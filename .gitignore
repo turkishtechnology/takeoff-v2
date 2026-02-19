@@ -1,0 +1,8 @@
+node_modules
+dist
+build
+.turbo
+.docusaurus
+*.tsbuildinfo
+.env
+.env.*
