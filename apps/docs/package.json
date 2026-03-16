@@ -3,9 +3,15 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "sync-theme": "node ./scripts/sync-takeoff-ui-theme.mjs",
+    "generate:api": "node ./src/docs-files/generate-mdx.mjs",
+    "build:react-spar": "pnpm --filter @takeoff-ui/react-spar build",
+    "predev": "pnpm run sync-theme && pnpm run generate:api && pnpm run build:react-spar",
     "dev": "docusaurus start",
+    "prebuild": "pnpm run sync-theme && pnpm run generate:api && pnpm run build:react-spar",
     "build": "docusaurus build",
     "serve": "docusaurus serve",
+    "precheck-types": "pnpm run sync-theme && pnpm run generate:api && pnpm run build:react-spar",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
@@ -13,14 +19,20 @@
   "dependencies": {
     "@docusaurus/core": "^3.7.0",
     "@docusaurus/preset-classic": "^3.7.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "@takeoff/react": "workspace:*"
+    "@docusaurus/theme-common": "^3.7.0",
+    "@takeoff-ui/react-spar": "workspace:*",
+    "clsx": "^2.1.1",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-live": "^4.1.8"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.7.0",
     "@docusaurus/tsconfig": "^3.7.0",
     "@docusaurus/types": "^3.7.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "typescript": "^5.7.0"
   },
   "browserslist": {

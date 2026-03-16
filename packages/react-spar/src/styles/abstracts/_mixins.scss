@@ -1,0 +1,14 @@
+@mixin focus-ring($shadow) {
+  &:focus-visible {
+    outline: none;
+    box-shadow: $shadow;
+  }
+}
+
+@mixin disabled-state {
+  &[data-disabled],
+  &:disabled,
+  &[aria-disabled='true'] {
+    @content;
+  }
+}

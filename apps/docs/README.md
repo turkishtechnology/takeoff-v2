@@ -1,3 +1,4 @@
 # docs
 
-Docusaurus documentation site for takeoff.
+Docusaurus site for public `@takeoff-ui/react-spar` product docs and component
+demos.

@@ -1,0 +1,317 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  border: 0;
+  font-family: 'Geologica', sans-serif;
+}
+
+.label {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.primary {
+  color: var(--primary-base);
+}
+
+.primary.filled {
+  color: var(--text-lightest);
+  background-color: var(--primary-base);
+}
+
+.primary.outlined {
+  background-color: transparent;
+  border: 1px solid var(--primary-base);
+}
+
+.primary.filledlight {
+  background-color: var(--primary-light);
+}
+
+.primary.text {
+  background-color: transparent;
+}
+
+.secondary {
+  color: var(--secondary-darkest);
+}
+
+.secondary.filled {
+  color: var(--text-lightest);
+  background-color: var(--secondary-darkest);
+}
+
+.secondary.outlined {
+  background-color: transparent;
+  border: 1px solid var(--secondary-base);
+}
+
+.secondary.filledlight {
+  background-color: var(--secondary-light);
+}
+
+.secondary.text {
+  background-color: transparent;
+}
+
+.neutral {
+  color: var(--text-darkest);
+}
+
+.neutral.filled {
+  color: var(--text-lightest);
+  background-color: var(--background-darkest);
+}
+
+.neutral.outlined {
+  background-color: transparent;
+  color: var(--text-darkest);
+  border: 1px solid var(--background-darkest);
+}
+
+.neutral.filledlight {
+  background-color: var(--background-light);
+}
+
+.neutral.text {
+  background-color: transparent;
+}
+
+.info {
+  color: var(--states-info-base);
+}
+
+.info.filled {
+  color: var(--text-lightest);
+  background-color: var(--states-info-base);
+}
+
+.info.outlined {
+  background-color: transparent;
+  border: 1px solid var(--states-info-base);
+}
+
+.info.filledlight {
+  background-color: var(--states-info-light);
+}
+
+.info.text {
+  background-color: transparent;
+}
+
+.success {
+  color: var(--states-success-dark);
+}
+
+.success.filled {
+  color: var(--text-lightest);
+  background-color: var(--states-success-dark);
+}
+
+.success.outlined {
+  background-color: transparent;
+  border: 1px solid var(--states-success-dark);
+}
+
+.success.filledlight {
+  background-color: var(--states-success-light);
+}
+
+.success.text {
+  background-color: transparent;
+}
+
+.danger {
+  color: var(--states-danger-dark);
+}
+
+.danger.filled {
+  color: var(--text-lightest);
+  background-color: var(--states-danger-dark);
+}
+
+.danger.outlined {
+  background-color: transparent;
+  border: 1px solid var(--states-danger-dark);
+}
+
+.danger.filledlight {
+  background-color: var(--states-danger-light);
+}
+
+.danger.text {
+  background-color: transparent;
+}
+
+.warning {
+  color: var(--states-warning-dark);
+}
+
+.warning.filled {
+  color: var(--text-lightest);
+  background-color: var(--states-warning-dark);
+}
+
+.warning.outlined {
+  background-color: transparent;
+  border: 1px solid var(--states-warning-dark);
+}
+
+.warning.filledlight {
+  background-color: var(--states-warning-light);
+}
+
+.warning.text {
+  background-color: transparent;
+}
+
+.verified {
+  color: var(--states-verified-dark);
+}
+
+.verified.filled {
+  color: var(--text-lightest);
+  background-color: var(--states-verified-dark);
+}
+
+.verified.outlined {
+  background-color: transparent;
+  border: 1px solid var(--states-verified-dark);
+}
+
+.verified.filledlight {
+  background-color: var(--states-verified-light);
+}
+
+.verified.text {
+  background-color: transparent;
+}
+
+.purple {
+  color: var(--text-lightest);
+}
+
+.purple.filled {
+  background-color: var(--purple-600);
+}
+
+.purple.outlined {
+  background-color: transparent;
+  color: var(--purple-600);
+  border: 1px solid var(--purple-600);
+}
+
+.purple.filledlight {
+  background-color: var(--purple-100);
+  color: var(--purple-600);
+}
+
+.purple.text {
+  background-color: transparent;
+  color: var(--purple-600);
+}
+
+.cyan {
+  color: var(--text-lightest);
+}
+
+.cyan.filled {
+  background-color: var(--cyan-600);
+}
+
+.cyan.outlined {
+  background-color: transparent;
+  color: var(--cyan-600);
+  border: 1px solid var(--cyan-600);
+}
+
+.cyan.filledlight {
+  background-color: var(--cyan-100);
+  color: var(--cyan-600);
+}
+
+.cyan.text {
+  background-color: transparent;
+  color: var(--cyan-600);
+}
+
+.business {
+  color: var(--text-lightest);
+}
+
+.business.filled {
+  background-color: var(--business-600);
+}
+
+.business.outlined {
+  background-color: transparent;
+  color: var(--business-600);
+  border: 1px solid var(--business-600);
+}
+
+.business.filledlight {
+  background-color: var(--business-100);
+  color: var(--business-600);
+}
+
+.business.text {
+  background-color: transparent;
+  color: var(--business-600);
+}
+
+.teal {
+  color: var(--text-lightest);
+}
+
+.teal.filled {
+  background-color: var(--teal-600);
+}
+
+.teal.outlined {
+  background-color: transparent;
+  color: var(--teal-700);
+  border: 1px solid var(--teal-200);
+}
+
+.teal.filledlight {
+  background-color: var(--teal-100);
+  color: var(--teal-800);
+}
+
+.teal.text {
+  background-color: transparent;
+  color: var(--teal-600);
+}
+
+.small {
+  height: 16px;
+  gap: 2px;
+  padding: var(--badge-small-basic-v-padding) var(--badge-small-basic-right-padding) var(--badge-small-basic-v-padding) var(--badge-small-basic-left-padding);
+  border-radius: var(--badge-small-basic-radius);
+  font-size: var(--desktop-body-2xs-size);
+  line-height: var(--desktop-body-2xs-line-height);
+}
+
+.base {
+  height: 20px;
+  gap: 4px;
+  padding: var(--badge-base-basic-v-padding) var(--badge-base-basic-right-padding) var(--badge-base-basic-v-padding) var(--badge-base-basic-left-padding);
+  border-radius: var(--badge-base-basic-radius);
+  font-size: var(--desktop-body-xs-size);
+  line-height: var(--desktop-body-xs-line-height);
+}
+
+.large {
+  height: 24px;
+  gap: 6px;
+  padding: var(--badge-large-basic-v-padding) var(--badge-large-basic-right-padding) var(--badge-large-basic-v-padding) var(--badge-large-basic-left-padding);
+  border-radius: var(--badge-large-basic-radius);
+  font-size: var(--desktop-body-xs-size);
+  line-height: var(--desktop-body-xs-line-height);
+}
+
+.rounded {
+  border-radius: var(--radius-full);
+}

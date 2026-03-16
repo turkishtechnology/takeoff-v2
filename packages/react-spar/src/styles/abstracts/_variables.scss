@@ -1,0 +1,130 @@
+$tk-breakpoint-sm: 36rem;
+$tk-breakpoint-md: 48rem;
+$tk-breakpoint-lg: 62rem;
+$tk-breakpoint-xl: 75rem;
+
+:root {
+  --tk-font-family-base: 'Geologica', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --tk-font-size-body-xs: 0.75rem;
+  --tk-font-size-body-sm: 0.875rem;
+  --tk-font-size-body-md: 1rem;
+  --tk-font-size-body-lg: 1.125rem;
+  --tk-font-weight-regular: 400;
+  --tk-font-weight-medium: 500;
+  --tk-font-weight-semibold: 600;
+  --tk-line-height-tight: 1.2;
+  --tk-line-height-base: 1.5;
+
+  --tk-space-1: 0.25rem;
+  --tk-space-2: 0.5rem;
+  --tk-space-3: 0.75rem;
+  --tk-space-4: 1rem;
+  --tk-space-5: 1.25rem;
+  --tk-space-6: 1.5rem;
+  --tk-space-8: 2rem;
+  --tk-space-10: 2.5rem;
+
+  --tk-radius-sm: 0.5rem;
+  --tk-radius-md: 0.75rem;
+  --tk-radius-lg: 1rem;
+  --tk-radius-pill: 999px;
+
+  --tk-color-white: #ffffff;
+  --tk-color-black: #111216;
+  --tk-color-brand: #c90019;
+  --tk-color-brand-strong: #8f0012;
+  --tk-color-brand-soft: #fae6e8;
+  --tk-color-brand-contrast: #ffffff;
+  --tk-color-secondary: #607083;
+  --tk-color-secondary-strong: #34404f;
+  --tk-color-secondary-soft: #f2f3f5;
+  --tk-color-secondary-contrast: #ffffff;
+  --tk-color-info: #3b82f6;
+  --tk-color-info-strong: #204887;
+  --tk-color-info-soft: #f5f9ff;
+  --tk-color-success: #22c55e;
+  --tk-color-success-strong: #136c34;
+  --tk-color-success-soft: #f4fcf7;
+  --tk-color-danger: #ff3d32;
+  --tk-color-danger-strong: #8c221c;
+  --tk-color-danger-soft: #fff5f5;
+  --tk-color-warning: #eab308;
+  --tk-color-warning-strong: #816204;
+  --tk-color-warning-soft: #fefbf3;
+  --tk-color-surface: #ffffff;
+  --tk-color-surface-subtle: #f9fafc;
+  --tk-color-surface-muted: #f2f5f8;
+  --tk-color-surface-elevated: #ffffff;
+  --tk-color-border: #cacfd8;
+  --tk-color-border-strong: #99a0ae;
+  --tk-color-text: #181b25;
+  --tk-color-text-muted: #717784;
+  --tk-color-text-subtle: #99a0ae;
+  --tk-color-text-inverse: #ffffff;
+  --tk-color-white-soft: rgba(255, 255, 255, 0.16);
+  --tk-color-white-muted: rgba(255, 255, 255, 0.48);
+
+  --tk-shadow-focus-brand: 0 0 0 3px rgba(201, 0, 25, 0.18);
+  --tk-shadow-focus-secondary: 0 0 0 3px rgba(96, 112, 131, 0.18);
+  --tk-shadow-focus-neutral: 0 0 0 3px rgba(82, 88, 102, 0.18);
+  --tk-shadow-focus-info: 0 0 0 3px rgba(59, 130, 246, 0.18);
+  --tk-shadow-focus-success: 0 0 0 3px rgba(34, 197, 94, 0.18);
+  --tk-shadow-focus-danger: 0 0 0 3px rgba(255, 61, 50, 0.18);
+  --tk-shadow-focus-warning: 0 0 0 3px rgba(234, 179, 8, 0.24);
+  --tk-shadow-focus-white: 0 0 0 3px rgba(255, 255, 255, 0.32);
+  --tk-shadow-elevated: 0 1px 2px rgba(17, 18, 22, 0.08), 0 10px 24px rgba(17, 18, 22, 0.12);
+  --tk-shadow-elevated-hover: 0 2px 6px rgba(17, 18, 22, 0.12), 0 14px 32px rgba(17, 18, 22, 0.16);
+
+  --tk-button-scale: 1;
+  --tk-button-font-size-small: 0.75rem;
+  --tk-button-font-size-base: 0.875rem;
+  --tk-button-font-size-large: 1rem;
+  --tk-button-height-small: 2rem;
+  --tk-button-height-base: 2.5rem;
+  --tk-button-height-large: 3rem;
+  --tk-button-radius-small: 0.625rem;
+  --tk-button-radius-base: 0.75rem;
+  --tk-button-radius-large: 0.875rem;
+  --tk-button-padding-small-y: 0.375rem;
+  --tk-button-padding-small-x: 0.75rem;
+  --tk-button-padding-base-y: 0.5rem;
+  --tk-button-padding-base-x: 1rem;
+  --tk-button-padding-large-y: 0.625rem;
+  --tk-button-padding-large-x: 1.25rem;
+  --tk-button-gap-small: 0.375rem;
+  --tk-button-gap-base: 0.5rem;
+  --tk-button-gap-large: 0.625rem;
+  --tk-button-icon-size-small: 1rem;
+  --tk-button-icon-size-base: 1.125rem;
+  --tk-button-icon-size-large: 1.25rem;
+  --tk-button-icon-only-padding-small: 0.375rem;
+  --tk-button-icon-only-padding-base: 0.5rem;
+  --tk-button-icon-only-padding-large: 0.625rem;
+}
+
+[data-theme='dark'] {
+  --tk-color-brand-soft: rgba(201, 0, 25, 0.18);
+  --tk-color-secondary: #99a0ae;
+  --tk-color-secondary-strong: #c1c8d1;
+  --tk-color-secondary-soft: rgba(255, 255, 255, 0.08);
+  --tk-color-secondary-contrast: #111216;
+  --tk-color-info-soft: rgba(59, 130, 246, 0.18);
+  --tk-color-success-soft: rgba(34, 197, 94, 0.18);
+  --tk-color-danger-soft: rgba(255, 61, 50, 0.18);
+  --tk-color-warning-soft: rgba(234, 179, 8, 0.18);
+  --tk-color-surface: #181b25;
+  --tk-color-surface-subtle: #111216;
+  --tk-color-surface-muted: #222530;
+  --tk-color-surface-elevated: #222530;
+  --tk-color-border: #525866;
+  --tk-color-border-strong: #717784;
+  --tk-color-text: #f9fafc;
+  --tk-color-text-muted: #c1c8d1;
+  --tk-color-text-subtle: #99a0ae;
+  --tk-shadow-elevated: 0 1px 2px rgba(0, 0, 0, 0.32), 0 10px 24px rgba(0, 0, 0, 0.28);
+  --tk-shadow-elevated-hover: 0 2px 6px rgba(0, 0, 0, 0.38), 0 14px 32px rgba(0, 0, 0, 0.34);
+}
+
+[data-density='compact'] {
+  --tk-button-scale: 0.9;
+}

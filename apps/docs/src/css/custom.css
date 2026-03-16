@@ -1,3 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap');
+@import './generated/takeoff-ui-tokens.css';
+@import './generated/takeoff-ui-docusaurus-overrides.css';
+@import './generated/takeoff-ui-layout.css';
+@import '@takeoff-ui/react-spar/styles.css';
+
 :root {
-  --ifm-color-primary: #2e8555;
+  --ifm-font-family-base: var(--family-body, 'Geologica'), sans-serif;
+  --ifm-heading-font-family: var(--family-title, 'Geologica'), sans-serif;
+  --ifm-font-color-base: var(--text-base, #717784);
+  --ifm-heading-color: var(--text-darkest, #222530);
+}
+
+html {
+  font-family: var(--ifm-font-family-base);
+}
+
+body {
+  color: var(--ifm-font-color-base);
+  background-color: var(--background-lightest, #f9fafc);
+  font-family: var(--ifm-font-family-base);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--ifm-heading-color);
+  font-family: var(--ifm-heading-font-family);
+}
+
+.theme-image-dark {
+  display: none;
+}
+
+[data-theme='dark'] .theme-image-light {
+  display: none;
+}
+
+[data-theme='dark'] .theme-image-dark {
+  display: inline-block;
+}
+
+.theme-back-to-top-button {
+  background: var(--primary-base, #c90019);
+  color: var(--static-white, #ffffff);
+}
+
+.section-design-system-intro {
+  padding-top: 2rem;
 }

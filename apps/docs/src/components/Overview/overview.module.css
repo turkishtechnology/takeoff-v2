@@ -1,0 +1,120 @@
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.cardLink {
+  display: block;
+  flex: 0 1 264px;
+  width: min(100%, 264px);
+  max-width: 264px;
+  color: var(--text-darkest);
+  text-decoration: none;
+}
+
+.cardLink:hover {
+  color: var(--text-darkest);
+  text-decoration: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  background: var(--static-light);
+  box-shadow: var(--effect-1-default-base);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 8px 16px 0;
+}
+
+.title {
+  margin: 0;
+  color: var(--text-darkest);
+  font-family: var(--desktop-title-h6-font, var(--family-title));
+  font-size: var(--desktop-title-h6-size, 20px);
+  font-weight: 600;
+  line-height: var(--desktop-title-h6-line-height, 28px);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 6px;
+  border: 0;
+  border-radius: var(--button-sizes-small-radius, 8px);
+  background: transparent;
+  color: var(--text-darkest);
+  transition: all 200ms cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+
+.action:hover,
+.cardLink:focus-visible .action {
+  background: var(--frames-lightest);
+}
+
+.cardLink:focus-visible {
+  outline: none;
+}
+
+.cardLink:focus-visible .card {
+  box-shadow: var(--secondary-focus), var(--effect-1-default-base);
+}
+
+.actionIcon {
+  width: var(--button-sizes-small-icon-size, 20px);
+  height: var(--button-sizes-small-icon-size, 20px);
+  stroke: var(--icon-darkest);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  fill: none;
+}
+
+.media {
+  position: relative;
+  padding: 16px;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  padding: var(--badge-base-basic-v-padding) var(--badge-base-basic-right-padding) var(--badge-base-basic-v-padding) var(--badge-base-basic-left-padding);
+  border-radius: var(--badge-base-basic-radius, 6px);
+  background: var(--cyan-600);
+  color: var(--text-lightest);
+  font-family: var(--family-body), sans-serif;
+  font-size: var(--desktop-body-xs-size, 12px);
+  line-height: var(--desktop-body-xs-line-height, 18px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .cardLink {
+    flex-basis: 100%;
+    width: 100%;
+    max-width: none;
+  }
+}

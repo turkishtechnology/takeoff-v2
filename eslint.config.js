@@ -1,16 +1,16 @@
 import js from '@eslint/js';
+import eslintConfigPrettier from 'eslint-config-prettier';
 import tseslint from 'typescript-eslint';
-import prettier from 'eslint-plugin-prettier/recommended';
 
 export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  prettier,
+  eslintConfigPrettier,
   {
-    files: ['**/*.{js,jsx,ts,tsx}'],
+    files: ['**/*.{js,jsx,mjs,cjs,ts,tsx}'],
     rules: {
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
 
       'no-console': 'warn',
       'no-debugger': 'error',
@@ -33,14 +33,17 @@ export default tseslint.config(
   },
   {
     ignores: [
-      'node_modules/**',
-      'dist/**',
-      'build/**',
-      '.next/**',
-      '.turbo/**',
-      'coverage/**',
-      'apps/docs/.docusaurus/**',
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/coverage/**',
+      '**/.next/**',
+      '**/.turbo/**',
+      '**/.cursor/**',
+      '**/.docusaurus/**',
       'apps/docs/build/**',
+      'apps/*/dist/**',
+      'packages/*/dist/**',
     ],
   },
 );

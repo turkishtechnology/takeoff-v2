@@ -1,0 +1,79 @@
+import LiveCode from '../../components/LiveCode';
+import TypeExample from './Examples/Appearance';
+import Form from './Examples/Form';
+import SizeAndWidth from './Examples/SizeAndWidth';
+import States from './Examples/States';
+import Variant from './Examples/Variant';
+import { Button, ReactSparDemoRoot } from '../../components/ReactSparDocs';
+
+### Playground
+
+<LiveCode
+  code={`() => {
+  const [loading, setLoading] = React.useState(false);
+
+return ( <div className='button-playground-root'>
+
+<div className='button-playground-stack'>
+<div className='button-playground-row'> <Button>Primary filled</Button>
+<Button type='outlined' variant='secondary'>Secondary outlined</Button>
+<Button type='text' variant='neutral'>Neutral text</Button> </div>
+
+          <div className='button-playground-row'>
+            <Button type='elevated'>Manage booking</Button>
+            <Button loading={loading} type='outlined' variant='secondary'>
+              {loading ? 'Checking fare' : 'Checkout'}
+            </Button>
+            <Button onClick={() => setLoading((value) => !value)}>
+              {loading ? 'Stop loading preview' : 'Trigger loading preview'}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+); }`}   cssCode={`.button-playground-root { width: 100%; display: flex;
+justify-content: center; }
+
+.button-playground-stack { display: grid; gap: 16px; width: min(100%, 640px);
+justify-items: center; }
+
+.button-playground-row { display: flex; flex-wrap: wrap; justify-content:
+center; gap: 12px; width: 100%; } `} previewMinHeight={220}
+previewWrapper={ReactSparDemoRoot} scope={{ Button }} />
+
+## Variant
+
+Use `variant` when the action meaning changes. The component keeps the same
+layout contract while the tone moves from primary to neutral, warning, or
+danger.
+
+<Variant />
+
+## Type
+
+Use `type` to control visual weight after the semantic tone is chosen. This
+keeps prominence separate from intent.
+
+<TypeExample />
+
+## Size and Layout
+
+`size` adjusts density. `fullWidth` gives an action its own line when the next
+step should read clearly and without competition.
+
+<SizeAndWidth />
+
+## States
+
+Reach for `loading` and `disabled` for operational feedback. For toggle
+behavior, keep native `aria-pressed`; Spar already exposes the pressed state for
+styling.
+
+<States />
+
+## Form Semantics
+
+Use `mode='submit'` or `mode='reset'` when the button belongs to a form. The
+wrapper preserves native behavior instead of recreating it in JavaScript.
+
+<Form />

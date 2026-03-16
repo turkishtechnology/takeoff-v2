@@ -10,20 +10,16 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "check-types": "turbo run check-types",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,cjs,css,scss,json,md,mdx,yml,yaml,html}\" --cache",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,cjs,css,scss,json,md,mdx,yml,yaml,html}\"",
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "*.{ts,tsx,js,jsx,mjs,cjs}": [
       "eslint --fix",
-      "prettier --write"
+      "prettier --write --cache"
     ],
-    "*.{js,jsx,mjs,cjs}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,yaml,yml,css,html}": "prettier --write"
+    "*.{css,scss,json,md,mdx,yaml,yml,html}": "prettier --write --cache"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.2",

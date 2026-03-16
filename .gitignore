@@ -6,3 +6,5 @@ build
 *.tsbuildinfo
 .env
 .env.*
+.npm-cache
+internal-docs/

@@ -1,13 +1,10 @@
-# Ignore .github directory
-.github/
-
-# Common ignore patterns
+.cursor/
+.turbo/
+.docusaurus/
 node_modules/
 dist/
 build/
 coverage/
-*.min.js
-*.min.css
-
-# Lock files
-pnpm-lock.yaml
+apps/*/dist/
+apps/docs/build/
+packages/*/dist/

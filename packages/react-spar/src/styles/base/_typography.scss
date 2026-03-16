@@ -1,0 +1,14 @@
+html {
+  font-family: var(--desktop-body-m-base-font, 'Geologica'), 'Segoe UI', 'Helvetica Neue', sans-serif;
+  line-height: var(--desktop-body-m-base-line-height, 1.5);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--background-lightest);
+  color: var(--text-darkest);
+  font-family: var(--desktop-body-m-base-font, 'Geologica'), 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: var(--desktop-body-m-base-size, 1rem);
+  font-weight: var(--desktop-body-m-base-line-weight, 400);
+  line-height: var(--desktop-body-m-base-line-height, 1.5);
+}

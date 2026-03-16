@@ -1,3 +1,0 @@
-# takeoff
-
-Core package.
