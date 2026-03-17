@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import HomepageFeatures from '@site/src/components/Landing/Features';
 import Frameworks from '@site/src/components/Landing/Frameworks';

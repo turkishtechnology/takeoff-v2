@@ -1,5 +1,5 @@
+import type { JSX } from 'react';
 import styles from './design-system.module.css';
-import React from 'react';
 
 export default function DesignSystem(): JSX.Element {
   return (

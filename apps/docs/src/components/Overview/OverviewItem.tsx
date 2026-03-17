@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { useColorMode } from '@docusaurus/theme-common';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './overview.module.css';

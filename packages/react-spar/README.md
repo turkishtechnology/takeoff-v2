@@ -21,19 +21,20 @@ pnpm add @takeoff-ui/react-spar @turkish-technology/spar react react-dom
 
 ```tsx
 import '@takeoff-ui/react-spar/styles';
-import { Button, ThemeProvider } from '@takeoff-ui/react-spar';
+import { Button, SparReactProvider } from '@takeoff-ui/react-spar';
 
 export function Example() {
   return (
-    <ThemeProvider>
+    <SparReactProvider>
       <Button type="outlined" variant="secondary">
         Book flight
       </Button>
-    </ThemeProvider>
+    </SparReactProvider>
   );
 }
 ```
 
-`ThemeProvider` writes `data-theme`, `data-color-mode`, and `data-density`
-attributes into the DOM so the shipped Sass output can react to color mode and
-density through the package's semantic global Sass variables.
+`SparReactProvider` is the new root provider for the package. It keeps the
+existing theme contract alive by writing `data-theme`, `data-color-mode`, and
+`data-density`, and also adds `dir`, `lang`, `data-direction`, and `data-locale`
+for broader app-level configuration.
