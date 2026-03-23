@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import Gif from '../Landing/Gif/gif';
 
 export default function PageHeader(): JSX.Element {

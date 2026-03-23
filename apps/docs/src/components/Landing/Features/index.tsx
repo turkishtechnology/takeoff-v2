@@ -1,4 +1,4 @@
-import type { ComponentProps, ComponentType, ReactNode } from 'react';
+import type { ComponentProps, ComponentType, JSX, ReactNode } from 'react';
 import styles from './styles.module.css';
 import FlexibleSvg from '@site/static/img/flexible.svg';
 import FrameworkAgnosticSvg from '@site/static/img/framework-agnostic.svg';

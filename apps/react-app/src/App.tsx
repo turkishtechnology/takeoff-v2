@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { Button, ThemeProvider, buttonClassNames } from '@takeoff-ui/react-spar';
+import { Button, SparReactProvider, buttonClassNames } from '@takeoff-ui/react-spar';
 
 const cssVar = (name: `--${string}`) => `var(${name})`;
 
@@ -43,7 +43,7 @@ const contractStyle: CSSProperties = {
 
 function App() {
   return (
-    <ThemeProvider>
+    <SparReactProvider>
       <main style={shellStyle}>
         <section style={cardStyle}>
           <p
@@ -68,8 +68,8 @@ function App() {
             React Spar Button product surface
           </h1>
           <p style={{ margin: '1rem 0 0', maxWidth: '44rem', color: cssVar('--tk-color-text-muted') }}>
-            This app mounts ThemeProvider, imports the package styles, and exercises the real Button wrapper with Takeoff type, variant, size, link, and loading capabilities on top
-            of Spar semantics.
+            This app mounts SparReactProvider, imports the package styles, and exercises the real Button wrapper with Takeoff type, variant, size, link, and loading capabilities on
+            top of Spar semantics.
           </p>
 
           <div style={sectionStyle}>
@@ -104,7 +104,7 @@ function App() {
           <pre style={contractStyle}>{JSON.stringify(buttonClassNames, null, 2)}</pre>
         </section>
       </main>
-    </ThemeProvider>
+    </SparReactProvider>
   );
 }
 

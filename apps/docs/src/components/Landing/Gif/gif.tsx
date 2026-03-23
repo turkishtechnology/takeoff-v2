@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import styles from './gif.module.css';
 
 export default function Gif(): JSX.Element {

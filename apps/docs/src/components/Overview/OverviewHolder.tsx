@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import OverviewItem from './OverviewItem';
 import { overviewItems } from '../../data/overview-items';
 import styles from './overview.module.css';

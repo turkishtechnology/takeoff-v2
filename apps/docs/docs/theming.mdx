@@ -8,26 +8,26 @@ sidebar_position: 2
 # Theming
 
 `@takeoff-ui/react-spar` keeps component examples intentionally isolated. Load
-styles once, mount `ThemeProvider` once, and let component pages focus on the
-component API.
+styles once, mount `SparReactProvider` once, and let component pages focus on
+the component API.
 
 ## App Shell Setup
 
 ```tsx
 import '@takeoff-ui/react-spar/styles';
-import { ThemeProvider } from '@takeoff-ui/react-spar';
+import { SparReactProvider } from '@takeoff-ui/react-spar';
 
 export function AppShell() {
   return (
-    <ThemeProvider colorMode="light" density="comfortable">
+    <SparReactProvider colorMode="light" density="comfortable">
       <App />
-    </ThemeProvider>
+    </SparReactProvider>
   );
 }
 ```
 
 - Import `@takeoff-ui/react-spar/styles` once in the application entry or shell.
-- Mount `ThemeProvider` once near the shell. It writes `data-theme`,
+- Mount `SparReactProvider` once near the shell. It writes `data-theme`,
   `data-color-mode`, and `data-density` for the shipped CSS contract.
 - Change `colorMode` or `density` at that same boundary when a route, story, or
   preview needs a different presentation.
