@@ -3,15 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "sync-theme": "node ./scripts/sync-takeoff-ui-theme.mjs",
     "generate:api": "node ./src/docs-files/generate-mdx.mjs",
     "build:react-spar": "pnpm --filter @takeoff-ui/react-spar build",
-    "predev": "pnpm run sync-theme && pnpm run generate:api && pnpm run build:react-spar",
+    "predev": "pnpm run generate:api && pnpm run build:react-spar",
     "dev": "docusaurus start",
-    "prebuild": "pnpm run sync-theme && pnpm run generate:api && pnpm run build:react-spar",
+    "prebuild": "pnpm run generate:api && pnpm run build:react-spar",
     "build": "docusaurus build",
     "serve": "docusaurus serve",
-    "precheck-types": "pnpm run sync-theme && pnpm run generate:api && pnpm run build:react-spar",
+    "precheck-types": "pnpm run generate:api && pnpm run build:react-spar",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

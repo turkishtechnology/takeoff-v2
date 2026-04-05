@@ -1,8 +1,8 @@
 import type { AnchorHTMLAttributes, ComponentPropsWithoutRef, ReactNode } from 'react';
 
-export type ButtonType = 'filled' | 'elevated' | 'outlined' | 'text';
+export type ButtonType = 'filled' | 'filledLight' | 'elevated' | 'outlined' | 'text';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'neutral' | 'info' | 'success' | 'danger' | 'warning' | 'white';
+export type ButtonVariant = 'primary' | 'secondary' | 'neutral' | 'info' | 'success' | 'danger' | 'warning' | 'white' | 'black';
 
 export type ButtonSize = 'large' | 'base' | 'small';
 
