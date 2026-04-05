@@ -20,6 +20,7 @@
     "@docusaurus/core": "^3.7.0",
     "@docusaurus/preset-classic": "^3.7.0",
     "@docusaurus/theme-common": "^3.7.0",
+    "@takeoff-design/tokens": "link:../../../takeoff-design/packages/tokens",
     "@takeoff-ui/react-spar": "workspace:*",
     "clsx": "^2.1.1",
     "prism-react-renderer": "^2.4.1",

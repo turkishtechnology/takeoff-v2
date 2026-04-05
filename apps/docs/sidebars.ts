@@ -7,7 +7,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Components',
-      items: ['components/overview', 'components/button'],
+      items: ['Components/Overview', 'Components/Button'],
     },
   ],
 };

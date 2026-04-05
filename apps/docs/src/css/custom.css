@@ -1,8 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap');
-@import './generated/takeoff-ui-tokens.css';
-@import './generated/takeoff-ui-docusaurus-overrides.css';
-@import './generated/takeoff-ui-layout.css';
-@import '@takeoff-ui/react-spar/styles.css';
+@import '@takeoff-design/tokens/css/default/theme.css';
+@import './docusaurus-overrides.css';
+@import './layout.css';
 
 :root {
   --ifm-font-family-base: var(--family-body, 'Geologica'), sans-serif;

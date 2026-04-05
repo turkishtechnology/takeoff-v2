@@ -55,6 +55,9 @@ importers:
       "@docusaurus/theme-common":
         specifier: ^3.7.0
         version: 3.9.2(@docusaurus/plugin-content-docs@3.9.2(@mdx-js/react@3.1.1(@types/react@19.2.14)(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      "@takeoff-design/tokens":
+        specifier: link:../../../takeoff-design/packages/tokens
+        version: link:../../../takeoff-design/packages/tokens
       "@takeoff-ui/react-spar":
         specifier: workspace:*
         version: link:../../packages/react-spar
@@ -95,6 +98,9 @@ importers:
 
   apps/react-app:
     dependencies:
+      "@takeoff-design/tokens":
+        specifier: link:../../../takeoff-design/packages/tokens
+        version: link:../../../takeoff-design/packages/tokens
       "@takeoff-ui/react-spar":
         specifier: workspace:*
         version: link:../../packages/react-spar
@@ -133,15 +139,15 @@ importers:
         specifier: ^19.0.0
         version: 19.2.4(react@19.2.4)
     devDependencies:
+      "@takeoff-design/tokens":
+        specifier: link:../../../takeoff-design/packages/tokens
+        version: link:../../../takeoff-design/packages/tokens
       "@types/react":
         specifier: ^19.0.0
         version: 19.2.14
       "@types/react-dom":
         specifier: ^19.0.0
         version: 19.2.3(@types/react@19.2.14)
-      sass:
-        specifier: ^1.83.4
-        version: 1.97.3
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
@@ -9907,6 +9913,7 @@ snapshots:
   chokidar@4.0.3:
     dependencies:
       readdirp: 4.1.2
+    optional: true
 
   chrome-trace-event@1.0.4: {}
 
@@ -11151,7 +11158,8 @@ snapshots:
 
   image-size@2.0.2: {}
 
-  immutable@5.1.5: {}
+  immutable@5.1.5:
+    optional: true
 
   import-fresh@3.3.1:
     dependencies:
@@ -12900,7 +12908,8 @@ snapshots:
     dependencies:
       picomatch: 2.3.1
 
-  readdirp@4.1.2: {}
+  readdirp@4.1.2:
+    optional: true
 
   recma-build-jsx@1.0.0:
     dependencies:
@@ -13149,6 +13158,7 @@ snapshots:
       source-map-js: 1.2.1
     optionalDependencies:
       "@parcel/watcher": 2.5.6
+    optional: true
 
   sax@1.4.4: {}
 

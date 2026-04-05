@@ -14,10 +14,6 @@ export default defineConfig({
         replacement: sparPackageDir,
       },
       {
-        find: '@takeoff-ui/react-spar/styles',
-        replacement: resolve(reactSparSourceDir, 'styles/index.scss'),
-      },
-      {
         find: '@takeoff-ui/react-spar',
         replacement: resolve(reactSparSourceDir, 'index.ts'),
       },

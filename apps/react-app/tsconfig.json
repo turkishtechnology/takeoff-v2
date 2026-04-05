@@ -19,8 +19,7 @@
     "noUncheckedSideEffectImports": true,
     "paths": {
       "@turkish-technology/spar": ["../../packages/react-spar/node_modules/@turkish-technology/spar"],
-      "@takeoff-ui/react-spar": ["../../packages/react-spar/src/index.ts"],
-      "@takeoff-ui/react-spar/styles": ["../../packages/react-spar/src/styles/index.ts"]
+      "@takeoff-ui/react-spar": ["../../packages/react-spar/src/index.ts"]
     }
   },
   "include": ["src", "vite-env.d.ts"]

@@ -38,6 +38,7 @@ export const SparReactProvider = ({ children, colorMode = 'light', density = 'co
         dir={dir}
         lang={locale}
         data-theme={colorMode}
+        data-scheme={colorMode}
         data-color-mode={colorMode}
         data-density={density}
         data-direction={dir}

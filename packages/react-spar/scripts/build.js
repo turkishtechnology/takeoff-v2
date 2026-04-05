@@ -1,15 +1,12 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, extname, relative, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { compile } from 'sass';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const packageDir = resolve(scriptDir, '..');
 const distDir = resolve(packageDir, 'dist');
-const distStylesDir = resolve(distDir, 'styles');
-const sourceStylesEntry = resolve(packageDir, 'src/styles/style.scss');
 const emittedModuleExtensions = new Set(['.js', '.mjs', '.cjs', '.css', '.json']);
 const sourceModuleExtensions = ['.ts', '.tsx', '.mts', '.cts'];
 
@@ -154,11 +151,5 @@ run('tsc', ['--project', 'tsconfig.build.json']);
 rewriteEmittedRelativeSpecifiers(distDir);
 assertEmittedRelativeSpecifiersAreFullySpecified(distDir);
 
-const styles = compile(sourceStylesEntry, {
-  loadPaths: [resolve(packageDir, 'src/styles')],
-  style: 'expanded',
-});
-
-mkdirSync(distStylesDir, { recursive: true });
-writeFileSync(resolve(distDir, 'styles.css'), styles.css);
-writeFileSync(resolve(distStylesDir, 'index.js'), "import '../styles.css';\n");
+// Styles are NOT bundled into this package.
+// Consumers import component styles from @takeoff-design/tokens directly.
