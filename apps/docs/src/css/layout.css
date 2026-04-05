@@ -574,11 +574,11 @@ body {
 .page-header .container h1 {
   color: var(--text-darkest, #222530);
 
-  /* Title/H1-60 */
+  /* Title/H3-36 */
   font-family: 'Geologica';
-  font-size: 60px;
+  font-size: 36px;
   font-weight: 400;
-  line-height: 100%;
+  line-height: 45px;
 }
 
 .page-header .container .description {
@@ -588,7 +588,9 @@ body {
 }
 
 .section-image .holder {
-  margin: 32px 0;
+  margin: 32px auto;
+  max-width: 1320px;
+  padding: 0 16px;
   max-height: 240px;
   overflow: hidden;
 }
@@ -613,6 +615,44 @@ body {
 
   .page-header .container .description {
     width: 100%;
+  }
+
+  .bg-point {
+    width: 300px;
+    height: 300px;
+  }
+
+  .section-image .holder {
+    max-height: 160px;
+  }
+
+  .section-image .holder .image {
+    height: 160px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .page-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .page-header .container h1 {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .bg-point {
+    width: 200px;
+    height: 200px;
+    filter: blur(100px);
+  }
+
+  .section-image .holder {
+    max-height: 120px;
+  }
+
+  .section-image .holder .image {
+    height: 120px;
   }
 }
 
@@ -689,51 +729,67 @@ body {
   text-transform: uppercase;
 }
 
-.section-frameworks {
-  display: flex;
-  align-items: center;
-  padding: 2rem 0;
-  width: 100%;
-}
-
-.section-frameworks .titleDesc {
-  color: var(--text-base);
-}
-
-.section-frameworks .framework {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  border-radius: 16px;
-  border: 2px solid var(--border-light);
-  background: var(--static-light);
-  padding: 16px;
-  height: 100%;
-}
-
-.section-frameworks .framework .frameworkSvg {
-  height: 40px;
-  width: 40px;
-  padding: 8px;
-  border-radius: 100%;
-  border: 2px solid var(--surface-light);
-  background: var(--static-light);
-}
-
-.section-frameworks .framework .frameworkDesc {
-  color: var(--text-base);
-  font-size: 14px;
-}
-
 .footer {
   margin-top: 24px;
   background-color: var(--static-light);
 }
+
+.footer .container {
+  max-width: 1320px;
+  padding: 0 16px;
+}
+
 .code-block-deprecated-usage {
   background-color: var(--primary-darkest);
 }
 .code-block-new-usage {
   background-color: var(--states-success-darkest);
+}
+
+/* Page Title Margin Override */
+.markdown h1:first-child {
+  --ifm-h1-font-size: var(--desktop-title-h3-size) !important;
+  margin-bottom: 12px !important;
+  --ifm-heading-line-height: var(--desktop-title-h3-line-height) !important;
+}
+
+/* Sidebar Menu Spacing */
+.menu__link {
+  margin-left: 20px;
+  margin-right: 20px;
+  border-radius: 4px;
+  position: relative;
+
+  &.menu__link--active:not(.menu__link--sublist) {
+    border-left: none !important;
+  }
+
+  &.menu__link--active:not(.menu__link--sublist)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 100%;
+    width: 4px;
+    background-color: var(--primary-base);
+    border-radius: 4px 0 0 4px;
+  }
+
+  &:hover {
+    background-color: var(--background-lightest);
+    color: var(--text-darkest);
+  }
+}
+
+/* Custom padding for main documentation content on wide screens */
+@media (min-width: 1440px) {
+  main[class*='docMainContainer_'] .container {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
 }
 
 tk-phone-input ul,

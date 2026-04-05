@@ -1,3 +1,14 @@
+.section {
+  padding: 2rem 0;
+}
+
+.sectionInner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 16px;
+  width: 100%;
+}
+
 .description {
   color: var(--text-base);
 }
@@ -12,7 +23,7 @@
 .avatarWrap {
   align-items: center;
   background: var(--static-light);
-  border: 2px solid var(--border-light);
+  border: 1px solid var(--border-light);
   border-radius: 999px;
   display: inline-flex;
   height: 64px;

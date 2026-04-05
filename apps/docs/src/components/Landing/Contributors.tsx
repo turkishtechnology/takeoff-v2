@@ -15,8 +15,8 @@ const contributors = [
 
 export default function Contributors(): JSX.Element {
   return (
-    <section>
-      <div className="container">
+    <section className={styles.section}>
+      <div className={styles.sectionInner}>
         <h1>Contributors</h1>
         <p className={styles.description}>
           This project thrives thanks to the contributors shipping wrapper code, styling bridges, and docs improvements across the shared design system.

@@ -8,13 +8,62 @@
   --ifm-color-primary-lightest: var(--primary-100);
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
-  --ifm-container-width-xl: 1600px;
-  --ifm-container-width: 1280px;
+  --ifm-container-width-xl: 1320px;
+  --ifm-container-width: 1320px;
   --ifm-navbar-padding-vertical: 12px;
   --ifm-navbar-link-color: var(--text-base);
   --ifm-z-index-dropdown: 1000;
   --ifm-z-index-fixed: 1000;
   --ifm-z-index-overlay: 1000;
+
+  /* Typography Overrides */
+  --ifm-font-family-base: 'Geologica', sans-serif;
+  --ifm-heading-font-family: 'Geologica', sans-serif;
+  --ifm-heading-color: var(--text-darkest);
+  --ifm-heading-font-weight: 400;
+
+  /* Headings */
+  --ifm-h1-font-size: var(--desktop-title-h3-size) !important;
+  --ifm-h1-line-height: var(--desktop-title-h3-line-height) !important;
+  --ifm-h1-font-weight: 400;
+  --ifm-h1-color: var(--text-darkest, #222530);
+
+  --ifm-h2-font-size: 36px;
+  --ifm-h2-line-height: 45px;
+  --ifm-h2-font-weight: 400;
+  --ifm-h2-color: var(--text-darkest, #222530);
+
+  --ifm-h3-font-size: 24px !important;
+  --ifm-h3-line-height: 32px;
+  --ifm-h3-font-weight: 400;
+  --ifm-h3-color: var(--text-darkest, #222530);
+
+  /* Body Text */
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.5;
+  --ifm-color-content: var(--text-base, #717784);
+
+  /* Docs Sidebar */
+  --doc-sidebar-width: 248px !important;
+  --ifm-menu-color: var(--text-base) !important;
+  --ifm-menu-color-active: var(--text-darkest) !important;
+  --ifm-menu-color-background-active: var(--background-lightest) !important;
+  --ifm-menu-color-background-hover: var(--background-lightest) !important;
+  --ifm-menu-link-padding-vertical: 8px !important;
+  --ifm-menu-link-padding-horizontal: 10px !important;
+}
+
+:root strong,
+:root b {
+  color: var(--text-dark) !important;
+}
+
+:root code {
+  color: var(--text-dark) !important;
+}
+
+:root ::marker {
+  color: var(--text-dark) !important;
 }
 
 [data-theme='dark'] {
