@@ -11,6 +11,15 @@ Current React policy: `@takeoff-ui/react-spar` targets React 19.x only in the
 current phase because the locked `@turkish-technology/spar` dependency requires
 React 19 peers.
 
+## Install
+
+`@takeoff-ui/react-spar` ships JS and types only. Install the shared Takeoff
+token package for component CSS.
+
+```bash
+pnpm add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar react react-dom
+```
+
 ## Start Here
 
 - [Theming](./theming) — one-time app-shell setup for styles, color mode, and

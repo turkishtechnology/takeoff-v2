@@ -1,80 +1,104 @@
 ---
 name: takeoff-component-port
-description:
-  Uses takeoff-ui as the original component and design-system reference,
-  extracts shared styling into takeoff-design/tokens, and delivers the React
-  package in takeoff-spar. Use when doing component parity work, "bilesen port",
-  shared token recipe authoring, or React wrapper implementation across
-  takeoff-ui, takeoff-design, and takeoff-spar.
+description: >
+  Use this skill when porting, reviewing, or correcting a Takeoff component
+  across takeoff-ui, takeoff-design, spar, and takeoff-spar. Apply it for
+  "bilesen port", parity investigations, Spar primitive fit checks, token recipe
+  extraction, React wrapper design, docs or README contract fixes, or drift
+  reviews between the Web Component source and the React package.
+compatibility: >
+  Requires a local workspace with sibling repos ../takeoff-ui and
+  ../takeoff-design. ../spar is strongly preferred. Shell access is required to
+  run the bundled scripts.
+metadata:
+  owner: takeoff-ui
+  version: '2'
 ---
 
 # Takeoff Component Port
 
-## When to use this skill
+Use this skill when a component has to move through this stack:
 
-Use this skill when the task is to move a component through this direction:
-
-- `takeoff-ui` provides the original implementation and the design-system
-  reference
-- `takeoff-design/packages/tokens` becomes the shared style distribution layer
-- `takeoff-spar` exposes the design system as the React package
-
-Use it for component parity work, extracting reusable styling into the tokens
-package, or building a React wrapper that stays faithful to the original
-`takeoff-ui` component.
-
-## Architecture intent
-
-- `takeoff-ui` is the first-built library and the main reference for component
-  behavior, DOM shape, API contract, and visual intent.
-- `takeoff-design/packages/tokens` is the shared styling package being built so
-  styles can be distributed and consumed consistently by `takeoff-spar` now and
-  by `takeoff-ui` or other packages over time.
-- `takeoff-spar` is the React delivery layer being developed so the same design
-  system can be consumed as a React package.
-- The porting workflow exists to turn an existing `takeoff-ui` component into a
-  reusable shared-style plus React-package form, without losing the original
-  design-system behavior.
+- `takeoff-ui` is the original source of truth for public contract, visual
+  intent, and baseline behavior.
+- `takeoff-design/packages/tokens` is the shared styling distribution layer.
+- `spar` is the preferred behavior and accessibility primitive layer.
+- `takeoff-spar` is the final React delivery layer.
 
 ## Quick start
 
-1. Confirm the target component name and derive `ComponentName`,
-   `component-name`, and `componentName`.
-2. From the `takeoff-spar` repo root, run
-   `python3 agent/takeoff-component-port/scripts/check_port_context.py <ComponentName>`.
-3. Read `[references/workflow.md](references/workflow.md)`.
-4. If the porting pattern is unclear, read
-   `[references/live-button.md](references/live-button.md)`.
-5. After implementation and builds, run
-   `python3 agent/takeoff-component-port/scripts/verify_port_artifacts.py <ComponentName>`.
+1. Resolve the component name in `ComponentName`, `component-name`, and
+   `componentName` forms.
+2. From the skill directory, run:
 
-## Hard rules
+   ```bash
+   python3 scripts/check_port_context.py <ComponentName> --repo-root ../..
+   ```
+
+3. Read these references:
+   - Always: [references/workflow.md](references/workflow.md)
+   - Always: [references/adaptation-policy.md](references/adaptation-policy.md)
+   - When the component structure is not obvious:
+     [references/archetypes.md](references/archetypes.md)
+   - When implementing slot/data/class contracts:
+     [references/live-button.md](references/live-button.md)
+   - Before sign-off:
+     [references/validation-matrix.md](references/validation-matrix.md)
+4. Implement the port or review.
+5. Before finishing, run:
+
+   ```bash
+   python3 scripts/verify_port_artifacts.py <ComponentName> --repo-root ../..
+   ```
+
+## Non-negotiables
 
 - Live repo state wins over stale prompt text.
-- Start from `takeoff-ui` first. Do not treat `takeoff-spar` as the primary
-  source when the original component already exists in `takeoff-ui`.
-- `takeoff-design/packages/tokens` owns shared styling and compiled CSS
-  distribution.
-- `react-spar` ships the React package as JS and types, not component CSS.
-- Prefer moving reusable style logic into `takeoff-design/packages/tokens` so
-  `takeoff-spar` consumes it now and `takeoff-ui` plus other packages can
-  consume it later.
-- Convert Shadow DOM and class-only styling hooks into slot classes plus
-  `data-*` attributes that the React layer can control.
-- Every selector added in a token recipe must have a matching slot class or
-  `data-*` hook in the React component.
-- Use the live `button` files in `takeoff-spar` as the React adaptation example,
-  not as a replacement for `takeoff-ui` source analysis.
-- If a sibling repo is missing locally, continue with the available evidence and
-  state the gap explicitly.
+- Start from `takeoff-ui`, not from the current `takeoff-spar` implementation.
+- If a matching Spar primitive exists, use it unless the adaptation policy says
+  otherwise and you state the reason explicitly.
+- Stencil event names do not carry their `tk` prefix into React. Convert them to
+  idiomatic React callback names such as `onClick`, `onActiveChange`, and
+  `onActiveIndexChange`.
+- Keep porting rationale internal. Do not push Stencil history, adaptation
+  notes, or internal migration commentary into public docs or component comments
+  unless they change the consumer-visible contract.
+- `takeoff-design/packages/tokens` owns shared styling and emitted CSS.
+- `@takeoff-ui/react-spar` ships JS and types, not component CSS.
+- Every selector in a token recipe must map to a real React slot class or
+  `data-*` hook.
+- Classify differences explicitly:
+  - `strict-parity`
+  - `technical-adaptation`
+  - `react-enhancement`
+  - `forbidden-divergence`
+- README, docs, smoke app, exports, and peer dependency guidance are part of the
+  public contract.
 
-## Additional resources
+## Available resources
 
-- `[references/workflow.md](references/workflow.md)` - end-to-end port workflow
-  and repo-aware path fixes
-- `[references/live-button.md](references/live-button.md)` - verified live
-  Button baseline and porting patterns
-- `[scripts/check_port_context.py](scripts/check_port_context.py)` - confirms
-  sibling repo layout and expected source files
-- `[scripts/verify_port_artifacts.py](scripts/verify_port_artifacts.py)` -
-  checks built CSS and `react-spar` artifact expectations
+- [references/workflow.md](references/workflow.md) End-to-end workflow and
+  repo-aware sequence.
+- [references/adaptation-policy.md](references/adaptation-policy.md) Rules for
+  deciding what React may adapt and what must remain identical.
+- [references/archetypes.md](references/archetypes.md) Porting heuristics by
+  component shape.
+- [references/validation-matrix.md](references/validation-matrix.md) Required
+  checks and final report template.
+- [references/live-button.md](references/live-button.md) Verified
+  slot/data/class contract example from the current repo.
+- [scripts/check_port_context.py](scripts/check_port_context.py) Verifies
+  sibling repo layout and prints a read-first checklist.
+- [scripts/verify_port_artifacts.py](scripts/verify_port_artifacts.py) Verifies
+  emitted CSS, token imports, slot/recipe coverage, and stale contract issues.
+
+## Final report
+
+Before closing the task, report:
+
+- chosen archetype
+- Spar primitive decision
+- difference classification
+- touched files
+- validations run
+- remaining risks or open questions

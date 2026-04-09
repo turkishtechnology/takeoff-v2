@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "React-first Takeoff wrappers built on top of @turkish-technology/spar.",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
@@ -13,22 +13,26 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
   "scripts": {
-    "build": "node ./scripts/build.js",
+    "build": "tsup",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "pack:check": "npm pack --dry-run --json --cache ../../.npm-cache",
-    "prepack": "node ./scripts/build.js"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "generate": "node ./scripts/generate-component.mjs",
+    "prepack": "tsup"
   },
   "dependencies": {
-    "@turkish-technology/spar": "0.1.3"
+    "@turkish-technology/spar": "0.1.3",
+    "clsx": "^2.1.1"
   },
   "peerDependencies": {
     "@takeoff-design/tokens": ">=0.1.0",
@@ -37,9 +41,17 @@
   },
   "devDependencies": {
     "@takeoff-design/tokens": "link:../../../takeoff-design/packages/tokens",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "typescript": "^5.7.0"
+    "jsdom": "^29.0.2",
+    "tsup": "^8.5.1",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.4",
+    "vitest-axe": "^0.1.0"
   },
   "publishConfig": {
     "access": "public"

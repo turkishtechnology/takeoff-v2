@@ -1,9 +1,9 @@
 import { Button as SparButton } from '@turkish-technology/spar';
-import { forwardRef, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ForwardedRef, type ReactNode } from 'react';
+import { type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ReactNode, type Ref } from 'react';
 
-import { buttonClassNames } from './style';
+import { renderIconSymbol } from '../../utils';
+import { ButtonBase } from './ButtonBase';
 import type { ButtonMode, ButtonProps } from './types';
-import { joinClassNames } from '../../utils';
 
 const getButtonMode = ({ as, href, mode }: Pick<ButtonProps, 'as' | 'href' | 'mode'>): ButtonMode => {
   if (mode === 'link' || as === 'a' || href) {
@@ -41,25 +41,14 @@ const resolveLinkRel = (target: AnchorHTMLAttributes<HTMLAnchorElement>['target'
   return 'noopener noreferrer';
 };
 
-const renderIconNode = (icon: ReactNode) => {
-  if (typeof icon === 'string') {
-    return (
-      <span className="tk-button-icon-symbol" data-icon-kind="symbol">
-        {icon}
-      </span>
-    );
-  }
-
-  return icon;
-};
+const renderIconNode = (icon: ReactNode) => renderIconSymbol(icon, 'tk-button-icon-symbol');
 
 const renderAdornment = (slot: 'leading-icon' | 'trailing-icon', icon: ReactNode) => {
   if (!hasContent(icon)) {
     return null;
   }
 
-  const className =
-    slot === 'leading-icon' ? joinClassNames(buttonClassNames.icon, buttonClassNames.leadingIcon) : joinClassNames(buttonClassNames.icon, buttonClassNames.trailingIcon);
+  const className = slot === 'leading-icon' ? ButtonBase.cx('leadingIcon', ButtonBase.classes.icon) : ButtonBase.cx('trailingIcon', ButtonBase.classes.icon);
 
   return (
     <span className={className} data-slot={slot} aria-hidden="true">
@@ -68,14 +57,10 @@ const renderAdornment = (slot: 'leading-icon' | 'trailing-icon', icon: ReactNode
   );
 };
 
-const renderSpinner = (spinner: ReactNode) => (
-  <span className={buttonClassNames.spinner} data-slot="spinner" aria-hidden="true">
-    {spinner}
-  </span>
-);
+const renderSpinner = (spinner: ReactNode) => <span {...ButtonBase.getSlotProps('spinner', { 'aria-hidden': 'true' })}>{spinner}</span>;
 
-const ButtonBase = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(function Button(
-  {
+function Button({ ref, ...rawProps }: ButtonProps & { ref?: Ref<HTMLButtonElement | HTMLAnchorElement> }) {
+  const {
     as,
     children,
     className,
@@ -86,10 +71,10 @@ const ButtonBase = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps
     formMethod,
     formNoValidate,
     formTarget,
-    fullWidth = false,
+    fullWidth,
     href,
     icon,
-    iconPosition = 'left',
+    iconPosition,
     label,
     leadingIcon,
     loading,
@@ -98,19 +83,17 @@ const ButtonBase = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps
     onClick,
     onKeyDown,
     rel,
-    rounded = false,
-    size = 'base',
+    rounded,
+    size,
     spinner,
     target,
     trailingIcon,
-    type: visualType = 'filled',
-    underline = false,
+    type: visualType,
+    underline,
     value,
-    variant = 'primary',
+    variant,
     ...restProps
-  },
-  ref,
-) {
+  } = ButtonBase.resolveProps(rawProps);
   const resolvedMode = getButtonMode({ as, href, mode });
   const resolvedLoading = Boolean(loading);
   const disabledState = Boolean(disabled);
@@ -123,7 +106,7 @@ const ButtonBase = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps
   const iconCount = Number(Boolean(renderedLeadingAdornment)) + Number(Boolean(renderedTrailingAdornment));
   const isIconOnly = !hasLabel && (Boolean(renderedLeadingAdornment) || Boolean(renderedTrailingAdornment));
   const isRounded = rounded && !hasLabel && iconCount === 1;
-  const rootClassName = joinClassNames(buttonClassNames.root, className);
+  const rootClassName = ButtonBase.cx('root', className);
   const resolvedFormAction = typeof formAction === 'string' ? formAction : undefined;
   const sharedProps = {
     ...restProps,
@@ -146,7 +129,7 @@ const ButtonBase = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps
     return (
       <a
         {...(sharedProps as AnchorHTMLAttributes<HTMLAnchorElement>)}
-        ref={ref as ForwardedRef<HTMLAnchorElement>}
+        ref={ref as Ref<HTMLAnchorElement>}
         href={disabledState ? undefined : href}
         target={target}
         rel={resolveLinkRel(target, rel)}
@@ -172,11 +155,7 @@ const ButtonBase = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps
         }}
       >
         {renderedLeadingAdornment}
-        {hasLabel ? (
-          <span className={buttonClassNames.label} data-slot="label">
-            {content}
-          </span>
-        ) : null}
+        {hasLabel ? <span {...ButtonBase.getSlotProps('label')}>{content}</span> : null}
         {renderedTrailingAdornment}
       </a>
     );
@@ -186,7 +165,7 @@ const ButtonBase = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps
     <SparButton
       {...(sharedProps as ButtonHTMLAttributes<HTMLButtonElement>)}
       as="button"
-      ref={ref as ForwardedRef<HTMLButtonElement>}
+      ref={ref as Ref<HTMLButtonElement>}
       disabled={disabledState}
       form={form}
       formAction={resolvedFormAction}
@@ -203,15 +182,15 @@ const ButtonBase = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps
     >
       {renderedLeadingAdornment}
       {hasLabel ? (
-        <span className={buttonClassNames.label} data-slot="label">
+        <span className={ButtonBase.cx('label')} data-slot="label">
           {content}
         </span>
       ) : null}
       {renderedTrailingAdornment}
     </SparButton>
   );
-});
+}
 
-ButtonBase.displayName = 'Button';
+Button.displayName = 'Button';
 
-export const Button = ButtonBase;
+export { Button };

@@ -1,0 +1,34 @@
+.demoStack {
+  display: grid;
+  gap: 24px;
+  width: min(100%, 720px);
+  margin-inline: auto;
+}
+
+.demoSection {
+  display: grid;
+  gap: 8px;
+}
+
+.sectionLabel {
+  margin: 0;
+  color: var(--primary-base);
+  font-family: var(--desktop-label-s-font, var(--family-body));
+  font-size: var(--desktop-label-s-size, 11px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: var(--desktop-label-s-line-height, 16px);
+  text-transform: uppercase;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border-light);
+}
+
+@media (max-width: 768px) {
+  .demoStack {
+    width: 100%;
+  }
+}

@@ -147,9 +147,8 @@ function buildPropNameOrder(declaration, config) {
   return [...prependPropNames, ...remainingDeclarationOrder, ...appendPropNames].filter((propName, index, propNames) => propNames.indexOf(propName) === index);
 }
 
-function buildPropRows(checker, declaration, config) {
+function buildMemberRows(checker, declaration, config, propNames) {
   const componentType = checker.getTypeAtLocation(declaration);
-  const propNames = buildPropNameOrder(declaration, config);
 
   return propNames.map(propName => {
     const symbol = componentType.getProperty(propName);
@@ -179,10 +178,34 @@ function buildPropRows(checker, declaration, config) {
   });
 }
 
-function renderPropsSection(config, propRows) {
-  const lines = [`### Props {#${config.headingBase}-props}`, '', '| Name | Type | Default | Description |', '| --- | --- | --- | --- |'];
+function isEventPropName(propName, config) {
+  if ((config.eventPropNames ?? []).includes(propName)) {
+    return true;
+  }
 
-  for (const row of propRows) {
+  return /^on[A-Z]/u.test(propName);
+}
+
+function buildApiRows(checker, declaration, config) {
+  const orderedPropNames = buildPropNameOrder(declaration, config);
+  const supplementalEventPropNames = config.eventPropNames ?? [];
+  const allPropNames = [...orderedPropNames, ...supplementalEventPropNames].filter((propName, index, propNames) => propNames.indexOf(propName) === index);
+  const allRows = buildMemberRows(checker, declaration, config, allPropNames);
+
+  return {
+    propRows: allRows.filter(row => !isEventPropName(row.name, config)),
+    eventRows: allRows.filter(row => isEventPropName(row.name, config)),
+  };
+}
+
+function renderTableSection(config, rows, sectionKey, title) {
+  if (!rows.length) {
+    return '';
+  }
+
+  const lines = [`### ${title} {#${config.headingBase}-${sectionKey}}`, '', '| Name | Type | Default | Description |', '| --- | --- | --- | --- |'];
+
+  for (const row of rows) {
     lines.push(
       `| <ApiBadge label="${row.name}" variant="primary" size="large" type="filledlight" /> | <code>${escapeHtml(row.type)}</code> | ${escapeMarkdownCell(row.defaultValue)} | ${escapeMarkdownCell(row.description)} |`,
     );
@@ -206,8 +229,18 @@ function renderDataAttributesSection(config) {
 }
 
 async function generateFile(config, checker, declaration, outputFilePath) {
-  const propRows = buildPropRows(checker, declaration, config);
-  const output = [generatedNotice, '', "import { ApiBadge } from '@site/src/components/ApiBadge';", '', renderPropsSection(config, propRows)];
+  const { propRows, eventRows } = buildApiRows(checker, declaration, config);
+  const output = [generatedNotice, '', "import { ApiBadge } from '@site/src/components/ApiBadge';"];
+
+  const propsSection = renderTableSection(config, propRows, 'props', 'Props');
+  if (propsSection) {
+    output.push('', propsSection);
+  }
+
+  const eventsSection = renderTableSection(config, eventRows, 'events', 'Events');
+  if (eventsSection) {
+    output.push('', eventsSection);
+  }
 
   const dataAttributesSection = renderDataAttributesSection(config);
   if (dataAttributesSection) {

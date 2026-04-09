@@ -1,5 +1,5 @@
-import type { CSSProperties } from 'react';
-import { Button, SparReactProvider, buttonClassNames } from '@takeoff-ui/react-spar';
+import { useState, type CSSProperties } from 'react';
+import { Accordion, AccordionItem, Button, SparReactProvider, accordionClassNames, accordionItemClassNames, buttonClassNames } from '@takeoff-ui/react-spar';
 
 const cssVar = (name: `--${string}`) => `var(${name})`;
 
@@ -42,6 +42,8 @@ const contractStyle: CSSProperties = {
 };
 
 function App() {
+  const [activeIndex, setActiveIndex] = useState<string | number | undefined>(0);
+
   return (
     <SparReactProvider>
       <main style={shellStyle}>
@@ -65,11 +67,10 @@ function App() {
               color: cssVar('--tk-color-text'),
             }}
           >
-            React Spar Button product surface
+            React Spar Button and Accordion product surface
           </h1>
           <p style={{ margin: '1rem 0 0', maxWidth: '44rem', color: cssVar('--tk-color-text-muted') }}>
-            This app mounts SparReactProvider, imports the package styles, and exercises the real Button wrapper with Takeoff type, variant, size, link, and loading capabilities on
-            top of Spar semantics.
+            This app mounts SparReactProvider, imports the shared Takeoff theme, and exercises the Button and Accordion wrappers while keeping behavior on top of Spar primitives.
           </p>
 
           <div style={sectionStyle}>
@@ -101,7 +102,34 @@ function App() {
             </div>
           </div>
 
-          <pre style={contractStyle}>{JSON.stringify(buttonClassNames, null, 2)}</pre>
+          <div style={sectionStyle}>
+            <strong>Accordion parity surface</strong>
+            <div style={{ marginTop: '0.75rem' }}>
+              <Accordion activeIndex={activeIndex} onActiveIndexChange={index => setActiveIndex(Array.isArray(index) ? index[index.length - 1] : index)}>
+                <AccordionItem header="Flight details" icon="flight">
+                  Review your departure and arrival windows, cabin, and seat assignment before check-in closes.
+                </AccordionItem>
+                <AccordionItem header="Baggage allowance" icon="luggage">
+                  Confirm your carry-on and checked baggage limits, then add extra allowance if your fare needs it.
+                </AccordionItem>
+                <AccordionItem header="Check-in options" icon="task_alt">
+                  Online check-in opens 24 hours before departure and stays available until the airport cut-off time.
+                </AccordionItem>
+              </Accordion>
+            </div>
+          </div>
+
+          <pre style={contractStyle}>
+            {JSON.stringify(
+              {
+                button: buttonClassNames,
+                accordion: accordionClassNames,
+                accordionItem: accordionItemClassNames,
+              },
+              null,
+              2,
+            )}
+          </pre>
         </section>
       </main>
     </SparReactProvider>

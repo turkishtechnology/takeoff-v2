@@ -76,6 +76,8 @@ more detail.
   package.
 - `packages/react-spar/package.json` keeps `@takeoff-design/tokens` as a peer
   dependency.
+- Stencil's `tk-click` event is intentionally represented as native React
+  `onClick` in the wrapper.
 - This package is the React delivery layer, not the owner of the shared styling
   contract.
 

@@ -13,6 +13,7 @@
     "lint:fix": {
       "cache": false
     },
+    "test": {},
     "check-types": {
       "dependsOn": ["^check-types"]
     }

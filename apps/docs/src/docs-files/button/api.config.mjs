@@ -4,9 +4,15 @@ export default {
   headingBase: 'button',
   prependPropNames: ['children'],
   appendPropNames: ['className'],
+  eventPropNames: ['onClick'],
   propOverrides: {
     children: {
       type: 'React.ReactNode',
+    },
+    onClick: {
+      type: 'React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>',
+      default: 'undefined',
+      description: 'Fired when the user activates the button or link.',
     },
     className: {
       type: 'string',

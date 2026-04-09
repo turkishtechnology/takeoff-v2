@@ -1,0 +1,84 @@
+import LiveCode from '../../components/LiveCode';
+import ActiveIndex from './Examples/ActiveIndex';
+import AllowMultiple from './Examples/AllowMultiple';
+import ArrowPosition from './Examples/ArrowPosition';
+import CustomIcons from './Examples/CustomIcons';
+import Mode from './Examples/Mode';
+import Size from './Examples/Size';
+import Type from './Examples/Type';
+import {
+  Accordion,
+  AccordionItem,
+  ReactSparDemoRoot,
+} from '../../components/ReactSparDocs';
+
+### Playground
+
+<LiveCode
+  code={`() => {
+  const [activeIndex, setActiveIndex] = React.useState(0);
+
+return ( <div style={{ width: '100%', maxWidth: 640, margin: '0 auto' }}>
+<Accordion activeIndex={activeIndex} onActiveIndexChange={(index) =>
+setActiveIndex(index)} > <AccordionItem header="Flight details"> View your
+departure and arrival times, seat assignments, and terminal information.
+</AccordionItem> <AccordionItem header="Baggage allowance"> Check your included
+baggage weight and dimensions for carry-on and checked luggage. </AccordionItem>
+<AccordionItem header="Check-in options"> Online check-in opens 24 hours before
+departure. You can also check in at the airport counter. </AccordionItem>
+</Accordion> </div> ); }`} previewMinHeight={220}
+previewWrapper={ReactSparDemoRoot} scope={{ Accordion, AccordionItem }} />
+
+The React wrapper keeps Takeoff's visual contract while delegating toggle state,
+ARIA wiring, and keyboard navigation to the underlying Spar Accordion primitive.
+The visible header surface is rendered through a div-backed trigger so grouped
+and divided header styling stays aligned with the original Takeoff UI markup.
+
+## Type
+
+Use `type` to switch between visual styles. `grouped` wraps each item in a
+bordered card while `divided` separates header and content with independent
+borders.
+
+<Type />
+
+## Mode
+
+`mode` controls density. `compact` removes margins and rounds so items stack
+flush against each other.
+
+<Mode />
+
+## Allow Multiple
+
+Set `allowMultiple` to let users expand more than one panel at the same time.
+
+<AllowMultiple />
+
+## Active Index
+
+Control which panels are open with the `activeIndex` prop and listen to changes
+via `onActiveIndexChange`.
+
+<ActiveIndex />
+
+## Size
+
+The `size` prop on `AccordionItem` adjusts header typography, padding, and
+spacing.
+
+<Size />
+
+## Arrow Position
+
+`arrowPosition` moves the expand/collapse chevron to the left or right side of
+the header.
+
+<ArrowPosition />
+
+## Custom Expand / Collapse Icons
+
+Override the default chevrons with `expandIcon` and `collapseIcon` on the
+`Accordion` container.
+
+<CustomIcons />
