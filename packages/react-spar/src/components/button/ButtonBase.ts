@@ -34,8 +34,3 @@ export const ButtonBase = createComponentBase<ButtonProps, ButtonSlot>({
     disabled: false,
   },
 });
-
-/**
- * @deprecated Use `ButtonBase.styles` instead.
- */
-export const buttonStyles = ButtonBase.styles;

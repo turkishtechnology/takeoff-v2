@@ -35,7 +35,8 @@ Included in Phase 1:
 
 Not required in Phase 1:
 
-- `slotProps` or `getSlotProps` APIs
+- `slotProps` or `getSlotProps` APIs — deferred to Phase 2 pilot; current
+  `cx()` + `data-slot` inline pattern is sufficient for Button and Accordion
 - new component scaffolding CLI
 - generic adapter hooks for every component
 - full state attribute normalization across the whole package
@@ -48,7 +49,9 @@ Not required in Phase 1:
   - `types.ts`
   - `index.ts`
 - Confirm that `ComponentBase.ts` is internal-only and not part of the public
-  package API.
+- `*Base.ts` calls `createComponentBase` with component-specific metadata
+  (slots, classNames, defaultProps) and may add pure helpers or light context
+  alongside the returned base object. package API.
 - Confirm that `ComponentBase.ts` owns:
   - component name
   - slot list
@@ -61,7 +64,9 @@ Not required in Phase 1:
   - primitive integration
   - DOM ownership
   - render output
-- Confirm that `types.ts` owns public types only.
+- Confirm that `types.ts` owns public types only. Internal types (context
+  values, adapter helpers, slot unions) live in `*Base.ts` and are not
+  re-exported.
 
 Acceptance criteria:
 
@@ -77,13 +82,15 @@ Acceptance criteria:
   - `slots`
   - `classNames`
   - `defaultProps`
-  - optional static `styles`
+  - optional static `styles` — merged with slot classNames into a single frozen
+    map; intended as a CSS module class-name map, not inline style objects
   - `cx`
   - `resolveProps`
 - Ensure `resolveProps` behaves predictably:
   - only fills `undefined` values
   - does not override explicit falsy values
-- Ensure base metadata stays serializable and easy to inspect.
+- Ensure base metadata stays plain and easy to inspect (frozen objects, no
+  closures in data fields).
 - Avoid adding behavior-specific logic into the shared utility.
 
 Acceptance criteria:
@@ -203,7 +210,8 @@ Before closing Phase 1, answer these explicitly:
 - Are Button and Accordion good enough to be used as internal references?
 - Is any component still carrying avoidable `style.ts` or `internal.ts`
   structure?
-- Is the public API unchanged?
+- Is the public API unchanged? Sign-off should be recorded in the PR that closes
+  Phase 1.
 
 If any answer is no, Phase 1 is not complete.
 
