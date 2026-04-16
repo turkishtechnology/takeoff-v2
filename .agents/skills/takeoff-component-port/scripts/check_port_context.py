@@ -232,6 +232,12 @@ def print_text_output(
     print(f"- takeoff-design: {roots['takeoff_design_root']}")
     print(f"- spar: {roots['spar_root']}")
     print("")
+    print("Repo discovery policy:")
+    print("- Assume sibling repos at ../takeoff-ui, ../takeoff-design, and optionally ../spar.")
+    print("- Only ask the user for repo locations if required repos cannot be found locally.")
+    print("- Missing takeoff-ui or takeoff-design blocks the task.")
+    print("- Missing spar is a warning unless the task depends on a primitive check.")
+    print("")
     print("Checks:")
 
     current_category = None

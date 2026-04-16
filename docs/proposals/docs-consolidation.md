@@ -19,18 +19,18 @@ The repository accumulated markdown files across heterogeneous locations without
 a documented lifecycle. Audit of all non-generated `.md` files (excluding
 `node_modules`, `dist`, and Docusaurus-rendered content):
 
-| Path                                                           | Class (today)                  | Class feels right?                               |
-| -------------------------------------------------------------- | ------------------------------ | ------------------------------------------------ |
-| `README.md`                                                    | monorepo entry                 | yes, but rotted (dead links, stale backlog refs) |
-| `packages/react-spar/README.md`                                | package intro                  | yes                                              |
-| `apps/docs/README.md`, `apps/react-app/README.md`              | app intro                      | yes, minimal is fine                             |
-| `packages/react-spar/docs/CODING_STANDARDS.md`                 | live reference                 | yes                                              |
-| `packages/react-spar/docs/DATA_ATTRIBUTE_VOCABULARY.md`        | live reference                 | yes                                              |
-| `packages/react-spar/docs/PHASE_1_IMPLEMENTATION_CHECKLIST.md` | completed execution playbook   | no — it is frozen narrative, not reference       |
-| `packages/react-spar/docs/PHASE_2_IMPLEMENTATION_CHECKLIST.md` | in-progress execution playbook | no — same issue                                  |
-| `.agents/generate-component/SKILL.md`                          | skill                          | yes                                              |
-| `.agents/takeoff-component-port/SKILL.md` + 5 reference docs   | skill                          | yes                                              |
-| `.changeset/README.md`                                         | tool boilerplate               | yes, do not touch                                |
+| Path                                                                | Class (today)                  | Class feels right?                               |
+| ------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------ |
+| `README.md`                                                         | monorepo entry                 | yes, but rotted (dead links, stale backlog refs) |
+| `packages/react-spar/README.md`                                     | package intro                  | yes                                              |
+| `apps/docs/README.md`, `apps/react-app/README.md`                   | app intro                      | yes, minimal is fine                             |
+| `packages/react-spar/docs/CODING_STANDARDS.md`                      | live reference                 | yes                                              |
+| `packages/react-spar/docs/DATA_ATTRIBUTE_VOCABULARY.md`             | live reference                 | yes                                              |
+| `packages/react-spar/docs/PHASE_1_IMPLEMENTATION_CHECKLIST.md`      | completed execution playbook   | no — it is frozen narrative, not reference       |
+| `packages/react-spar/docs/PHASE_2_IMPLEMENTATION_CHECKLIST.md`      | in-progress execution playbook | no — same issue                                  |
+| `.agents/skills/generate-component/SKILL.md`                        | skill                          | yes                                              |
+| `.agents/skills/takeoff-component-port/SKILL.md` + 5 reference docs | skill                          | yes                                              |
+| `.changeset/README.md`                                              | tool boilerplate               | yes, do not touch                                |
 
 Problems:
 
@@ -41,9 +41,9 @@ Problems:
 2. PHASE checklists are execution narratives, not reference material. They read
    as playbooks and age out. Keeping them next to live reference docs
    (`CODING_STANDARDS.md`) blurs lifecycle.
-3. `.agents/` is the established home for executable agent skills. It is unclear
-   whether completed execution playbooks (PHASE\_\*) should become skills, be
-   archived, or stay where they are.
+3. `.agents/skills/` is the established home for executable agent skills. It is
+   unclear whether completed execution playbooks (PHASE\_\*) should become
+   skills, be archived, or stay where they are.
 4. No CI guard catches dead intra-repo markdown links.
 5. No convention file tells contributors where a new doc belongs.
 
@@ -55,7 +55,7 @@ Produce a taxonomy, a migration plan, and a guard mechanism so that:
 - contributors can answer "where does this doc go" without asking
 - stale backlog / task references cannot silently leak into `README.md`
 - execution narratives and reference material live apart
-- `.agents/` stays coherent as the agent-facing surface
+- `.agents/skills/` stays coherent as the agent-facing surface
 
 ## Proposed document classes
 
@@ -64,8 +64,9 @@ Candidate taxonomy to validate during research:
 1. **Intro** — README at repo, package, or app root. Short. Entry points only.
 2. **Reference** — stable contract docs (coding standards, attribute vocab,
    release policy). Live close to the code they govern.
-3. **Skill** — executable agent instructions under `.agents/<name>/SKILL.md`,
-   with frontmatter and optional `references/`, `scripts/`, `agents/` siblings.
+3. **Skill** — executable agent instructions under
+   `.agents/skills/<name>/SKILL.md`, with frontmatter and optional
+   `references/`, `scripts/`, `agents/` siblings.
 4. **Research task / proposal** — open question, design exploration, or
    investigation plan. Lives under `docs/proposals/` until it produces a skill
    or a reference doc, then deleted.
@@ -101,8 +102,8 @@ Candidate taxonomy to validate during research:
 - Every non-generated `.md` / `.mdx` outside `node_modules`, `dist`,
   `.changeset/` boilerplate, and the Docusaurus-rendered `apps/docs/docs/`
   product docs.
-- `.agents/` skill convention and its relationship to research and playbook
-  markdown.
+- `.agents/skills/` skill convention and its relationship to research and
+  playbook markdown.
 - Root README, package READMEs, app READMEs.
 
 ### Out of scope

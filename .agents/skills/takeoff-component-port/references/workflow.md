@@ -14,13 +14,18 @@ stack without losing contract clarity:
 ## 1. Resolve context first
 
 1. Derive `ComponentName`, `component-name`, and `componentName`.
-2. Run:
+2. Assume sibling repos at `../takeoff-ui`, `../takeoff-design`, and optionally
+   `../spar`. Do not ask the user for repo locations unless the required repos
+   cannot be found locally.
+3. Run:
 
    ```bash
    python3 scripts/check_port_context.py <ComponentName> --repo-root ../..
    ```
 
-3. Read the printed checklist before editing.
+4. Read the printed checklist before editing. Treat missing `takeoff-ui` or
+   `takeoff-design` as blockers. Treat missing `spar` as a warning unless the
+   task depends on confirming a matching primitive.
 
 ## 2. Read the stack in the right order
 

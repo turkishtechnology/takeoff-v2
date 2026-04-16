@@ -28,7 +28,7 @@ Monorepo for `@takeoff-ui/react-spar` — a React 19 component library that wrap
 - `packages/react-spar` — `@takeoff-ui/react-spar`, the published package
 - `apps/docs` — Docusaurus site for public docs and component demos
 - `apps/react-app` — local integration / smoke app
-- `.agents` — agent skills (`generate-component`, `takeoff-component-port`)
+- `.agents/skills` — repo-local Codex skills (canonical discovery path)
 - `docs/proposals` — open research and design proposals awaiting resolution
 - `.changeset` — changesets-driven release automation
 
@@ -46,8 +46,8 @@ Execution playbooks (internal):
 
 Agent skills:
 
-- [Component port skill](./.agents/takeoff-component-port/SKILL.md)
-- [Generate component skill](./.agents/generate-component/SKILL.md)
+- [Component port skill](./.agents/skills/takeoff-component-port/SKILL.md)
+- [Generate component skill](./.agents/skills/generate-component/SKILL.md)
 
 Open research:
 

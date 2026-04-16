@@ -7,9 +7,9 @@ description: >
   extraction, React wrapper design, docs or README contract fixes, or drift
   reviews between the Web Component source and the React package.
 compatibility: >
-  Requires a local workspace with sibling repos ../takeoff-ui and
-  ../takeoff-design. ../spar is strongly preferred. Shell access is required to
-  run the bundled scripts.
+  Assumes a local workspace with sibling repos ../takeoff-ui and
+  ../takeoff-design. ../spar is strongly preferred but optional. Shell access is
+  required to run the bundled scripts.
 metadata:
   owner: takeoff-ui
   version: '2'
@@ -24,6 +24,17 @@ Use this skill when a component has to move through this stack:
 - `takeoff-design/packages/tokens` is the shared styling distribution layer.
 - `spar` is the preferred behavior and accessibility primitive layer.
 - `takeoff-spar` is the final React delivery layer.
+
+## Repo discovery
+
+- Assume sibling repos at `../takeoff-ui`, `../takeoff-design`, and optionally
+  `../spar`.
+- Do not ask the user for repo locations up front.
+- Only ask the user for repo locations if the required repos cannot be found
+  locally.
+- Treat missing `takeoff-ui` or `takeoff-design` as blockers.
+- Treat missing `spar` as a warning unless the task depends on confirming a
+  matching Spar primitive.
 
 ## Quick start
 
