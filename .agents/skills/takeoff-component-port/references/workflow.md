@@ -47,7 +47,7 @@ Minimum reads:
 - `../takeoff-design/packages/tokens/styles/_index.scss`
 - `packages/react-spar/src/components/button/`
 - `packages/react-spar/src/components/index.ts`
-- `packages/react-spar/src/theme/recipes.ts`
+- `packages/react-spar/src/styling/slot-registry.ts`
 
 ## 3. Build a parity matrix before editing
 
@@ -80,7 +80,39 @@ Before implementation, classify the component using
 If the component is compound, map sub-parts explicitly. Do not flatten
 subcomponent responsibilities into one wrapper file.
 
-## 5. Make the primitive decision explicitly
+## 5. Decide the customization surface
+
+Before implementation, write down the public React surface the component will
+support:
+
+- parity wrapper only
+- wrapper + `slotProps`
+- wrapper + render overrides
+- wrapper + public compound parts
+
+Do this per component, then per slot.
+
+For each slot, classify it as one of:
+
+- structural
+- content-bearing
+- decorative
+
+Default rules:
+
+- structural slots may accept `slotProps`, but they should not be replaced by
+  free-form render overrides
+- content-bearing and decorative slots may accept render overrides if the
+  canonical slot owner node stays intact
+- public compound parts are usually required for disclosure and overlay
+  components when consumers need full ownership of structural slots
+- leaf components usually stay wrapper-first unless the slot graph becomes
+  meaningfully consumer-owned
+
+If public compound parts exist, the parity wrapper should compose the same parts
+internally so slot classes, `data-*` hooks, and semantics stay aligned.
+
+## 6. Make the primitive decision explicitly
 
 If `spar` has a relevant primitive:
 
@@ -99,16 +131,18 @@ If `spar` has only a partial fit:
 - document the missing fit as `technical-adaptation` or `forbidden-divergence`,
   never silently
 
-## 6. Update the shared style layer
+## 7. Update the shared style layer
 
 When touching `takeoff-design`:
 
 - add or update component tokens only for dimension-like values
 - keep recipe selectors tied to actual React slot classes or `data-*` hooks
+- keep render overrides inside canonical slot owner nodes so recipe selectors do
+  not lose their anchor
 - wire the recipe through `styles/_index.scss`
 - remove stale selectors that no longer map to rendered DOM
 
-## 7. Update the React layer
+## 8. Update the React layer
 
 When touching `takeoff-spar`:
 
@@ -119,13 +153,15 @@ When touching `takeoff-spar`:
 - use React-only ergonomics only when they preserve or improve the contract
   without surprising consumers
 - keep slot classes stable and readable
+- keep canonical slot owner nodes stable across wrapper, render overrides, and
+  public compound parts
 - keep migration rationale out of component comments unless it affects the
   public contract directly
 
 React may be more ergonomic than Web Components, but the port must still explain
 what changed and why.
 
-## 8. Update the public contract
+## 9. Update the public contract
 
 Treat these as required surfaces, not optional polish:
 
@@ -141,7 +177,11 @@ Public docs should describe actual usage, imports, and user-visible behavior. Do
 not add Stencil-to-React migration notes there unless consumers need that
 information to use the component correctly.
 
-## 9. Validate before closing
+If a component supports `slotProps`, render overrides, or public compound parts,
+the docs should say so explicitly and should separate those surfaces from the
+strict-parity wrapper path.
+
+## 10. Validate before closing
 
 Use [validation-matrix.md](validation-matrix.md) and then run:
 
@@ -158,12 +198,14 @@ Minimum closing checks:
 - no stale `@takeoff-ui/react-spar/styles` references
 - recipe selectors backed by rendered class names
 
-## 10. Final report format
+## 11. Final report format
 
 Return a short report with:
 
 - archetype
 - primitive decision
+- customization surface decision
+- slot inventory and ownership split
 - difference classification
 - touched files
 - validations run

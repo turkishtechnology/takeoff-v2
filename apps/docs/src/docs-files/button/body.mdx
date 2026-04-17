@@ -3,33 +3,38 @@ import TypeExample from './Examples/Appearance';
 import Form from './Examples/Form';
 import SizeAndWidth from './Examples/SizeAndWidth';
 import States from './Examples/States';
+import Template from './Examples/Template';
 import Variant from './Examples/Variant';
 import { Button, ReactSparDemoRoot } from '../../components/ReactSparDocs';
 
-### Playground
+## Playground
+
+The React wrapper preserves the Takeoff Button product surface — `variant`,
+`type`, `size`, `loading`, `disabled`, `leadingIcon`, `trailingIcon`,
+`fullWidth`, and `mode` — while Spar owns the underlying interaction model,
+focus handling, and ARIA wiring.
 
 <LiveCode
   code={`() => {
   const [loading, setLoading] = React.useState(false);
 
-return ( <div className='button-playground-root'>
+return ( <div className="button-playground-root">
+<div className="button-playground-stack">
+<div className="button-playground-row"> <Button>Primary filled</Button>
+<Button type="outlined" variant="secondary">Secondary outlined</Button>
+<Button type="text" variant="neutral">Neutral text</Button> </div>
 
-<div className='button-playground-stack'>
-<div className='button-playground-row'> <Button>Primary filled</Button>
-<Button type='outlined' variant='secondary'>Secondary outlined</Button>
-<Button type='text' variant='neutral'>Neutral text</Button> </div>
-
-          <div className='button-playground-row'>
-            <Button type='elevated'>Manage booking</Button>
-            <Button loading={loading} type='outlined' variant='secondary'>
-              {loading ? 'Checking fare' : 'Checkout'}
-            </Button>
-            <Button onClick={() => setLoading((value) => !value)}>
-              {loading ? 'Stop loading preview' : 'Trigger loading preview'}
-            </Button>
-          </div>
+        <div className="button-playground-row">
+          <Button type="elevated">Manage booking</Button>
+          <Button loading={loading} type="outlined" variant="secondary">
+            {loading ? 'Checking fare' : 'Checkout'}
+          </Button>
+          <Button onClick={() => setLoading((value) => !value)}>
+            {loading ? 'Stop loading preview' : 'Trigger loading preview'}
+          </Button>
         </div>
       </div>
+    </div>
 
 ); }`}   cssCode={`.button-playground-root { width: 100%; display: flex;
 justify-content: center; }
@@ -40,6 +45,14 @@ justify-items: center; }
 .button-playground-row { display: flex; flex-wrap: wrap; justify-content:
 center; gap: 12px; width: 100%; } `} previewMinHeight={220}
 previewWrapper={ReactSparDemoRoot} scope={{ Button }} />
+
+## Template
+
+Button is template-friendly for inline composition. `children`, `leadingIcon`,
+`trailingIcon`, `slotProps`, and `fullWidth` let you shape a richer CTA without
+rebuilding the component from scratch.
+
+<Template />
 
 ## Variant
 

@@ -1,5 +1,9 @@
 # Phase 1 Implementation Checklist
 
+Historical baseline only. This file records the original rollout of the
+base-driven component structure. For current authoring rules, follow
+`CODING_STANDARDS.md` and the `takeoff-component-port` skill references first.
+
 This checklist turns the current direction into a stable authoring pattern for
 `packages/react-spar/src/components`.
 
@@ -12,6 +16,8 @@ Phase 1 does not aim to:
 - migrate every future component up front
 - introduce a large runtime abstraction layer
 - rewrite primitive behavior that already works
+
+Some deferred items below are historical context now, not current policy.
 
 ## Expected outcome
 
@@ -158,15 +164,16 @@ Acceptance criteria:
 - public imports stay unchanged
 - docs describe usage, not authoring internals
 
-## 6. Align theme registration
+## 6. Align slot-class registry
 
-- Confirm `src/theme/recipes.ts` reads slot anatomy from base files.
-- Confirm recipe slot registration still matches rendered DOM.
+- Confirm `src/styling/slot-registry.ts` reads slot anatomy from base files.
+- Confirm every shipped component's slot classes are mirrored in the registry
+  and still match rendered DOM.
 - Confirm deleted `style.ts` files do not leave stale imports behind.
 
 Acceptance criteria:
 
-- theme slot registry compiles cleanly
+- slot-class registry compiles cleanly
 - no stale import paths remain
 - verifier expectations still match runtime output
 

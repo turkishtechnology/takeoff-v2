@@ -13,24 +13,32 @@ type FeatureItem = {
 
 const featureList: FeatureItem[] = [
   {
-    title: 'Simple',
+    title: 'React 19 First',
     Svg: SimpleSvg,
-    description: <>Takeoff Spar keeps the current React wrapper scope narrow, so the package can ship clean behavior and a stable styling contract before expanding outward.</>,
+    description: <>A focused React 19 wrapper with a typed, stable public API that keeps upgrades predictable.</>,
   },
   {
-    title: 'Flexible',
-    Svg: FlexibleSvg,
-    description: <>The docs inherit the broader Takeoff UI visual system while remaining grounded in the actual tokens, slots, and implementation state of this repo.</>,
-  },
-  {
-    title: 'Framework Agnostic',
-    Svg: FrameworkAgnosticSvg,
-    description: <>Spar provides the primitive behavior layer, which keeps the wrapper strategy portable even when the first productized surface is React-first.</>,
-  },
-  {
-    title: 'Powered By Spar',
+    title: 'Spar Primitives',
     Svg: PoweredBySparSvg,
-    description: <>The first slice is a real bridge over Spar primitives, not a mock docs shell. The Button demos in this site render the actual wrapper from this monorepo.</>,
+    description: (
+      <>
+        Accessibility and behavior are delivered by <code>@turkish-technology/spar</code>, so proven primitives power every component.
+      </>
+    ),
+  },
+  {
+    title: 'Token-Driven Styling',
+    Svg: FlexibleSvg,
+    description: (
+      <>
+        Visuals flow from <code>@takeoff-design/tokens</code>. Theming and brand updates land in one source of truth.
+      </>
+    ),
+  },
+  {
+    title: 'Part of Takeoff UI',
+    Svg: FrameworkAgnosticSvg,
+    description: <>The React surface of the broader Takeoff design system. Shared vocabulary, shared tokens, one roadmap.</>,
   },
 ];
 

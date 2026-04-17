@@ -1,7 +1,12 @@
-import { createContext, type ReactNode } from 'react';
+import { createElement, type ReactNode } from 'react';
 
 import { createComponentBase } from '../../base/createComponentBase';
 import type { SlotClassNames } from '../../types';
+import { createSafeContext } from '../../utils/createSafeContext';
+// TODO(takeoff-icons): Swap these placeholder SVGs for the official Takeoff
+// icon components (currently `keyboard_arrow_down` / `keyboard_arrow_up` in
+// takeoff-ui) before the first public release.
+import { PlaceholderChevronDown, PlaceholderChevronUp } from '../../utils/placeholderIcons';
 
 import type { AccordionArrowPosition, AccordionItemProps, AccordionMode, AccordionProps, AccordionType } from './types';
 
@@ -20,8 +25,8 @@ export const AccordionBase = createComponentBase<AccordionProps, AccordionSlot>(
   defaultProps: {
     allowMultiple: false,
     arrowPosition: 'right',
-    expandIcon: 'keyboard_arrow_down',
-    collapseIcon: 'keyboard_arrow_up',
+    expandIcon: createElement(PlaceholderChevronDown),
+    collapseIcon: createElement(PlaceholderChevronUp),
     hideArrows: false,
     type: 'grouped',
     mode: 'default',
@@ -62,7 +67,7 @@ export interface AccordionAdapterContextValue {
   hideArrows: boolean;
 }
 
-export const AccordionAdapterContext = createContext<AccordionAdapterContextValue | null>(null);
+export const [AccordionProvider, useAccordionContext] = createSafeContext<AccordionAdapterContextValue>('Accordion');
 
 export const encodeAccordionItemValue = (value: AccordionItemKey): string => (typeof value === 'number' ? `n:${value}` : `s:${value}`);
 

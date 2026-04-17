@@ -54,6 +54,39 @@ adaptations when documented:
 
 These are still expected to preserve the original product behavior.
 
+## Customization surface policy
+
+Every component starts with the parity wrapper surface. Add richer React
+surfaces only when the component shape justifies them.
+
+Supported surface types:
+
+- **parity wrapper** - the primary public API that mirrors the Takeoff contract
+- **`slotProps`** - additive props applied to canonical slot owner nodes
+- **render overrides** - additive React-only content replacement inside
+  canonical slot owner nodes
+- **public compound parts** - additive React-only ownership for structural slots
+
+Rules:
+
+- `slotProps` are valid when consumers only need to tune an existing node
+- render overrides are valid only for content-bearing or decorative slots
+- render overrides must preserve the canonical slot owner node, class, and
+  `data-slot` anchor
+- structural slots such as `root`, `trigger`, `content`, `header`, `overlay`,
+  and `closeButton` should not be replaced by free-form render props
+- when consumers need to reorder, omit, or fully own structural slots, add
+  public compound parts instead
+- if public compound parts exist, the parity wrapper should compose those same
+  parts internally
+
+This is usually:
+
+- `strict-parity` for the wrapper contract
+- `technical-adaptation` for internal DOM reshaping that keeps behavior the same
+- `react-enhancement` for additive `slotProps`, render overrides, or compound
+  surfaces
+
 ## Where to record adaptation rationale
 
 Keep adaptation reasoning in the final port report and in internal skill-driven
@@ -72,6 +105,20 @@ contract in a way users must know.
 - public import or theming instructions
 
 If one of these changes, classify it and justify it.
+
+## Structural vs content slot rule
+
+Before exposing customization, classify each slot:
+
+- **structural** - owns semantics, interaction, layout, or selector anchoring
+- **content-bearing** - owns consumer-facing content inside a stable container
+- **decorative** - owns optional icons, ornaments, or affordances
+
+Default mapping:
+
+- structural: `slotProps` only, plus compound ownership when needed
+- content-bearing: `slotProps` + render override
+- decorative: `slotProps` + render override
 
 ## DOM ownership rule
 

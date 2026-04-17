@@ -24,9 +24,10 @@ more detail.
 - `takeoff-design/packages/tokens/styles/_index.scss` - shared style wiring into
   compiled CSS
 - `takeoff-spar/packages/react-spar/src/components/button/` - React adaptation
-  baseline (`Button.tsx`, `types.ts`, `style.ts`)
+  baseline (`Button.tsx`, `types.ts`, `ButtonBase.ts`)
 - `takeoff-spar/packages/react-spar/src/components/index.ts` - component barrel
-- `takeoff-spar/packages/react-spar/src/theme/recipes.ts` - slot registry
+- `takeoff-spar/packages/react-spar/src/styling/slot-registry.ts` - slot-class
+  registry
 
 ## Layer roles in this example
 
@@ -54,7 +55,7 @@ more detail.
 
 - The component folder is lowercase:
   `packages/react-spar/src/components/button/`.
-- `style.ts` exports these slot class names:
+- `ButtonBase.ts` exports these slot class names:
   - `root` -> `tk-button`
   - `label` -> `tk-button-label`
   - `icon` -> `tk-button-icon`
@@ -80,6 +81,17 @@ more detail.
   `onClick` in the wrapper.
 - This package is the React delivery layer, not the owner of the shared styling
   contract.
+
+## Customization takeaway
+
+Button is the current leaf-component reference:
+
+- keep the parity wrapper as the primary public surface
+- public compound parts are not required by default
+- `slotProps` are appropriate for `root`, `label`, `leadingIcon`,
+  `trailingIcon`, and `spinner`
+- render overrides are appropriate for icon and spinner content, not for the
+  structural button root
 
 ## Important divergence from Stencil Button
 

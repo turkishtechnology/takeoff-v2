@@ -14,7 +14,8 @@ export default function DesignSystem(): JSX.Element {
             <span>Ready to Use</span>
           </div>
           <p className={styles.sectionDesc}>
-            This docs app consumes the same Takeoff UI design variables and Docusaurus override layer, so the presentation stays aligned with the source design system.
+            react-spar consumes <code>@takeoff-design/tokens</code> as a peer dependency. Primitives, semantic tokens, radii, shadows, and typography scales stay aligned with the
+            rest of the Takeoff system, so visual decisions land once and travel everywhere.
           </p>
         </div>
         <div className={styles.cardsContainer}>
@@ -25,8 +26,8 @@ export default function DesignSystem(): JSX.Element {
             <div className={styles.cardBody}>
               <h3 className={styles.cardTitle}>Takeoff Design System</h3>
               <p className={styles.cardDesc}>
-                The page shell is driven by primitives, semantic tokens, radius values, shadows, typography scales, and IFM overrides from Takeoff UI. That keeps Spar documentation
-                visually consistent with the upstream system without hand-maintaining duplicate values.
+                Tokens, icons, fonts, reset rules, and recipes are sourced from <code>@takeoff-design/tokens</code>. Because react-spar ships no bundled component CSS, every
+                product adopting it inherits one consistent brand expression across Takeoff surfaces.
               </p>
             </div>
           </div>

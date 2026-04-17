@@ -8,7 +8,6 @@ export interface ComponentBaseConfig<TProps extends object, TSlot extends string
   slots: readonly TSlot[];
   classNames: SlotClassNames<TSlot>;
   defaultProps?: Partial<TProps>;
-  styles?: Record<string, string>;
 }
 
 export interface SlotProps {
@@ -21,7 +20,6 @@ export interface ComponentBase<TProps extends object, TSlot extends string> {
   name: string;
   slots: readonly TSlot[];
   classes: Readonly<SlotClassNames<TSlot>>;
-  styles: Readonly<Record<string, string>>;
   defaultProps: Readonly<Partial<TProps>>;
   cx: (slot: TSlot, ...classNames: ClassValue[]) => string;
   getSlotProps: (slot: TSlot, extra?: { className?: ClassValue; [key: string]: unknown }) => SlotProps;
@@ -45,20 +43,14 @@ export const createComponentBase = <TProps extends object, TSlot extends string>
   slots,
   classNames,
   defaultProps = {},
-  styles,
 }: ComponentBaseConfig<TProps, TSlot>): ComponentBase<TProps, TSlot> => {
   const classes = Object.freeze({ ...classNames }) as Readonly<SlotClassNames<TSlot>>;
   const resolvedDefaultProps = Object.freeze({ ...defaultProps }) as Readonly<Partial<TProps>>;
-  const resolvedStyles = Object.freeze({
-    ...classes,
-    ...styles,
-  });
 
   return {
     name,
     slots: Object.freeze([...slots]) as readonly TSlot[],
     classes,
-    styles: resolvedStyles,
     defaultProps: resolvedDefaultProps,
     cx: (slot, ...dynamicClassNames) => clsx(classes[slot], ...dynamicClassNames),
     getSlotProps: (slot, extra = {}) => {

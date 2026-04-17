@@ -17,6 +17,16 @@ Example: `leadingIcon` (key) → `data-slot="leading-icon"` (DOM).
 | ----------- | -------------------------------------------- | -------------------------------------------------------------- |
 | `data-slot` | Identifies the logical part of the component | Always present on every rendered element. Value is kebab-case. |
 
+## Customization ownership rules
+
+- `data-slot` belongs on the canonical slot owner node, not on arbitrary helper
+  wrappers.
+- `slotProps` target the canonical slot owner node.
+- Render overrides may replace content inside a canonical slot owner node, but
+  they must not remove the slot owner node itself.
+- Public compound parts must emit the same canonical `data-slot` anchors as the
+  parity wrapper path.
+
 ## State hooks
 
 Boolean presence attributes: empty string when active, omitted when inactive.
@@ -71,3 +81,6 @@ Boolean presence attributes for layout or content semantics.
 4. Every emitted `data-*` hook must have a real consumer in styling, semantics,
    or docs.
 5. One-off attributes require explicit justification in the component base file.
+6. Structural slots keep their canonical `data-slot` anchor even when render
+   overrides are supported.
+7. Public compound parts must not invent a second slot vocabulary.

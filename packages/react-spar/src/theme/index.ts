@@ -1,1 +1,0 @@
-export { recipes } from './recipes';

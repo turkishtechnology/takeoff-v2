@@ -19,7 +19,8 @@ export default function Contributors(): JSX.Element {
       <div className={styles.sectionInner}>
         <h1>Contributors</h1>
         <p className={styles.description}>
-          This project thrives thanks to the contributors shipping wrapper code, styling bridges, and docs improvements across the shared design system.
+          Takeoff Spar is maintained by the Takeoff team, the same group behind <code>takeoff-ui</code> and <code>takeoff-design</code>. Their ongoing work on wrappers, design
+          tokens, and documentation keeps the ecosystem aligned across every product surface.
         </p>
         <div className={styles.strip}>
           {contributors.map(contributor => (

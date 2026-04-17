@@ -13,6 +13,7 @@ EXPECTED_TOKEN_IMPORT = "@takeoff-design/tokens/css/default/theme.css"
 STALE_STYLE_IMPORT = "@takeoff-ui/react-spar/styles"
 STENCIL_EVENT_NAME_PATTERN = re.compile(r"\btk-(?:click|[a-z0-9-]+(?:change|selected))\b")
 REACT_TK_CALLBACK_PATTERN = re.compile(r"\bonTk[A-Z][A-Za-z0-9]*\b")
+CHANGESET_PACKAGE_MARKER = "'@takeoff-ui/react-spar'"
 
 
 def split_words(raw_name: str) -> list[str]:
@@ -118,6 +119,7 @@ def main() -> int:
         return 2
 
     kebab_name = derived_names["kebab"]
+    pascal_name = derived_names["pascal"]
 
     takeoff_design_root = repo_root.parent / "takeoff-design" / "packages/tokens"
     react_package_root = repo_root / "packages/react-spar"
@@ -132,6 +134,9 @@ def main() -> int:
     docs_runtime_css_path = repo_root / "apps/docs/src/css/custom.css"
     docs_guide_path = repo_root / "apps/docs/docs/theming.mdx"
     demo_main_path = repo_root / "apps/react-app/src/main.tsx"
+    docs_page_path = repo_root / f"apps/docs/docs/Components/{pascal_name}.mdx"
+    smoke_app_path = repo_root / "apps/react-app/src/App.tsx"
+    changesets_root = repo_root / ".changeset"
 
     theme_css_contents = read_text_if_exists(theme_css_path)
     recipe_contents = read_text_if_exists(recipe_path)
@@ -175,6 +180,33 @@ def main() -> int:
     peer_dependencies = package_json.get("peerDependencies", {}) if isinstance(package_json, dict) else {}
     peer_dependency_present = "@takeoff-design/tokens" in peer_dependencies
 
+    smoke_app_contents = read_text_if_exists(smoke_app_path)
+    smoke_scenario_present = (
+        smoke_app_contents is not None
+        and (
+            re.search(rf"\b{re.escape(pascal_name)}\b", smoke_app_contents) is not None
+            or f"tk-{kebab_name}" in smoke_app_contents
+        )
+    )
+
+    changeset_entries: list[str] = []
+    if changesets_root.exists():
+        for changeset_path in sorted(changesets_root.glob("*.md")):
+            if changeset_path.name.lower() == "readme.md":
+                continue
+            text = read_text_if_exists(changeset_path)
+            if text is None:
+                continue
+            if CHANGESET_PACKAGE_MARKER not in text:
+                continue
+            if (
+                re.search(rf"\b{re.escape(pascal_name)}\b", text) is not None
+                or f"`{kebab_name}`" in text
+                or f"tk-{kebab_name}" in text
+            ):
+                changeset_entries.append(str(changeset_path))
+    changeset_entry_present = bool(changeset_entries)
+
     results = {
         "component_name": kebab_name,
         "component_root_exists": component_root.exists(),
@@ -201,6 +233,12 @@ def main() -> int:
         "recipe_class_names": sorted(recipe_class_names),
         "recipe_classes_missing_in_component": recipe_classes_missing_in_component,
         "component_classes_missing_in_recipe": component_classes_missing_in_recipe,
+        "docs_page_exists": docs_page_path.exists(),
+        "docs_page_path": str(docs_page_path),
+        "smoke_scenario_present": smoke_scenario_present,
+        "smoke_app_path": str(smoke_app_path),
+        "changeset_entry_present": changeset_entry_present,
+        "changeset_entries": changeset_entries,
     }
 
     ok = (
@@ -222,6 +260,9 @@ def main() -> int:
         and not results["stencil_event_name_hits"]
         and not results["react_tk_callback_hits"]
         and not results["recipe_classes_missing_in_component"]
+        and results["docs_page_exists"]
+        and results["smoke_scenario_present"]
+        and results["changeset_entry_present"]
     )
 
     results["ok"] = ok
@@ -282,6 +323,16 @@ def main() -> int:
         if results["component_classes_missing_in_recipe"]:
             for class_name in results["component_classes_missing_in_recipe"]:
                 print(f"  {class_name}")
+        print(f"- {'OK' if results['docs_page_exists'] else 'MISSING'}: {results['docs_page_path']}")
+        print(
+            f"- {'OK' if results['smoke_scenario_present'] else 'MISSING'}: smoke scenario in {results['smoke_app_path']}"
+        )
+        print(
+            f"- {'OK' if results['changeset_entry_present'] else 'MISSING'}: changeset entry under .changeset/ naming {pascal_name}"
+        )
+        if results["changeset_entries"]:
+            for entry in results["changeset_entries"]:
+                print(f"  {entry}")
 
     return 0 if ok else 1
 

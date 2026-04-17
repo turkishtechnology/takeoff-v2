@@ -1,11 +1,17 @@
 import { Accordion as SparAccordion } from '@turkish-technology/spar';
 import { type Ref } from 'react';
 
-import { AccordionBase, AccordionAdapterContext } from './AccordionBase';
+import { useComponentTheme } from '../../provider';
+import { applyThemeDefaults, buildSlotAttrs, mergeClassNames, mergeSlotProps } from '../../customization';
+// TODO(takeoff-icons): Default arrow icons are Lucide-sourced placeholders.
+// Replace with the official Takeoff icon components before first release.
+import { PlaceholderChevronDown, PlaceholderChevronUp } from '../../utils/placeholderIcons';
+import { AccordionBase, AccordionProvider } from './AccordionBase';
 import type { AccordionProps } from './types';
 import { useAccordionAdapter } from './useAccordionAdapter';
 
 function Accordion({ ref, ...rawProps }: AccordionProps & { ref?: Ref<HTMLDivElement> }) {
+  const themeConfig = useComponentTheme('Accordion');
   const {
     activeIndex: controlledActiveIndex,
     defaultActiveIndex,
@@ -19,12 +25,16 @@ function Accordion({ ref, ...rawProps }: AccordionProps & { ref?: Ref<HTMLDivEle
     onActiveIndexChange,
     children,
     className,
+    classNames: instanceClassNames,
+    slotProps: instanceSlotProps,
     ...restProps
-  } = AccordionBase.resolveProps(rawProps);
+  } = AccordionBase.resolveProps(applyThemeDefaults(themeConfig?.defaultProps, rawProps));
+  const resolvedClassNames = mergeClassNames(themeConfig?.classNames, instanceClassNames);
+  const resolvedSlotProps = mergeSlotProps(themeConfig?.slotProps, instanceSlotProps);
   const allowMultiple = rawAllowMultiple ?? false;
   const arrowPosition = rawArrowPosition ?? 'right';
-  const expandIcon = rawExpandIcon ?? 'keyboard_arrow_down';
-  const collapseIcon = rawCollapseIcon ?? 'keyboard_arrow_up';
+  const expandIcon = rawExpandIcon ?? <PlaceholderChevronDown />;
+  const collapseIcon = rawCollapseIcon ?? <PlaceholderChevronUp />;
   const hideArrows = rawHideArrows ?? false;
   const type = rawType ?? 'grouped';
   const mode = rawMode ?? 'default';
@@ -44,12 +54,11 @@ function Accordion({ ref, ...rawProps }: AccordionProps & { ref?: Ref<HTMLDivEle
   });
 
   return (
-    <AccordionAdapterContext.Provider value={adapterContext}>
+    <AccordionProvider value={adapterContext}>
       <SparAccordion
         {...restProps}
+        {...buildSlotAttrs(AccordionBase.getSlotProps('root', { className }), resolvedSlotProps, 'root', resolvedClassNames?.root)}
         ref={ref}
-        className={AccordionBase.cx('root', className)}
-        data-slot="root"
         type={allowMultiple ? 'multiple' : 'single'}
         isCollapsible
         value={sparValue}
@@ -57,7 +66,7 @@ function Accordion({ ref, ...rawProps }: AccordionProps & { ref?: Ref<HTMLDivEle
       >
         {processedChildren}
       </SparAccordion>
-    </AccordionAdapterContext.Provider>
+    </AccordionProvider>
   );
 }
 

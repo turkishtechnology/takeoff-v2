@@ -34,25 +34,39 @@ Monorepo for `@takeoff-ui/react-spar` — a React 19 component library that wrap
 
 ## Documentation
 
+Repo contract (canonical):
+
+- [Source-of-truth matrix](./docs/source-of-truth.md) — where every claim about
+  this repo is authoritatively stated
+- [Contract model](./docs/contract-model.md) — parity rules, divergence
+  taxonomy, breaking-change and migration-safety definitions
+- [Public API decision framework](./docs/api-decision-framework.md) — how
+  per-component API shapes are decided
+- [Architectural decisions](./docs/decisions/README.md) — durable repo-wide
+  decision records
+
 Live reference:
 
 - [Coding standards](./packages/react-spar/docs/CODING_STANDARDS.md)
 - [Data attribute vocabulary](./packages/react-spar/docs/DATA_ATTRIBUTE_VOCABULARY.md)
 
-Execution playbooks (internal):
-
-- [Phase 1 implementation checklist](./packages/react-spar/docs/PHASE_1_IMPLEMENTATION_CHECKLIST.md)
-- [Phase 2 implementation checklist](./packages/react-spar/docs/PHASE_2_IMPLEMENTATION_CHECKLIST.md)
+Current component customization and compound-surface decisions belong in those
+reference docs plus the internal component-port skill resources.
 
 Agent skills:
 
 - [Component port skill](./.agents/skills/takeoff-component-port/SKILL.md)
 - [Generate component skill](./.agents/skills/generate-component/SKILL.md)
 
-Open research:
+Open work:
 
-- [Docs consolidation R&D task](./docs/proposals/docs-consolidation.md) — drives
-  the long-term home for every markdown file in this repo.
+- [Monorepo professionalization execution plan](./docs/proposals/monorepo-professionalization-execution-plan.md)
+  — the active milestone tracker. The only doc under `docs/proposals/`.
+
+Archive (frozen historical narratives, never trust over live code):
+
+- [Documentation archive](./docs/archive/README.md) — Phase 1 / Phase 2
+  implementation checklists.
 
 ## Getting started
 
@@ -63,3 +77,28 @@ pnpm dev:react   # smoke app
 pnpm --filter @takeoff-ui/react-spar test
 pnpm --filter @takeoff-ui/react-spar build
 ```
+
+## Validation workflow
+
+The workspace is split into **pure validation boundaries** and **prep / build
+steps**. CI calls each by name so the log makes the intent obvious.
+
+| Command                                     | Guarantee                                                                                                                                                                                                          |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `pnpm check-types`                          | Pure. Each package runs `tsc --noEmit` only — no codegen, no package builds.                                                                                                                                       |
+| `pnpm lint`                                 | Pure. Each package runs `eslint .` only.                                                                                                                                                                           |
+| `pnpm --filter @takeoff-ui/react-spar test` | Pure. Vitest. Reads source files; no upstream build required.                                                                                                                                                      |
+| `pnpm --filter docs verify:generated-api`   | Doc-integrity gate. Re-runs the docs API codegen and fails CI if it changes any tracked file in `apps/docs/src/docs-files`.                                                                                        |
+| `pnpm build`                                | Builds packages then the docs site (turbo respects `^build`). The docs `prebuild` hook runs `generate:api` and rebuilds `@takeoff-ui/react-spar` so a direct `pnpm --filter docs build` still works without turbo. |
+| `pnpm dev:docs` / `pnpm dev:react`          | Dev servers. The docs `predev` hook performs the same prep as `prebuild`.                                                                                                                                          |
+
+Why the split matters:
+
+- `apps/docs/tsconfig.json` path-aliases `@takeoff-ui/react-spar` to source,
+  matching `apps/react-app`. That removes the previous `precheck-types` hook
+  that ran the package's full ESM + CJS + DTS build before every typecheck.
+- Codegen and package builds remain available as named scripts (`generate:api`,
+  `build:react-spar`) used by `predev` / `prebuild` and CI's build step. They
+  are not implicit side effects of validation.
+- The docs API tables under `apps/docs/src/docs-files/<component>/api.mdx` are
+  committed and verified for drift in CI; do not edit them by hand.

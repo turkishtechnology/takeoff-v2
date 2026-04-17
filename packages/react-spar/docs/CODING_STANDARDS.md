@@ -25,6 +25,22 @@ component-name/
 └── index.ts                   # Local barrel
 ```
 
+Compound or overlay families may legitimately expand into a part-based layout:
+
+```plaintext
+component-name/
+├── ComponentName.tsx          # Parity wrapper
+├── ComponentNameBase.ts       # Slots, class names, defaults, helpers
+├── ComponentName.context.ts   # Shared context when multiple parts need it
+├── ComponentNameRoot.tsx      # Canonical structural part
+├── ComponentNameContent.tsx   # Canonical structural part
+├── ComponentNameHeader.tsx    # Canonical structural part
+├── useComponentNameAdapter.ts # State translation hook (when needed)
+├── types.ts                   # Public types only
+├── ComponentName.test.tsx     # Tests
+└── index.ts                   # Local barrel
+```
+
 Rules:
 
 - Folder names use `kebab-case`.
@@ -32,12 +48,15 @@ Rules:
 - Not every component needs an adapter hook. Add one when the wrapper must
   reconcile controlled and uncontrolled state, normalize values, or build shared
   context.
+- Not every component needs public compound parts. Add them only when the
+  component shape makes structural slots meaningfully consumer-owned.
 - `ComponentNameBase.ts` is the source of truth for slot names, emitted class
   names, and default props.
 - Split extra helper files only when the base or adapter file becomes hard to
   read.
 - Export the component from its local barrel and from `src/components/index.ts`.
-- Register slot classes in `src/theme/recipes.ts`.
+- Mirror slot classes into `src/styling/slot-registry.ts` (the generator script
+  does this automatically when scaffolding a new component).
 - Prefer the generator script when scaffolding a new component:
 
 ```bash
@@ -111,6 +130,29 @@ export const buttonClassNames = {
 - Use `ReactNode` for content slots. When aliases exist, document precedence
   with `children`.
 
+### Customization surfaces
+
+Every component must decide its supported customization surfaces deliberately.
+Do not let them emerge ad hoc.
+
+Available surfaces:
+
+- parity wrapper
+- `slotProps`
+- render overrides
+- public compound parts
+
+Rules:
+
+- every component keeps the parity wrapper as the primary surface
+- `slotProps` tune canonical slot owner nodes
+- render overrides replace content inside canonical slot owner nodes
+- public compound parts hand structural slot ownership to the consumer
+- render overrides must not replace structural slot owner nodes
+- leaf components usually stop at wrapper + `slotProps` + limited render
+  overrides
+- disclosure and overlay components usually need public compound parts
+
 Examples of explicit precedence that should be documented and tested:
 
 - `children` overrides `label`
@@ -128,6 +170,25 @@ Examples of explicit precedence that should be documented and tested:
   normalization, and stable `data-*` hooks.
 - Do not add wrapper nodes unless they solve a clear styling, semantic, or
   interaction problem.
+- If a component exports public compound parts, the wrapper should compose those
+  same parts internally instead of maintaining a second render tree.
+
+### Customization ownership
+
+For every slot, classify it before exposing customization:
+
+- structural: owns semantics, interaction, layout, or selector anchoring
+- content-bearing: owns consumer-facing content inside a stable slot container
+- decorative: owns optional icons or ornaments
+
+Default mapping:
+
+- structural: `slotProps`, plus public compound ownership when needed
+- content-bearing: `slotProps` + render override
+- decorative: `slotProps` + render override
+
+Typical structural slots include `root`, `overlay`, `trigger`, `content`,
+`header`, and `closeButton`.
 
 ### Base file responsibility
 
@@ -137,6 +198,8 @@ Examples of explicit precedence that should be documented and tested:
 - `createContext` is allowed in the base file when multiple subcomponents share
   wrapper state.
 - Prefer `createComponentBase` for `cx`, `getSlotProps`, and `resolveProps`.
+- When a component supports richer customization, keep the canonical slot
+  inventory close to the base file or an adjacent context file.
 
 ### Adapter hook responsibility
 
@@ -217,6 +280,10 @@ function MyComponent({
 - Use `createContext` plus `useContext` for new context-based composition. Do
   not introduce `contextType` or `Context.Consumer` patterns in new code.
 - Set `displayName` on exported components.
+- If a component supports render overrides, keep the canonical slot owner node,
+  class, and `data-slot` anchor in the render path.
+- If a component exports public compound parts, keep class/data semantics
+  aligned between wrapper usage and compound usage.
 
 ## Styling Contract
 
@@ -317,6 +384,12 @@ describe('Button', () => {
   styling contract.
 - Include one happy-path `axe` check for each interactive component, and add
   focused regression checks for risky variants.
+- If a component supports `slotProps`, test that they land on canonical slot
+  owner nodes.
+- If a component supports render overrides, test that the canonical slot owner
+  node still exists around overridden content.
+- If a component exports public compound parts, test at least one wrapper path
+  and one compound composition path.
 
 ### Component test checklist
 
@@ -329,6 +402,9 @@ Before submitting a component, make sure tests cover:
 - callback behavior and call counts
 - disabled, loading, and edge semantics
 - slot rendering and precedence rules
+- `slotProps` behavior when supported
+- render override behavior when supported
+- wrapper and compound parity smoke paths when compound parts are public
 - accessibility baseline
 - errors or invariants for invalid composition when applicable
 
@@ -346,8 +422,18 @@ Before submitting a component, make sure tests cover:
 - Generated API output should expose callback props under the `Events` section
   when applicable.
 - Do not manually edit generated MDX files.
+- If a component supports richer customization, docs should separate:
+  - parity wrapper usage
+  - additive render or `slotProps` usage
+  - public compound usage when it exists
 
 ## Merge Checklist
+
+The authoritative gate for new component work is
+[`docs/component-port-readiness.md`](../../../docs/component-port-readiness.md).
+That doc carries the full readiness checklist, artifact manifest, and review
+templates. The list below is the subset local to this package — keep it truthful
+but do not duplicate the readiness doc.
 
 Before considering a component complete:
 
@@ -355,9 +441,22 @@ Before considering a component complete:
 - `pnpm lint`
 - `pnpm build`
 - `pnpm --filter @takeoff-ui/react-spar test`
+- `python3 .agents/skills/takeoff-component-port/scripts/verify_port_artifacts.py <Name> --repo-root .`
+  (enforces the artifact manifest: wrapper, recipe, docs page, smoke scenario,
+  changeset, export, no emitted CSS)
 - regenerate docs API output when public types changed
 - confirm the component is exported from `src/components/index.ts`
 - confirm no CSS is emitted from `packages/react-spar/dist`
-- confirm slot classes are registered in `src/theme/recipes.ts`
+- confirm slot classes are mirrored in `src/styling/slot-registry.ts`
+- confirm at least one smoke scenario in
+  [`apps/react-app/src/App.tsx`](../../../apps/react-app/src/App.tsx) exercises
+  the new component end to end against the real tokens CSS import. If a
+  customization surface is genuinely not part of the component's public
+  contract, mark the omission inline as `// exemption: <reason>` so it is
+  intentional and reviewable.
 - confirm docs, generated API tables, tests, and component types describe the
   same contract
+- write the parity-review report (and the React-enhancement review report when
+  any additive surface is introduced) into the PR description, using the
+  templates in
+  [`docs/component-port-readiness.md`](../../../docs/component-port-readiness.md)

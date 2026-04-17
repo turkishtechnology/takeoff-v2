@@ -108,18 +108,4 @@ describe('createComponentBase', () => {
       expect(result['data-slot']).toBe('label');
     });
   });
-
-  describe('styles', () => {
-    it('should merge classes with custom styles', () => {
-      const withStyles = createComponentBase<object, 'root'>({
-        name: 'Styled',
-        slots: ['root'],
-        classNames: { root: 'tk-styled' },
-        styles: { custom: 'my-style' },
-      });
-      expect(withStyles.styles.root).toBe('tk-styled');
-      expect(withStyles.styles.custom).toBe('my-style');
-      expect(Object.isFrozen(withStyles.styles)).toBe(true);
-    });
-  });
 });

@@ -7,7 +7,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Components',
-      items: ['Components/Overview', 'Components/Accordion', 'Components/Button'],
+      items: ['Components/Overview', 'Components/Accordion', 'Components/Button', 'Components/Checkbox', 'Components/Dialog', 'Components/Input'],
     },
   ],
 };

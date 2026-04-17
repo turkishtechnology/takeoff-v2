@@ -4,15 +4,11 @@ description: >
   Use this skill when porting, reviewing, or correcting a Takeoff component
   across takeoff-ui, takeoff-design, spar, and takeoff-spar. Apply it for
   "bilesen port", parity investigations, Spar primitive fit checks, token recipe
-  extraction, React wrapper design, docs or README contract fixes, or drift
-  reviews between the Web Component source and the React package.
-compatibility: >
-  Assumes a local workspace with sibling repos ../takeoff-ui and
-  ../takeoff-design. ../spar is strongly preferred but optional. Shell access is
-  required to run the bundled scripts.
-metadata:
-  owner: takeoff-ui
-  version: '2'
+  extraction, React wrapper design, customization-surface decisions, docs or
+  README contract fixes, or drift reviews between the Web Component source and
+  the React package. Assumes sibling repos ../takeoff-ui and ../takeoff-design
+  exist locally; ../spar is preferred. Requires shell access for the bundled
+  Python scripts.
 ---
 
 # Takeoff Component Port
@@ -49,6 +45,12 @@ Use this skill when a component has to move through this stack:
 3. Read these references:
    - Always: [references/workflow.md](references/workflow.md)
    - Always: [references/adaptation-policy.md](references/adaptation-policy.md)
+   - Always (the canonical gate): the repo-level
+     [`docs/component-port-readiness.md`](../../../docs/component-port-readiness.md).
+     This file is the source of truth for the readiness checklist, artifact
+     manifest, parity-review template, React-enhancement review template, and
+     rollout order. The references in this skill are supporting material; the
+     readiness doc is the contract.
    - When the component structure is not obvious:
      [references/archetypes.md](references/archetypes.md)
    - When implementing slot/data/class contracts:
@@ -68,6 +70,11 @@ Use this skill when a component has to move through this stack:
 - Start from `takeoff-ui`, not from the current `takeoff-spar` implementation.
 - If a matching Spar primitive exists, use it unless the adaptation policy says
   otherwise and you state the reason explicitly.
+- Every task must explicitly decide the customization surface:
+  - parity wrapper only
+  - wrapper + `slotProps`
+  - wrapper + render overrides
+  - wrapper + public compound parts
 - Stencil event names do not carry their `tk` prefix into React. Convert them to
   idiomatic React callback names such as `onClick`, `onActiveChange`, and
   `onActiveIndexChange`.
@@ -78,6 +85,10 @@ Use this skill when a component has to move through this stack:
 - `@takeoff-ui/react-spar` ships JS and types, not component CSS.
 - Every selector in a token recipe must map to a real React slot class or
   `data-*` hook.
+- `slotProps` may tune canonical slot owner nodes, but free-form render
+  overrides must not replace structural slot owners.
+- Structural slot ownership belongs to compound parts when React consumers need
+  full composition control.
 - Classify differences explicitly:
   - `strict-parity`
   - `technical-adaptation`
@@ -105,10 +116,17 @@ Use this skill when a component has to move through this stack:
 
 ## Final report
 
-Before closing the task, report:
+Before closing the task, write the parity-review report (always) and the
+React-enhancement review report (when the change introduces any additive
+React-only surface). Both templates live in the canonical
+[`docs/component-port-readiness.md`](../../../docs/component-port-readiness.md).
+
+The short version captured in every PR description:
 
 - chosen archetype
 - Spar primitive decision
+- customization surface decision
+- slot inventory and ownership split
 - difference classification
 - touched files
 - validations run

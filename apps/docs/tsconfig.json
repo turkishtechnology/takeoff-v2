@@ -1,7 +1,11 @@
 {
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@site/*": ["./*"],
+      "@takeoff-ui/react-spar": ["../../packages/react-spar/src/index.ts"]
+    }
   },
   "exclude": ["build"]
 }

@@ -1,4 +1,7 @@
-import type { AnchorHTMLAttributes, ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ComponentPropsWithoutRef, HTMLAttributes, ReactNode } from 'react';
+
+import type { ButtonSlot } from './ButtonBase';
+import type { ClassNamesOverride } from '../../customization/overrides';
 
 export type ButtonType = 'filled' | 'filledLight' | 'elevated' | 'outlined' | 'text';
 
@@ -11,6 +14,15 @@ export type ButtonMode = 'button' | 'submit' | 'reset' | 'link';
 export type ButtonIconPosition = 'left' | 'right';
 
 export type ButtonIcon = ReactNode | string;
+
+export interface ButtonSlotProps {
+  root?: ButtonHTMLAttributes<HTMLButtonElement> | AnchorHTMLAttributes<HTMLAnchorElement>;
+  label?: HTMLAttributes<HTMLSpanElement>;
+  icon?: HTMLAttributes<HTMLSpanElement>;
+  leadingIcon?: HTMLAttributes<HTMLSpanElement>;
+  trailingIcon?: HTMLAttributes<HTMLSpanElement>;
+  spinner?: HTMLAttributes<HTMLSpanElement>;
+}
 
 type ButtonNativeProps = Omit<ComponentPropsWithoutRef<'button'>, 'children' | 'type' | 'disabled'>;
 
@@ -109,4 +121,20 @@ export type ButtonProps = ButtonNativeProps & {
    * Button label or custom content.
    */
   children?: ReactNode;
+  /**
+   * Per-slot class name overrides.
+   */
+  classNames?: ClassNamesOverride<ButtonSlot>;
+  /**
+   * Per-slot HTML attribute overrides.
+   */
+  slotProps?: ButtonSlotProps;
+  /**
+   * Render override for the icon slot. Receives the default icon node and returns custom content.
+   */
+  renderIcon?: (defaultIcon: ReactNode) => ReactNode;
+  /**
+   * Render override for the spinner slot. Receives the default spinner node and returns custom content.
+   */
+  renderSpinner?: (defaultSpinner: ReactNode) => ReactNode;
 };

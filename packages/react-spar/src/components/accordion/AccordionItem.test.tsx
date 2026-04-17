@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { axe } from 'vitest-axe';
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
-import { AccordionAdapterContext, type AccordionAdapterContextValue } from './AccordionBase';
+import { AccordionProvider, type AccordionAdapterContextValue } from './AccordionBase';
 import { AccordionItem } from './AccordionItem';
 
 vi.mock('@turkish-technology/spar', () => {
@@ -39,7 +39,7 @@ const defaultContext: AccordionAdapterContextValue = {
 
 const renderWithAccordionContext = (ui: ReactNode, context: Partial<AccordionAdapterContextValue> = {}) => {
   const mergedContext = { ...defaultContext, ...context };
-  return render(<AccordionAdapterContext.Provider value={mergedContext}>{ui}</AccordionAdapterContext.Provider>);
+  return render(<AccordionProvider value={mergedContext}>{ui}</AccordionProvider>);
 };
 
 describe('AccordionItem', () => {
@@ -251,7 +251,97 @@ describe('AccordionItem', () => {
     it('should throw when used outside Accordion context', () => {
       expect(() => {
         render(<AccordionItem header="Test">Content</AccordionItem>);
-      }).toThrow('AccordionItem components must be used within Accordion');
+      }).toThrow('AccordionItem must be used within Accordion');
+    });
+  });
+
+  describe('classNames prop', () => {
+    it('should apply classNames.root to root element', () => {
+      const { container } = renderWithAccordionContext(
+        <AccordionItem header="Test" classNames={{ root: 'custom-root' }}>
+          Content
+        </AccordionItem>,
+      );
+      const root = container.querySelector('[data-slot="root"]')!;
+      expect(root.className).toContain('tk-accordion-item');
+      expect(root.className).toContain('custom-root');
+    });
+
+    it('should apply classNames.header to header slot', () => {
+      const { container } = renderWithAccordionContext(
+        <AccordionItem header="Test" classNames={{ header: 'custom-header' }}>
+          Content
+        </AccordionItem>,
+      );
+      const header = container.querySelector('[data-slot="header"]')!;
+      expect(header.className).toContain('tk-accordion-item-header');
+      expect(header.className).toContain('custom-header');
+    });
+
+    it('should apply classNames.content to content slot', () => {
+      const { container } = renderWithAccordionContext(
+        <AccordionItem header="Test" classNames={{ content: 'custom-content' }}>
+          Content
+        </AccordionItem>,
+      );
+      const content = container.querySelector('[data-slot="content"]')!;
+      expect(content.className).toContain('tk-accordion-item-content');
+      expect(content.className).toContain('custom-content');
+    });
+
+    it('should apply classNames.title to title slot', () => {
+      const { container } = renderWithAccordionContext(
+        <AccordionItem header="Test" classNames={{ title: 'custom-title' }}>
+          Content
+        </AccordionItem>,
+      );
+      const title = container.querySelector('[data-slot="title"]')!;
+      expect(title.className).toContain('tk-accordion-item-title');
+      expect(title.className).toContain('custom-title');
+    });
+  });
+
+  describe('slotProps prop', () => {
+    it('should forward slotProps.root attributes to root element', () => {
+      const { container } = renderWithAccordionContext(
+        <AccordionItem header="Test" slotProps={{ root: { 'aria-describedby': 'desc' } }}>
+          Content
+        </AccordionItem>,
+      );
+      const root = container.querySelector('[data-slot="root"]')!;
+      expect(root).toHaveAttribute('aria-describedby', 'desc');
+    });
+
+    it('should forward slotProps.content attributes to content slot', () => {
+      const { container } = renderWithAccordionContext(
+        <AccordionItem header="Test" slotProps={{ content: { id: 'my-content' } }}>
+          Content
+        </AccordionItem>,
+      );
+      const content = container.querySelector('[data-slot="content"]')!;
+      expect(content).toHaveAttribute('id', 'my-content');
+    });
+
+    it('should concatenate slotProps.root.className with canonical root class', () => {
+      const { container } = renderWithAccordionContext(
+        <AccordionItem header="Test" slotProps={{ root: { className: 'sp-root' } }}>
+          Content
+        </AccordionItem>,
+      );
+      const root = container.querySelector('[data-slot="root"]')!;
+      expect(root.className).toContain('tk-accordion-item');
+      expect(root.className).toContain('sp-root');
+    });
+
+    it('should concatenate slotProps.content.className with canonical content class', () => {
+      const { container } = renderWithAccordionContext(
+        <AccordionItem header="Test" slotProps={{ content: { className: 'sp-content' } }}>
+          Content
+        </AccordionItem>,
+      );
+      const content = container.querySelector('[data-slot="content"]')!;
+      expect(content.className).toContain('tk-accordion-item-content');
+      expect(content.className).toContain('sp-content');
     });
   });
 

@@ -1,0 +1,97 @@
+import LiveCode from '../../components/LiveCode';
+import Basic from './Examples/Basic';
+import FooterActions from './Examples/FooterActions';
+import HeaderTypes from './Examples/HeaderTypes';
+import MaskTreatments from './Examples/MaskTreatments';
+import Template from './Examples/Template';
+import Variants from './Examples/Variants';
+import {
+  Button,
+  Dialog,
+  ReactSparDemoRoot,
+} from '../../components/ReactSparDocs';
+
+## Playground
+
+The React wrapper keeps the Takeoff Dialog product surface centered on
+`visible`, `headerType`, `variant`, `maskVariant`, and `preventDismiss`. The old
+slot API becomes ReactNode props such as `headerSlot`, `contentSlot`,
+`footerSlot`, and `footerActions`, while focus trapping and ARIA wiring stay on
+the underlying Spar Dialog primitive.
+
+Dismissal is owned by Spar: pressing `Esc` or clicking the mask calls
+`onVisibleChange(false)`. Set `preventDismiss` to lock the dialog open until a
+product action resolves it.
+
+<LiveCode
+  code={`() => {
+  const [visible, setVisible] = React.useState(false);
+
+return ( <div style={{ display: 'flex', justifyContent: 'center' }}> <Button
+onClick={() => setVisible(true)}>Open dialog</Button>
+
+      <Dialog
+        visible={visible}
+        onVisibleChange={setVisible}
+        header="Upgrade cabin"
+        subheader="Review the fare difference before you continue."
+        containerStyle={{ width: '460px' }}
+        footerActions={
+          <>
+            <Button type="text" variant="neutral" onClick={() => setVisible(false)}>
+              Cancel
+            </Button>
+            <Button>Continue</Button>
+          </>
+        }
+      >
+        You can keep Takeoff's dialog product props such as visible, headerType,
+        variant, maskVariant, and preventDismiss while Spar owns focus trapping,
+        overlay semantics, and Escape handling.
+      </Dialog>
+    </div>
+
+); }`} previewMinHeight={240} previewWrapper={ReactSparDemoRoot}
+scope={{ Button, Dialog }} />
+
+## Template
+
+Dialog is the strongest templating surface in the current set. `headerSlot`,
+`contentSlot`, `footerSlot`, `footerActions`, and `containerSlot` let you
+replace most visible regions while Spar continues to own modal behavior.
+
+<Template />
+
+## Basic Usage
+
+Use `visible` and `onVisibleChange` for a controlled modal surface that mirrors
+the Takeoff UI contract.
+
+<Basic />
+
+## Footer Actions
+
+Pass `footerActions` when you want to keep the default footer wrapper but supply
+custom action buttons.
+
+<FooterActions />
+
+## Header Types
+
+`headerType` preserves the original Takeoff header treatments without changing
+the dialog body contract.
+
+<HeaderTypes />
+
+## Variants
+
+`variant` changes the sign icon treatment and tone of the dialog.
+
+<Variants />
+
+## Mask Treatments
+
+Use `maskVariant`, `isMaskBlur`, and `hideBackdrop` to tune the surrounding
+overlay without moving away from the modal behavior contract.
+
+<MaskTreatments />

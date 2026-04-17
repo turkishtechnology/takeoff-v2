@@ -1,0 +1,80 @@
+import LiveCode from '../../components/LiveCode';
+import Basic from './Examples/Basic';
+import Validation from './Examples/Validation';
+import Adornments from './Examples/Adornments';
+import States from './Examples/States';
+import Template from './Examples/Template';
+import { Input, ReactSparDemoRoot } from '../../components/ReactSparDocs';
+// TODO(takeoff-icons): MailIcon is a temporary Lucide-sourced placeholder.
+// Replace with the official Takeoff icon set before the first public release.
+import { MailIcon } from '../../components/PlaceholderIcons';
+
+## Playground
+
+The React wrapper keeps the Takeoff Input product surface centered on `label`,
+`description`, `error`, `invalid`, `icon`, `prefix`, `suffix`, `clearable`,
+`loading`, and the native `type` + `size` props. ARIA relationships between
+label, description, error, and the native input are owned by the Spar Input
+primitive — the wrapper never recreates them.
+
+The Stencil modes `password`, `counter`, `chips`, and Cleave.js-based `mask` are
+intentionally out of scope for this wrapper. Those will ship as separate
+wrappers (`PasswordInput`, `NumberInput`, `ChipsInput`) when their upstream
+primitives are available.
+
+<LiveCode
+  code={`() => {
+  const [value, setValue] = React.useState('');
+
+return ( <div style={{ display: 'grid', gap: 12, width: 'min(100%, 26rem)' }}>
+<Input label="Email" type="email" description="We use this to send your
+itinerary." icon={<MailIcon />} value={value} onChange={(event) =>
+setValue(event.target.value)} clearable /> </div> ); }`} previewMinHeight={180}
+previewWrapper={ReactSparDemoRoot} scope={{ Input, MailIcon }} />
+
+## Template
+
+Input is built for form-field composition. The canonical slots — `root`,
+`label`, `asterisk`, `container`, `field`, `leading-icon`, `trailing-icon`,
+`prefix`, `suffix`, `clear-button`, `clear-icon`, `spinner`, `description`,
+`error-message` — stay stable so product styling hooks keep working across
+variants.
+
+The `clearable` surface keeps the `<button>` structural owner; consumers can
+only override the icon content via `renderClearIcon`. Use `suffix` for inline
+nodes such as keyboard hints — it composes with `clearable` without breaking the
+trailing slot order.
+
+<Template />
+
+## Basic Usage
+
+Use `label`, `description`, and `required` together for the common product
+field. The wrapper handles the visible asterisk when `required` is set and a
+label is present.
+
+<Basic />
+
+## Validation
+
+`invalid` flips the field into the error state and shows the `error` message
+with `role="alert"`. The description slot is hidden while an error is announced
+so screen readers do not read both.
+
+<Validation />
+
+## Adornments
+
+Use `icon` + `iconPosition` for the shared icon contract, or `leadingIcon` /
+`trailingIcon` for explicit slot control. `prefix` and `suffix` render inline
+text or nodes before and after the field.
+
+<Adornments />
+
+## States
+
+`disabled` and `readOnly` carry the native HTML semantics. `size` selects the
+dimension track from the shared token recipe. Size is also exposed on the root
+as `data-size` for product styling.
+
+<States />

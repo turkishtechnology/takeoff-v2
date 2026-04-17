@@ -54,7 +54,7 @@
 .card {
   display: flex;
   flex-direction: column;
-  flex: 1 1 calc(33.333% - 16px);
+  flex: 1 1 calc(50% - 12px);
   min-width: 0;
   border-radius: 16px;
   border: 1px solid var(--border-light, #e1e4ea);
@@ -64,6 +64,13 @@
 
 .cardHeader {
   padding: 16px;
+}
+
+.iconRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
 }
 
 .iconFramework {

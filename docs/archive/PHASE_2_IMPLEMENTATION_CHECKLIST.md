@@ -1,5 +1,9 @@
 # Phase 2 Implementation Checklist
 
+Historical planning snapshot only. Some ideas here landed, others were
+superseded by live coding standards and component-port workflow references. Use
+the live reference docs first when making current decisions.
+
 Phase 2 builds on the Phase 1 base-driven structure.
 
 Phase 2 goal: Standardize state and slot contracts, then pilot a more modern

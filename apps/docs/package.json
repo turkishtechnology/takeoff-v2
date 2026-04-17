@@ -4,13 +4,13 @@
   "private": true,
   "scripts": {
     "generate:api": "node ./src/docs-files/generate-mdx.mjs",
+    "verify:generated-api": "node ./src/docs-files/generate-mdx.mjs && git diff --exit-code -- ./src/docs-files",
     "build:react-spar": "pnpm --filter @takeoff-ui/react-spar build",
     "predev": "pnpm run generate:api && pnpm run build:react-spar",
     "dev": "docusaurus start",
     "prebuild": "pnpm run generate:api && pnpm run build:react-spar",
     "build": "docusaurus build",
     "serve": "docusaurus serve",
-    "precheck-types": "pnpm run generate:api && pnpm run build:react-spar",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

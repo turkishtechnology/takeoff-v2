@@ -125,6 +125,10 @@ const config: Config = {
               label: 'Button',
               to: '/docs/components/button',
             },
+            {
+              label: 'Dialog',
+              to: '/docs/components/dialog',
+            },
           ],
         },
         {

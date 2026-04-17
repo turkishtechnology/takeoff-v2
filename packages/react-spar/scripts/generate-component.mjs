@@ -21,8 +21,8 @@
  *     index.ts
  *
  * Also updates:
- *   src/components/index.ts  (adds barrel export)
- *   src/theme/recipes.ts     (adds recipe entry)
+ *   src/components/index.ts            (adds barrel export)
+ *   src/styling/slot-registry.ts       (adds slot-class entry)
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -32,7 +32,7 @@ import { fileURLToPath } from 'node:url';
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const packageDir = resolve(scriptDir, '..');
 const componentsDir = resolve(packageDir, 'src/components');
-const recipesPath = resolve(packageDir, 'src/theme/recipes.ts');
+const slotRegistryPath = resolve(packageDir, 'src/styling/slot-registry.ts');
 const componentsIndexPath = resolve(componentsDir, 'index.ts');
 
 const name = process.argv[2];
@@ -184,24 +184,24 @@ if (!componentsIndex.includes(`./${kebab}`)) {
   console.log(`Updated src/components/index.ts`);
 }
 
-// --- Update src/theme/recipes.ts ---
-const recipes = readFileSync(recipesPath, 'utf8');
-if (!recipes.includes(`${name}Base`)) {
+// --- Update src/styling/slot-registry.ts ---
+const slotRegistry = readFileSync(slotRegistryPath, 'utf8');
+if (!slotRegistry.includes(`${name}Base`)) {
   const importLine = `import { ${name}Base } from '../components/${kebab}/${name}Base';`;
-  const recipeEntry = `  ${camel}: {\n    slots: ${name}Base.classes,\n  },`;
+  const slotEntry = `  ${camel}: {\n    slots: ${name}Base.classes,\n  },`;
 
-  let updated = recipes;
+  let updated = slotRegistry;
 
   // Add import after last import
   const lastImportIndex = updated.lastIndexOf('import ');
   const lastImportEnd = updated.indexOf('\n', lastImportIndex);
   updated = updated.slice(0, lastImportEnd + 1) + importLine + '\n' + updated.slice(lastImportEnd + 1);
 
-  // Add recipe entry before closing `} as const`
-  updated = updated.replace(/} as const;/, `${recipeEntry}\n} as const;`);
+  // Add slot-class entry before closing `} as const`
+  updated = updated.replace(/} as const;/, `${slotEntry}\n} as const;`);
 
-  writeFileSync(recipesPath, updated);
-  console.log(`Updated src/theme/recipes.ts`);
+  writeFileSync(slotRegistryPath, updated);
+  console.log(`Updated src/styling/slot-registry.ts`);
 }
 
 console.log(`\nGenerated component: ${name}`);

@@ -1,38 +1,57 @@
 import { useState } from 'react';
 import RenderedDemo from '../../../components/RenderedDemo';
-import styles from './accordion-examples.module.css';
 import { Accordion, AccordionItem, ReactSparDemoRoot } from './shared';
+
+function toArray(value: string | number | (string | number)[] | undefined): (string | number)[] {
+  if (Array.isArray(value)) return value;
+  if (value == null) return [];
+  return [value];
+}
 
 const code = `import { useState } from 'react';
 
+function toArray(value) {
+  if (Array.isArray(value)) return value;
+  if (value == null) return [];
+  return [value];
+}
+
 export function ActiveIndexDemo() {
-  const [active, setActive] = useState<(string | number)[]>([0, 1]);
+  const [active, setActive] = useState([0, 1]);
 
   return (
-    <Accordion
-      allowMultiple
-      activeIndex={active}
-      onActiveIndexChange={(index) => setActive(Array.isArray(index) ? index : index !== undefined ? [index] : [])}
-    >
-      <AccordionItem header="Panel 1">Panel 1 Content</AccordionItem>
-      <AccordionItem header="Panel 2">Panel 2 Content</AccordionItem>
-      <AccordionItem header="Panel 3">Panel 3 Content</AccordionItem>
-    </Accordion>
+    <div style={{ width: 'min(100%, 40rem)' }}>
+      <Accordion
+        allowMultiple
+        activeIndex={active}
+        onActiveIndexChange={(next) => setActive(toArray(next))}
+      >
+        <AccordionItem header="Panel 1">Panel 1 Content</AccordionItem>
+        <AccordionItem header="Panel 2">Panel 2 Content</AccordionItem>
+        <AccordionItem header="Panel 3">Panel 3 Content</AccordionItem>
+      </Accordion>
+    </div>
   );
 }`;
 
-export default function ActiveIndex() {
+function ActiveIndexDemo() {
   const [active, setActive] = useState<(string | number)[]>([0, 1]);
 
   return (
+    <div style={{ width: 'min(100%, 40rem)' }}>
+      <Accordion allowMultiple activeIndex={active} onActiveIndexChange={next => setActive(toArray(next))}>
+        <AccordionItem header="Panel 1">Panel 1 Content</AccordionItem>
+        <AccordionItem header="Panel 2">Panel 2 Content</AccordionItem>
+        <AccordionItem header="Panel 3">Panel 3 Content</AccordionItem>
+      </Accordion>
+    </div>
+  );
+}
+
+export default function ActiveIndex() {
+  return (
     <RenderedDemo code={code} previewWrapper={ReactSparDemoRoot}>
-      <div className={styles.demoStack}>
-        <Accordion allowMultiple activeIndex={active} onActiveIndexChange={index => setActive(Array.isArray(index) ? index : index !== undefined ? [index] : [])}>
-          <AccordionItem header="Panel 1">Panel 1 Content</AccordionItem>
-          <AccordionItem header="Panel 2">Panel 2 Content</AccordionItem>
-          <AccordionItem header="Panel 3">Panel 3 Content</AccordionItem>
-        </Accordion>
-      </div>
+      <ActiveIndexDemo />
     </RenderedDemo>
   );
 }

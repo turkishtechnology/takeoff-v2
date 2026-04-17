@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import type { ComponentPropsWithoutRef, Ref } from 'react';
 import { Button } from './Button';
+import { SparReactProvider } from '../../provider';
 
 vi.mock('@turkish-technology/spar', () => {
   function MockButton({
@@ -165,6 +166,37 @@ describe('Button', () => {
       expect(spinnerSlot).toBeInTheDocument();
       expect(spinnerSlot!.className).toContain('tk-button-spinner');
       expect(screen.getByTestId('custom-spinner')).toBeInTheDocument();
+    });
+
+    it('should render default spinner indicator when no spinner prop is provided', () => {
+      const { container } = render(<Button loading>Text</Button>);
+      const spinnerSlot = container.querySelector('[data-slot="spinner"]');
+      expect(spinnerSlot).toBeInTheDocument();
+      const defaultIndicator = container.querySelector('[data-slot="spinner-indicator"]');
+      expect(defaultIndicator).toBeInTheDocument();
+      expect(defaultIndicator!.className).toContain('tk-button-default-spinner');
+    });
+
+    it('should pass default spinner node to renderSpinner override', () => {
+      const renderSpinner = vi.fn(node => <div data-testid="wrapped">{node}</div>);
+      const { container } = render(
+        <Button loading renderSpinner={renderSpinner}>
+          Text
+        </Button>,
+      );
+      expect(renderSpinner).toHaveBeenCalled();
+      const arg = renderSpinner.mock.calls[0][0];
+      expect(arg).toBeTruthy();
+      expect(screen.getByTestId('wrapped')).toBeInTheDocument();
+      const defaultIndicator = container.querySelector('[data-slot="spinner-indicator"]');
+      expect(defaultIndicator).toBeInTheDocument();
+    });
+
+    it('should not render empty spinner slot when loading without spinner prop', () => {
+      const { container } = render(<Button loading>Text</Button>);
+      const spinnerSlot = container.querySelector('[data-slot="spinner"]');
+      expect(spinnerSlot).toBeInTheDocument();
+      expect(spinnerSlot!.childNodes.length).toBeGreaterThan(0);
     });
   });
 
@@ -334,6 +366,136 @@ describe('Button', () => {
       const { container } = render(<Button disabled>Disabled</Button>);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
+    });
+  });
+
+  describe('classNames prop', () => {
+    it('should merge instance classNames.root with root class', () => {
+      render(<Button classNames={{ root: 'custom-root' }}>Click me</Button>);
+      const button = screen.getByRole('button');
+      expect(button.className).toContain('tk-button');
+      expect(button.className).toContain('custom-root');
+    });
+
+    it('should merge instance classNames.label with label class', () => {
+      render(<Button classNames={{ label: 'custom-label' }}>Click me</Button>);
+      const label = screen.getByText('Click me');
+      expect(label.className).toContain('tk-button-label');
+      expect(label.className).toContain('custom-label');
+    });
+
+    it('should merge instance classNames.spinner with spinner slot', () => {
+      const { container } = render(
+        <Button loading classNames={{ spinner: 'custom-spinner' }} spinner={<span>...</span>}>
+          Text
+        </Button>,
+      );
+      const spinnerSlot = container.querySelector('[data-slot="spinner"]')!;
+      expect(spinnerSlot.className).toContain('tk-button-spinner');
+      expect(spinnerSlot.className).toContain('custom-spinner');
+    });
+  });
+
+  describe('slotProps prop', () => {
+    it('should forward slotProps.root attributes to root element', () => {
+      render(<Button slotProps={{ root: { 'aria-describedby': 'desc' } }}>Click me</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('aria-describedby', 'desc');
+    });
+
+    it('should forward slotProps.label attributes to label span', () => {
+      render(<Button slotProps={{ label: { id: 'my-label' } }}>Click me</Button>);
+      const label = screen.getByText('Click me');
+      expect(label).toHaveAttribute('id', 'my-label');
+    });
+
+    it('should concatenate slotProps.root.className with canonical root class', () => {
+      render(<Button slotProps={{ root: { className: 'slot-cls' } }}>Click me</Button>);
+      const button = screen.getByRole('button');
+      expect(button.className).toContain('tk-button');
+      expect(button.className).toContain('slot-cls');
+    });
+
+    it('should concatenate slotProps.label.className with canonical label class', () => {
+      render(<Button slotProps={{ label: { className: 'slot-label-cls' } }}>Click me</Button>);
+      const label = screen.getByText('Click me');
+      expect(label.className).toContain('tk-button-label');
+      expect(label.className).toContain('slot-label-cls');
+    });
+  });
+
+  describe('render overrides', () => {
+    it('should use renderIcon to override icon content', () => {
+      render(
+        <Button icon="home" renderIcon={() => <span data-testid="custom-icon">Custom</span>}>
+          Text
+        </Button>,
+      );
+      expect(screen.getByTestId('custom-icon')).toBeInTheDocument();
+    });
+
+    it('should pass default icon node to renderIcon', () => {
+      const renderIcon = vi.fn(node => node);
+      render(
+        <Button icon={<span data-testid="original">O</span>} renderIcon={renderIcon}>
+          Text
+        </Button>,
+      );
+      expect(renderIcon).toHaveBeenCalled();
+    });
+
+    it('should use renderSpinner to override spinner content', () => {
+      render(
+        <Button loading renderSpinner={() => <span data-testid="custom-spinner">Loading...</span>}>
+          Text
+        </Button>,
+      );
+      expect(screen.getByTestId('custom-spinner')).toBeInTheDocument();
+    });
+  });
+
+  describe('theme-level customization', () => {
+    it('should apply theme-level defaultProps', () => {
+      render(
+        <SparReactProvider components={{ Button: { defaultProps: { variant: 'danger', size: 'large' } } }}>
+          <Button>Themed</Button>
+        </SparReactProvider>,
+      );
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('data-variant', 'danger');
+      expect(button).toHaveAttribute('data-size', 'large');
+    });
+
+    it('should allow instance props to override theme defaultProps', () => {
+      render(
+        <SparReactProvider components={{ Button: { defaultProps: { variant: 'danger' } } }}>
+          <Button variant="success">Override</Button>
+        </SparReactProvider>,
+      );
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('data-variant', 'success');
+    });
+
+    it('should merge theme-level classNames with instance classNames', () => {
+      render(
+        <SparReactProvider components={{ Button: { classNames: { root: 'theme-root' } } }}>
+          <Button classNames={{ root: 'instance-root' }}>Merged</Button>
+        </SparReactProvider>,
+      );
+      const button = screen.getByRole('button');
+      expect(button.className).toContain('theme-root');
+      expect(button.className).toContain('instance-root');
+      expect(button.className).toContain('tk-button');
+    });
+
+    it('should merge theme-level slotProps with instance slotProps', () => {
+      render(
+        <SparReactProvider components={{ Button: { slotProps: { root: { 'aria-label': 'theme' } } } }}>
+          <Button slotProps={{ root: { 'aria-describedby': 'desc' } }}>Merged</Button>
+        </SparReactProvider>,
+      );
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('aria-describedby', 'desc');
     });
   });
 });

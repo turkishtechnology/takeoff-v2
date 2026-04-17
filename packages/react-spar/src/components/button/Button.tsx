@@ -1,8 +1,10 @@
 import { Button as SparButton } from '@turkish-technology/spar';
 import { type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ReactNode, type Ref } from 'react';
 
+import { useComponentTheme } from '../../provider';
 import { renderIconSymbol } from '../../utils';
-import { ButtonBase } from './ButtonBase';
+import { applyThemeDefaults, buildSlotAttrs, mergeClassNames, mergeSlotProps } from '../../customization';
+import { ButtonBase, type ButtonSlot } from './ButtonBase';
 import type { ButtonMode, ButtonProps } from './types';
 
 const getButtonMode = ({ as, href, mode }: Pick<ButtonProps, 'as' | 'href' | 'mode'>): ButtonMode => {
@@ -43,27 +45,15 @@ const resolveLinkRel = (target: AnchorHTMLAttributes<HTMLAnchorElement>['target'
 
 const renderIconNode = (icon: ReactNode) => renderIconSymbol(icon, 'tk-button-icon-symbol');
 
-const renderAdornment = (slot: 'leading-icon' | 'trailing-icon', icon: ReactNode) => {
-  if (!hasContent(icon)) {
-    return null;
-  }
-
-  const className = slot === 'leading-icon' ? ButtonBase.cx('leadingIcon', ButtonBase.classes.icon) : ButtonBase.cx('trailingIcon', ButtonBase.classes.icon);
-
-  return (
-    <span className={className} data-slot={slot} aria-hidden="true">
-      {renderIconNode(icon)}
-    </span>
-  );
-};
-
-const renderSpinner = (spinner: ReactNode) => <span {...ButtonBase.getSlotProps('spinner', { 'aria-hidden': 'true' })}>{spinner}</span>;
+const DefaultSpinner = () => <span className="tk-button-default-spinner" data-slot="spinner-indicator" aria-hidden="true" />;
 
 function Button({ ref, ...rawProps }: ButtonProps & { ref?: Ref<HTMLButtonElement | HTMLAnchorElement> }) {
+  const themeConfig = useComponentTheme('Button');
   const {
     as,
     children,
     className,
+    classNames: instanceClassNames,
     disabled,
     form,
     formAction,
@@ -83,8 +73,11 @@ function Button({ ref, ...rawProps }: ButtonProps & { ref?: Ref<HTMLButtonElemen
     onClick,
     onKeyDown,
     rel,
+    renderIcon,
+    renderSpinner: renderSpinnerOverride,
     rounded,
     size,
+    slotProps: instanceSlotProps,
     spinner,
     target,
     trailingIcon,
@@ -93,7 +86,9 @@ function Button({ ref, ...rawProps }: ButtonProps & { ref?: Ref<HTMLButtonElemen
     value,
     variant,
     ...restProps
-  } = ButtonBase.resolveProps(rawProps);
+  } = ButtonBase.resolveProps(applyThemeDefaults(themeConfig?.defaultProps, rawProps));
+  const resolvedClassNames = mergeClassNames(themeConfig?.classNames, instanceClassNames);
+  const resolvedSlotProps = mergeSlotProps(themeConfig?.slotProps, instanceSlotProps);
   const resolvedMode = getButtonMode({ as, href, mode });
   const resolvedLoading = Boolean(loading);
   const disabledState = Boolean(disabled);
@@ -101,15 +96,51 @@ function Button({ ref, ...rawProps }: ButtonProps & { ref?: Ref<HTMLButtonElemen
   const hasLabel = hasContent(content);
   const resolvedLeadingIcon = hasContent(leadingIcon) ? leadingIcon : iconPosition === 'left' ? icon : null;
   const resolvedTrailingIcon = hasContent(trailingIcon) ? trailingIcon : iconPosition === 'right' ? icon : null;
-  const renderedLeadingAdornment = resolvedLoading ? renderSpinner(spinner) : renderAdornment('leading-icon', resolvedLeadingIcon);
-  const renderedTrailingAdornment = resolvedLoading ? null : renderAdornment('trailing-icon', resolvedTrailingIcon);
+
+  const buildAdornment = (slot: 'leading-icon' | 'trailing-icon', iconNode: ReactNode) => {
+    if (!hasContent(iconNode)) {
+      return null;
+    }
+
+    const slotKey: ButtonSlot = slot === 'leading-icon' ? 'leadingIcon' : 'trailingIcon';
+    const iconClassExtra =
+      slot === 'leading-icon'
+        ? [ButtonBase.classes.icon, resolvedClassNames?.leadingIcon, resolvedClassNames?.icon].filter(Boolean).join(' ')
+        : [ButtonBase.classes.icon, resolvedClassNames?.trailingIcon, resolvedClassNames?.icon].filter(Boolean).join(' ');
+    const baseGetSlot = ButtonBase.getSlotProps(slotKey, { 'aria-hidden': 'true' });
+    const attrs = buildSlotAttrs(baseGetSlot, resolvedSlotProps, slotKey, iconClassExtra);
+    // Override data-slot to use kebab form matching the DOM contract
+    attrs['data-slot'] = slot;
+
+    const defaultNode = renderIconNode(iconNode);
+    const renderedContent = renderIcon ? renderIcon(defaultNode) : defaultNode;
+
+    return <span {...attrs}>{renderedContent}</span>;
+  };
+
+  const buildSpinner = (spinnerNode: ReactNode) => {
+    const attrs = buildSlotAttrs(ButtonBase.getSlotProps('spinner', { 'aria-hidden': 'true' }), resolvedSlotProps, 'spinner', resolvedClassNames?.spinner);
+    const defaultNode = hasContent(spinnerNode) ? spinnerNode : <DefaultSpinner />;
+    const renderedContent = renderSpinnerOverride ? renderSpinnerOverride(defaultNode) : defaultNode;
+
+    return <span {...attrs}>{renderedContent}</span>;
+  };
+
+  const renderedLeadingAdornment = resolvedLoading ? buildSpinner(spinner) : buildAdornment('leading-icon', resolvedLeadingIcon);
+  const renderedTrailingAdornment = resolvedLoading ? null : buildAdornment('trailing-icon', resolvedTrailingIcon);
   const iconCount = Number(Boolean(renderedLeadingAdornment)) + Number(Boolean(renderedTrailingAdornment));
   const isIconOnly = !hasLabel && (Boolean(renderedLeadingAdornment) || Boolean(renderedTrailingAdornment));
   const isRounded = rounded && !hasLabel && iconCount === 1;
-  const rootClassName = ButtonBase.cx('root', className);
+  const rootSlotClassName = resolvedSlotProps?.root?.className;
+  const rootClassName = ButtonBase.cx('root', className, rootSlotClassName, resolvedClassNames?.root);
+  const labelSlotClassName = resolvedSlotProps?.label?.className;
+  const labelClassName = ButtonBase.cx('label', labelSlotClassName, resolvedClassNames?.label);
   const resolvedFormAction = typeof formAction === 'string' ? formAction : undefined;
+  const { className: _rootSlotCls, ...rootSlotRest } = resolvedSlotProps?.root ?? {};
+  const { className: _labelSlotCls, ...labelSlotRest } = resolvedSlotProps?.label ?? {};
   const sharedProps = {
     ...restProps,
+    ...rootSlotRest,
     'className': rootClassName,
     'aria-busy': resolvedLoading || undefined,
     'data-slot': 'root',
@@ -155,7 +186,11 @@ function Button({ ref, ...rawProps }: ButtonProps & { ref?: Ref<HTMLButtonElemen
         }}
       >
         {renderedLeadingAdornment}
-        {hasLabel ? <span {...ButtonBase.getSlotProps('label')}>{content}</span> : null}
+        {hasLabel ? (
+          <span {...labelSlotRest} className={labelClassName} data-slot="label">
+            {content}
+          </span>
+        ) : null}
         {renderedTrailingAdornment}
       </a>
     );
@@ -182,7 +217,7 @@ function Button({ ref, ...rawProps }: ButtonProps & { ref?: Ref<HTMLButtonElemen
     >
       {renderedLeadingAdornment}
       {hasLabel ? (
-        <span className={ButtonBase.cx('label')} data-slot="label">
+        <span {...labelSlotRest} className={labelClassName} data-slot="label">
           {content}
         </span>
       ) : null}

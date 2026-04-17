@@ -5,6 +5,7 @@ import ArrowPosition from './Examples/ArrowPosition';
 import CustomIcons from './Examples/CustomIcons';
 import Mode from './Examples/Mode';
 import Size from './Examples/Size';
+import Template from './Examples/Template';
 import Type from './Examples/Type';
 import {
   Accordion,
@@ -12,7 +13,17 @@ import {
   ReactSparDemoRoot,
 } from '../../components/ReactSparDocs';
 
-### Playground
+## Playground
+
+The React wrapper keeps Takeoff's visual contract while delegating toggle state,
+ARIA wiring, and keyboard navigation to the underlying Spar Accordion primitive.
+The visible header surface is rendered through a div-backed trigger so grouped
+and divided header styling stays aligned with the original Takeoff UI markup.
+
+Keyboard navigation follows the
+[WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/)
+pattern: `Up` / `Down` move focus between headers, `Home` and `End` jump to the
+first and last header, and `Enter` / `Space` toggle the focused panel.
 
 <LiveCode
   code={`() => {
@@ -29,10 +40,14 @@ departure. You can also check in at the airport counter. </AccordionItem>
 </Accordion> </div> ); }`} previewMinHeight={220}
 previewWrapper={ReactSparDemoRoot} scope={{ Accordion, AccordionItem }} />
 
-The React wrapper keeps Takeoff's visual contract while delegating toggle state,
-ARIA wiring, and keyboard navigation to the underlying Spar Accordion primitive.
-The visible header surface is rendered through a div-backed trigger so grouped
-and divided header styling stays aligned with the original Takeoff UI markup.
+## Template
+
+Accordion is template-friendly at the content layer and reasonably flexible at
+the header layer because `header` is `ReactNode` and panel bodies accept
+arbitrary children. The trigger shell, arrow placement, and item anatomy remain
+product-owned.
+
+<Template />
 
 ## Type
 
