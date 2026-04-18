@@ -15,24 +15,28 @@ export function InputTemplateDemo() {
     <div style={{ display: 'grid', gap: 16, width: 'min(100%, 28rem)' }}>
       <Input
         aria-label="Search reservations"
-        icon={<SearchIcon />}
-        placeholder="PNR or surname"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         clearable
-        suffix={
-          <kbd
-            style={{
-              fontSize: '0.75rem',
-              padding: '0 4px',
-              border: '1px solid currentColor',
-              borderRadius: 4,
-            }}
-          >
-            /
-          </kbd>
-        }
-      />
+      >
+        <Input.Container>
+          <Input.LeadingIcon><SearchIcon /></Input.LeadingIcon>
+          <Input.Field placeholder="PNR or surname" />
+          <Input.Suffix>
+            <kbd
+              style={{
+                fontSize: '0.75rem',
+                padding: '0 4px',
+                border: '1px solid currentColor',
+                borderRadius: 4,
+              }}
+            >
+              /
+            </kbd>
+          </Input.Suffix>
+          <Input.ClearButton />
+        </Input.Container>
+      </Input>
     </div>
   );
 }`;
@@ -42,26 +46,27 @@ function InputTemplateDemo() {
 
   return (
     <div style={{ display: 'grid', gap: 16, width: 'min(100%, 28rem)' }}>
-      <Input
-        aria-label="Search reservations"
-        icon={<SearchIcon />}
-        placeholder="PNR or surname"
-        value={query}
-        onChange={event => setQuery(event.target.value)}
-        clearable
-        suffix={
-          <kbd
-            style={{
-              fontSize: '0.75rem',
-              padding: '0 4px',
-              border: '1px solid currentColor',
-              borderRadius: 4,
-            }}
-          >
-            /
-          </kbd>
-        }
-      />
+      <Input aria-label="Search reservations" value={query} onChange={event => setQuery(event.target.value)} clearable>
+        <Input.Container>
+          <Input.LeadingIcon>
+            <SearchIcon />
+          </Input.LeadingIcon>
+          <Input.Field placeholder="PNR or surname" />
+          <Input.Suffix>
+            <kbd
+              style={{
+                fontSize: '0.75rem',
+                padding: '0 4px',
+                border: '1px solid currentColor',
+                borderRadius: 4,
+              }}
+            >
+              /
+            </kbd>
+          </Input.Suffix>
+          <Input.ClearButton />
+        </Input.Container>
+      </Input>
     </div>
   );
 }

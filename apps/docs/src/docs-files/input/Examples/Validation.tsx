@@ -20,16 +20,19 @@ export function InputValidationDemo() {
   return (
     <div style={{ display: 'grid', gap: 16, width: 'min(100%, 28rem)' }}>
       <Input
-        label="Email"
         type="email"
-        icon={<MailIcon />}
-        description="We use this to send your itinerary."
         invalid={invalid}
-        error="Enter a valid email address."
         value={email}
         onChange={(event) => setEmail(event.target.value)}
-        onBlur={() => setTouched(true)}
-      />
+      >
+        <Input.Label>Email</Input.Label>
+        <Input.Container>
+          <Input.LeadingIcon><MailIcon /></Input.LeadingIcon>
+          <Input.Field onBlur={() => setTouched(true)} />
+        </Input.Container>
+        <Input.Description>We use this to send your itinerary.</Input.Description>
+        <Input.ErrorMessage>Enter a valid email address.</Input.ErrorMessage>
+      </Input>
     </div>
   );
 }`;
@@ -45,17 +48,17 @@ function InputValidationDemo() {
 
   return (
     <div style={{ display: 'grid', gap: 16, width: 'min(100%, 28rem)' }}>
-      <Input
-        label="Email"
-        type="email"
-        icon={<MailIcon />}
-        description="We use this to send your itinerary."
-        invalid={invalid}
-        error="Enter a valid email address."
-        value={email}
-        onChange={event => setEmail(event.target.value)}
-        onBlur={() => setTouched(true)}
-      />
+      <Input type="email" invalid={invalid} value={email} onChange={event => setEmail(event.target.value)}>
+        <Input.Label>Email</Input.Label>
+        <Input.Container>
+          <Input.LeadingIcon>
+            <MailIcon />
+          </Input.LeadingIcon>
+          <Input.Field onBlur={() => setTouched(true)} />
+        </Input.Container>
+        <Input.Description>We use this to send your itinerary.</Input.Description>
+        <Input.ErrorMessage>Enter a valid email address.</Input.ErrorMessage>
+      </Input>
     </div>
   );
 }

@@ -7,11 +7,7 @@ import Mode from './Examples/Mode';
 import Size from './Examples/Size';
 import Template from './Examples/Template';
 import Type from './Examples/Type';
-import {
-  Accordion,
-  AccordionItem,
-  ReactSparDemoRoot,
-} from '../../components/ReactSparDocs';
+import { Accordion, ReactSparDemoRoot } from '../../components/ReactSparDocs';
 
 ## Playground
 
@@ -19,6 +15,10 @@ The React wrapper keeps Takeoff's visual contract while delegating toggle state,
 ARIA wiring, and keyboard navigation to the underlying Spar Accordion primitive.
 The visible header surface is rendered through a div-backed trigger so grouped
 and divided header styling stays aligned with the original Takeoff UI markup.
+
+Accordion is a compound component. Compose each panel from `Accordion.Item`,
+`Accordion.Header`, `Accordion.Title`, and `Accordion.Content`. `Accordion.Icon`
+and `Accordion.Arrow` are optional header parts.
 
 Keyboard navigation follows the
 [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/)
@@ -30,22 +30,30 @@ first and last header, and `Enter` / `Space` toggle the focused panel.
   const [activeIndex, setActiveIndex] = React.useState(0);
 
 return ( <div style={{ width: '100%', maxWidth: 640, margin: '0 auto' }}>
+
 <Accordion activeIndex={activeIndex} onActiveIndexChange={(index) =>
-setActiveIndex(index)} > <AccordionItem header="Flight details"> View your
-departure and arrival times, seat assignments, and terminal information.
-</AccordionItem> <AccordionItem header="Baggage allowance"> Check your included
-baggage weight and dimensions for carry-on and checked luggage. </AccordionItem>
-<AccordionItem header="Check-in options"> Online check-in opens 24 hours before
-departure. You can also check in at the airport counter. </AccordionItem>
-</Accordion> </div> ); }`} previewMinHeight={220}
-previewWrapper={ReactSparDemoRoot} scope={{ Accordion, AccordionItem }} />
+setActiveIndex(index)} > <Accordion.Item> <Accordion.Header>
+<Accordion.Title>Flight details</Accordion.Title> <Accordion.Arrow />
+</Accordion.Header> <Accordion.Content> View your departure and arrival times,
+seat assignments, and terminal information. </Accordion.Content>
+</Accordion.Item> <Accordion.Item> <Accordion.Header>
+<Accordion.Title>Baggage allowance</Accordion.Title> <Accordion.Arrow />
+</Accordion.Header> <Accordion.Content> Check your included baggage weight and
+dimensions for carry-on and checked luggage. </Accordion.Content>
+</Accordion.Item> <Accordion.Item> <Accordion.Header>
+<Accordion.Title>Check-in options</Accordion.Title> <Accordion.Arrow />
+</Accordion.Header> <Accordion.Content> Online check-in opens 24 hours before
+departure. You can also check in at the airport counter. </Accordion.Content>
+</Accordion.Item> </Accordion> </div> ); }`} previewMinHeight={220}
+previewWrapper={ReactSparDemoRoot} scope={{ Accordion }} />
 
 ## Template
 
 Accordion is template-friendly at the content layer and reasonably flexible at
-the header layer because `header` is `ReactNode` and panel bodies accept
-arbitrary children. The trigger shell, arrow placement, and item anatomy remain
-product-owned.
+the header layer — `Accordion.Title` accepts any `ReactNode`, `Accordion.Icon`
+renders a leading glyph (string values render as Material Symbols), and
+`Accordion.Content` accepts arbitrary children. The trigger shell and item
+anatomy remain product-owned.
 
 <Template />
 
@@ -79,21 +87,24 @@ via `onActiveIndexChange`.
 
 ## Size
 
-The `size` prop on `AccordionItem` adjusts header typography, padding, and
+The `size` prop on `Accordion.Item` adjusts header typography, padding, and
 spacing.
 
 <Size />
 
 ## Arrow Position
 
-`arrowPosition` moves the expand/collapse chevron to the left or right side of
-the header.
+`Accordion.Arrow` placement inside `Accordion.Header` determines which side the
+expand/collapse chevron appears on. Render it after `Accordion.Title` for the
+default right-aligned chevron, or before `Accordion.Title` to place it on the
+left. Omit `Accordion.Arrow` entirely to hide the chevron.
 
 <ArrowPosition />
 
 ## Custom Expand / Collapse Icons
 
-Override the default chevrons with `expandIcon` and `collapseIcon` on the
-`Accordion` container.
+Override the default chevrons with the `expandIcon` and `collapseIcon` props on
+`Accordion.Arrow`, or pass a render-prop child that receives the resolved
+`isOpen` state for fully custom arrow content.
 
 <CustomIcons />

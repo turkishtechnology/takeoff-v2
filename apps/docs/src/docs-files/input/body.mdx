@@ -11,11 +11,14 @@ import { MailIcon } from '../../components/PlaceholderIcons';
 
 ## Playground
 
-The React wrapper keeps the Takeoff Input product surface centered on `label`,
-`description`, `error`, `invalid`, `icon`, `prefix`, `suffix`, `clearable`,
-`loading`, and the native `type` + `size` props. ARIA relationships between
-label, description, error, and the native input are owned by the Spar Input
-primitive — the wrapper never recreates them.
+The React wrapper exposes Input as a compound component. State props such as
+`type`, `size`, `disabled`, `readOnly`, `required`, `invalid`, `clearable`,
+`loading`, `value`, `defaultValue`, and `onChange` live on the `<Input>` root.
+Every visual slot — label, asterisk, container, field, leading/trailing icons,
+prefix/suffix, clear button, spinner, description, and error message — is a
+dedicated subcomponent. ARIA relationships between label, description, error,
+and the native input are owned by the Spar Input primitive — the wrapper never
+recreates them.
 
 The Stencil modes `password`, `counter`, `chips`, and Cleave.js-based `mask` are
 intentionally out of scope for this wrapper. Those will ship as separate
@@ -27,54 +30,62 @@ primitives are available.
   const [value, setValue] = React.useState('');
 
 return ( <div style={{ display: 'grid', gap: 12, width: 'min(100%, 26rem)' }}>
-<Input label="Email" type="email" description="We use this to send your
-itinerary." icon={<MailIcon />} value={value} onChange={(event) =>
-setValue(event.target.value)} clearable /> </div> ); }`} previewMinHeight={180}
+
+<Input type="email" value={value} onChange={(event) =>
+setValue(event.target.value)} clearable> <Input.Label>Email</Input.Label>
+<Input.Container> <Input.LeadingIcon><MailIcon /></Input.LeadingIcon>
+<Input.Field /> <Input.ClearButton /> </Input.Container>
+<Input.Description>We use this to send your itinerary.</Input.Description>
+</Input> </div> ); }`} previewMinHeight={180}
 previewWrapper={ReactSparDemoRoot} scope={{ Input, MailIcon }} />
 
 ## Template
 
-Input is built for form-field composition. The canonical slots — `root`,
-`label`, `asterisk`, `container`, `field`, `leading-icon`, `trailing-icon`,
-`prefix`, `suffix`, `clear-button`, `clear-icon`, `spinner`, `description`,
-`error-message` — stay stable so product styling hooks keep working across
-variants.
+Input is built for form-field composition. The canonical subcomponents —
+`Input.Label`, `Input.Asterisk`, `Input.Container`, `Input.Field`,
+`Input.LeadingIcon`, `Input.TrailingIcon`, `Input.Prefix`, `Input.Suffix`,
+`Input.ClearButton`, `Input.Spinner`, `Input.Description`, and
+`Input.ErrorMessage` — map 1:1 to the `data-slot` anatomy, keeping product
+styling hooks stable across variants.
 
-The `clearable` surface keeps the `<button>` structural owner; consumers can
-only override the icon content via `renderClearIcon`. Use `suffix` for inline
-nodes such as keyboard hints — it composes with `clearable` without breaking the
-trailing slot order.
+`Input.ClearButton` keeps the `<button>` structural owner and only renders when
+`clearable` is set on the root and the field has a value. Pass custom children
+to replace the default icon content. `Input.Suffix` renders inline nodes such as
+keyboard hints and composes with the clear button without breaking the trailing
+slot order.
 
 <Template />
 
 ## Basic Usage
 
-Use `label`, `description`, and `required` together for the common product
-field. The wrapper handles the visible asterisk when `required` is set and a
-label is present.
+Compose `Input.Label` with `Input.Asterisk` and add `Input.Description` below
+the container for the common product field. Setting `required` on the root makes
+`Input.Asterisk` render; it stays hidden otherwise.
 
 <Basic />
 
 ## Validation
 
-`invalid` flips the field into the error state and shows the `error` message
-with `role="alert"`. The description slot is hidden while an error is announced
-so screen readers do not read both.
+`invalid` on the root flips the field into the error state. `Input.ErrorMessage`
+renders with `role="alert"` while `invalid` is `true`, and `Input.Description`
+is suppressed at the same time so screen readers do not read both.
 
 <Validation />
 
 ## Adornments
 
-Use `icon` + `iconPosition` for the shared icon contract, or `leadingIcon` /
-`trailingIcon` for explicit slot control. `prefix` and `suffix` render inline
-text or nodes before and after the field.
+Use `Input.LeadingIcon` or `Input.TrailingIcon` for inline icon slots. Both
+accept a React node or a Material Symbols ligature string. `Input.Prefix` and
+`Input.Suffix` render inline text or nodes before and after `Input.Field`. Place
+`Input.Spinner` inside the container to show a loading indicator when `loading`
+is set; it yields automatically when `Input.ClearButton` is active.
 
 <Adornments />
 
 ## States
 
-`disabled` and `readOnly` carry the native HTML semantics. `size` selects the
-dimension track from the shared token recipe. Size is also exposed on the root
-as `data-size` for product styling.
+`disabled` and `readOnly` on the root carry the native HTML semantics. `size`
+selects the dimension track from the shared token recipe and is exposed on the
+root and container as `data-size` for product styling.
 
 <States />

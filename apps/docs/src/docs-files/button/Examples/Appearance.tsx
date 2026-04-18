@@ -40,10 +40,10 @@ const code = `export function TypeDemo() {
       <div style={{ display: 'grid', gap: 12, width: '100%', justifyItems: 'center' }}>
         <p style={sectionLabelStyle}>Type</p>
         <div style={rowStyle}>
-          <Button type="filled">Filled</Button>
-          <Button type="outlined">Outlined</Button>
-          <Button type="text">Text</Button>
-          <Button type="elevated">Elevated</Button>
+          <Button type="filled"><Button.Label>Filled</Button.Label></Button>
+          <Button type="outlined"><Button.Label>Outlined</Button.Label></Button>
+          <Button type="text"><Button.Label>Text</Button.Label></Button>
+          <Button type="elevated"><Button.Label>Elevated</Button.Label></Button>
         </div>
       </div>
 
@@ -52,10 +52,10 @@ const code = `export function TypeDemo() {
       <div style={{ display: 'grid', gap: 12, width: '100%', justifyItems: 'center' }}>
         <p style={sectionLabelStyle}>With variant</p>
         <div style={rowStyle}>
-          <Button type="filled" variant="secondary">Filled secondary</Button>
-          <Button type="outlined" variant="secondary">Outlined secondary</Button>
-          <Button type="text" variant="neutral">Text neutral</Button>
-          <Button type="elevated" variant="warning">Elevated warning</Button>
+          <Button type="filled" variant="secondary"><Button.Label>Filled secondary</Button.Label></Button>
+          <Button type="outlined" variant="secondary"><Button.Label>Outlined secondary</Button.Label></Button>
+          <Button type="text" variant="neutral"><Button.Label>Text neutral</Button.Label></Button>
+          <Button type="elevated" variant="warning"><Button.Label>Elevated warning</Button.Label></Button>
         </div>
       </div>
     </div>
@@ -68,10 +68,18 @@ function TypeDemo() {
       <div style={{ display: 'grid', gap: 12, width: '100%', justifyItems: 'center' }}>
         <p style={sectionLabelStyle}>Type</p>
         <div style={rowStyle}>
-          <Button type="filled">Filled</Button>
-          <Button type="outlined">Outlined</Button>
-          <Button type="text">Text</Button>
-          <Button type="elevated">Elevated</Button>
+          <Button type="filled">
+            <Button.Label>Filled</Button.Label>
+          </Button>
+          <Button type="outlined">
+            <Button.Label>Outlined</Button.Label>
+          </Button>
+          <Button type="text">
+            <Button.Label>Text</Button.Label>
+          </Button>
+          <Button type="elevated">
+            <Button.Label>Elevated</Button.Label>
+          </Button>
         </div>
       </div>
 
@@ -81,16 +89,16 @@ function TypeDemo() {
         <p style={sectionLabelStyle}>With variant</p>
         <div style={rowStyle}>
           <Button type="filled" variant="secondary">
-            Filled secondary
+            <Button.Label>Filled secondary</Button.Label>
           </Button>
           <Button type="outlined" variant="secondary">
-            Outlined secondary
+            <Button.Label>Outlined secondary</Button.Label>
           </Button>
           <Button type="text" variant="neutral">
-            Text neutral
+            <Button.Label>Text neutral</Button.Label>
           </Button>
           <Button type="elevated" variant="warning">
-            Elevated warning
+            <Button.Label>Elevated warning</Button.Label>
           </Button>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { createComponentBase } from '../../base/createComponentBase';
 import type { SlotClassNames } from '../../types';
+import { createSafeContext } from '../../utils/createSafeContext';
 
 import type { DialogProps } from './types';
 
@@ -45,9 +46,6 @@ export const DialogBase = createComponentBase<DialogProps, DialogSlot>({
     visible: undefined,
     defaultVisible: false,
     headerType: 'basic',
-    showCloseButton: true,
-    showHeader: true,
-    showVariantSign: true,
     variant: 'info',
     hideBackdrop: false,
     maskVariant: 'base',
@@ -57,3 +55,18 @@ export const DialogBase = createComponentBase<DialogProps, DialogSlot>({
     portalContainer: undefined,
   },
 });
+
+export interface DialogContextValue {
+  visible: boolean;
+  variant: NonNullable<DialogProps['variant']>;
+  headerType: NonNullable<DialogProps['headerType']>;
+  maskVariant: NonNullable<DialogProps['maskVariant']>;
+  hideBackdrop: boolean;
+  isMaskBlur: boolean;
+  portalContainer: HTMLElement | null;
+  requestClose: () => void;
+  classNames: DialogProps['classNames'];
+  slotProps: DialogProps['slotProps'];
+}
+
+export const [DialogProvider, useDialogContext] = createSafeContext<DialogContextValue>('Dialog');

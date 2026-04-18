@@ -8,14 +8,20 @@ const code = `export function BasicInputDemo() {
   return (
     <div style={{ display: 'grid', gap: 16, width: 'min(100%, 28rem)' }}>
       <Input
-        label="Full name"
         required
-        placeholder="Ada Lovelace"
-        description="Written exactly as it appears on your passport."
         value={value}
         onChange={(event) => setValue(event.target.value)}
         clearable
-      />
+      >
+        <Input.Label>
+          Full name <Input.Asterisk />
+        </Input.Label>
+        <Input.Container>
+          <Input.Field placeholder="Ada Lovelace" />
+          <Input.ClearButton />
+        </Input.Container>
+        <Input.Description>Written exactly as it appears on your passport.</Input.Description>
+      </Input>
     </div>
   );
 }`;
@@ -25,15 +31,16 @@ function BasicInputDemo() {
 
   return (
     <div style={{ display: 'grid', gap: 16, width: 'min(100%, 28rem)' }}>
-      <Input
-        label="Full name"
-        required
-        placeholder="Ada Lovelace"
-        description="Written exactly as it appears on your passport."
-        value={value}
-        onChange={event => setValue(event.target.value)}
-        clearable
-      />
+      <Input required value={value} onChange={event => setValue(event.target.value)} clearable>
+        <Input.Label>
+          Full name <Input.Asterisk />
+        </Input.Label>
+        <Input.Container>
+          <Input.Field placeholder="Ada Lovelace" />
+          <Input.ClearButton />
+        </Input.Container>
+        <Input.Description>Written exactly as it appears on your passport.</Input.Description>
+      </Input>
     </div>
   );
 }

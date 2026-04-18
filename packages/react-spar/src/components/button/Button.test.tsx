@@ -23,37 +23,47 @@ vi.mock('@turkish-technology/spar', () => {
   return { Button: MockButton };
 });
 
-describe('Button', () => {
+describe('Button (compound)', () => {
   describe('rendering', () => {
-    it('should render a button element by default', () => {
-      render(<Button>Click me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toBeInTheDocument();
+    it('renders a button element by default', () => {
+      render(
+        <Button>
+          <Button.Label>Click me</Button.Label>
+        </Button>,
+      );
+      expect(screen.getByRole('button')).toBeInTheDocument();
     });
 
-    it('should apply tk-button root class', () => {
-      render(<Button>Click me</Button>);
+    it('applies tk-button root class and data-slot', () => {
+      render(
+        <Button>
+          <Button.Label>Click me</Button.Label>
+        </Button>,
+      );
       const button = screen.getByRole('button');
       expect(button.className).toContain('tk-button');
-    });
-
-    it('should set data-slot="root" on root element', () => {
-      render(<Button>Click me</Button>);
-      const button = screen.getByRole('button');
       expect(button).toHaveAttribute('data-slot', 'root');
     });
 
-    it('should merge custom className with root class', () => {
-      render(<Button className="my-custom">Click me</Button>);
+    it('merges custom className with root class', () => {
+      render(
+        <Button className="my-custom">
+          <Button.Label>Click me</Button.Label>
+        </Button>,
+      );
       const button = screen.getByRole('button');
       expect(button.className).toContain('tk-button');
       expect(button.className).toContain('my-custom');
     });
   });
 
-  describe('default props', () => {
-    it('should apply default data attributes', () => {
-      render(<Button>Click me</Button>);
+  describe('default data attributes', () => {
+    it('applies default data attributes', () => {
+      render(
+        <Button>
+          <Button.Label>Click me</Button.Label>
+        </Button>,
+      );
       const button = screen.getByRole('button');
       expect(button).toHaveAttribute('data-variant', 'primary');
       expect(button).toHaveAttribute('data-size', 'base');
@@ -61,41 +71,45 @@ describe('Button', () => {
       expect(button).toHaveAttribute('data-mode', 'button');
     });
 
-    it('should not set boolean data attributes when false', () => {
-      render(<Button>Click me</Button>);
+    it('omits boolean data attributes when false', () => {
+      render(
+        <Button>
+          <Button.Label>Click me</Button.Label>
+        </Button>,
+      );
       const button = screen.getByRole('button');
       expect(button).not.toHaveAttribute('data-disabled');
       expect(button).not.toHaveAttribute('data-loading');
       expect(button).not.toHaveAttribute('data-full-width');
       expect(button).not.toHaveAttribute('data-underline');
+      expect(button).not.toHaveAttribute('data-icon-only');
     });
   });
 
-  describe('label slot', () => {
-    it('should render children in a label span with data-slot="label"', () => {
-      render(<Button>Hello</Button>);
+  describe('Button.Label', () => {
+    it('renders inside a span with canonical slot markers', () => {
+      render(
+        <Button>
+          <Button.Label>Hello</Button.Label>
+        </Button>,
+      );
       const label = screen.getByText('Hello');
       expect(label.tagName).toBe('SPAN');
       expect(label).toHaveAttribute('data-slot', 'label');
       expect(label.className).toContain('tk-button-label');
     });
-
-    it('should render label prop when no children', () => {
-      render(<Button label="From label" />);
-      const label = screen.getByText('From label');
-      expect(label).toHaveAttribute('data-slot', 'label');
-    });
-
-    it('should prefer children over label prop', () => {
-      render(<Button label="label text">children text</Button>);
-      expect(screen.getByText('children text')).toBeInTheDocument();
-      expect(screen.queryByText('label text')).not.toBeInTheDocument();
-    });
   });
 
-  describe('icon slots', () => {
-    it('should render leading icon with correct slot and classes', () => {
-      render(<Button leadingIcon={<span data-testid="lead-icon">L</span>}>Text</Button>);
+  describe('Button.LeadingIcon / TrailingIcon', () => {
+    it('renders leading icon with canonical slot and class markers', () => {
+      render(
+        <Button>
+          <Button.LeadingIcon>
+            <span data-testid="lead-icon">L</span>
+          </Button.LeadingIcon>
+          <Button.Label>Text</Button.Label>
+        </Button>,
+      );
       const iconSlot = screen.getByTestId('lead-icon').parentElement!;
       expect(iconSlot).toHaveAttribute('data-slot', 'leading-icon');
       expect(iconSlot).toHaveAttribute('aria-hidden', 'true');
@@ -103,108 +117,109 @@ describe('Button', () => {
       expect(iconSlot.className).toContain('tk-button-leading-icon');
     });
 
-    it('should render trailing icon with correct slot and classes', () => {
-      render(<Button trailingIcon={<span data-testid="trail-icon">T</span>}>Text</Button>);
+    it('renders trailing icon with canonical slot and class markers', () => {
+      render(
+        <Button>
+          <Button.Label>Text</Button.Label>
+          <Button.TrailingIcon>
+            <span data-testid="trail-icon">T</span>
+          </Button.TrailingIcon>
+        </Button>,
+      );
       const iconSlot = screen.getByTestId('trail-icon').parentElement!;
       expect(iconSlot).toHaveAttribute('data-slot', 'trailing-icon');
       expect(iconSlot.className).toContain('tk-button-icon');
       expect(iconSlot.className).toContain('tk-button-trailing-icon');
     });
 
-    it('should render string icon as Material Symbol span', () => {
-      render(<Button icon="home">Text</Button>);
+    it('renders string icons as Material Symbol spans', () => {
+      render(
+        <Button>
+          <Button.LeadingIcon>home</Button.LeadingIcon>
+          <Button.Label>Text</Button.Label>
+        </Button>,
+      );
       const symbolSpan = screen.getByText('home');
       expect(symbolSpan).toHaveAttribute('data-icon-kind', 'symbol');
       expect(symbolSpan.className).toContain('tk-button-icon-symbol');
     });
-
-    it('should place icon based on iconPosition prop', () => {
-      const { container } = render(
-        <Button icon="home" iconPosition="right">
-          Text
-        </Button>,
-      );
-      const trailingSlot = container.querySelector('[data-slot="trailing-icon"]');
-      expect(trailingSlot).toBeInTheDocument();
-    });
-
-    it('should default icon to leading position', () => {
-      const { container } = render(<Button icon="home">Text</Button>);
-      const leadingSlot = container.querySelector('[data-slot="leading-icon"]');
-      expect(leadingSlot).toBeInTheDocument();
-    });
   });
 
   describe('disabled state', () => {
-    it('should set data-disabled on root when disabled', () => {
-      render(<Button disabled>Click me</Button>);
+    it('sets data-disabled on root when disabled', () => {
+      render(
+        <Button disabled>
+          <Button.Label>Click me</Button.Label>
+        </Button>,
+      );
       const button = screen.getByRole('button');
       expect(button).toHaveAttribute('data-disabled', '');
     });
   });
 
   describe('loading state', () => {
-    it('should set data-loading on root when loading', () => {
-      render(<Button loading>Click me</Button>);
+    it('sets data-loading and aria-busy on root when loading', () => {
+      render(
+        <Button loading>
+          <Button.Label>Click me</Button.Label>
+        </Button>,
+      );
       const button = screen.getByRole('button');
       expect(button).toHaveAttribute('data-loading', '');
-    });
-
-    it('should set aria-busy when loading', () => {
-      render(<Button loading>Click me</Button>);
-      const button = screen.getByRole('button');
       expect(button).toHaveAttribute('aria-busy', 'true');
     });
 
-    it('should render spinner slot when loading', () => {
-      const { container } = render(
-        <Button loading spinner={<span data-testid="custom-spinner" />}>
-          Text
+    it('renders Button.Spinner only when loading', () => {
+      const { container, rerender } = render(
+        <Button>
+          <Button.Spinner />
+          <Button.Label>Text</Button.Label>
+        </Button>,
+      );
+      expect(container.querySelector('[data-slot="spinner"]')).toBeNull();
+
+      rerender(
+        <Button loading>
+          <Button.Spinner />
+          <Button.Label>Text</Button.Label>
         </Button>,
       );
       const spinnerSlot = container.querySelector('[data-slot="spinner"]');
       expect(spinnerSlot).toBeInTheDocument();
       expect(spinnerSlot!.className).toContain('tk-button-spinner');
-      expect(screen.getByTestId('custom-spinner')).toBeInTheDocument();
     });
 
-    it('should render default spinner indicator when no spinner prop is provided', () => {
-      const { container } = render(<Button loading>Text</Button>);
-      const spinnerSlot = container.querySelector('[data-slot="spinner"]');
-      expect(spinnerSlot).toBeInTheDocument();
+    it('renders a default spinner indicator when Button.Spinner has no children', () => {
+      const { container } = render(
+        <Button loading>
+          <Button.Spinner />
+          <Button.Label>Text</Button.Label>
+        </Button>,
+      );
       const defaultIndicator = container.querySelector('[data-slot="spinner-indicator"]');
       expect(defaultIndicator).toBeInTheDocument();
       expect(defaultIndicator!.className).toContain('tk-button-default-spinner');
     });
 
-    it('should pass default spinner node to renderSpinner override', () => {
-      const renderSpinner = vi.fn(node => <div data-testid="wrapped">{node}</div>);
+    it('renders custom spinner content when provided as children', () => {
       const { container } = render(
-        <Button loading renderSpinner={renderSpinner}>
-          Text
+        <Button loading>
+          <Button.Spinner>
+            <span data-testid="custom-spinner" />
+          </Button.Spinner>
+          <Button.Label>Text</Button.Label>
         </Button>,
       );
-      expect(renderSpinner).toHaveBeenCalled();
-      const arg = renderSpinner.mock.calls[0][0];
-      expect(arg).toBeTruthy();
-      expect(screen.getByTestId('wrapped')).toBeInTheDocument();
-      const defaultIndicator = container.querySelector('[data-slot="spinner-indicator"]');
-      expect(defaultIndicator).toBeInTheDocument();
-    });
-
-    it('should not render empty spinner slot when loading without spinner prop', () => {
-      const { container } = render(<Button loading>Text</Button>);
-      const spinnerSlot = container.querySelector('[data-slot="spinner"]');
-      expect(spinnerSlot).toBeInTheDocument();
-      expect(spinnerSlot!.childNodes.length).toBeGreaterThan(0);
+      expect(screen.getByTestId('custom-spinner')).toBeInTheDocument();
+      expect(container.querySelector('[data-slot="spinner-indicator"]')).toBeNull();
     });
   });
 
   describe('link mode', () => {
-    it('should render as anchor when mode="link"', () => {
+    it('renders as anchor when mode="link"', () => {
       render(
         <Button mode="link" href="/test">
-          Link
+          <Button.Label>Link</Button.Label>
         </Button>,
       );
       const link = screen.getByRole('link');
@@ -212,46 +227,46 @@ describe('Button', () => {
       expect(link).toHaveAttribute('href', '/test');
     });
 
-    it('should render as anchor when as="a"', () => {
+    it('renders as anchor when as="a"', () => {
       render(
         <Button as="a" href="/test">
-          Link
+          <Button.Label>Link</Button.Label>
         </Button>,
       );
-      const link = screen.getByRole('link');
-      expect(link.tagName).toBe('A');
+      expect(screen.getByRole('link').tagName).toBe('A');
     });
 
-    it('should render as anchor when href is provided', () => {
-      render(<Button href="/test">Link</Button>);
-      const link = screen.getByRole('link');
-      expect(link.tagName).toBe('A');
+    it('renders as anchor when href is provided', () => {
+      render(
+        <Button href="/test">
+          <Button.Label>Link</Button.Label>
+        </Button>,
+      );
+      expect(screen.getByRole('link').tagName).toBe('A');
     });
 
-    it('should not set data-type for link mode', () => {
+    it('does not set data-type in link mode', () => {
       render(
         <Button mode="link" href="/test">
-          Link
+          <Button.Label>Link</Button.Label>
         </Button>,
       );
-      const link = screen.getByRole('link');
-      expect(link).not.toHaveAttribute('data-type');
+      expect(screen.getByRole('link')).not.toHaveAttribute('data-type');
     });
 
-    it('should add rel="noopener noreferrer" for target="_blank"', () => {
+    it('applies rel="noopener noreferrer" for target="_blank"', () => {
       render(
         <Button mode="link" href="/test" target="_blank">
-          Link
+          <Button.Label>Link</Button.Label>
         </Button>,
       );
-      const link = screen.getByRole('link');
-      expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+      expect(screen.getByRole('link')).toHaveAttribute('rel', 'noopener noreferrer');
     });
 
-    it('should set aria-disabled on disabled link', () => {
+    it('marks a disabled link with aria-disabled and strips href', () => {
       const { container } = render(
         <Button mode="link" href="/test" disabled>
-          Link
+          <Button.Label>Link</Button.Label>
         </Button>,
       );
       const link = container.querySelector('a')!;
@@ -259,11 +274,11 @@ describe('Button', () => {
       expect(link).not.toHaveAttribute('href');
     });
 
-    it('should prevent click on disabled link', async () => {
+    it('blocks click on disabled link', async () => {
       const onClick = vi.fn();
       const { container } = render(
         <Button mode="link" href="/test" disabled onClick={onClick}>
-          Link
+          <Button.Label>Link</Button.Label>
         </Button>,
       );
       const link = container.querySelector('a')!;
@@ -273,121 +288,184 @@ describe('Button', () => {
   });
 
   describe('variant data attributes', () => {
-    it('should set data-variant', () => {
-      render(<Button variant="danger">Delete</Button>);
+    it('sets data-variant', () => {
+      render(
+        <Button variant="danger">
+          <Button.Label>Delete</Button.Label>
+        </Button>,
+      );
       expect(screen.getByRole('button')).toHaveAttribute('data-variant', 'danger');
     });
 
-    it('should set data-size', () => {
-      render(<Button size="large">Big</Button>);
+    it('sets data-size', () => {
+      render(
+        <Button size="large">
+          <Button.Label>Big</Button.Label>
+        </Button>,
+      );
       expect(screen.getByRole('button')).toHaveAttribute('data-size', 'large');
     });
 
-    it('should set data-type', () => {
-      render(<Button type="outlined">Outlined</Button>);
+    it('sets data-type', () => {
+      render(
+        <Button type="outlined">
+          <Button.Label>Outlined</Button.Label>
+        </Button>,
+      );
       expect(screen.getByRole('button')).toHaveAttribute('data-type', 'outlined');
     });
 
-    it('should set data-full-width when fullWidth', () => {
-      render(<Button fullWidth>Full</Button>);
+    it('sets data-full-width when fullWidth', () => {
+      render(
+        <Button fullWidth>
+          <Button.Label>Full</Button.Label>
+        </Button>,
+      );
       expect(screen.getByRole('button')).toHaveAttribute('data-full-width', '');
     });
 
-    it('should set data-underline when underline', () => {
-      render(<Button underline>Underlined</Button>);
+    it('sets data-underline when underline', () => {
+      render(
+        <Button underline>
+          <Button.Label>Underlined</Button.Label>
+        </Button>,
+      );
       expect(screen.getByRole('button')).toHaveAttribute('data-underline', '');
     });
   });
 
   describe('icon-only mode', () => {
-    it('should set data-icon-only when no label and icon present', () => {
-      render(<Button icon="home" />);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-icon-only', '');
+    it('sets data-icon-only when iconOnly prop is true', () => {
+      render(
+        <Button iconOnly aria-label="Home">
+          <Button.LeadingIcon>home</Button.LeadingIcon>
+        </Button>,
+      );
+      expect(screen.getByRole('button')).toHaveAttribute('data-icon-only', '');
     });
 
-    it('should set data-rounded when icon-only and rounded', () => {
-      render(<Button icon="home" rounded />);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-rounded', '');
+    it('sets data-rounded when iconOnly and rounded', () => {
+      render(
+        <Button iconOnly rounded aria-label="Home">
+          <Button.LeadingIcon>home</Button.LeadingIcon>
+        </Button>,
+      );
+      expect(screen.getByRole('button')).toHaveAttribute('data-rounded', '');
     });
 
-    it('should not set data-icon-only when label present', () => {
-      render(<Button icon="home">Text</Button>);
-      const button = screen.getByRole('button');
-      expect(button).not.toHaveAttribute('data-icon-only');
+    it('does not apply data-rounded when iconOnly is false', () => {
+      render(
+        <Button rounded>
+          <Button.Label>Text</Button.Label>
+        </Button>,
+      );
+      expect(screen.getByRole('button')).not.toHaveAttribute('data-rounded');
     });
   });
 
   describe('form attributes', () => {
-    it('should pass native button type for submit mode', () => {
-      render(<Button mode="submit">Submit</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('type', 'submit');
+    it('sets native submit type for mode="submit"', () => {
+      render(
+        <Button mode="submit">
+          <Button.Label>Submit</Button.Label>
+        </Button>,
+      );
+      expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
     });
 
-    it('should pass native button type for reset mode', () => {
-      render(<Button mode="reset">Reset</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('type', 'reset');
+    it('sets native reset type for mode="reset"', () => {
+      render(
+        <Button mode="reset">
+          <Button.Label>Reset</Button.Label>
+        </Button>,
+      );
+      expect(screen.getByRole('button')).toHaveAttribute('type', 'reset');
     });
   });
 
   describe('accessibility', () => {
-    it('should have no a11y violations for default button', async () => {
-      const { container } = render(<Button>Click me</Button>);
-      const results = await axe(container);
-      expect(results).toHaveNoViolations();
-    });
-
-    it('should have no a11y violations for link mode', async () => {
+    it('has no a11y violations for default button', async () => {
       const { container } = render(
-        <Button mode="link" href="/test">
-          Link
+        <Button>
+          <Button.Label>Click me</Button.Label>
         </Button>,
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
-    it('should have no a11y violations for icon-only button with aria-label', async () => {
-      const { container } = render(<Button icon="home" aria-label="Home" />);
+    it('has no a11y violations for link mode', async () => {
+      const { container } = render(
+        <Button mode="link" href="/test">
+          <Button.Label>Link</Button.Label>
+        </Button>,
+      );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
-    it('should have no a11y violations when loading', async () => {
-      const { container } = render(<Button loading>Loading</Button>);
+    it('has no a11y violations for icon-only button with aria-label', async () => {
+      const { container } = render(
+        <Button iconOnly aria-label="Home">
+          <Button.LeadingIcon>home</Button.LeadingIcon>
+        </Button>,
+      );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
-    it('should have no a11y violations when disabled', async () => {
-      const { container } = render(<Button disabled>Disabled</Button>);
+    it('has no a11y violations when loading', async () => {
+      const { container } = render(
+        <Button loading>
+          <Button.Spinner />
+          <Button.Label>Loading</Button.Label>
+        </Button>,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+
+    it('has no a11y violations when disabled', async () => {
+      const { container } = render(
+        <Button disabled>
+          <Button.Label>Disabled</Button.Label>
+        </Button>,
+      );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
   });
 
   describe('classNames prop', () => {
-    it('should merge instance classNames.root with root class', () => {
-      render(<Button classNames={{ root: 'custom-root' }}>Click me</Button>);
+    it('merges instance classNames.root with root class', () => {
+      render(
+        <Button classNames={{ root: 'custom-root' }}>
+          <Button.Label>Click me</Button.Label>
+        </Button>,
+      );
       const button = screen.getByRole('button');
       expect(button.className).toContain('tk-button');
       expect(button.className).toContain('custom-root');
     });
 
-    it('should merge instance classNames.label with label class', () => {
-      render(<Button classNames={{ label: 'custom-label' }}>Click me</Button>);
+    it('merges instance classNames.label with label class', () => {
+      render(
+        <Button classNames={{ label: 'custom-label' }}>
+          <Button.Label>Click me</Button.Label>
+        </Button>,
+      );
       const label = screen.getByText('Click me');
       expect(label.className).toContain('tk-button-label');
       expect(label.className).toContain('custom-label');
     });
 
-    it('should merge instance classNames.spinner with spinner slot', () => {
+    it('merges instance classNames.spinner with spinner slot', () => {
       const { container } = render(
-        <Button loading classNames={{ spinner: 'custom-spinner' }} spinner={<span>...</span>}>
-          Text
+        <Button loading classNames={{ spinner: 'custom-spinner' }}>
+          <Button.Spinner>
+            <span>...</span>
+          </Button.Spinner>
+          <Button.Label>Text</Button.Label>
         </Button>,
       );
       const spinnerSlot = container.querySelector('[data-slot="spinner"]')!;
@@ -397,68 +475,32 @@ describe('Button', () => {
   });
 
   describe('slotProps prop', () => {
-    it('should forward slotProps.root attributes to root element', () => {
-      render(<Button slotProps={{ root: { 'aria-describedby': 'desc' } }}>Click me</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('aria-describedby', 'desc');
-    });
-
-    it('should forward slotProps.label attributes to label span', () => {
-      render(<Button slotProps={{ label: { id: 'my-label' } }}>Click me</Button>);
-      const label = screen.getByText('Click me');
-      expect(label).toHaveAttribute('id', 'my-label');
-    });
-
-    it('should concatenate slotProps.root.className with canonical root class', () => {
-      render(<Button slotProps={{ root: { className: 'slot-cls' } }}>Click me</Button>);
-      const button = screen.getByRole('button');
-      expect(button.className).toContain('tk-button');
-      expect(button.className).toContain('slot-cls');
-    });
-
-    it('should concatenate slotProps.label.className with canonical label class', () => {
-      render(<Button slotProps={{ label: { className: 'slot-label-cls' } }}>Click me</Button>);
-      const label = screen.getByText('Click me');
-      expect(label.className).toContain('tk-button-label');
-      expect(label.className).toContain('slot-label-cls');
-    });
-  });
-
-  describe('render overrides', () => {
-    it('should use renderIcon to override icon content', () => {
+    it('forwards slotProps.root attributes to root element', () => {
       render(
-        <Button icon="home" renderIcon={() => <span data-testid="custom-icon">Custom</span>}>
-          Text
+        <Button slotProps={{ root: { 'aria-describedby': 'desc' } }}>
+          <Button.Label>Click me</Button.Label>
         </Button>,
       );
-      expect(screen.getByTestId('custom-icon')).toBeInTheDocument();
+      expect(screen.getByRole('button')).toHaveAttribute('aria-describedby', 'desc');
     });
 
-    it('should pass default icon node to renderIcon', () => {
-      const renderIcon = vi.fn(node => node);
+    it('forwards slotProps.label attributes to label span', () => {
       render(
-        <Button icon={<span data-testid="original">O</span>} renderIcon={renderIcon}>
-          Text
+        <Button slotProps={{ label: { id: 'my-label' } }}>
+          <Button.Label>Click me</Button.Label>
         </Button>,
       );
-      expect(renderIcon).toHaveBeenCalled();
-    });
-
-    it('should use renderSpinner to override spinner content', () => {
-      render(
-        <Button loading renderSpinner={() => <span data-testid="custom-spinner">Loading...</span>}>
-          Text
-        </Button>,
-      );
-      expect(screen.getByTestId('custom-spinner')).toBeInTheDocument();
+      expect(screen.getByText('Click me')).toHaveAttribute('id', 'my-label');
     });
   });
 
   describe('theme-level customization', () => {
-    it('should apply theme-level defaultProps', () => {
+    it('applies theme-level defaultProps', () => {
       render(
         <SparReactProvider components={{ Button: { defaultProps: { variant: 'danger', size: 'large' } } }}>
-          <Button>Themed</Button>
+          <Button>
+            <Button.Label>Themed</Button.Label>
+          </Button>
         </SparReactProvider>,
       );
       const button = screen.getByRole('button');
@@ -466,36 +508,29 @@ describe('Button', () => {
       expect(button).toHaveAttribute('data-size', 'large');
     });
 
-    it('should allow instance props to override theme defaultProps', () => {
+    it('allows instance props to override theme defaultProps', () => {
       render(
         <SparReactProvider components={{ Button: { defaultProps: { variant: 'danger' } } }}>
-          <Button variant="success">Override</Button>
+          <Button variant="success">
+            <Button.Label>Override</Button.Label>
+          </Button>
         </SparReactProvider>,
       );
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('data-variant', 'success');
+      expect(screen.getByRole('button')).toHaveAttribute('data-variant', 'success');
     });
 
-    it('should merge theme-level classNames with instance classNames', () => {
+    it('merges theme classNames with instance classNames', () => {
       render(
         <SparReactProvider components={{ Button: { classNames: { root: 'theme-root' } } }}>
-          <Button classNames={{ root: 'instance-root' }}>Merged</Button>
+          <Button classNames={{ root: 'instance-root' }}>
+            <Button.Label>Merged</Button.Label>
+          </Button>
         </SparReactProvider>,
       );
       const button = screen.getByRole('button');
       expect(button.className).toContain('theme-root');
       expect(button.className).toContain('instance-root');
       expect(button.className).toContain('tk-button');
-    });
-
-    it('should merge theme-level slotProps with instance slotProps', () => {
-      render(
-        <SparReactProvider components={{ Button: { slotProps: { root: { 'aria-label': 'theme' } } } }}>
-          <Button slotProps={{ root: { 'aria-describedby': 'desc' } }}>Merged</Button>
-        </SparReactProvider>,
-      );
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('aria-describedby', 'desc');
     });
   });
 });

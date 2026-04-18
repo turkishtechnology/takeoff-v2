@@ -1,5 +1,5 @@
 import RenderedDemo from '../../../components/RenderedDemo';
-import { Accordion, AccordionItem, ReactSparDemoRoot } from './shared';
+import { Accordion, ReactSparDemoRoot } from './shared';
 
 const sectionLabelStyle = {
   margin: 0,
@@ -25,18 +25,54 @@ const code = `export function TypeDemo() {
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Grouped</p>
         <Accordion type="grouped">
-          <AccordionItem header="Panel 1 Title">Panel 1 Content</AccordionItem>
-          <AccordionItem header="Panel 2 Title">Panel 2 Content</AccordionItem>
-          <AccordionItem header="Panel 3 Title">Panel 3 Content</AccordionItem>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 3 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 3 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Divided</p>
         <Accordion type="divided">
-          <AccordionItem header="Panel 1 Title">Panel 1 Content</AccordionItem>
-          <AccordionItem header="Panel 2 Title">Panel 2 Content</AccordionItem>
-          <AccordionItem header="Panel 3 Title">Panel 3 Content</AccordionItem>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 3 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 3 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
     </div>
@@ -49,18 +85,54 @@ function TypeDemo() {
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Grouped</p>
         <Accordion type="grouped">
-          <AccordionItem header="Panel 1 Title">Panel 1 Content</AccordionItem>
-          <AccordionItem header="Panel 2 Title">Panel 2 Content</AccordionItem>
-          <AccordionItem header="Panel 3 Title">Panel 3 Content</AccordionItem>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 3 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 3 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Divided</p>
         <Accordion type="divided">
-          <AccordionItem header="Panel 1 Title">Panel 1 Content</AccordionItem>
-          <AccordionItem header="Panel 2 Title">Panel 2 Content</AccordionItem>
-          <AccordionItem header="Panel 3 Title">Panel 3 Content</AccordionItem>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 3 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 3 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
     </div>

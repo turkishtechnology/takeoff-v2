@@ -1,13 +1,11 @@
 import type { ComponentPropsWithoutRef, HTMLAttributes, ReactNode } from 'react';
 
-import type { AccordionSlot, AccordionItemSlot } from './AccordionBase';
+import type { AccordionArrowRenderState, AccordionItemSlot, AccordionSlot } from './AccordionBase';
 import type { ClassNamesOverride } from '../../customization/overrides';
 
 export type AccordionType = 'grouped' | 'divided';
 
 export type AccordionMode = 'default' | 'compact';
-
-export type AccordionArrowPosition = 'left' | 'right';
 
 export type AccordionItemSize = 'base' | 'large';
 
@@ -30,12 +28,12 @@ export interface AccordionProps extends AccordionNativeProps {
   /**
    * Currently active panel indexes. Can be a single value or an array.
    * When `allowMultiple` is false, only the last value in the array is used.
-   * Has priority over `AccordionItem.active`.
+   * Has priority over `Accordion.Item.active`.
    */
   activeIndex?: string | number | (string | number)[];
   /**
    * Initial active panel indexes for uncontrolled usage.
-   * Has priority over `AccordionItem.active`.
+   * Has priority over `Accordion.Item.active`.
    */
   defaultActiveIndex?: string | number | (string | number)[];
   /**
@@ -43,34 +41,6 @@ export interface AccordionProps extends AccordionNativeProps {
    * @defaultValue false
    */
   allowMultiple?: boolean;
-  /**
-   * Position of the expand/collapse chevron.
-   * @defaultValue 'right'
-   */
-  arrowPosition?: AccordionArrowPosition;
-  /**
-   * Custom expand icon. String values still render as Material Symbols ligatures
-   * when the consumer has loaded the font. The built-in default is a placeholder
-   * chevron SVG.
-   *
-   * TODO(takeoff-icons): Swap the chevron placeholder for the official Takeoff
-   * icon before the first public release.
-   */
-  expandIcon?: ReactNode;
-  /**
-   * Custom collapse icon. String values still render as Material Symbols ligatures
-   * when the consumer has loaded the font. The built-in default is a placeholder
-   * chevron SVG.
-   *
-   * TODO(takeoff-icons): Swap the chevron placeholder for the official Takeoff
-   * icon before the first public release.
-   */
-  collapseIcon?: ReactNode;
-  /**
-   * Whether to hide the expand/collapse arrows.
-   * @defaultValue false
-   */
-  hideArrows?: boolean;
   /**
    * Accordion visual style.
    * @defaultValue 'grouped'
@@ -85,6 +55,9 @@ export interface AccordionProps extends AccordionNativeProps {
    * Callback fired when the active index changes.
    */
   onActiveIndexChange?: (activeIndex: string | number | (string | number)[] | undefined) => void;
+  /**
+   * Compound children — must be composed from `Accordion.Item`.
+   */
   children?: ReactNode;
   /**
    * Per-slot class name overrides for the accordion root.
@@ -104,18 +77,10 @@ export interface AccordionItemProps extends AccordionItemNativeProps {
    */
   itemKey?: string | number;
   /**
-   * Header text or custom header content.
-   */
-  header?: ReactNode;
-  /**
    * Component size.
    * @defaultValue 'base'
    */
   size?: AccordionItemSize;
-  /**
-   * Icon displayed in the header. String values render as Material Symbols.
-   */
-  icon?: ReactNode;
   /**
    * Initial or declarative active state for this item when the parent accordion
    * is not controlled by `activeIndex`.
@@ -125,6 +90,9 @@ export interface AccordionItemProps extends AccordionItemNativeProps {
    * Callback fired when user interaction requests a new active state for this item.
    */
   onActiveChange?: (active: boolean) => void;
+  /**
+   * Compound children — typically `Accordion.Header` and `Accordion.Content`.
+   */
   children?: ReactNode;
   /**
    * Per-slot class name overrides for this accordion item.
@@ -134,4 +102,42 @@ export interface AccordionItemProps extends AccordionItemNativeProps {
    * Per-slot HTML attribute overrides for this accordion item.
    */
   slotProps?: AccordionItemSlotProps;
+}
+
+export interface AccordionHeaderProps extends HTMLAttributes<HTMLDivElement> {
+  /**
+   * Typically composed from `Accordion.Icon`, `Accordion.Title`, and
+   * `Accordion.Arrow` — but any layout is accepted.
+   */
+  children?: ReactNode;
+}
+
+export interface AccordionTitleProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
+}
+
+export interface AccordionIconProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
+}
+
+export interface AccordionArrowProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'children'> {
+  /**
+   * Custom expand icon rendered when the item is collapsed. When omitted the
+   * built-in placeholder chevron is used.
+   */
+  expandIcon?: ReactNode;
+  /**
+   * Custom collapse icon rendered when the item is expanded. When omitted the
+   * built-in placeholder chevron is used.
+   */
+  collapseIcon?: ReactNode;
+  /**
+   * Render-prop children for fully custom arrow content. Takes precedence over
+   * the icon props and receives the resolved open state.
+   */
+  children?: ReactNode | ((state: AccordionArrowRenderState) => ReactNode);
+}
+
+export interface AccordionContentProps extends HTMLAttributes<HTMLDivElement> {
+  children?: ReactNode;
 }

@@ -30,15 +30,18 @@ export function StatesDemo() {
     <div style={{ display: 'grid', gap: 12, width: 'min(100%, 45rem)', justifyItems: 'center' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
         <Button aria-pressed={pressed} onClick={() => setPressed((value) => !value)}>
-          {pressed ? 'Seat locked' : 'Select seat'}
+          <Button.Label>{pressed ? 'Seat locked' : 'Select seat'}</Button.Label>
         </Button>
         <Button onClick={() => setLoading((value) => !value)}>
-          {loading ? 'Stop loading preview' : 'Trigger loading preview'}
+          <Button.Label>{loading ? 'Stop loading preview' : 'Trigger loading preview'}</Button.Label>
         </Button>
         <Button loading={loading} type="outlined" variant="secondary">
-          {loading ? 'Checking fare' : 'Checkout'}
+          <Button.Spinner />
+          <Button.Label>{loading ? 'Checking fare' : 'Checkout'}</Button.Label>
         </Button>
-        <Button disabled>Boarding closed</Button>
+        <Button disabled>
+          <Button.Label>Boarding closed</Button.Label>
+        </Button>
       </div>
       <p style={metaStyle}>
         Pressed state: {String(pressed)}. Loading is handled through the product-level <code>loading</code> prop.
@@ -55,13 +58,18 @@ function StatesDemo() {
     <div style={{ display: 'grid', gap: 12, width: 'min(100%, 45rem)', justifyItems: 'center' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
         <Button aria-pressed={pressed} onClick={() => setPressed(value => !value)}>
-          {pressed ? 'Seat locked' : 'Select seat'}
+          <Button.Label>{pressed ? 'Seat locked' : 'Select seat'}</Button.Label>
         </Button>
-        <Button onClick={() => setLoading(value => !value)}>{loading ? 'Stop loading preview' : 'Trigger loading preview'}</Button>
+        <Button onClick={() => setLoading(value => !value)}>
+          <Button.Label>{loading ? 'Stop loading preview' : 'Trigger loading preview'}</Button.Label>
+        </Button>
         <Button loading={loading} type="outlined" variant="secondary">
-          {loading ? 'Checking fare' : 'Checkout'}
+          <Button.Spinner />
+          <Button.Label>{loading ? 'Checking fare' : 'Checkout'}</Button.Label>
         </Button>
-        <Button disabled>Boarding closed</Button>
+        <Button disabled>
+          <Button.Label>Boarding closed</Button.Label>
+        </Button>
       </div>
       <p style={metaStyle}>
         Pressed state: {String(pressed)}. Loading is handled through the product-level <code>loading</code> prop.

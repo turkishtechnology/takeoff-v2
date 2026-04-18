@@ -7,12 +7,20 @@ const code = `export function CheckboxTemplateDemo() {
 
   return (
     <Checkbox
-      label="Subscribe to itinerary updates"
-      description="We send you check-in and gate change alerts."
       type="card"
       value={subscribed}
       onChange={(next) => setSubscribed(Boolean(next))}
-    />
+    >
+      <Checkbox.Indicator>
+        <Checkbox.Icon />
+      </Checkbox.Indicator>
+      <Checkbox.Content>
+        <Checkbox.Label>Subscribe to itinerary updates</Checkbox.Label>
+        <Checkbox.Description>
+          We send you check-in and gate change alerts.
+        </Checkbox.Description>
+      </Checkbox.Content>
+    </Checkbox>
   );
 }`;
 
@@ -20,13 +28,15 @@ function CheckboxTemplateDemo() {
   const [subscribed, setSubscribed] = useState(true);
 
   return (
-    <Checkbox
-      label="Subscribe to itinerary updates"
-      description="We send you check-in and gate change alerts."
-      type="card"
-      value={subscribed}
-      onChange={next => setSubscribed(Boolean(next))}
-    />
+    <Checkbox type="card" value={subscribed} onChange={next => setSubscribed(Boolean(next))}>
+      <Checkbox.Indicator>
+        <Checkbox.Icon />
+      </Checkbox.Indicator>
+      <Checkbox.Content>
+        <Checkbox.Label>Subscribe to itinerary updates</Checkbox.Label>
+        <Checkbox.Description>We send you check-in and gate change alerts.</Checkbox.Description>
+      </Checkbox.Content>
+    </Checkbox>
   );
 }
 

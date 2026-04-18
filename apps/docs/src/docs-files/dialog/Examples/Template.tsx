@@ -54,18 +54,11 @@ const footerStyle = {
   justifyContent: 'space-between',
   alignItems: 'center',
   gap: 16,
-  padding: '0 32px 32px',
 };
 
 const footerMetaStyle = {
   color: 'var(--text-base)',
   fontSize: '0.875rem',
-};
-
-const actionsStyle = {
-  display: 'flex',
-  flexWrap: 'wrap' as const,
-  gap: 12,
 };
 
 const code = `// TODO(takeoff-icons): Swap the placeholder icon below for the official
@@ -100,61 +93,64 @@ export function DialogTemplateDemo() {
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 16,
-    padding: '0 32px 32px',
   };
   const footerMetaStyle = { color: 'var(--text-base)', fontSize: '0.875rem' };
-  const actionsStyle = { display: 'flex', flexWrap: 'wrap', gap: 12 };
 
   return (
     <>
-      <Button onClick={() => setVisible(true)}>Open custom template</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Button.Label>Open custom template</Button.Label>
+      </Button>
 
       <Dialog
         aria-label="Exit row approval"
         visible={visible}
         onVisibleChange={setVisible}
         containerStyle={{ width: '520px' }}
-        headerSlot={
-          <div style={headerStyle}>
-            <div style={introStyle}>
-              <span style={eyebrowStyle}>Manual approval</span>
-              <strong style={headingStyle}>Move passenger to exit row</strong>
-              <span style={descriptionStyle}>Seat 14C requires a final cabin eligibility check.</span>
+      >
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <div style={headerStyle}>
+              <div style={introStyle}>
+                <span style={eyebrowStyle}>Manual approval</span>
+                <Dialog.Title style={headingStyle}>Move passenger to exit row</Dialog.Title>
+                <Dialog.Description style={descriptionStyle}>
+                  Seat 14C requires a final cabin eligibility check.
+                </Dialog.Description>
+              </div>
+              <Dialog.CloseButton>
+                <CloseIcon />
+              </Dialog.CloseButton>
             </div>
-            <Button
-              type="text"
-              variant="neutral"
-              icon={<CloseIcon />}
-              rounded
-              onClick={() => setVisible(false)}
-              aria-label="Close dialog"
-            />
-          </div>
-        }
-        contentSlot={
-          <div style={bodyStyle}>
-            <div style={paneStyle}>
-              <strong>Passenger</strong>
-              <span>Ayse Kaya • 34 years old</span>
+          </Dialog.Header>
+          <Dialog.Body>
+            <div style={bodyStyle}>
+              <div style={paneStyle}>
+                <strong>Passenger</strong>
+                <span>Ayse Kaya • 34 years old</span>
+              </div>
+              <div style={paneStyle}>
+                <strong>Rules</strong>
+                <span>Passenger confirms English comprehension and independent mobility.</span>
+              </div>
             </div>
-            <div style={paneStyle}>
-              <strong>Rules</strong>
-              <span>Passenger confirms English comprehension and independent mobility.</span>
+          </Dialog.Body>
+          <Dialog.Footer>
+            <div style={footerStyle}>
+              <span style={footerMetaStyle}>Decision is logged to the booking timeline.</span>
+              <Dialog.FooterActions>
+                <Button type="text" variant="neutral" onClick={() => setVisible(false)}>
+                  <Button.Label>Reject</Button.Label>
+                </Button>
+                <Button onClick={() => setVisible(false)}>
+                  <Button.Label>Approve seat</Button.Label>
+                </Button>
+              </Dialog.FooterActions>
             </div>
-          </div>
-        }
-        footerSlot={
-          <div style={footerStyle}>
-            <span style={footerMetaStyle}>Decision is logged to the booking timeline.</span>
-            <div style={actionsStyle}>
-              <Button type="text" variant="neutral" onClick={() => setVisible(false)}>
-                Reject
-              </Button>
-              <Button onClick={() => setVisible(false)}>Approve seat</Button>
-            </div>
-          </div>
-        }
-      />
+          </Dialog.Footer>
+        </Dialog.Panel>
+      </Dialog>
     </>
   );
 }`;
@@ -164,47 +160,52 @@ function DialogTemplateDemo() {
 
   return (
     <>
-      <Button onClick={() => setVisible(true)}>Open custom template</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Button.Label>Open custom template</Button.Label>
+      </Button>
 
-      <Dialog
-        aria-label="Exit row approval"
-        visible={visible}
-        onVisibleChange={setVisible}
-        containerStyle={{ width: '520px' }}
-        headerSlot={
-          <div style={headerStyle}>
-            <div style={introStyle}>
-              <span style={eyebrowStyle}>Manual approval</span>
-              <strong style={headingStyle}>Move passenger to exit row</strong>
-              <span style={descriptionStyle}>Seat 14C requires a final cabin eligibility check.</span>
+      <Dialog aria-label="Exit row approval" visible={visible} onVisibleChange={setVisible} containerStyle={{ width: '520px' }}>
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <div style={headerStyle}>
+              <div style={introStyle}>
+                <span style={eyebrowStyle}>Manual approval</span>
+                <Dialog.Title style={headingStyle}>Move passenger to exit row</Dialog.Title>
+                <Dialog.Description style={descriptionStyle}>Seat 14C requires a final cabin eligibility check.</Dialog.Description>
+              </div>
+              <Dialog.CloseButton>
+                <CloseIcon />
+              </Dialog.CloseButton>
             </div>
-            <Button type="text" variant="neutral" icon={<CloseIcon />} rounded onClick={() => setVisible(false)} aria-label="Close dialog" />
-          </div>
-        }
-        contentSlot={
-          <div style={bodyStyle}>
-            <div style={paneStyle}>
-              <strong>Passenger</strong>
-              <span>Ayse Kaya • 34 years old</span>
+          </Dialog.Header>
+          <Dialog.Body>
+            <div style={bodyStyle}>
+              <div style={paneStyle}>
+                <strong>Passenger</strong>
+                <span>Ayse Kaya • 34 years old</span>
+              </div>
+              <div style={paneStyle}>
+                <strong>Rules</strong>
+                <span>Passenger confirms English comprehension and independent mobility.</span>
+              </div>
             </div>
-            <div style={paneStyle}>
-              <strong>Rules</strong>
-              <span>Passenger confirms English comprehension and independent mobility.</span>
+          </Dialog.Body>
+          <Dialog.Footer>
+            <div style={footerStyle}>
+              <span style={footerMetaStyle}>Decision is logged to the booking timeline.</span>
+              <Dialog.FooterActions>
+                <Button type="text" variant="neutral" onClick={() => setVisible(false)}>
+                  <Button.Label>Reject</Button.Label>
+                </Button>
+                <Button onClick={() => setVisible(false)}>
+                  <Button.Label>Approve seat</Button.Label>
+                </Button>
+              </Dialog.FooterActions>
             </div>
-          </div>
-        }
-        footerSlot={
-          <div style={footerStyle}>
-            <span style={footerMetaStyle}>Decision is logged to the booking timeline.</span>
-            <div style={actionsStyle}>
-              <Button type="text" variant="neutral" onClick={() => setVisible(false)}>
-                Reject
-              </Button>
-              <Button onClick={() => setVisible(false)}>Approve seat</Button>
-            </div>
-          </div>
-        }
-      />
+          </Dialog.Footer>
+        </Dialog.Panel>
+      </Dialog>
     </>
   );
 }

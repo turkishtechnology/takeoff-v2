@@ -23,11 +23,39 @@ export function IndeterminateCheckboxDemo() {
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <Checkbox label="All extras" value={parent} onChange={toggleAll} />
+      <Checkbox value={parent} onChange={toggleAll}>
+        <Checkbox.Indicator>
+          <Checkbox.Icon />
+        </Checkbox.Indicator>
+        <Checkbox.Content>
+          <Checkbox.Label>All extras</Checkbox.Label>
+        </Checkbox.Content>
+      </Checkbox>
       <div style={{ display: 'grid', gap: 8, paddingInlineStart: 28 }}>
-        <Checkbox label="Meal" value={meal} onChange={(next) => setMeal(Boolean(next))} />
-        <Checkbox label="Extra luggage" value={luggage} onChange={(next) => setLuggage(Boolean(next))} />
-        <Checkbox label="Seat selection" value={seat} onChange={(next) => setSeat(Boolean(next))} />
+        <Checkbox value={meal} onChange={(next) => setMeal(Boolean(next))}>
+          <Checkbox.Indicator>
+            <Checkbox.Icon />
+          </Checkbox.Indicator>
+          <Checkbox.Content>
+            <Checkbox.Label>Meal</Checkbox.Label>
+          </Checkbox.Content>
+        </Checkbox>
+        <Checkbox value={luggage} onChange={(next) => setLuggage(Boolean(next))}>
+          <Checkbox.Indicator>
+            <Checkbox.Icon />
+          </Checkbox.Indicator>
+          <Checkbox.Content>
+            <Checkbox.Label>Extra luggage</Checkbox.Label>
+          </Checkbox.Content>
+        </Checkbox>
+        <Checkbox value={seat} onChange={(next) => setSeat(Boolean(next))}>
+          <Checkbox.Indicator>
+            <Checkbox.Icon />
+          </Checkbox.Indicator>
+          <Checkbox.Content>
+            <Checkbox.Label>Seat selection</Checkbox.Label>
+          </Checkbox.Content>
+        </Checkbox>
       </div>
     </div>
   );
@@ -53,11 +81,39 @@ function IndeterminateCheckboxDemo() {
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <Checkbox label="All extras" value={parent} onChange={toggleAll} />
+      <Checkbox value={parent} onChange={toggleAll}>
+        <Checkbox.Indicator>
+          <Checkbox.Icon />
+        </Checkbox.Indicator>
+        <Checkbox.Content>
+          <Checkbox.Label>All extras</Checkbox.Label>
+        </Checkbox.Content>
+      </Checkbox>
       <div style={{ display: 'grid', gap: 8, paddingInlineStart: 28 }}>
-        <Checkbox label="Meal" value={meal} onChange={next => setMeal(Boolean(next))} />
-        <Checkbox label="Extra luggage" value={luggage} onChange={next => setLuggage(Boolean(next))} />
-        <Checkbox label="Seat selection" value={seat} onChange={next => setSeat(Boolean(next))} />
+        <Checkbox value={meal} onChange={next => setMeal(Boolean(next))}>
+          <Checkbox.Indicator>
+            <Checkbox.Icon />
+          </Checkbox.Indicator>
+          <Checkbox.Content>
+            <Checkbox.Label>Meal</Checkbox.Label>
+          </Checkbox.Content>
+        </Checkbox>
+        <Checkbox value={luggage} onChange={next => setLuggage(Boolean(next))}>
+          <Checkbox.Indicator>
+            <Checkbox.Icon />
+          </Checkbox.Indicator>
+          <Checkbox.Content>
+            <Checkbox.Label>Extra luggage</Checkbox.Label>
+          </Checkbox.Content>
+        </Checkbox>
+        <Checkbox value={seat} onChange={next => setSeat(Boolean(next))}>
+          <Checkbox.Indicator>
+            <Checkbox.Icon />
+          </Checkbox.Indicator>
+          <Checkbox.Content>
+            <Checkbox.Label>Seat selection</Checkbox.Label>
+          </Checkbox.Content>
+        </Checkbox>
       </div>
     </div>
   );

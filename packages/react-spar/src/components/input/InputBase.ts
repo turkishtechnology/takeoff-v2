@@ -1,5 +1,8 @@
+import type { ChangeEvent, MutableRefObject, Ref, SyntheticEvent } from 'react';
+
 import { createComponentBase } from '../../base/createComponentBase';
 import type { SlotClassNames } from '../../types';
+import { createSafeContext } from '../../utils/createSafeContext';
 
 import type { InputProps } from './types';
 
@@ -52,6 +55,29 @@ export const InputBase = createComponentBase<InputProps, InputSlot>({
     invalid: false,
     clearable: false,
     loading: false,
-    iconPosition: 'left',
   },
 });
+
+export interface InputContextValue {
+  /** Resolved current value of the input field. */
+  currentValue: string | number | undefined;
+  /** Whether the parent is operating in controlled mode. */
+  isControlled: boolean;
+  size: NonNullable<InputProps['size']>;
+  type: NonNullable<InputProps['type']>;
+  disabled: boolean;
+  readOnly: boolean;
+  required: boolean;
+  invalid: boolean;
+  clearable: boolean;
+  loading: boolean;
+  fieldRef: Ref<HTMLInputElement>;
+  fieldRefObject: MutableRefObject<HTMLInputElement | null>;
+  classNames: InputProps['classNames'];
+  slotProps: InputProps['slotProps'];
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  onClearClick?: (event: SyntheticEvent<HTMLButtonElement>) => void;
+  setUncontrolledValue: (value: string | number | undefined) => void;
+}
+
+export const [InputProvider, useInputContext] = createSafeContext<InputContextValue>('Input');

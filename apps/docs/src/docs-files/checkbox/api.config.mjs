@@ -39,33 +39,33 @@ export default {
   dataAttributes: [
     {
       attribute: 'data-slot="root"',
-      appliedWhen: 'Always',
-      purpose: 'Stable root slot selector for wrapper styling. Carries role="checkbox" and the full state data-* set.',
+      appliedWhen: 'Always (on `Checkbox`)',
+      purpose: 'Stable root slot selector for wrapper styling. Carries role="checkbox" and the full state data-* set. Class: `tk-checkbox`.',
     },
     {
       attribute: 'data-slot="indicator"',
-      appliedWhen: 'Always',
-      purpose: 'Stable selector for the visible box (border + fill).',
+      appliedWhen: 'Always (on `Checkbox.Indicator`)',
+      purpose: 'Stable selector for the visible box (border + fill). Class: `tk-checkbox-indicator`.',
     },
     {
       attribute: 'data-slot="icon"',
-      appliedWhen: 'Always',
-      purpose: 'Stable selector for the check / indeterminate glyph holder. Visibility is driven by data-checked / data-indeterminate on the root.',
+      appliedWhen: 'Always (on `Checkbox.Icon`)',
+      purpose: 'Stable selector for the check / indeterminate glyph holder. Visibility is driven by data-checked / data-indeterminate on the root. Class: `tk-checkbox-icon`.',
     },
     {
-      attribute: 'data-slot="text"',
-      appliedWhen: '`label` or `description` is provided',
-      purpose: 'Stable wrapper around the label + description stack.',
+      attribute: 'data-slot="content"',
+      appliedWhen: 'Always (on `Checkbox.Content`)',
+      purpose: 'Stable wrapper around the label + description stack. Class: `tk-checkbox-content`.',
     },
     {
       attribute: 'data-slot="label"',
-      appliedWhen: '`label` prop is provided',
-      purpose: 'Stable selector for the visible label text.',
+      appliedWhen: 'Always (on `Checkbox.Label`)',
+      purpose: 'Stable selector for the visible label text. Class: `tk-checkbox-label`.',
     },
     {
       attribute: 'data-slot="description"',
-      appliedWhen: '`description` prop is provided',
-      purpose: 'Stable selector for the helper text.',
+      appliedWhen: 'Always (on `Checkbox.Description`)',
+      purpose: 'Stable selector for the helper text. Class: `tk-checkbox-description`.',
     },
     {
       attribute: 'data-size',

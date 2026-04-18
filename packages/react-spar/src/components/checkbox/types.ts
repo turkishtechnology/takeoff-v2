@@ -5,8 +5,7 @@ import type { ClassNamesOverride } from '../../customization/overrides';
 
 /**
  * Tri-state value preserved from the `tk-checkbox` contract: `true` = checked,
- * `false` = unchecked, `null` = indeterminate. The React wrapper normalizes
- * this onto the spar primitive's `CheckedState` (`boolean | 'indeterminate'`).
+ * `false` = unchecked, `null` = indeterminate.
  */
 export type CheckboxValue = boolean | null;
 
@@ -25,7 +24,7 @@ export interface CheckboxSlotProps {
   root?: HTMLAttributes<HTMLElement>;
   indicator?: HTMLAttributes<HTMLSpanElement>;
   icon?: HTMLAttributes<HTMLSpanElement>;
-  text?: HTMLAttributes<HTMLSpanElement>;
+  content?: HTMLAttributes<HTMLSpanElement>;
   label?: HTMLAttributes<HTMLSpanElement>;
   description?: HTMLAttributes<HTMLSpanElement>;
 }
@@ -40,8 +39,7 @@ export interface CheckboxProps {
    */
   defaultValue?: CheckboxValue;
   /**
-   * Sugar for `value: null`. Mirrors the `tk-checkbox` `indeterminate` prop.
-   * Wins over `value` / `defaultValue` while `true`.
+   * Sugar for `value: null`. Wins over `value` / `defaultValue` while `true`.
    * @defaultValue false
    */
   indeterminate?: boolean;
@@ -49,14 +47,6 @@ export interface CheckboxProps {
    * Fired on every value change. Receives the normalized tri-state value.
    */
   onChange?: (value: CheckboxValue) => void;
-  /**
-   * Visible label text.
-   */
-  label?: ReactNode;
-  /**
-   * Helper text rendered below the label.
-   */
-  description?: ReactNode;
   /**
    * Component size.
    * @defaultValue 'base'
@@ -73,8 +63,7 @@ export interface CheckboxProps {
    */
   disabled?: boolean;
   /**
-   * Marks the control as read-only. Spar primitive handles the interaction
-   * lock.
+   * Marks the control as read-only.
    * @defaultValue false
    */
   readOnly?: boolean;
@@ -85,24 +74,21 @@ export interface CheckboxProps {
   required?: boolean;
   /**
    * Marks the control as invalid. Exposes `data-invalid` on the root for
-   * styling; does not alter the ARIA tree.
+   * styling.
    * @defaultValue false
    */
   invalid?: boolean;
   /**
-   * Name attribute for form submission. When set, spar renders a hidden
-   * native input that mirrors the checked state.
+   * Name attribute for form submission.
    */
   name?: string;
   /**
-   * String value sent with form submissions when the box is checked. Mirrors
-   * the native `<input type="checkbox">` `value` attribute.
+   * String value sent with form submissions when the box is checked.
    * @defaultValue 'on'
    */
   formValue?: string;
   /**
-   * ID of the form this checkbox belongs to. Forwards to the hidden native
-   * input rendered by spar when `name` is set.
+   * ID of the form this checkbox belongs to.
    */
   form?: string;
   /**
@@ -111,13 +97,11 @@ export interface CheckboxProps {
    */
   autoFocus?: boolean;
   /**
-   * Override the tab order. The spar primitive already handles `-1` when the
-   * control is disabled.
+   * Override the tab order.
    */
   tabIndex?: number;
   /**
-   * Custom ID for the root node. When omitted, spar generates a stable id
-   * via `useId`.
+   * Custom ID for the root node.
    */
   id?: string;
   /**
@@ -125,22 +109,18 @@ export interface CheckboxProps {
    */
   className?: string;
   /**
-   * Per-slot class name overrides. Canonical `tk-*` classes are never
-   * replaced.
+   * Compound children — must be composed from `Checkbox.Indicator`,
+   * `Checkbox.Content`, `Checkbox.Label`, `Checkbox.Description`.
+   */
+  children?: ReactNode;
+  /**
+   * Per-slot class name overrides.
    */
   classNames?: ClassNamesOverride<CheckboxSlot>;
   /**
-   * Per-slot HTML attribute overrides. `className` values concatenate onto
-   * the canonical slot class.
+   * Per-slot HTML attribute overrides. `className` values concatenate.
    */
   slotProps?: CheckboxSlotProps;
-  /**
-   * Render override for the check / indeterminate glyph. Receives the
-   * resolved checked / indeterminate flags. Returning `null` hides the
-   * glyph; the structural `<span class="tk-checkbox-icon">` owner stays so
-   * the recipe can keep driving the fill.
-   */
-  renderIcon?: (state: CheckboxIconRenderState) => ReactNode;
   /**
    * Fired when focus enters the root.
    */
@@ -150,12 +130,38 @@ export interface CheckboxProps {
    */
   onBlur?: (event: FocusEvent<HTMLElement>) => void;
   /**
-   * Fired when the root is clicked. Runs in addition to the primitive's
-   * toggle handler.
+   * Fired when the root is clicked.
    */
   onClick?: (event: MouseEvent<HTMLElement>) => void;
   /**
    * Fired on every keydown on the root.
    */
   onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void;
+}
+
+export interface CheckboxIndicatorProps extends HTMLAttributes<HTMLSpanElement> {
+  /**
+   * Typically `<Checkbox.Icon>`, or custom glyph content.
+   */
+  children?: ReactNode;
+}
+
+export interface CheckboxIconProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'children'> {
+  /**
+   * Optional custom glyph content. When omitted, the default check/remove
+   * icons are rendered based on state.
+   */
+  children?: ReactNode | ((state: CheckboxIconRenderState) => ReactNode);
+}
+
+export interface CheckboxContentProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
+}
+
+export interface CheckboxLabelProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
+}
+
+export interface CheckboxDescriptionProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
 }

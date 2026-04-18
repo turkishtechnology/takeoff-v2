@@ -14,10 +14,8 @@ describe('AccordionBase', () => {
 
   it('should have correct default props', () => {
     expect(AccordionBase.defaultProps.allowMultiple).toBe(false);
-    expect(AccordionBase.defaultProps.arrowPosition).toBe('right');
     expect(AccordionBase.defaultProps.type).toBe('grouped');
     expect(AccordionBase.defaultProps.mode).toBe('default');
-    expect(AccordionBase.defaultProps.hideArrows).toBe(false);
   });
 });
 

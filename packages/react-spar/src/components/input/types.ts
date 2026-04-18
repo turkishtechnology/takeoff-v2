@@ -13,10 +13,6 @@ export type InputType = 'text' | 'email' | 'password' | 'search' | 'tel' | 'url'
 
 export type InputSize = 'large' | 'base' | 'small';
 
-export type InputIconPosition = 'left' | 'right';
-
-export type InputIcon = ReactNode | string;
-
 export interface InputSlotProps {
   root?: HTMLAttributes<HTMLDivElement>;
   label?: LabelHTMLAttributes<HTMLLabelElement>;
@@ -34,12 +30,9 @@ export interface InputSlotProps {
   errorMessage?: HTMLAttributes<HTMLDivElement>;
 }
 
-type InputNativeProps = Omit<
-  ComponentPropsWithoutRef<'input'>,
-  'children' | 'type' | 'size' | 'disabled' | 'readOnly' | 'required' | 'value' | 'defaultValue' | 'onChange' | 'prefix'
->;
+type InputRootNativeProps = Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'defaultValue'>;
 
-export interface InputProps extends InputNativeProps {
+export interface InputProps extends InputRootNativeProps {
   /**
    * HTML input type. Narrower than the native set — see `InputType` for the
    * supported values.
@@ -62,26 +55,26 @@ export interface InputProps extends InputNativeProps {
    */
   readOnly?: boolean;
   /**
-   * Marks the field as required. When a label is present, the wrapper renders
-   * the canonical asterisk node.
+   * Marks the field as required. Affects the `<Input.Asterisk>` subcomponent.
    * @defaultValue false
    */
   required?: boolean;
   /**
-   * Marks the field as invalid. When `true`, `error` is announced via the
-   * error-message slot and the input receives `aria-invalid="true"`.
+   * Marks the field as invalid. When `true`, `<Input.ErrorMessage>` is rendered
+   * and the input receives `aria-invalid="true"`; `<Input.Description>` is
+   * suppressed while invalid.
    * @defaultValue false
    */
   invalid?: boolean;
   /**
-   * Shows a clear button that resets the value to an empty string and calls
-   * `onClearClick`.
+   * Enables `<Input.ClearButton>` to render. The clear button becomes visible
+   * when the field has a value and is not disabled/read-only.
    * @defaultValue false
    */
   clearable?: boolean;
   /**
-   * Shows a spinner on the trailing side. Skipped when the clear button is
-   * visible.
+   * Drives `<Input.Spinner>` visibility. The spinner yields to the clear
+   * button when both are active.
    * @defaultValue false
    */
   loading?: boolean;
@@ -98,60 +91,18 @@ export interface InputProps extends InputNativeProps {
    */
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   /**
-   * Fired after the user activates the clear button.
+   * Fired after the user activates `<Input.ClearButton>`.
    */
   onClearClick?: (event: SyntheticEvent<HTMLButtonElement>) => void;
   /**
-   * Label text above the field.
-   */
-  label?: ReactNode;
-  /**
-   * Helper text below the field. Hidden while an error is shown.
-   */
-  description?: ReactNode;
-  /**
-   * Error text shown below the field when `invalid` is `true`. Announced as an
-   * alert via `role="alert"`.
-   */
-  error?: ReactNode;
-  /**
-   * Shared icon prop. String values assume the consumer has loaded Material
-   * Symbols fonts. Prefer `leadingIcon` / `trailingIcon` for explicit slot
-   * control.
-   */
-  icon?: InputIcon;
-  /**
-   * Placement of the shared `icon` prop.
-   * @defaultValue 'left'
-   */
-  iconPosition?: InputIconPosition;
-  /**
-   * Explicit content for the leading icon slot.
-   */
-  leadingIcon?: ReactNode;
-  /**
-   * Explicit content for the trailing icon slot.
-   */
-  trailingIcon?: ReactNode;
-  /**
-   * Text or node rendered inside the field before the native input. Replaces
-   * the Stencil `pre` prop.
-   */
-  prefix?: ReactNode;
-  /**
-   * Text or node rendered inside the field after the native input.
-   */
-  suffix?: ReactNode;
-  /**
-   * Optional custom loading indicator. When omitted the wrapper renders the
-   * canonical default spinner node.
-   */
-  spinner?: ReactNode;
-  /**
-   * Custom base ID for ARIA wiring. When omitted, the Spar primitive generates
-   * one. Sub-element IDs derive from this base.
+   * Custom base ID for ARIA wiring.
    */
   id?: string;
+  /**
+   * Compound children — typically composed from `Input.Label`,
+   * `Input.Container`, `Input.Description`, and `Input.ErrorMessage`.
+   */
+  children?: ReactNode;
   /**
    * Per-slot class name overrides.
    */
@@ -161,39 +112,57 @@ export interface InputProps extends InputNativeProps {
    * replaced.
    */
   slotProps?: InputSlotProps;
-  /**
-   * Render override for the leading icon content. Receives the default icon
-   * node and must return React content — the structural `<span>` owner stays.
-   */
-  renderLeadingIcon?: (defaultIcon: ReactNode) => ReactNode;
-  /**
-   * Render override for the trailing icon content. The structural `<span>`
-   * owner stays.
-   */
-  renderTrailingIcon?: (defaultIcon: ReactNode) => ReactNode;
-  /**
-   * Render override for the spinner content. Receives the default spinner
-   * node; the structural slot `<span>` owner stays.
-   */
-  renderSpinner?: (defaultSpinner: ReactNode) => ReactNode;
-  /**
-   * Render override for the clear button icon content. The structural
-   * `<button>` owner and dismiss behavior stay.
-   */
-  renderClearIcon?: (defaultIcon: ReactNode) => ReactNode;
 }
 
-export interface InputLabelPartProps {
+export interface InputLabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
   children?: ReactNode;
-  className?: string;
 }
 
-export interface InputDescriptionPartProps {
+export interface InputAsteriskProps extends HTMLAttributes<HTMLSpanElement> {
   children?: ReactNode;
-  className?: string;
 }
 
-export interface InputErrorMessagePartProps {
+export interface InputContainerProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
-  className?: string;
+}
+
+export type InputFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type' | 'disabled' | 'readOnly' | 'required' | 'value' | 'defaultValue'>;
+
+export interface InputLeadingIconProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
+}
+
+export interface InputTrailingIconProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
+}
+
+export interface InputPrefixProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
+}
+
+export interface InputSuffixProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
+}
+
+export interface InputSpinnerProps extends HTMLAttributes<HTMLSpanElement> {
+  /**
+   * Optional custom spinner content. When omitted a default indicator is used.
+   */
+  children?: ReactNode;
+}
+
+export interface InputClearButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'onKeyDown' | 'type'> {
+  /**
+   * Optional custom icon content for the clear button. When omitted, the
+   * default placeholder close icon is used.
+   */
+  children?: ReactNode;
+}
+
+export interface InputDescriptionProps extends HTMLAttributes<HTMLDivElement> {
+  children?: ReactNode;
+}
+
+export interface InputErrorMessageProps extends HTMLAttributes<HTMLDivElement> {
+  children?: ReactNode;
 }

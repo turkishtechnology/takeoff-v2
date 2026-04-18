@@ -7,7 +7,7 @@ export default {
   propOverrides: {
     children: {
       type: 'React.ReactNode',
-      description: 'AccordionItem elements rendered inside the accordion container.',
+      description: 'Accordion.Item elements rendered inside the accordion container.',
     },
     className: {
       type: 'string',

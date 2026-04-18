@@ -32,9 +32,9 @@ const code = `export function SizeAndWidthDemo() {
       <div style={{ display: 'grid', gap: 12, width: '100%', justifyItems: 'center' }}>
         <p style={sectionLabelStyle}>Sizes</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-          <Button size="small">Small</Button>
-          <Button size="base">Base</Button>
-          <Button size="large">Large</Button>
+          <Button size="small"><Button.Label>Small</Button.Label></Button>
+          <Button size="base"><Button.Label>Base</Button.Label></Button>
+          <Button size="large"><Button.Label>Large</Button.Label></Button>
         </div>
       </div>
 
@@ -43,9 +43,11 @@ const code = `export function SizeAndWidthDemo() {
       <div style={{ display: 'grid', gap: 12, width: '100%', justifyItems: 'center' }}>
         <p style={sectionLabelStyle}>Full width</p>
         <div style={{ display: 'grid', gap: 12, width: 'min(100%, 22.5rem)' }}>
-          <Button fullWidth>Continue to passenger details</Button>
+          <Button fullWidth>
+            <Button.Label>Continue to passenger details</Button.Label>
+          </Button>
           <Button fullWidth type="outlined" variant="secondary">
-            Compare fare families
+            <Button.Label>Compare fare families</Button.Label>
           </Button>
         </div>
       </div>
@@ -59,9 +61,15 @@ function SizeAndWidthDemo() {
       <div style={{ display: 'grid', gap: 12, width: '100%', justifyItems: 'center' }}>
         <p style={sectionLabelStyle}>Sizes</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-          <Button size="small">Small</Button>
-          <Button size="base">Base</Button>
-          <Button size="large">Large</Button>
+          <Button size="small">
+            <Button.Label>Small</Button.Label>
+          </Button>
+          <Button size="base">
+            <Button.Label>Base</Button.Label>
+          </Button>
+          <Button size="large">
+            <Button.Label>Large</Button.Label>
+          </Button>
         </div>
       </div>
 
@@ -70,9 +78,11 @@ function SizeAndWidthDemo() {
       <div style={{ display: 'grid', gap: 12, width: '100%', justifyItems: 'center' }}>
         <p style={sectionLabelStyle}>Full width</p>
         <div style={{ display: 'grid', gap: 12, width: 'min(100%, 22.5rem)' }}>
-          <Button fullWidth>Continue to passenger details</Button>
+          <Button fullWidth>
+            <Button.Label>Continue to passenger details</Button.Label>
+          </Button>
           <Button fullWidth type="outlined" variant="secondary">
-            Compare fare families
+            <Button.Label>Compare fare families</Button.Label>
           </Button>
         </div>
       </div>

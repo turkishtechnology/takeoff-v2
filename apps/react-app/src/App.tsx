@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import {
   Accordion,
-  AccordionItem,
   Button,
   Checkbox,
   Dialog,
@@ -23,19 +22,11 @@ import {
 // official Takeoff icon set before the first public release.
 import { FlightIcon, LuggageIcon, MailIcon, SearchIcon, TaskAltIcon } from './placeholder-icons';
 
-/**
- * React's HTMLAttributes types do not include an index signature for `data-*`,
- * so the verifier scenarios need a typed bridge to embed `data-verify-*`
- * markers on a button slot's canonical root without per-line casts.
- */
 const buttonRootMarkers = (values: Record<`data-${string}`, string>): ButtonSlotProps['root'] => values as unknown as ButtonSlotProps['root'];
-
 const checkboxRootMarkers = (values: Record<`data-${string}`, string>): CheckboxSlotProps['root'] => values as unknown as CheckboxSlotProps['root'];
 
 const cssVar = (name: `--${string}`) => `var(${name})`;
 
-// @takeoff-design/tokens ships only shadow *colors*, not composite box-shadow
-// primitives. The offsets/blurs are hardcoded; the colors remain themable.
 const elevatedShadow = '0 10px 25px -10px var(--shadow-black-alpha-base), 0 4px 10px -4px var(--shadow-black-alpha-light)';
 
 const shellStyle: CSSProperties = {
@@ -77,28 +68,8 @@ const contractStyle: CSSProperties = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Contract verifier
+// Contract verifier — compound anatomy + customization paths.
 // ─────────────────────────────────────────────────────────────────────────────
-//
-// The smoke app is the contract verifier described in Milestone 6 of
-// docs/proposals/monorepo-professionalization-execution-plan.md. It must
-// not regress without an explicit exemption.
-//
-// Verification scope:
-//   1. Provider contract: SparReactProvider writes data-theme on its
-//      display:contents wrapper.
-//   2. Token CSS import path: a known --tk-* variable resolves to a
-//      non-empty value (proves the @takeoff-design/tokens stylesheet
-//      actually loaded).
-//   3. Public exports: every named import at the top of this file must
-//      stay resolvable — type-check + build covers this for free.
-//   4. Slot or anatomy hooks: each visible-by-default shipped component
-//      renders its canonical root with the documented `tk-*` class +
-//      `data-slot="root"` anchor (per ADR 0005).
-//   5. Representative customization paths: provider-level defaultProps,
-//      provider-level classNames, provider-level slotProps, instance
-//      classNames, instance slotProps, and a render override that does
-//      not delete the canonical owner node.
 
 type CheckResult = { id: string; label: string; ok: boolean; detail?: string };
 
@@ -114,28 +85,17 @@ const runContractChecks = (scope: HTMLElement): CheckResult[] => {
     }
   };
 
-  // 1. Provider contract.
   check('provider:data-theme', 'SparReactProvider writes data-theme="light" on its wrapper', () => {
     const node = scope.querySelector<HTMLElement>('[data-theme]');
     const value = node?.getAttribute('data-theme');
     return { ok: value === 'light', detail: value ?? '(missing)' };
   });
 
-  // 2. Token CSS import path. Sample one variable known to ship from
-  //    @takeoff-design/tokens default theme. `--text-base` is one of the
-  //    foundational typography color tokens; if it resolves, the
-  //    `@takeoff-design/tokens/css/default/theme.css` import is wired.
   check('tokens:css-loaded', '--text-base resolves (token CSS imported)', () => {
     const sample = getComputedStyle(document.documentElement).getPropertyValue('--text-base').trim();
     return { ok: sample.length > 0, detail: sample || '(empty — token CSS missing)' };
   });
 
-  // 2b. Token category sweep. One token per category the smoke app's inline
-  //     styles rely on — spacing, background, border, radius, text, shadow
-  //     color, brand, static, and status (success + danger). A failure here
-  //     means the @takeoff-design/tokens contract drifted for that category,
-  //     not that react-spar broke. Keep the list aligned with the `cssVar`
-  //     references in this file.
   const tokenContract: ReadonlyArray<{ category: string; name: `--${string}` }> = [
     { category: 'spacing', name: '--spacing-8xl' },
     { category: 'background', name: '--background-lightest' },
@@ -165,8 +125,6 @@ const runContractChecks = (scope: HTMLElement): CheckResult[] => {
     };
   });
 
-  // 4. Slot anatomy for visible-by-default components. Dialog is
-  //    interactive-only and is covered by its own test suite.
   for (const [name, classMap] of [
     ['Button', buttonClassNames],
     ['Accordion', accordionClassNames],
@@ -180,15 +138,11 @@ const runContractChecks = (scope: HTMLElement): CheckResult[] => {
     });
   }
 
-  // 4b. Checkbox state hooks — verify the canonical data-* state attributes
-  //     emitted by the spar primitive flow through to the root so the token
-  //     recipe can drive visuals without touching JS.
   check('anatomy:Checkbox-state-attrs', 'Checkbox.data-indeterminate carries tri-state to the root', () => {
     const node = scope.querySelector(`[data-slot="root"].${checkboxClassNames.root}[data-verify="checkbox-indeterminate"][data-indeterminate]`);
     return { ok: node !== null, detail: node ? 'data-indeterminate present' : 'expected data-indeterminate' };
   });
 
-  // 5. Customization paths.
   check('customization:provider-defaultProps', 'provider components.Button.defaultProps lands (data-type)', () => {
     const node = scope.querySelector<HTMLElement>('[data-verify="provider"]');
     const value = node?.getAttribute('data-type');
@@ -223,14 +177,14 @@ const runContractChecks = (scope: HTMLElement): CheckResult[] => {
     return { ok: node !== null, detail: node ? 'attribute present' : 'data-verify-instance-slotprops missing' };
   });
 
-  check('customization:render-override-content', 'renderSpinner override content lands inside canonical owner', () => {
-    const marker = scope.querySelector('[data-verify="render-override"] [data-verify-render-override="ok"]');
-    return { ok: marker !== null, detail: marker ? 'marker present' : 'override marker missing' };
+  check('customization:compound-spinner-slot', 'Button.Spinner child lands inside the canonical spinner owner', () => {
+    const marker = scope.querySelector('[data-verify="compound-spinner"] [data-slot="spinner"] [data-verify-compound-spinner="ok"]');
+    return { ok: marker !== null, detail: marker ? 'marker present' : 'compound spinner marker missing' };
   });
 
-  check('customization:render-override-owner-preserved', 'renderSpinner override preserves canonical spinner slot owner', () => {
-    const owner = scope.querySelector(`[data-verify="render-override"] [data-slot="spinner"].${buttonClassNames.spinner}`);
-    return { ok: owner !== null, detail: owner ? 'owner preserved' : 'canonical spinner owner deleted by override' };
+  check('customization:compound-spinner-owner-preserved', 'Button.Spinner preserves the canonical spinner slot owner', () => {
+    const owner = scope.querySelector(`[data-verify="compound-spinner"] [data-slot="spinner"].${buttonClassNames.spinner}`);
+    return { ok: owner !== null, detail: owner ? 'owner preserved' : 'spinner owner missing' };
   });
 
   return results;
@@ -321,17 +275,16 @@ const CustomizationScenarios = (): ReactNode => (
     </p>
 
     <div style={{ ...actionsStyle, alignItems: 'center' }}>
-      {/* Provider-level customization: defaultProps + classNames + slotProps */}
       <SparReactProvider components={providerThemeForButton}>
-        <Button slotProps={{ root: buttonRootMarkers({ 'data-verify': 'provider' }) }}>Provider-level customization</Button>
+        <Button slotProps={{ root: buttonRootMarkers({ 'data-verify': 'provider' }) }}>
+          <Button.Label>Provider-level customization</Button.Label>
+        </Button>
       </SparReactProvider>
 
-      {/* Instance-level classNames concatenates with canonical */}
       <Button classNames={{ root: 'verify-instance-classnames' }} slotProps={{ root: buttonRootMarkers({ 'data-verify': 'instance-classnames' }) }}>
-        Instance classNames
+        <Button.Label>Instance classNames</Button.Label>
       </Button>
 
-      {/* Instance-level slotProps merges attributes onto the canonical root */}
       <Button
         slotProps={{
           root: buttonRootMarkers({
@@ -340,16 +293,14 @@ const CustomizationScenarios = (): ReactNode => (
           }),
         }}
       >
-        Instance slotProps
+        <Button.Label>Instance slotProps</Button.Label>
       </Button>
 
-      {/* renderSpinner override: replaces content but must not delete the canonical owner */}
-      <Button
-        loading
-        renderSpinner={defaultSpinner => <span data-verify-render-override="ok">{defaultSpinner}</span>}
-        slotProps={{ root: buttonRootMarkers({ 'data-verify': 'render-override' }) }}
-      >
-        renderSpinner override
+      <Button loading slotProps={{ root: buttonRootMarkers({ 'data-verify': 'compound-spinner' }) }}>
+        <Button.Spinner>
+          <span data-verify-compound-spinner="ok" />
+        </Button.Spinner>
+        <Button.Label>Compound spinner</Button.Label>
       </Button>
     </div>
   </div>
@@ -416,14 +367,18 @@ function App() {
           <div style={sectionStyle}>
             <strong>Visual variants</strong>
             <div style={actionsStyle}>
-              <Button>Primary filled</Button>
+              <Button>
+                <Button.Label>Primary filled</Button.Label>
+              </Button>
               <Button type="outlined" variant="secondary">
-                Secondary outlined
+                <Button.Label>Secondary outlined</Button.Label>
               </Button>
               <Button type="text" variant="neutral">
-                Neutral text
+                <Button.Label>Neutral text</Button.Label>
               </Button>
-              <Button type="elevated">Elevated action</Button>
+              <Button type="elevated">
+                <Button.Label>Elevated action</Button.Label>
+              </Button>
             </div>
           </div>
 
@@ -431,13 +386,14 @@ function App() {
             <strong>Links and states</strong>
             <div style={actionsStyle}>
               <Button type="outlined" variant="secondary">
-                Manage booking
+                <Button.Label>Manage booking</Button.Label>
               </Button>
               <Button mode="link" href="https://www.turkishairlines.com" target="_blank" underline>
-                View fare rules
+                <Button.Label>View fare rules</Button.Label>
               </Button>
               <Button loading variant="secondary">
-                Checking fare
+                <Button.Spinner />
+                <Button.Label>Checking fare</Button.Label>
               </Button>
             </div>
           </div>
@@ -448,15 +404,36 @@ function App() {
             <strong>Accordion parity surface</strong>
             <div style={{ marginTop: '0.75rem' }}>
               <Accordion activeIndex={activeIndex} onActiveIndexChange={index => setActiveIndex(Array.isArray(index) ? index[index.length - 1] : index)}>
-                <AccordionItem header="Flight details" icon={<FlightIcon />}>
-                  Review your departure and arrival windows, cabin, and seat assignment before check-in closes.
-                </AccordionItem>
-                <AccordionItem header="Baggage allowance" icon={<LuggageIcon />}>
-                  Confirm your carry-on and checked baggage limits, then add extra allowance if your fare needs it.
-                </AccordionItem>
-                <AccordionItem header="Check-in options" icon={<TaskAltIcon />}>
-                  Online check-in opens 24 hours before departure and stays available until the airport cut-off time.
-                </AccordionItem>
+                <Accordion.Item>
+                  <Accordion.Header>
+                    <Accordion.Icon>
+                      <FlightIcon />
+                    </Accordion.Icon>
+                    <Accordion.Title>Flight details</Accordion.Title>
+                    <Accordion.Arrow />
+                  </Accordion.Header>
+                  <Accordion.Content>Review your departure and arrival windows, cabin, and seat assignment before check-in closes.</Accordion.Content>
+                </Accordion.Item>
+                <Accordion.Item>
+                  <Accordion.Header>
+                    <Accordion.Icon>
+                      <LuggageIcon />
+                    </Accordion.Icon>
+                    <Accordion.Title>Baggage allowance</Accordion.Title>
+                    <Accordion.Arrow />
+                  </Accordion.Header>
+                  <Accordion.Content>Confirm your carry-on and checked baggage limits, then add extra allowance if your fare needs it.</Accordion.Content>
+                </Accordion.Item>
+                <Accordion.Item>
+                  <Accordion.Header>
+                    <Accordion.Icon>
+                      <TaskAltIcon />
+                    </Accordion.Icon>
+                    <Accordion.Title>Check-in options</Accordion.Title>
+                    <Accordion.Arrow />
+                  </Accordion.Header>
+                  <Accordion.Content>Online check-in opens 24 hours before departure and stays available until the airport cut-off time.</Accordion.Content>
+                </Accordion.Item>
               </Accordion>
             </div>
           </div>
@@ -464,60 +441,106 @@ function App() {
           <div style={sectionStyle}>
             <strong>Input form-field surface</strong>
             <div style={{ ...actionsStyle, flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem' }}>
-              <Input
-                label="Full name"
-                required
-                placeholder="Ada Lovelace"
-                description="Written exactly as on your passport."
-                value={fullName}
-                onChange={event => setFullName(event.target.value)}
-                clearable
-              />
-              <Input
-                label="Email"
-                type="email"
-                icon={<MailIcon />}
-                invalid={email.length > 0 && !email.includes('@')}
-                error="Enter a valid email address."
-                description="We use this to send your itinerary."
-                value={email}
-                onChange={event => setEmail(event.target.value)}
-              />
-              <Input aria-label="Search flights" icon={<SearchIcon />} placeholder="Search flights" size="small" loading />
+              <Input required value={fullName} onChange={event => setFullName(event.target.value)} clearable>
+                <Input.Label>
+                  Full name <Input.Asterisk />
+                </Input.Label>
+                <Input.Container>
+                  <Input.Field placeholder="Ada Lovelace" />
+                  <Input.ClearButton />
+                </Input.Container>
+                <Input.Description>Written exactly as on your passport.</Input.Description>
+              </Input>
+
+              <Input type="email" invalid={email.length > 0 && !email.includes('@')} value={email} onChange={event => setEmail(event.target.value)}>
+                <Input.Label>Email</Input.Label>
+                <Input.Container>
+                  <Input.LeadingIcon>
+                    <MailIcon />
+                  </Input.LeadingIcon>
+                  <Input.Field />
+                </Input.Container>
+                <Input.Description>We use this to send your itinerary.</Input.Description>
+                <Input.ErrorMessage>Enter a valid email address.</Input.ErrorMessage>
+              </Input>
+
+              <Input size="small" loading>
+                <Input.Container>
+                  <Input.LeadingIcon>
+                    <SearchIcon />
+                  </Input.LeadingIcon>
+                  <Input.Field aria-label="Search flights" placeholder="Search flights" />
+                  <Input.Spinner />
+                </Input.Container>
+              </Input>
             </div>
           </div>
 
           <div style={sectionStyle}>
             <strong>Checkbox parity surface</strong>
             <div style={{ ...actionsStyle, flexDirection: 'column', alignItems: 'flex-start', gap: '0.75rem' }}>
-              <Checkbox label="Accept fare rules" description="Required before you continue to payment." required value={termsAccepted} onChange={setTermsAccepted} />
-              <Checkbox label="Add checked baggage" description="Uncontrolled · card variant" type="card" defaultValue={false} />
-              <Checkbox label="Select all extras" indeterminate slotProps={{ root: checkboxRootMarkers({ 'data-verify': 'checkbox-indeterminate' }) }} />
+              <Checkbox required value={termsAccepted} onChange={setTermsAccepted}>
+                <Checkbox.Indicator>
+                  <Checkbox.Icon />
+                </Checkbox.Indicator>
+                <Checkbox.Content>
+                  <Checkbox.Label>Accept fare rules</Checkbox.Label>
+                  <Checkbox.Description>Required before you continue to payment.</Checkbox.Description>
+                </Checkbox.Content>
+              </Checkbox>
+
+              <Checkbox type="card" defaultValue={false}>
+                <Checkbox.Indicator>
+                  <Checkbox.Icon />
+                </Checkbox.Indicator>
+                <Checkbox.Content>
+                  <Checkbox.Label>Add checked baggage</Checkbox.Label>
+                  <Checkbox.Description>Uncontrolled · card variant</Checkbox.Description>
+                </Checkbox.Content>
+              </Checkbox>
+
+              <Checkbox indeterminate slotProps={{ root: checkboxRootMarkers({ 'data-verify': 'checkbox-indeterminate' }) }}>
+                <Checkbox.Indicator>
+                  <Checkbox.Icon />
+                </Checkbox.Indicator>
+                <Checkbox.Content>
+                  <Checkbox.Label>Select all extras</Checkbox.Label>
+                </Checkbox.Content>
+              </Checkbox>
             </div>
           </div>
 
           <div style={sectionStyle}>
             <strong>Dialog parity surface</strong>
             <div style={actionsStyle}>
-              <Button onClick={() => setDialogVisible(true)}>Open dialog</Button>
+              <Button onClick={() => setDialogVisible(true)}>
+                <Button.Label>Open dialog</Button.Label>
+              </Button>
             </div>
 
-            <Dialog
-              visible={dialogVisible}
-              onVisibleChange={setDialogVisible}
-              header="Upgrade cabin"
-              subheader="Review the fare difference before confirming."
-              containerStyle={{ width: '460px' }}
-              footerActions={
-                <>
-                  <Button type="text" variant="neutral" onClick={() => setDialogVisible(false)}>
-                    Cancel
-                  </Button>
-                  <Button>Continue</Button>
-                </>
-              }
-            >
-              Review the fare, cabin benefits, and baggage rules before you complete the upgrade.
+            <Dialog visible={dialogVisible} onVisibleChange={setDialogVisible}>
+              <Dialog.Mask />
+              <Dialog.Panel style={{ width: '460px' }}>
+                <Dialog.Header>
+                  <Dialog.SignIcon />
+                  <Dialog.TitleGroup>
+                    <Dialog.Description>Review the fare difference before confirming.</Dialog.Description>
+                    <Dialog.Title>Upgrade cabin</Dialog.Title>
+                  </Dialog.TitleGroup>
+                  <Dialog.CloseButton />
+                </Dialog.Header>
+                <Dialog.Body>Review the fare, cabin benefits, and baggage rules before you complete the upgrade.</Dialog.Body>
+                <Dialog.Footer>
+                  <Dialog.FooterActions>
+                    <Button type="text" variant="neutral" onClick={() => setDialogVisible(false)}>
+                      <Button.Label>Cancel</Button.Label>
+                    </Button>
+                    <Button>
+                      <Button.Label>Continue</Button.Label>
+                    </Button>
+                  </Dialog.FooterActions>
+                </Dialog.Footer>
+              </Dialog.Panel>
             </Dialog>
           </div>
 

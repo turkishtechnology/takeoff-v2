@@ -1,5 +1,5 @@
 import RenderedDemo from '../../../components/RenderedDemo';
-import { Accordion, AccordionItem, ReactSparDemoRoot } from './shared';
+import { Accordion, ReactSparDemoRoot } from './shared';
 
 const sectionLabelStyle = {
   margin: 0,
@@ -25,16 +25,40 @@ const code = `export function ModeDemo() {
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Default</p>
         <Accordion mode="default">
-          <AccordionItem header="Panel 1 Title">Panel 1 Content</AccordionItem>
-          <AccordionItem header="Panel 2 Title">Panel 2 Content</AccordionItem>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Compact</p>
         <Accordion mode="compact">
-          <AccordionItem header="Panel 1 Title">Panel 1 Content</AccordionItem>
-          <AccordionItem header="Panel 2 Title">Panel 2 Content</AccordionItem>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
     </div>
@@ -47,16 +71,40 @@ function ModeDemo() {
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Default</p>
         <Accordion mode="default">
-          <AccordionItem header="Panel 1 Title">Panel 1 Content</AccordionItem>
-          <AccordionItem header="Panel 2 Title">Panel 2 Content</AccordionItem>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Compact</p>
         <Accordion mode="compact">
-          <AccordionItem header="Panel 1 Title">Panel 1 Content</AccordionItem>
-          <AccordionItem header="Panel 2 Title">Panel 2 Content</AccordionItem>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
     </div>

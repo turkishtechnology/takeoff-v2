@@ -1,14 +1,10 @@
-import { createElement, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { createComponentBase } from '../../base/createComponentBase';
 import type { SlotClassNames } from '../../types';
 import { createSafeContext } from '../../utils/createSafeContext';
-// TODO(takeoff-icons): Swap these placeholder SVGs for the official Takeoff
-// icon components (currently `keyboard_arrow_down` / `keyboard_arrow_up` in
-// takeoff-ui) before the first public release.
-import { PlaceholderChevronDown, PlaceholderChevronUp } from '../../utils/placeholderIcons';
 
-import type { AccordionArrowPosition, AccordionItemProps, AccordionMode, AccordionProps, AccordionType } from './types';
+import type { AccordionItemProps, AccordionMode, AccordionProps, AccordionType } from './types';
 
 export const accordionSlots = ['root'] as const;
 
@@ -24,10 +20,6 @@ export const AccordionBase = createComponentBase<AccordionProps, AccordionSlot>(
   classNames: accordionClassNames,
   defaultProps: {
     allowMultiple: false,
-    arrowPosition: 'right',
-    expandIcon: createElement(PlaceholderChevronDown),
-    collapseIcon: createElement(PlaceholderChevronUp),
-    hideArrows: false,
     type: 'grouped',
     mode: 'default',
   },
@@ -61,13 +53,21 @@ export interface AccordionAdapterContextValue {
   openItemValues: Set<string>;
   type: AccordionType;
   mode: AccordionMode;
-  arrowPosition: AccordionArrowPosition;
-  expandIcon: ReactNode;
-  collapseIcon: ReactNode;
-  hideArrows: boolean;
+  classNames: AccordionProps['classNames'];
+  slotProps: AccordionProps['slotProps'];
 }
 
 export const [AccordionProvider, useAccordionContext] = createSafeContext<AccordionAdapterContextValue>('Accordion');
+
+export interface AccordionItemContextValue {
+  encodedValue: string;
+  isOpen: boolean;
+  size: NonNullable<AccordionItemProps['size']>;
+  classNames: AccordionItemProps['classNames'];
+  slotProps: AccordionItemProps['slotProps'];
+}
+
+export const [AccordionItemProvider, useAccordionItemContext] = createSafeContext<AccordionItemContextValue>('AccordionItem');
 
 export const encodeAccordionItemValue = (value: AccordionItemKey): string => (typeof value === 'number' ? `n:${value}` : `s:${value}`);
 
@@ -82,3 +82,13 @@ export const decodeAccordionItemValue = (value: string): AccordionItemKey => {
 
   return value;
 };
+
+/**
+ * Arrow render input shared between default icon resolution and user-supplied
+ * `<Accordion.Arrow>` render-prop children.
+ */
+export interface AccordionArrowRenderState {
+  isOpen: boolean;
+}
+
+export type AccordionArrowChildren = ReactNode | ((state: AccordionArrowRenderState) => ReactNode);
