@@ -163,7 +163,14 @@ Compound parts must:
   default anatomy and at least one customization path;
 - be exported under the root's namespace via
   `Object.assign(Root, { Part, ... })` so that the single import resolves the
-  whole surface.
+  whole surface;
+- render through their upstream counterpart when one exists — a compound part
+  whose slot has a matching Spar primitive part must delegate to that part
+  rather than re-emit the same slot node with a plain tag. Bypassing an upstream
+  part is allowed only as a recorded exemption with rationale. See
+  `packages/react-spar/docs/CODING_STANDARDS.md` § _Composition Archetypes_ for
+  the Inherited / React-enhancement / Bypass classification every part must
+  declare.
 
 ## Decision recording
 

@@ -14,6 +14,33 @@ export const accordionClassNames = {
   root: 'tk-accordion',
 } as const satisfies SlotClassNames<AccordionSlot>;
 
+/**
+ * Composition archetype classification (see
+ * `packages/react-spar/docs/CODING_STANDARDS.md § Composition Archetypes`).
+ *
+ * `SparAccordion` ships a compound upstream; its semantic parts are all
+ * inherited by our wrapper. Structural chrome (title, icon, arrow) has no
+ * upstream counterpart and is react-enhancement.
+ *
+ * - `Accordion` root   — inherited. Delegates to `SparAccordion`; supplies the
+ *   adapter-hook value/onValueChange translation.
+ * - `Accordion.Item`   — inherited. Delegates to `SparAccordion.Item`.
+ * - `Accordion.Header` — inherited. Delegates to
+ *   `SparAccordion.Header > SparAccordion.Trigger`, both forced to
+ *   `as="div"`. Rationale: upstream `SparAccordion.Trigger` defaults to a
+ *   native `<button>`, which cannot legally nest interactive children; our
+ *   header row composes an icon / title / arrow cluster and may itself need
+ *   to contain a consumer-supplied secondary control. Rendering the trigger
+ *   as a `<div>` preserves the ARIA and keyboard wiring Spar attaches while
+ *   keeping the DOM nestable. The wrapper keeps `role="button"` and
+ *   `tabIndex` because Spar emits them regardless of `as`.
+ * - `Accordion.Content`— inherited. Delegates to `SparAccordion.Content` with
+ *   `forceMount` so animation states have a stable tree.
+ * - `Accordion.Title`  — react-enhancement.
+ * - `Accordion.Icon`   — react-enhancement.
+ * - `Accordion.Arrow`  — react-enhancement; function-as-children exposes
+ *   `{ isOpen }` for consumer-rendered chevrons.
+ */
 export const AccordionBase = createComponentBase<AccordionProps, AccordionSlot>({
   name: 'Accordion',
   slots: accordionSlots,

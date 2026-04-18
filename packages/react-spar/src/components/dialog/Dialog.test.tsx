@@ -3,7 +3,7 @@ import { axe } from 'vitest-axe';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { renderWithProvider, screen } from '../../test-utils';
 import { SparReactProvider } from '../../provider';
 import { Dialog } from './Dialog';
@@ -169,5 +169,48 @@ describe('Dialog (compound)', () => {
   it('has no a11y violations for a default compound dialog', async () => {
     const { container } = renderDefaultDialog();
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  describe('preventDismiss', () => {
+    it('blocks Escape-key dismiss when set', () => {
+      const onVisibleChange = vi.fn();
+      renderWithProvider(
+        <Dialog defaultVisible preventDismiss onVisibleChange={onVisibleChange}>
+          <Dialog.Panel>
+            <Dialog.Body>locked</Dialog.Body>
+          </Dialog.Panel>
+        </Dialog>,
+      );
+      fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+      expect(onVisibleChange).not.toHaveBeenCalled();
+      expect(screen.queryByRole('dialog')).toBeInTheDocument();
+    });
+
+    it('blocks outside pointer-down dismiss when set', () => {
+      const onVisibleChange = vi.fn();
+      renderWithProvider(
+        <Dialog defaultVisible preventDismiss onVisibleChange={onVisibleChange}>
+          <Dialog.Panel>
+            <Dialog.Body>locked</Dialog.Body>
+          </Dialog.Panel>
+        </Dialog>,
+      );
+      fireEvent.pointerDown(document.body);
+      expect(onVisibleChange).not.toHaveBeenCalled();
+      expect(screen.queryByRole('dialog')).toBeInTheDocument();
+    });
+
+    it('still dismisses on Escape when preventDismiss is off (control)', () => {
+      const onVisibleChange = vi.fn();
+      renderWithProvider(
+        <Dialog defaultVisible onVisibleChange={onVisibleChange}>
+          <Dialog.Panel>
+            <Dialog.Body>open</Dialog.Body>
+          </Dialog.Panel>
+        </Dialog>,
+      );
+      fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+      expect(onVisibleChange).toHaveBeenCalledWith(false);
+    });
   });
 });

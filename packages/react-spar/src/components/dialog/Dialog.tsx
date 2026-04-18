@@ -170,7 +170,7 @@ function Dialog(rawProps: DialogProps) {
 
   const resolvedPortalContainer = portalContainer ?? (mounted ? document.body : null);
 
-  const handleVisibleChange = (nextVisible: boolean) => {
+  const commitVisibility = (nextVisible: boolean) => {
     if (!isControlled) {
       setUncontrolledVisible(nextVisible);
     }
@@ -183,7 +183,19 @@ function Dialog(rawProps: DialogProps) {
     }
   };
 
-  const requestClose = () => handleVisibleChange(false);
+  // Spar invokes this when its dismissal paths fire
+  // (`SparDialog.Content`'s `useInteractOutside` and Escape handler). When
+  // `preventDismiss` is set we swallow the dismissal here, which keeps the
+  // close-button path (explicit user action) working since it routes through
+  // `requestClose` below.
+  const handleVisibleChange = (nextVisible: boolean) => {
+    if (preventDismiss && !nextVisible) {
+      return;
+    }
+    commitVisibility(nextVisible);
+  };
+
+  const requestClose = () => commitVisibility(false);
 
   const contextValue = useMemo(
     () => ({
@@ -204,23 +216,13 @@ function Dialog(rawProps: DialogProps) {
   return (
     <DialogProvider value={contextValue}>
       <SparDialog id={baseId} modal open={currentVisible} onOpenChange={handleVisibleChange}>
-        <DialogInteractionBoundary preventDismiss={preventDismiss}>{children}</DialogInteractionBoundary>
+        {children}
       </SparDialog>
     </DialogProvider>
   );
 }
 
 Dialog.displayName = 'Dialog';
-
-/**
- * Internal helper that wraps the children in whatever dismiss/outside-click
- * configuration the root needs. Kept separate so the Provider value and the
- * compound parts can share context without threading props manually.
- */
-function DialogInteractionBoundary({ preventDismiss, children }: { preventDismiss: boolean; children: ReactNode }) {
-  void preventDismiss;
-  return <>{children}</>;
-}
 
 function DialogMask(rest: DialogMaskProps) {
   const context = useDialogContext('Dialog.Mask');
