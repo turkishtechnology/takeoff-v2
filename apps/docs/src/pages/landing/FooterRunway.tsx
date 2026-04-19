@@ -20,7 +20,7 @@ const COLUMNS: Column[] = [
   {
     title: 'Product',
     links: [
-      { label: 'Components', href: '/docs/components/overview' },
+      { label: 'Components', href: '/docs/roadmap' },
       { label: 'Theme Studio', href: '/theme-studio' },
       { label: 'Changelog', href: '/changelog' },
       { label: 'Roadmap', href: '/docs/roadmap' },
@@ -49,7 +49,6 @@ const COLUMNS: Column[] = [
       { label: 'Turkish Technology', href: 'https://turkishtechnology.com', external: true },
       { label: 'Takeoff Design', href: 'https://design.takeoff.turkishtechnology.com', external: true },
       { label: 'Spar', href: 'https://github.com/turkishtechnology/spar', external: true },
-      { label: 'Philosophy', href: '/docs/philosophy/' },
     ],
   },
 ];

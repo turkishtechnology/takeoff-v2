@@ -125,13 +125,17 @@
   position: relative;
 }
 
+.codeWrap code {
+  color: inherit !important;
+}
+
 .codeWrap pre {
   margin: 0;
   padding: 1.25rem 1.25rem;
   font-family: var(--runway-type-mono-family);
   font-size: 0.875rem;
   line-height: 1.6;
-  color: #e6e6ea;
+  color: var(--runway-ink-dim);
   background: transparent;
   overflow-x: auto;
   overflow-y: hidden;
@@ -151,12 +155,50 @@
   margin-right: 0.75rem;
 }
 
-.codeWrap pre .keyword {
-  color: #b6b6be;
+.code {
+  display: block;
+  color: inherit;
 }
 
-.codeWrap pre .token {
-  color: #e6e6ea;
+.codeLine {
+  display: block;
+  white-space: pre;
+}
+
+.kw {
+  color: #c792ea;
+}
+
+.tag {
+  color: #ff6b7a;
+}
+
+.attr {
+  color: var(--runway-accent-cyan);
+}
+
+.str {
+  color: #a5d6a7;
+}
+
+.fn {
+  color: #ffcb6b;
+}
+
+.punct {
+  color: var(--runway-ink-dim);
+}
+
+.cliTool {
+  color: #ffcb6b;
+}
+
+.cliVerb {
+  color: var(--runway-ink);
+}
+
+.cliPackage {
+  color: var(--runway-accent-cyan);
 }
 
 .copyBtn {

@@ -302,7 +302,9 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -22px;
+  /* Sit flush with the navbar's bottom border.
+     Link (~34px) is centered in a 66px navbar, so link-bottom is ~16px above the navbar edge. */
+  bottom: -16px;
   height: 2px;
   background: currentColor;
 }

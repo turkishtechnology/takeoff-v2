@@ -22,8 +22,7 @@ pnpm add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar 
 
 ## Start Here
 
-- [Components Overview](/docs/components/overview) — component inventory styled
-  with the Takeoff UI docs theme
-- [Button](/docs/components/button) — live preview surface for the current
-  `Button` wrapper in docs
+- [Installation](/docs/installation) — add `@takeoff-ui/react-spar` and its peer
+  packages to your project
+- [Roadmap](/docs/roadmap) — component port status and release readiness
 - [Theme Studio](/theme-studio) — live-edit Takeoff tokens and export a CSS file

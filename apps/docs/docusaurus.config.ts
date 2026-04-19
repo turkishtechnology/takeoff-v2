@@ -133,16 +133,12 @@ const config: Config = {
               to: '/docs',
             },
             {
-              label: 'Components',
-              to: '/docs/components/overview',
+              label: 'Installation',
+              to: '/docs/installation',
             },
             {
-              label: 'Button',
-              to: '/docs/components/button',
-            },
-            {
-              label: 'Dialog',
-              to: '/docs/components/dialog',
+              label: 'Roadmap',
+              to: '/docs/roadmap',
             },
           ],
         },

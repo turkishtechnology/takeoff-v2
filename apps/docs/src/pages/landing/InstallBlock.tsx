@@ -41,6 +41,111 @@ function CopyButton({ value }: { value: string }): JSX.Element {
   );
 }
 
+function InstallCommandCode({ command }: { command: string }): JSX.Element {
+  const [tool, verb, ...packages] = command.split(' ');
+
+  return (
+    <code className={styles.code}>
+      <span className={styles.codeLine}>
+        <span className={styles.prompt}>$</span>
+        <span className={styles.cliTool}>{tool}</span>
+        <span className={styles.punct}> </span>
+        <span className={styles.cliVerb}>{verb}</span>
+        {packages.map(pkg => (
+          <span key={pkg}>
+            <span className={styles.punct}> </span>
+            <span className={styles.cliPackage}>{pkg}</span>
+          </span>
+        ))}
+      </span>
+    </code>
+  );
+}
+
+function ImportTokensCode(): JSX.Element {
+  return (
+    <code className={styles.code}>
+      <span className={styles.codeLine}>
+        <span className={styles.kw}>import</span>
+        <span className={styles.punct}> </span>
+        <span className={styles.str}>'@takeoff-design/tokens/css/default/theme.css'</span>
+        <span className={styles.punct}>;</span>
+      </span>
+    </code>
+  );
+}
+
+function ProviderCode(): JSX.Element {
+  return (
+    <code className={styles.code}>
+      <span className={styles.codeLine}>
+        <span className={styles.kw}>import</span>
+        <span className={styles.punct}> {'{ '}</span>
+        <span className={styles.fn}>SparReactProvider</span>
+        <span className={styles.punct}>{' }'}</span>
+        <span className={styles.punct}> </span>
+        <span className={styles.kw}>from</span>
+        <span className={styles.punct}> </span>
+        <span className={styles.str}>'@takeoff-ui/react-spar'</span>
+        <span className={styles.punct}>;</span>
+      </span>
+      <span className={styles.codeLine}>
+        <span className={styles.kw}>import</span>
+        <span className={styles.punct}> </span>
+        <span className={styles.str}>'@takeoff-design/tokens/css/default/theme.css'</span>
+        <span className={styles.punct}>;</span>
+      </span>
+      <span className={styles.codeLine}> </span>
+      <span className={styles.codeLine}>
+        <span className={styles.kw}>export</span>
+        <span className={styles.punct}> </span>
+        <span className={styles.kw}>function</span>
+        <span className={styles.punct}> </span>
+        <span className={styles.fn}>App</span>
+        <span className={styles.punct}>({'{ '}</span>
+        <span className={styles.attr}>children</span>
+        <span className={styles.punct}>
+          {' }'}) {'{'}
+        </span>
+      </span>
+      <span className={styles.codeLine}>
+        {'  '}
+        <span className={styles.kw}>return</span>
+        <span className={styles.punct}> (</span>
+      </span>
+      <span className={styles.codeLine}>
+        {'    '}
+        <span className={styles.punct}>&lt;</span>
+        <span className={styles.tag}>SparReactProvider</span>
+        <span className={styles.punct}> </span>
+        <span className={styles.attr}>colorMode</span>
+        <span className={styles.punct}>=</span>
+        <span className={styles.str}>"light"</span>
+        <span className={styles.punct}>&gt;</span>
+      </span>
+      <span className={styles.codeLine}>
+        {'      '}
+        <span className={styles.punct}>{'{'}</span>
+        <span className={styles.attr}>children</span>
+        <span className={styles.punct}>{'}'}</span>
+      </span>
+      <span className={styles.codeLine}>
+        {'    '}
+        <span className={styles.punct}>&lt;/</span>
+        <span className={styles.tag}>SparReactProvider</span>
+        <span className={styles.punct}>&gt;</span>
+      </span>
+      <span className={styles.codeLine}>
+        {'  '}
+        <span className={styles.punct}>);</span>
+      </span>
+      <span className={styles.codeLine}>
+        <span className={styles.punct}>{'}'}</span>
+      </span>
+    </code>
+  );
+}
+
 export default function InstallBlock(): JSX.Element {
   const [pm, setPm] = useState<PackageManager>('pnpm');
   const activeCommand = INSTALL_COMMANDS[pm];
@@ -83,10 +188,7 @@ export default function InstallBlock(): JSX.Element {
             </div>
             <div className={styles.codeWrap}>
               <pre>
-                <code>
-                  <span className={styles.prompt}>$</span>
-                  {activeCommand}
-                </code>
+                <InstallCommandCode command={activeCommand} />
               </pre>
               <CopyButton value={activeCommand} />
             </div>
@@ -102,7 +204,7 @@ export default function InstallBlock(): JSX.Element {
             </div>
             <div className={styles.codeWrap}>
               <pre>
-                <code>{CSS_IMPORT}</code>
+                <ImportTokensCode />
               </pre>
               <CopyButton value={CSS_IMPORT} />
             </div>
@@ -118,7 +220,7 @@ export default function InstallBlock(): JSX.Element {
             </div>
             <div className={styles.codeWrap}>
               <pre>
-                <code>{PROVIDER_SNIPPET}</code>
+                <ProviderCode />
               </pre>
               <CopyButton value={PROVIDER_SNIPPET} />
             </div>

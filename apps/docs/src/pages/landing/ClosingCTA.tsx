@@ -22,7 +22,7 @@ export default function ClosingCTA(): JSX.Element {
                 <path d="M3 8 H12 M8.5 4 L12 8 L8.5 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
-            <Link to="/docs/components/overview" className={styles.ctaGhost}>
+            <Link to="/docs/roadmap" className={styles.ctaGhost}>
               <svg className={styles.icon} viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M4 3h8v10H4z" stroke="currentColor" strokeWidth="1.5" />
                 <path d="M6 6h4M6 8h4M6 10h3" stroke="currentColor" strokeWidth="1.5" />

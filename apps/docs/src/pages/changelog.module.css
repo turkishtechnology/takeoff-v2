@@ -1,0 +1,363 @@
+/* ── Surface ─────────────────────────────────────────────────── */
+
+.page {
+  position: relative;
+  background: var(--runway-black);
+  color: var(--runway-ink);
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 96px 40px 120px;
+}
+
+/* ── Page header (aligned to the content column) ─────────────── */
+
+.header {
+  padding-left: calc(160px + 48px); /* gutter + gap */
+  margin-bottom: 96px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--runway-type-mono-family);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--runway-ink-faint);
+  margin: 0 0 20px;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 18px;
+  height: 1px;
+  background: var(--runway-cardinal-bright);
+  display: inline-block;
+}
+
+.title {
+  font-family: 'Geologica', sans-serif;
+  font-size: clamp(32px, 4.2vw, 48px);
+  line-height: 1.05;
+  letter-spacing: -1px;
+  font-weight: 500;
+  color: var(--runway-ink);
+  margin: 0 0 18px;
+}
+
+.lead {
+  font-family: 'Geologica', sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--runway-ink-dim);
+  margin: 0;
+  max-width: 58ch;
+}
+
+/* ── Feed ────────────────────────────────────────────────────── */
+
+.feed {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Entry grid (desktop) ────────────────────────────────────── */
+
+.entry {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 48px;
+  align-items: start;
+  padding: 64px 0 72px;
+  border-top: 1px solid var(--runway-surface-dark-border);
+}
+
+.entry:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+/* ── Sticky meta gutter ──────────────────────────────────────── */
+
+.meta {
+  position: sticky;
+  top: calc(var(--ifm-navbar-height, 60px) + 32px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  /* margin-top aligns the aside with the entry title baseline (approx.) */
+  margin-top: 6px;
+}
+
+.version {
+  display: inline-block;
+  padding: 3px 9px;
+  border: 1px solid var(--runway-surface-dark-border-2);
+  border-radius: 4px;
+  font-family: var(--runway-type-mono-family);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--runway-ink);
+  line-height: 1.4;
+  white-space: nowrap;
+  background: transparent;
+}
+
+.date {
+  font-family: var(--runway-type-mono-family);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--runway-ink-faint);
+  white-space: nowrap;
+}
+
+/* ── Entry body ──────────────────────────────────────────────── */
+
+.body {
+  min-width: 0; /* prevent grid blowout on long tokens */
+}
+
+.entryTitle {
+  font-family: 'Geologica', sans-serif;
+  font-size: clamp(24px, 2.8vw, 32px);
+  line-height: 1.18;
+  letter-spacing: -0.5px;
+  font-weight: 500;
+  color: var(--runway-ink);
+  margin: 0 0 18px;
+}
+
+.entrySummary {
+  font-family: 'Geologica', sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  font-weight: 400;
+  color: var(--runway-ink-dim);
+  margin: 0 0 40px;
+  max-width: 64ch;
+}
+
+/* ── Media ───────────────────────────────────────────────────── */
+
+.media {
+  margin: 0 0 44px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--runway-surface-dark-border);
+  background: var(--runway-bg-2);
+}
+
+.media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── Sections ────────────────────────────────────────────────── */
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sectionTitle {
+  font-family: 'Geologica', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.1px;
+  color: var(--runway-ink);
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--runway-surface-dark-border);
+}
+
+.sectionList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionItem {
+  font-family: 'Geologica', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--runway-ink-dim);
+  padding-left: 20px;
+  position: relative;
+}
+
+.sectionItem::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.72em;
+  width: 6px;
+  height: 1px;
+  background: var(--runway-ink-ghost);
+}
+
+/* ── Collapsible sections (disclosure group) ─────────────────── */
+/* TODO: Replace with <Accordion> from @takeoff-ui/react-spar once ported to docs. */
+
+.collapsibleGroup {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--runway-surface-dark-border);
+}
+
+.sections + .collapsibleGroup {
+  margin-top: 36px;
+}
+
+.collapsible {
+  border-bottom: 1px solid var(--runway-surface-dark-border);
+}
+
+.collapsibleSummary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 2px;
+  font-family: 'Geologica', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--runway-ink);
+  user-select: none;
+}
+
+.collapsibleSummary::-webkit-details-marker {
+  display: none;
+}
+
+.collapsibleSummary::marker {
+  content: '';
+}
+
+.collapsibleSummary:focus-visible {
+  outline: 2px solid var(--runway-cardinal-bright);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+.collapsibleChevron {
+  flex-shrink: 0;
+  color: var(--runway-ink-faint);
+  transition:
+    transform 200ms var(--runway-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)),
+    color 150ms ease;
+}
+
+.collapsibleSummary:hover .collapsibleChevron {
+  color: var(--runway-ink);
+}
+
+.collapsible[open] .collapsibleChevron {
+  transform: rotate(180deg);
+}
+
+.collapsibleContent {
+  padding: 6px 2px 22px;
+}
+
+/* ── Links row (optional) ────────────────────────────────────── */
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px dashed var(--runway-surface-dark-border);
+}
+
+.linkItem {
+  font-family: var(--runway-type-mono-family);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--runway-ink-faint);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.linkItem:hover {
+  color: var(--runway-ink);
+  border-bottom-color: var(--runway-ink-faint);
+  text-decoration: none;
+}
+
+/* ── Responsive: tablet / mobile ─────────────────────────────── */
+
+@media (max-width: 900px) {
+  .container {
+    padding: 80px 28px 104px;
+  }
+
+  .header {
+    padding-left: 0;
+    margin-bottom: 64px;
+  }
+
+  .entry {
+    display: block;
+    padding: 48px 0 56px;
+  }
+
+  .meta {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .container {
+    padding: 64px 20px 96px;
+  }
+
+  .entryTitle {
+    font-size: 22px;
+    letter-spacing: -0.2px;
+    margin-bottom: 14px;
+  }
+
+  .entrySummary {
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  .sections {
+    gap: 28px;
+  }
+}

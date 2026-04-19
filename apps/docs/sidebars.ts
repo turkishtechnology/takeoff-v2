@@ -10,12 +10,6 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Components',
-      collapsed: false,
-      items: ['Components/Overview', 'Components/Accordion', 'Components/Button', 'Components/Checkbox', 'Components/Dialog', 'Components/Input'],
-    },
-    {
-      type: 'category',
       label: 'Discover',
       collapsed: false,
       items: ['roadmap', 'contributing'],

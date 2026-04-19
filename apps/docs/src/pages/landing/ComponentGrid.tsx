@@ -154,18 +154,18 @@ export default function ComponentGrid(): JSX.Element {
         <div className={styles.head}>
           <p className={styles.eyebrow}>Documentation</p>
           <h2 id="runway-components-title" className={styles.title}>
-            Foundational components,
+            Core components,
             <br />
-            <em>documented end to end.</em>
+            <em>shipped with the full contract.</em>
           </h2>
           <p className={styles.lede}>
-            Buttons, Inputs, Checkbox, Dialog, and Accordion define the first public surface of the library. The adjacent previews show the vocabulary the next ports will follow,
-            but this site only treats a component as shipped when its docs, examples, and API table are in place.
+            Buttons, Inputs, Checkbox, Dialog, and Accordion set the tone for the library. The previews alongside them show what is coming next, but nothing ships without docs,
+            examples, and API coverage in place.
           </p>
         </div>
 
         <div className={styles.grid}>
-          <Link to="/docs/components/button" className={`${styles.card} ${styles.buttonsCard}`}>
+          <Link to="/docs/roadmap" className={`${styles.card} ${styles.buttonsCard}`}>
             <div className={styles.cardTitle}>
               <h4>Buttons</h4>
               <span className={styles.cardMono}>Button</span>
@@ -173,7 +173,7 @@ export default function ComponentGrid(): JSX.Element {
             <BrowserOnly fallback={<div className={styles.demo} />}>{() => <ButtonsCardDemo />}</BrowserOnly>
           </Link>
 
-          <Link to="/docs/components/input" className={styles.card}>
+          <Link to="/docs/roadmap" className={styles.card}>
             <div className={styles.cardTitle}>
               <h4>Input</h4>
               <span className={styles.cardMono}>Input</span>
@@ -215,7 +215,7 @@ export default function ComponentGrid(): JSX.Element {
         </div>
 
         <div className={styles.exploreRow}>
-          <Link to="/docs/components/overview" className={styles.exploreLink}>
+          <Link to="/docs/roadmap" className={styles.exploreLink}>
             Browse the full component set
             <ArrowIcon />
           </Link>
