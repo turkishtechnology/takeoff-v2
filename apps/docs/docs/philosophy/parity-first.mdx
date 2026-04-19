@@ -1,0 +1,46 @@
+---
+title: Parity-first
+description:
+  What we commit to vs. what we don't — aligning with Takeoff UI Core.
+sidebar_label: Parity-first
+sidebar_position: 3
+slug: /philosophy/parity-first
+---
+
+# Parity-first
+
+> We ship parity with Takeoff UI Core on the surfaces that matter: prop names,
+> states, slots, `data-*` hooks.
+
+## What "parity" means here
+
+Parity is about the **surfaces you interact with**, not the rendering strategy.
+When Takeoff UI Core — the Stencil source of truth — exposes a prop named
+`variant` with values `primary | secondary | neutral | …`, the React wrapper
+exposes the same.
+
+When the Stencil implementation emits `data-slot="spinner-indicator"` on a
+specific node, the React wrapper emits it on the corresponding node too.
+
+## What parity does NOT mean
+
+- **Not identical JSX trees.** The React wrapper is free to compose primitives
+  from `@turkish-technology/spar` however it likes internally.
+- **Not identical event wiring.** React's synthetic events replace DOM events;
+  we match _semantics_ (`onClick`, `onValueChange`), not `addEventListener`
+  names.
+- **Not identical bundle shape.** The React package is tree-shakable and
+  framework-native; Stencil artifacts are not imported.
+
+## Why it matters
+
+Teams on both sides — the Core Web Components users and the React wrapper users
+— share a single styling contract. A designer can write one recipe in
+`@takeoff-design/tokens` that targets `[data-slot="spinner-indicator"]` and it
+works across every framework. Your CSS stops being framework-coupled.
+
+## The promise
+
+If Takeoff UI Core ships a new variant, the React wrapper ships the same variant
+in the next release. If a data attribute changes, the wrapper emits the new one.
+Your styles never break silently.

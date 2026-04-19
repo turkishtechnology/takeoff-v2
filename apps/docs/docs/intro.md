@@ -22,8 +22,8 @@ pnpm add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar 
 
 ## Start Here
 
-- [Theming](./theming) — one-time app-shell setup for styles and color mode
 - [Components Overview](/docs/components/overview) — component inventory styled
   with the Takeoff UI docs theme
 - [Button](/docs/components/button) — live preview surface for the current
   `Button` wrapper in docs
+- [Theme Studio](/theme-studio) — live-edit Takeoff tokens and export a CSS file

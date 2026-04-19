@@ -74,32 +74,51 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
+      title: 'Takeoff Spar',
       logo: {
-        alt: 'Takeoff UI Logo',
-        src: 'img/navbar-logo.svg',
-        srcDark: 'img/navbar-logo-dark.svg',
+        alt: 'Takeoff Spar',
+        src: 'img/brand-mark.svg',
+        srcDark: 'img/brand-mark-dark.svg',
+        width: 22,
+        height: 22,
       },
-      hideOnScroll: true,
+      hideOnScroll: false,
       items: [
+        {
+          type: 'html',
+          position: 'left',
+          value: '<span class="navbar__version-pill">v0.0.1</span>',
+        },
         {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Documentation',
+          label: 'Docs',
+        },
+        {
+          to: '/changelog',
+          label: 'Changelog',
+          position: 'left',
+          activeBaseRegex: '^/changelog',
         },
         {
           type: 'search',
           position: 'right',
         },
         {
-          to: 'https://github.com/turkishtechnology/takeoff-spar/releases',
-          label: 'v0.0.1',
-          position: 'right',
+          'href': 'https://github.com/turkishtechnology/takeoff-spar',
+          'position': 'right',
+          'label': 'GitHub',
+          'className': 'navbar__github-link',
+          'aria-label': 'GitHub repository',
         },
+        // TODO(react-spar): swap this html item for a <Button variant="primary">
+        // once Docusaurus navbar items support React nodes (requires swizzling
+        // @theme/Navbar/Layout). Keeping as styled anchor for minimal-risk parity.
         {
-          href: 'https://github.com/turkishtechnology/takeoff-spar',
+          type: 'html',
           position: 'right',
-          label: 'Github',
+          value: '<a class="navbar__cta-primary" href="/docs/">Get started</a>',
         },
       ],
     },
@@ -112,10 +131,6 @@ const config: Config = {
             {
               label: 'Getting Started',
               to: '/docs',
-            },
-            {
-              label: 'Theming',
-              to: '/docs/theming',
             },
             {
               label: 'Components',

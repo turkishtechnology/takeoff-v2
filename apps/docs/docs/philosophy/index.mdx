@@ -1,0 +1,42 @@
+---
+title: Philosophy
+description: Three pillars that shape every component surface in Takeoff Spar.
+sidebar_label: Philosophy
+sidebar_position: 1
+slug: /philosophy/
+---
+
+# Philosophy
+
+Three commitments shape every public surface in `@takeoff-ui/react-spar`. They
+exist to keep the library _predictable_ across components, _stable_ across
+upgrades, and _honest_ about its structure.
+
+## The pillars
+
+<div className="runway-pillars-grid">
+
+### [01 · Shape it — Spar-shaped surfaces](/docs/philosophy/spar-shaped)
+
+Components mirror the structure they represent. Leaf components stay
+wrapper-first; compound parts exist only where they map to real structural
+ownership.
+
+### [02 · Align it — Parity-first](/docs/philosophy/parity-first)
+
+Public surfaces align with Takeoff UI Core on the contracts that matter: prop
+names, state semantics, slot vocabulary, `data-*` hooks.
+
+### [03 · Extend it — Additive customization](/docs/philosophy/additive-customization)
+
+Every customization surface is additive. `classNames` and `slotProps` layer over
+canonical owner nodes — they never bypass them.
+
+</div>
+
+## Why this matters
+
+A component library is a _commitment to a shape_. The moment it grows
+inconsistent, consumers pay a tax: they have to remember which rule applies
+where. These three pillars give us a single rule to run through every API
+decision — and let you predict the next component's shape before it ships.

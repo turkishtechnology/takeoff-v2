@@ -25,7 +25,8 @@
     "prism-react-renderer": "^2.4.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-live": "^4.1.8"
+    "react-live": "^4.1.8",
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.7.0",
@@ -33,6 +34,7 @@
     "@docusaurus/types": "^3.7.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.170.0",
     "typescript": "^5.7.0"
   },
   "browserslist": {

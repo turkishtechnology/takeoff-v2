@@ -1,0 +1,57 @@
+---
+title: Accessibility
+description:
+  How Takeoff Spar delegates a11y concerns to Spar primitives and the contracts
+  we keep.
+sidebar_label: Accessibility
+sidebar_position: 5
+slug: /accessibility
+---
+
+# Accessibility
+
+`@takeoff-ui/react-spar` treats accessibility as a **structural** concern, not a
+styling one. Focus traps, ARIA roles, keyboard maps, and screen-reader wiring
+live inside `@turkish-technology/spar` primitives — the wrapper never duplicates
+them.
+
+## What we commit to
+
+- **ARIA roles and relationships** come from the Spar primitive for each
+  component. The wrapper never strips or overrides them.
+- **Keyboard maps** (Tab / Shift+Tab / Enter / Space / Escape / Arrow keys)
+  match the WAI-ARIA Authoring Practices for each component type.
+- **Focus management** — trap, restore, and initial focus — is owned by the
+  overlay primitives (Dialog today; Popover, DropdownMenu next).
+- **Reduced motion** — every non-essential animation on the docs site and inside
+  components honors `prefers-reduced-motion: reduce`.
+- **Color contrast** — token recipes meet WCAG 2.1 AA on both light and dark
+  surfaces. Cardinal red shifts to `#E6001F` for AA contrast on black.
+- **Semantic HTML** — Button renders `<button>` or `<a>` depending on `mode`;
+  Input, Checkbox, and other form primitives render native form elements.
+
+## Per-component a11y surface
+
+| Component | Role                    | Keyboard                 | Focus              | Notes                                      |
+| --------- | ----------------------- | ------------------------ | ------------------ | ------------------------------------------ |
+| Button    | `button` / `link`       | Space, Enter             | Native             | `aria-busy` when `loading`                 |
+| Input     | Native input            | Native                   | Native             | Label ↔ field via `htmlFor`                |
+| Checkbox  | `checkbox`              | Space                    | Native             | `aria-checked` tri-state for indeterminate |
+| Accordion | `region` per item       | Enter, Space, Arrow keys | Managed            | `aria-expanded` on header                  |
+| Dialog    | `dialog`, `alertdialog` | Escape                   | Trapped + restored | Mask is `aria-hidden`                      |
+
+## Testing checklist
+
+Every shipped component passes:
+
+- Automated axe-core scan (zero violations).
+- Keyboard-only smoke test (Tab/Shift+Tab/Space/Enter/Escape reach every
+  action).
+- Screen-reader pass (VoiceOver on macOS, NVDA on Windows).
+- Reduced-motion sweep (no animation longer than 10ms).
+
+## Reporting issues
+
+Accessibility regressions are treated as P0. File an issue with the component
+name, the assistive tech involved, and a minimal repro; we'll ship a fix in the
+next patch release.

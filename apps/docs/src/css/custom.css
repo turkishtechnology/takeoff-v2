@@ -2,6 +2,7 @@
 @import '@takeoff-design/tokens/css/default/theme.css';
 @import './docusaurus-overrides.css';
 @import './layout.css';
+@import './runway.css';
 
 html {
   font-family: var(--ifm-font-family-base);
@@ -38,8 +39,4 @@ h6 {
 .theme-back-to-top-button {
   background: var(--primary-base, #c90019);
   color: var(--static-white, #ffffff);
-}
-
-.section-design-system-intro {
-  padding-top: 2rem;
 }

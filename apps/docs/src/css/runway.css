@@ -1,0 +1,318 @@
+/* ==========================================================================
+   RUNWAY — marketing surface CSS for the Takeoff Spar docs app
+   --------------------------------------------------------------------------
+   Loaded after @takeoff-design/tokens, Docusaurus overrides, and layout.css.
+   Scope is explicit: classes prefixed .runway-* or data-runway-surface
+   attributes on pages that opt in. Never leaks into /docs/** content.
+   ========================================================================== */
+
+/* --- Type ramp (landing + marketing pages) -------------------------------- */
+:root {
+  /* Display & headline scale — clamped for fluid typography */
+  --runway-type-display: clamp(2.5rem, 5vw + 1rem, 4.75rem);
+  --runway-type-display-lh: 1.05;
+  --runway-type-display-weight: 800;
+  --runway-type-display-tracking: -0.02em;
+
+  --runway-type-h1: clamp(2rem, 3vw + 1rem, 3rem);
+  --runway-type-h1-lh: 1.1;
+  --runway-type-h1-weight: 700;
+  --runway-type-h1-tracking: -0.015em;
+
+  --runway-type-h2: 1.75rem;
+  --runway-type-h2-lh: 1.2;
+  --runway-type-h2-weight: 700;
+
+  --runway-type-h3: 1.25rem;
+  --runway-type-h3-lh: 1.3;
+  --runway-type-h3-weight: 600;
+
+  --runway-type-body: 1rem;
+  --runway-type-body-lh: 1.6;
+  --runway-type-body-weight: 400;
+
+  --runway-type-small: 0.875rem;
+  --runway-type-small-lh: 1.5;
+
+  --runway-type-eyebrow-size: 0.75rem;
+  --runway-type-eyebrow-weight: 600;
+  --runway-type-eyebrow-tracking: 0.14em;
+
+  --runway-type-mono-family: 'JetBrains Mono', 'SF Mono', ui-monospace, Menlo, Monaco, monospace;
+
+  /* Motion */
+  --runway-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --runway-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --runway-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --runway-duration-fast: 140ms;
+  --runway-duration-base: 220ms;
+  --runway-duration-slow: 420ms;
+  --runway-duration-cinematic: 700ms;
+
+  /* ────────────────────────────────────────────────────────────────
+   * Runway palette — layered design tokens.
+   *
+   * LIGHT MODE (below, :root) — aliased to Takeoff design-system tokens
+   * so the landing adapts to the library's native off-white palette with
+   * cardinal-red accents. Every component, sidebar, TOC, and doc page
+   * already theme from these tokens.
+   *
+   * DARK MODE (below, [data-theme='dark']) — pinned to the reference
+   * Takeoff UI landing palette (exact hex values) so dark mode gets the
+   * deep, engineered look we want for the marketing surface.
+   *
+   * All CSS across /src/pages/landing/ references these as --runway-*
+   * names; only this file needs to know about the two-layer strategy.
+   * ──────────────────────────────────────────────────────────────── */
+
+  /* Surfaces — LIGHT mode (Takeoff tokens) */
+  --runway-black: var(--background-lightest);
+  --runway-bg-1: var(--static-white, #ffffff);
+  --runway-bg-2: var(--neutral-50, #f9fafc);
+  --runway-bg-3: var(--neutral-100, #f2f5f8);
+
+  /* Ink — LIGHT mode */
+  --runway-ink: var(--text-darkest);
+  --runway-ink-dim: var(--text-base);
+  --runway-ink-faint: var(--text-sub-base);
+  --runway-ink-ghost: var(--text-light);
+
+  /* Borders — LIGHT mode */
+  --runway-surface-dark-border: var(--border-light);
+  --runway-surface-dark-border-2: var(--border-sub-base);
+  --runway-surface-dark: var(--runway-bg-1);
+  --runway-surface-dark-raised: var(--runway-bg-2);
+
+  /* Cardinal accent — maps to Takeoff `--primary-base`
+     Light: #c90019 · Dark (overridden below): #ff1736 */
+  --runway-cardinal: var(--primary-base);
+  --runway-cardinal-bright: var(--primary-base);
+  --runway-cardinal-secondary: var(--primary-dark);
+  --runway-cardinal-glow: color-mix(in srgb, var(--primary-base) 35%, transparent);
+
+  /* Semantic accents (flow from Takeoff state recipes in both modes) */
+  --runway-accent-cyan: var(--states-info-base, #7dd3fc);
+  --runway-accent-amber: var(--states-warning-base, #ffb84d);
+  --runway-accent-green: var(--states-success-base, #4ade80);
+
+  /* Hero grid + HUD decorations — LIGHT mode */
+  --runway-grid-color: color-mix(in srgb, var(--text-darkest) 4%, transparent);
+  --runway-grid-size: 64px;
+  --runway-hud-color: color-mix(in srgb, var(--primary-base) 55%, transparent);
+  --runway-bracket-color: var(--primary-base);
+  --runway-ring-color: color-mix(in srgb, var(--primary-base) 18%, transparent);
+}
+
+/* ────────────────────────────────────────────────────────────────
+ * DARK MODE — pinned to the reference Takeoff UI landing palette.
+ * Every token below is the reference's *exact* value so our landing
+ * is pixel-accurate against the mock when the user is on dark mode.
+ * ──────────────────────────────────────────────────────────────── */
+[data-theme='dark'] {
+  /* Reference landing palette */
+  --runway-black: #0a0a0d;
+  --runway-bg-1: #111116;
+  --runway-bg-2: #17171d;
+  --runway-bg-3: #1e1e26;
+
+  /* Reference ink ramp */
+  --runway-ink: #f6f6f8;
+  --runway-ink-dim: #b8b8c2;
+  --runway-ink-faint: #7a7a86;
+  --runway-ink-ghost: #4a4a55;
+
+  /* Reference borders */
+  --runway-surface-dark-border: #24242e;
+  --runway-surface-dark-border-2: #2d2d38;
+  --runway-surface-dark: var(--runway-bg-1);
+  --runway-surface-dark-raised: var(--runway-bg-2);
+
+  /* Reference cardinal (boosted for dark-surface AA contrast) */
+  --runway-cardinal: #ff1736;
+  --runway-cardinal-bright: #ff1736;
+  --runway-cardinal-secondary: #ff4a5f;
+  --runway-cardinal-glow: rgba(255, 23, 54, 0.35);
+
+  /* Reference accents */
+  --runway-accent-cyan: #7dd3fc;
+  --runway-accent-amber: #ffb84d;
+  --runway-accent-green: #4ade80;
+
+  /* Reference hero grid + HUD */
+  --runway-grid-color: rgba(255, 255, 255, 0.025);
+  --runway-hud-color: rgba(255, 23, 54, 0.55);
+  --runway-bracket-color: #ff1736;
+  --runway-ring-color: rgba(255, 23, 54, 0.18);
+}
+
+/* --- Load JetBrains Mono once, alongside Geologica ----------------------- */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* --- Surface classes (opt-in) -------------------------------------------- */
+.runway-surface-dark {
+  background: var(--runway-black);
+  color: var(--runway-ink);
+}
+
+.runway-surface-dark h1,
+.runway-surface-dark h2,
+.runway-surface-dark h3,
+.runway-surface-dark h4,
+.runway-surface-dark h5,
+.runway-surface-dark h6 {
+  color: var(--runway-ink);
+}
+
+.runway-surface-dark a {
+  color: var(--runway-ink);
+}
+
+/* --- Reusable marketing utilities ---------------------------------------- */
+.runway-eyebrow {
+  display: inline-block;
+  font-family: var(--runway-type-mono-family);
+  font-size: var(--runway-type-eyebrow-size);
+  font-weight: var(--runway-type-eyebrow-weight);
+  letter-spacing: var(--runway-type-eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--runway-cardinal-bright);
+}
+
+.runway-display {
+  font-family: 'Geologica', sans-serif;
+  font-size: var(--runway-type-display);
+  line-height: var(--runway-type-display-lh);
+  font-weight: var(--runway-type-display-weight);
+  letter-spacing: var(--runway-type-display-tracking);
+  color: var(--runway-ink);
+  margin: 0;
+}
+
+.runway-h1 {
+  font-family: 'Geologica', sans-serif;
+  font-size: var(--runway-type-h1);
+  line-height: var(--runway-type-h1-lh);
+  font-weight: var(--runway-type-h1-weight);
+  letter-spacing: var(--runway-type-h1-tracking);
+  margin: 0;
+}
+
+.runway-h2 {
+  font-family: 'Geologica', sans-serif;
+  font-size: var(--runway-type-h2);
+  line-height: var(--runway-type-h2-lh);
+  font-weight: var(--runway-type-h2-weight);
+  margin: 0;
+}
+
+.runway-h3 {
+  font-family: 'Geologica', sans-serif;
+  font-size: var(--runway-type-h3);
+  line-height: var(--runway-type-h3-lh);
+  font-weight: var(--runway-type-h3-weight);
+  margin: 0;
+}
+
+.runway-body {
+  font-family: 'Geologica', sans-serif;
+  font-size: var(--runway-type-body);
+  line-height: var(--runway-type-body-lh);
+  font-weight: var(--runway-type-body-weight);
+}
+
+.runway-body-dim {
+  color: var(--runway-ink-dim);
+}
+
+.runway-mono {
+  font-family: var(--runway-type-mono-family);
+}
+
+/* --- Signature motion primitives ----------------------------------------- */
+.runway-lift {
+  transition:
+    transform var(--runway-duration-base) var(--runway-ease-standard),
+    box-shadow var(--runway-duration-base) var(--runway-ease-standard),
+    border-color var(--runway-duration-base) var(--runway-ease-standard);
+}
+
+.runway-lift:hover {
+  transform: translateY(-2px);
+}
+
+.runway-cardinal-stripe {
+  position: relative;
+}
+
+.runway-cardinal-stripe::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0;
+  background: var(--runway-cardinal-bright);
+  animation: runway-stripe 700ms var(--runway-ease-standard) 200ms forwards;
+}
+
+@keyframes runway-stripe {
+  to {
+    width: 100%;
+  }
+}
+
+/* --- Reduced motion: neutralize every non-essential animation ------------ */
+@media (prefers-reduced-motion: reduce) {
+  .runway-lift,
+  .runway-cardinal-stripe::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .runway-cardinal-stripe::after {
+    width: 100%;
+  }
+}
+
+/* --- Container widths ---------------------------------------------------- */
+.runway-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.runway-container-wide {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* --- Landing-page body hook (Docusaurus wraps pages with plugin-pages) --- */
+.plugin-pages [data-runway-landing='true'] {
+  background: var(--runway-black);
+  color: var(--runway-ink);
+}
+
+html[data-runway-landing='true'] .main-wrapper {
+  background: var(--runway-black);
+}
+
+/* --- Global subtle film-grain overlay on landing surface ---------------- */
+[data-runway-landing='true']::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-runway-landing='true']::before {
+    display: none;
+  }
+}

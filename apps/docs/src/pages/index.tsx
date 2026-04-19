@@ -1,32 +1,41 @@
 import type { JSX } from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import HomepageFeatures from '@site/src/components/Landing/Features';
-import Frameworks from '@site/src/components/Landing/Frameworks';
-import DesignSystem from '@site/src/components/Landing/DesignSystem/DesignSystem';
-import Contributors from '@site/src/components/Landing/Contributors';
-import PageHeader from '@site/src/components/PageHeader/PageHeader';
 import Layout from '@theme/Layout';
+import { useRunwaySurface } from '@site/src/hooks/useRunwaySurface';
+
+import HeroRunway from '@site/src/pages/landing/HeroRunway';
+import ComponentGrid from '@site/src/pages/landing/ComponentGrid';
+import ValueRow from '@site/src/pages/landing/ValueRow';
+import OneSurface from '@site/src/pages/landing/OneSurface';
+import CustomerLogos from '@site/src/pages/landing/CustomerLogos';
+import PhilosophyBand from '@site/src/pages/landing/PhilosophyBand';
+import InstallBlock from '@site/src/pages/landing/InstallBlock';
+import TypeScriptBand from '@site/src/pages/landing/TypeScriptBand';
+import ClosingCTA from '@site/src/pages/landing/ClosingCTA';
+import FooterRunway from '@site/src/pages/landing/FooterRunway';
 
 export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
+  useRunwaySurface();
 
   return (
-    <Layout title={`${siteConfig.title}`}>
-      <PageHeader />
-      <main>
-        <HomepageFeatures />
-        <Frameworks />
-        <DesignSystem />
-        <section className="section-image">
-          <div className="holder">
-            <div className="image"></div>
-          </div>
-        </section>
-        <Contributors />
+    <Layout
+      title={siteConfig.title}
+      description="React components for flight. A React 19 component library built on Turkish Technology's Spar primitives and Takeoff design tokens."
+      noFooter
+    >
+      <main data-runway-landing="true">
+        <HeroRunway />
+        <ComponentGrid />
+        <ValueRow />
+        <OneSurface />
+        <CustomerLogos />
+        <PhilosophyBand />
+        <InstallBlock />
+        <TypeScriptBand />
+        <ClosingCTA />
+        <FooterRunway />
       </main>
-      <div className="bg-point top-right">&nbsp;</div>
-      <div className="bg-point middle-right">&nbsp;</div>
-      <div className="bg-point middle-left">&nbsp;</div>
     </Layout>
   );
 }
