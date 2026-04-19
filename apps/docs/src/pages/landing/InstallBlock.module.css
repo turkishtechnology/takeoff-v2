@@ -134,6 +134,15 @@
   color: #e6e6ea;
   background: transparent;
   overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.codeWrap pre::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .codeWrap pre .prompt {

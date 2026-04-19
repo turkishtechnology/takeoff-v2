@@ -68,7 +68,7 @@ export default function FooterRunway(): JSX.Element {
               </span>
               Takeoff Spar
             </Link>
-            <p className={styles.tagline}>The React 19 face of Turkish Technology's Spar primitives. Framework-native, token-driven, MIT-licensed.</p>
+            <p className={styles.tagline}>React component docs for the Takeoff design system on Spar primitives. Token-driven, compound-first, MIT-licensed.</p>
           </div>
 
           {COLUMNS.map(col => (

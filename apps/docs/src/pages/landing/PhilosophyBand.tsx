@@ -11,21 +11,21 @@ interface Pillar {
 
 const PILLARS: Pillar[] = [
   {
-    label: 'Pillar 01',
+    label: 'Principle 01',
     verb: 'Shape it.',
-    aphorism: 'Components mirror the structure they represent — not the props a generator could invent.',
+    aphorism: 'Components expose structure where structure is real, not where a convenience prop would be easier to add.',
     href: '/docs/philosophy/spar-shaped',
   },
   {
-    label: 'Pillar 02',
+    label: 'Principle 02',
     verb: 'Align it.',
-    aphorism: 'We ship parity with Takeoff UI Core on the surfaces that matter: prop names, states, slots, data-* hooks.',
+    aphorism: 'React surfaces stay aligned with Takeoff Core on the contracts consumers actually depend on: state, slots, and styling hooks.',
     href: '/docs/philosophy/parity-first',
   },
   {
-    label: 'Pillar 03',
+    label: 'Principle 03',
     verb: 'Extend it.',
-    aphorism: 'Every customization surface is additive. No render-overrides, no escape hatches, no upgrade tax.',
+    aphorism: 'React-only enhancements stay additive, so customization never breaks the owner nodes and selectors the system relies on.',
     href: '/docs/philosophy/additive-customization',
   },
 ];
@@ -43,13 +43,13 @@ export default function PhilosophyBand(): JSX.Element {
       </div>
       <div className={styles.inner}>
         <div className={styles.head}>
-          <span className={styles.eyebrow}>Design philosophy</span>
+          <span className={styles.eyebrow}>Product philosophy</span>
           <h2 id="runway-philosophy-title" className={styles.title}>
-            Three pillars. No escape hatches.
+            Three principles keep the API predictable.
           </h2>
           <p className={styles.lede}>
-            The library earns its name from engineering, not marketing. Every API decision runs through the same three commitments — so the surface you learn today keeps working
-            the day we ship the next component.
+            These are the rules behind every shipped surface in the library. They explain why the API reads consistently, why styling hooks stay stable, and why customization does
+            not turn into migration debt later.
           </p>
         </div>
         <div className={styles.pillars}>

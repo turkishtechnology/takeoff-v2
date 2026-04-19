@@ -21,7 +21,7 @@ export default function Home(): JSX.Element {
   return (
     <Layout
       title={siteConfig.title}
-      description="React components for flight. A React 19 component library built on Turkish Technology's Spar primitives and Takeoff design tokens."
+      description="Documentation for @takeoff-ui/react-spar, the React 19 component library for the Takeoff design system built on Spar primitives and Takeoff design tokens."
       noFooter
     >
       <main data-runway-landing="true">

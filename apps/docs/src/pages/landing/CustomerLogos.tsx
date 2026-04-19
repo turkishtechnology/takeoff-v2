@@ -8,9 +8,9 @@ const TRACK = [...BRANDS, ...BRANDS];
 
 export default function CustomerLogos(): JSX.Element {
   return (
-    <section className={styles.strip} aria-label="Adopted by">
+    <section className={styles.strip} aria-label="Takeoff ecosystem">
       <div className={styles.inner}>
-        <p className={styles.label}>Shipping in production at</p>
+        <p className={styles.label}>Built for teams across the Takeoff ecosystem</p>
         <div className={styles.viewport}>
           <div className={styles.track} aria-hidden="false">
             {TRACK.map((b, i) => (

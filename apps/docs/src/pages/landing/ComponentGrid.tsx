@@ -152,15 +152,15 @@ export default function ComponentGrid(): JSX.Element {
     <section className={styles.section} aria-labelledby="runway-components-title">
       <div className={styles.inner}>
         <div className={styles.head}>
-          <p className={styles.eyebrow}>Library</p>
+          <p className={styles.eyebrow}>Documentation</p>
           <h2 id="runway-components-title" className={styles.title}>
-            5 shipped,
+            Foundational components,
             <br />
-            <em>12 airworthy by year-end.</em>
+            <em>documented end to end.</em>
           </h2>
           <p className={styles.lede}>
-            From inputs and dialogs to accordions and soon-to-ship overlays — the components you need, with the Spar polish you expect. The five shipped today compose this page;
-            the rest are tracked on the roadmap.
+            Buttons, Inputs, Checkbox, Dialog, and Accordion define the first public surface of the library. The adjacent previews show the vocabulary the next ports will follow,
+            but this site only treats a component as shipped when its docs, examples, and API table are in place.
           </p>
         </div>
 
@@ -216,7 +216,7 @@ export default function ComponentGrid(): JSX.Element {
 
         <div className={styles.exploreRow}>
           <Link to="/docs/components/overview" className={styles.exploreLink}>
-            See every component
+            Browse the full component set
             <ArrowIcon />
           </Link>
         </div>

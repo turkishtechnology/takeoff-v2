@@ -51,11 +51,11 @@ export default function InstallBlock(): JSX.Element {
         <div className={styles.copy}>
           <span className={styles.eyebrow}>Installation</span>
           <h2 id="runway-install-title" className={styles.title}>
-            Three lines. No config file.
+            Install once. Theme from the root.
           </h2>
           <p className={styles.lede}>
-            Install the packages, import the token stylesheet, wrap your tree in <code>SparReactProvider</code>. The provider sets <code>data-theme</code>,<code>lang</code>, and
-            any theme-level defaults — you control everything from the root.
+            Install the React package with its token and primitive peers, import one theme file, and wrap your app once. From there, color mode, tokens, and component defaults flow
+            from the root.
           </p>
         </div>
 

@@ -216,23 +216,36 @@
   background: var(--runway-bg-1, #111116);
   border: 1px solid var(--runway-surface-dark-border, #24242e);
   border-radius: 10px;
-  width: fit-content;
+  width: min(100%, 36rem);
   max-width: 100%;
   font-family: var(--runway-type-mono-family);
   font-size: 13px;
   color: var(--runway-ink-dim, #b8b8c2);
+  min-width: 0;
 }
 
 .installPrompt {
   color: var(--runway-cardinal-bright, #ff1736);
   user-select: none;
+  flex-shrink: 0;
 }
 
 .installCmd {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
   color: var(--runway-ink, #f6f6f8);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.installCmd::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .installCopy {
@@ -249,6 +262,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .installCopy:hover {

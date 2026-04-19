@@ -62,18 +62,18 @@ export default function OneSurface(): JSX.Element {
     <section className={styles.section} aria-labelledby="runway-surface-title">
       <div className={styles.inner}>
         <div className={styles.copy}>
-          <span className={styles.eyebrow}>One API, four frameworks</span>
+          <span className={styles.eyebrow}>React wrapper layer</span>
           <h2 id="runway-surface-title" className={styles.title}>
-            Write it once.
+            React ergonomics.
             <br />
-            Ship it everywhere.
+            System-level consistency.
           </h2>
           <p className={styles.lede}>
-            Every component is a standards-based primitive maintained by Turkish Technology's Spar core, wrapped for ergonomic use in your favorite framework. Tokens, slots, and{' '}
-            <code>data-*</code> hooks stay identical across every wrapper — so styles you write today carry across the stack.
+            This repository focuses on the React package, but it stays aligned with the wider Takeoff ecosystem on tokens, slots, and documented <code>data-*</code> hooks. That
+            keeps styling and migration decisions predictable without flattening React into a lowest-common-denominator wrapper.
           </p>
 
-          <div className={styles.pills} role="tablist" aria-label="Framework">
+          <div className={styles.pills} role="tablist" aria-label="Takeoff ecosystem wrappers">
             {FRAMEWORKS.map(f => (
               <span key={f.name} className={`${styles.pill} ${f.status === 'active' ? styles.pillActive : styles.pillDim}`} role="tab" aria-selected={f.status === 'active'}>
                 <span className={styles.pillIcon}>{f.icon}</span>
@@ -82,12 +82,12 @@ export default function OneSurface(): JSX.Element {
             ))}
           </div>
 
-          <Link to="/docs/" className={styles.ctaLink}>
+          <Link to="/docs/philosophy/" className={styles.ctaLink}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M4 3h8v10H4z" stroke="currentColor" strokeWidth="1.5" />
               <path d="M6 6h4M6 8h4M6 10h3" stroke="currentColor" strokeWidth="1.5" />
             </svg>
-            Read the docs
+            Read the philosophy
           </Link>
         </div>
 
@@ -104,7 +104,7 @@ export default function OneSurface(): JSX.Element {
           <div className={styles.editorBody}>
             <pre>
               <span className={styles.editorLine}>
-                <span className="com">{'// Search a flight in ten lines.'}</span>
+                <span className="com">{'// Compose a booking surface with explicit structure.'}</span>
               </span>
               <span className={styles.editorLine}>
                 <span className="kw">import</span>

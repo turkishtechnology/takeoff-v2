@@ -12,9 +12,9 @@ interface ValueCard {
 const CARDS: ValueCard[] = [
   {
     index: '01',
-    label: 'Foundations',
-    title: 'Design tokens you can trust',
-    body: 'Every color, spacing, radius, and shadow is a semantic token from @takeoff-design/tokens. Swap themes without touching components.',
+    label: 'Token contract',
+    title: 'Design tokens stay in charge',
+    body: 'Color, spacing, radius, and elevation all resolve from @takeoff-design/tokens. Rebrand and theme at the token layer instead of patching components one by one.',
     icon: (
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 3 L21 8 L12 13 L3 8 Z" />
@@ -25,9 +25,9 @@ const CARDS: ValueCard[] = [
   },
   {
     index: '02',
-    label: 'Spar-shaped',
-    title: 'Structure, not sugar',
-    body: 'Leaf components stay wrapper-first; compound parts surface only where they map to real structure. No flat content props, no invented APIs.',
+    label: 'API shape',
+    title: 'Structure where structure is real',
+    body: 'Roots own state, named parts own content and layout. That keeps the surface close to the rendered anatomy and avoids convenience props that drift over time.',
     icon: (
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <circle cx="5" cy="6" r="2" />
@@ -42,8 +42,8 @@ const CARDS: ValueCard[] = [
   {
     index: '03',
     label: 'Accessibility',
-    title: 'A11Y, not an afterthought',
-    body: 'Focus traps, ARIA wiring, and keyboard maps live in Spar primitives. Wrapper components never duplicate them. Reduced-motion honored.',
+    title: 'A11Y is preserved in the wrapper',
+    body: 'ARIA wiring, keyboard behavior, focus management, and reduced-motion expectations come from Spar primitives and remain intact in the React layer.',
     icon: (
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="9" />
@@ -55,9 +55,9 @@ const CARDS: ValueCard[] = [
   },
   {
     index: '04',
-    label: 'Typesafe',
-    title: 'Fully typed',
-    body: 'Strict TypeScript on every prop, every slot, every data-*. Autocomplete where you expect it, narrowing where you need it — no generics trick.',
+    label: 'TypeScript',
+    title: 'Types match the docs',
+    body: 'Props, slot names, and documented data-* hooks are typed from the same public surface these docs describe, so autocomplete reflects the contract instead of tribal knowledge.',
     icon: (
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <rect x="3" y="5" width="18" height="14" rx="2" />
@@ -69,9 +69,9 @@ const CARDS: ValueCard[] = [
   },
   {
     index: '05',
-    label: 'React 19',
-    title: 'First-class, from day zero',
-    body: 'Built around React 19 — Actions, use(), useOptimistic, Suspense. No legacy branches, no polyfill burden, no compatibility apologies.',
+    label: 'React baseline',
+    title: 'One modern support target',
+    body: 'The library targets React 19 on purpose. Peer dependencies, examples, and documentation all align around the same baseline instead of splitting across legacy branches.',
     icon: (
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <ellipse cx="12" cy="12" rx="10" ry="4" />
@@ -84,8 +84,8 @@ const CARDS: ValueCard[] = [
   {
     index: '06',
     label: 'Theming',
-    title: 'Dark & light, any brand',
-    body: 'CSS custom properties drive every visual. Drop in a new token file and the whole library rebrands — no fork, no Sass recompile, no upgrade drift.',
+    title: 'Customization stays additive',
+    body: 'Components read CSS custom properties and expose classNames and slotProps where customization is expected. You extend the surface without replacing the owner nodes it depends on.',
     icon: (
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 3 A 9 9 0 0 0 12 21 A 6 6 0 0 1 12 9 A 6 6 0 0 1 12 3 Z" />
@@ -100,14 +100,14 @@ export default function ValueRow(): JSX.Element {
       <div className={styles.inner}>
         <div className={styles.head}>
           <div className={styles.headLeft}>
-            <span className={styles.eyebrow}>Why this library</span>
+            <span className={styles.eyebrow}>Why teams choose it</span>
             <h2 id="runway-values-title" className={styles.title}>
-              Production-grade by <em>default.</em>
+              A small surface with a <em>strong contract.</em>
             </h2>
           </div>
           <p className={styles.headBody}>
-            Six commitments that run through every component surface — from the tokens you theme against to the compound parts you compose. Nothing aspirational; this is the
-            contract.
+            The promise is not “everything for everyone.” It is a narrower, more durable guarantee: React 19 only, compound composition, token-driven styling, and customization
+            that stays additive over time.
           </p>
         </div>
 

@@ -3,13 +3,19 @@ import Link from '@docusaurus/Link';
 import TakeoffLogo3D from '@site/src/components/TakeoffLogo3D';
 import styles from './HeroRunway.module.css';
 
-const INSTALL_CMD = 'pnpm add @takeoff-ui/react-spar';
+const INSTALL_CMD = 'pnpm add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar';
 
 function CopyIcon(): JSX.Element {
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.25" />
-      <path d="M3 3v7.5a1.5 1.5 0 0 0 1.5 1.5" stroke="currentColor" strokeWidth="1.25" />
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="9" y="9" width="11" height="11" rx="2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M6 15H5.5A2.5 2.5 0 0 1 3 12.5v-8A2.5 2.5 0 0 1 5.5 2h8A2.5 2.5 0 0 1 16 4.5V5"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -58,28 +64,28 @@ export default function HeroRunway(): JSX.Element {
         {/* Copy ---------------------------------------------------- */}
         <div className={styles.copy}>
           <Link to="/changelog" className={styles.releasePill}>
-            <span className={styles.releaseBadge}>NEW</span>
-            <span>Phase B — Button, Input, Checkbox shipping →</span>
+            <span className={styles.releaseBadge}>DOCS</span>
+            <span>Installation, components, philosophy, and migration →</span>
           </Link>
 
           <h1 id="runway-hero-headline" className={styles.headline}>
-            <span className={styles.line}>React components</span>
+            <span className={styles.line}>The React surface</span>
             <span className={styles.line}>
-              for <span className={styles.accent}>flight.</span>
+              for the <span className={styles.accent}>Takeoff</span>
             </span>
             <span className={styles.line}>
-              <span className={styles.highlight}>Ready for takeoff.</span>
+              <span className={styles.highlight}>design system.</span>
             </span>
           </h1>
 
           <p className={styles.subhead}>
-            <strong>@takeoff-ui/react-spar</strong> is the React 19 face of Turkish Technology's Spar primitives and Takeoff design tokens. Load-bearing by default, additively
-            customizable, engineered to stay stable across every upgrade.
+            <strong>@takeoff-ui/react-spar</strong> brings Spar primitives, Takeoff design tokens, and a stable compound API together in one React 19 library. It is built to theme
+            cleanly, compose predictably, and stay understandable as the component set grows.
           </p>
 
           <div className={styles.ctaRow}>
-            <Link to="/docs/" className={styles.ctaPrimary}>
-              Start building
+            <Link to="/docs/installation" className={styles.ctaPrimary}>
+              Get started
               <ArrowIcon />
             </Link>
             <Link to="/docs/components/overview" className={styles.ctaGhost}>
@@ -98,22 +104,20 @@ export default function HeroRunway(): JSX.Element {
 
           <dl className={styles.stats}>
             <div>
-              <dt className={styles.statValue}>
-                <em>5</em>
-              </dt>
-              <dd className={styles.statLabel}>Components</dd>
+              <dt className={styles.statValue}>Compound</dt>
+              <dd className={styles.statLabel}>API model</dd>
             </div>
             <div>
               <dt className={styles.statValue}>React 19</dt>
-              <dd className={styles.statLabel}>First-class</dd>
+              <dd className={styles.statLabel}>Baseline</dd>
             </div>
             <div>
-              <dt className={styles.statValue}>A11Y</dt>
-              <dd className={styles.statLabel}>WCAG 2.1</dd>
+              <dt className={styles.statValue}>Tokens</dt>
+              <dd className={styles.statLabel}>Theme layer</dd>
             </div>
             <div>
               <dt className={styles.statValue}>MIT</dt>
-              <dd className={styles.statLabel}>Open source</dd>
+              <dd className={styles.statLabel}>License</dd>
             </div>
           </dl>
         </div>

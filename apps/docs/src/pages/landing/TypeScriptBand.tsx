@@ -10,11 +10,11 @@ export default function TypeScriptBand(): JSX.Element {
         <div className={styles.copy}>
           <span className={styles.eyebrow}>TypeScript, end to end</span>
           <h2 id="runway-ts-title" className={styles.title}>
-            Every prop, every slot, every <code>data-*</code> — typed all the way down.
+            The types and the docs describe the same surface.
           </h2>
           <p className={styles.lede}>
-            Variants, sizes, modes, slot attribute contracts — all inferred from the source of truth. Autocomplete where you'd expect it, narrowing where you need it, no generics
-            trick to learn.
+            Variants, slot names, and component overrides resolve from the public API itself. That means autocomplete follows the documented contract instead of a parallel,
+            accidental type layer.
           </p>
         </div>
 
