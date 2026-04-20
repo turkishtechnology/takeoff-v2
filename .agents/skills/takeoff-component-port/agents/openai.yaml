@@ -1,4 +1,0 @@
-interface:
-  display_name: "Takeoff Component Port"
-  short_description: "Port Takeoff UI components across the monorepo"
-  default_prompt: "Use $takeoff-component-port to port a component across takeoff-ui, takeoff-design, spar, and takeoff-spar."
