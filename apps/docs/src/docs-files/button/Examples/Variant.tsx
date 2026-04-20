@@ -4,12 +4,12 @@ import { Button, ReactSparDemoRoot } from './shared';
 const code = `export function VariantDemo() {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
-      <Button variant="primary">Primary</Button>
-      <Button variant="secondary">Secondary</Button>
-      <Button variant="success">Success</Button>
-      <Button variant="warning">Warning</Button>
-      <Button variant="danger">Danger</Button>
-      <Button variant="neutral">Neutral</Button>
+      <Button variant="primary"><Button.Label>Primary</Button.Label></Button>
+      <Button variant="secondary"><Button.Label>Secondary</Button.Label></Button>
+      <Button variant="success"><Button.Label>Success</Button.Label></Button>
+      <Button variant="warning"><Button.Label>Warning</Button.Label></Button>
+      <Button variant="danger"><Button.Label>Danger</Button.Label></Button>
+      <Button variant="neutral"><Button.Label>Neutral</Button.Label></Button>
     </div>
   );
 }`;
@@ -17,12 +17,24 @@ const code = `export function VariantDemo() {
 function VariantDemo() {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
-      <Button variant="primary">Primary</Button>
-      <Button variant="secondary">Secondary</Button>
-      <Button variant="success">Success</Button>
-      <Button variant="warning">Warning</Button>
-      <Button variant="danger">Danger</Button>
-      <Button variant="neutral">Neutral</Button>
+      <Button variant="primary">
+        <Button.Label>Primary</Button.Label>
+      </Button>
+      <Button variant="secondary">
+        <Button.Label>Secondary</Button.Label>
+      </Button>
+      <Button variant="success">
+        <Button.Label>Success</Button.Label>
+      </Button>
+      <Button variant="warning">
+        <Button.Label>Warning</Button.Label>
+      </Button>
+      <Button variant="danger">
+        <Button.Label>Danger</Button.Label>
+      </Button>
+      <Button variant="neutral">
+        <Button.Label>Neutral</Button.Label>
+      </Button>
     </div>
   );
 }

@@ -8,6 +8,7 @@ export default {
   propOverrides: {
     children: {
       type: 'React.ReactNode',
+      description: 'Compound children — must be composed from `Button.Label`, `Button.LeadingIcon`, `Button.TrailingIcon`, and `Button.Spinner`.',
     },
     onClick: {
       type: 'React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>',
@@ -28,22 +29,22 @@ export default {
     },
     {
       attribute: 'data-slot="label"',
-      appliedWhen: 'Always',
+      appliedWhen: '`Button.Label` is rendered',
       purpose: 'Stable label slot selector for wrapper styling.',
     },
     {
       attribute: 'data-slot="leading-icon"',
-      appliedWhen: 'Leading icon or loading spinner is rendered',
+      appliedWhen: '`Button.LeadingIcon` is rendered',
       purpose: 'Stable leading adornment selector.',
     },
     {
       attribute: 'data-slot="trailing-icon"',
-      appliedWhen: 'Trailing icon is rendered',
+      appliedWhen: '`Button.TrailingIcon` is rendered',
       purpose: 'Stable trailing adornment selector.',
     },
     {
       attribute: 'data-slot="spinner"',
-      appliedWhen: '`loading` is `true`',
+      appliedWhen: '`Button.Spinner` is rendered and `loading` is `true`',
       purpose: 'Stable loading indicator selector.',
     },
     {

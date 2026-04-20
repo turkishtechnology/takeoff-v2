@@ -30,22 +30,45 @@ export function InputAdornmentsDemo() {
     <div style={{ display: 'grid', gap: 20, width: 'min(100%, 28rem)' }}>
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Leading icon</p>
-        <Input aria-label="Search" icon={<SearchIcon />} placeholder="Search flights" />
+        <Input aria-label="Search">
+          <Input.Container>
+            <Input.LeadingIcon><SearchIcon /></Input.LeadingIcon>
+            <Input.Field placeholder="Search flights" />
+          </Input.Container>
+        </Input>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Suffix text</p>
-        <Input label="Domain" suffix=".com" placeholder="turkishairlines" />
+        <Input>
+          <Input.Label>Domain</Input.Label>
+          <Input.Container>
+            <Input.Field placeholder="turkishairlines" />
+            <Input.Suffix>.com</Input.Suffix>
+          </Input.Container>
+        </Input>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Prefix text</p>
-        <Input label="Amount" prefix="TRY" type="number" placeholder="0" />
+        <Input type="number">
+          <Input.Label>Amount</Input.Label>
+          <Input.Container>
+            <Input.Prefix>TRY</Input.Prefix>
+            <Input.Field placeholder="0" />
+          </Input.Container>
+        </Input>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Loading spinner</p>
-        <Input aria-label="Search" icon={<SearchIcon />} loading />
+        <Input aria-label="Search" loading>
+          <Input.Container>
+            <Input.LeadingIcon><SearchIcon /></Input.LeadingIcon>
+            <Input.Field />
+            <Input.Spinner />
+          </Input.Container>
+        </Input>
       </div>
     </div>
   );
@@ -56,22 +79,49 @@ function InputAdornmentsDemo() {
     <div style={{ display: 'grid', gap: 20, width: 'min(100%, 28rem)' }}>
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Leading icon</p>
-        <Input aria-label="Search" icon={<SearchIcon />} placeholder="Search flights" />
+        <Input aria-label="Search">
+          <Input.Container>
+            <Input.LeadingIcon>
+              <SearchIcon />
+            </Input.LeadingIcon>
+            <Input.Field placeholder="Search flights" />
+          </Input.Container>
+        </Input>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Suffix text</p>
-        <Input label="Domain" suffix=".com" placeholder="turkishairlines" />
+        <Input>
+          <Input.Label>Domain</Input.Label>
+          <Input.Container>
+            <Input.Field placeholder="turkishairlines" />
+            <Input.Suffix>.com</Input.Suffix>
+          </Input.Container>
+        </Input>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Prefix text</p>
-        <Input label="Amount" prefix="TRY" type="number" placeholder="0" />
+        <Input type="number">
+          <Input.Label>Amount</Input.Label>
+          <Input.Container>
+            <Input.Prefix>TRY</Input.Prefix>
+            <Input.Field placeholder="0" />
+          </Input.Container>
+        </Input>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Loading spinner</p>
-        <Input aria-label="Search" icon={<SearchIcon />} loading />
+        <Input aria-label="Search" loading>
+          <Input.Container>
+            <Input.LeadingIcon>
+              <SearchIcon />
+            </Input.LeadingIcon>
+            <Input.Field />
+            <Input.Spinner />
+          </Input.Container>
+        </Input>
       </div>
     </div>
   );

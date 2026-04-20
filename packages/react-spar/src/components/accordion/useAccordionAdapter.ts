@@ -1,7 +1,7 @@
 import { Children, cloneElement, isValidElement, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
 
-import { decodeAccordionItemValue, encodeAccordionItemValue, type AccordionAdapterContextValue, type AccordionItemKey } from './AccordionBase';
-import type { AccordionArrowPosition, AccordionItemProps, AccordionMode, AccordionProps, AccordionType } from './types';
+import { decodeAccordionItemValue, encodeAccordionItemValue, type AccordionItemKey } from './AccordionBase';
+import type { AccordionItemProps, AccordionProps } from './types';
 
 const dedupeValues = <T extends AccordionItemKey | string>(values: T[]): T[] => {
   const seen = new Set<T>();
@@ -77,17 +77,11 @@ interface UseAccordionAdapterOptions {
   defaultActiveIndex: AccordionProps['defaultActiveIndex'];
   allowMultiple: boolean;
   onActiveIndexChange: AccordionProps['onActiveIndexChange'];
-  type: AccordionType;
-  mode: AccordionMode;
-  arrowPosition: AccordionArrowPosition;
-  expandIcon: ReactNode;
-  collapseIcon: ReactNode;
-  hideArrows: boolean;
 }
 
 interface UseAccordionAdapterResult {
   processedChildren: ReactNode;
-  adapterContext: AccordionAdapterContextValue;
+  openItemValueSet: Set<string>;
   sparValue: string | string[];
   handleValueChange: (nextValue: string | string[]) => void;
 }
@@ -104,12 +98,6 @@ export const useAccordionAdapter = ({
   defaultActiveIndex,
   allowMultiple,
   onActiveIndexChange,
-  type,
-  mode,
-  arrowPosition,
-  expandIcon,
-  collapseIcon,
-  hideArrows,
 }: UseAccordionAdapterOptions): UseAccordionAdapterResult => {
   const { itemDescriptors, processedChildren } = useMemo(() => {
     let itemIndex = 0;
@@ -241,22 +229,9 @@ export const useAccordionAdapter = ({
     }
   };
 
-  const adapterContext = useMemo(
-    () => ({
-      openItemValues: openItemValueSet,
-      type,
-      mode,
-      arrowPosition,
-      expandIcon,
-      collapseIcon,
-      hideArrows,
-    }),
-    [arrowPosition, collapseIcon, expandIcon, hideArrows, mode, openItemValueSet, type],
-  );
-
   return {
     processedChildren,
-    adapterContext,
+    openItemValueSet,
     sparValue,
     handleValueChange,
   };

@@ -55,12 +55,16 @@ export function FormDemo() {
       />
 
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
-        <Button mode="submit">Save passenger</Button>
-        <Button mode="reset" type="text" variant="neutral">Reset form</Button>
+        <Button mode="submit">
+          <Button.Label>Save passenger</Button.Label>
+        </Button>
+        <Button mode="reset" type="text" variant="neutral">
+          <Button.Label>Reset form</Button.Label>
+        </Button>
       </div>
 
       <Button fullWidth type="outlined" variant="secondary">
-        Review full-width action
+        <Button.Label>Review full-width action</Button.Label>
       </Button>
 
       <p style={metaStyle}>
@@ -87,14 +91,16 @@ function FormDemo() {
       <input aria-label="Passenger name" name="passengerName" placeholder="Passenger name" style={inputStyle} />
 
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
-        <Button mode="submit">Save passenger</Button>
+        <Button mode="submit">
+          <Button.Label>Save passenger</Button.Label>
+        </Button>
         <Button mode="reset" type="text" variant="neutral">
-          Reset form
+          <Button.Label>Reset form</Button.Label>
         </Button>
       </div>
 
       <Button fullWidth type="outlined" variant="secondary">
-        Review full-width action
+        <Button.Label>Review full-width action</Button.Label>
       </Button>
 
       <p style={metaStyle}>{submitted ? 'Form submit intercepted successfully.' : 'Submit the form to verify native submit and reset semantics.'}</p>

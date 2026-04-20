@@ -6,11 +6,9 @@ import { ApiBadge } from '@site/src/components/ApiBadge';
 
 | Name                                                                              | Type                                                                                                                                  | Default   | Description                                                                                                     |
 | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" variant="primary" size="large" type="filledlight" />   | <code>React.ReactNode</code>                                                                                                          | undefined | Content displayed when the accordion item is expanded.                                                          |
+| <ApiBadge label="children" variant="primary" size="large" type="filledlight" />   | <code>React.ReactNode</code>                                                                                                          | undefined | Compound children — typically Accordion.Header and Accordion.Content.                                           |
 | <ApiBadge label="itemKey" variant="primary" size="large" type="filledlight" />    | <code>string &#124; number</code>                                                                                                     | undefined | Optional key to identify this item. Falls back to the child position index.                                     |
-| <ApiBadge label="header" variant="primary" size="large" type="filledlight" />     | <code>React.ReactNode</code>                                                                                                          | undefined | Header text or custom header content.                                                                           |
 | <ApiBadge label="size" variant="primary" size="large" type="filledlight" />       | <code>AccordionItemSize</code>                                                                                                        | 'base'    | Component size.                                                                                                 |
-| <ApiBadge label="icon" variant="primary" size="large" type="filledlight" />       | <code>React.ReactNode</code>                                                                                                          | undefined | Icon displayed in the header. String values render as Material Symbols.                                         |
 | <ApiBadge label="active" variant="primary" size="large" type="filledlight" />     | <code>boolean</code>                                                                                                                  | undefined | Initial or declarative active state for this item when the parent accordion is not controlled by `activeIndex`. |
 | <ApiBadge label="classNames" variant="primary" size="large" type="filledlight" /> | <code>Partial&lt;Record&lt;"header" &#124; "title" &#124; "content" &#124; "root" &#124; "icon" &#124; "arrow", string&gt;&gt;</code> | undefined | Per-slot class name overrides for this accordion item.                                                          |
 | <ApiBadge label="slotProps" variant="primary" size="large" type="filledlight" />  | <code>AccordionItemSlotProps</code>                                                                                                   | undefined | Per-slot HTML attribute overrides for this accordion item.                                                      |
@@ -24,15 +22,15 @@ import { ApiBadge } from '@site/src/components/ApiBadge';
 
 ### Data Attributes {#accordion-item-data-attributes}
 
-| Attribute           | Applied when               | Purpose                                      |
-| ------------------- | -------------------------- | -------------------------------------------- |
-| data-slot="root"    | Always                     | Stable item root slot selector.              |
-| data-slot="header"  | Always                     | Stable header slot selector.                 |
-| data-slot="title"   | Always                     | Stable title slot selector.                  |
-| data-slot="content" | Always                     | Stable content slot selector.                |
-| data-slot="icon"    | `icon` prop is provided    | Stable icon slot selector.                   |
-| data-slot="arrow"   | `hideArrows` is not `true` | Stable collapse/expand arrow selector.       |
-| data-open           | Item is expanded           | Styling hook for the open/active state.      |
-| data-type           | Always                     | Inherited from parent Accordion `type` prop. |
-| data-size           | Always                     | Reflects item `size` prop.                   |
-| data-mode           | Always                     | Inherited from parent Accordion `mode` prop. |
+| Attribute           | Applied when                    | Purpose                                      |
+| ------------------- | ------------------------------- | -------------------------------------------- |
+| data-slot="root"    | Always                          | Stable item root slot selector.              |
+| data-slot="header"  | `Accordion.Header` is rendered  | Stable header slot selector.                 |
+| data-slot="title"   | `Accordion.Title` is rendered   | Stable title slot selector.                  |
+| data-slot="content" | `Accordion.Content` is rendered | Stable content slot selector.                |
+| data-slot="icon"    | `Accordion.Icon` is rendered    | Stable icon slot selector.                   |
+| data-slot="arrow"   | `Accordion.Arrow` is rendered   | Stable collapse/expand arrow selector.       |
+| data-open           | Item is expanded                | Styling hook for the open/active state.      |
+| data-type           | Always                          | Inherited from parent Accordion `type` prop. |
+| data-size           | Always                          | Reflects item `size` prop.                   |
+| data-mode           | Always                          | Inherited from parent Accordion `mode` prop. |

@@ -41,8 +41,6 @@ export function ButtonTemplateDemo() {
         size="large"
         type="filled"
         variant="primary"
-        leadingIcon={<FlightIcon width={16} height={16} strokeWidth={1.8} />}
-        trailingIcon={<ArrowForwardIcon width={18} height={18} strokeWidth={1.8} />}
         slotProps={{
           root: {
             style: {
@@ -52,16 +50,22 @@ export function ButtonTemplateDemo() {
               boxShadow: '0 18px 32px rgba(201, 0, 25, 0.18)',
             },
           },
-          label: { style: labelStyle },
-          trailingIcon: { style: trailingIconStyle },
         }}
       >
-        <span style={{ fontSize: '1rem', fontWeight: 600, lineHeight: 1.2 }}>
-          Continue with Business Flex
-        </span>
-        <span style={{ fontSize: '0.8125rem', lineHeight: 1.35, color: 'rgba(255, 255, 255, 0.82)' }}>
-          Priority check-in | extra baggage | flexible refund
-        </span>
+        <Button.LeadingIcon>
+          <FlightIcon width={16} height={16} strokeWidth={1.8} />
+        </Button.LeadingIcon>
+        <Button.Label style={labelStyle}>
+          <span style={{ fontSize: '1rem', fontWeight: 600, lineHeight: 1.2 }}>
+            Continue with Business Flex
+          </span>
+          <span style={{ fontSize: '0.8125rem', lineHeight: 1.35, color: 'rgba(255, 255, 255, 0.82)' }}>
+            Priority check-in | extra baggage | flexible refund
+          </span>
+        </Button.Label>
+        <Button.TrailingIcon style={trailingIconStyle}>
+          <ArrowForwardIcon width={18} height={18} strokeWidth={1.8} />
+        </Button.TrailingIcon>
       </Button>
     </div>
   );
@@ -75,8 +79,6 @@ function ButtonTemplateDemo() {
         size="large"
         type="filled"
         variant="primary"
-        leadingIcon={<FlightIcon width={16} height={16} strokeWidth={1.8} />}
-        trailingIcon={<ArrowForwardIcon width={18} height={18} strokeWidth={1.8} />}
         slotProps={{
           root: {
             style: {
@@ -86,12 +88,18 @@ function ButtonTemplateDemo() {
               boxShadow: '0 18px 32px rgba(201, 0, 25, 0.18)',
             },
           },
-          label: { style: labelStyle },
-          trailingIcon: { style: trailingIconStyle },
         }}
       >
-        <span style={{ fontSize: '1rem', fontWeight: 600, lineHeight: 1.2 }}>Continue with Business Flex</span>
-        <span style={{ fontSize: '0.8125rem', lineHeight: 1.35, color: 'rgba(255, 255, 255, 0.82)' }}>Priority check-in | extra baggage | flexible refund</span>
+        <Button.LeadingIcon>
+          <FlightIcon width={16} height={16} strokeWidth={1.8} />
+        </Button.LeadingIcon>
+        <Button.Label style={labelStyle}>
+          <span style={{ fontSize: '1rem', fontWeight: 600, lineHeight: 1.2 }}>Continue with Business Flex</span>
+          <span style={{ fontSize: '0.8125rem', lineHeight: 1.35, color: 'rgba(255, 255, 255, 0.82)' }}>Priority check-in | extra baggage | flexible refund</span>
+        </Button.Label>
+        <Button.TrailingIcon style={trailingIconStyle}>
+          <ArrowForwardIcon width={18} height={18} strokeWidth={1.8} />
+        </Button.TrailingIcon>
       </Button>
     </div>
   );

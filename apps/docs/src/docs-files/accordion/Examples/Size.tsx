@@ -1,5 +1,5 @@
 import RenderedDemo from '../../../components/RenderedDemo';
-import { Accordion, AccordionItem, ReactSparDemoRoot } from './shared';
+import { Accordion, ReactSparDemoRoot } from './shared';
 
 const sectionLabelStyle = {
   margin: 0,
@@ -25,24 +25,40 @@ const code = `export function SizeDemo() {
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Base</p>
         <Accordion>
-          <AccordionItem header="Panel 1 Title" size="base">
-            Panel content at base size.
-          </AccordionItem>
-          <AccordionItem header="Panel 2 Title" size="base">
-            Panel content at base size.
-          </AccordionItem>
+          <Accordion.Item size="base">
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel content at base size.</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item size="base">
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel content at base size.</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Large</p>
         <Accordion>
-          <AccordionItem header="Panel 1 Title" size="large">
-            Panel content at large size.
-          </AccordionItem>
-          <AccordionItem header="Panel 2 Title" size="large">
-            Panel content at large size.
-          </AccordionItem>
+          <Accordion.Item size="large">
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel content at large size.</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item size="large">
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel content at large size.</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
     </div>
@@ -55,24 +71,40 @@ function SizeDemo() {
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Base</p>
         <Accordion>
-          <AccordionItem header="Panel 1 Title" size="base">
-            Panel content at base size.
-          </AccordionItem>
-          <AccordionItem header="Panel 2 Title" size="base">
-            Panel content at base size.
-          </AccordionItem>
+          <Accordion.Item size="base">
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel content at base size.</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item size="base">
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel content at base size.</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Large</p>
         <Accordion>
-          <AccordionItem header="Panel 1 Title" size="large">
-            Panel content at large size.
-          </AccordionItem>
-          <AccordionItem header="Panel 2 Title" size="large">
-            Panel content at large size.
-          </AccordionItem>
+          <Accordion.Item size="large">
+            <Accordion.Header>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel content at large size.</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item size="large">
+            <Accordion.Header>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel content at large size.</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
     </div>

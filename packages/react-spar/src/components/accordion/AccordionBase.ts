@@ -1,14 +1,10 @@
-import { createElement, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { createComponentBase } from '../../base/createComponentBase';
 import type { SlotClassNames } from '../../types';
 import { createSafeContext } from '../../utils/createSafeContext';
-// TODO(takeoff-icons): Swap these placeholder SVGs for the official Takeoff
-// icon components (currently `keyboard_arrow_down` / `keyboard_arrow_up` in
-// takeoff-ui) before the first public release.
-import { PlaceholderChevronDown, PlaceholderChevronUp } from '../../utils/placeholderIcons';
 
-import type { AccordionArrowPosition, AccordionItemProps, AccordionMode, AccordionProps, AccordionType } from './types';
+import type { AccordionItemProps, AccordionMode, AccordionProps, AccordionType } from './types';
 
 export const accordionSlots = ['root'] as const;
 
@@ -18,16 +14,39 @@ export const accordionClassNames = {
   root: 'tk-accordion',
 } as const satisfies SlotClassNames<AccordionSlot>;
 
+/**
+ * Composition archetype classification (see
+ * `packages/react-spar/docs/CODING_STANDARDS.md § Composition Archetypes`).
+ *
+ * `SparAccordion` ships a compound upstream; its semantic parts are all
+ * inherited by our wrapper. Structural chrome (title, icon, arrow) has no
+ * upstream counterpart and is react-enhancement.
+ *
+ * - `Accordion` root   — inherited. Delegates to `SparAccordion`; supplies the
+ *   adapter-hook value/onValueChange translation.
+ * - `Accordion.Item`   — inherited. Delegates to `SparAccordion.Item`.
+ * - `Accordion.Header` — inherited. Delegates to
+ *   `SparAccordion.Header > SparAccordion.Trigger`, both forced to
+ *   `as="div"`. Rationale: upstream `SparAccordion.Trigger` defaults to a
+ *   native `<button>`, which cannot legally nest interactive children; our
+ *   header row composes an icon / title / arrow cluster and may itself need
+ *   to contain a consumer-supplied secondary control. Rendering the trigger
+ *   as a `<div>` preserves the ARIA and keyboard wiring Spar attaches while
+ *   keeping the DOM nestable. The wrapper keeps `role="button"` and
+ *   `tabIndex` because Spar emits them regardless of `as`.
+ * - `Accordion.Content`— inherited. Delegates to `SparAccordion.Content` with
+ *   `forceMount` so animation states have a stable tree.
+ * - `Accordion.Title`  — react-enhancement.
+ * - `Accordion.Icon`   — react-enhancement.
+ * - `Accordion.Arrow`  — react-enhancement; function-as-children exposes
+ *   `{ isOpen }` for consumer-rendered chevrons.
+ */
 export const AccordionBase = createComponentBase<AccordionProps, AccordionSlot>({
   name: 'Accordion',
   slots: accordionSlots,
   classNames: accordionClassNames,
   defaultProps: {
     allowMultiple: false,
-    arrowPosition: 'right',
-    expandIcon: createElement(PlaceholderChevronDown),
-    collapseIcon: createElement(PlaceholderChevronUp),
-    hideArrows: false,
     type: 'grouped',
     mode: 'default',
   },
@@ -61,13 +80,21 @@ export interface AccordionAdapterContextValue {
   openItemValues: Set<string>;
   type: AccordionType;
   mode: AccordionMode;
-  arrowPosition: AccordionArrowPosition;
-  expandIcon: ReactNode;
-  collapseIcon: ReactNode;
-  hideArrows: boolean;
+  classNames: AccordionProps['classNames'];
+  slotProps: AccordionProps['slotProps'];
 }
 
 export const [AccordionProvider, useAccordionContext] = createSafeContext<AccordionAdapterContextValue>('Accordion');
+
+export interface AccordionItemContextValue {
+  encodedValue: string;
+  isOpen: boolean;
+  size: NonNullable<AccordionItemProps['size']>;
+  classNames: AccordionItemProps['classNames'];
+  slotProps: AccordionItemProps['slotProps'];
+}
+
+export const [AccordionItemProvider, useAccordionItemContext] = createSafeContext<AccordionItemContextValue>('AccordionItem');
 
 export const encodeAccordionItemValue = (value: AccordionItemKey): string => (typeof value === 'number' ? `n:${value}` : `s:${value}`);
 
@@ -82,3 +109,13 @@ export const decodeAccordionItemValue = (value: string): AccordionItemKey => {
 
   return value;
 };
+
+/**
+ * Arrow render input shared between default icon resolution and user-supplied
+ * `<Accordion.Arrow>` render-prop children.
+ */
+export interface AccordionArrowRenderState {
+  isOpen: boolean;
+}
+
+export type AccordionArrowChildren = ReactNode | ((state: AccordionArrowRenderState) => ReactNode);

@@ -21,14 +21,14 @@ export function MaskTreatmentsDemo() {
           type={hideBackdrop ? 'filled' : 'outlined'}
           onClick={() => setHideBackdrop((value) => !value)}
         >
-          {hideBackdrop ? 'Backdrop hidden' : 'Backdrop visible'}
+          <Button.Label>{hideBackdrop ? 'Backdrop hidden' : 'Backdrop visible'}</Button.Label>
         </Button>
         <Button
           size="small"
           type={blurMask ? 'filled' : 'outlined'}
           onClick={() => setBlurMask((value) => !value)}
         >
-          {blurMask ? 'Blur on' : 'Blur off'}
+          <Button.Label>{blurMask ? 'Blur on' : 'Blur off'}</Button.Label>
         </Button>
       </div>
 
@@ -41,25 +41,40 @@ export function MaskTreatmentsDemo() {
             variant={maskVariant === value ? 'primary' : 'secondary'}
             onClick={() => setMaskVariant(value)}
           >
-            {value}
+            <Button.Label>{value}</Button.Label>
           </Button>
         ))}
       </div>
 
-      <Button onClick={() => setVisible(true)}>Open dialog</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Button.Label>Open dialog</Button.Label>
+      </Button>
 
       <Dialog
         visible={visible}
         onVisibleChange={setVisible}
-        header="Mask treatment"
-        subheader={\`\${maskVariant} • \${blurMask ? 'blurred' : 'no blur'} • \${hideBackdrop ? 'no backdrop' : 'backdrop visible'}\`}
         hideBackdrop={hideBackdrop}
         isMaskBlur={blurMask}
         maskVariant={maskVariant}
         containerStyle={{ width: '460px' }}
       >
-        The same dialog body runs with a hidden backdrop, a blurred mask, or any
-        of the five mask variants depending on product context.
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.SignIcon />
+            <Dialog.TitleGroup>
+              <Dialog.Description>
+                {\`\${maskVariant} • \${blurMask ? 'blurred' : 'no blur'} • \${hideBackdrop ? 'no backdrop' : 'backdrop visible'}\`}
+              </Dialog.Description>
+              <Dialog.Title>Mask treatment</Dialog.Title>
+            </Dialog.TitleGroup>
+            <Dialog.CloseButton />
+          </Dialog.Header>
+          <Dialog.Body>
+            The same dialog body runs with a hidden backdrop, a blurred mask, or any
+            of the five mask variants depending on product context.
+          </Dialog.Body>
+        </Dialog.Panel>
       </Dialog>
     </div>
   );
@@ -75,10 +90,10 @@ function MaskTreatmentsDemo() {
     <div style={{ display: 'grid', gap: 16, width: 'min(100%, 40rem)', justifyItems: 'center' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
         <Button size="small" type={hideBackdrop ? 'filled' : 'outlined'} onClick={() => setHideBackdrop(value => !value)}>
-          {hideBackdrop ? 'Backdrop hidden' : 'Backdrop visible'}
+          <Button.Label>{hideBackdrop ? 'Backdrop hidden' : 'Backdrop visible'}</Button.Label>
         </Button>
         <Button size="small" type={blurMask ? 'filled' : 'outlined'} onClick={() => setBlurMask(value => !value)}>
-          {blurMask ? 'Blur on' : 'Blur off'}
+          <Button.Label>{blurMask ? 'Blur on' : 'Blur off'}</Button.Label>
         </Button>
       </div>
 
@@ -91,24 +106,28 @@ function MaskTreatmentsDemo() {
             variant={maskVariant === value ? 'primary' : 'secondary'}
             onClick={() => setMaskVariant(value)}
           >
-            {value}
+            <Button.Label>{value}</Button.Label>
           </Button>
         ))}
       </div>
 
-      <Button onClick={() => setVisible(true)}>Open dialog</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Button.Label>Open dialog</Button.Label>
+      </Button>
 
-      <Dialog
-        visible={visible}
-        onVisibleChange={setVisible}
-        header="Mask treatment"
-        subheader={`${maskVariant} • ${blurMask ? 'blurred' : 'no blur'} • ${hideBackdrop ? 'no backdrop' : 'backdrop visible'}`}
-        hideBackdrop={hideBackdrop}
-        isMaskBlur={blurMask}
-        maskVariant={maskVariant}
-        containerStyle={{ width: '460px' }}
-      >
-        The same dialog body runs with a hidden backdrop, a blurred mask, or any of the five mask variants depending on product context.
+      <Dialog visible={visible} onVisibleChange={setVisible} hideBackdrop={hideBackdrop} isMaskBlur={blurMask} maskVariant={maskVariant} containerStyle={{ width: '460px' }}>
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.SignIcon />
+            <Dialog.TitleGroup>
+              <Dialog.Description>{`${maskVariant} • ${blurMask ? 'blurred' : 'no blur'} • ${hideBackdrop ? 'no backdrop' : 'backdrop visible'}`}</Dialog.Description>
+              <Dialog.Title>Mask treatment</Dialog.Title>
+            </Dialog.TitleGroup>
+            <Dialog.CloseButton />
+          </Dialog.Header>
+          <Dialog.Body>The same dialog body runs with a hidden backdrop, a blurred mask, or any of the five mask variants depending on product context.</Dialog.Body>
+        </Dialog.Panel>
       </Dialog>
     </div>
   );

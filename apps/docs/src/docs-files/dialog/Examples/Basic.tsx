@@ -9,17 +9,30 @@ export function BasicDialogDemo() {
 
   return (
     <>
-      <Button onClick={() => setVisible(true)}>Open dialog</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Button.Label>Open dialog</Button.Label>
+      </Button>
 
       <Dialog
         visible={visible}
         onVisibleChange={setVisible}
-        header="Upgrade cabin"
-        subheader="Review the fare difference before confirming."
         containerStyle={{ width: '460px' }}
       >
-        You can keep the Takeoff product props while Spar owns focus trapping
-        and dialog semantics. Press Esc or click the mask to dismiss.
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.SignIcon />
+            <Dialog.TitleGroup>
+              <Dialog.Description>Review the fare difference before confirming.</Dialog.Description>
+              <Dialog.Title>Upgrade cabin</Dialog.Title>
+            </Dialog.TitleGroup>
+            <Dialog.CloseButton />
+          </Dialog.Header>
+          <Dialog.Body>
+            You can compose Dialog parts while Spar owns focus trapping and
+            dialog semantics. Press Esc or click the mask to dismiss.
+          </Dialog.Body>
+        </Dialog.Panel>
       </Dialog>
     </>
   );
@@ -30,10 +43,23 @@ function BasicDialogDemo() {
 
   return (
     <>
-      <Button onClick={() => setVisible(true)}>Open dialog</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Button.Label>Open dialog</Button.Label>
+      </Button>
 
-      <Dialog visible={visible} onVisibleChange={setVisible} header="Upgrade cabin" subheader="Review the fare difference before confirming." containerStyle={{ width: '460px' }}>
-        You can keep the Takeoff product props while Spar owns focus trapping and dialog semantics. Press Esc or click the mask to dismiss.
+      <Dialog visible={visible} onVisibleChange={setVisible} containerStyle={{ width: '460px' }}>
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.SignIcon />
+            <Dialog.TitleGroup>
+              <Dialog.Description>Review the fare difference before confirming.</Dialog.Description>
+              <Dialog.Title>Upgrade cabin</Dialog.Title>
+            </Dialog.TitleGroup>
+            <Dialog.CloseButton />
+          </Dialog.Header>
+          <Dialog.Body>You can compose Dialog parts while Spar owns focus trapping and dialog semantics. Press Esc or click the mask to dismiss.</Dialog.Body>
+        </Dialog.Panel>
       </Dialog>
     </>
   );

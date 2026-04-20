@@ -1,61 +1,37 @@
 import { Dialog as SparDialog } from '@turkish-technology/spar';
 import { clsx } from 'clsx';
 import { createPortal } from 'react-dom';
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 
 import { useComponentTheme } from '../../provider';
 import { renderIconSymbol } from '../../utils';
 import { applyThemeDefaults, buildSlotAttrs, mergeClassNames, mergeSlotProps } from '../../customization';
 // TODO(takeoff-icons): Variant sign + close icons use Lucide-sourced SVG
-// placeholders. Replace with the official Takeoff icon components (currently
-// `check_circle` / `warning` / `error` / `info` / `close` in takeoff-ui)
-// before the first public release.
+// placeholders. Replace with the official Takeoff icon components before the
+// first public release.
 import { PlaceholderClose, PlaceholderError, PlaceholderInfo, PlaceholderSuccess, PlaceholderWarning } from '../../utils/placeholderIcons';
-import { DialogBase } from './DialogBase';
+import { DialogBase, DialogProvider, useDialogContext } from './DialogBase';
 import type {
-  DialogContentPartProps,
-  DialogDescriptionPartProps,
-  DialogFooterActionsPartProps,
-  DialogFooterPartProps,
-  DialogHeaderPartProps,
+  DialogBodyProps,
+  DialogCloseButtonProps,
+  DialogDescriptionProps,
+  DialogFooterActionsProps,
+  DialogFooterProps,
+  DialogHeaderProps,
   DialogHeaderType,
+  DialogMaskProps,
   DialogMaskVariant,
+  DialogPanelProps,
   DialogProps,
-  DialogTitlePartProps,
+  DialogSignIconProps,
+  DialogTitleGroupProps,
+  DialogTitleProps,
   DialogVariant,
 } from './types';
 
 let activeBodyScrollLocks = 0;
 let previousBodyOverflow = '';
 let previousBodyPaddingRight = '';
-
-const visuallyHiddenStyle: CSSProperties = {
-  position: 'absolute',
-  width: '1px',
-  height: '1px',
-  padding: 0,
-  margin: '-1px',
-  overflow: 'hidden',
-  clip: 'rect(0, 0, 0, 0)',
-  whiteSpace: 'nowrap',
-  border: 0,
-};
-
-const hasRenderableContent = (value: ReactNode): boolean => {
-  if (value === null || value === undefined || value === false) {
-    return false;
-  }
-
-  if (typeof value === 'string') {
-    return value.trim().length > 0;
-  }
-
-  if (Array.isArray(value)) {
-    return value.some(item => hasRenderableContent(item));
-  }
-
-  return true;
-};
 
 const getVariantIcon = (variant: DialogVariant): ReactNode => {
   switch (variant) {
@@ -126,42 +102,27 @@ const unlockBodyScroll = () => {
 function Dialog(rawProps: DialogProps) {
   const themeConfig = useComponentTheme('Dialog');
   const {
-    'id': baseId,
-    className,
-    'classNames': instanceClassNames,
-    style,
+    id: baseId,
     visible,
     defaultVisible = false,
     onVisibleChange,
     onOpen,
     onClose,
-    header,
     headerType = 'basic',
-    showCloseButton = true,
-    showHeader = true,
-    showVariantSign = true,
-    subheader,
     variant = 'info',
     hideBackdrop = false,
     maskVariant = 'base',
     isMaskBlur = false,
-    containerStyle = null,
     preventDismiss = false,
     portalContainer,
-    containerSlot,
-    headerSlot,
-    contentSlot,
-    footerSlot,
-    footerActions,
-    'slotProps': instanceSlotProps,
-    renderCloseIcon,
-    renderSignIcon,
     children,
-    'aria-label': ariaLabel,
-    ...restProps
+    classNames: instanceClassNames,
+    slotProps: instanceSlotProps,
   } = DialogBase.resolveProps(applyThemeDefaults(themeConfig?.defaultProps, rawProps));
+
   const resolvedClassNames = mergeClassNames(themeConfig?.classNames, instanceClassNames);
   const resolvedSlotProps = mergeSlotProps(themeConfig?.slotProps, instanceSlotProps);
+
   const [uncontrolledVisible, setUncontrolledVisible] = useState(Boolean(defaultVisible));
   const [mounted, setMounted] = useState(false);
   const isControlled = visible !== undefined;
@@ -208,20 +169,8 @@ function Dialog(rawProps: DialogProps) {
   }, [currentVisible, hideBackdrop]);
 
   const resolvedPortalContainer = portalContainer ?? (mounted ? document.body : null);
-  const hasContainerSlot = hasRenderableContent(containerSlot);
-  const hasHeaderSlot = hasRenderableContent(headerSlot);
-  const hasContentSlot = hasRenderableContent(contentSlot);
-  const hasChildren = hasRenderableContent(children);
-  const hasFooterSlot = hasRenderableContent(footerSlot);
-  const hasFooterActions = hasRenderableContent(footerActions);
-  const resolvedAriaLabel = typeof ariaLabel === 'string' && ariaLabel.trim().length > 0 ? ariaLabel : null;
-  const shouldRenderDefaultHeader = showHeader && !hasContainerSlot && !hasHeaderSlot;
-  const shouldRenderVisibleTitle = shouldRenderDefaultHeader && hasRenderableContent(header);
-  const shouldRenderVisibleSubtitle = shouldRenderDefaultHeader && hasRenderableContent(subheader);
-  const hiddenTitle = shouldRenderVisibleTitle || hasContainerSlot || hasHeaderSlot ? resolvedAriaLabel : (resolvedAriaLabel ?? (showHeader ? null : header));
-  const hiddenDescription = shouldRenderVisibleSubtitle || hasContainerSlot || hasHeaderSlot || showHeader ? null : subheader;
 
-  const handleVisibleChange = (nextVisible: boolean) => {
+  const commitVisibility = (nextVisible: boolean) => {
     if (!isControlled) {
       setUncontrolledVisible(nextVisible);
     }
@@ -234,224 +183,223 @@ function Dialog(rawProps: DialogProps) {
     }
   };
 
-  const renderVariantSign = () => {
-    if (!showVariantSign) {
-      return null;
+  // Spar invokes this when its dismissal paths fire
+  // (`SparDialog.Content`'s `useInteractOutside` and Escape handler). When
+  // `preventDismiss` is set we swallow the dismissal here, which keeps the
+  // close-button path (explicit user action) working since it routes through
+  // `requestClose` below.
+  const handleVisibleChange = (nextVisible: boolean) => {
+    if (preventDismiss && !nextVisible) {
+      return;
     }
-
-    const defaultSignNode = (
-      <span
-        {...buildSlotAttrs(DialogBase.getSlotProps('signIcon', { 'aria-hidden': 'true', 'data-variant': variant }), resolvedSlotProps, 'signIcon', resolvedClassNames?.signIcon)}
-      >
-        {renderIconSymbol(getVariantIcon(variant), 'tk-dialog-sign-icon-symbol')}
-      </span>
-    );
-
-    return renderSignIcon ? renderSignIcon(defaultSignNode) : defaultSignNode;
+    commitVisibility(nextVisible);
   };
 
-  const renderHeader = () => {
-    if (hasContainerSlot || !showHeader) {
-      return null;
-    }
+  const requestClose = () => commitVisibility(false);
 
-    if (hasHeaderSlot) {
-      return headerSlot;
-    }
-
-    return (
-      <div
-        {...buildSlotAttrs(
-          DialogBase.getSlotProps('header', { 'className': headerTypeClassNames[headerType], 'data-header-type': headerType }),
-          resolvedSlotProps,
-          'header',
-          resolvedClassNames?.header,
-        )}
-      >
-        <div {...buildSlotAttrs(DialogBase.getSlotProps('headerContent'), resolvedSlotProps, 'headerContent', resolvedClassNames?.headerContent)}>
-          {renderVariantSign()}
-          {(shouldRenderVisibleTitle || shouldRenderVisibleSubtitle) && (
-            <div {...buildSlotAttrs(DialogBase.getSlotProps('titleContainer'), resolvedSlotProps, 'titleContainer', resolvedClassNames?.titleContainer)}>
-              {shouldRenderVisibleSubtitle ? (
-                <SparDialog.Description as="span" {...buildSlotAttrs(DialogBase.getSlotProps('subtitle'), resolvedSlotProps, 'subtitle', resolvedClassNames?.subtitle)}>
-                  {subheader}
-                </SparDialog.Description>
-              ) : null}
-              {shouldRenderVisibleTitle ? (
-                <SparDialog.Title as="span" {...buildSlotAttrs(DialogBase.getSlotProps('title'), resolvedSlotProps, 'title', resolvedClassNames?.title)}>
-                  {header}
-                </SparDialog.Title>
-              ) : null}
-            </div>
-          )}
-        </div>
-
-        {showCloseButton
-          ? (() => {
-              const closeButtonAttrs = buildSlotAttrs(DialogBase.getSlotProps('closeButton'), resolvedSlotProps, 'closeButton', resolvedClassNames?.closeButton);
-              const closeIconAttrs = buildSlotAttrs(DialogBase.getSlotProps('closeIcon', { 'aria-hidden': 'true' }), resolvedSlotProps, 'closeIcon', resolvedClassNames?.closeIcon);
-              // TODO(takeoff-icons): Replace placeholder close SVG with Takeoff icon.
-              const defaultIconContent = renderIconSymbol(<PlaceholderClose />, 'tk-dialog-close-icon-symbol');
-              const iconContent = renderCloseIcon ? renderCloseIcon(defaultIconContent) : defaultIconContent;
-
-              return (
-                <button aria-label="Close dialog" {...closeButtonAttrs} onClick={() => handleVisibleChange(false)} type="button">
-                  <span {...closeIconAttrs}>{iconContent}</span>
-                </button>
-              );
-            })()
-          : null}
-      </div>
-    );
-  };
-
-  const renderHiddenAccessibleNodes = () => (
-    <>
-      {hasRenderableContent(hiddenTitle) ? (
-        <SparDialog.Title as="span" style={visuallyHiddenStyle}>
-          {hiddenTitle}
-        </SparDialog.Title>
-      ) : null}
-      {hasRenderableContent(hiddenDescription) ? (
-        <SparDialog.Description as="span" style={visuallyHiddenStyle}>
-          {hiddenDescription}
-        </SparDialog.Description>
-      ) : null}
-    </>
+  const contextValue = useMemo(
+    () => ({
+      visible: currentVisible,
+      variant,
+      headerType,
+      maskVariant,
+      hideBackdrop,
+      isMaskBlur,
+      portalContainer: resolvedPortalContainer,
+      requestClose,
+      classNames: resolvedClassNames,
+      slotProps: resolvedSlotProps,
+    }),
+    [currentVisible, variant, headerType, maskVariant, hideBackdrop, isMaskBlur, resolvedPortalContainer, resolvedClassNames, resolvedSlotProps, requestClose],
   );
 
-  const renderContent = () => {
-    if (hasContainerSlot) {
-      return containerSlot;
-    }
-
-    const contentAttrs = buildSlotAttrs(DialogBase.getSlotProps('content'), resolvedSlotProps, 'content', resolvedClassNames?.content);
-
-    if (hasContentSlot) {
-      return <div {...contentAttrs}>{contentSlot}</div>;
-    }
-
-    if (hasChildren) {
-      return <div {...contentAttrs}>{children}</div>;
-    }
-
-    return null;
-  };
-
-  const renderFooter = () => {
-    if (hasContainerSlot) {
-      return null;
-    }
-
-    if (hasFooterSlot) {
-      return footerSlot;
-    }
-
-    if (hasFooterActions) {
-      return (
-        <div {...buildSlotAttrs(DialogBase.getSlotProps('footer'), resolvedSlotProps, 'footer', resolvedClassNames?.footer)}>
-          <div {...buildSlotAttrs(DialogBase.getSlotProps('footerActions'), resolvedSlotProps, 'footerActions', resolvedClassNames?.footerActions)}>{footerActions}</div>
-        </div>
-      );
-    }
-
-    return null;
-  };
-
   return (
-    <SparDialog id={baseId} modal open={currentVisible} onOpenChange={handleVisibleChange}>
-      {mounted && currentVisible && resolvedPortalContainer
-        ? createPortal(
-            <div
-              {...buildSlotAttrs(
-                DialogBase.getSlotProps('mask', {
-                  'className': clsx(maskVariantClassNames[maskVariant], {
-                    'tk-dialog-mask-hidden': hideBackdrop,
-                    'tk-dialog-mask-blur': isMaskBlur,
-                  }),
-                  'aria-hidden': 'true',
-                  'data-mask-variant': maskVariant,
-                  'data-backdrop-hidden': hideBackdrop ? '' : undefined,
-                  'data-mask-blur': isMaskBlur ? '' : undefined,
-                }),
-                resolvedSlotProps,
-                'mask',
-                resolvedClassNames?.mask,
-              )}
-            />,
-            resolvedPortalContainer,
-          )
-        : null}
-
-      <SparDialog.Content
-        {...restProps}
-        {...buildSlotAttrs(
-          DialogBase.getSlotProps('root', {
-            'className': clsx(className, dialogVariantClassNames[variant]),
-            'style': {
-              ...(containerStyle ?? {}),
-              ...(style ?? {}),
-            },
-            'aria-label': ariaLabel,
-            'data-variant': variant,
-            'data-header-type': headerType,
-            'data-mask-variant': maskVariant,
-            'data-backdrop-hidden': hideBackdrop ? '' : undefined,
-            'data-mask-blur': isMaskBlur ? '' : undefined,
-          }),
-          resolvedSlotProps,
-          'root',
-          resolvedClassNames?.root,
-        )}
-        container={resolvedPortalContainer ?? undefined}
-        onInteractOutside={event => {
-          if (preventDismiss) {
-            event.preventDefault();
-          }
-        }}
-      >
-        {renderHiddenAccessibleNodes()}
-        {renderHeader()}
-        {renderContent()}
-        {renderFooter()}
-      </SparDialog.Content>
-    </SparDialog>
+    <DialogProvider value={contextValue}>
+      <SparDialog id={baseId} modal open={currentVisible} onOpenChange={handleVisibleChange}>
+        {children}
+      </SparDialog>
+    </DialogProvider>
   );
 }
 
 Dialog.displayName = 'Dialog';
 
-const DialogHeader = ({ children, className }: DialogHeaderPartProps) => <div {...DialogBase.getSlotProps('header', { className })}>{children}</div>;
+function DialogMask(rest: DialogMaskProps) {
+  const context = useDialogContext('Dialog.Mask');
+  if (!context.visible || !context.portalContainer) {
+    return null;
+  }
+  const attrs = buildSlotAttrs(
+    DialogBase.getSlotProps('mask', {
+      'className': clsx(maskVariantClassNames[context.maskVariant], {
+        'tk-dialog-mask-hidden': context.hideBackdrop,
+        'tk-dialog-mask-blur': context.isMaskBlur,
+      }),
+      'aria-hidden': 'true',
+      'data-mask-variant': context.maskVariant,
+      'data-backdrop-hidden': context.hideBackdrop ? '' : undefined,
+      'data-mask-blur': context.isMaskBlur ? '' : undefined,
+    }),
+    context.slotProps,
+    'mask',
+    context.classNames?.mask,
+  );
+
+  return createPortal(<div {...attrs} {...rest} />, context.portalContainer);
+}
+DialogMask.displayName = 'Dialog.Mask';
+
+function DialogPanel({ children, className, ...rest }: DialogPanelProps) {
+  const context = useDialogContext('Dialog.Panel');
+  const attrs = buildSlotAttrs(
+    DialogBase.getSlotProps('root', {
+      'className': clsx(className, dialogVariantClassNames[context.variant]),
+      'data-variant': context.variant,
+      'data-header-type': context.headerType,
+      'data-mask-variant': context.maskVariant,
+      'data-backdrop-hidden': context.hideBackdrop ? '' : undefined,
+      'data-mask-blur': context.isMaskBlur ? '' : undefined,
+    }),
+    context.slotProps,
+    'root',
+    context.classNames?.root,
+  );
+
+  return (
+    <SparDialog.Content {...attrs} {...rest} container={context.portalContainer ?? undefined}>
+      {children}
+    </SparDialog.Content>
+  );
+}
+DialogPanel.displayName = 'Dialog.Panel';
+
+function DialogHeader({ children, className, ...rest }: DialogHeaderProps) {
+  const context = useDialogContext('Dialog.Header');
+  const attrs = buildSlotAttrs(
+    DialogBase.getSlotProps('header', { 'className': clsx(className, headerTypeClassNames[context.headerType]), 'data-header-type': context.headerType }),
+    context.slotProps,
+    'header',
+    context.classNames?.header,
+  );
+  return (
+    <div {...attrs} {...rest}>
+      {children}
+    </div>
+  );
+}
 DialogHeader.displayName = 'Dialog.Header';
 
-const DialogContent = ({ children, className }: DialogContentPartProps) => <div {...DialogBase.getSlotProps('content', { className })}>{children}</div>;
-DialogContent.displayName = 'Dialog.Content';
+function DialogTitleGroup({ children, className, ...rest }: DialogTitleGroupProps) {
+  const context = useDialogContext('Dialog.TitleGroup');
+  const attrs = buildSlotAttrs(DialogBase.getSlotProps('titleContainer', { className }), context.slotProps, 'titleContainer', context.classNames?.titleContainer);
+  return (
+    <div {...attrs} {...rest}>
+      {children}
+    </div>
+  );
+}
+DialogTitleGroup.displayName = 'Dialog.TitleGroup';
 
-const DialogFooter = ({ children, className }: DialogFooterPartProps) => <div {...DialogBase.getSlotProps('footer', { className })}>{children}</div>;
-DialogFooter.displayName = 'Dialog.Footer';
-
-const DialogFooterActions = ({ children, className }: DialogFooterActionsPartProps) => <div {...DialogBase.getSlotProps('footerActions', { className })}>{children}</div>;
-DialogFooterActions.displayName = 'Dialog.FooterActions';
-
-const DialogTitle = ({ children, className }: DialogTitlePartProps) => (
-  <SparDialog.Title as="span" {...DialogBase.getSlotProps('title', { className })}>
-    {children}
-  </SparDialog.Title>
-);
+function DialogTitle({ children, className, ...rest }: DialogTitleProps) {
+  const context = useDialogContext('Dialog.Title');
+  const attrs = buildSlotAttrs(DialogBase.getSlotProps('title', { className }), context.slotProps, 'title', context.classNames?.title);
+  return (
+    <SparDialog.Title as="span" {...attrs} {...rest}>
+      {children}
+    </SparDialog.Title>
+  );
+}
 DialogTitle.displayName = 'Dialog.Title';
 
-const DialogDescription = ({ children, className }: DialogDescriptionPartProps) => (
-  <SparDialog.Description as="span" {...DialogBase.getSlotProps('subtitle', { className })}>
-    {children}
-  </SparDialog.Description>
-);
+function DialogDescription({ children, className, ...rest }: DialogDescriptionProps) {
+  const context = useDialogContext('Dialog.Description');
+  const attrs = buildSlotAttrs(DialogBase.getSlotProps('subtitle', { className }), context.slotProps, 'subtitle', context.classNames?.subtitle);
+  return (
+    <SparDialog.Description as="span" {...attrs} {...rest}>
+      {children}
+    </SparDialog.Description>
+  );
+}
 DialogDescription.displayName = 'Dialog.Description';
 
+function DialogSignIcon({ children, className, ...rest }: DialogSignIconProps) {
+  const context = useDialogContext('Dialog.SignIcon');
+  const attrs = buildSlotAttrs(
+    DialogBase.getSlotProps('signIcon', { 'aria-hidden': 'true', 'data-variant': context.variant, className }),
+    context.slotProps,
+    'signIcon',
+    context.classNames?.signIcon,
+  );
+  return (
+    <span {...attrs} {...rest}>
+      {renderIconSymbol(children ?? getVariantIcon(context.variant), 'tk-dialog-sign-icon-symbol')}
+    </span>
+  );
+}
+DialogSignIcon.displayName = 'Dialog.SignIcon';
+
+function DialogCloseButton({ children, className, ...rest }: DialogCloseButtonProps) {
+  const context = useDialogContext('Dialog.CloseButton');
+  const attrs = buildSlotAttrs(DialogBase.getSlotProps('closeButton', { className }), context.slotProps, 'closeButton', context.classNames?.closeButton);
+  const iconAttrs = buildSlotAttrs(DialogBase.getSlotProps('closeIcon', { 'aria-hidden': 'true' }), context.slotProps, 'closeIcon', context.classNames?.closeIcon);
+  const defaultIcon = renderIconSymbol(<PlaceholderClose />, 'tk-dialog-close-icon-symbol');
+
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    context.requestClose();
+  };
+
+  return (
+    <button aria-label="Close dialog" {...attrs} {...rest} onClick={handleClick} type="button">
+      <span {...iconAttrs}>{children ?? defaultIcon}</span>
+    </button>
+  );
+}
+DialogCloseButton.displayName = 'Dialog.CloseButton';
+
+function DialogBody({ children, className, ...rest }: DialogBodyProps) {
+  const context = useDialogContext('Dialog.Body');
+  const attrs = buildSlotAttrs(DialogBase.getSlotProps('content', { className }), context.slotProps, 'content', context.classNames?.content);
+  return (
+    <div {...attrs} {...rest}>
+      {children}
+    </div>
+  );
+}
+DialogBody.displayName = 'Dialog.Body';
+
+function DialogFooter({ children, className, ...rest }: DialogFooterProps) {
+  const context = useDialogContext('Dialog.Footer');
+  const attrs = buildSlotAttrs(DialogBase.getSlotProps('footer', { className }), context.slotProps, 'footer', context.classNames?.footer);
+  return (
+    <div {...attrs} {...rest}>
+      {children}
+    </div>
+  );
+}
+DialogFooter.displayName = 'Dialog.Footer';
+
+function DialogFooterActions({ children, className, ...rest }: DialogFooterActionsProps) {
+  const context = useDialogContext('Dialog.FooterActions');
+  const attrs = buildSlotAttrs(DialogBase.getSlotProps('footerActions', { className }), context.slotProps, 'footerActions', context.classNames?.footerActions);
+  return (
+    <div {...attrs} {...rest}>
+      {children}
+    </div>
+  );
+}
+DialogFooterActions.displayName = 'Dialog.FooterActions';
+
 const DialogCompound = Object.assign(Dialog, {
+  Mask: DialogMask,
+  Panel: DialogPanel,
   Header: DialogHeader,
+  TitleGroup: DialogTitleGroup,
   Title: DialogTitle,
   Description: DialogDescription,
-  Content: DialogContent,
+  SignIcon: DialogSignIcon,
+  CloseButton: DialogCloseButton,
+  Body: DialogBody,
   Footer: DialogFooter,
   FooterActions: DialogFooterActions,
 });

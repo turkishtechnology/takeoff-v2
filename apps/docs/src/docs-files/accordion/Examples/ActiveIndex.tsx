@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import RenderedDemo from '../../../components/RenderedDemo';
-import { Accordion, AccordionItem, ReactSparDemoRoot } from './shared';
+import { Accordion, ReactSparDemoRoot } from './shared';
 
 function toArray(value: string | number | (string | number)[] | undefined): (string | number)[] {
   if (Array.isArray(value)) return value;
@@ -26,9 +26,27 @@ export function ActiveIndexDemo() {
         activeIndex={active}
         onActiveIndexChange={(next) => setActive(toArray(next))}
       >
-        <AccordionItem header="Panel 1">Panel 1 Content</AccordionItem>
-        <AccordionItem header="Panel 2">Panel 2 Content</AccordionItem>
-        <AccordionItem header="Panel 3">Panel 3 Content</AccordionItem>
+        <Accordion.Item>
+          <Accordion.Header>
+            <Accordion.Title>Panel 1</Accordion.Title>
+            <Accordion.Arrow />
+          </Accordion.Header>
+          <Accordion.Content>Panel 1 Content</Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item>
+          <Accordion.Header>
+            <Accordion.Title>Panel 2</Accordion.Title>
+            <Accordion.Arrow />
+          </Accordion.Header>
+          <Accordion.Content>Panel 2 Content</Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item>
+          <Accordion.Header>
+            <Accordion.Title>Panel 3</Accordion.Title>
+            <Accordion.Arrow />
+          </Accordion.Header>
+          <Accordion.Content>Panel 3 Content</Accordion.Content>
+        </Accordion.Item>
       </Accordion>
     </div>
   );
@@ -40,9 +58,27 @@ function ActiveIndexDemo() {
   return (
     <div style={{ width: 'min(100%, 40rem)' }}>
       <Accordion allowMultiple activeIndex={active} onActiveIndexChange={next => setActive(toArray(next))}>
-        <AccordionItem header="Panel 1">Panel 1 Content</AccordionItem>
-        <AccordionItem header="Panel 2">Panel 2 Content</AccordionItem>
-        <AccordionItem header="Panel 3">Panel 3 Content</AccordionItem>
+        <Accordion.Item>
+          <Accordion.Header>
+            <Accordion.Title>Panel 1</Accordion.Title>
+            <Accordion.Arrow />
+          </Accordion.Header>
+          <Accordion.Content>Panel 1 Content</Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item>
+          <Accordion.Header>
+            <Accordion.Title>Panel 2</Accordion.Title>
+            <Accordion.Arrow />
+          </Accordion.Header>
+          <Accordion.Content>Panel 2 Content</Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item>
+          <Accordion.Header>
+            <Accordion.Title>Panel 3</Accordion.Title>
+            <Accordion.Arrow />
+          </Accordion.Header>
+          <Accordion.Content>Panel 3 Content</Accordion.Content>
+        </Accordion.Item>
       </Accordion>
     </div>
   );

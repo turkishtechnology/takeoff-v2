@@ -22,23 +22,36 @@ export function HeaderTypesDemo() {
             variant={headerType === value ? 'primary' : 'secondary'}
             onClick={() => setHeaderType(value)}
           >
-            {value}
+            <Button.Label>{value}</Button.Label>
           </Button>
         ))}
       </div>
 
-      <Button onClick={() => setVisible(true)}>Open dialog</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Button.Label>Open dialog</Button.Label>
+      </Button>
 
       <Dialog
         visible={visible}
         onVisibleChange={setVisible}
-        header="Header treatment"
-        subheader={\`Current headerType: \${headerType}\`}
         headerType={headerType}
         containerStyle={{ width: '460px' }}
       >
-        Header types keep the same body and footer layout while changing the
-        top treatment only.
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.SignIcon />
+            <Dialog.TitleGroup>
+              <Dialog.Description>{\`Current headerType: \${headerType}\`}</Dialog.Description>
+              <Dialog.Title>Header treatment</Dialog.Title>
+            </Dialog.TitleGroup>
+            <Dialog.CloseButton />
+          </Dialog.Header>
+          <Dialog.Body>
+            Header types keep the same body and footer layout while changing the
+            top treatment only.
+          </Dialog.Body>
+        </Dialog.Panel>
       </Dialog>
     </div>
   );
@@ -59,22 +72,28 @@ function HeaderTypesDemo() {
             variant={headerType === value ? 'primary' : 'secondary'}
             onClick={() => setHeaderType(value)}
           >
-            {value}
+            <Button.Label>{value}</Button.Label>
           </Button>
         ))}
       </div>
 
-      <Button onClick={() => setVisible(true)}>Open dialog</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Button.Label>Open dialog</Button.Label>
+      </Button>
 
-      <Dialog
-        visible={visible}
-        onVisibleChange={setVisible}
-        header="Header treatment"
-        subheader={`Current headerType: ${headerType}`}
-        headerType={headerType}
-        containerStyle={{ width: '460px' }}
-      >
-        Header types keep the same body and footer layout while changing the top treatment only.
+      <Dialog visible={visible} onVisibleChange={setVisible} headerType={headerType} containerStyle={{ width: '460px' }}>
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.SignIcon />
+            <Dialog.TitleGroup>
+              <Dialog.Description>{`Current headerType: ${headerType}`}</Dialog.Description>
+              <Dialog.Title>Header treatment</Dialog.Title>
+            </Dialog.TitleGroup>
+            <Dialog.CloseButton />
+          </Dialog.Header>
+          <Dialog.Body>Header types keep the same body and footer layout while changing the top treatment only.</Dialog.Body>
+        </Dialog.Panel>
       </Dialog>
     </div>
   );

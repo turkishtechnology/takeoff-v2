@@ -203,9 +203,12 @@ Use this report when the change is classified as `strict-parity` or
 ## React-enhancement review template
 
 Use this second report when the change introduces any `react-enhancement`
-surfaces — new controlled/uncontrolled pairs, `slotProps`, render overrides,
-compound parts, or any additive prop with no core analogue. Copy into the PR
-description below the parity review.
+surfaces — new controlled/uncontrolled pairs, `slotProps`, additional compound
+subcomponents beyond the canonical anatomy, or any additive state prop with no
+core analogue. Compound-only composition is the baseline; adding a new
+subcomponent counts as a react-enhancement when it exposes a slot that the core
+anatomy did not already name. Copy into the PR description below the parity
+review.
 
 ```markdown
 ## React-enhancement review — <ComponentName>
@@ -216,21 +219,22 @@ three additive tests (additive / optional / documented).
 
 ### Enhancements introduced
 
-| surface         | kind                              | parity overlap       | consumer impact                                     |
-| --------------- | --------------------------------- | -------------------- | --------------------------------------------------- |
-| `renderSpinner` | render override (decorative slot) | none                 | additive                                            |
-| `Input.Label`   | public compound part              | mirrors `label` prop | additive; wrapper composes the same part internally |
+| surface          | kind                                        | parity overlap                              | consumer impact                                  |
+| ---------------- | ------------------------------------------- | ------------------------------------------- | ------------------------------------------------ |
+| `Input.Asterisk` | additive compound subcomponent (decorative) | none (renders only when `required` is true) | additive; the subcomponent is optional           |
+| `classNames`     | per-slot class-name override                | none                                        | additive; canonical `tk-*` classes are preserved |
 
 ### Per-enhancement justification
 
 For each row above:
 
 - **`<surface>`**
-  - **problem it solves**: <why a parity-only wrapper cannot serve this need>
+  - **problem it solves**: <why the baseline compound anatomy cannot serve
+    this need>
   - **why additive**:
-    <how it layers on top of the parity path without changing it>
-  - **canonical-owner preservation**: <how structural owner + data-slot stay
-    intact>
+    <how it layers on top of the canonical anatomy without changing it>
+  - **canonical-owner preservation**: <how the subcomponent's owner tag, class,
+    and `data-slot` stay intact>
   - **tests**: <path(s) to the test(s) pinning it>
   - **docs**: <path to the docs surface describing it>
 
@@ -238,7 +242,8 @@ For each row above:
 
 - instance `classNames` / `slotProps` win over provider theme-level values
 - controlled props win over uncontrolled fallbacks
-- render overrides replace content inside canonical owner nodes only
+- compound children own the content inside the canonical owner nodes only —
+  consumers never replace the owner itself
 
 ### Residual risks
 

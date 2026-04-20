@@ -4,11 +4,36 @@ import { Input, ReactSparDemoRoot } from './shared';
 const code = `export function InputStatesDemo() {
   return (
     <div style={{ display: 'grid', gap: 16, width: 'min(100%, 28rem)' }}>
-      <Input label="Default" placeholder="Type here" />
-      <Input label="Disabled" disabled defaultValue="Locked" />
-      <Input label="Read only" readOnly defaultValue="View only" />
-      <Input label="Small" size="small" placeholder="Compact" />
-      <Input label="Large" size="large" placeholder="Spacious" />
+      <Input>
+        <Input.Label>Default</Input.Label>
+        <Input.Container>
+          <Input.Field placeholder="Type here" />
+        </Input.Container>
+      </Input>
+      <Input disabled defaultValue="Locked">
+        <Input.Label>Disabled</Input.Label>
+        <Input.Container>
+          <Input.Field />
+        </Input.Container>
+      </Input>
+      <Input readOnly defaultValue="View only">
+        <Input.Label>Read only</Input.Label>
+        <Input.Container>
+          <Input.Field />
+        </Input.Container>
+      </Input>
+      <Input size="small">
+        <Input.Label>Small</Input.Label>
+        <Input.Container>
+          <Input.Field placeholder="Compact" />
+        </Input.Container>
+      </Input>
+      <Input size="large">
+        <Input.Label>Large</Input.Label>
+        <Input.Container>
+          <Input.Field placeholder="Spacious" />
+        </Input.Container>
+      </Input>
     </div>
   );
 }`;
@@ -16,11 +41,36 @@ const code = `export function InputStatesDemo() {
 function InputStatesDemo() {
   return (
     <div style={{ display: 'grid', gap: 16, width: 'min(100%, 28rem)' }}>
-      <Input label="Default" placeholder="Type here" />
-      <Input label="Disabled" disabled defaultValue="Locked" />
-      <Input label="Read only" readOnly defaultValue="View only" />
-      <Input label="Small" size="small" placeholder="Compact" />
-      <Input label="Large" size="large" placeholder="Spacious" />
+      <Input>
+        <Input.Label>Default</Input.Label>
+        <Input.Container>
+          <Input.Field placeholder="Type here" />
+        </Input.Container>
+      </Input>
+      <Input disabled defaultValue="Locked">
+        <Input.Label>Disabled</Input.Label>
+        <Input.Container>
+          <Input.Field />
+        </Input.Container>
+      </Input>
+      <Input readOnly defaultValue="View only">
+        <Input.Label>Read only</Input.Label>
+        <Input.Container>
+          <Input.Field />
+        </Input.Container>
+      </Input>
+      <Input size="small">
+        <Input.Label>Small</Input.Label>
+        <Input.Container>
+          <Input.Field placeholder="Compact" />
+        </Input.Container>
+      </Input>
+      <Input size="large">
+        <Input.Label>Large</Input.Label>
+        <Input.Container>
+          <Input.Field placeholder="Spacious" />
+        </Input.Container>
+      </Input>
     </div>
   );
 }

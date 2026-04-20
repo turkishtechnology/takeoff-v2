@@ -42,7 +42,7 @@ export interface DialogProps extends DialogNativeProps {
    */
   onVisibleChange?: (visible: boolean) => void;
   /**
-   * Fired when the dialog opens because the `visible` state changes to `true`.
+   * Fired when the dialog opens.
    */
   onOpen?: () => void;
   /**
@@ -50,33 +50,10 @@ export interface DialogProps extends DialogNativeProps {
    */
   onClose?: () => void;
   /**
-   * The header text.
-   */
-  header?: ReactNode;
-  /**
    * Header type.
    * @defaultValue 'basic'
    */
   headerType?: DialogHeaderType;
-  /**
-   * Controls whether the close button is shown.
-   * @defaultValue true
-   */
-  showCloseButton?: boolean;
-  /**
-   * Controls whether the header is shown.
-   * @defaultValue true
-   */
-  showHeader?: boolean;
-  /**
-   * Controls whether the variant sign is shown.
-   * @defaultValue true
-   */
-  showVariantSign?: boolean;
-  /**
-   * The subheader text.
-   */
-  subheader?: ReactNode;
   /**
    * The variant of the dialog.
    * @defaultValue 'info'
@@ -111,25 +88,9 @@ export interface DialogProps extends DialogNativeProps {
    */
   portalContainer?: HTMLElement | null;
   /**
-   * Custom container template that replaces the default header/content/footer layout.
+   * Compound children — typically composed from `Dialog.Mask`, `Dialog.Panel`
+   * (containing `Dialog.Header`, `Dialog.Body`, `Dialog.Footer`).
    */
-  containerSlot?: ReactNode;
-  /**
-   * Custom header template.
-   */
-  headerSlot?: ReactNode;
-  /**
-   * Custom content template. Takes precedence over `children`.
-   */
-  contentSlot?: ReactNode;
-  /**
-   * Custom footer template.
-   */
-  footerSlot?: ReactNode;
-  /**
-   * Custom actions template for the default footer.
-   */
-  footerActions?: ReactNode;
   children?: ReactNode;
   /**
    * Per-slot class name overrides.
@@ -139,44 +100,54 @@ export interface DialogProps extends DialogNativeProps {
    * Per-slot HTML attribute overrides.
    */
   slotProps?: DialogSlotProps;
+}
+
+export type DialogMaskProps = HTMLAttributes<HTMLDivElement>;
+
+export interface DialogPanelProps extends HTMLAttributes<HTMLDivElement> {
+  children?: ReactNode;
+}
+
+export interface DialogHeaderProps extends HTMLAttributes<HTMLDivElement> {
+  children?: ReactNode;
+}
+
+export interface DialogTitleGroupProps extends HTMLAttributes<HTMLDivElement> {
+  children?: ReactNode;
+}
+
+export interface DialogTitleProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
+}
+
+export interface DialogDescriptionProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
+}
+
+export interface DialogSignIconProps extends HTMLAttributes<HTMLSpanElement> {
   /**
-   * Custom content for the close button icon. The structural owner `<button>` is preserved;
-   * only the icon content inside it is replaced. This ensures the canonical
-   * `button.tk-dialog-header-close-button[data-slot="close-button"]` and dismiss behavior remain intact.
+   * Optional custom sign icon content. When omitted, the variant-driven
+   * placeholder icon is rendered.
    */
-  renderCloseIcon?: (defaultIcon: ReactNode) => ReactNode;
+  children?: ReactNode;
+}
+
+export interface DialogCloseButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'type'> {
   /**
-   * Render override for the variant sign icon.
+   * Optional custom icon content. When omitted the default close icon is
+   * rendered.
    */
-  renderSignIcon?: (defaultNode: ReactNode) => ReactNode;
+  children?: ReactNode;
 }
 
-export interface DialogHeaderPartProps {
+export interface DialogBodyProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
-  className?: string;
 }
 
-export interface DialogTitlePartProps {
+export interface DialogFooterProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
-  className?: string;
 }
 
-export interface DialogDescriptionPartProps {
+export interface DialogFooterActionsProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
-  className?: string;
-}
-
-export interface DialogContentPartProps {
-  children?: ReactNode;
-  className?: string;
-}
-
-export interface DialogFooterPartProps {
-  children?: ReactNode;
-  className?: string;
-}
-
-export interface DialogFooterActionsPartProps {
-  children?: ReactNode;
-  className?: string;
 }

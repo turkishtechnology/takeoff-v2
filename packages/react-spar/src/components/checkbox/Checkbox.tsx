@@ -1,15 +1,14 @@
 import { Checkbox as SparCheckbox } from '@turkish-technology/spar';
-import { useCallback, useState, type FocusEvent, type KeyboardEvent, type MouseEvent, type ReactNode, type Ref } from 'react';
+import { useCallback, useState, type FocusEvent, type KeyboardEvent, type MouseEvent, type Ref } from 'react';
 
 import { useComponentTheme } from '../../provider';
 import { renderIconSymbol } from '../../utils';
 import { applyThemeDefaults, buildSlotAttrs, mergeClassNames, mergeSlotProps } from '../../customization';
 // TODO(takeoff-icons): Default check / indeterminate glyphs are Lucide-sourced
-// placeholders. Replace with the Takeoff icon set (`check` and `remove` in
-// takeoff-ui) before the first public release.
+// placeholders. Replace with the Takeoff icon set before the first public release.
 import { PlaceholderCheck, PlaceholderRemove } from '../../utils/placeholderIcons';
-import { CheckboxBase } from './CheckboxBase';
-import type { CheckboxProps, CheckboxValue } from './types';
+import { CheckboxBase, CheckboxProvider, useCheckboxContext } from './CheckboxBase';
+import type { CheckboxContentProps, CheckboxDescriptionProps, CheckboxIconProps, CheckboxIndicatorProps, CheckboxLabelProps, CheckboxProps, CheckboxValue } from './types';
 
 type SparCheckedState = boolean | 'indeterminate';
 
@@ -17,17 +16,15 @@ const toSparChecked = (value: CheckboxValue): SparCheckedState => (value === nul
 
 const fromSparChecked = (value: SparCheckedState): CheckboxValue => (value === 'indeterminate' ? null : value);
 
-const renderDefaultIcon = (node: ReactNode) => renderIconSymbol(node, 'tk-checkbox-icon-symbol');
+const renderDefaultIcon = (node: React.ReactNode) => renderIconSymbol(node, 'tk-checkbox-icon-symbol');
 
-export function Checkbox({ ref, ...rawProps }: CheckboxProps & { ref?: Ref<HTMLElement> }) {
+function Checkbox({ ref, ...rawProps }: CheckboxProps & { ref?: Ref<HTMLElement> }) {
   const themeConfig = useComponentTheme('Checkbox');
   const {
     value,
     defaultValue,
     indeterminate,
     onChange,
-    label,
-    description,
     size,
     type,
     disabled,
@@ -40,10 +37,10 @@ export function Checkbox({ ref, ...rawProps }: CheckboxProps & { ref?: Ref<HTMLE
     autoFocus,
     tabIndex,
     id,
+    children,
     className,
     classNames: instanceClassNames,
     slotProps: instanceSlotProps,
-    renderIcon,
     onFocus,
     onBlur,
     onClick,
@@ -101,14 +98,7 @@ export function Checkbox({ ref, ...rawProps }: CheckboxProps & { ref?: Ref<HTMLE
   const resolvedDisabled = Boolean(disabled);
   const resolvedReadOnly = Boolean(readOnly);
   const resolvedInvalid = Boolean(invalid);
-  const hasLabel = label !== undefined && label !== null && label !== false && label !== '';
-  const hasDescription = description !== undefined && description !== null && description !== false && description !== '';
-
-  const indicatorAttrs = buildSlotAttrs(CheckboxBase.getSlotProps('indicator', { 'aria-hidden': 'true' }), resolvedSlotProps, 'indicator', resolvedClassNames?.indicator);
-  const iconAttrs = buildSlotAttrs(CheckboxBase.getSlotProps('icon', { 'aria-hidden': 'true' }), resolvedSlotProps, 'icon', resolvedClassNames?.icon);
-  const textAttrs = buildSlotAttrs(CheckboxBase.getSlotProps('text'), resolvedSlotProps, 'text', resolvedClassNames?.text);
-  const labelAttrs = buildSlotAttrs(CheckboxBase.getSlotProps('label'), resolvedSlotProps, 'label', resolvedClassNames?.label);
-  const descriptionAttrs = buildSlotAttrs(CheckboxBase.getSlotProps('description'), resolvedSlotProps, 'description', resolvedClassNames?.description);
+  const resolvedRequired = Boolean(required);
 
   const rootSlotAttrs = buildSlotAttrs(
     CheckboxBase.getSlotProps('root', {
@@ -122,51 +112,122 @@ export function Checkbox({ ref, ...rawProps }: CheckboxProps & { ref?: Ref<HTMLE
     resolvedClassNames?.root,
   );
 
-  const iconNode = (() => {
-    const state = { checked: isChecked, indeterminate: isIndeterminate };
-    if (renderIcon) {
-      return renderIcon(state);
-    }
-    if (isIndeterminate) {
-      return renderDefaultIcon(<PlaceholderRemove />);
-    }
-    if (isChecked) {
-      return renderDefaultIcon(<PlaceholderCheck />);
-    }
-    return null;
-  })();
+  const contextValue = {
+    checked: isChecked,
+    indeterminate: isIndeterminate,
+    disabled: resolvedDisabled,
+    readOnly: resolvedReadOnly,
+    invalid: resolvedInvalid,
+    required: resolvedRequired,
+    classNames: resolvedClassNames,
+    slotProps: resolvedSlotProps,
+  };
 
   return (
-    <SparCheckbox
-      ref={ref}
-      id={id}
-      checked={toSparChecked(currentValue)}
-      onChange={handleChange}
-      disabled={resolvedDisabled}
-      readOnly={resolvedReadOnly}
-      required={required}
-      name={name}
-      value={formValue}
-      form={form}
-      autoFocus={autoFocus}
-      tabIndex={tabIndex}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      {...rootSlotAttrs}
-    >
-      <span {...indicatorAttrs}>
-        <span {...iconAttrs}>{iconNode}</span>
-      </span>
-      {(hasLabel || hasDescription) && (
-        <span {...textAttrs}>
-          {hasLabel ? <span {...labelAttrs}>{label}</span> : null}
-          {hasDescription ? <span {...descriptionAttrs}>{description}</span> : null}
-        </span>
-      )}
-    </SparCheckbox>
+    <CheckboxProvider value={contextValue}>
+      <SparCheckbox
+        ref={ref}
+        id={id}
+        checked={toSparChecked(currentValue)}
+        onChange={handleChange}
+        disabled={resolvedDisabled}
+        readOnly={resolvedReadOnly}
+        required={resolvedRequired}
+        name={name}
+        value={formValue}
+        form={form}
+        autoFocus={autoFocus}
+        tabIndex={tabIndex}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        {...rootSlotAttrs}
+      >
+        {children}
+      </SparCheckbox>
+    </CheckboxProvider>
   );
 }
 
 Checkbox.displayName = 'Checkbox';
+
+function CheckboxIndicator({ children, className, ...rest }: CheckboxIndicatorProps) {
+  const context = useCheckboxContext('Checkbox.Indicator');
+  const attrs = buildSlotAttrs(CheckboxBase.getSlotProps('indicator', { 'aria-hidden': 'true', className }), context.slotProps, 'indicator', context.classNames?.indicator);
+  return (
+    <span {...attrs} {...rest}>
+      {children ?? <CheckboxIcon />}
+    </span>
+  );
+}
+CheckboxIndicator.displayName = 'Checkbox.Indicator';
+
+function CheckboxIcon({ children, className, ...rest }: CheckboxIconProps) {
+  const context = useCheckboxContext('Checkbox.Icon');
+  const attrs = buildSlotAttrs(CheckboxBase.getSlotProps('icon', { 'aria-hidden': 'true', className }), context.slotProps, 'icon', context.classNames?.icon);
+
+  const state = { checked: context.checked, indeterminate: context.indeterminate };
+  let content: React.ReactNode;
+  if (typeof children === 'function') {
+    content = children(state);
+  } else if (children !== undefined) {
+    content = children;
+  } else if (context.indeterminate) {
+    content = renderDefaultIcon(<PlaceholderRemove />);
+  } else if (context.checked) {
+    content = renderDefaultIcon(<PlaceholderCheck />);
+  } else {
+    content = null;
+  }
+
+  return (
+    <span {...attrs} {...rest}>
+      {content}
+    </span>
+  );
+}
+CheckboxIcon.displayName = 'Checkbox.Icon';
+
+function CheckboxContent({ children, className, ...rest }: CheckboxContentProps) {
+  const context = useCheckboxContext('Checkbox.Content');
+  const attrs = buildSlotAttrs(CheckboxBase.getSlotProps('content', { className }), context.slotProps, 'content', context.classNames?.content);
+  return (
+    <span {...attrs} {...rest}>
+      {children}
+    </span>
+  );
+}
+CheckboxContent.displayName = 'Checkbox.Content';
+
+function CheckboxLabel({ children, className, ...rest }: CheckboxLabelProps) {
+  const context = useCheckboxContext('Checkbox.Label');
+  const attrs = buildSlotAttrs(CheckboxBase.getSlotProps('label', { className }), context.slotProps, 'label', context.classNames?.label);
+  return (
+    <span {...attrs} {...rest}>
+      {children}
+    </span>
+  );
+}
+CheckboxLabel.displayName = 'Checkbox.Label';
+
+function CheckboxDescription({ children, className, ...rest }: CheckboxDescriptionProps) {
+  const context = useCheckboxContext('Checkbox.Description');
+  const attrs = buildSlotAttrs(CheckboxBase.getSlotProps('description', { className }), context.slotProps, 'description', context.classNames?.description);
+  return (
+    <span {...attrs} {...rest}>
+      {children}
+    </span>
+  );
+}
+CheckboxDescription.displayName = 'Checkbox.Description';
+
+const CheckboxCompound = Object.assign(Checkbox, {
+  Indicator: CheckboxIndicator,
+  Icon: CheckboxIcon,
+  Content: CheckboxContent,
+  Label: CheckboxLabel,
+  Description: CheckboxDescription,
+});
+
+export { CheckboxCompound as Checkbox };

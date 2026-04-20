@@ -4,8 +4,8 @@ import { type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ReactNode, t
 import { useComponentTheme } from '../../provider';
 import { renderIconSymbol } from '../../utils';
 import { applyThemeDefaults, buildSlotAttrs, mergeClassNames, mergeSlotProps } from '../../customization';
-import { ButtonBase, type ButtonSlot } from './ButtonBase';
-import type { ButtonMode, ButtonProps } from './types';
+import { ButtonBase, ButtonProvider, buttonIconSharedClassName, useButtonContext } from './ButtonBase';
+import type { ButtonLabelProps, ButtonLeadingIconProps, ButtonMode, ButtonProps, ButtonSpinnerProps, ButtonTrailingIconProps } from './types';
 
 const getButtonMode = ({ as, href, mode }: Pick<ButtonProps, 'as' | 'href' | 'mode'>): ButtonMode => {
   if (mode === 'link' || as === 'a' || href) {
@@ -23,18 +23,6 @@ const getNativeButtonType = ({ mode }: Pick<ButtonProps, 'mode'>): ButtonHTMLAtt
   return 'button';
 };
 
-const hasContent = (value: ReactNode): boolean => {
-  if (value === null || value === undefined || value === false) {
-    return false;
-  }
-
-  if (typeof value === 'string') {
-    return value.trim().length > 0;
-  }
-
-  return true;
-};
-
 const resolveLinkRel = (target: AnchorHTMLAttributes<HTMLAnchorElement>['target'], rel: AnchorHTMLAttributes<HTMLAnchorElement>['rel']) => {
   if (target !== '_blank' || rel) {
     return rel;
@@ -42,8 +30,6 @@ const resolveLinkRel = (target: AnchorHTMLAttributes<HTMLAnchorElement>['target'
 
   return 'noopener noreferrer';
 };
-
-const renderIconNode = (icon: ReactNode) => renderIconSymbol(icon, 'tk-button-icon-symbol');
 
 const DefaultSpinner = () => <span className="tk-button-default-spinner" data-slot="spinner-indicator" aria-hidden="true" />;
 
@@ -63,81 +49,37 @@ function Button({ ref, ...rawProps }: ButtonProps & { ref?: Ref<HTMLButtonElemen
     formTarget,
     fullWidth,
     href,
-    icon,
-    iconPosition,
-    label,
-    leadingIcon,
+    iconOnly,
     loading,
     mode,
     name,
     onClick,
     onKeyDown,
     rel,
-    renderIcon,
-    renderSpinner: renderSpinnerOverride,
     rounded,
     size,
     slotProps: instanceSlotProps,
-    spinner,
     target,
-    trailingIcon,
     type: visualType,
     underline,
     value,
     variant,
     ...restProps
   } = ButtonBase.resolveProps(applyThemeDefaults(themeConfig?.defaultProps, rawProps));
+
   const resolvedClassNames = mergeClassNames(themeConfig?.classNames, instanceClassNames);
   const resolvedSlotProps = mergeSlotProps(themeConfig?.slotProps, instanceSlotProps);
   const resolvedMode = getButtonMode({ as, href, mode });
   const resolvedLoading = Boolean(loading);
   const disabledState = Boolean(disabled);
-  const content = children ?? label;
-  const hasLabel = hasContent(content);
-  const resolvedLeadingIcon = hasContent(leadingIcon) ? leadingIcon : iconPosition === 'left' ? icon : null;
-  const resolvedTrailingIcon = hasContent(trailingIcon) ? trailingIcon : iconPosition === 'right' ? icon : null;
+  const resolvedIconOnly = Boolean(iconOnly);
+  const isRounded = Boolean(rounded) && resolvedIconOnly;
 
-  const buildAdornment = (slot: 'leading-icon' | 'trailing-icon', iconNode: ReactNode) => {
-    if (!hasContent(iconNode)) {
-      return null;
-    }
-
-    const slotKey: ButtonSlot = slot === 'leading-icon' ? 'leadingIcon' : 'trailingIcon';
-    const iconClassExtra =
-      slot === 'leading-icon'
-        ? [ButtonBase.classes.icon, resolvedClassNames?.leadingIcon, resolvedClassNames?.icon].filter(Boolean).join(' ')
-        : [ButtonBase.classes.icon, resolvedClassNames?.trailingIcon, resolvedClassNames?.icon].filter(Boolean).join(' ');
-    const baseGetSlot = ButtonBase.getSlotProps(slotKey, { 'aria-hidden': 'true' });
-    const attrs = buildSlotAttrs(baseGetSlot, resolvedSlotProps, slotKey, iconClassExtra);
-    // Override data-slot to use kebab form matching the DOM contract
-    attrs['data-slot'] = slot;
-
-    const defaultNode = renderIconNode(iconNode);
-    const renderedContent = renderIcon ? renderIcon(defaultNode) : defaultNode;
-
-    return <span {...attrs}>{renderedContent}</span>;
-  };
-
-  const buildSpinner = (spinnerNode: ReactNode) => {
-    const attrs = buildSlotAttrs(ButtonBase.getSlotProps('spinner', { 'aria-hidden': 'true' }), resolvedSlotProps, 'spinner', resolvedClassNames?.spinner);
-    const defaultNode = hasContent(spinnerNode) ? spinnerNode : <DefaultSpinner />;
-    const renderedContent = renderSpinnerOverride ? renderSpinnerOverride(defaultNode) : defaultNode;
-
-    return <span {...attrs}>{renderedContent}</span>;
-  };
-
-  const renderedLeadingAdornment = resolvedLoading ? buildSpinner(spinner) : buildAdornment('leading-icon', resolvedLeadingIcon);
-  const renderedTrailingAdornment = resolvedLoading ? null : buildAdornment('trailing-icon', resolvedTrailingIcon);
-  const iconCount = Number(Boolean(renderedLeadingAdornment)) + Number(Boolean(renderedTrailingAdornment));
-  const isIconOnly = !hasLabel && (Boolean(renderedLeadingAdornment) || Boolean(renderedTrailingAdornment));
-  const isRounded = rounded && !hasLabel && iconCount === 1;
   const rootSlotClassName = resolvedSlotProps?.root?.className;
   const rootClassName = ButtonBase.cx('root', className, rootSlotClassName, resolvedClassNames?.root);
-  const labelSlotClassName = resolvedSlotProps?.label?.className;
-  const labelClassName = ButtonBase.cx('label', labelSlotClassName, resolvedClassNames?.label);
   const resolvedFormAction = typeof formAction === 'string' ? formAction : undefined;
   const { className: _rootSlotCls, ...rootSlotRest } = resolvedSlotProps?.root ?? {};
-  const { className: _labelSlotCls, ...labelSlotRest } = resolvedSlotProps?.label ?? {};
+
   const sharedProps = {
     ...restProps,
     ...rootSlotRest,
@@ -151,81 +93,156 @@ function Button({ ref, ...rawProps }: ButtonProps & { ref?: Ref<HTMLButtonElemen
     'data-size': size,
     'data-mode': resolvedMode,
     'data-full-width': fullWidth ? '' : undefined,
-    'data-icon-only': isIconOnly ? '' : undefined,
+    'data-icon-only': resolvedIconOnly ? '' : undefined,
     'data-rounded': isRounded ? '' : undefined,
     'data-underline': underline ? '' : undefined,
   };
 
+  const contextValue = {
+    loading: resolvedLoading,
+    disabled: disabledState,
+    size: size ?? 'base',
+    variant: variant ?? 'primary',
+    type: visualType ?? 'filled',
+    mode: resolvedMode,
+    classNames: resolvedClassNames,
+    slotProps: resolvedSlotProps,
+  };
+
   if (resolvedMode === 'link') {
     return (
-      <a
-        {...(sharedProps as AnchorHTMLAttributes<HTMLAnchorElement>)}
-        ref={ref as Ref<HTMLAnchorElement>}
-        href={disabledState ? undefined : href}
-        target={target}
-        rel={resolveLinkRel(target, rel)}
-        aria-disabled={disabledState || undefined}
-        tabIndex={disabledState ? -1 : sharedProps.tabIndex}
-        onClick={event => {
-          if (disabledState) {
-            event.preventDefault();
-            event.stopPropagation();
-            return;
-          }
+      <ButtonProvider value={contextValue}>
+        <a
+          {...(sharedProps as AnchorHTMLAttributes<HTMLAnchorElement>)}
+          ref={ref as Ref<HTMLAnchorElement>}
+          href={disabledState ? undefined : href}
+          target={target}
+          rel={resolveLinkRel(target, rel)}
+          aria-disabled={disabledState || undefined}
+          tabIndex={disabledState ? -1 : sharedProps.tabIndex}
+          onClick={event => {
+            if (disabledState) {
+              event.preventDefault();
+              event.stopPropagation();
+              return;
+            }
 
-          onClick?.(event as never);
-        }}
-        onKeyDown={event => {
-          if (disabledState && (event.key === 'Enter' || event.key === ' ')) {
-            event.preventDefault();
-            event.stopPropagation();
-            return;
-          }
+            onClick?.(event as never);
+          }}
+          onKeyDown={event => {
+            if (disabledState && (event.key === 'Enter' || event.key === ' ')) {
+              event.preventDefault();
+              event.stopPropagation();
+              return;
+            }
 
-          onKeyDown?.(event as never);
-        }}
-      >
-        {renderedLeadingAdornment}
-        {hasLabel ? (
-          <span {...labelSlotRest} className={labelClassName} data-slot="label">
-            {content}
-          </span>
-        ) : null}
-        {renderedTrailingAdornment}
-      </a>
+            onKeyDown?.(event as never);
+          }}
+        >
+          {children}
+        </a>
+      </ButtonProvider>
     );
   }
 
   return (
-    <SparButton
-      {...(sharedProps as ButtonHTMLAttributes<HTMLButtonElement>)}
-      as="button"
-      ref={ref as Ref<HTMLButtonElement>}
-      disabled={disabledState}
-      form={form}
-      formAction={resolvedFormAction}
-      formEncType={formEncType}
-      formMethod={formMethod}
-      formNoValidate={formNoValidate}
-      formTarget={formTarget}
-      isLoading={resolvedLoading}
-      name={name}
-      onClick={onClick}
-      onKeyDown={onKeyDown}
-      type={getNativeButtonType({ mode: resolvedMode })}
-      value={value}
-    >
-      {renderedLeadingAdornment}
-      {hasLabel ? (
-        <span {...labelSlotRest} className={labelClassName} data-slot="label">
-          {content}
-        </span>
-      ) : null}
-      {renderedTrailingAdornment}
-    </SparButton>
+    <ButtonProvider value={contextValue}>
+      <SparButton
+        {...(sharedProps as ButtonHTMLAttributes<HTMLButtonElement>)}
+        as="button"
+        ref={ref as Ref<HTMLButtonElement>}
+        disabled={disabledState}
+        form={form}
+        formAction={resolvedFormAction}
+        formEncType={formEncType}
+        formMethod={formMethod}
+        formNoValidate={formNoValidate}
+        formTarget={formTarget}
+        isLoading={resolvedLoading}
+        name={name}
+        onClick={onClick}
+        onKeyDown={onKeyDown}
+        type={getNativeButtonType({ mode: resolvedMode })}
+        value={value}
+      >
+        {children}
+      </SparButton>
+    </ButtonProvider>
   );
 }
 
 Button.displayName = 'Button';
 
-export { Button };
+function ButtonLabel({ children, className, ...rest }: ButtonLabelProps) {
+  const context = useButtonContext('Button.Label');
+  const attrs = buildSlotAttrs(ButtonBase.getSlotProps('label', { className }), context.slotProps, 'label', context.classNames?.label);
+  return (
+    <span {...attrs} {...rest}>
+      {children}
+    </span>
+  );
+}
+ButtonLabel.displayName = 'Button.Label';
+
+const renderIconNode = (icon: ReactNode) => renderIconSymbol(icon, 'tk-button-icon-symbol');
+
+function ButtonLeadingIcon({ children, className, ...rest }: ButtonLeadingIconProps) {
+  const context = useButtonContext('Button.LeadingIcon');
+  const attrs = buildSlotAttrs(
+    ButtonBase.getSlotProps('leadingIcon', { 'aria-hidden': 'true', 'className': [buttonIconSharedClassName, className].filter(Boolean).join(' ') || undefined }),
+    context.slotProps,
+    'leadingIcon',
+    context.classNames?.leadingIcon,
+  );
+  attrs['data-slot'] = 'leading-icon';
+
+  return (
+    <span {...attrs} {...rest}>
+      {renderIconNode(children)}
+    </span>
+  );
+}
+ButtonLeadingIcon.displayName = 'Button.LeadingIcon';
+
+function ButtonTrailingIcon({ children, className, ...rest }: ButtonTrailingIconProps) {
+  const context = useButtonContext('Button.TrailingIcon');
+  const attrs = buildSlotAttrs(
+    ButtonBase.getSlotProps('trailingIcon', { 'aria-hidden': 'true', 'className': [buttonIconSharedClassName, className].filter(Boolean).join(' ') || undefined }),
+    context.slotProps,
+    'trailingIcon',
+    context.classNames?.trailingIcon,
+  );
+  attrs['data-slot'] = 'trailing-icon';
+
+  return (
+    <span {...attrs} {...rest}>
+      {renderIconNode(children)}
+    </span>
+  );
+}
+ButtonTrailingIcon.displayName = 'Button.TrailingIcon';
+
+function ButtonSpinner({ children, className, ...rest }: ButtonSpinnerProps) {
+  const context = useButtonContext('Button.Spinner');
+  if (!context.loading) {
+    return null;
+  }
+
+  const attrs = buildSlotAttrs(ButtonBase.getSlotProps('spinner', { 'aria-hidden': 'true', className }), context.slotProps, 'spinner', context.classNames?.spinner);
+
+  return (
+    <span {...attrs} {...rest}>
+      {children ?? <DefaultSpinner />}
+    </span>
+  );
+}
+ButtonSpinner.displayName = 'Button.Spinner';
+
+const ButtonCompound = Object.assign(Button, {
+  Label: ButtonLabel,
+  LeadingIcon: ButtonLeadingIcon,
+  TrailingIcon: ButtonTrailingIcon,
+  Spinner: ButtonSpinner,
+});
+
+export { ButtonCompound as Button };

@@ -3,10 +3,11 @@ import { axe } from 'vitest-axe';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { renderWithProvider, screen } from '../../test-utils';
 import { SparReactProvider } from '../../provider';
 import { Dialog } from './Dialog';
+import { Button } from '../button/Button';
 
 vi.mock('react-dom', async importOriginal => {
   const actual = await importOriginal<typeof import('react-dom')>();
@@ -22,404 +23,194 @@ afterEach(() => {
   document.body.style.paddingRight = '';
 });
 
-describe('Dialog', () => {
-  it('renders the default dialog anatomy with slot classes', () => {
-    renderWithProvider(
-      <Dialog defaultVisible header="Cabin upgrade" subheader="Confirm the fare difference">
-        Review the new fare before confirming the change.
-      </Dialog>,
-    );
+const renderDefaultDialog = (props: Partial<React.ComponentProps<typeof Dialog>> = {}) =>
+  renderWithProvider(
+    <Dialog defaultVisible {...props}>
+      <Dialog.Mask />
+      <Dialog.Panel>
+        <Dialog.Header>
+          <Dialog.SignIcon />
+          <Dialog.TitleGroup>
+            <Dialog.Description>Confirm the fare difference</Dialog.Description>
+            <Dialog.Title>Cabin upgrade</Dialog.Title>
+          </Dialog.TitleGroup>
+          <Dialog.CloseButton />
+        </Dialog.Header>
+        <Dialog.Body>Review the new fare before confirming the change.</Dialog.Body>
+        <Dialog.Footer>
+          <Dialog.FooterActions>
+            <Button>
+              <Button.Label>Confirm</Button.Label>
+            </Button>
+          </Dialog.FooterActions>
+        </Dialog.Footer>
+      </Dialog.Panel>
+    </Dialog>,
+  );
+
+describe('Dialog (compound)', () => {
+  it('renders the compound dialog anatomy with canonical slot classes', () => {
+    renderDefaultDialog();
 
     const dialog = screen.getByRole('dialog');
-    const mask = document.querySelector('.tk-dialog-mask');
-    const header = document.querySelector('.tk-dialog-header');
-    const content = document.querySelector('.tk-dialog-content');
-
     expect(dialog).toBeInTheDocument();
     expect(dialog.className).toContain('tk-dialog');
     expect(dialog).toHaveAttribute('data-variant', 'info');
-    expect(mask).toBeInTheDocument();
-    expect(header).toBeInTheDocument();
-    expect(content).toBeInTheDocument();
-    expect(screen.getByText('Cabin upgrade')).toHaveClass('tk-dialog-title');
-    expect(screen.getByText('Confirm the fare difference')).toHaveClass('tk-dialog-subtitle');
+    expect(document.querySelector('.tk-dialog-mask')).toBeInTheDocument();
+    expect(document.querySelector('.tk-dialog-header')).toBeInTheDocument();
+    expect(document.querySelector('.tk-dialog-content')).toBeInTheDocument();
+    expect(screen.getByText('Cabin upgrade').className).toContain('tk-dialog-title');
+    expect(screen.getByText('Confirm the fare difference').className).toContain('tk-dialog-subtitle');
   });
 
-  it('uses the custom header slot instead of the default header contract', () => {
-    const { container } = renderWithProvider(
-      <Dialog
-        defaultVisible
-        header="Ignored"
-        headerSlot={
-          <div data-testid="custom-header">
-            <strong>Custom header</strong>
-          </div>
-        }
-      >
-        Content
-      </Dialog>,
-    );
-
-    expect(screen.getByTestId('custom-header')).toBeInTheDocument();
-    expect(screen.queryByText('Ignored')).not.toBeInTheDocument();
-    expect(container.querySelector('.tk-dialog-header')).toBeNull();
-    expect(screen.queryByLabelText('Close dialog')).not.toBeInTheDocument();
-  });
-
-  it('prefers contentSlot over children and wraps footerActions with dialog footer classes', () => {
+  it('hides Dialog.Mask when not visible', () => {
     renderWithProvider(
-      <Dialog
-        defaultVisible
-        contentSlot={<p>Slot content</p>}
-        footerActions={
-          <>
-            <button type="button">Cancel</button>
-            <button type="button">Confirm</button>
-          </>
-        }
-      >
-        Children content
+      <Dialog>
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Body>hidden</Dialog.Body>
+        </Dialog.Panel>
       </Dialog>,
     );
-
-    expect(screen.getByText('Slot content')).toBeInTheDocument();
-    expect(screen.queryByText('Children content')).not.toBeInTheDocument();
-    expect(document.querySelector('.tk-dialog-footer')).toBeInTheDocument();
-    expect(document.querySelector('.tk-dialog-footer-actions')).toBeInTheDocument();
+    expect(document.querySelector('.tk-dialog-mask')).toBeNull();
   });
 
-  it('emits close callbacks and closes in uncontrolled mode when the close button is pressed', async () => {
+  it('dismisses when Dialog.CloseButton is clicked', async () => {
     const user = userEvent.setup();
-    const onVisibleChange = vi.fn();
     const onClose = vi.fn();
-
     renderWithProvider(
-      <Dialog defaultVisible header="Close me" onClose={onClose} onVisibleChange={onVisibleChange}>
-        Body
+      <Dialog defaultVisible onClose={onClose}>
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.Title>hi</Dialog.Title>
+            <Dialog.CloseButton />
+          </Dialog.Header>
+        </Dialog.Panel>
       </Dialog>,
     );
-
-    await user.click(screen.getByRole('button', { name: 'Close dialog' }));
-
-    expect(onVisibleChange).toHaveBeenCalledWith(false);
+    await user.click(screen.getByLabelText('Close dialog'));
     expect(onClose).toHaveBeenCalledTimes(1);
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('prevents outside dismissal when preventDismiss is enabled', async () => {
+  it('forwards data-variant from the root prop to the panel', () => {
+    renderDefaultDialog({ variant: 'danger' });
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveAttribute('data-variant', 'danger');
+  });
+
+  it('supports controlled visibility via visible + onVisibleChange', async () => {
     const user = userEvent.setup();
     const onVisibleChange = vi.fn();
-    const { container } = renderWithProvider(
-      <Dialog defaultVisible header="Protected dialog" onVisibleChange={onVisibleChange} preventDismiss>
-        Body
+    const { rerender } = renderWithProvider(
+      <Dialog visible onVisibleChange={onVisibleChange}>
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.CloseButton />
+          </Dialog.Header>
+          <Dialog.Body>content</Dialog.Body>
+        </Dialog.Panel>
       </Dialog>,
     );
+    await user.click(screen.getByLabelText('Close dialog'));
+    expect(onVisibleChange).toHaveBeenCalledWith(false);
 
-    const mask = container.querySelector('.tk-dialog-mask');
-    expect(mask).toBeInTheDocument();
-
-    await user.click(mask as HTMLElement);
-
-    expect(onVisibleChange).not.toHaveBeenCalled();
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    rerender(
+      <SparReactProvider>
+        <Dialog visible={false} onVisibleChange={onVisibleChange}>
+          <Dialog.Panel>
+            <Dialog.Body>content</Dialog.Body>
+          </Dialog.Panel>
+        </Dialog>
+      </SparReactProvider>,
+    );
+    expect(screen.queryByRole('dialog')).toBeNull();
   });
 
-  it('applies mask modifier classes and skips body scroll lock when the backdrop is hidden', () => {
+  it('merges instance classNames with canonical slot classes', () => {
     renderWithProvider(
-      <Dialog defaultVisible hideBackdrop isMaskBlur maskVariant="darkest">
-        Body
+      <Dialog defaultVisible classNames={{ root: 'panel-instance', title: 'title-instance' }}>
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.Title>hi</Dialog.Title>
+          </Dialog.Header>
+        </Dialog.Panel>
       </Dialog>,
     );
-
-    const mask = document.querySelector('.tk-dialog-mask') as HTMLElement;
-
-    expect(mask).toHaveClass('tk-dialog-mask-hidden');
-    expect(mask).toHaveClass('tk-dialog-mask-blur');
-    expect(mask).toHaveClass('tk-dialog-mask-darkest');
-    expect(document.body.style.overflow).toBe('');
+    const panel = screen.getByRole('dialog');
+    expect(panel.className).toContain('panel-instance');
+    const title = screen.getByText('hi');
+    expect(title.className).toContain('tk-dialog-title');
+    expect(title.className).toContain('title-instance');
   });
 
-  it('locks body scroll while the dialog is open and restores it on unmount', () => {
-    document.body.style.overflow = 'scroll';
-    document.body.style.paddingRight = '4px';
-
-    const { unmount } = renderWithProvider(
-      <Dialog defaultVisible header="Scroll lock">
-        Body
-      </Dialog>,
+  it('applies theme-level defaultProps and merges slotProps', () => {
+    render(
+      <SparReactProvider
+        components={{
+          Dialog: {
+            defaultProps: { maskVariant: 'dark' },
+            slotProps: { root: { 'data-theme-probe': 'merged' } as React.HTMLAttributes<HTMLDivElement> },
+          },
+        }}
+      >
+        <Dialog defaultVisible>
+          <Dialog.Mask />
+          <Dialog.Panel aria-label="x">
+            <Dialog.Body>content</Dialog.Body>
+          </Dialog.Panel>
+        </Dialog>
+      </SparReactProvider>,
     );
-
-    expect(document.body.style.overflow).toBe('hidden');
-    expect(document.body.style.paddingRight).not.toBe('4px');
-
-    unmount();
-
-    expect(document.body.style.overflow).toBe('scroll');
-    expect(document.body.style.paddingRight).toBe('4px');
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveAttribute('data-mask-variant', 'dark');
+    expect(dialog).toHaveAttribute('data-theme-probe', 'merged');
   });
 
-  it('has no obvious accessibility violations for the default dialog structure', async () => {
-    const { container } = renderWithProvider(
-      <Dialog defaultVisible header="Delete booking" subheader="This action cannot be undone">
-        Review the consequences before you continue.
-      </Dialog>,
-    );
-
+  it('has no a11y violations for a default compound dialog', async () => {
+    const { container } = renderDefaultDialog();
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  describe('classNames prop', () => {
-    it('applies classNames.root to the dialog root', () => {
+  describe('preventDismiss', () => {
+    it('blocks Escape-key dismiss when set', () => {
+      const onVisibleChange = vi.fn();
       renderWithProvider(
-        <Dialog defaultVisible classNames={{ root: 'custom-root' }}>
-          Body
+        <Dialog defaultVisible preventDismiss onVisibleChange={onVisibleChange}>
+          <Dialog.Panel>
+            <Dialog.Body>locked</Dialog.Body>
+          </Dialog.Panel>
         </Dialog>,
       );
-      const dialog = screen.getByRole('dialog');
-      expect(dialog.className).toContain('custom-root');
-      expect(dialog.className).toContain('tk-dialog');
+      fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+      expect(onVisibleChange).not.toHaveBeenCalled();
+      expect(screen.queryByRole('dialog')).toBeInTheDocument();
     });
 
-    it('applies classNames.content to the content slot', () => {
+    it('blocks outside pointer-down dismiss when set', () => {
+      const onVisibleChange = vi.fn();
       renderWithProvider(
-        <Dialog defaultVisible classNames={{ content: 'custom-content' }}>
-          Body
+        <Dialog defaultVisible preventDismiss onVisibleChange={onVisibleChange}>
+          <Dialog.Panel>
+            <Dialog.Body>locked</Dialog.Body>
+          </Dialog.Panel>
         </Dialog>,
       );
-      const content = document.querySelector('.tk-dialog-content');
-      expect(content).toBeInTheDocument();
-      expect(content!.className).toContain('custom-content');
+      fireEvent.pointerDown(document.body);
+      expect(onVisibleChange).not.toHaveBeenCalled();
+      expect(screen.queryByRole('dialog')).toBeInTheDocument();
     });
 
-    it('applies classNames.header to the header slot', () => {
+    it('still dismisses on Escape when preventDismiss is off (control)', () => {
+      const onVisibleChange = vi.fn();
       renderWithProvider(
-        <Dialog defaultVisible header="Title" classNames={{ header: 'custom-header' }}>
-          Body
+        <Dialog defaultVisible onVisibleChange={onVisibleChange}>
+          <Dialog.Panel>
+            <Dialog.Body>open</Dialog.Body>
+          </Dialog.Panel>
         </Dialog>,
       );
-      const header = document.querySelector('.tk-dialog-header');
-      expect(header!.className).toContain('custom-header');
-    });
-
-    it('applies classNames.footer to the footer slot', () => {
-      renderWithProvider(
-        <Dialog defaultVisible classNames={{ footer: 'custom-footer' }} footerActions={<button type="button">OK</button>}>
-          Body
-        </Dialog>,
-      );
-      const footer = document.querySelector('.tk-dialog-footer');
-      expect(footer!.className).toContain('custom-footer');
-    });
-  });
-
-  describe('slotProps prop', () => {
-    it('forwards slotProps.content attributes to content slot', () => {
-      renderWithProvider(
-        <Dialog defaultVisible slotProps={{ content: { id: 'my-content' } }}>
-          Body
-        </Dialog>,
-      );
-      const content = document.querySelector('.tk-dialog-content');
-      expect(content).toHaveAttribute('id', 'my-content');
-    });
-  });
-
-  describe('render overrides', () => {
-    it('uses renderCloseIcon to override close icon content while preserving structural button', () => {
-      renderWithProvider(
-        <Dialog defaultVisible header="Title" renderCloseIcon={() => <span data-testid="custom-x">X</span>}>
-          Body
-        </Dialog>,
-      );
-      const closeButton = screen.getByLabelText('Close dialog');
-      expect(closeButton).toBeInTheDocument();
-      expect(closeButton.tagName).toBe('BUTTON');
-      expect(closeButton.className).toContain('tk-dialog-header-close-button');
-      expect(screen.getByTestId('custom-x')).toBeInTheDocument();
-    });
-
-    it('preserves dismiss behavior when renderCloseIcon is used', async () => {
-      const user = userEvent.setup();
-      const onClose = vi.fn();
-
-      renderWithProvider(
-        <Dialog defaultVisible header="Title" onClose={onClose} renderCloseIcon={() => <span>X</span>}>
-          Body
-        </Dialog>,
-      );
-
-      await user.click(screen.getByLabelText('Close dialog'));
-      expect(onClose).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('compound parts', () => {
-    it('renders Dialog.Header with correct slot class', () => {
-      renderWithProvider(
-        <Dialog
-          defaultVisible
-          showHeader={false}
-          containerSlot={
-            <>
-              <Dialog.Header>Custom Header</Dialog.Header>
-              <Dialog.Content>Custom Content</Dialog.Content>
-            </>
-          }
-        >
-          Ignored children
-        </Dialog>,
-      );
-      const header = document.querySelector('.tk-dialog-header');
-      expect(header).toBeInTheDocument();
-      expect(header!.textContent).toBe('Custom Header');
-    });
-
-    it('renders Dialog.Content with correct slot class', () => {
-      renderWithProvider(
-        <Dialog defaultVisible showHeader={false} containerSlot={<Dialog.Content>Compound Content</Dialog.Content>}>
-          Ignored
-        </Dialog>,
-      );
-      const content = document.querySelector('.tk-dialog-content');
-      expect(content).toBeInTheDocument();
-      expect(content!.textContent).toBe('Compound Content');
-    });
-
-    it('renders Dialog.Footer with correct slot class', () => {
-      renderWithProvider(
-        <Dialog
-          defaultVisible
-          showHeader={false}
-          containerSlot={
-            <>
-              <Dialog.Content>Body</Dialog.Content>
-              <Dialog.Footer>Footer Content</Dialog.Footer>
-            </>
-          }
-        >
-          Ignored
-        </Dialog>,
-      );
-      const footer = document.querySelector('.tk-dialog-footer');
-      expect(footer).toBeInTheDocument();
-      expect(footer!.textContent).toBe('Footer Content');
-    });
-
-    it('renders Dialog.FooterActions with correct slot class', () => {
-      renderWithProvider(
-        <Dialog
-          defaultVisible
-          showHeader={false}
-          containerSlot={
-            <>
-              <Dialog.Content>Body</Dialog.Content>
-              <Dialog.Footer>
-                <Dialog.FooterActions>Actions</Dialog.FooterActions>
-              </Dialog.Footer>
-            </>
-          }
-        >
-          Ignored
-        </Dialog>,
-      );
-      const actions = document.querySelector('.tk-dialog-footer-actions');
-      expect(actions).toBeInTheDocument();
-      expect(actions!.textContent).toBe('Actions');
-    });
-
-    it('applies custom className to compound parts', () => {
-      renderWithProvider(
-        <Dialog defaultVisible showHeader={false} containerSlot={<Dialog.Content className="my-content">Custom</Dialog.Content>}>
-          Ignored
-        </Dialog>,
-      );
-      const content = document.querySelector('.tk-dialog-content');
-      expect(content!.className).toContain('my-content');
-    });
-
-    it('renders Dialog.Title with semantic ARIA wiring', () => {
-      renderWithProvider(
-        <Dialog
-          defaultVisible
-          showHeader={false}
-          containerSlot={
-            <>
-              <Dialog.Title>Accessible Title</Dialog.Title>
-              <Dialog.Content>Body</Dialog.Content>
-            </>
-          }
-        >
-          Ignored
-        </Dialog>,
-      );
-      const title = screen.getByText('Accessible Title');
-      expect(title).toBeInTheDocument();
-      expect(title.className).toContain('tk-dialog-title');
-    });
-
-    it('renders Dialog.Description with semantic ARIA wiring', () => {
-      renderWithProvider(
-        <Dialog
-          defaultVisible
-          showHeader={false}
-          containerSlot={
-            <>
-              <Dialog.Title>Title</Dialog.Title>
-              <Dialog.Description>Helpful description</Dialog.Description>
-              <Dialog.Content>Body</Dialog.Content>
-            </>
-          }
-        >
-          Ignored
-        </Dialog>,
-      );
-      const desc = screen.getByText('Helpful description');
-      expect(desc).toBeInTheDocument();
-      expect(desc.className).toContain('tk-dialog-subtitle');
-    });
-
-    it('Dialog.Title provides accessible name via aria-labelledby', async () => {
-      const { container } = renderWithProvider(
-        <Dialog
-          defaultVisible
-          showHeader={false}
-          containerSlot={
-            <>
-              <Dialog.Title>My Dialog Name</Dialog.Title>
-              <Dialog.Content>Body</Dialog.Content>
-            </>
-          }
-        >
-          Ignored
-        </Dialog>,
-      );
-      expect(await axe(container)).toHaveNoViolations();
-    });
-  });
-
-  describe('theme-level customization', () => {
-    it('applies theme-level defaultProps', () => {
-      render(
-        <SparReactProvider components={{ Dialog: { defaultProps: { variant: 'danger' } } }}>
-          <Dialog defaultVisible header="Theme Test">
-            Body
-          </Dialog>
-        </SparReactProvider>,
-      );
-      const dialog = screen.getByRole('dialog');
-      expect(dialog).toHaveAttribute('data-variant', 'danger');
-    });
-
-    it('allows instance props to override theme defaultProps', () => {
-      render(
-        <SparReactProvider components={{ Dialog: { defaultProps: { variant: 'danger' } } }}>
-          <Dialog defaultVisible header="Override" variant="success">
-            Body
-          </Dialog>
-        </SparReactProvider>,
-      );
-      const dialog = screen.getByRole('dialog');
-      expect(dialog).toHaveAttribute('data-variant', 'success');
+      fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+      expect(onVisibleChange).toHaveBeenCalledWith(false);
     });
   });
 });

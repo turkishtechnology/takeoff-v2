@@ -2,7 +2,7 @@ import RenderedDemo from '../../../components/RenderedDemo';
 // TODO(takeoff-icons): FlightIcon / HotelIcon are temporary Lucide-sourced
 // placeholders. Replace with the official Takeoff icon set before the first
 // public release.
-import { Accordion, AccordionItem, FlightIcon, HotelIcon, ReactSparDemoRoot } from './shared';
+import { Accordion, FlightIcon, HotelIcon, ReactSparDemoRoot } from './shared';
 
 const sectionLabelStyle = {
   margin: 0,
@@ -31,17 +31,45 @@ export function ArrowPositionDemo() {
     <div style={{ display: 'grid', gap: 24, width: 'min(100%, 40rem)' }}>
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Right (default)</p>
-        <Accordion arrowPosition="right">
-          <AccordionItem header="Panel 1 Title" icon={<FlightIcon />}>Panel 1 Content</AccordionItem>
-          <AccordionItem header="Panel 2 Title" icon={<HotelIcon />}>Panel 2 Content</AccordionItem>
+        <Accordion>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Icon><FlightIcon /></Accordion.Icon>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Icon><HotelIcon /></Accordion.Icon>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Left</p>
-        <Accordion arrowPosition="left">
-          <AccordionItem header="Panel 1 Title" icon={<FlightIcon />}>Panel 1 Content</AccordionItem>
-          <AccordionItem header="Panel 2 Title" icon={<HotelIcon />}>Panel 2 Content</AccordionItem>
+        <Accordion>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Arrow />
+              <Accordion.Icon><FlightIcon /></Accordion.Icon>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Arrow />
+              <Accordion.Icon><HotelIcon /></Accordion.Icon>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
     </div>
@@ -53,25 +81,53 @@ function ArrowPositionDemo() {
     <div style={{ display: 'grid', gap: 24, width: 'min(100%, 40rem)' }}>
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Right (default)</p>
-        <Accordion arrowPosition="right">
-          <AccordionItem header="Panel 1 Title" icon={<FlightIcon />}>
-            Panel 1 Content
-          </AccordionItem>
-          <AccordionItem header="Panel 2 Title" icon={<HotelIcon />}>
-            Panel 2 Content
-          </AccordionItem>
+        <Accordion>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Icon>
+                <FlightIcon />
+              </Accordion.Icon>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Icon>
+                <HotelIcon />
+              </Accordion.Icon>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+              <Accordion.Arrow />
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <p style={sectionLabelStyle}>Left</p>
-        <Accordion arrowPosition="left">
-          <AccordionItem header="Panel 1 Title" icon={<FlightIcon />}>
-            Panel 1 Content
-          </AccordionItem>
-          <AccordionItem header="Panel 2 Title" icon={<HotelIcon />}>
-            Panel 2 Content
-          </AccordionItem>
+        <Accordion>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Arrow />
+              <Accordion.Icon>
+                <FlightIcon />
+              </Accordion.Icon>
+              <Accordion.Title>Panel 1 Title</Accordion.Title>
+            </Accordion.Header>
+            <Accordion.Content>Panel 1 Content</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Header>
+              <Accordion.Arrow />
+              <Accordion.Icon>
+                <HotelIcon />
+              </Accordion.Icon>
+              <Accordion.Title>Panel 2 Title</Accordion.Title>
+            </Accordion.Header>
+            <Accordion.Content>Panel 2 Content</Accordion.Content>
+          </Accordion.Item>
         </Accordion>
       </div>
     </div>

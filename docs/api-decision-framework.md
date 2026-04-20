@@ -2,7 +2,7 @@
 title: Public API Decision Framework
 status: canonical
 owner: takeoff-spar
-updated: 2026-04-17
+updated: 2026-04-18
 ---
 
 # Public API Decision Framework
@@ -21,19 +21,45 @@ Related:
 - [`contract-model.md`](./contract-model.md) — what the library promises
 - [`decisions/`](./decisions/README.md) — durable repo-wide decisions
 
+## 0. Compound-only baseline
+
+Every component in `@takeoff-ui/react-spar` ships as a compound surface. The
+root component owns state; subcomponents own structure. This framework assumes
+that baseline everywhere. Specifically:
+
+- There is no flat alternative. `<Button label="X">`,
+  `<Input label="X" description="Y">`, `<AccordionItem header="X" icon={...}>`,
+  `<Dialog header="X" subheader="Y" footerActions={...}>` and similar shapes
+  **do not exist** and must not be proposed.
+- Content, icons, descriptions, error text, footer actions, spinners, and the
+  like are authored as named subcomponents (`Button.Label`, `Button.Spinner`,
+  `Input.LeadingIcon`, `Dialog.Header`, `Dialog.CloseButton`, and so on).
+- The root's only responsibility is state: `variant`, `size`, `type`,
+  `disabled`, `loading`, `invalid`, `clearable`, `visible`, `allowMultiple`,
+  etc. No content-bearing props live on the root.
+- Subcomponents read shared state from the root via context, so consumers never
+  thread per-part props through the tree. Customization targets slot keys via
+  `classNames` and `slotProps` on the root.
+
+Section 7 below refines how to add new parts when a component grows. If the
+answer to "should this be a prop or a part?" is not obvious, it is a part.
+
 ## 1. Prop parity
 
 Question: does an equivalent prop exist on `takeoff-ui/core`?
 
-- If yes, match the name and semantics exactly. Classify as `strict-parity`.
-- If yes but a React idiom diverges (`visible` vs `open`, event payload shape),
-  keep the parity name. Add an alias only when the React idiom is strongly
-  expected. Alias decisions must be recorded as an ADR under
-  [`decisions/`](./decisions/README.md).
-- If no, the prop is a `react-enhancement` and must be additive and must not
-  overlap a parity prop.
+- If the core prop is stateful (variant, size, type, visibility, value, active
+  index, etc.) and belongs on the root, match the name and semantics exactly.
+  Classify as `strict-parity`.
+- If the core prop is content-bearing (`header`, `label`, `icon`, `subheader`,
+  `footerActions`, `description`, etc.), translate it into a compound
+  subcomponent that owns that piece of content. Record the translation
+  explicitly in the component port decision note as a `technical-adaptation`
+  driven by the compound-only baseline.
+- If no core prop exists, new surface is a `react-enhancement` and must be
+  additive and must not overlap a parity prop.
 
-Default stance: parity wins.
+Default stance: parity wins on state; structure always compounds.
 
 ## 2. Event parity
 
@@ -64,7 +90,9 @@ Question: does the wrapper own state or delegate to Spar?
 
 Question: do two props target the same slot or the same data?
 
-- Explicit wins over implicit (`children` beats `label`).
+- Content lives in compound children, not in props. If a consumer and a
+  subcomponent both try to supply the same piece of content, the subcomponent
+  wins because that is the only entry point.
 - Controlled wins over uncontrolled.
 - Instance `slotProps` wins over theme-level `slotProps` of the same slot.
 - Instance `classNames` wins over theme-level `classNames` of the same slot.
@@ -78,61 +106,83 @@ Question: who owns the structural node of each slot?
 Classify every slot before exposing customization:
 
 - **Structural**: semantics, interaction, layout, or selector anchoring live
-  here. Owned by the wrapper. Consumers may target via `slotProps` or, when
-  provided, public compound parts. Never replaceable by render overrides.
-- **Content-bearing**: the canonical container stays, but its inner content is
-  consumer-facing. Accepts render overrides.
-- **Decorative**: optional ornaments such as icons or spinners. Accepts render
-  overrides and may be absent.
+  here. Always owned by a dedicated compound subcomponent. Consumers may target
+  them via `slotProps` or via their children; they may not replace the owner
+  node itself.
+- **Content-bearing**: the compound subcomponent renders a canonical container
+  whose _inner content_ is consumer-facing. Consumers override by passing
+  children to the subcomponent.
+- **Decorative**: optional ornaments such as icons or spinners. Consumers either
+  omit the subcomponent entirely or pass custom children to it.
 
-Typical structural slots include `root`, `overlay`, `trigger`, `content`,
-`header`, `closeButton`.
+Typical structural subcomponents include `Root`, `Mask`/`Overlay`, `Trigger`,
+`Content`/`Panel`/`Body`, `Header`, `CloseButton`, `Item`. A slot is never
+"flat-prop-only".
 
-## 6. Render override scope
+## 6. Content override scope
 
-Question: where can a render override reach?
+Question: where can a consumer reach to customize content?
 
-- Render overrides replace the content _inside_ canonical slot owner nodes.
-- Render overrides must not replace the structural owner node itself (its tag,
-  class, `data-slot`, or dismiss wiring).
-- Every render override callback receives the default-rendered node as an
-  argument so consumers can compose rather than reinvent.
-- Render override prop names (`renderSpinner`, `renderIcon`, `renderCloseIcon`,
-  `renderSignIcon`) are part of the public contract. Renaming or removing them
-  is breaking.
+- Content overrides flow through compound children. Pass children to the
+  relevant subcomponent (`Button.Spinner`, `Dialog.SignIcon`, `Checkbox.Icon`)
+  to replace what is rendered inside the canonical owner node.
+- The owner node itself (its tag, class, `data-slot`, and any dismiss / ARIA
+  wiring) is always controlled by the subcomponent; consumer children never
+  replace it.
+- `renderIcon` / `renderSpinner` / `renderCloseIcon` / `renderSignIcon` /
+  `renderX` props **do not exist** on the public surface and must not be added.
+  They were superseded by the compound-only baseline.
+- When a subcomponent needs to expose render-time state (e.g. open/closed for
+  `Accordion.Arrow`, checked/indeterminate for `Checkbox.Icon`), use
+  function-as-children: `({ isOpen }) => ReactNode`.
 
 ## 7. Compound part thresholds
 
-Question: should a component expose public compound parts (`Dialog.Header`,
-`Dialog.Footer`, etc.)?
+Question: how many compound parts should a component expose?
 
-Default to parity-wrapper-only. Introduce compound parts only when all of the
-following hold:
+Every component starts with a root plus the minimum set of parts required to
+render its default anatomy. Add a new part when **any** of these hold:
 
-- the component has multiple structural slots with meaningful layout freedom
-  (disclosure, overlay, list families)
-- consumers can demonstrate a layout need that `slotProps` plus render overrides
-  cannot serve
-- the wrapper can internally compose the same compound parts so that only one
-  render tree exists
+- a structural slot already exists in the Takeoff UI core anatomy and cannot be
+  represented as a prop on an existing part (disclosure header vs content,
+  dialog mask vs panel, etc.);
+- consumers need to reorder, omit, or restyle that slot independently of its
+  siblings;
+- the sub-tree needs its own state from context (for example, `Input.Asterisk`
+  listens to `required` from the root, `Input.ErrorMessage` listens to
+  `invalid`);
+- the sub-tree is semantically independent and deserves its own
+  `data-slot`/`tk-*` selector for token recipes.
 
 Compound parts must:
 
-- emit the same `data-slot` anchors as the parity wrapper path
-- preserve ARIA wiring required by the parity contract
-- be covered by at least one wrapper-path and one compound-path test
+- emit a stable `data-slot` anchor and a `tk-*` class;
+- preserve ARIA wiring required by the parity contract (Dialog.Title/
+  Description remain the ARIA labelling nodes);
+- be covered by compound-path tests and smoke scenarios that exercise both the
+  default anatomy and at least one customization path;
+- be exported under the root's namespace via
+  `Object.assign(Root, { Part, ... })` so that the single import resolves the
+  whole surface;
+- render through their upstream counterpart when one exists — a compound part
+  whose slot has a matching Spar primitive part must delegate to that part
+  rather than re-emit the same slot node with a plain tag. Bypassing an upstream
+  part is allowed only as a recorded exemption with rationale. See
+  `packages/react-spar/docs/CODING_STANDARDS.md` § _Composition Archetypes_ for
+  the Inherited / React-enhancement / Bypass classification every part must
+  declare.
 
 ## Decision recording
 
 For each component port or API change, record:
 
 - the divergence classification (`strict-parity`, `technical-adaptation`,
-  `react-enhancement`, `forbidden-divergence`)
-- the customization surface choice (wrapper-only, `slotProps`, render overrides,
-  compound parts)
-- the precedence rules observed
+  `react-enhancement`, `forbidden-divergence`);
+- the part list (root + subcomponents) and what context each consumes;
+- the precedence rules observed (controlled vs uncontrolled, theme vs instance,
+  instance props vs compound children);
 - any deviation from the defaults in this framework, with a link to the relevant
-  ADR
+  ADR.
 
 The component-port skill (`$takeoff-component-port`) carries the working
 template. The canonical repo-wide record of cross-component decisions lives in

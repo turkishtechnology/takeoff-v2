@@ -10,8 +10,6 @@ const code = `export function CheckboxValidationDemo() {
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       <Checkbox
-        label="I have read the fare rules"
-        description={invalid ? undefined : 'Required before you continue.'}
         required
         invalid={invalid}
         value={accepted}
@@ -19,7 +17,17 @@ const code = `export function CheckboxValidationDemo() {
           setAccepted(Boolean(next));
           setTouched(true);
         }}
-      />
+      >
+        <Checkbox.Indicator>
+          <Checkbox.Icon />
+        </Checkbox.Indicator>
+        <Checkbox.Content>
+          <Checkbox.Label>I have read the fare rules</Checkbox.Label>
+          {!invalid && (
+            <Checkbox.Description>Required before you continue.</Checkbox.Description>
+          )}
+        </Checkbox.Content>
+      </Checkbox>
     </div>
   );
 }`;
@@ -32,8 +40,6 @@ function CheckboxValidationDemo() {
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       <Checkbox
-        label="I have read the fare rules"
-        description={invalid ? undefined : 'Required before you continue.'}
         required
         invalid={invalid}
         value={accepted}
@@ -41,7 +47,15 @@ function CheckboxValidationDemo() {
           setAccepted(Boolean(next));
           setTouched(true);
         }}
-      />
+      >
+        <Checkbox.Indicator>
+          <Checkbox.Icon />
+        </Checkbox.Indicator>
+        <Checkbox.Content>
+          <Checkbox.Label>I have read the fare rules</Checkbox.Label>
+          {!invalid && <Checkbox.Description>Required before you continue.</Checkbox.Description>}
+        </Checkbox.Content>
+      </Checkbox>
     </div>
   );
 }

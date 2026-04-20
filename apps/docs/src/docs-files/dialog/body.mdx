@@ -13,52 +13,103 @@ import {
 
 ## Playground
 
-The React wrapper keeps the Takeoff Dialog product surface centered on
-`visible`, `headerType`, `variant`, `maskVariant`, and `preventDismiss`. The old
-slot API becomes ReactNode props such as `headerSlot`, `contentSlot`,
-`footerSlot`, and `footerActions`, while focus trapping and ARIA wiring stay on
+Dialog is a compound component. The root owns modal state (`visible`,
+`headerType`, `variant`, `maskVariant`, `preventDismiss`) while every visible
+region is composed from named parts: `Dialog.Mask`, `Dialog.Panel`,
+`Dialog.Header`, `Dialog.SignIcon`, `Dialog.TitleGroup`, `Dialog.Title`,
+`Dialog.Description`, `Dialog.CloseButton`, `Dialog.Body`, `Dialog.Footer`, and
+`Dialog.FooterActions`. Focus trapping, ARIA wiring, and Escape handling stay on
 the underlying Spar Dialog primitive.
 
-Dismissal is owned by Spar: pressing `Esc` or clicking the mask calls
-`onVisibleChange(false)`. Set `preventDismiss` to lock the dialog open until a
-product action resolves it.
+Dismissal is owned by Spar: pressing `Esc`, clicking the mask, or activating
+`Dialog.CloseButton` calls `onVisibleChange(false)`. Set `preventDismiss` to
+lock the dialog open until a product action resolves it.
 
 <LiveCode
   code={`() => {
   const [visible, setVisible] = React.useState(false);
 
 return ( <div style={{ display: 'flex', justifyContent: 'center' }}> <Button
-onClick={() => setVisible(true)}>Open dialog</Button>
+onClick={() => setVisible(true)}><Button.Label>Open
+dialog</Button.Label></Button>
 
       <Dialog
         visible={visible}
         onVisibleChange={setVisible}
-        header="Upgrade cabin"
-        subheader="Review the fare difference before you continue."
         containerStyle={{ width: '460px' }}
-        footerActions={
-          <>
-            <Button type="text" variant="neutral" onClick={() => setVisible(false)}>
-              Cancel
-            </Button>
-            <Button>Continue</Button>
-          </>
-        }
       >
-        You can keep Takeoff's dialog product props such as visible, headerType,
-        variant, maskVariant, and preventDismiss while Spar owns focus trapping,
-        overlay semantics, and Escape handling.
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.SignIcon />
+            <Dialog.TitleGroup>
+              <Dialog.Description>Review the fare difference before you continue.</Dialog.Description>
+              <Dialog.Title>Upgrade cabin</Dialog.Title>
+            </Dialog.TitleGroup>
+            <Dialog.CloseButton />
+          </Dialog.Header>
+          <Dialog.Body>
+            Compose Dialog parts to match the product surface. The root still owns
+            visible, headerType, variant, maskVariant, and preventDismiss while
+            Spar owns focus trapping, overlay semantics, and Escape handling.
+          </Dialog.Body>
+          <Dialog.Footer>
+            <Dialog.FooterActions>
+              <Button type="text" variant="neutral" onClick={() => setVisible(false)}>
+                <Button.Label>Cancel</Button.Label>
+              </Button>
+              <Button onClick={() => setVisible(false)}>
+                <Button.Label>Continue</Button.Label>
+              </Button>
+            </Dialog.FooterActions>
+          </Dialog.Footer>
+        </Dialog.Panel>
       </Dialog>
     </div>
 
 ); }`} previewMinHeight={240} previewWrapper={ReactSparDemoRoot}
 scope={{ Button, Dialog }} />
 
+## Anatomy
+
+Compose the full dialog by nesting the compound parts inside the root. The
+canonical shape is:
+
+```tsx
+<Dialog visible={...} onVisibleChange={...} variant="info" headerType="basic">
+  <Dialog.Mask />
+  <Dialog.Panel>
+    <Dialog.Header>
+      <Dialog.SignIcon />
+      <Dialog.TitleGroup>
+        <Dialog.Description>Review the fare difference</Dialog.Description>
+        <Dialog.Title>Confirm upgrade</Dialog.Title>
+      </Dialog.TitleGroup>
+      <Dialog.CloseButton />
+    </Dialog.Header>
+    <Dialog.Body>Review details below.</Dialog.Body>
+    <Dialog.Footer>
+      <Dialog.FooterActions>
+        <Button><Button.Label>Cancel</Button.Label></Button>
+        <Button><Button.Label>Confirm</Button.Label></Button>
+      </Dialog.FooterActions>
+    </Dialog.Footer>
+  </Dialog.Panel>
+</Dialog>
+```
+
+Every part is optional. Omit `Dialog.Header`, `Dialog.Footer`, or
+`Dialog.SignIcon` when a surface doesn't need them. `Dialog.SignIcon` accepts
+children to override the variant-driven default icon, and `Dialog.CloseButton`
+accepts children to replace its icon.
+
 ## Template
 
-Dialog is the strongest templating surface in the current set. `headerSlot`,
-`contentSlot`, `footerSlot`, `footerActions`, and `containerSlot` let you
-replace most visible regions while Spar continues to own modal behavior.
+Dialog is the strongest templating surface in the current set. Because each
+region is a named compound part, you can replace the header, body, and footer
+with bespoke layouts while `Dialog.Title`, `Dialog.Description`, and
+`Dialog.CloseButton` keep accessibility wiring and dismiss behavior on the
+underlying Spar primitive.
 
 <Template />
 
@@ -71,27 +122,30 @@ the Takeoff UI contract.
 
 ## Footer Actions
 
-Pass `footerActions` when you want to keep the default footer wrapper but supply
-custom action buttons.
+Compose `Dialog.Footer` and `Dialog.FooterActions` to keep the default footer
+layout while supplying custom action buttons.
 
 <FooterActions />
 
 ## Header Types
 
 `headerType` preserves the original Takeoff header treatments without changing
-the dialog body contract.
+the dialog body contract. The value is forwarded to `Dialog.Header` as a
+`data-header-type` attribute and class hook.
 
 <HeaderTypes />
 
 ## Variants
 
-`variant` changes the sign icon treatment and tone of the dialog.
+`variant` changes the sign icon treatment and tone of the dialog. Pair it with
+`Dialog.SignIcon` to render the variant-appropriate icon.
 
 <Variants />
 
 ## Mask Treatments
 
 Use `maskVariant`, `isMaskBlur`, and `hideBackdrop` to tune the surrounding
-overlay without moving away from the modal behavior contract.
+overlay without moving away from the modal behavior contract. `Dialog.Mask`
+reads the resolved mask state from the root.
 
 <MaskTreatments />

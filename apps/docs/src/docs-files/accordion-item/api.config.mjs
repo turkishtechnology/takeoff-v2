@@ -7,7 +7,7 @@ export default {
   propOverrides: {
     children: {
       type: 'React.ReactNode',
-      description: 'Content displayed when the accordion item is expanded.',
+      description: 'Compound children — typically Accordion.Header and Accordion.Content.',
     },
     className: {
       type: 'string',
@@ -23,27 +23,27 @@ export default {
     },
     {
       attribute: 'data-slot="header"',
-      appliedWhen: 'Always',
+      appliedWhen: '`Accordion.Header` is rendered',
       purpose: 'Stable header slot selector.',
     },
     {
       attribute: 'data-slot="title"',
-      appliedWhen: 'Always',
+      appliedWhen: '`Accordion.Title` is rendered',
       purpose: 'Stable title slot selector.',
     },
     {
       attribute: 'data-slot="content"',
-      appliedWhen: 'Always',
+      appliedWhen: '`Accordion.Content` is rendered',
       purpose: 'Stable content slot selector.',
     },
     {
       attribute: 'data-slot="icon"',
-      appliedWhen: '`icon` prop is provided',
+      appliedWhen: '`Accordion.Icon` is rendered',
       purpose: 'Stable icon slot selector.',
     },
     {
       attribute: 'data-slot="arrow"',
-      appliedWhen: '`hideArrows` is not `true`',
+      appliedWhen: '`Accordion.Arrow` is rendered',
       purpose: 'Stable collapse/expand arrow selector.',
     },
     {

@@ -7,12 +7,17 @@ const code = `export function BasicCheckboxDemo() {
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <Checkbox
-        label="Accept terms of service"
-        description="You can still cancel up to 24 hours before departure."
-        value={agreed}
-        onChange={(next) => setAgreed(Boolean(next))}
-      />
+      <Checkbox value={agreed} onChange={(next) => setAgreed(Boolean(next))}>
+        <Checkbox.Indicator>
+          <Checkbox.Icon />
+        </Checkbox.Indicator>
+        <Checkbox.Content>
+          <Checkbox.Label>Accept terms of service</Checkbox.Label>
+          <Checkbox.Description>
+            You can still cancel up to 24 hours before departure.
+          </Checkbox.Description>
+        </Checkbox.Content>
+      </Checkbox>
     </div>
   );
 }`;
@@ -22,7 +27,15 @@ function BasicCheckboxDemo() {
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <Checkbox label="Accept terms of service" description="You can still cancel up to 24 hours before departure." value={agreed} onChange={next => setAgreed(Boolean(next))} />
+      <Checkbox value={agreed} onChange={next => setAgreed(Boolean(next))}>
+        <Checkbox.Indicator>
+          <Checkbox.Icon />
+        </Checkbox.Indicator>
+        <Checkbox.Content>
+          <Checkbox.Label>Accept terms of service</Checkbox.Label>
+          <Checkbox.Description>You can still cancel up to 24 hours before departure.</Checkbox.Description>
+        </Checkbox.Content>
+      </Checkbox>
     </div>
   );
 }

@@ -4,8 +4,12 @@ This document explains how we build components under
 `packages/react-spar/src/components`.
 
 `@takeoff-ui/react-spar` is a React adapter layer on top of
-`@turkish-technology/spar`, not a second component framework. The standards
-below exist to keep three things consistent across the package:
+`@turkish-technology/spar`, not a second component framework. Every component is
+authored as a **compound surface**: a root that owns state plus a fixed list of
+named subcomponents that own structure. The standards below keep that model
+consistent across the package.
+
+Consistency goals:
 
 - idiomatic React APIs for consumers
 - preserved Spar behavior and accessibility
@@ -13,48 +17,38 @@ below exist to keep three things consistent across the package:
 
 ## Folder Structure
 
-Each new component directory should usually contain:
+Each component directory should contain:
 
 ```plaintext
 component-name/
-├── ComponentName.tsx          # Public wrapper
-├── ComponentNameBase.ts       # Slots, class names, defaults, light helpers
+├── ComponentName.tsx          # Root + all compound subcomponents (Object.assign export)
+├── ComponentNameBase.ts       # Slots, class names, defaults, context, helpers
 ├── useComponentNameAdapter.ts # State translation hook (when needed)
-├── types.ts                   # Public types only
-├── ComponentName.test.tsx     # Tests
+├── types.ts                   # Public types for the root and every subcomponent
+├── ComponentName.test.tsx     # Tests covering the compound surface
 └── index.ts                   # Local barrel
 ```
 
-Compound or overlay families may legitimately expand into a part-based layout:
-
-```plaintext
-component-name/
-├── ComponentName.tsx          # Parity wrapper
-├── ComponentNameBase.ts       # Slots, class names, defaults, helpers
-├── ComponentName.context.ts   # Shared context when multiple parts need it
-├── ComponentNameRoot.tsx      # Canonical structural part
-├── ComponentNameContent.tsx   # Canonical structural part
-├── ComponentNameHeader.tsx    # Canonical structural part
-├── useComponentNameAdapter.ts # State translation hook (when needed)
-├── types.ts                   # Public types only
-├── ComponentName.test.tsx     # Tests
-└── index.ts                   # Local barrel
-```
+Large families (Accordion, Dialog, Input) often benefit from a single
+`ComponentName.tsx` that declares every subcomponent and exports the compound
+surface via `Object.assign`. Split into separate files only when the single file
+becomes hard to read.
 
 Rules:
 
 - Folder names use `kebab-case`.
 - Component files and exports use `PascalCase`.
-- Not every component needs an adapter hook. Add one when the wrapper must
+- Not every component needs an adapter hook. Add one when the root must
   reconcile controlled and uncontrolled state, normalize values, or build shared
-  context.
-- Not every component needs public compound parts. Add them only when the
-  component shape makes structural slots meaningfully consumer-owned.
+  context that drives the subcomponents.
+- Every component **does** ship compound subcomponents. Even leaf controls
+  (Button, Checkbox) expose at minimum a `Label` and adornment subcomponents so
+  the content surface stays structural, not prop-driven.
 - `ComponentNameBase.ts` is the source of truth for slot names, emitted class
-  names, and default props.
-- Split extra helper files only when the base or adapter file becomes hard to
-  read.
-- Export the component from its local barrel and from `src/components/index.ts`.
+  names, default props, and the context hook that subcomponents consume.
+- Export the root from the local barrel and from `src/components/index.ts`.
+  Subcomponents are reached exclusively via the root (`Button.Label`,
+  `Dialog.Header`, …), not via direct named exports.
 - Mirror slot classes into `src/styling/slot-registry.ts` (the generator script
   does this automatically when scaffolding a new component).
 - Prefer the generator script when scaffolding a new component:
@@ -63,17 +57,52 @@ Rules:
 pnpm --filter @takeoff-ui/react-spar generate Tooltip
 ```
 
-- Move existing components toward these patterns when the change is low risk. Do
-  not rewrite stable code only for stylistic purity.
+## Compound-Only Baseline
+
+Every component ships a root plus compound subcomponents. That is the only
+authoring model. Concretely:
+
+- The root accepts **state props only**: variant/size/type/mode flags,
+  controlled/uncontrolled value pairs, lifecycle callbacks, and native HTML
+  attributes that target the root element.
+- Content, icons, descriptions, error messages, spinners, footers, masks, close
+  buttons, and every other structural or content-bearing piece live in
+  **compound subcomponents** (`Root.Label`, `Root.LeadingIcon`, `Root.Icon`,
+  `Root.Description`, `Root.ErrorMessage`, `Root.Spinner`, `Root.Header`,
+  `Root.Body`, `Root.Footer`, `Root.CloseButton`, `Root.Mask`, `Root.Panel`, and
+  so on).
+- Subcomponents share state with the root through **context**, not props. For
+  example, `Input.Asterisk` only renders when `required` is true on the root;
+  `Input.ErrorMessage` only renders when `invalid` is true; `Button.Spinner`
+  only renders when `loading` is true.
+- **Do not** add flat content props (`label`, `header`, `subheader`, `icon`,
+  `leadingIcon`, `description`, `error`, `footerActions`, `spinner`,
+  `containerSlot`, `headerSlot`, `contentSlot`, `footerSlot`). Translate them
+  into subcomponents.
+- **Do not** add render-override props (`renderIcon`, `renderSpinner`,
+  `renderLeadingIcon`, `renderTrailingIcon`, `renderClearIcon`,
+  `renderCloseIcon`, `renderSignIcon`). Consumers override by passing children
+  to the relevant subcomponent. The canonical owner node is always preserved by
+  the subcomponent.
+
+When a subcomponent needs to expose render-time state to consumers, use
+function-as-children:
+`<Checkbox.Icon>{({ checked, indeterminate }) => …}</Checkbox.Icon>`,
+`<Accordion.Arrow>{({ isOpen }) => …}</Accordion.Arrow>`.
 
 ## Naming Conventions
 
 ### Component, file, and type names
 
-- Public components use `PascalCase`: `Button`, `Accordion`, `AccordionItem`.
+- Public root components use `PascalCase`: `Button`, `Accordion`, `Input`.
+- Subcomponents are attached to the root via `Object.assign` and exported as
+  part of the root's compound surface: `Button.Label`, `Accordion.Item`,
+  `Dialog.Header`, etc. Their `displayName` follows the dotted form
+  (`displayName = 'Dialog.Header'`).
 - Base objects use `ComponentNameBase`.
 - Adapter hooks use `useComponentNameAdapter`.
-- Public props and type aliases live in `types.ts`.
+- Public props and type aliases live in `types.ts`. Each subcomponent has its
+  own props interface (`ButtonLabelProps`, `DialogHeaderProps`, ...).
 - Internal helper names should describe the domain behavior they own, such as
   `encodeAccordionItemValue` or `normalizeAccordionItemKeys`.
 
@@ -118,88 +147,74 @@ export const buttonClassNames = {
 - Start from native React props with `ComponentPropsWithoutRef` and remove
   conflicts deliberately with `Omit`.
 - Expose idiomatic React props and callbacks, not raw primitive internals.
-- Keep the public surface small. Do not leak Spar-only implementation details
-  unless the wrapper intentionally owns that contract.
+- Keep the root's public surface narrow — only state. Content flows through
+  subcomponents.
 - Prefer clear controlled and uncontrolled pairs for stateful components, such
   as `activeIndex` and `defaultActiveIndex`.
-- When two props overlap, define and document precedence explicitly.
+- When two state inputs overlap, define and document precedence explicitly.
 - Reflect defaults in both `ComponentBase.defaultProps` and `@defaultValue`
   JSDoc.
 - Avoid broad polymorphism. Support only the render modes the package is
   prepared to test and document.
-- Use `ReactNode` for content slots. When aliases exist, document precedence
-  with `children`.
 
 ### Customization surfaces
 
-Every component must decide its supported customization surfaces deliberately.
-Do not let them emerge ad hoc.
+Every component exposes exactly these customization surfaces:
 
-Available surfaces:
+- **compound subcomponents** — the primary way to compose anatomy and swap
+  content inside canonical owner nodes;
+- **`classNames`** — per-slot extra class names, always concatenated with
+  `tk-*`;
+- **`slotProps`** — per-slot HTML attribute overrides, shallow-merged with
+  instance winning;
+- **provider-level defaults** — `SparReactProvider` `components` map (theme
+  defaultProps + classNames + slotProps).
 
-- parity wrapper
-- `slotProps`
-- render overrides
-- public compound parts
-
-Rules:
-
-- every component keeps the parity wrapper as the primary surface
-- `slotProps` tune canonical slot owner nodes
-- render overrides replace content inside canonical slot owner nodes
-- public compound parts hand structural slot ownership to the consumer
-- render overrides must not replace structural slot owner nodes
-- leaf components usually stop at wrapper + `slotProps` + limited render
-  overrides
-- disclosure and overlay components usually need public compound parts
+Do not add `renderX` props. Do not add flat content props. If consumers need a
+new content hook, add a new compound subcomponent.
 
 Examples of explicit precedence that should be documented and tested:
 
-- `children` overrides `label`
-- `activeIndex` overrides `AccordionItem.active`
-- explicit slot props override legacy parity aliases
+- `activeIndex` overrides `Accordion.Item.active`
+- `indeterminate` overrides `value` / `defaultValue` on `Checkbox`
+- instance `slotProps` / `classNames` override theme-level counterparts of the
+  same slot
 
 ## Component Architecture
 
 ### Wrapper responsibility
 
-- A component in this package is a thin React adapter.
-- Spar should continue to own behavior, keyboard handling, and ARIA whenever it
-  already provides them.
-- The wrapper owns API translation, DOM required for styling, value
+- Each component is a thin React adapter.
+- Spar owns behavior, keyboard handling, and ARIA whenever it already provides
+  them.
+- The root owns API translation, state, context, DOM required for styling, value
   normalization, and stable `data-*` hooks.
-- Do not add wrapper nodes unless they solve a clear styling, semantic, or
-  interaction problem.
-- If a component exports public compound parts, the wrapper should compose those
-  same parts internally instead of maintaining a second render tree.
+- Subcomponents own their canonical slot owner nodes (tag, class, `data-slot`,
+  and any behavior such as dismiss). They read shared state from context and
+  apply `classNames`/`slotProps` on render.
 
 ### Customization ownership
 
 For every slot, classify it before exposing customization:
 
-- structural: owns semantics, interaction, layout, or selector anchoring
-- content-bearing: owns consumer-facing content inside a stable slot container
-- decorative: owns optional icons or ornaments
+- **structural** — owns semantics, interaction, layout, or selector anchoring.
+  Always a compound subcomponent.
+- **content-bearing** — the subcomponent renders a canonical container whose
+  inner content is consumer-supplied via children.
+- **decorative** — optional ornaments (icons, spinners, arrows). The
+  subcomponent can be omitted entirely, or accept custom children.
 
-Default mapping:
-
-- structural: `slotProps`, plus public compound ownership when needed
-- content-bearing: `slotProps` + render override
-- decorative: `slotProps` + render override
-
-Typical structural slots include `root`, `overlay`, `trigger`, `content`,
-`header`, and `closeButton`.
+Typical structural subcomponents include `Root`, `Mask`, `Panel`, `Body`,
+`Header`, `Footer`, `CloseButton`, `Item`, `Trigger`.
 
 ### Base file responsibility
 
 - Define slots, class names, and default props in `ComponentNameBase.ts`.
+- Declare the context that subcomponents consume (`createSafeContext` from
+  `src/utils`).
 - Keep the base file focused on static metadata, pure helpers, and light context
   wiring.
-- `createContext` is allowed in the base file when multiple subcomponents share
-  wrapper state.
 - Prefer `createComponentBase` for `cx`, `getSlotProps`, and `resolveProps`.
-- When a component supports richer customization, keep the canonical slot
-  inventory close to the base file or an adjacent context file.
 
 ### Adapter hook responsibility
 
@@ -217,8 +232,12 @@ Typical structural slots include `root`, `overlay`, `trigger`, `content`,
 import { Primitive } from '@turkish-technology/spar';
 import { type Ref } from 'react';
 
-import { MyComponentBase } from './MyComponentBase';
-import type { MyComponentProps } from './types';
+import {
+  MyComponentBase,
+  MyComponentProvider,
+  useMyComponentContext,
+} from './MyComponentBase';
+import type { MyComponentProps, MyComponentPartProps } from './types';
 import { useMyComponentAdapter } from './useMyComponentAdapter';
 
 function MyComponent({
@@ -231,6 +250,8 @@ function MyComponent({
     onValueChange,
     children,
     className,
+    classNames,
+    slotProps,
     ...restProps
   } = MyComponentBase.resolveProps(rawProps);
 
@@ -241,32 +262,63 @@ function MyComponent({
     children,
   });
 
+  const contextValue = {
+    /* state flags + classNames + slotProps */
+  };
+
   return (
-    <Primitive
-      {...restProps}
-      ref={ref}
-      {...MyComponentBase.getSlotProps('root', {
-        className,
-        'data-state': normalizedValue ? 'open' : undefined,
-      })}
-      value={normalizedValue}
-      onValueChange={handleValueChange}
-    >
-      {children}
-    </Primitive>
+    <MyComponentProvider value={contextValue}>
+      <Primitive
+        {...restProps}
+        ref={ref}
+        {...MyComponentBase.getSlotProps('root', {
+          className,
+          'data-state': normalizedValue ? 'open' : undefined,
+        })}
+        value={normalizedValue}
+        onValueChange={handleValueChange}
+      >
+        {children}
+      </Primitive>
+    </MyComponentProvider>
   );
 }
+
+function MyComponentPart({
+  children,
+  className,
+  ...rest
+}: MyComponentPartProps) {
+  const context = useMyComponentContext('MyComponent.Part');
+  const attrs = buildSlotAttrs(
+    MyComponentBase.getSlotProps('part', { className }),
+    context.slotProps,
+    'part',
+    context.classNames?.part,
+  );
+  return (
+    <span {...attrs} {...rest}>
+      {children}
+    </span>
+  );
+}
+MyComponentPart.displayName = 'MyComponent.Part';
+
+const MyComponentCompound = Object.assign(MyComponent, {
+  Part: MyComponentPart,
+});
+export { MyComponentCompound as MyComponent };
 ```
 
 ### Implementation rules
 
-- Call `resolveProps` once near the top of the component.
+- Call `resolveProps` once near the top of the root component.
 - Normalize values and derive booleans above the return block.
-- Keep JSX shallow. Move repeated or branching rendering into small helpers.
+- Keep JSX shallow. Move repeated or branching rendering into subcomponents.
 - Use `getSlotProps` for slot nodes. Use `cx` when you only need class
   composition without extra slot metadata.
-- New components should prefer `getSlotProps` for consistent `data-slot` output.
-  Existing stable components can adopt it opportunistically.
+- Use `buildSlotAttrs` (from `src/customization`) inside subcomponents to
+  compose canonical slot attrs with context-resolved `classNames`/`slotProps`.
 - Use `clsx` through `createComponentBase` or directly. Do not add local
   string-join helpers.
 - Use small pure helpers for normalization, encoding, and equality checks.
@@ -277,13 +329,67 @@ function MyComponent({
   navigation, set `aria-disabled`, manage `tabIndex`, and block activation keys.
 - Memoization is allowed only when identity or repeated derivation actually
   matters. Do not add `useMemo` or `useCallback` by default.
-- Use `createContext` plus `useContext` for new context-based composition. Do
-  not introduce `contextType` or `Context.Consumer` patterns in new code.
-- Set `displayName` on exported components.
-- If a component supports render overrides, keep the canonical slot owner node,
-  class, and `data-slot` anchor in the render path.
-- If a component exports public compound parts, keep class/data semantics
-  aligned between wrapper usage and compound usage.
+- Use `createSafeContext` (from `src/utils/createSafeContext`) so that a
+  subcomponent used outside its root raises a descriptive error.
+- Set `displayName` on the root (`'Button'`) and every subcomponent
+  (`'Button.Label'`, `'Dialog.Header'`).
+
+## Composition Archetypes
+
+The compound-only baseline (above) decides _that_ every component has compound
+parts. This section decides _what each part renders underneath_. Every compound
+part falls into exactly one of three archetypes:
+
+| Archetype             | When it applies                                                                             | Canonical example                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **Inherited**         | The upstream Spar primitive already exports a part for this slot                            | `Input.Label` → `SparInputLabel`                                                  |
+| **React-enhancement** | No upstream part exists for this slot; the wrapper owns the DOM tag and styling hooks alone | `Button.Spinner`, `Input.Container`, `Dialog.SignIcon`                            |
+| **Bypass**            | An upstream part exists but the wrapper renders a plain tag for a specific, recorded reason | `Dialog.Mask` is the class to avoid; justified bypasses carry an inline rationale |
+
+The rules:
+
+1. **Every compound part declares its archetype in `ComponentNameBase.ts`.** A
+   one-line JSDoc on the slot or part reference is enough
+   (`// @archetype inherited — wraps SparDialog.Title`). Reviewers should be
+   able to read the base file and know which parts delegate, which are pure
+   React, and which intentionally bypass upstream.
+2. **Inherited parts must render their upstream counterpart, not a plain tag.**
+   A compound part that has an upstream equivalent but renders a plain `<div>` /
+   `<span>` is a bug unless it is explicitly classified as Bypass with a reason.
+   This is the letter of ADR-0003 applied at the slot level.
+3. **React-enhancement parts must have no upstream equivalent.** If the upstream
+   primitive grows a matching part later, the react-enhancement classification
+   must migrate to Inherited in the same release.
+4. **Bypass parts must carry an inline `exemption:` comment at the render site
+   and a `@bypass` line in the base file** giving the concrete reason (e.g.
+   upstream behavior conflicts with the React wrapper's semantics, upstream
+   hasn't shipped the part yet). "Felt easier" is not a reason.
+5. **Wrappers must not re-implement behavior Spar already owns** (ADR-0003).
+   When a wrapper bypasses an upstream part, it inherits the burden of proving
+   that no behavior (keyboarding, focus, ARIA lifecycle) is being silently
+   re-implemented in React. If there is, the correct path is to delegate through
+   the upstream part and restrict the wrapper to styling and API translation.
+
+Canonical examples per archetype, as of the composition audit absorbed into this
+section:
+
+- **Inherited root, inherited parts** — `Accordion`. Delegates through every
+  `SparAccordion.*` part it uses, with only styling enhancements layered in.
+- **Inherited root, mix of inherited + react-enhancement parts** — `Input` and
+  `Dialog`. Upstream compound parts exist for semantic anchors (`Label`,
+  `Title`, `Description`, `Field`, …) and are inherited; visual chrome parts
+  (`Container`, `LeadingIcon`, `SignIcon`, `Header`, …) are react-enhancement.
+- **Compound-in-react over a leaf upstream** — `Button` and `Checkbox`.
+  `SparButton` and `SparCheckbox` are leaves; every `.Label` / `.Icon` /
+  `.Indicator` / `.Spinner` part is react-enhancement.
+- **Bypass with documented rationale** — `Button` link-mode renders a bare `<a>`
+  rather than `<SparButton as="a">` because the upstream keyboard handler
+  preventDefaults Enter/Space on non-native elements, which would block a native
+  anchor's navigation. The rationale lives in `ButtonBase.ts`.
+
+Every new component port must classify its parts against this table as part of
+the component-port decision note. The readiness gate
+(`docs/component-port-readiness.md`) treats a missing archetype as a blocker.
 
 ## Styling Contract
 
@@ -327,7 +433,8 @@ const sharedProps = {
 - Wrapper nodes must not break focus order, label linkage, heading hierarchy, or
   region ownership.
 - Decorative icons and arrows should be `aria-hidden`.
-- Icon-only interactive controls must still have an accessible name.
+- Icon-only interactive controls must still have an accessible name (typically
+  via `aria-label` on the root).
 - When simulating disabled behavior on non-disabled elements, also handle
   `aria-disabled`, focusability, and blocked pointer and keyboard interaction.
 - Prefer semantic HTML or Spar primitives over custom role recreation.
@@ -353,17 +460,25 @@ const sharedProps = {
 ### Test structure
 
 ```tsx
-describe('Button', () => {
+describe('Button (compound)', () => {
   describe('rendering', () => {
-    it('should render a button element by default', () => {
-      render(<Button>Click me</Button>);
+    it('renders a button element by default', () => {
+      render(
+        <Button>
+          <Button.Label>Click me</Button.Label>
+        </Button>,
+      );
       expect(screen.getByRole('button')).toBeInTheDocument();
     });
   });
 
   describe('accessibility', () => {
-    it('should have no a11y violations', async () => {
-      const { container } = render(<Button>Click me</Button>);
+    it('has no a11y violations', async () => {
+      const { container } = render(
+        <Button>
+          <Button.Label>Click me</Button.Label>
+        </Button>,
+      );
       expect(await axe(container)).toHaveNoViolations();
     });
   });
@@ -372,45 +487,46 @@ describe('Button', () => {
 
 ### Test best practices
 
+- Always compose the anatomy explicitly — tests exist to pin the compound
+  surface.
 - Prefer queries by role, label, text, and visible behavior.
 - Use `container.querySelector` only when asserting stable structural hooks such
   as `data-slot` or documented `data-*` attributes.
 - Simulate user behavior with `userEvent` instead of calling internal helpers or
   mutating DOM nodes directly.
-- Test contract precedence cases explicitly, such as `children` over `label` or
-  controlled props over item-level fallbacks.
-- For stateful wrappers, cover controlled, uncontrolled, and transition paths.
+- For stateful roots, cover controlled, uncontrolled, and transition paths.
 - Assert emitted `data-*` hooks only when they are part of the documented
   styling contract.
 - Include one happy-path `axe` check for each interactive component, and add
   focused regression checks for risky variants.
-- If a component supports `slotProps`, test that they land on canonical slot
-  owner nodes.
-- If a component supports render overrides, test that the canonical slot owner
-  node still exists around overridden content.
-- If a component exports public compound parts, test at least one wrapper path
-  and one compound composition path.
+- When a subcomponent renders conditionally (`Input.Spinner`,
+  `Input.ClearButton`, `Input.ErrorMessage`, `Button.Spinner`,
+  `Input.Asterisk`), assert both the rendered and the skipped paths.
+- Assert that `classNames`/`slotProps` land on the correct subcomponent owner
+  node.
+- Assert that using a subcomponent outside its root raises the safe-context
+  error.
 
 ### Component test checklist
 
 Before submitting a component, make sure tests cover:
 
 - default rendering and root slot contract
-- class name merging
+- canonical anatomy for every subcomponent (class + `data-slot`)
+- class name merging (theme + instance)
 - default props and emitted data attributes
 - controlled and uncontrolled behavior when applicable
 - callback behavior and call counts
-- disabled, loading, and edge semantics
-- slot rendering and precedence rules
-- `slotProps` behavior when supported
-- render override behavior when supported
-- wrapper and compound parity smoke paths when compound parts are public
+- disabled, loading, invalid, required, clearable (and any other state-driven
+  conditional subcomponent) edge semantics
+- `slotProps` behavior
+- context-boundary errors when subcomponents are used outside the root
 - accessibility baseline
-- errors or invariants for invalid composition when applicable
 
 ## Documentation
 
-- Public docs should describe usage and user-visible behavior.
+- Public docs describe compound usage only. No flat content props appear in
+  examples because no flat content props exist.
 - Internal porting history, migration notes, or primitive quirks do not belong
   in component comments or public docs unless they affect consumers.
 - Keep type docs precise. Generated API tables are only as good as the JSDoc in
@@ -422,10 +538,6 @@ Before submitting a component, make sure tests cover:
 - Generated API output should expose callback props under the `Events` section
   when applicable.
 - Do not manually edit generated MDX files.
-- If a component supports richer customization, docs should separate:
-  - parity wrapper usage
-  - additive render or `slotProps` usage
-  - public compound usage when it exists
 
 ## Merge Checklist
 
@@ -445,17 +557,18 @@ Before considering a component complete:
   (enforces the artifact manifest: wrapper, recipe, docs page, smoke scenario,
   changeset, export, no emitted CSS)
 - regenerate docs API output when public types changed
-- confirm the component is exported from `src/components/index.ts`
+- confirm the root is exported from `src/components/index.ts` (subcomponents are
+  reached exclusively through the root)
 - confirm no CSS is emitted from `packages/react-spar/dist`
 - confirm slot classes are mirrored in `src/styling/slot-registry.ts`
 - confirm at least one smoke scenario in
   [`apps/react-app/src/App.tsx`](../../../apps/react-app/src/App.tsx) exercises
-  the new component end to end against the real tokens CSS import. If a
+  the new compound anatomy end to end against the real tokens CSS import. If a
   customization surface is genuinely not part of the component's public
   contract, mark the omission inline as `// exemption: <reason>` so it is
   intentional and reviewable.
 - confirm docs, generated API tables, tests, and component types describe the
-  same contract
+  same compound contract
 - write the parity-review report (and the React-enhancement review report when
   any additive surface is introduced) into the PR description, using the
   templates in

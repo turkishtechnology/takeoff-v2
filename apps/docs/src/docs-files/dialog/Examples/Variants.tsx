@@ -22,23 +22,36 @@ export function DialogVariantsDemo() {
             variant={variant === value ? 'primary' : 'secondary'}
             onClick={() => setVariant(value)}
           >
-            {value}
+            <Button.Label>{value}</Button.Label>
           </Button>
         ))}
       </div>
 
-      <Button onClick={() => setVisible(true)}>Preview variant</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Button.Label>Preview variant</Button.Label>
+      </Button>
 
       <Dialog
         visible={visible}
         onVisibleChange={setVisible}
-        header="Service message"
-        subheader={\`Current variant: \${variant}\`}
         variant={variant}
         containerStyle={{ width: '460px' }}
       >
-        Variant changes the sign icon treatment and tonal emphasis while the
-        layout contract stays stable.
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.SignIcon />
+            <Dialog.TitleGroup>
+              <Dialog.Description>{\`Current variant: \${variant}\`}</Dialog.Description>
+              <Dialog.Title>Service message</Dialog.Title>
+            </Dialog.TitleGroup>
+            <Dialog.CloseButton />
+          </Dialog.Header>
+          <Dialog.Body>
+            Variant changes the sign icon treatment and tonal emphasis while the
+            layout contract stays stable.
+          </Dialog.Body>
+        </Dialog.Panel>
       </Dialog>
     </div>
   );
@@ -53,22 +66,28 @@ function DialogVariantsDemo() {
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
         {variants.map(value => (
           <Button key={value} size="small" type={variant === value ? 'filled' : 'outlined'} variant={variant === value ? 'primary' : 'secondary'} onClick={() => setVariant(value)}>
-            {value}
+            <Button.Label>{value}</Button.Label>
           </Button>
         ))}
       </div>
 
-      <Button onClick={() => setVisible(true)}>Preview variant</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Button.Label>Preview variant</Button.Label>
+      </Button>
 
-      <Dialog
-        visible={visible}
-        onVisibleChange={setVisible}
-        header="Service message"
-        subheader={`Current variant: ${variant}`}
-        variant={variant}
-        containerStyle={{ width: '460px' }}
-      >
-        Variant changes the sign icon treatment and tonal emphasis while the layout contract stays stable.
+      <Dialog visible={visible} onVisibleChange={setVisible} variant={variant} containerStyle={{ width: '460px' }}>
+        <Dialog.Mask />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.SignIcon />
+            <Dialog.TitleGroup>
+              <Dialog.Description>{`Current variant: ${variant}`}</Dialog.Description>
+              <Dialog.Title>Service message</Dialog.Title>
+            </Dialog.TitleGroup>
+            <Dialog.CloseButton />
+          </Dialog.Header>
+          <Dialog.Body>Variant changes the sign icon treatment and tonal emphasis while the layout contract stays stable.</Dialog.Body>
+        </Dialog.Panel>
       </Dialog>
     </div>
   );
