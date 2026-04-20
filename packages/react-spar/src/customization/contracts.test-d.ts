@@ -1,27 +1,26 @@
 import { describe, expectTypeOf, it } from 'vitest';
 
-import type { ButtonProps, ButtonSlotProps } from '../components/button/types';
-import type { ButtonSlot } from '../components/button/ButtonBase';
+import type { AccordionProps } from '../components/accordion/types';
 import { useComponentTheme } from '../provider';
 
 import type { ComponentCustomizationRegistry, ComponentName, ComponentThemeConfig, ComponentsThemeMap } from './contracts';
 
 describe('ComponentCustomizationRegistry — type surface', () => {
   it('narrows ComponentName to the registered set', () => {
-    expectTypeOf<ComponentName>().toEqualTypeOf<'Button' | 'Accordion' | 'AccordionItem' | 'Checkbox' | 'Dialog' | 'Input'>();
+    expectTypeOf<ComponentName>().toEqualTypeOf<'Accordion' | 'AccordionItem' | 'AccordionHeader' | 'AccordionTrigger' | 'AccordionContent'>();
   });
 
-  it('binds each registry entry to its component props + slot + slotProps', () => {
-    expectTypeOf<ComponentCustomizationRegistry['Button']>().toEqualTypeOf<ComponentThemeConfig<ButtonProps, ButtonSlot, ButtonSlotProps>>();
+  it('binds each registry entry to its component props', () => {
+    expectTypeOf<ComponentCustomizationRegistry['Accordion']>().toEqualTypeOf<ComponentThemeConfig<AccordionProps>>();
   });
 
   it('exposes every registry entry as an optional slot on ComponentsThemeMap', () => {
-    expectTypeOf<ComponentsThemeMap['Button']>().toEqualTypeOf<ComponentThemeConfig<ButtonProps, ButtonSlot, ButtonSlotProps> | undefined>();
+    expectTypeOf<ComponentsThemeMap['Accordion']>().toEqualTypeOf<ComponentThemeConfig<AccordionProps> | undefined>();
   });
 
   it('narrows useComponentTheme return by the passed component key', () => {
-    const buttonConfig = useComponentTheme('Button');
-    expectTypeOf(buttonConfig).toEqualTypeOf<ComponentThemeConfig<ButtonProps, ButtonSlot, ButtonSlotProps> | undefined>();
+    const accordionConfig = useComponentTheme('Accordion');
+    expectTypeOf(accordionConfig).toEqualTypeOf<ComponentThemeConfig<AccordionProps> | undefined>();
   });
 });
 
@@ -29,16 +28,16 @@ describe('ComponentsThemeMap — compile-time rejection', () => {
   it('rejects unknown component keys on the map', () => {
     const theme: ComponentsThemeMap = {
       // @ts-expect-error 'FakeComponent' is not a registered component name
-      FakeComponent: { classNames: {} },
+      FakeComponent: { className: 'x' },
     };
     void theme;
   });
 
-  it('rejects unknown classNames slot keys on a registered component', () => {
+  it('rejects non-string className on a registered component', () => {
     const theme: ComponentsThemeMap = {
-      Button: {
-        // @ts-expect-error 'noSuchSlot' is not a ButtonSlot
-        classNames: { noSuchSlot: 'x' },
+      Accordion: {
+        // @ts-expect-error className must be a string
+        className: 1,
       },
     };
     void theme;
@@ -46,19 +45,9 @@ describe('ComponentsThemeMap — compile-time rejection', () => {
 
   it('rejects unknown defaultProps fields on a registered component', () => {
     const theme: ComponentsThemeMap = {
-      Button: {
-        // @ts-expect-error 'bogusField' is not a ButtonProps field
+      Accordion: {
+        // @ts-expect-error 'bogusField' is not an AccordionProps field
         defaultProps: { bogusField: 1 },
-      },
-    };
-    void theme;
-  });
-
-  it('rejects unknown slotProps slot keys on a registered component', () => {
-    const theme: ComponentsThemeMap = {
-      Button: {
-        // @ts-expect-error 'notASlot' is not a Button slot
-        slotProps: { notASlot: {} },
       },
     };
     void theme;

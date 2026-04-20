@@ -1,4 +1,4 @@
 export * from './provider';
 export * from './components';
-export type { ClassNamesOverride, ComponentCustomizationRegistry, ComponentName, ComponentThemeConfig, ComponentsThemeMap, SlotPropsOverride } from './customization';
+export type { ComponentCustomizationRegistry, ComponentName, ComponentThemeConfig, ComponentsThemeMap } from './customization';
 export type { SlotClassNames } from './types';
