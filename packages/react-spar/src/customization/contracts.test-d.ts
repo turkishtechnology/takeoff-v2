@@ -7,7 +7,7 @@ import type { ComponentCustomizationRegistry, ComponentName, ComponentThemeConfi
 
 describe('ComponentCustomizationRegistry — type surface', () => {
   it('narrows ComponentName to the registered set', () => {
-    expectTypeOf<ComponentName>().toEqualTypeOf<'Accordion' | 'AccordionItem' | 'AccordionHeader' | 'AccordionTrigger' | 'AccordionContent'>();
+    expectTypeOf<ComponentName>().toEqualTypeOf<'Accordion' | 'AccordionItem' | 'AccordionHeader' | 'AccordionTrigger' | 'AccordionContent' | 'AccordionArrow'>();
   });
 
   it('binds each registry entry to its component props', () => {

@@ -1,4 +1,4 @@
-import type { ElementType } from 'react';
+import type { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react';
 import type {
   AccordionContentProps as SparAccordionContentProps,
   AccordionHeaderProps as SparAccordionHeaderProps,
@@ -18,3 +18,6 @@ export type AccordionItemProps<T extends ElementType = 'div'> = SparAccordionIte
 export type AccordionHeaderProps<T extends ElementType = 'h3'> = SparAccordionHeaderProps<T>;
 export type AccordionTriggerProps<T extends ElementType = 'button'> = SparAccordionTriggerProps<T>;
 export type AccordionContentProps<T extends ElementType = 'div'> = SparAccordionContentProps<T>;
+export type AccordionArrowProps = Omit<ComponentPropsWithoutRef<'span'>, 'children'> & {
+  children?: ReactNode;
+};

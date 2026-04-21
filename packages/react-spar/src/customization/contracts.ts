@@ -1,4 +1,4 @@
-import type { AccordionContentProps, AccordionHeaderProps, AccordionItemProps, AccordionProps, AccordionTriggerProps } from '../components/accordion/types';
+import type { AccordionArrowProps, AccordionContentProps, AccordionHeaderProps, AccordionItemProps, AccordionProps, AccordionTriggerProps } from '../components/accordion/types';
 
 /**
  * Theme-level configuration for a single component.
@@ -29,6 +29,7 @@ export interface ComponentCustomizationRegistry {
   AccordionHeader: ComponentThemeConfig<AccordionHeaderProps>;
   AccordionTrigger: ComponentThemeConfig<AccordionTriggerProps>;
   AccordionContent: ComponentThemeConfig<AccordionContentProps>;
+  AccordionArrow: ComponentThemeConfig<AccordionArrowProps>;
 }
 
 /**
