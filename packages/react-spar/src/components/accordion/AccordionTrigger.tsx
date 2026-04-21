@@ -2,13 +2,11 @@ import type { ElementType } from 'react';
 
 import { AccordionTrigger as SparAccordionTrigger } from '@turkish-technology/spar';
 
-import { createComponentBase } from '../../base/createComponentBase';
 import { resolveSlotClass } from '../../customization';
 import { useComponentTheme } from '../../provider';
 
+import { AccordionTriggerBase } from './base';
 import type { AccordionTriggerProps } from './types';
-
-export const AccordionTriggerBase = createComponentBase<'root'>({ root: 'tk-accordion-item-header' });
 
 export const AccordionTrigger = <T extends ElementType = 'button'>(props: AccordionTriggerProps<T>) => {
   const theme = useComponentTheme('AccordionTrigger');
