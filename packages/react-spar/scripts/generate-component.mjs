@@ -71,25 +71,7 @@ export interface ${name}Props extends ${name}NativeProps {
 // --- <Name>Base.ts ---
 writeFileSync(
   resolve(componentDir, `${name}Base.ts`),
-  `import { createComponentBase } from '../../base/createComponentBase';
-import type { SlotClassNames } from '../../types';
-
-import type { ${name}Props } from './types';
-
-export const ${camel}Slots = ['root'] as const;
-
-export type ${name}Slot = (typeof ${camel}Slots)[number];
-
-export const ${camel}ClassNames = {
-  root: '${prefix}',
-} as const satisfies SlotClassNames<${name}Slot>;
-
-export const ${name}Base = createComponentBase<${name}Props, ${name}Slot>({
-  name: '${name}',
-  slots: ${camel}Slots,
-  classNames: ${camel}ClassNames,
-  defaultProps: {},
-});
+  `export const ${name}Base = { classes: { root: '${prefix}' } } as const;
 `,
 );
 

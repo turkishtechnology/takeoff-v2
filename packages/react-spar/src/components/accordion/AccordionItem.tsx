@@ -2,14 +2,12 @@ import type { ElementType } from 'react';
 
 import { AccordionItem as SparAccordionItem } from '@turkish-technology/spar';
 
-import { createComponentBase } from '../../base/createComponentBase';
 import { resolveSlotClass } from '../../customization';
 import { useComponentTheme } from '../../provider';
 
+import { AccordionItemBase } from './base';
 import { useAccordionVariant } from './context';
 import type { AccordionItemProps } from './types';
-
-export const AccordionItemBase = createComponentBase<'root'>({ root: 'tk-accordion-item' });
 
 export const AccordionItem = <T extends ElementType = 'div'>(props: AccordionItemProps<T>) => {
   const theme = useComponentTheme('AccordionItem');

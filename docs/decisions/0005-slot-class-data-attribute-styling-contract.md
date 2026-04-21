@@ -25,7 +25,8 @@ whenever a slot was renamed or moved.
 `tk-*` slot classes, `data-slot` values, and the canonical state and variant
 `data-*` hooks are part of the public styling contract. They must be:
 
-- declared in the component base file via `createComponentBase`
+- declared in the component file as a
+  `<Name>Base = { classes: { ... } } as const` literal
 - mirrored into `src/styling/slot-registry.ts` so the package owns one typed
   inventory of every shipped slot class (the generator script does this
   automatically)
