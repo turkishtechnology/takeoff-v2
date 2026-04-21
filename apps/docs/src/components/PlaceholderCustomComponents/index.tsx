@@ -17,6 +17,7 @@ import styles from './PlaceholderCustomComponents.module.css';
  * TODO(react-spar): Replace every export in this file with the real compound
  * primitive from `@takeoff-ui/react-spar` as it ships. Tracking:
  *
+ *   - <Input>       — In progress; will replace PlaceholderInput
  *   - <Badge>       — Phase C candidate (not in current roadmap)
  *   - <Switch>      — Roadmap item #02 (Toggle); will replace PlaceholderSwitch
  *   - <Progress>    — Phase C candidate (not in current roadmap)
@@ -27,6 +28,24 @@ import styles from './PlaceholderCustomComponents.module.css';
  * real one.
  * ─────────────────────────────────────────────────────────────────────────
  */
+
+/* ----- Input ---------------------------------------------------------- */
+
+export interface PlaceholderInputProps {
+  label: string;
+  value: string;
+}
+
+export function PlaceholderInput({ label, value }: PlaceholderInputProps): JSX.Element {
+  return (
+    <div className={styles.input}>
+      <span className={styles.inputLabel}>{label}</span>
+      <div className={styles.inputContainer}>
+        <span className={styles.inputField}>{value}</span>
+      </div>
+    </div>
+  );
+}
 
 /* ----- Badge ---------------------------------------------------------- */
 

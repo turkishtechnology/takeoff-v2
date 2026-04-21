@@ -5,6 +5,43 @@
  * light / dark mode through the Takeoff token layer.
  * ───────────────────────────────────────────────────────────────────────── */
 
+/* ---- Input ----------------------------------------------------------- */
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  font-family: 'Geologica', sans-serif;
+}
+
+.inputLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--runway-ink-dim);
+  letter-spacing: -0.01em;
+}
+
+.inputContainer {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--runway-bg-1);
+  border: 1px solid var(--runway-surface-dark-border-2);
+  border-radius: 8px;
+  transition: border-color 150ms ease;
+}
+
+.inputContainer:hover {
+  border-color: color-mix(in srgb, var(--runway-cardinal) 40%, var(--runway-surface-dark-border-2));
+}
+
+.inputField {
+  font-size: 13px;
+  color: var(--runway-ink);
+  letter-spacing: -0.01em;
+}
+
 /* ---- Badge ----------------------------------------------------------- */
 .badge {
   font-size: 11px;

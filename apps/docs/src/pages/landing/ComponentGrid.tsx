@@ -1,13 +1,13 @@
 import type { JSX } from 'react';
 import Link from '@docusaurus/Link';
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import { Button, Input } from '@takeoff-ui/react-spar';
-import { PlaceholderBadge, PlaceholderSwitchRow, PlaceholderProgress, PlaceholderAvatarGroup } from '@site/src/components/PlaceholderCustomComponents';
+import { Button } from '@takeoff-ui/react-spar';
+import { PlaceholderBadge, PlaceholderInput, PlaceholderSwitchRow, PlaceholderProgress, PlaceholderAvatarGroup } from '@site/src/components/PlaceholderCustomComponents';
 import styles from './ComponentGrid.module.css';
 
 /*
  * ComponentGrid — six live-preview cards for the landing.
- * Real react-spar components (Button, Input) + mocks from
+ * Real react-spar components (Button) + mocks from
  * @site/src/components/PlaceholderCustomComponents. The TODO(react-spar)
  * tracker lives in PlaceholderCustomComponents/index.tsx — one source of
  * truth for every component we're temporarily mocking.
@@ -85,12 +85,7 @@ function ButtonsCardDemo(): JSX.Element {
 function InputCardDemo(): JSX.Element {
   return (
     <div className={styles.demo} style={{ padding: '18px 14px', alignItems: 'stretch' }}>
-      <Input readOnly defaultValue="Istanbul (IST)" style={{ width: '100%' }}>
-        <Input.Label>Departure airport</Input.Label>
-        <Input.Container>
-          <Input.Field />
-        </Input.Container>
-      </Input>
+      <PlaceholderInput label="Departure airport" value="Istanbul (IST)" />
     </div>
   );
 }
