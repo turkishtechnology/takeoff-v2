@@ -17,6 +17,7 @@ import styles from './PlaceholderCustomComponents.module.css';
  * TODO(react-spar): Replace every export in this file with the real compound
  * primitive from `@takeoff-ui/react-spar` as it ships. Tracking:
  *
+ *   - <Button>      — Not yet shipped from react-spar; will replace PlaceholderButton
  *   - <Input>       — In progress; will replace PlaceholderInput
  *   - <Badge>       — Phase C candidate (not in current roadmap)
  *   - <Switch>      — Roadmap item #02 (Toggle); will replace PlaceholderSwitch
@@ -28,6 +29,44 @@ import styles from './PlaceholderCustomComponents.module.css';
  * real one.
  * ─────────────────────────────────────────────────────────────────────────
  */
+
+/* ----- Button --------------------------------------------------------- */
+
+export type PlaceholderButtonVariant = 'primary' | 'neutral';
+export type PlaceholderButtonType = 'filled' | 'outlined' | 'text';
+export type PlaceholderButtonSize = 'small' | 'default' | 'large';
+
+export interface PlaceholderButtonProps {
+  variant?: PlaceholderButtonVariant;
+  type?: PlaceholderButtonType;
+  size?: PlaceholderButtonSize;
+  children: React.ReactNode;
+}
+
+const BTN_VARIANT_CLASS: Record<PlaceholderButtonVariant, string> = {
+  primary: styles.btnPrimary,
+  neutral: styles.btnNeutral,
+};
+
+const BTN_TYPE_CLASS: Record<PlaceholderButtonType, string> = {
+  filled: styles.btnFilled,
+  outlined: styles.btnOutlined,
+  text: styles.btnText,
+};
+
+const BTN_SIZE_CLASS: Record<PlaceholderButtonSize, string> = {
+  small: styles.btnSmall,
+  default: styles.btnDefault,
+  large: styles.btnLarge,
+};
+
+export function PlaceholderButton({ variant = 'primary', type = 'filled', size = 'default', children }: PlaceholderButtonProps): JSX.Element {
+  return (
+    <button type="button" className={`${styles.btn} ${BTN_VARIANT_CLASS[variant]} ${BTN_TYPE_CLASS[type]} ${BTN_SIZE_CLASS[size]}`}>
+      {children}
+    </button>
+  );
+}
 
 /* ----- Input ---------------------------------------------------------- */
 

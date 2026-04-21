@@ -5,6 +5,105 @@
  * light / dark mode through the Takeoff token layer.
  * ───────────────────────────────────────────────────────────────────────── */
 
+/* ---- Button ---------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: 'Geologica', sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+  white-space: nowrap;
+}
+
+.btnSmall {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.btnDefault {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+
+.btnLarge {
+  height: 40px;
+  padding: 0 18px;
+  font-size: 14px;
+}
+
+/* Primary · filled */
+.btnPrimary.btnFilled {
+  background: var(--runway-cardinal);
+  color: var(--static-white, #fff);
+  border: 1px solid var(--runway-cardinal);
+}
+.btnPrimary.btnFilled:hover {
+  background: var(--runway-cardinal-secondary, var(--runway-cardinal));
+  border-color: var(--runway-cardinal-secondary, var(--runway-cardinal));
+}
+
+/* Primary · outlined */
+.btnPrimary.btnOutlined {
+  background: transparent;
+  color: var(--runway-cardinal);
+  border: 1px solid var(--runway-cardinal);
+}
+.btnPrimary.btnOutlined:hover {
+  background: color-mix(in srgb, var(--runway-cardinal) 10%, transparent);
+}
+
+/* Primary · text */
+.btnPrimary.btnText {
+  background: transparent;
+  color: var(--runway-cardinal);
+  border: 1px solid transparent;
+}
+.btnPrimary.btnText:hover {
+  background: color-mix(in srgb, var(--runway-cardinal) 8%, transparent);
+}
+
+/* Neutral · filled */
+.btnNeutral.btnFilled {
+  background: var(--runway-bg-3, var(--runway-surface-dark-border-2));
+  color: var(--runway-ink);
+  border: 1px solid var(--runway-surface-dark-border-2);
+}
+.btnNeutral.btnFilled:hover {
+  background: var(--runway-surface-dark-border-2);
+}
+
+/* Neutral · outlined */
+.btnNeutral.btnOutlined {
+  background: transparent;
+  color: var(--runway-ink);
+  border: 1px solid var(--runway-surface-dark-border-2);
+}
+.btnNeutral.btnOutlined:hover {
+  border-color: var(--runway-ink-faint);
+  background: color-mix(in srgb, var(--runway-ink) 4%, transparent);
+}
+
+/* Neutral · text */
+.btnNeutral.btnText {
+  background: transparent;
+  color: var(--runway-ink-dim);
+  border: 1px solid transparent;
+}
+.btnNeutral.btnText:hover {
+  color: var(--runway-ink);
+  background: color-mix(in srgb, var(--runway-ink) 5%, transparent);
+}
+
 /* ---- Input ----------------------------------------------------------- */
 .input {
   display: flex;

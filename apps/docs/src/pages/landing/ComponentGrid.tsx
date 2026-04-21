@@ -1,8 +1,7 @@
 import type { JSX } from 'react';
 import Link from '@docusaurus/Link';
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import { Button } from '@takeoff-ui/react-spar';
-import { PlaceholderBadge, PlaceholderInput, PlaceholderSwitchRow, PlaceholderProgress, PlaceholderAvatarGroup } from '@site/src/components/PlaceholderCustomComponents';
+import { PlaceholderBadge, PlaceholderButton, PlaceholderInput, PlaceholderSwitchRow, PlaceholderProgress, PlaceholderAvatarGroup } from '@site/src/components/PlaceholderCustomComponents';
 import styles from './ComponentGrid.module.css';
 
 /*
@@ -47,36 +46,36 @@ function ButtonsCardDemo(): JSX.Element {
   return (
     <div className={`${styles.demo} ${styles.buttonsDemo}`}>
       <div className={styles.stack}>
-        <Button variant="primary" type="filled" size="small">
+        <PlaceholderButton variant="primary" type="filled" size="small">
           Primary
-        </Button>
-        <Button variant="neutral" type="outlined" size="small">
+        </PlaceholderButton>
+        <PlaceholderButton variant="neutral" type="outlined" size="small">
           Secondary
-        </Button>
-        <Button variant="neutral" type="text" size="small">
+        </PlaceholderButton>
+        <PlaceholderButton variant="neutral" type="text" size="small">
           Ghost
-        </Button>
+        </PlaceholderButton>
       </div>
       <div className={styles.stack}>
-        <Button variant="primary" type="filled" size="small">
+        <PlaceholderButton variant="primary" type="filled" size="small">
           Small
-        </Button>
-        <Button variant="primary" type="filled">
+        </PlaceholderButton>
+        <PlaceholderButton variant="primary" type="filled">
           Default
-        </Button>
-        <Button variant="primary" type="filled" size="large">
+        </PlaceholderButton>
+        <PlaceholderButton variant="primary" type="filled" size="large">
           Large
-        </Button>
+        </PlaceholderButton>
       </div>
       <div className={styles.stack}>
-        <Button variant="primary" type="filled" size="small">
+        <PlaceholderButton variant="primary" type="filled" size="small">
           <TakeoffIcon />
           Book flight
-        </Button>
-        <Button variant="neutral" type="outlined" size="small">
+        </PlaceholderButton>
+        <PlaceholderButton variant="neutral" type="outlined" size="small">
           <LuggageIcon />
           Baggage
-        </Button>
+        </PlaceholderButton>
       </div>
     </div>
   );
