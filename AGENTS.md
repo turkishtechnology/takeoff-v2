@@ -34,6 +34,9 @@ here.
 ## Skill routing
 
 - Use `$generate-component` before scaffolding a new React Spar component.
+- Use `$generate-api-alignment` when creating or refreshing a component API
+  alignment worksheet, especially for scratch ports where the `react-spar`
+  column should stay blank for manual decisions.
 - Use `$takeoff-component-port` when porting, reviewing, or correcting component
   parity across `takeoff-ui`, `takeoff-design`, `spar`, and `takeoff-spar`.
 - Use `$takeoff-component-port` when deciding whether a component should remain

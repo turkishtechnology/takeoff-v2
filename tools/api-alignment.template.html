@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>__ALIGNMENT_TITLE__</title>
+    <link rel="stylesheet" href="./api-alignment.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1 id="pageTitle">__ALIGNMENT_TITLE__</h1>
+        <p id="pageSubtitle">__ALIGNMENT_SUBTITLE__</p>
+      </div>
+      <div class="actions">
+        <button id="btnExport" class="primary">Export markdown</button>
+        <button id="btnReset">Reset decisions</button>
+      </div>
+    </header>
+
+    <nav class="tabs" id="tabs"></nav>
+
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot keep"></span> Keep (accept current name)</div>
+      <div class="legend-item"><span class="legend-dot rename"></span> Rename (type new name)</div>
+      <div class="legend-item"><span class="legend-dot drop"></span> Drop from this layer</div>
+      <div class="legend-item"><span class="legend-dot add"></span> Add (for rows missing in the layer)</div>
+      <div class="legend-item"><span class="legend-dot skip"></span> Skip (no decision / N/A)</div>
+    </div>
+
+    <main id="main"></main>
+
+    <aside id="exportPanel" class="export-panel">
+      <div class="dialog">
+        <header>
+          <h2>Exported markdown</h2>
+        </header>
+        <textarea id="exportText" readonly></textarea>
+        <div class="dialog-footer">
+          <button id="btnCopy" class="primary">Copy to clipboard</button>
+          <button id="btnClose">Close</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      window.API_ALIGNMENT_CONFIG = {
+        title: '__ALIGNMENT_TITLE__',
+        subtitle: '__ALIGNMENT_SUBTITLE__',
+        storageKey: '__ALIGNMENT_STORAGE_KEY__',
+        exportTitle: '__ALIGNMENT_EXPORT_TITLE__',
+        exportNote: '__ALIGNMENT_EXPORT_NOTE__',
+        data: __ALIGNMENT_DATA__,
+      };
+    </script>
+    <script src="./api-alignment.runtime.js"></script>
+  </body>
+</html>

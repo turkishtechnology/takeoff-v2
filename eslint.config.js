@@ -32,6 +32,27 @@ export default tseslint.config(
     },
   },
   {
+    files: ['tools/**/*.js'],
+    languageOptions: {
+      globals: {
+        window: 'readonly',
+        document: 'readonly',
+        navigator: 'readonly',
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
+        confirm: 'readonly',
+        alert: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        fetch: 'readonly',
+        URL: 'readonly',
+        Blob: 'readonly',
+      },
+    },
+  },
+  {
     ignores: [
       '**/node_modules/**',
       '**/dist/**',

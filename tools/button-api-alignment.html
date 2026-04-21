@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Button API Alignment</title>
+    <link rel="stylesheet" href="./api-alignment.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1 id="pageTitle">Button API Alignment</h1>
+        <p id="pageSubtitle">takeoff-ui + spar are the source layers; react-spar cells are intentionally blank because Button will be ported from scratch.</p>
+      </div>
+      <div class="actions">
+        <button id="btnExport" class="primary">Export markdown</button>
+        <button id="btnReset">Reset decisions</button>
+      </div>
+    </header>
+
+    <nav class="tabs" id="tabs"></nav>
+
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot keep"></span> Keep (accept current name)</div>
+      <div class="legend-item"><span class="legend-dot rename"></span> Rename (type new name)</div>
+      <div class="legend-item"><span class="legend-dot drop"></span> Drop from this layer</div>
+      <div class="legend-item"><span class="legend-dot add"></span> Add (for rows missing in the layer)</div>
+      <div class="legend-item"><span class="legend-dot skip"></span> Skip (no decision / N/A)</div>
+    </div>
+
+    <main id="main"></main>
+
+    <aside id="exportPanel" class="export-panel">
+      <div class="dialog">
+        <header>
+          <h2>Exported markdown</h2>
+        </header>
+        <textarea id="exportText" readonly></textarea>
+        <div class="dialog-footer">
+          <button id="btnCopy" class="primary">Copy to clipboard</button>
+          <button id="btnClose">Close</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      window.API_ALIGNMENT_CONFIG = {
+        title: 'Button API Alignment',
+        subtitle: 'takeoff-ui + spar are the source layers; react-spar cells are intentionally blank because Button will be ported from scratch.',
+        storageKey: 'buttonApiAlignmentDecisions.v2',
+        exportTitle: '# Button API - scratch-port worksheet',
+        exportNote:
+          'Generated from tools/api-alignment.template.html. For this worksheet, react-spar cells are intentionally blank so the final surface can be decided interactively.',
+        data: {
+          parts: [
+            {
+              id: 'root',
+              label: 'Button (root)',
+              description: 'State and behavior owned by the root regardless of the eventual react-spar anatomy.',
+              props: [
+                {
+                  id: 'visualType',
+                  concept: 'Visual style family',
+                  takeoffUi: {
+                    name: 'type',
+                    type: "'filled' | 'filledLight' | 'outlined' | 'text'",
+                    default: "'filled'",
+                    note: 'tk-button.tsx exposes four visual families on the `type` prop.',
+                  },
+                  spar: null,
+                  reactSpar: null,
+                  note: "Spar's native `type` prop controls submit/reset semantics, so it is not the same concept as takeoff-ui's visual `type`.",
+                },
+                {
+                  id: 'variant',
+                  concept: 'Semantic color variant',
+                  takeoffUi: {
+                    name: 'variant',
+                    type: "'primary' | 'secondary' | 'neutral' | 'info' | 'success' | 'danger' | 'warning' | 'white' | 'black'",
+                    default: "'primary'",
+                  },
+                  spar: null,
+                  reactSpar: null,
+                },
+                {
+                  id: 'size',
+                  concept: 'Component size',
+                  takeoffUi: {
+                    name: 'size',
+                    type: "'large' | 'base' | 'small'",
+                    default: "'base'",
+                  },
+                  spar: null,
+                  reactSpar: null,
+                },
+                {
+                  id: 'behaviorMode',
+                  concept: 'Behavior mode (button / submit / reset / link)',
+                  takeoffUi: {
+                    name: 'mode',
+                    type: "'button' | 'submit' | 'reset' | 'link'",
+                    default: "'button'",
+                    note: 'When `mode="link"`, tk-button renders an `<a>` and nulls the visual `type`.',
+                  },
+                  spar: {
+                    name: 'type',
+                    type: "React.ButtonHTMLAttributes['type']",
+                    default: "'button'",
+                    note: 'Only applied when the rendered component is a native `<button>`.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'polymorphicTag',
+                  concept: 'Rendered element selection',
+                  takeoffUi: {
+                    name: '(internal)',
+                    type: '`<button>` or `<a>` based on `mode`',
+                    default: '—',
+                  },
+                  spar: {
+                    name: 'as',
+                    type: 'ElementType',
+                    default: "'button'",
+                    note: 'Spar exposes polymorphic rendering; non-native tags get `role="button"` plus keyboard handling.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'href',
+                  concept: 'Link destination',
+                  takeoffUi: {
+                    name: 'href',
+                    type: 'string',
+                    default: 'null',
+                    note: 'Meaningful only when `mode="link"`.',
+                  },
+                  spar: {
+                    name: 'href',
+                    type: 'native anchor attribute (via spread)',
+                    default: 'undefined',
+                    note: 'Forwarded through `...htmlProps` when `as="a"`.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'target',
+                  concept: 'Link target',
+                  takeoffUi: {
+                    name: 'target',
+                    type: 'string',
+                    default: 'null',
+                  },
+                  spar: {
+                    name: 'target',
+                    type: 'native anchor attribute (via spread)',
+                    default: 'undefined',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'rel',
+                  concept: 'Link relationship',
+                  takeoffUi: null,
+                  spar: {
+                    name: 'rel',
+                    type: 'native anchor attribute (via spread)',
+                    default: 'undefined',
+                    note: 'Inherited from `PolymorphicProps` when `as="a"`.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'loading',
+                  concept: 'Loading state',
+                  takeoffUi: {
+                    name: 'loading',
+                    type: 'boolean',
+                    default: 'null',
+                    note: 'Injects an internal `tk-spinner`, overrides the left icon slot, and adds a `loading` class.',
+                  },
+                  spar: {
+                    name: 'isLoading',
+                    type: 'boolean',
+                    default: 'false',
+                    note: 'Sets `aria-busy="true"`, `aria-live="polite"`, and `data-loading=""`; does not render a spinner.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'disabled',
+                  concept: 'Disabled state',
+                  takeoffUi: {
+                    name: 'disabled',
+                    type: 'boolean',
+                    default: 'null',
+                    note: 'Applied to the underlying `<button>` and short-circuits the click handler.',
+                  },
+                  spar: {
+                    name: 'disabled',
+                    type: 'boolean',
+                    default: 'false',
+                    note: 'Native `disabled` on `<button>`; non-native tags get `aria-disabled` and `tabIndex={-1}` instead.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'autoFocus',
+                  concept: 'Auto-focus on mount',
+                  takeoffUi: null,
+                  spar: {
+                    name: 'autoFocus',
+                    type: 'boolean',
+                    default: 'false',
+                    note: 'Handled via `useAutoFocus` hook; also exposes `data-autofocus=""`.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'fullWidth',
+                  concept: 'Stretch to container width',
+                  takeoffUi: {
+                    name: 'fullWidth',
+                    type: 'boolean',
+                    default: 'null',
+                    note: 'Adds `full-width` class to the Stencil host element.',
+                  },
+                  spar: null,
+                  reactSpar: null,
+                },
+                {
+                  id: 'underline',
+                  concept: 'Underline label',
+                  takeoffUi: {
+                    name: 'underline',
+                    type: 'boolean',
+                    default: 'null',
+                  },
+                  spar: null,
+                  reactSpar: null,
+                },
+                {
+                  id: 'iconOnly',
+                  concept: 'Explicit icon-only intent',
+                  takeoffUi: {
+                    name: '(implicit)',
+                    type: 'derived from empty `label` + `icon`',
+                    default: '—',
+                    note: 'takeoff-ui switches to `icon-only` class automatically when label is empty.',
+                  },
+                  spar: null,
+                  reactSpar: null,
+                },
+                {
+                  id: 'rounded',
+                  concept: 'Circular icon-only shape',
+                  takeoffUi: {
+                    name: 'rounded',
+                    type: 'boolean',
+                    default: 'null',
+                    note: 'Only takes effect when the runtime content is icon-only (no label).',
+                  },
+                  spar: null,
+                  reactSpar: null,
+                },
+                {
+                  id: 'activation',
+                  concept: 'Activation callback / event',
+                  takeoffUi: {
+                    name: 'tk-click',
+                    type: 'CustomEvent<MouseEvent>',
+                    default: '—',
+                    note: 'Also triggers `form.requestSubmit()` / `form.reset()` based on `mode`.',
+                  },
+                  spar: {
+                    name: 'onClick',
+                    type: '(event: MouseEvent<HTMLElement>) => void',
+                    default: 'undefined',
+                    note: 'Fires for both mouse clicks and keyboard activations on non-native tags.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'keyboardActivation',
+                  concept: 'Keyboard handler',
+                  takeoffUi: null,
+                  spar: {
+                    name: 'onKeyDown',
+                    type: '(event: KeyboardEvent<HTMLElement>) => void',
+                    default: 'undefined',
+                    note: 'For non-native tags, Enter/Space trigger activation via `preventDefault` + shared handler.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'pressedState',
+                  concept: 'Toggle pressed state',
+                  takeoffUi: null,
+                  spar: {
+                    name: 'isPressed / onPressedChange',
+                    type: 'boolean / (pressed: boolean) => void',
+                    default: 'undefined',
+                    note: 'Setting `isPressed` promotes the button to toggle mode; controls `aria-pressed` + `data-pressed`.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'ref',
+                  concept: 'DOM ref forwarding',
+                  takeoffUi: {
+                    name: '(Stencil ref)',
+                    type: 'HTMLTkButtonElement',
+                    default: '—',
+                  },
+                  spar: {
+                    name: 'ref',
+                    type: 'React.Ref<HTMLElement>',
+                    default: 'undefined',
+                    note: 'Treated as a regular prop (React 19 style) and merged with an internal ref via `useMergedRef`.',
+                  },
+                  reactSpar: null,
+                },
+              ],
+            },
+            {
+              id: 'content',
+              label: 'Content Mapping',
+              description: 'Source-side content and visual ownership. Use the empty react-spar cells to decide whether these become root props, parts, or are dropped.',
+              props: [
+                {
+                  id: 'labelText',
+                  concept: 'Label text content',
+                  takeoffUi: {
+                    name: 'label',
+                    type: 'string',
+                    default: "''",
+                    note: 'Rendered inside a `<span>` between the leading and trailing icons.',
+                  },
+                  spar: {
+                    name: 'children',
+                    type: 'ReactNode',
+                    default: 'undefined',
+                    note: 'Rendered as direct children of the rendered element; no dedicated label slot.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'iconPayload',
+                  concept: 'Icon payload',
+                  takeoffUi: {
+                    name: 'icon',
+                    type: 'string | IIconOptions | IMultiIconOptions',
+                    default: 'null',
+                    note: '`IMultiIconOptions` lets takeoff-ui express a left and a right icon through one root prop.',
+                  },
+                  spar: {
+                    name: 'children',
+                    type: 'ReactNode',
+                    default: 'undefined',
+                    note: 'Icons must be composed by the consumer; no dedicated icon slot.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'iconSide',
+                  concept: 'Left vs right icon placement',
+                  takeoffUi: {
+                    name: 'iconPosition',
+                    type: "'left' | 'right'",
+                    default: "'left'",
+                    note: 'Ignored when `icon` is an `IMultiIconOptions` shape (both sides are explicit).',
+                  },
+                  spar: null,
+                  reactSpar: null,
+                },
+                {
+                  id: 'loadingVisual',
+                  concept: 'Visible loading indicator content',
+                  takeoffUi: {
+                    name: 'loading',
+                    type: 'boolean',
+                    default: 'null',
+                    note: 'tk-button renders an internal `<tk-spinner>` sized from `size`; not independently customizable.',
+                  },
+                  spar: {
+                    name: 'isLoading',
+                    type: 'boolean',
+                    default: 'false',
+                    note: 'Aria/data-state only; consumer supplies their own visible spinner via children.',
+                  },
+                  reactSpar: null,
+                },
+              ],
+            },
+            {
+              id: 'styling',
+              label: 'Styling Hooks',
+              description: 'Class names, data-attributes, and style pass-through used to select and customize the rendered DOM.',
+              props: [
+                {
+                  id: 'classNameProp',
+                  concept: 'Consumer className pass-through',
+                  takeoffUi: null,
+                  spar: {
+                    name: 'className',
+                    type: 'string',
+                    default: 'undefined',
+                    note: 'Applied directly to the rendered element (no merging with canonical classes).',
+                  },
+                  reactSpar: null,
+                  note: 'takeoff-ui owns its class string internally on the Shadow DOM host.',
+                },
+                {
+                  id: 'styleProp',
+                  concept: 'Inline style pass-through',
+                  takeoffUi: null,
+                  spar: {
+                    name: 'style',
+                    type: 'CSSProperties',
+                    default: 'undefined',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'canonicalClass',
+                  concept: 'Canonical root class token',
+                  takeoffUi: {
+                    name: '.tk-button',
+                    type: 'class string built from `type`, `variant`, `size`, plus state modifiers',
+                    default: '—',
+                    note: 'Modifier classes include `loading`, `rounded`, `link`, `underline`, `icon-only`.',
+                  },
+                  spar: null,
+                  reactSpar: null,
+                },
+                {
+                  id: 'stateAttributes',
+                  concept: 'State data attributes',
+                  takeoffUi: null,
+                  spar: {
+                    name: 'data-disabled / data-loading / data-pressed / data-autofocus',
+                    type: 'empty-string attributes',
+                    default: 'absent',
+                    note: 'Emitted by the memoized `dataAttributes` object; present only when the corresponding state is active.',
+                  },
+                  reactSpar: null,
+                },
+                {
+                  id: 'tabIndexBehavior',
+                  concept: 'Tab index handling',
+                  takeoffUi: null,
+                  spar: {
+                    name: 'tabIndex',
+                    type: 'number',
+                    default: '`disabled ? -1 : 0` unless consumer overrides',
+                    note: 'Spar defaults tabIndex only when the consumer did not pass one via `...htmlProps`.',
+                  },
+                  reactSpar: null,
+                },
+              ],
+            },
+          ],
+        },
+      };
+    </script>
+    <script src="./api-alignment.runtime.js"></script>
+  </body>
+</html>
