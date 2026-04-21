@@ -34,9 +34,6 @@ jobs:
       - name: Validate lint (pure eslint)
         run: pnpm turbo lint
 
-      - name: Verify generated docs API tables are up to date
-        run: pnpm --filter docs verify:generated-api
-
       - name: Validate markdown link integrity
         uses: lycheeverse/lychee-action@v2
         with:

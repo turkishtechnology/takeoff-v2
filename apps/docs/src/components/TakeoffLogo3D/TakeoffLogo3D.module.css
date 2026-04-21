@@ -1,0 +1,34 @@
+.root {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fallback svg {
+  width: 55%;
+  height: auto;
+  stroke: var(--runway-cardinal-bright, #e6001f);
+  fill: none;
+  stroke-width: 1.5;
+  opacity: 0.95;
+  filter: drop-shadow(0 0 24px var(--runway-cardinal-glow, rgba(230, 0, 31, 0.45)));
+}

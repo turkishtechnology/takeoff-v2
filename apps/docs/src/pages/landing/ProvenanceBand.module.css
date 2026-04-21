@@ -1,0 +1,82 @@
+.section {
+  padding: 6rem 1.5rem;
+  background: var(--runway-black);
+  color: var(--runway-ink);
+  border-top: 1px solid var(--runway-surface-dark-border);
+  text-align: center;
+}
+
+.inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+.headline {
+  font-family: 'Geologica', sans-serif;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  line-height: 1.35;
+  font-weight: 600;
+  color: var(--runway-ink, #f5f5f7);
+  margin: 0;
+  max-width: 34ch;
+}
+
+.headline em {
+  font-style: normal;
+  color: var(--runway-cardinal-bright, #e6001f);
+}
+
+.sub {
+  font-family: var(--runway-type-mono-family);
+  font-size: 0.8125rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--runway-ink-faint, #6a6a74);
+  margin: 0;
+}
+
+.logos {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.wordmark {
+  font-family: 'Geologica', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--runway-ink-dim, #b6b6be);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.7;
+  transition: all var(--runway-duration-base, 220ms) ease;
+}
+
+.wordmark:hover {
+  opacity: 1;
+  color: var(--runway-ink, #f5f5f7);
+  text-decoration: none;
+}
+
+.wordmark::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--runway-cardinal-bright, #e6001f);
+  opacity: 0.5;
+}
+
+.wordmark:hover::before {
+  opacity: 1;
+}

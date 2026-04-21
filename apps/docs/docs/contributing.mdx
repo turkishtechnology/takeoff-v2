@@ -1,0 +1,54 @@
+---
+title: Contributing
+description: How to propose changes, port a new component, and ship a release.
+sidebar_label: Contributing
+sidebar_position: 10
+slug: /contributing
+---
+
+# Contributing
+
+`@takeoff-ui/react-spar` lives in the
+[`turkishtechnology/takeoff-spar`](https://github.com/turkishtechnology/takeoff-spar)
+monorepo. Contributions follow a short, strict path designed to keep every
+component at the same level of polish.
+
+## The readiness gate
+
+Before a new component can merge, it has to pass
+[`docs/component-port-readiness.md`](https://github.com/turkishtechnology/takeoff-spar/blob/main/docs/component-port-readiness.md):
+
+- Wrapper + types + base metadata.
+- Full public-surface unit tests.
+- Changeset landed.
+- Smoke test in `e2e/smoke-verifier.spec.ts`.
+
+## Starting a port
+
+1. Open an issue titled `port: <ComponentName>`.
+2. Fill in the API decision framework checklist — leaf or compound, prop parity
+   with Core, slot taxonomy, data-attribute emission.
+3. Get sign-off on the framework answers before writing code.
+4. Scaffold the component, tests, and docs in one PR.
+
+## Review workflow
+
+- One code owner + one docs owner review.
+- Every public change ships with a changeset via `pnpm changeset`.
+- Breaking changes (surface contract violations) require an ADR in
+  `docs/decisions/`.
+
+## Style & formatting
+
+- ESLint + Prettier run on pre-commit via Husky.
+- `pnpm lint` and `pnpm check-types` are required to pass CI.
+- No mocking a database in tests (we hit the real one — lesson learned the hard
+  way).
+
+## Local development
+
+```bash
+pnpm install
+pnpm --filter docs dev          # runs the docs site
+pnpm --filter @takeoff-ui/react-spar test  # component unit tests
+```

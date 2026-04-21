@@ -1,3 +1,17 @@
+/* ==========================================================================
+   DOCUSAURUS OVERRIDES — runway-aligned inner-docs chrome
+   --------------------------------------------------------------------------
+   Strategy: all structural rules (radius, padding, border, spacing, font,
+   heading rhythm) live mode-agnostic so light and dark surfaces share the
+   same skeleton. Only colors, shadows, and backgrounds flex per theme.
+   Colors flow from two layers:
+     · `--takeoff-*` / Takeoff tokens (aliased into `--ifm-*`) for light
+     · `--runway-*` tokens (defined in runway.css) for dark
+   This keeps /docs pages in the same visual family as the landing without
+   swizzling Docusaurus components.
+   ========================================================================== */
+
+/* --- Infima variable aliasing (light mode is the default :root) ---------- */
 :root {
   --ifm-color-primary: var(--primary-500);
   --ifm-color-primary-dark: var(--primary-400);
@@ -7,7 +21,7 @@
   --ifm-color-primary-lighter: var(--primary-200);
   --ifm-color-primary-lightest: var(--primary-100);
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
   --ifm-container-width-xl: 1320px;
   --ifm-container-width: 1320px;
   --ifm-navbar-padding-vertical: 12px;
@@ -16,41 +30,63 @@
   --ifm-z-index-fixed: 1000;
   --ifm-z-index-overlay: 1000;
 
-  /* Typography Overrides */
+  /* Typography */
   --ifm-font-family-base: 'Geologica', sans-serif;
   --ifm-heading-font-family: 'Geologica', sans-serif;
   --ifm-heading-color: var(--text-darkest);
   --ifm-heading-font-weight: 400;
 
-  /* Headings */
+  /* Heading scale — aligns docs h1/h2/h3 with landing runway rhythm */
   --ifm-h1-font-size: var(--desktop-title-h3-size) !important;
   --ifm-h1-line-height: var(--desktop-title-h3-line-height) !important;
-  --ifm-h1-font-weight: 400;
+  --ifm-h1-font-weight: 500;
   --ifm-h1-color: var(--text-darkest, #222530);
 
-  --ifm-h2-font-size: 36px;
-  --ifm-h2-line-height: 45px;
-  --ifm-h2-font-weight: 400;
+  --ifm-h2-font-size: 32px;
+  --ifm-h2-line-height: 40px;
+  --ifm-h2-font-weight: 500;
   --ifm-h2-color: var(--text-darkest, #222530);
 
-  --ifm-h3-font-size: 24px !important;
-  --ifm-h3-line-height: 32px;
-  --ifm-h3-font-weight: 400;
+  --ifm-h3-font-size: 22px !important;
+  --ifm-h3-line-height: 30px;
+  --ifm-h3-font-weight: 500;
   --ifm-h3-color: var(--text-darkest, #222530);
 
-  /* Body Text */
+  /* Body text */
   --ifm-font-size-base: 16px;
-  --ifm-line-height-base: 1.5;
+  --ifm-line-height-base: 1.6;
   --ifm-color-content: var(--text-base, #717784);
 
-  /* Docs Sidebar */
-  --doc-sidebar-width: 248px !important;
+  /* TOC (light mode — dark values overridden below) */
+  --ifm-toc-border-color: var(--border-light, #e1e4ea);
+  --ifm-toc-link-color: var(--text-base, #717784);
+  --ifm-toc-padding-horizontal: 14px;
+
+  /* Sidebar */
+  --doc-sidebar-width: 264px !important;
   --ifm-menu-color: var(--text-base) !important;
   --ifm-menu-color-active: var(--text-darkest) !important;
   --ifm-menu-color-background-active: var(--background-lightest) !important;
   --ifm-menu-color-background-hover: var(--background-lightest) !important;
   --ifm-menu-link-padding-vertical: 8px !important;
-  --ifm-menu-link-padding-horizontal: 10px !important;
+  --ifm-menu-link-padding-horizontal: 12px !important;
+
+  /* Inner-docs surface aliases — light values, overridden in dark block */
+  --docs-surface-1: var(--static-white, #ffffff);
+  --docs-surface-2: var(--background-lightest, #f9fafc);
+  --docs-surface-3: var(--neutral-100, #f2f5f8);
+  --docs-border-subtle: var(--border-light, #e1e4ea);
+  --docs-border-strong: var(--border-sub-base, #cdd0d5);
+  --docs-ink-strong: var(--text-darkest, #222530);
+  --docs-ink-base: var(--text-base, #717784);
+  --docs-ink-faint: var(--text-sub-base, #99a0ae);
+  --docs-cardinal: var(--primary-base, #c90019);
+  --docs-cardinal-soft: color-mix(in srgb, var(--primary-base, #c90019) 8%, transparent);
+  --docs-cardinal-border: color-mix(in srgb, var(--primary-base, #c90019) 28%, transparent);
+  --docs-shadow-card: 0 1px 2px rgba(17, 17, 22, 0.04), 0 8px 24px -12px rgba(17, 17, 22, 0.08);
+
+  /* Runway type tokens — enables landing-style eyebrow / mono throughout docs */
+  --docs-mono-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
 :root strong,
@@ -66,13 +102,860 @@
   color: var(--text-dark) !important;
 }
 
+/* --- Dark mode token overrides ------------------------------------------ */
 [data-theme='dark'] {
-  --ifm-color-primary: #db5465;
-  --ifm-color-primary-dark: var(--primary-300);
-  --ifm-color-primary-darker: var(--primary-200);
-  --ifm-color-primary-darkest: var(--primary-100);
-  --ifm-color-primary-light: var(--primary-700);
-  --ifm-color-primary-lighter: var(--primary-800);
-  --ifm-color-primary-lightest: var(--primary-900);
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #ff4a5f;
+  --ifm-color-primary-dark: #ff3050;
+  --ifm-color-primary-darker: #ff1736;
+  --ifm-color-primary-darkest: #e6001f;
+  --ifm-color-primary-light: #ff6477;
+  --ifm-color-primary-lighter: #ff7e8e;
+  --ifm-color-primary-lightest: #ff98a5;
+  --docusaurus-highlighted-code-line-bg: rgba(255, 23, 54, 0.12);
+
+  /* Core surface */
+  --ifm-background-color: #0a0a0d;
+  --ifm-background-surface-color: #111116;
+  --ifm-color-content: #b8b8c2;
+  --ifm-color-content-secondary: #7a7a86;
+
+  /* Headings */
+  --ifm-heading-color: #f6f6f8;
+  --ifm-h1-color: #f6f6f8;
+  --ifm-h2-color: #f6f6f8;
+  --ifm-h3-color: #f6f6f8;
+
+  /* Links */
+  --ifm-link-color: #ff4a5f;
+  --ifm-link-hover-color: #ff1736;
+
+  /* Code */
+  --ifm-code-background: rgba(255, 23, 54, 0.1);
+  --ifm-code-color: #ff4a5f;
+  --ifm-code-padding-horizontal: 0.4rem;
+  --ifm-code-padding-vertical: 0.15rem;
+  --ifm-pre-background: #0f0f14;
+  --ifm-pre-color: #e6e6ea;
+
+  /* Sidebar */
+  --ifm-menu-color: #b8b8c2 !important;
+  --ifm-menu-color-active: #ff1736 !important;
+  --ifm-menu-color-background-active: rgba(255, 23, 54, 0.08) !important;
+  --ifm-menu-color-background-hover: #17171d !important;
+
+  /* TOC (structural width + dark-mode colors; light color aliased via :root below) */
+  --ifm-toc-border-color: #24242e;
+  --ifm-toc-link-color: #7a7a86;
+  --ifm-toc-padding-horizontal: 14px;
+
+  /* Breadcrumbs */
+  --ifm-breadcrumb-color-active: #ff1736;
+  --ifm-breadcrumb-item-background-active: rgba(255, 23, 54, 0.08);
+
+  /* Emphasis ramp (Infima grayscale) */
+  --ifm-color-emphasis-0: #0a0a0d;
+  --ifm-color-emphasis-100: #111116;
+  --ifm-color-emphasis-200: #17171d;
+  --ifm-color-emphasis-300: #1e1e26;
+  --ifm-color-emphasis-400: #24242e;
+  --ifm-color-emphasis-500: #2d2d38;
+  --ifm-color-emphasis-600: #4a4a55;
+  --ifm-color-emphasis-700: #7a7a86;
+  --ifm-color-emphasis-800: #b8b8c2;
+  --ifm-color-emphasis-900: #f6f6f8;
+
+  --ifm-hr-border-color: #24242e;
+
+  /* Tables */
+  --ifm-table-border-color: #24242e;
+  --ifm-table-head-background: #17171d;
+  --ifm-table-stripe-background: #111116;
+
+  /* Blockquote */
+  --ifm-blockquote-color: #b8b8c2;
+  --ifm-blockquote-border-color: #ff1736;
+
+  /* Navbar */
+  --ifm-navbar-background-color: rgba(10, 10, 13, 0.72);
+  --ifm-navbar-link-color: #b8b8c2;
+  --ifm-navbar-link-hover-color: #f6f6f8;
+  --ifm-navbar-link-active-color: #ff1736;
+
+  /* Footer */
+  --ifm-footer-background-color: #0a0a0d;
+  --ifm-footer-color: #7a7a86;
+  --ifm-footer-link-color: #b8b8c2;
+  --ifm-footer-title-color: #f6f6f8;
+  --ifm-footer-link-hover-color: #ff4a5f;
+
+  /* Inner-docs surface aliases — dark values */
+  --docs-surface-1: #111116;
+  --docs-surface-2: #17171d;
+  --docs-surface-3: #1e1e26;
+  --docs-border-subtle: #24242e;
+  --docs-border-strong: #2d2d38;
+  --docs-ink-strong: #f6f6f8;
+  --docs-ink-base: #b8b8c2;
+  --docs-ink-faint: #7a7a86;
+  --docs-cardinal: #ff1736;
+  --docs-cardinal-soft: rgba(255, 23, 54, 0.08);
+  --docs-cardinal-border: rgba(255, 23, 54, 0.28);
+  --docs-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 20px 40px -20px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme='dark'] strong,
+[data-theme='dark'] b {
+  color: #f6f6f8 !important;
+}
+
+[data-theme='dark'] code {
+  color: #ff4a5f !important;
+}
+
+[data-theme='dark'] ::marker {
+  color: #b8b8c2 !important;
+}
+
+/* ==========================================================================
+   NAVBAR — runway-aligned on both light and dark (structure is common;
+   only colors and backgrounds flex per theme).
+   ========================================================================== */
+
+.navbar {
+  height: 66px;
+  padding: 0 40px;
+  box-shadow: none;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease;
+}
+
+.navbar__inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.navbar__items {
+  gap: 24px;
+  flex-wrap: nowrap;
+}
+
+.navbar__items--right {
+  gap: 12px;
+}
+
+.navbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Geologica', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.2px;
+  margin-right: 4px;
+}
+
+.navbar__title {
+  font-family: 'Geologica', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.2px;
+}
+
+.navbar__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  width: 22px;
+  margin-right: 0;
+  flex: 0 0 auto;
+}
+
+.navbar__logo img {
+  height: 22px !important;
+  width: 22px !important;
+  display: block;
+  object-fit: contain;
+}
+
+.navbar__link {
+  font-family: 'Geologica', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 6px 2px;
+  margin: 0;
+  transition: color 150ms ease;
+  position: relative;
+}
+
+.navbar__link--active {
+  font-weight: 500;
+}
+
+.navbar__link--active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* Sit flush with the navbar's bottom border.
+     Link (~34px) is centered in a 66px navbar, so link-bottom is ~16px above the navbar edge. */
+  bottom: -16px;
+  height: 2px;
+  background: currentColor;
+}
+
+[data-theme='light'] .navbar {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: saturate(160%) blur(12px);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  border-bottom: 1px solid var(--border-light, #e1e4ea);
+}
+
+[data-theme='light'] .navbar__title,
+[data-theme='light'] .navbar__brand {
+  color: var(--text-darkest, #222530);
+}
+
+[data-theme='light'] .navbar__link {
+  color: var(--text-base, #717784);
+}
+
+[data-theme='light'] .navbar__link:hover {
+  color: var(--text-darkest, #222530);
+  background: transparent;
+}
+
+[data-theme='light'] .navbar__link--active {
+  color: var(--primary-base, #c90019);
+}
+
+[data-theme='dark'] .navbar {
+  background: rgba(10, 10, 13, 0.72);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid #24242e;
+}
+
+[data-theme='dark'] .navbar__title,
+[data-theme='dark'] .navbar__brand {
+  color: #f6f6f8;
+}
+
+[data-theme='dark'] .navbar__link {
+  color: #b8b8c2;
+}
+
+[data-theme='dark'] .navbar__link:hover {
+  color: #f6f6f8;
+  background: transparent;
+}
+
+[data-theme='dark'] .navbar__link--active {
+  color: #ff1736;
+}
+
+/* --- Custom navbar items (version pill, GitHub, CTA) -------------------- */
+
+.navbar__version-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--docs-mono-family);
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  line-height: 1;
+  height: 20px;
+  background: var(--docs-surface-2);
+  color: var(--docs-ink-base);
+  border: 1px solid var(--docs-border-subtle);
+}
+
+.navbar__github-link {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px !important;
+  border-radius: 8px;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  transition: all 150ms ease;
+}
+
+.navbar__github-link::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background-color: currentColor;
+  flex-shrink: 0;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.68 1.25 3.34.95.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 2.89-.39c.98 0 1.96.13 2.89.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.26 5.68.41.35.77 1.04.77 2.1 0 1.51-.01 2.73-.01 3.1 0 .31.21.68.8.56A11.52 11.52 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.68 1.25 3.34.95.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 2.89-.39c.98 0 1.96.13 2.89.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.26 5.68.41.35.77 1.04.77 2.1 0 1.51-.01 2.73-.01 3.1 0 .31.21.68.8.56A11.52 11.52 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z'/></svg>");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  display: inline-block;
+}
+
+[data-theme='light'] .navbar__github-link {
+  color: var(--text-base, #717784);
+  border: 1px solid var(--border-light, #e1e4ea);
+}
+
+[data-theme='light'] .navbar__github-link:hover {
+  background: var(--background-lightest, #f9fafc);
+  color: var(--text-darkest, #222530);
+  border-color: var(--border-base, #cdd0d5);
+}
+
+[data-theme='dark'] .navbar__github-link {
+  color: #b8b8c2;
+  border: 1px solid #2d2d38;
+}
+
+[data-theme='dark'] .navbar__github-link:hover {
+  background: #17171d;
+  color: #f6f6f8;
+  border-color: #7a7a86;
+}
+
+/* Primary CTA
+ * TODO(react-spar): once Docusaurus supports React nodes inside navbar items,
+ * replace this CSS-styled <a> with a real <Button variant="primary" type="filled">
+ * from `@takeoff-ui/react-spar`. Current limitation: `type: 'html'` accepts a
+ * raw HTML string only, so we mirror the Button's visual contract in CSS here. */
+.navbar__cta-primary {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px !important;
+  border-radius: 8px;
+  font-family: 'Geologica', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: none !important;
+  transition:
+    background 150ms ease,
+    box-shadow 150ms ease;
+  border: 1px solid transparent;
+  line-height: 1.4;
+}
+
+[data-theme='light'] .navbar__cta-primary {
+  background: var(--primary-base, #c90019);
+  color: #fff !important;
+  box-shadow: 0 4px 12px -4px rgba(201, 0, 25, 0.35);
+}
+
+[data-theme='light'] .navbar__cta-primary:hover {
+  background: #a60014;
+  color: #fff !important;
+  box-shadow: 0 6px 16px -4px rgba(201, 0, 25, 0.45);
+}
+
+[data-theme='dark'] .navbar__cta-primary {
+  background: #ff1736;
+  color: #fff !important;
+  box-shadow: 0 4px 16px -6px rgba(255, 23, 54, 0.35);
+}
+
+[data-theme='dark'] .navbar__cta-primary:hover {
+  background: #ff4a5f;
+  color: #fff !important;
+  box-shadow: 0 6px 20px -6px rgba(255, 23, 54, 0.45);
+}
+
+/* Color-mode toggle hover */
+[data-theme='dark'] .clean-btn:hover {
+  background: #17171d;
+}
+
+/* Dark-mode search button */
+[data-theme='dark'] .DocSearch-Button {
+  background: #17171d !important;
+  border: 1px solid #2d2d38 !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  padding: 0 12px !important;
+  color: #b8b8c2 !important;
+}
+
+[data-theme='dark'] .DocSearch-Button:hover {
+  border-color: #7a7a86 !important;
+  background: #1e1e26 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] .DocSearch-Button-Placeholder {
+  color: #7a7a86 !important;
+}
+
+/* ==========================================================================
+   DOCS LAYOUT — wraps main/sidebar/TOC. Applies to both light and dark.
+   ========================================================================== */
+
+.main-wrapper {
+  background: var(--ifm-background-color, var(--static-white, #ffffff));
+}
+
+[data-theme='dark'] body,
+[data-theme='dark'] .main-wrapper {
+  background: #0a0a0d;
+}
+
+[data-theme='dark'] body {
+  color: #b8b8c2;
+}
+
+/* --- Sidebar ------------------------------------------------------------- */
+
+.theme-doc-sidebar-container {
+  background: transparent;
+  border-right: 1px solid var(--docs-border-subtle);
+  transition: border-color 150ms ease;
+}
+
+[data-theme='dark'] .theme-doc-sidebar-container {
+  background: #0a0a0d;
+  border-right-color: #24242e;
+}
+
+.theme-doc-sidebar-menu .menu__link {
+  margin-inline: 14px;
+  border-radius: 8px;
+  padding: 7px 12px;
+  position: relative;
+  font-size: 14px;
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.theme-doc-sidebar-menu .menu__link--active:not(.menu__link--sublist) {
+  border-left: none !important;
+  font-weight: 500;
+}
+
+.theme-doc-sidebar-menu .menu__link--active:not(.menu__link--sublist)::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 2px;
+  background-color: var(--docs-cardinal);
+}
+
+.theme-doc-sidebar-menu .menu__list-item-collapsible > .menu__link {
+  color: var(--docs-ink-strong);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+
+.theme-doc-sidebar-menu .menu__caret {
+  color: var(--docs-ink-faint);
+}
+
+[data-theme='light'] .theme-doc-sidebar-menu .menu__link:hover {
+  background: var(--background-lightest);
+  color: var(--docs-ink-strong);
+}
+
+[data-theme='light'] .theme-doc-sidebar-menu .menu__link--active {
+  background: var(--docs-cardinal-soft);
+  color: var(--docs-cardinal);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-menu .menu__link:hover {
+  background: #17171d;
+  color: #f6f6f8;
+}
+
+[data-theme='dark'] .theme-doc-sidebar-menu .menu__link--active {
+  background: rgba(255, 23, 54, 0.08);
+  color: #ff1736;
+}
+
+/* --- TOC (right rail) ----------------------------------------------------
+   Infima already renders a single `.table-of-contents__left-border` on the
+   root <ul>, so we do NOT add any border on `.theme-doc-toc-desktop` — that
+   would produce a double vertical line. Instead, we tokenize the Infima
+   color and refine link rhythm.
+   ------------------------------------------------------------------------- */
+
+.table-of-contents {
+  font-size: 0.82rem;
+  letter-spacing: 0.005em;
+}
+
+.table-of-contents__link {
+  color: var(--docs-ink-faint);
+  transition: color 150ms ease;
+  padding: 4px 0;
+}
+
+.table-of-contents__link:hover,
+.table-of-contents__link:hover code {
+  color: var(--docs-ink-strong);
+}
+
+.table-of-contents__link--active,
+.table-of-contents__link--active code {
+  color: var(--docs-cardinal) !important;
+  font-weight: 500;
+}
+
+/* --- Breadcrumbs --------------------------------------------------------- */
+
+.breadcrumbs__link {
+  color: var(--docs-ink-faint);
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 4px 8px;
+  transition:
+    color 150ms ease,
+    background 150ms ease;
+}
+
+.breadcrumbs__link:hover {
+  color: var(--docs-ink-strong);
+  background: var(--docs-surface-2);
+}
+
+.breadcrumbs__item--active .breadcrumbs__link {
+  color: var(--docs-cardinal);
+  background: var(--docs-cardinal-soft);
+}
+
+/* --- Markdown content rhythm -------------------------------------------- */
+
+.theme-doc-markdown {
+  color: var(--docs-ink-base);
+}
+
+.theme-doc-markdown h1,
+.theme-doc-markdown h2,
+.theme-doc-markdown h3,
+.theme-doc-markdown h4,
+.theme-doc-markdown h5,
+.theme-doc-markdown h6 {
+  color: var(--docs-ink-strong);
+  letter-spacing: -0.01em;
+}
+
+.markdown h1:first-child {
+  --ifm-h1-font-size: var(--desktop-title-h3-size, 36px) !important;
+  --ifm-heading-line-height: var(--desktop-title-h3-line-height, 45px) !important;
+  margin-bottom: 12px !important;
+  letter-spacing: -0.02em;
+}
+
+.markdown > h2,
+.theme-doc-markdown > h2 {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed var(--docs-border-subtle);
+  letter-spacing: -0.015em;
+}
+
+.markdown > h2:first-of-type,
+.theme-doc-markdown > h2:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 2rem;
+}
+
+.markdown > h3 {
+  margin-top: 2rem;
+  letter-spacing: -0.01em;
+}
+
+.markdown p,
+.theme-doc-markdown p {
+  line-height: 1.65;
+}
+
+/* Inline code */
+.theme-doc-markdown code:not(pre code) {
+  background: var(--docs-cardinal-soft);
+  color: var(--docs-cardinal) !important;
+  border: 1px solid var(--docs-cardinal-border);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-family: var(--docs-mono-family);
+}
+
+/* Links (structural — color flexes per mode via --ifm-link-color) */
+.theme-doc-markdown a:not(.card):not([class*='button']) {
+  text-decoration: none;
+  border-bottom: 1px dashed color-mix(in srgb, var(--ifm-link-color, var(--primary-base)) 45%, transparent);
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.theme-doc-markdown a:not(.card):not([class*='button']):hover {
+  border-bottom-color: currentColor;
+}
+
+/* --- Code blocks --------------------------------------------------------- */
+
+pre,
+.prism-code,
+.theme-code-block {
+  border-radius: 10px;
+  border: 1px solid var(--docs-border-subtle);
+  box-shadow: var(--docs-shadow-card);
+}
+
+.theme-code-block .prism-code {
+  background: transparent !important;
+  border: none;
+  box-shadow: none;
+}
+
+[data-theme='dark'] pre,
+[data-theme='dark'] .prism-code,
+[data-theme='dark'] .theme-code-block {
+  background: #0f0f14 !important;
+  border-color: #24242e;
+}
+
+.theme-code-block-highlighted-line {
+  background-color: var(--docs-cardinal-soft) !important;
+  border-left: 3px solid var(--docs-cardinal);
+}
+
+/* --- Tables -------------------------------------------------------------- */
+
+.theme-doc-markdown table {
+  background: var(--docs-surface-1);
+  border: 1px solid var(--docs-border-subtle);
+  border-radius: 10px;
+  overflow: hidden;
+  display: table;
+  width: 100%;
+}
+
+.theme-doc-markdown th {
+  background: var(--docs-surface-2);
+  color: var(--docs-ink-strong);
+  font-family: var(--docs-mono-family);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-bottom: 1px solid var(--docs-border-subtle);
+}
+
+.theme-doc-markdown td {
+  border-color: var(--docs-border-subtle);
+}
+
+[data-theme='dark'] .theme-doc-markdown tr:nth-child(even) {
+  background: rgba(23, 23, 29, 0.4);
+}
+
+/* --- Blockquotes --------------------------------------------------------- */
+
+.theme-doc-markdown blockquote {
+  border-left: 3px solid var(--docs-cardinal);
+  background: var(--docs-cardinal-soft);
+  color: var(--docs-ink-base);
+  padding: 12px 20px;
+  border-radius: 0 8px 8px 0;
+}
+
+/* --- Horizontal rule ---------------------------------------------------- */
+
+.theme-doc-markdown hr {
+  border: none;
+  border-top: 1px dashed var(--docs-border-subtle);
+}
+
+/* --- Admonitions -------------------------------------------------------- */
+
+.theme-admonition {
+  background: var(--docs-surface-1);
+  border: 1px solid var(--docs-border-subtle);
+  border-left: 3px solid var(--docs-cardinal);
+  border-radius: 8px;
+  color: var(--docs-ink-base);
+}
+
+.theme-admonition-note {
+  border-left-color: var(--states-info-base, #7dd3fc);
+}
+
+.theme-admonition-tip {
+  border-left-color: var(--states-success-base, #4ade80);
+}
+
+.theme-admonition-warning {
+  border-left-color: var(--states-warning-base, #ffb84d);
+}
+
+.theme-admonition-danger {
+  border-left-color: var(--docs-cardinal);
+}
+
+/* --- Pagination nav ----------------------------------------------------- */
+
+.pagination-nav__link {
+  background: var(--docs-surface-1);
+  border: 1px solid var(--docs-border-subtle);
+  border-radius: 10px;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.pagination-nav__link:hover {
+  border-color: var(--docs-cardinal-border);
+  background: var(--docs-surface-2);
+  box-shadow: var(--docs-shadow-card);
+}
+
+.pagination-nav__sublabel {
+  color: var(--docs-ink-faint);
+  font-family: var(--docs-mono-family);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pagination-nav__label {
+  color: var(--docs-ink-strong);
+  font-weight: 500;
+}
+
+/* --- Edit-this-page / last-updated footer -------------------------------
+   No dashed separator — the space below the main content stays clean;
+   pagination-nav cards carry the visual weight on their own.
+   ------------------------------------------------------------------------- */
+
+.theme-last-updated,
+.theme-doc-footer {
+  color: var(--docs-ink-faint);
+}
+
+.theme-doc-footer-edit-meta-row a {
+  color: var(--docs-ink-base);
+}
+
+.theme-doc-footer-edit-meta-row a:hover {
+  color: var(--docs-cardinal);
+}
+
+/* --- Docusaurus native footer (docs inner pages) ------------------------ */
+
+footer.footer {
+  background: var(--docs-surface-1);
+  border-top: 1px solid var(--docs-border-subtle);
+  color: var(--docs-ink-faint);
+}
+
+footer.footer .footer__title {
+  color: var(--docs-ink-strong);
+  font-family: 'Geologica', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+footer.footer .footer__link-item {
+  color: var(--docs-ink-base);
+  transition: color 150ms ease;
+}
+
+footer.footer .footer__link-item:hover {
+  color: var(--docs-cardinal);
+}
+
+footer.footer .footer__copyright {
+  color: var(--docs-ink-faint);
+  font-family: var(--docs-mono-family);
+  font-size: 12px;
+}
+
+/* --- Mobile navbar sidebar ---------------------------------------------- */
+
+[data-theme='dark'] .navbar-sidebar {
+  background: #0a0a0d;
+}
+
+[data-theme='dark'] .navbar-sidebar__brand {
+  background: #0a0a0d;
+  border-bottom: 1px solid #24242e;
+}
+
+[data-theme='dark'] .navbar-sidebar__back {
+  background: #17171d;
+  color: #b8b8c2;
+}
+
+/* --- Dark mode selection + scrollbar ------------------------------------ */
+
+[data-theme='dark'] ::selection {
+  background: rgba(255, 23, 54, 0.35);
+  color: #f6f6f8;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-track {
+  background: #0a0a0d;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: #24242e;
+  border-radius: 5px;
+  border: 2px solid #0a0a0d;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: #2d2d38;
+}
+
+/* ==========================================================================
+   SHARED UTILITIES — available to MDX demos and inline page chrome.
+   ========================================================================== */
+
+/* `.demo-section-label`: the landing eyebrow pattern, reusable inside demos.
+   Renders a JetBrains Mono uppercase label with a cardinal leading stripe.
+   Use via <p className="demo-section-label">Type</p>. */
+.demo-section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  font-family: var(--docs-mono-family);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--docs-cardinal);
+  line-height: 1;
+}
+
+.demo-section-label::before {
+  content: '';
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  flex: 0 0 auto;
 }

@@ -82,6 +82,9 @@ importers:
       react-live:
         specifier: ^4.1.8
         version: 4.1.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      three:
+        specifier: ^0.170.0
+        version: 0.170.0
     devDependencies:
       "@docusaurus/module-type-aliases":
         specifier: ^3.7.0
@@ -98,6 +101,9 @@ importers:
       "@types/react-dom":
         specifier: ^19.0.0
         version: 19.2.3(@types/react@19.2.14)
+      "@types/three":
+        specifier: ^0.170.0
+        version: 0.170.0
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
@@ -2540,6 +2546,9 @@ packages:
       react: ">=19.0.0"
       react-dom: ">=19.0.0"
 
+  "@tweenjs/tween.js@23.1.3":
+    resolution: { integrity: sha512-vJmvvwFxYuGnF2axRtPYocag6Clbb5YS7kLL+SO/TeVFzHqDIWrNKYtcsPMibjDx9O+bu+psAy9NKfWklassUA== }
+
   "@types/aria-query@5.0.4":
     resolution: { integrity: sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw== }
 
@@ -2698,11 +2707,20 @@ packages:
   "@types/sockjs@0.3.36":
     resolution: { integrity: sha512-MK9V6NzAS1+Ud7JV9lJLFqW85VbC9dq3LmwZCuBe4wBDgKC0Kj/jd8Xl+nSviU+Qc3+m7umHHyHg//2KSa0a0Q== }
 
+  "@types/stats.js@0.17.4":
+    resolution: { integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA== }
+
+  "@types/three@0.170.0":
+    resolution: { integrity: sha512-CUm2uckq+zkCY7ZbFpviRttY+6f9fvwm6YqSqPfA5K22s9w7R4VnA3rzJse8kHVvuzLcTx+CjNCs2NYe0QFAyg== }
+
   "@types/unist@2.0.11":
     resolution: { integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA== }
 
   "@types/unist@3.0.3":
     resolution: { integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q== }
+
+  "@types/webxr@0.5.24":
+    resolution: { integrity: sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg== }
 
   "@types/ws@8.18.1":
     resolution: { integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg== }
@@ -2854,6 +2872,9 @@ packages:
 
   "@webassemblyjs/wast-printer@1.14.1":
     resolution: { integrity: sha512-kPSSXE6De1XOR820C90RIo2ogvZG+c3KiHzqUoO/F34Y2shGzesfqv7o57xrxovZJH/MetF5UjroJ/R/3isoiw== }
+
+  "@webgpu/types@0.1.69":
+    resolution: { integrity: sha512-RPmm6kgRbI8e98zSD3RVACvnuktIja5+yLgDAkTmxLr90BEwdTXRQWNLF3ETTTyH/8mKhznZuN5AveXYFEsMGQ== }
 
   "@xtuc/ieee754@1.2.0":
     resolution: { integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA== }
@@ -4056,6 +4077,9 @@ packages:
     resolution: { integrity: sha512-u5/sxGfiMfZNtJ3OvQpXcvotFpYkL0n9u9mM2vkui2nGo8b4wvDkJ8gAkYqbA8QpGyFCv3RK0Z+Iv+9veCS9bQ== }
     engines: { node: ">=0.4.0" }
 
+  fflate@0.8.2:
+    resolution: { integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A== }
+
   figures@3.2.0:
     resolution: { integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg== }
     engines: { node: ">=8" }
@@ -4946,6 +4970,9 @@ packages:
   merge2@1.4.1:
     resolution: { integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg== }
     engines: { node: ">= 8" }
+
+  meshoptimizer@0.18.1:
+    resolution: { integrity: sha512-ZhoIoL7TNV4s5B6+rx5mC//fw8/POGyNxS/DZyCJeiZ12ScLfVwRE/GfsxwiTkMYYD5DmK2/JXnEVXqL4rF+Sw== }
 
   methods@1.1.2:
     resolution: { integrity: sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w== }
@@ -6597,6 +6624,9 @@ packages:
     engines: { node: ">=10.18" }
     peerDependencies:
       tslib: ^2
+
+  three@0.170.0:
+    resolution: { integrity: sha512-FQK+LEpYc0fBD+J8g6oSEyyNzjp+Q7Ks1C568WWaoMRLW+TkNNWmenWeGgJjV105Gd+p/2ql1ZcjYvNiPZBhuQ== }
 
   thunky@1.1.0:
     resolution: { integrity: sha512-eHY7nBftgThBqOyHGVN+l8gF0BucP09fMo0oO/Lb0w1OF80dJv+lDVpXG60WMQvkcxAkNybKsrEIE3ZtKGmPrA== }
@@ -10334,6 +10364,8 @@ snapshots:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
+  "@tweenjs/tween.js@23.1.3": {}
+
   "@types/aria-query@5.0.4": {}
 
   "@types/babel__core@7.20.5":
@@ -10526,9 +10558,22 @@ snapshots:
     dependencies:
       "@types/node": 25.3.0
 
+  "@types/stats.js@0.17.4": {}
+
+  "@types/three@0.170.0":
+    dependencies:
+      "@tweenjs/tween.js": 23.1.3
+      "@types/stats.js": 0.17.4
+      "@types/webxr": 0.5.24
+      "@webgpu/types": 0.1.69
+      fflate: 0.8.2
+      meshoptimizer: 0.18.1
+
   "@types/unist@2.0.11": {}
 
   "@types/unist@3.0.3": {}
+
+  "@types/webxr@0.5.24": {}
 
   "@types/ws@8.18.1":
     dependencies:
@@ -10761,6 +10806,8 @@ snapshots:
     dependencies:
       "@webassemblyjs/ast": 1.14.1
       "@xtuc/long": 4.2.2
+
+  "@webgpu/types@0.1.69": {}
 
   "@xtuc/ieee754@1.2.0": {}
 
@@ -12054,6 +12101,8 @@ snapshots:
     dependencies:
       xml-js: 1.6.11
 
+  fflate@0.8.2: {}
+
   figures@3.2.0:
     dependencies:
       escape-string-regexp: 1.0.5
@@ -13116,6 +13165,8 @@ snapshots:
   merge-stream@2.0.0: {}
 
   merge2@1.4.1: {}
+
+  meshoptimizer@0.18.1: {}
 
   methods@1.1.2: {}
 
@@ -15074,6 +15125,8 @@ snapshots:
   thingies@2.5.0(tslib@2.8.1):
     dependencies:
       tslib: 2.8.1
+
+  three@0.170.0: {}
 
   thunky@1.1.0: {}
 

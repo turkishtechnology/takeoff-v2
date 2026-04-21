@@ -1,0 +1,118 @@
+---
+title: Migrating from @takeoff-ui/react
+description:
+  Upgrade paths and codemods from the Stencil-generated React bindings.
+sidebar_label: From @takeoff-ui/react
+sidebar_position: 1
+slug: /migration/from-takeoff-ui-react
+---
+
+# Migrating from `@takeoff-ui/react`
+
+`@takeoff-ui/react-spar` is the **native React 19 successor** to the
+Stencil-generated `@takeoff-ui/react` bindings. If your app currently imports
+from the old package, this guide walks the full migration.
+
+## The big picture
+
+| Concern          | `@takeoff-ui/react`                               | `@takeoff-ui/react-spar`                             |
+| ---------------- | ------------------------------------------------- | ---------------------------------------------------- |
+| Source           | Stencil-generated bindings                        | Hand-authored React 19 wrappers                      |
+| Under the hood   | Web components via `@stencil/react-output-target` | Native React + `@turkish-technology/spar` primitives |
+| React version    | 16 – 18                                           | **19 only**                                          |
+| Prop shape       | Often flat (`label`, `header`)                    | Compound parts (`<Dialog.Header>`)                   |
+| Customization    | `className` pass-through                          | `classNames` + `slotProps` per slot                  |
+| Render overrides | Some (`renderIcon` etc.)                          | None — use compound parts                            |
+| Styling contract | `tk-*` slot classes                               | Same `tk-*` slot classes                             |
+
+## What **doesn't** change
+
+- **Your CSS.** Token recipes that target `.tk-button-label` or
+  `[data-slot="spinner-indicator"]` keep working. The slot vocabulary is
+  identical.
+- **Your design tokens.** `@takeoff-design/tokens` is unchanged.
+- **Your mental model** of "variant/type/size/mode" props.
+
+## What **does** change
+
+### Flat content props become compound parts
+
+```tsx
+// Before — @takeoff-ui/react
+<TkDialog
+  open={open}
+  header="Online check-in"
+  footer={<TkButton>Confirm</TkButton>}
+>
+  <TkInput label="Code" />
+</TkDialog>
+
+// After — @takeoff-ui/react-spar
+<Dialog open={open} onOpenChange={setOpen}>
+  <Dialog.Mask />
+  <Dialog.Panel>
+    <Dialog.Header>
+      <Dialog.Title>Online check-in</Dialog.Title>
+    </Dialog.Header>
+    <Dialog.Body>
+      <Input label="Code" />
+    </Dialog.Body>
+    <Dialog.Footer>
+      <Button variant="primary">Confirm</Button>
+    </Dialog.Footer>
+  </Dialog.Panel>
+</Dialog>
+```
+
+### Render-overrides become slot composition
+
+```tsx
+// Before
+<TkButton renderIcon={() => <MyIcon />}>Check in</TkButton>
+
+// After — in @takeoff-ui/react-spar, Button stays wrapper-first.
+// Pass an icon as children, or compose an icon-only button:
+<Button variant="primary">
+  <MyIcon /> Check in
+</Button>
+```
+
+### Class / attribute overrides move to typed props
+
+```tsx
+// Before
+<TkButton className="my-button" data-analytics="confirm">...</TkButton>
+
+// After
+<Button
+  classNames={{ root: 'my-button' }}
+  slotProps={{ root: { 'data-analytics': 'confirm' } }}
+>
+  ...
+</Button>
+```
+
+## Step-by-step
+
+1. **Pin React to 19.** `pnpm up react@^19 react-dom@^19`.
+2. **Swap the package.** Remove `@takeoff-ui/react`, install
+   `@takeoff-ui/react-spar` and `@turkish-technology/spar`.
+3. **Update imports.** Replace `TkButton` / `TkDialog` / etc. with the
+   un-prefixed names (`Button`, `Dialog`).
+4. **Flatten → compound.** For each component, walk the prop surface; anywhere a
+   flat content prop existed (`label`, `header`, `footer`), move that content
+   into the corresponding compound part.
+5. **Replace render-overrides.** Remove `renderIcon`, `renderSpinner`, etc. Use
+   children or icon-only mode.
+6. **Move className / data-attribute escape hatches** into `classNames` and
+   `slotProps`.
+7. **Wrap in the provider.** Add `<SparReactProvider>` at the app root.
+8. **Run your test suite.** Most visual regressions fail at step 4 — a compound
+   part that didn't make the jump.
+
+## Codemods
+
+Community codemods for the flat-to-compound transform are tracked in issue
+[#TBD](https://github.com/turkishtechnology/takeoff-spar/issues). For now, the
+migration is primarily mechanical find-and-replace; the type system flags
+missing compound parts at build time.

@@ -1,0 +1,52 @@
+---
+title: Roadmap
+description: Planned component ports in priority order.
+sidebar_label: Roadmap
+sidebar_position: 9
+slug: /roadmap
+---
+
+# Roadmap
+
+We ship components one at a time, fully tested and fully documented, against the
+gate in
+[`docs/component-port-readiness.md`](https://github.com/turkishtechnology/takeoff-spar/blob/main/docs/component-port-readiness.md).
+
+## Shipped
+
+| Component | Shipped    | Status |
+| --------- | ---------- | ------ |
+| Accordion | 2026-04-13 | Stable |
+| Dialog    | (early)    | Stable |
+| Input     | 2026-04-16 | Stable |
+| Checkbox  | 2026-04-17 | Stable |
+| Button    | 2026-04-18 | Stable |
+
+## In the hangar (priority order)
+
+| #   | Component    | Body                                                                  | Spar dependency   |
+| --- | ------------ | --------------------------------------------------------------------- | ----------------- |
+| 01  | Radio        | Single-select form primitive. Shares Checkbox slot vocabulary.        | Spar · ready      |
+| 02  | Toggle       | Switch-style on/off. Shares Checkbox slots; distinct role.            | Spar · ready      |
+| 03  | Popover      | Anchor-positioned overlay. Blocker for Tooltip, DropdownMenu, Select. | Spar · in review  |
+| 04  | Tooltip      | Hover/focus descriptive surface.                                      | Depends · Popover |
+| 05  | DropdownMenu | Keyboard-complete menu with submenus.                                 | Depends · Popover |
+| 06  | Tabs         | Controlled/uncontrolled tablist, horizontal + vertical.               | Spar · ready      |
+| 07  | Select       | Listbox with filtering and keyboard navigation.                       | Depends · Popover |
+
+## What "priority order" means
+
+We ship **Popover before Tooltip/DropdownMenu/Select** because those three
+components all depend on Popover's positioning engine. We ship **Radio and
+Toggle before Popover** because they don't block anything and give form users
+immediate value.
+
+Priority can shift when the Takeoff UI Core source of truth ships new primitives
+or a consumer team signals a blocker.
+
+## How decisions happen
+
+Every new component runs through the
+[API decision framework](https://github.com/turkishtechnology/takeoff-spar/blob/main/docs/api-decision-framework.md)
+before a line of code is written. The framework answers: leaf or compound, which
+parts are real, which props align with Core, which `data-*` hooks are emitted.
