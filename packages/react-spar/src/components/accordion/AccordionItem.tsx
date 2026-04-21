@@ -11,7 +11,7 @@ import type { AccordionItemProps } from './types';
 
 export const AccordionItem = <T extends ElementType = 'div'>(props: AccordionItemProps<T>) => {
   const theme = useComponentTheme('AccordionItem');
-  const { viewType, size, mode } = useAccordionVariant('AccordionItem');
+  const { type, size } = useAccordionVariant('AccordionItem');
   const { className, children, ...rest } = { ...theme?.defaultProps, ...props } as AccordionItemProps<T>;
 
   return (
@@ -19,9 +19,8 @@ export const AccordionItem = <T extends ElementType = 'div'>(props: AccordionIte
       {...(rest as AccordionItemProps<T>)}
       className={resolveSlotClass(AccordionItemBase.classes.root, className, theme?.className)}
       data-slot="root"
-      data-view-type={viewType}
+      data-type={type}
       data-size={size}
-      data-mode={mode}
     >
       {children}
     </SparAccordionItem>

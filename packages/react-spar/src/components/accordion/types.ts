@@ -7,14 +7,12 @@ import type {
   AccordionTriggerProps as SparAccordionTriggerProps,
 } from '@turkish-technology/spar';
 
-export type ViewType = 'grouped' | 'divided';
+export type AccordionType = 'grouped' | 'divided' | 'compact';
 export type AccordionSize = 'base' | 'large';
-export type AccordionMode = 'default' | 'compact';
 
 export type AccordionProps<T extends ElementType = 'div'> = SparAccordionProps<T> & {
-  viewType?: ViewType;
+  type?: AccordionType;
   size?: AccordionSize;
-  mode?: AccordionMode;
 };
 export type AccordionItemProps<T extends ElementType = 'div'> = SparAccordionItemProps<T>;
 export type AccordionHeaderProps<T extends ElementType = 'h3'> = SparAccordionHeaderProps<T>;

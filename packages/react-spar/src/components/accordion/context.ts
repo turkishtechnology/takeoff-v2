@@ -1,11 +1,10 @@
 import { createSafeContext } from '../../utils';
 
-import type { AccordionMode, AccordionSize, ViewType } from './types';
+import type { AccordionSize, AccordionType } from './types';
 
 export interface AccordionVariantContextValue {
-  viewType: ViewType;
+  type: AccordionType;
   size: AccordionSize;
-  mode: AccordionMode;
 }
 
 export const [AccordionVariantProvider, useAccordionVariant] = createSafeContext<AccordionVariantContextValue>('AccordionVariantProvider');

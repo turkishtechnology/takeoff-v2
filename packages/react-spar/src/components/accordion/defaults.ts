@@ -1,5 +1,4 @@
-import type { AccordionMode, AccordionSize, ViewType } from './types';
+import type { AccordionSize, AccordionType } from './types';
 
-export const DEFAULT_VIEW_TYPE: ViewType = 'grouped';
+export const DEFAULT_TYPE: AccordionType = 'grouped';
 export const DEFAULT_SIZE: AccordionSize = 'base';
-export const DEFAULT_MODE: AccordionMode = 'default';

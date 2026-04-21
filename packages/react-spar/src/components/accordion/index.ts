@@ -33,4 +33,4 @@ export {
   AccordionContentBase,
 };
 
-export type { AccordionContentProps, AccordionHeaderProps, AccordionItemProps, AccordionMode, AccordionProps, AccordionSize, AccordionTriggerProps, ViewType } from './types';
+export type { AccordionContentProps, AccordionHeaderProps, AccordionItemProps, AccordionProps, AccordionSize, AccordionTriggerProps, AccordionType } from './types';
