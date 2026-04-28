@@ -6,14 +6,15 @@ Repo-wide decisions that shape `@takeoff-ui/react-spar`. ADRs override
 
 ## Index
 
-| ID       | Title                                                                         | Status   | Supersedes |
-| -------- | ----------------------------------------------------------------------------- | -------- | ---------- |
-| ADR-0001 | [Package dependency strategy](./0001-package-dependency-strategy.md)          | accepted | —          |
-| ADR-0002 | [Compound export policy](./0002-compound-export-policy.md)                    | accepted | —          |
-| ADR-0003 | [Spar delegation rule](./0003-spar-delegation-rule.md)                        | accepted | —          |
-| ADR-0004 | [No render-override props](./0004-no-render-overrides.md)                     | accepted | —          |
-| ADR-0005 | [Provider `display: contents` invariant](./0005-provider-display-contents.md) | accepted | —          |
-| ADR-0006 | [`ComponentsThemeMap` typing bridge](./0006-component-theme-typing-bridge.md) | accepted | —          |
+| ID       | Title                                                                                         | Status   | Supersedes |
+| -------- | --------------------------------------------------------------------------------------------- | -------- | ---------- |
+| ADR-0001 | [Package dependency strategy](./0001-package-dependency-strategy.md)                          | accepted | —          |
+| ADR-0002 | [Compound export policy](./0002-compound-export-policy.md)                                    | accepted | —          |
+| ADR-0003 | [Spar delegation rule](./0003-spar-delegation-rule.md)                                        | accepted | —          |
+| ADR-0004 | [No render-override props](./0004-no-render-overrides.md)                                     | accepted | —          |
+| ADR-0005 | [Provider `display: contents` invariant](./0005-provider-display-contents.md)                 | accepted | —          |
+| ADR-0006 | [`ComponentsThemeMap` typing bridge](./0006-component-theme-typing-bridge.md)                 | accepted | —          |
+| ADR-0007 | [Accordion as reference, Button kickoff](./0007-accordion-as-reference-and-button-kickoff.md) | accepted | —          |
 
 ## Authoring rules
 

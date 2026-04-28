@@ -14,9 +14,15 @@ const DefaultChevron = () => (
 export const AccordionArrow = (props: AccordionArrowProps) => {
   const theme = useComponentTheme('AccordionArrow');
   const merged = AccordionArrowBase.resolveProps(props, theme?.defaultProps);
-  const { className, children, ...rest } = merged;
+  const { className, classNames, slotProps, children, ...rest } = merged;
 
-  const rootAttrs = buildSlotAttrs(AccordionArrowBase.getSlotProps('root', { className }), theme?.slotProps, 'root', theme?.classNames?.root ?? theme?.className);
+  const rootAttrs = buildSlotAttrs(AccordionArrowBase.getSlotProps('root', { className }), 'root', {
+    themeSlotProps: theme?.slotProps,
+    themeClassNames: theme?.classNames,
+    themeClassName: theme?.className,
+    instanceSlotProps: slotProps,
+    instanceClassNames: classNames,
+  });
 
   return (
     <span {...rest} {...rootAttrs}>
@@ -25,4 +31,4 @@ export const AccordionArrow = (props: AccordionArrowProps) => {
   );
 };
 
-AccordionArrow.displayName = 'AccordionArrow';
+AccordionArrow.displayName = 'Accordion.Arrow';
