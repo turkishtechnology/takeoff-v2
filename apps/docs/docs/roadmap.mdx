@@ -17,10 +17,21 @@ gate in
 | Component | Shipped    | Status |
 | --------- | ---------- | ------ |
 | Accordion | 2026-04-13 | Stable |
-| Dialog    | (early)    | Stable |
-| Input     | 2026-04-16 | Stable |
-| Checkbox  | 2026-04-17 | Stable |
-| Button    | 2026-04-18 | Stable |
+
+## In flight (active port batch)
+
+These components have a decision sheet under `tools/` and are progressing
+through the
+[component port readiness](https://github.com/turkishtechnology/takeoff-spar/blob/main/docs/component-port-readiness.md)
+gate. The full per-component disposition tables live in
+[component API audit](https://github.com/turkishtechnology/takeoff-spar/blob/main/docs/component-api-audit.md).
+
+| Component | Status         | Notes                                                                                                        |
+| --------- | -------------- | ------------------------------------------------------------------------------------------------------------ |
+| Button    | Decision sheet | New port from scratch. Worksheet at `tools/button-api-alignment.html`.                                       |
+| Dialog    | Decision sheet | New port from scratch. Compound-only; `header`/`subheader`/`showCloseButton` intentionally omitted.          |
+| Checkbox  | Refactor       | Compound surface (`Checkbox.Label`, `Checkbox.Description`, `Checkbox.Icon`); flat content props deprecated. |
+| Input     | Refactor       | Compound surface; render-overrides deprecated; counter/chips/password/mask split into siblings.              |
 
 ## In the hangar (priority order)
 

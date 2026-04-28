@@ -13,6 +13,9 @@ Before proposing API changes or new customization surfaces, consult:
 
 - `docs/contract-model.md` — parity, divergence taxonomy, breaking-change rules
 - `docs/api-decision-framework.md` — per-component API decision template
+- `docs/component-architecture.md` — folder, file, and responsibility layout
+- `docs/component-port-readiness.md` — the merge gate every component passes
+- `docs/component-api-audit.md` — current per-component disposition tables
 - `docs/decisions/README.md` — durable repo-wide decisions (ADRs)
 
 Cross-component architectural choices must be recorded as ADRs under

@@ -1,4 +1,4 @@
-import { resolveSlotClass } from '../../customization';
+import { buildSlotAttrs } from '../../customization';
 import { useComponentTheme } from '../../provider';
 
 import { AccordionArrowBase } from './base';
@@ -13,10 +13,13 @@ const DefaultChevron = () => (
 
 export const AccordionArrow = (props: AccordionArrowProps) => {
   const theme = useComponentTheme('AccordionArrow');
-  const { className, children, ...rest } = { ...theme?.defaultProps, ...props } as AccordionArrowProps;
+  const merged = AccordionArrowBase.resolveProps(props, theme?.defaultProps);
+  const { className, children, ...rest } = merged;
+
+  const rootAttrs = buildSlotAttrs(AccordionArrowBase.getSlotProps('root', { className }), theme?.slotProps, 'root', theme?.classNames?.root ?? theme?.className);
 
   return (
-    <span {...rest} className={resolveSlotClass(AccordionArrowBase.classes.root, className, theme?.className)} data-slot="root">
+    <span {...rest} {...rootAttrs}>
       {children ?? <DefaultChevron />}
     </span>
   );

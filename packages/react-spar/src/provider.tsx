@@ -35,7 +35,7 @@ export const SparReactProvider = ({ children, colorMode = 'light', locale, compo
         {...restProps}
         lang={locale}
         data-theme={colorMode}
-        // `display: contents` is part of the provider contract (ADR 0007);
+        // `display: contents` is part of the provider contract (ADR-0005);
         // consumer `style` is merged underneath so the invariant always wins.
         style={style ? { ...style, ...providerStyle } : providerStyle}
       >
@@ -74,7 +74,7 @@ export const useComponentTheme = <K extends ComponentName>(componentName: K): Co
    * check against `ComponentCustomizationRegistry[K]`. The runtime value is
    * already `ComponentCustomizationRegistry[K] | undefined` by construction
    * of `ComponentsThemeMap`, so this assertion is a typing bridge, not a
-   * behavioral change. Recorded as load-bearing in ADR 0006.
+   * behavioral change. Recorded as load-bearing in ADR-0006.
    */
   return context?.components?.[componentName] as ComponentCustomizationRegistry[K] | undefined;
 };

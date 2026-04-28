@@ -1,7 +1,9 @@
+import type { HTMLAttributes } from 'react';
 import { describe, expectTypeOf, it } from 'vitest';
 
 import type { AccordionProps } from '../components/accordion/types';
 import { useComponentTheme } from '../provider';
+import type { ClassNamesMap, SlotPropsMap } from '../types';
 
 import type { ComponentCustomizationRegistry, ComponentName, ComponentThemeConfig, ComponentsThemeMap } from './contracts';
 
@@ -21,6 +23,25 @@ describe('ComponentCustomizationRegistry — type surface', () => {
   it('narrows useComponentTheme return by the passed component key', () => {
     const accordionConfig = useComponentTheme('Accordion');
     expectTypeOf(accordionConfig).toEqualTypeOf<ComponentThemeConfig<AccordionProps> | undefined>();
+  });
+});
+
+describe('ComponentThemeConfig — extended surfaces', () => {
+  it('defaults TSlot to "root" so single-slot entries get a 1-key classNames map', () => {
+    expectTypeOf<NonNullable<ComponentThemeConfig<AccordionProps>['classNames']>>().toEqualTypeOf<ClassNamesMap<'root'>>();
+  });
+
+  it('defaults TSlotProps to a generic HTMLAttributes map keyed by the slot union', () => {
+    expectTypeOf<NonNullable<ComponentThemeConfig<AccordionProps>['slotProps']>>().toEqualTypeOf<SlotPropsMap<'root', HTMLAttributes<HTMLElement>>>();
+  });
+
+  it('keeps the legacy `className` shortcut on every entry', () => {
+    expectTypeOf<ComponentThemeConfig<AccordionProps>['className']>().toEqualTypeOf<string | undefined>();
+  });
+
+  it('allows multi-slot widening when a component opts in', () => {
+    type MultiSlotConfig = ComponentThemeConfig<AccordionProps, 'root' | 'arrow'>;
+    expectTypeOf<NonNullable<MultiSlotConfig['classNames']>>().toEqualTypeOf<ClassNamesMap<'root' | 'arrow'>>();
   });
 });
 
@@ -48,6 +69,30 @@ describe('ComponentsThemeMap — compile-time rejection', () => {
       Accordion: {
         // @ts-expect-error 'bogusField' is not an AccordionProps field
         defaultProps: { bogusField: 1 },
+      },
+    };
+    void theme;
+  });
+
+  it('rejects unknown slot keys on classNames', () => {
+    const theme: ComponentsThemeMap = {
+      Accordion: {
+        classNames: {
+          // @ts-expect-error 'header' is not a slot of single-slot Accordion entry
+          header: 'x',
+        },
+      },
+    };
+    void theme;
+  });
+
+  it('rejects unknown slot keys on slotProps', () => {
+    const theme: ComponentsThemeMap = {
+      Accordion: {
+        slotProps: {
+          // @ts-expect-error 'header' is not a slot of single-slot Accordion entry
+          header: { id: 'x' },
+        },
       },
     };
     void theme;

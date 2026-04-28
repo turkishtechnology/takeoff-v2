@@ -43,6 +43,7 @@ export type {
   AccordionContentProps,
   AccordionHeaderProps,
   AccordionItemProps,
+  AccordionMode,
   AccordionProps,
   AccordionSize,
   AccordionTriggerProps,

@@ -28,45 +28,44 @@ Monorepo for `@takeoff-ui/react-spar` — a React 19 component library that wrap
 - `packages/react-spar` — `@takeoff-ui/react-spar`, the published package
 - `apps/docs` — Docusaurus site for public docs and component demos
 - `apps/react-app` — local integration / smoke app
-- `.agents/skills` — repo-local Codex skills (canonical discovery path)
-- `docs/proposals` — open research and design proposals awaiting resolution
+- `.agents/skills` and `.claude/skills` — repo-local skills (component port,
+  alignment worksheet generation, blueprint authoring, changelog automation)
+- `docs/` — repo-wide canonical contract (see Documentation below)
 - `.changeset` — changesets-driven release automation
+- `tools/` — per-component API alignment worksheets used to drive port
+  decisions; see
+  [`docs/api-decision-framework.md`](./docs/api-decision-framework.md)
 
 ## Documentation
 
 Repo contract (canonical):
 
-- [Source-of-truth matrix](./docs/source-of-truth.md) — where every claim about
-  this repo is authoritatively stated
 - [Contract model](./docs/contract-model.md) — parity rules, divergence
   taxonomy, breaking-change and migration-safety definitions
 - [Public API decision framework](./docs/api-decision-framework.md) — how
   per-component API shapes are decided
+- [Component architecture](./docs/component-architecture.md) — folder, file, and
+  responsibility layout every component implements
+- [Component port readiness](./docs/component-port-readiness.md) — the merge
+  gate every component passes before shipping
+- [Component API audit](./docs/component-api-audit.md) — comparative API surface
+  for the active port batch
 - [Architectural decisions](./docs/decisions/README.md) — durable repo-wide
-  decision records
+  decision records (ADRs)
 
 Live reference:
 
 - [Coding standards](./packages/react-spar/docs/CODING_STANDARDS.md)
 - [Data attribute vocabulary](./packages/react-spar/docs/DATA_ATTRIBUTE_VOCABULARY.md)
 
-Current component customization and compound-surface decisions belong in those
-reference docs plus the internal component-port skill resources.
+Repo-local skills (canonical paths):
 
-Agent skills:
-
-- [Component port skill](./.agents/skills/takeoff-component-port/SKILL.md)
-- [Generate component skill](./.agents/skills/generate-component/SKILL.md)
-
-Open work:
-
-- [Monorepo professionalization execution plan](./docs/proposals/monorepo-professionalization-execution-plan.md)
-  — the active milestone tracker. The only doc under `docs/proposals/`.
-
-Archive (frozen historical narratives, never trust over live code):
-
-- [Documentation archive](./docs/archive/README.md) — Phase 1 / Phase 2
-  implementation checklists.
+- [`.claude/skills/generate-api-alignment`](./.claude/skills/generate-api-alignment/SKILL.md)
+  — scaffold or refresh a `tools/<component>-api-alignment.html` worksheet
+- [`.claude/skills/generate-component-blueprint`](./.claude/skills/generate-component-blueprint/SKILL.md)
+  — produce a source-backed API and anatomy decision document
+- [`.claude/skills/generate-changelog`](./.claude/skills/generate-changelog/SKILL.md)
+  — append a release entry to the docs changelog
 
 ## Getting started
 
