@@ -48,10 +48,9 @@ export function Example() {
   return (
     <SparReactProvider>
       <Accordion>
-        <Accordion.Item>
+        <Accordion.Item itemKey="baggage">
           <Accordion.Header>
-            <Accordion.Title>Baggage allowance</Accordion.Title>
-            <Accordion.Arrow />
+            <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content>
             Review your cabin and checked baggage limits before your trip.
@@ -160,12 +159,10 @@ props on any component.
 ### Accordion
 
 ```tsx
-<Accordion allowMultiple activeIndex={...} onActiveIndexChange={...}>
-  <Accordion.Item itemKey="one" size="base">
+<Accordion allowMultiple activeIndex={...} onActiveIndexChange={...} arrowPosition="right">
+  <Accordion.Item itemKey="one">
     <Accordion.Header>
-      <Accordion.Icon>home</Accordion.Icon>       {/* optional */}
-      <Accordion.Title>FAQ</Accordion.Title>
-      <Accordion.Arrow />                         {/* omit to hide; place before title for left placement */}
+      <Accordion.Trigger>FAQ</Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>Answer content</Accordion.Content>
   </Accordion.Item>
@@ -173,10 +170,13 @@ props on any component.
 ```
 
 - Root state props: `activeIndex`, `defaultActiveIndex`, `allowMultiple`,
-  `type`, `mode`, `onActiveIndexChange`.
-- Item state props: `itemKey`, `size`, `active`, `onActiveChange`.
-- `<Accordion.Arrow>` accepts `expandIcon`/`collapseIcon` props or a render-prop
-  child `({ isOpen }) => ReactNode`.
+  `onActiveIndexChange`, `preventCollapse`.
+- Root visual props: `type`, `mode`, `size`, `arrowPosition`, `hideArrows`,
+  `expandIcon`, `collapseIcon`.
+- Item state props: `itemKey`, `disabled`.
+- The arrow is rendered automatically inside every `Accordion.Trigger`. Hide it
+  with `hideArrows` on the root, swap glyphs with `expandIcon`/`collapseIcon`,
+  or move it with `arrowPosition`.
 
 ### Input
 
@@ -296,13 +296,13 @@ slotProps are also concatenated with the canonical class:
 
 ```tsx
 <Accordion.Item
+  itemKey="faq"
   slotProps={{
     root: { 'aria-describedby': 'faq-note' },
-    content: { className: 'faq-content', id: 'faq-body' },
   }}
 >
   <Accordion.Header>
-    <Accordion.Title>FAQ</Accordion.Title>
+    <Accordion.Trigger>FAQ</Accordion.Trigger>
   </Accordion.Header>
   <Accordion.Content>Answer text</Accordion.Content>
 </Accordion.Item>

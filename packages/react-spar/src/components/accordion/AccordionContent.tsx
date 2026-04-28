@@ -1,6 +1,4 @@
-import type { ElementType } from 'react';
-
-import { AccordionContent as SparAccordionContent, type AccordionContentProps as SparAccordionContentProps } from '@turkish-technology/spar';
+import { AccordionContent as SparAccordionContent } from '@turkish-technology/spar';
 
 import { buildSlotAttrs } from '../../customization';
 import { useComponentTheme } from '../../provider';
@@ -8,9 +6,9 @@ import { useComponentTheme } from '../../provider';
 import { AccordionContentBase } from './base';
 import type { AccordionContentProps } from './types';
 
-export const AccordionContent = <T extends ElementType = 'div'>(props: AccordionContentProps<T>) => {
+export const AccordionContent = (props: AccordionContentProps) => {
   const theme = useComponentTheme('AccordionContent');
-  const merged = AccordionContentBase.resolveProps(props as AccordionContentProps, theme?.defaultProps) as AccordionContentProps<T>;
+  const merged = AccordionContentBase.resolveProps(props, theme?.defaultProps);
   const { className, classNames, slotProps, children, ...rest } = merged;
 
   const rootAttrs = buildSlotAttrs(AccordionContentBase.getSlotProps('root', { className }), 'root', {
@@ -22,7 +20,7 @@ export const AccordionContent = <T extends ElementType = 'div'>(props: Accordion
   });
 
   return (
-    <SparAccordionContent {...(rest as SparAccordionContentProps<T>)} {...rootAttrs}>
+    <SparAccordionContent {...rest} {...rootAttrs}>
       {children}
     </SparAccordionContent>
   );

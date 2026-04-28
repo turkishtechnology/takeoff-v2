@@ -1,4 +1,4 @@
-import type { AccordionArrowProps, AccordionContentProps, AccordionHeaderProps, AccordionItemProps, AccordionProps, AccordionTriggerProps } from '../components/accordion/types';
+import type { AccordionContentProps, AccordionHeaderProps, AccordionItemProps, AccordionProps, AccordionTriggerProps } from '../components/accordion/types';
 import type { ClassNamesMap, SlotPropsMap } from '../types';
 
 /**
@@ -44,7 +44,6 @@ export interface ComponentCustomizationRegistry {
   AccordionHeader: ComponentThemeConfig<AccordionHeaderProps>;
   AccordionTrigger: ComponentThemeConfig<AccordionTriggerProps>;
   AccordionContent: ComponentThemeConfig<AccordionContentProps>;
-  AccordionArrow: ComponentThemeConfig<AccordionArrowProps>;
 }
 
 /**

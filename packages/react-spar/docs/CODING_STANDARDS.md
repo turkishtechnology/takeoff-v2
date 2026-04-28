@@ -87,8 +87,7 @@ authoring model. Concretely:
 
 When a subcomponent needs to expose render-time state to consumers, use
 function-as-children:
-`<Checkbox.Icon>{({ checked, indeterminate }) => …}</Checkbox.Icon>`,
-`<Accordion.Arrow>{({ isOpen }) => …}</Accordion.Arrow>`.
+`<Checkbox.Icon>{({ checked, indeterminate }) => …}</Checkbox.Icon>`.
 
 ## Naming Conventions
 
@@ -356,7 +355,8 @@ The rules:
 2. **Inherited parts must render their upstream counterpart, not a plain tag.**
    A compound part that has an upstream equivalent but renders a plain `<div>` /
    `<span>` is a bug unless it is explicitly classified as Bypass with a reason.
-   This is the letter of ADR-0003 applied at the slot level.
+   This is the upstream-first rule (see `docs/component-authoring-contract.md`)
+   applied at the slot level.
 3. **React-enhancement parts must have no upstream equivalent.** If the upstream
    primitive grows a matching part later, the react-enhancement classification
    must migrate to Inherited in the same release.
@@ -364,9 +364,10 @@ The rules:
    and a `@bypass` line in the base file** giving the concrete reason (e.g.
    upstream behavior conflicts with the React wrapper's semantics, upstream
    hasn't shipped the part yet). "Felt easier" is not a reason.
-5. **Wrappers must not re-implement behavior Spar already owns** (ADR-0003).
-   When a wrapper bypasses an upstream part, it inherits the burden of proving
-   that no behavior (keyboarding, focus, ARIA lifecycle) is being silently
+5. **Wrappers must not re-implement behavior Spar already owns** (see
+   `docs/component-authoring-contract.md` — "Spar owns behavior"). When a
+   wrapper bypasses an upstream part, it inherits the burden of proving that no
+   behavior (keyboarding, focus, ARIA lifecycle) is being silently
    re-implemented in React. If there is, the correct path is to delegate through
    the upstream part and restrict the wrapper to styling and API translation.
 
@@ -388,8 +389,9 @@ section:
   anchor's navigation. The rationale lives in `ButtonBase.ts`.
 
 Every new component port must classify its parts against this table as part of
-the component-port decision note. The readiness gate
-(`docs/component-port-readiness.md`) treats a missing archetype as a blocker.
+the contract produced by the
+[`takeoff-component-workflow`](../../../.agents/skills/takeoff-component-workflow/SKILL.md)
+skill. A missing archetype classification is a contract blocker.
 
 ## Styling Contract
 
@@ -541,11 +543,11 @@ Before submitting a component, make sure tests cover:
 
 ## Merge Checklist
 
-The authoritative gate for new component work is
-[`docs/component-port-readiness.md`](../../../docs/component-port-readiness.md).
-That doc carries the full readiness checklist, artifact manifest, and review
-templates. The list below is the subset local to this package — keep it truthful
-but do not duplicate the readiness doc.
+The authoritative gate for new component work is the contract produced by the
+[`takeoff-component-workflow`](../../../.agents/skills/takeoff-component-workflow/SKILL.md)
+skill, governed by
+[`docs/component-authoring-contract.md`](../../../docs/component-authoring-contract.md).
+The list below is the subset local to this package.
 
 Before considering a component complete:
 
@@ -553,9 +555,6 @@ Before considering a component complete:
 - `pnpm lint`
 - `pnpm build`
 - `pnpm --filter @takeoff-ui/react-spar test`
-- `python3 .agents/skills/takeoff-component-port/scripts/verify_port_artifacts.py <Name> --repo-root .`
-  (enforces the artifact manifest: wrapper, recipe, docs page, smoke scenario,
-  changeset, export, no emitted CSS)
 - regenerate docs API output when public types changed
 - confirm the root is exported from `src/components/index.ts` (subcomponents are
   reached exclusively through the root)
@@ -569,7 +568,6 @@ Before considering a component complete:
   intentional and reviewable.
 - confirm docs, generated API tables, tests, and component types describe the
   same compound contract
-- write the parity-review report (and the React-enhancement review report when
-  any additive surface is introduced) into the PR description, using the
-  templates in
-  [`docs/component-port-readiness.md`](../../../docs/component-port-readiness.md)
+- include the parity-review summary (and any React-enhancement justification) in
+  the PR description, following
+  [`docs/component-authoring-contract.md`](../../../docs/component-authoring-contract.md)

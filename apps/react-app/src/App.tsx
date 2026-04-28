@@ -311,7 +311,7 @@ const CustomizationScenarios = (): ReactNode => (
 // ─────────────────────────────────────────────────────────────────────────────
 
 function App() {
-  const [activeIndex, setActiveIndex] = useState<string | number | undefined>(0);
+  const [activeIndex, setActiveIndex] = useState<string | number | undefined>('flight-details');
   const [dialogVisible, setDialogVisible] = useState(false);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -404,33 +404,30 @@ function App() {
             <strong>Accordion parity surface</strong>
             <div style={{ marginTop: '0.75rem' }}>
               <Accordion activeIndex={activeIndex} onActiveIndexChange={index => setActiveIndex(Array.isArray(index) ? index[index.length - 1] : index)}>
-                <Accordion.Item>
+                <Accordion.Item itemKey="flight-details">
                   <Accordion.Header>
-                    <Accordion.Icon>
+                    <Accordion.Trigger>
                       <FlightIcon />
-                    </Accordion.Icon>
-                    <Accordion.Title>Flight details</Accordion.Title>
-                    <Accordion.Arrow />
+                      Flight details
+                    </Accordion.Trigger>
                   </Accordion.Header>
                   <Accordion.Content>Review your departure and arrival windows, cabin, and seat assignment before check-in closes.</Accordion.Content>
                 </Accordion.Item>
-                <Accordion.Item>
+                <Accordion.Item itemKey="baggage-allowance">
                   <Accordion.Header>
-                    <Accordion.Icon>
+                    <Accordion.Trigger>
                       <LuggageIcon />
-                    </Accordion.Icon>
-                    <Accordion.Title>Baggage allowance</Accordion.Title>
-                    <Accordion.Arrow />
+                      Baggage allowance
+                    </Accordion.Trigger>
                   </Accordion.Header>
                   <Accordion.Content>Confirm your carry-on and checked baggage limits, then add extra allowance if your fare needs it.</Accordion.Content>
                 </Accordion.Item>
-                <Accordion.Item>
+                <Accordion.Item itemKey="check-in-options">
                   <Accordion.Header>
-                    <Accordion.Icon>
+                    <Accordion.Trigger>
                       <TaskAltIcon />
-                    </Accordion.Icon>
-                    <Accordion.Title>Check-in options</Accordion.Title>
-                    <Accordion.Arrow />
+                      Check-in options
+                    </Accordion.Trigger>
                   </Accordion.Header>
                   <Accordion.Content>Online check-in opens 24 hours before departure and stays available until the airport cut-off time.</Accordion.Content>
                 </Accordion.Item>

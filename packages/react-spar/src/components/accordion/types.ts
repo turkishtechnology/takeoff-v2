@@ -1,11 +1,4 @@
-import type { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react';
-import type {
-  AccordionContentProps as SparAccordionContentProps,
-  AccordionHeaderProps as SparAccordionHeaderProps,
-  AccordionItemProps as SparAccordionItemProps,
-  AccordionProps as SparAccordionProps,
-  AccordionTriggerProps as SparAccordionTriggerProps,
-} from '@turkish-technology/spar';
+import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../types';
 
@@ -14,7 +7,7 @@ import type { ClassNamesMap, SlotPropsMap } from '../../types';
  *
  * `'compact'` is supported during the current major as a deprecated alias for
  * `mode='compact'` and triggers a one-time dev warning when used. It will be
- * removed in the next major release per `docs/component-api-audit.md` row 18.
+ * removed in the next major release.
  */
 export type AccordionType = 'grouped' | 'divided' | 'compact';
 
@@ -27,41 +20,39 @@ export type AccordionMode = 'default' | 'compact';
 export type AccordionSize = 'base' | 'large';
 
 /**
- * Identity of a single Accordion item. Matches Takeoff Core's `itemKey` shape
- * on `tk-accordion-item`. The wrapper stringifies the value when handing it
- * to the Spar primitive but preserves the original shape on the
- * `onActiveIndexChange` payload.
+ * Identity of a single Accordion item. Mirrors Takeoff Core's
+ * `tk-accordion-item.itemKey` and is forwarded to the Spar primitive
+ * unchanged.
  */
 export type AccordionItemKey = string | number;
 
 /**
- * Currently active panel identifiers. Mirrors Core
- * `tk-accordion.activeIndex`: a single value (`single` selection) or an array
- * (`allowMultiple`).
+ * Currently active panel identifier(s). Scalar in single mode, array when
+ * `allowMultiple` is set.
  */
 export type AccordionActiveIndex = AccordionItemKey | AccordionItemKey[];
+
+/**
+ * Position of the auto-rendered arrow inside the trigger.
+ * @defaultValue 'right'
+ */
+export type AccordionArrowPosition = 'left' | 'right';
 
 export type AccordionSlot = 'root';
 export type AccordionItemSlot = 'root';
 export type AccordionHeaderSlot = 'root';
 export type AccordionTriggerSlot = 'root';
 export type AccordionContentSlot = 'root';
-export type AccordionArrowSlot = 'root';
 
 /**
- * Spar primitive props the wrapper hides from its public API. The adapter hook
- * (`useAccordionAdapter`) is the only consumer of these names; surfacing them
- * through `AccordionProps` would re-introduce the leak the Takeoff vocabulary
- * is meant to prevent (see `docs/contract-model.md` § "State model policy").
+ * Public props for the Accordion root. Behavior props (`allowMultiple`,
+ * `activeIndex`, `defaultActiveIndex`, `onActiveIndexChange`,
+ * `preventCollapse`, `disabled`, `orientation`) are forwarded to the Spar
+ * primitive unchanged. Visual props (`type`, `mode`, `size`, `arrowPosition`,
+ * `hideArrows`, `expandIcon`, `collapseIcon`) are takeoff-spar's own and
+ * cascade to descendants through the visual context.
  */
-type SparStateOnly = 'type' | 'value' | 'defaultValue' | 'onValueChange' | 'isCollapsible';
-
-/**
- * Takeoff-vocabulary public props for the Accordion root. The adapter
- * translates these to Spar's `value` / `defaultValue` / `onValueChange` /
- * `type='single'|'multiple'` shape internally.
- */
-export interface AccordionOwnProps {
+export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames' | 'defaultValue' | 'onChange'> {
   /**
    * Visual grouping. `'compact'` is a deprecated alias for
    * `(type='grouped', mode='compact')` and emits a dev warning.
@@ -79,82 +70,75 @@ export interface AccordionOwnProps {
    */
   size?: AccordionSize;
   /**
-   * Currently active item identifier(s) — controlled. Each value is an
-   * {@link AccordionItemKey} that matches one item's `itemKey` (or its
-   * positional index when `itemKey` is omitted).
+   * Position of the auto-rendered arrow inside each trigger.
+   * @defaultValue 'right'
    */
-  activeIndex?: AccordionActiveIndex;
+  arrowPosition?: AccordionArrowPosition;
   /**
-   * Initial active item identifier(s) — uncontrolled. Used only on mount.
-   */
-  defaultActiveIndex?: AccordionActiveIndex;
-  /**
-   * Fired exactly once per user-visible state change. The payload preserves
-   * the original {@link AccordionItemKey} shape: items declared with numeric
-   * `itemKey` (or auto-numbered) emit numbers; items declared with string
-   * `itemKey` emit strings.
-   */
-  onActiveIndexChange?: (next: AccordionActiveIndex) => void;
-  /**
-   * When `true`, multiple panels can be expanded at once.
+   * Hide the auto-rendered arrow on every trigger.
    * @defaultValue false
    */
+  hideArrows?: boolean;
+  /**
+   * Visual content for the arrow when an item is collapsed.
+   * @defaultValue a built-in chevron pointing down
+   */
+  expandIcon?: ReactNode;
+  /**
+   * Visual content for the arrow when an item is expanded.
+   * @defaultValue a built-in chevron pointing up
+   */
+  collapseIcon?: ReactNode;
+
+  /** When `true`, multiple items can be expanded simultaneously. */
   allowMultiple?: boolean;
-  /**
-   * Per-slot extra class names. Concatenated onto the canonical `tk-*` class
-   * which is never dropped.
-   */
+  /** Controlled active item identifier(s). */
+  activeIndex?: AccordionActiveIndex;
+  /** Uncontrolled initial active item identifier(s). */
+  defaultActiveIndex?: AccordionActiveIndex;
+  /** Fired when the active set changes. */
+  onActiveIndexChange?: (next: AccordionActiveIndex) => void;
+  /** When `true`, single-mode items cannot be collapsed by clicking again. */
+  preventCollapse?: boolean;
+  /** Disables every item in the accordion. */
+  disabled?: boolean;
+  /** Orientation for keyboard navigation. */
+  orientation?: 'vertical' | 'horizontal';
+
   classNames?: ClassNamesMap<AccordionSlot>;
-  /**
-   * Per-slot HTML attribute overrides. Canonical `data-*` hooks always win on
-   * conflict; instance entries override theme entries for unrelated keys.
-   */
   slotProps?: SlotPropsMap<AccordionSlot>;
+
+  ref?: Ref<HTMLDivElement>;
 }
 
-export type AccordionProps<T extends ElementType = 'div'> = Omit<SparAccordionProps<T>, SparStateOnly | 'classNames' | 'slotProps'> & AccordionOwnProps;
-
-export interface AccordionItemOwnProps {
+export interface AccordionItemProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
   /**
-   * Stable identity for this item. Matches Takeoff Core's
-   * `tk-accordion-item.itemKey`. When omitted, the root assigns a positional
-   * numeric key based on declaration order. Pass a string when matching
-   * against string-shaped `activeIndex`; pass a number for numeric-shaped
-   * `activeIndex`. Mixing string and number itemKeys within one Accordion is
-   * not supported.
+   * Stable identity for this item. Forwarded to the Spar primitive verbatim
+   * and matched against `Accordion.activeIndex`.
    */
   itemKey?: AccordionItemKey;
+  /** Disables this item only. */
+  disabled?: boolean;
   classNames?: ClassNamesMap<AccordionItemSlot>;
   slotProps?: SlotPropsMap<AccordionItemSlot>;
+  ref?: Ref<HTMLDivElement>;
 }
 
-export type AccordionItemProps<T extends ElementType = 'div'> = Omit<SparAccordionItemProps<T>, 'value' | 'classNames' | 'slotProps'> & AccordionItemOwnProps;
-
-export interface AccordionHeaderOwnProps {
+export interface AccordionHeaderProps extends Omit<ComponentPropsWithoutRef<'h3'>, 'classNames'> {
+  /** HTML heading level (1-6). */
+  level?: number;
   classNames?: ClassNamesMap<AccordionHeaderSlot>;
   slotProps?: SlotPropsMap<AccordionHeaderSlot>;
 }
 
-export type AccordionHeaderProps<T extends ElementType = 'h3'> = Omit<SparAccordionHeaderProps<T>, 'classNames' | 'slotProps'> & AccordionHeaderOwnProps;
-
-export interface AccordionTriggerOwnProps {
+export interface AccordionTriggerProps extends Omit<ComponentPropsWithoutRef<'button'>, 'classNames'> {
   classNames?: ClassNamesMap<AccordionTriggerSlot>;
   slotProps?: SlotPropsMap<AccordionTriggerSlot>;
 }
 
-export type AccordionTriggerProps<T extends ElementType = 'button'> = Omit<SparAccordionTriggerProps<T>, 'classNames' | 'slotProps'> & AccordionTriggerOwnProps;
-
-export interface AccordionContentOwnProps {
+export interface AccordionContentProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
+  /** Render content even while collapsed. */
+  forceMount?: boolean;
   classNames?: ClassNamesMap<AccordionContentSlot>;
   slotProps?: SlotPropsMap<AccordionContentSlot>;
 }
-
-export type AccordionContentProps<T extends ElementType = 'div'> = Omit<SparAccordionContentProps<T>, 'classNames' | 'slotProps'> & AccordionContentOwnProps;
-
-export interface AccordionArrowOwnProps {
-  children?: ReactNode;
-  classNames?: ClassNamesMap<AccordionArrowSlot>;
-  slotProps?: SlotPropsMap<AccordionArrowSlot>;
-}
-
-export type AccordionArrowProps = Omit<ComponentPropsWithoutRef<'span'>, 'children' | 'classNames' | 'slotProps'> & AccordionArrowOwnProps;

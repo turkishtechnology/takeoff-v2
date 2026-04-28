@@ -67,7 +67,6 @@ describe('Accordion — type / mode contract', () => {
         {renderItem('one')}
       </Accordion>,
     );
-    // Even with explicit mode, the legacy type triggers the deprecation warning.
     expect(warnSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -86,7 +85,7 @@ describe('Accordion — Takeoff state API', () => {
     expect(getByTestId('trigger-c')).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it('lets single-mode items collapse (Spar isCollapsible flipped to true by the adapter)', () => {
+  it('lets single-mode items collapse by default (matches Takeoff Core)', () => {
     const onChange = vi.fn();
     const { getByTestId } = render(
       <Accordion defaultActiveIndex="a" onActiveIndexChange={onChange}>
@@ -96,6 +95,18 @@ describe('Accordion — Takeoff state API', () => {
     fireEvent.click(getByTestId('trigger-a'));
     expect(onChange).toHaveBeenCalledWith('');
     expect(getByTestId('trigger-a')).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('blocks single-mode collapse when preventCollapse is set', () => {
+    const onChange = vi.fn();
+    const { getByTestId } = render(
+      <Accordion defaultActiveIndex="a" preventCollapse onActiveIndexChange={onChange}>
+        {renderItems(['a', 'b'])}
+      </Accordion>,
+    );
+    fireEvent.click(getByTestId('trigger-a'));
+    expect(onChange).not.toHaveBeenCalled();
+    expect(getByTestId('trigger-a')).toHaveAttribute('aria-expanded', 'true');
   });
 
   it('treats activeIndex as controlled and forwards the Takeoff-shaped payload on change', () => {
@@ -110,7 +121,6 @@ describe('Accordion — Takeoff state API', () => {
     fireEvent.click(getByTestId('trigger-b'));
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith('b');
-    // Without the parent moving controlled state, the panel stays on `a`.
     expect(getByTestId('trigger-a')).toHaveAttribute('aria-expanded', 'true');
 
     rerender(
@@ -148,87 +158,52 @@ describe('Accordion — Takeoff state API', () => {
     fireEvent.click(getByTestId('trigger-a'));
     expect(onChange).toHaveBeenLastCalledWith(['b']);
   });
-
-  it('coerces a multi-mode array of numeric itemKeys back to numbers on change', () => {
-    const onChange = vi.fn();
-    const { getByTestId } = render(
-      <Accordion allowMultiple defaultActiveIndex={[0]} onActiveIndexChange={onChange}>
-        {renderItems([0, 1, 2])}
-      </Accordion>,
-    );
-    fireEvent.click(getByTestId('trigger-2'));
-    expect(onChange).toHaveBeenCalledWith([0, 2]);
-    expect(typeof (onChange.mock.calls[0]?.[0] as number[])[0]).toBe('number');
-    expect(typeof (onChange.mock.calls[0]?.[0] as number[])[1]).toBe('number');
-  });
 });
 
-describe('Accordion — itemKey contract', () => {
-  it('auto-assigns positional numeric itemKeys when consumers omit itemKey', () => {
-    const onChange = vi.fn();
-    const { container, getAllByRole } = render(
-      <Accordion defaultActiveIndex={0} onActiveIndexChange={onChange}>
-        <Accordion.Item>
-          <Accordion.Header>
-            <Accordion.Trigger>First</Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content>First body</Accordion.Content>
-        </Accordion.Item>
-        <Accordion.Item>
-          <Accordion.Header>
-            <Accordion.Trigger>Second</Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content>Second body</Accordion.Content>
-        </Accordion.Item>
-      </Accordion>,
-    );
-    // The first item is open via positional activeIndex=0.
-    const triggers = getAllByRole('button');
-    expect(triggers[0]).toHaveAttribute('aria-expanded', 'true');
-    expect(triggers[1]).toHaveAttribute('aria-expanded', 'false');
-
-    fireEvent.click(triggers[1]!);
-    expect(onChange).toHaveBeenCalledWith(1);
-    expect(typeof onChange.mock.calls[0]?.[0]).toBe('number');
-
-    // Sanity check that the positional value made it onto Spar's `value` shape.
-    expect(container.querySelectorAll('[role="region"]').length).toBeGreaterThan(0);
-  });
-
-  it('passes string itemKey through unchanged on the callback payload', () => {
-    const onChange = vi.fn();
+describe('Accordion — arrow visual contract', () => {
+  it('auto-renders an arrow span inside every trigger with the canonical class', () => {
     const { getByTestId } = render(
-      <Accordion defaultActiveIndex="alpha" onActiveIndexChange={onChange}>
-        {renderItem('alpha')}
-        {renderItem('beta')}
+      <Accordion defaultActiveIndex="a">
+        {renderItem('a')}
+        {renderItem('b')}
       </Accordion>,
     );
-    fireEvent.click(getByTestId('trigger-beta'));
-    expect(onChange).toHaveBeenCalledWith('beta');
+    const triggerA = getByTestId('trigger-a');
+    const arrowA = triggerA.querySelector('.tk-accordion-item-arrow');
+    expect(arrowA).not.toBeNull();
+    expect(arrowA).toHaveAttribute('data-state', 'open');
+    expect(arrowA).toHaveAttribute('data-position', 'right');
+
+    const triggerB = getByTestId('trigger-b');
+    expect(triggerB.querySelector('.tk-accordion-item-arrow')).toHaveAttribute('data-state', 'closed');
   });
 
-  it('warns once when Accordion.Item is rendered outside Accordion (and therefore lacks an injected key)', () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-    // Need the variant context, so we still wrap in an Accordion to mount —
-    // but the item itself is wrapped in an extra layer that breaks the
-    // root's child-walk. The warning is the documented fallback signal.
-    expect(() =>
-      render(
-        <Accordion>
-          <div data-testid="wrapper">
-            <Accordion.Item>
-              <Accordion.Header>
-                <Accordion.Trigger>Detached</Accordion.Trigger>
-              </Accordion.Header>
-              <Accordion.Content>Detached body</Accordion.Content>
-            </Accordion.Item>
-          </div>
-        </Accordion>,
-      ),
-    ).not.toThrow();
-    expect(warnSpy).toHaveBeenCalled();
-    expect(warnSpy.mock.calls[0]?.[0]).toContain('itemKey');
-    warnSpy.mockRestore();
+  it('honors arrowPosition="left" and emits the matching data attribute', () => {
+    const { container, getByTestId } = render(<Accordion arrowPosition="left">{renderItem('a')}</Accordion>);
+    const root = container.querySelector('[data-slot="root"]');
+    expect(root).toHaveAttribute('data-arrow-position', 'left');
+
+    const trigger = getByTestId('trigger-a');
+    const arrow = trigger.querySelector('.tk-accordion-item-arrow');
+    expect(arrow).toHaveAttribute('data-position', 'left');
+    // When positioned left, the arrow should be the trigger's first child.
+    expect(trigger.firstElementChild).toBe(arrow);
+  });
+
+  it('omits the arrow entirely when hideArrows is set', () => {
+    const { getByTestId } = render(<Accordion hideArrows>{renderItem('a')}</Accordion>);
+    expect(getByTestId('trigger-a').querySelector('.tk-accordion-item-arrow')).toBeNull();
+  });
+
+  it('renders custom expandIcon / collapseIcon when supplied', () => {
+    const { getByTestId } = render(
+      <Accordion defaultActiveIndex="open" expandIcon={<span data-testid="expand-icon">+</span>} collapseIcon={<span data-testid="collapse-icon">-</span>}>
+        {renderItem('open')}
+        {renderItem('closed')}
+      </Accordion>,
+    );
+    expect(getByTestId('trigger-open').querySelector('[data-testid="collapse-icon"]')).not.toBeNull();
+    expect(getByTestId('trigger-closed').querySelector('[data-testid="expand-icon"]')).not.toBeNull();
   });
 });
 
@@ -238,10 +213,7 @@ describe('Accordion — compound anatomy', () => {
       <Accordion defaultActiveIndex="a">
         <Accordion.Item itemKey="a" data-testid="anatomy-item">
           <Accordion.Header data-testid="anatomy-header">
-            <Accordion.Trigger data-testid="anatomy-trigger">
-              Toggle
-              <Accordion.Arrow data-testid="anatomy-arrow" />
-            </Accordion.Trigger>
+            <Accordion.Trigger data-testid="anatomy-trigger">Toggle</Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content data-testid="anatomy-content">Body</Accordion.Content>
         </Accordion.Item>
@@ -259,18 +231,14 @@ describe('Accordion — compound anatomy', () => {
 
     const content = getByTestId('anatomy-content');
     expect(content).toHaveClass('tk-accordion-item-content');
-
-    const arrow = getByTestId('anatomy-arrow');
-    expect(arrow).toHaveClass('tk-accordion-item-arrow');
   });
 
-  it('exposes dotted displayName on every subcomponent for DevTools', () => {
+  it('exposes dotted displayName on every public subcomponent for DevTools', () => {
     expect((Accordion as unknown as { displayName?: string }).displayName).toBe('Accordion');
     expect(Accordion.Item.displayName).toBe('Accordion.Item');
     expect(Accordion.Header.displayName).toBe('Accordion.Header');
     expect(Accordion.Trigger.displayName).toBe('Accordion.Trigger');
     expect(Accordion.Content.displayName).toBe('Accordion.Content');
-    expect(Accordion.Arrow.displayName).toBe('Accordion.Arrow');
   });
 });
 

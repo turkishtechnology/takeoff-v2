@@ -1,7 +1,7 @@
 import { createComponentBase } from '../../styling/createComponentBase';
 
 import { DEFAULT_SIZE, DEFAULT_TYPE } from './defaults';
-import type { AccordionArrowProps, AccordionContentProps, AccordionHeaderProps, AccordionItemProps, AccordionProps, AccordionTriggerProps } from './types';
+import type { AccordionContentProps, AccordionHeaderProps, AccordionItemProps, AccordionProps, AccordionTriggerProps } from './types';
 
 /**
  * One `createComponentBase` instance per registered customization key. Each
@@ -41,10 +41,4 @@ export const AccordionContentBase = createComponentBase<AccordionContentProps, '
   name: 'AccordionContent',
   slots: ['root'] as const,
   classes: { root: 'tk-accordion-item-content' },
-});
-
-export const AccordionArrowBase = createComponentBase<AccordionArrowProps, 'root'>({
-  name: 'AccordionArrow',
-  slots: ['root'] as const,
-  classes: { root: 'tk-accordion-item-arrow' },
 });

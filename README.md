@@ -28,43 +28,24 @@ Monorepo for `@takeoff-ui/react-spar` — a React 19 component library that wrap
 - `packages/react-spar` — `@takeoff-ui/react-spar`, the published package
 - `apps/docs` — Docusaurus site for public docs and component demos
 - `apps/react-app` — local integration / smoke app
-- `.agents/skills` and `.claude/skills` — repo-local skills (component port,
-  alignment worksheet generation, blueprint authoring, changelog automation)
-- `docs/` — repo-wide canonical contract (see Documentation below)
+- `.agents/skills` — repo-local skills (component workflow, changelog)
+- `docs/` — component authoring contract
 - `.changeset` — changesets-driven release automation
-- `tools/` — per-component API alignment worksheets used to drive port
-  decisions; see
-  [`docs/api-decision-framework.md`](./docs/api-decision-framework.md)
 
 ## Documentation
 
-Repo contract (canonical):
-
-- [Contract model](./docs/contract-model.md) — parity rules, divergence
-  taxonomy, breaking-change and migration-safety definitions
-- [Public API decision framework](./docs/api-decision-framework.md) — how
-  per-component API shapes are decided
-- [Component architecture](./docs/component-architecture.md) — folder, file, and
-  responsibility layout every component implements
-- [Component port readiness](./docs/component-port-readiness.md) — the merge
-  gate every component passes before shipping
-- [Component API audit](./docs/component-api-audit.md) — comparative API surface
-  for the active port batch
-- [Architectural decisions](./docs/decisions/README.md) — durable repo-wide
-  decision records (ADRs)
-
-Live reference:
-
+- [Component authoring contract](./docs/component-authoring-contract.md) — layer
+  responsibilities, the no-adapter-hook rule, the upstream-first rule, public
+  compound policy, and the review checklist
 - [Coding standards](./packages/react-spar/docs/CODING_STANDARDS.md)
 - [Data attribute vocabulary](./packages/react-spar/docs/DATA_ATTRIBUTE_VOCABULARY.md)
 
-Repo-local skills (canonical paths):
+AI workflows:
 
-- [`.claude/skills/generate-api-alignment`](./.claude/skills/generate-api-alignment/SKILL.md)
-  — scaffold or refresh a `tools/<component>-api-alignment.html` worksheet
-- [`.claude/skills/generate-component-blueprint`](./.claude/skills/generate-component-blueprint/SKILL.md)
-  — produce a source-backed API and anatomy decision document
-- [`.claude/skills/generate-changelog`](./.claude/skills/generate-changelog/SKILL.md)
+- [`.agents/skills/takeoff-component-workflow`](./.agents/skills/takeoff-component-workflow/SKILL.md)
+  — contract / implement / review / fix-blockers / final-verify modes for
+  component work
+- [`.agents/skills/generate-changelog`](./.agents/skills/generate-changelog/SKILL.md)
   — append a release entry to the docs changelog
 
 ## Getting started
