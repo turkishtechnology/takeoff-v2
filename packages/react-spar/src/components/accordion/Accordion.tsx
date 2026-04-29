@@ -1,24 +1,19 @@
 import { Accordion as SparAccordion, type AccordionProps as SparAccordionProps } from '@turkish-technology/spar';
 
-import { buildSlotAttrs } from '../../customization';
+import { buildSlotAttrs } from '../../core';
+import { useDeprecationWarning } from '../../hooks';
 import { useComponentTheme } from '../../provider';
-import { useDeprecationWarning } from '../../utils';
 
 import { AccordionBase } from './base';
 import { AccordionVariantProvider } from './context';
-import { DEFAULT_MODE, DEFAULT_SIZE, DEFAULT_TYPE } from './defaults';
+import { DEFAULT_ARROW_POSITION, DEFAULT_MODE, DEFAULT_SIZE, DEFAULT_TYPE } from './defaults';
 import type { AccordionMode, AccordionProps, AccordionType } from './types';
 
 const LEGACY_COMPACT_TYPE_MESSAGE =
   '[react-spar] Accordion `type="compact"` is deprecated. Use `mode="compact"` instead. The legacy value will be removed in the next major release.';
 
-const DEFAULT_ARROW_POSITION = 'right' as const;
-
-/**
- * Map a legacy `type='compact'` to the canonical `(type='grouped', mode='compact')`
- * pair. When the explicit `mode` prop is also passed it wins, so consumers can
- * opt into the new vocabulary without losing the deprecation signal.
- */
+// Map the deprecated `type='compact'` shorthand to its canonical
+// `(type='grouped', mode='compact')` pair. An explicit `mode` always wins.
 const normalizeTypeAndMode = (type: AccordionType, mode: AccordionMode | undefined): { type: Exclude<AccordionType, 'compact'>; mode: AccordionMode } => {
   if (type === 'compact') {
     return { type: 'grouped', mode: mode ?? 'compact' };

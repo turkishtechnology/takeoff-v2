@@ -17,40 +17,37 @@ Consistency goals:
 
 ## Folder Structure
 
-Each component directory should contain:
+Each component directory should contain (Accordion is the reference — see
+`src/components/accordion/`):
 
 ```plaintext
 component-name/
-├── ComponentName.tsx          # Root + all compound subcomponents (Object.assign export)
-├── ComponentNameBase.ts       # Slots, class names, defaults, context, helpers
-├── useComponentNameAdapter.ts # State translation hook (when needed)
-├── types.ts                   # Public types for the root and every subcomponent
-├── ComponentName.test.tsx     # Tests covering the compound surface
-└── index.ts                   # Local barrel
+├── ComponentName.tsx          # Root component
+├── ComponentNamePart.tsx      # One file per public sub-component
+├── ComponentName.test.tsx     # Compound-surface tests
+├── base.ts                    # createComponentBase calls for every part
+├── context.ts                 # Cross-part variant context (when needed)
+├── defaults.ts                # DEFAULT_* literals (when needed)
+├── types.ts                   # Public types for the root and every part
+├── types.test-d.ts            # Compile-time type tests (when needed)
+└── index.ts                   # Local barrel — Object.assign compound export
 ```
-
-Large families (Accordion, Dialog, Input) often benefit from a single
-`ComponentName.tsx` that declares every subcomponent and exports the compound
-surface via `Object.assign`. Split into separate files only when the single file
-becomes hard to read.
 
 Rules:
 
 - Folder names use `kebab-case`.
-- Component files and exports use `PascalCase`.
-- Not every component needs an adapter hook. Add one when the root must
-  reconcile controlled and uncontrolled state, normalize values, or build shared
-  context that drives the subcomponents.
+- Component files and exports use `PascalCase`. Infrastructure files (`base.ts`,
+  `context.ts`, `defaults.ts`) stay lowercase.
 - Every component **does** ship compound subcomponents. Even leaf controls
   (Button, Checkbox) expose at minimum a `Label` and adornment subcomponents so
   the content surface stays structural, not prop-driven.
-- `ComponentNameBase.ts` is the source of truth for slot names, emitted class
-  names, default props, and the context hook that subcomponents consume.
+- `base.ts` is the source of truth for slot names and emitted class names. One
+  `createComponentBase` call per public sub-component, all colocated.
 - Export the root from the local barrel and from `src/components/index.ts`.
   Subcomponents are reached exclusively via the root (`Button.Label`,
   `Dialog.Header`, …), not via direct named exports.
-- Mirror slot classes into `src/styling/slot-registry.ts` (the generator script
-  does this automatically when scaffolding a new component).
+- Mirror slot classes into `src/slot-registry.ts` (the generator script does
+  this automatically when scaffolding a new component).
 - Prefer the generator script when scaffolding a new component:
 
 ```bash
@@ -98,8 +95,8 @@ function-as-children:
   part of the root's compound surface: `Button.Label`, `Accordion.Item`,
   `Dialog.Header`, etc. Their `displayName` follows the dotted form
   (`displayName = 'Dialog.Header'`).
-- Base objects use `ComponentNameBase`.
-- Adapter hooks use `useComponentNameAdapter`.
+- Base objects (inside `base.ts`) use `ComponentNameBase` — e.g.
+  `AccordionBase`, `AccordionItemBase`. Each is one `createComponentBase` call.
 - Public props and type aliases live in `types.ts`. Each subcomponent has its
   own props interface (`ButtonLabelProps`, `DialogHeaderProps`, ...).
 - Internal helper names should describe the domain behavior they own, such as
@@ -208,9 +205,10 @@ Typical structural subcomponents include `Root`, `Mask`, `Panel`, `Body`,
 
 ### Base file responsibility
 
-- Define slots, class names, and default props in `ComponentNameBase.ts`.
-- Declare the context that subcomponents consume (`createSafeContext` from
-  `src/utils`).
+- Define slots, class names, and default props in `base.ts` (one
+  `createComponentBase` call per public sub-component, all colocated).
+- Declare the context that subcomponents consume in `context.ts`
+  (`createSafeContext` from `src/hooks`).
 - Keep the base file focused on static metadata, pure helpers, and light context
   wiring.
 - Prefer `createComponentBase` for `cx`, `getSlotProps`, and `resolveProps`.
@@ -316,8 +314,8 @@ export { MyComponentCompound as MyComponent };
 - Keep JSX shallow. Move repeated or branching rendering into subcomponents.
 - Use `getSlotProps` for slot nodes. Use `cx` when you only need class
   composition without extra slot metadata.
-- Use `buildSlotAttrs` (from `src/customization`) inside subcomponents to
-  compose canonical slot attrs with context-resolved `classNames`/`slotProps`.
+- Use `buildSlotAttrs` (from `src/core`) inside subcomponents to compose
+  canonical slot attrs with context-resolved `classNames`/`slotProps`.
 - Use `clsx` through `createComponentBase` or directly. Do not add local
   string-join helpers.
 - Use small pure helpers for normalization, encoding, and equality checks.
@@ -328,8 +326,8 @@ export { MyComponentCompound as MyComponent };
   navigation, set `aria-disabled`, manage `tabIndex`, and block activation keys.
 - Memoization is allowed only when identity or repeated derivation actually
   matters. Do not add `useMemo` or `useCallback` by default.
-- Use `createSafeContext` (from `src/utils/createSafeContext`) so that a
-  subcomponent used outside its root raises a descriptive error.
+- Use `createSafeContext` (from `src/hooks`) so that a subcomponent used outside
+  its root raises a descriptive error.
 - Set `displayName` on the root (`'Button'`) and every subcomponent
   (`'Button.Label'`, `'Dialog.Header'`).
 
@@ -347,8 +345,8 @@ part falls into exactly one of three archetypes:
 
 The rules:
 
-1. **Every compound part declares its archetype in `ComponentNameBase.ts`.** A
-   one-line JSDoc on the slot or part reference is enough
+1. **Every compound part declares its archetype in `base.ts`.** A one-line JSDoc
+   on the slot or part reference is enough
    (`// @archetype inherited — wraps SparDialog.Title`). Reviewers should be
    able to read the base file and know which parts delegate, which are pure
    React, and which intentionally bypass upstream.
@@ -559,7 +557,7 @@ Before considering a component complete:
 - confirm the root is exported from `src/components/index.ts` (subcomponents are
   reached exclusively through the root)
 - confirm no CSS is emitted from `packages/react-spar/dist`
-- confirm slot classes are mirrored in `src/styling/slot-registry.ts`
+- confirm slot classes are mirrored in `src/slot-registry.ts`
 - confirm at least one smoke scenario in
   [`apps/react-app/src/App.tsx`](../../../apps/react-app/src/App.tsx) exercises
   the new compound anatomy end to end against the real tokens CSS import. If a

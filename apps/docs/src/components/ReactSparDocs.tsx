@@ -1,8 +1,8 @@
 import { useColorMode } from '@docusaurus/theme-common';
 import { type PropsWithChildren } from 'react';
-import { Accordion, Button, Checkbox, Dialog, SparReactProvider } from '@takeoff-ui/react-spar';
+import { Accordion, SparReactProvider } from '@takeoff-ui/react-spar';
 
-export { Accordion, Button, Checkbox, Dialog };
+export { Accordion };
 
 export function ReactSparDemoRoot({ children }: PropsWithChildren) {
   const { colorMode } = useColorMode();

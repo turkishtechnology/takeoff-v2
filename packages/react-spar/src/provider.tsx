@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 
-import type { ComponentCustomizationRegistry, ComponentName, ComponentsThemeMap } from './customization';
+import type { ComponentName, ComponentThemeRegistry, ComponentsThemeMap } from './core';
 
 export type ColorMode = 'light' | 'dark';
 
@@ -47,34 +47,24 @@ export const SparReactProvider = ({ children, colorMode = 'light', locale, compo
 
 export const useTheme = (): ThemeValue => {
   const context = useContext(SparReactContext);
-
   if (context === undefined) {
     throw new Error('useTheme must be used within a SparReactProvider');
   }
-
-  return {
-    colorMode: context.colorMode,
-  };
+  return { colorMode: context.colorMode };
 };
 
 /**
- * Reads the theme config for a known component name from `SparReactProvider`.
- * The return type is narrowed by the component key: `useComponentTheme('Button')`
- * returns `ComponentThemeConfig<ButtonProps, ButtonSlot, ButtonSlotProps> | undefined`.
- *
- * Passing an unknown component name is a compile-time error.
+ * Read the provider override config for a known component name. The return
+ * type narrows by key: `useComponentTheme('Accordion')` returns
+ * `ComponentThemeConfig<AccordionProps> | undefined`. Unknown names are a
+ * compile-time error.
  */
-export const useComponentTheme = <K extends ComponentName>(componentName: K): ComponentCustomizationRegistry[K] | undefined => {
+export const useComponentTheme = <K extends ComponentName>(componentName: K): ComponentThemeRegistry[K] | undefined => {
   const context = useContext(SparReactContext);
-  /*
-   * Indexed access on a `Partial<...>`-shaped map with a generic key cannot be
-   * narrowed by TypeScript without help: under non-strict-null tsconfigs (the
-   * docs site extends `@docusaurus/tsconfig`, which does not enable strict),
-   * `ComponentsThemeMap[K]` keeps its optional modifier and fails the variance
-   * check against `ComponentCustomizationRegistry[K]`. The runtime value is
-   * already `ComponentCustomizationRegistry[K] | undefined` by construction
-   * of `ComponentsThemeMap`, so this assertion is a typing bridge, not a
-   * behavioral change. Recorded as load-bearing in ADR-0006.
-   */
-  return context?.components?.[componentName] as ComponentCustomizationRegistry[K] | undefined;
+  // The runtime value is `ComponentThemeRegistry[K] | undefined` by
+  // construction, but indexing a `Partial<...>`-shaped map with a generic
+  // key keeps the optional modifier under non-strict-null tsconfigs (the
+  // docs site extends `@docusaurus/tsconfig`, which is not strict). The
+  // cast bridges typing only — it does not change behavior.
+  return context?.components?.[componentName] as ComponentThemeRegistry[K] | undefined;
 };

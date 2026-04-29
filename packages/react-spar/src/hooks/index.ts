@@ -1,3 +1,3 @@
-export { renderIconSymbol } from './renderIconSymbol';
 export { createSafeContext } from './createSafeContext';
+export type { SafeContextHook, SafeContextProvider, SafeContextProviderProps } from './createSafeContext';
 export { useDeprecationWarning } from './useDeprecationWarning';

@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
 
-import type { ClassNamesMap, SlotPropsMap } from '../../types';
+import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 /**
  * Visual grouping vocabulary mirrored from Takeoff Core (`tk-accordion`).
@@ -105,7 +105,9 @@ export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
   /** Orientation for keyboard navigation. */
   orientation?: 'vertical' | 'horizontal';
 
+  /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionSlot>;
+  /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<AccordionSlot>;
 
   ref?: Ref<HTMLDivElement>;
@@ -113,13 +115,16 @@ export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
 
 export interface AccordionItemProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
   /**
-   * Stable identity for this item. Forwarded to the Spar primitive verbatim
-   * and matched against `Accordion.activeIndex`.
+   * Stable identity for this item. Required so root controlled props
+   * (`activeIndex`, `defaultActiveIndex`) can target this item reliably.
+   * Forwarded to the Spar primitive verbatim.
    */
-  itemKey?: AccordionItemKey;
+  itemKey: AccordionItemKey;
   /** Disables this item only. */
   disabled?: boolean;
+  /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionItemSlot>;
+  /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<AccordionItemSlot>;
   ref?: Ref<HTMLDivElement>;
 }
@@ -127,18 +132,24 @@ export interface AccordionItemProps extends Omit<ComponentPropsWithoutRef<'div'>
 export interface AccordionHeaderProps extends Omit<ComponentPropsWithoutRef<'h3'>, 'classNames'> {
   /** HTML heading level (1-6). */
   level?: number;
+  /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionHeaderSlot>;
+  /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<AccordionHeaderSlot>;
 }
 
 export interface AccordionTriggerProps extends Omit<ComponentPropsWithoutRef<'button'>, 'classNames'> {
+  /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionTriggerSlot>;
+  /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<AccordionTriggerSlot>;
 }
 
 export interface AccordionContentProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
   /** Render content even while collapsed. */
   forceMount?: boolean;
+  /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionContentSlot>;
+  /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<AccordionContentSlot>;
 }

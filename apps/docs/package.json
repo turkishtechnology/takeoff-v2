@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "build:react-spar": "pnpm --filter @takeoff-ui/react-spar build",
-    "predev": "pnpm run build:react-spar",
+    "gen:api": "node scripts/generate-api-mdx.mjs",
+    "predev": "pnpm run build:react-spar && pnpm run gen:api",
     "dev": "docusaurus start",
-    "prebuild": "pnpm run build:react-spar",
+    "prebuild": "pnpm run build:react-spar && pnpm run gen:api",
     "build": "docusaurus build",
     "serve": "docusaurus serve",
     "check-types": "tsc --noEmit",

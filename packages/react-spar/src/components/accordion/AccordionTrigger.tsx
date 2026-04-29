@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import { AccordionTrigger as SparAccordionTrigger, useAccordionItemContext } from '@turkish-technology/spar';
 
-import { buildSlotAttrs } from '../../customization';
+import { buildSlotAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { AccordionTriggerBase } from './base';
@@ -47,7 +47,7 @@ export const AccordionTrigger = (props: AccordionTriggerProps) => {
   return (
     <SparAccordionTrigger {...rest} {...rootAttrs}>
       {arrowPosition === 'left' && arrow}
-      <span className="tk-accordion-item-trigger-label">{children}</span>
+      <span className="tk-accordion-item-title">{children}</span>
       {arrowPosition === 'right' && arrow}
     </SparAccordionTrigger>
   );

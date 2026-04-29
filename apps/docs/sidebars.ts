@@ -14,6 +14,12 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: ['roadmap', 'contributing'],
     },
+    {
+      type: 'category',
+      label: 'Components',
+      collapsed: false,
+      items: ['components/accordion'],
+    },
   ],
 };
 

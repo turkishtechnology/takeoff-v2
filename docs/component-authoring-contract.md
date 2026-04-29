@@ -30,6 +30,46 @@ Takeoff Core defines product-facing names and visual language:
 React Spar should preserve this vocabulary unless there is a strong
 React-specific reason not to.
 
+### React owns framework ergonomics
+
+Preserve Takeoff Core product vocabulary, not Web Component mechanics.
+
+Map these directly when Spar supports them:
+
+```txt
+activeIndex
+allowMultiple
+itemKey
+type
+mode
+size
+arrowPosition
+expandIcon
+collapseIcon
+hideArrows
+```
+
+Translate framework mechanics into React conventions:
+
+```txt
+tk-active-index-change -> onActiveIndexChange
+initial active state   -> defaultActiveIndex
+slots                  -> compound components
+```
+
+Do not expose Web Component-only shortcuts when React has a clearer shape:
+
+```txt
+Accordion.Item active
+Accordion.Item header
+slot="header"
+slot="content"
+onTkActiveIndexChange
+```
+
+If mapping is only prop naming or event naming, keep it inline or fix Spar so
+the wrapper can pass the prop through. Do not create an adapter hook for this.
+
 ### Spar owns behavior
 
 Spar owns:
@@ -218,6 +258,25 @@ Do not require:
 ```
 
 The trigger renders an internal arrow slot with stable styling hooks.
+
+Accordion item identity is `itemKey`.
+
+React examples and public types should require `Accordion.Item itemKey` so
+controlled root props (`activeIndex`, `defaultActiveIndex`) have a stable
+target. Spar may keep a runtime fallback for JavaScript or low-level usage, but
+takeoff-spar should guide TypeScript consumers toward explicit identity.
+
+Accordion uses `data-open` as the public open-state hook.
+
+`Accordion.Item` and `Accordion.Content` both emit `data-open` when open.
+takeoff-design recipes key open-state CSS off this attribute instead of Spar's
+`data-state` so rules stay attached when `forceMount` keeps closed panels in
+the DOM.
+
+`AccordionItem` mirrors Spar's active-index match in a `useMemo` because the
+attribute is set on `<SparAccordionItem>` itself, before Spar's item context is
+visible. Both `data-open` writes (item + content) are intentional. Do not
+collapse the duplication.
 
 ---
 

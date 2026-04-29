@@ -1,6 +1,6 @@
 import { AccordionHeader as SparAccordionHeader } from '@turkish-technology/spar';
 
-import { buildSlotAttrs } from '../../customization';
+import { buildSlotAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { AccordionHeaderBase } from './base';

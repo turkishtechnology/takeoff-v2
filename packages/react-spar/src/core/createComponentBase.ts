@@ -1,22 +1,14 @@
 import { clsx, type ClassValue } from 'clsx';
 
-import type { SlotClassNames } from '../types';
+import type { SlotClassNames } from './types';
 
 export interface CreateComponentBaseConfig<TProps, TSlot extends string> {
-  /** Stable identifier used for debugging and `displayName` correlation. */
   name: string;
-  /** Slot key tuple, declared once. Order is meaningful for documentation only. */
   slots: readonly TSlot[];
-  /** Canonical `tk-*` class for every slot. Empty strings are allowed. */
+  /** Canonical `tk-*` class for each slot. Empty strings are allowed. */
   classes: SlotClassNames<TSlot>;
-  /** Component-author defaults. Theme defaults from the provider override these. */
+  /** Author-side defaults. Provider theme defaults override these. */
   defaultProps?: Partial<TProps>;
-}
-
-export interface SlotAttrsOutput<TSlot extends string, TAttrs> {
-  'className': string | undefined;
-  'data-slot': TSlot;
-  'attrs': TAttrs;
 }
 
 export interface ComponentBase<TProps, TSlot extends string> {
@@ -24,29 +16,16 @@ export interface ComponentBase<TProps, TSlot extends string> {
   readonly slots: readonly TSlot[];
   readonly classes: SlotClassNames<TSlot>;
   readonly defaultProps: Partial<TProps>;
-
-  /** Pure passthrough to `clsx` so component code never reaches for it directly. */
   cx(...inputs: ClassValue[]): string;
-
-  /**
-   * Compose the canonical slot attrs (`data-slot` + class) with locally-passed
-   * attrs (instance className + any HTML attributes). Returns a single object
-   * suitable for `<X {...result}>` or further composition with `buildSlotAttrs`.
-   */
+  /** Returns `{ 'data-slot', className }` plus the rest of the passed attrs, with the canonical class concatenated. */
   getSlotProps<TAttrs extends { className?: string }>(slot: TSlot, attrs?: TAttrs): Omit<TAttrs, 'className'> & { 'data-slot': TSlot; 'className': string | undefined };
-
-  /**
-   * Apply default-prop precedence:
-   *   author defaults  →  provider/theme defaults  →  instance props.
-   * Instance always wins; theme wins over author defaults.
-   */
+  /** Layer order: author defaults → theme defaults → instance props (instance wins). */
   resolveProps<P extends Partial<TProps>>(props: P, themeDefaults?: Partial<TProps>): P;
 }
 
 /**
- * Single factory that every component's `*Base.ts` calls to mint a tiny,
- * typed kit of helpers. Centralizes class composition, slot tagging, and
- * default-prop precedence so the component code stays a thin adapter.
+ * Mint the tiny kit each component uses for class composition, slot tagging
+ * and default-prop merging. Keeps every wrapper a thin adapter over Spar.
  */
 export const createComponentBase = <TProps, TSlot extends string>(config: CreateComponentBaseConfig<TProps, TSlot>): ComponentBase<TProps, TSlot> => {
   const { name, slots, classes, defaultProps = {} as Partial<TProps> } = config;

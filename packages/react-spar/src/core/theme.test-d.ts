@@ -3,17 +3,17 @@ import { describe, expectTypeOf, it } from 'vitest';
 
 import type { AccordionProps } from '../components/accordion/types';
 import { useComponentTheme } from '../provider';
-import type { ClassNamesMap, SlotPropsMap } from '../types';
 
-import type { ComponentCustomizationRegistry, ComponentName, ComponentThemeConfig, ComponentsThemeMap } from './contracts';
+import type { ComponentName, ComponentThemeConfig, ComponentThemeRegistry, ComponentsThemeMap } from './theme';
+import type { ClassNamesMap, SlotPropsMap } from './types';
 
-describe('ComponentCustomizationRegistry — type surface', () => {
+describe('ComponentThemeRegistry — type surface', () => {
   it('narrows ComponentName to the registered set', () => {
     expectTypeOf<ComponentName>().toEqualTypeOf<'Accordion' | 'AccordionItem' | 'AccordionHeader' | 'AccordionTrigger' | 'AccordionContent'>();
   });
 
   it('binds each registry entry to its component props', () => {
-    expectTypeOf<ComponentCustomizationRegistry['Accordion']>().toEqualTypeOf<ComponentThemeConfig<AccordionProps>>();
+    expectTypeOf<ComponentThemeRegistry['Accordion']>().toEqualTypeOf<ComponentThemeConfig<AccordionProps>>();
   });
 
   it('exposes every registry entry as an optional slot on ComponentsThemeMap', () => {

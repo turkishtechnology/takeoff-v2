@@ -1,21 +1,15 @@
-import { createComponentBase } from '../../styling/createComponentBase';
+import { createComponentBase } from '../../core';
 
 import { DEFAULT_SIZE, DEFAULT_TYPE } from './defaults';
 import type { AccordionContentProps, AccordionHeaderProps, AccordionItemProps, AccordionProps, AccordionTriggerProps } from './types';
 
-/**
- * One `createComponentBase` instance per registered customization key. Each
- * entry today exposes a single canonical `root` slot; multi-slot keys can be
- * widened later without touching the helper API.
- */
 export const AccordionBase = createComponentBase<AccordionProps, 'root'>({
   name: 'Accordion',
   slots: ['root'] as const,
   classes: { root: 'tk-accordion' },
-  // `mode` is intentionally absent from the author defaults: the legacy
-  // `type='compact'` migration in Accordion.tsx needs to detect "consumer did
-  // not pass mode" so it can upgrade to `mode='compact'`. The DEFAULT_MODE
-  // fallback is applied by `normalizeTypeAndMode` after that detection.
+  // `mode` is intentionally absent: the legacy `type='compact'` migration in
+  // Accordion.tsx detects "consumer did not pass mode" and upgrades the value,
+  // and that detection has to run before the default fallback fills in.
   defaultProps: { type: DEFAULT_TYPE, size: DEFAULT_SIZE },
 });
 

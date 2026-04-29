@@ -4,6 +4,11 @@ Current-phase React package for Takeoff components backed by
 `@turkish-technology/spar`. Every component ships as a **compound surface** —
 state lives on the root and structure lives in named subcomponents.
 
+The public API preserves Takeoff Core product vocabulary (`activeIndex`,
+`itemKey`, `type`, `mode`, `size`) while translating framework mechanics into
+React conventions (`default*` props, `on*` callbacks, and compound children
+instead of Web Component slots).
+
 ## Reference
 
 - Spar documentation: https://spar.app.turkishtechlab.com/
@@ -173,10 +178,13 @@ props on any component.
   `onActiveIndexChange`, `preventCollapse`.
 - Root visual props: `type`, `mode`, `size`, `arrowPosition`, `hideArrows`,
   `expandIcon`, `collapseIcon`.
-- Item state props: `itemKey`, `disabled`.
+- Item state props: required `itemKey`, `disabled`.
 - The arrow is rendered automatically inside every `Accordion.Trigger`. Hide it
   with `hideArrows` on the root, swap glyphs with `expandIcon`/`collapseIcon`,
   or move it with `arrowPosition`.
+- Web Component shortcuts such as item-level `active`, `header`, and
+  `onTkActiveIndexChange` are intentionally not part of the React surface; use
+  root state props and compound children instead.
 
 ### Input
 

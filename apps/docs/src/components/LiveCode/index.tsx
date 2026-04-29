@@ -21,9 +21,18 @@ interface LiveCodeProps {
   previewMinHeight?: number;
   previewWrapper?: ComponentType<PropsWithChildren>;
   scope?: Record<string, unknown>;
+  /**
+   * Switch the demo into react-live's "no-inline" evaluation mode. The demo
+   * source must declare a component and call `render(<Demo />)` at the end.
+   * This is the only way to use React hooks (`useState`, `useEffect`, …) in
+   * a demo: react-live evaluates the IIFE form at module load time, which
+   * lands hook calls outside any component render and breaks them. Default
+   * is `false` (single JSX expression).
+   */
+  noInline?: boolean;
 }
 
-export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 220, previewWrapper, scope = {} }: LiveCodeProps) => {
+export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 220, previewWrapper, scope = {}, noInline = false }: LiveCodeProps) => {
   const { colorMode } = useColorMode();
   const selectedTheme = colorMode === 'dark' ? themes.vsDark : themes.github;
   const [activeTab, setActiveTab] = useState<LiveCodeTab>(defaultTab);
@@ -223,10 +232,10 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
   return (
     <div className="live-code-container">
       <React.Fragment key={resetKey}>
-        <LiveProvider code={formattedCode} scope={liveScope} noInline={false}>
+        <LiveProvider code={formattedCode} scope={liveScope} noInline={noInline}>
           <div className="live-preview-card">
             <div className="live-preview-wrapper" style={{ minHeight: `${previewMinHeight}px` }}>
-              <SnapshotPreview onHasRendered={() => setHasRenderedOnce(true)} previewWrapper={previewWrapper} scope={liveScope} />
+              <SnapshotPreview onHasRendered={() => setHasRenderedOnce(true)} previewWrapper={previewWrapper} scope={liveScope} noInline={noInline} />
               <PreviewErrorOverlay hasRenderedOnce={hasRenderedOnce} onShowInCode={handleShowInCode} onReset={handleReset} />
             </div>
             <PreviewErrorFooter hasRenderedOnce={hasRenderedOnce} isCodePanelOpen={!isCodeCollapsed} onShowInCode={handleShowInCode} onReset={handleReset} />

@@ -1,6 +1,6 @@
-import { AccordionContent as SparAccordionContent } from '@turkish-technology/spar';
+import { AccordionContent as SparAccordionContent, useCollapsibleContext } from '@turkish-technology/spar';
 
-import { buildSlotAttrs } from '../../customization';
+import { buildSlotAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { AccordionContentBase } from './base';
@@ -8,6 +8,9 @@ import type { AccordionContentProps } from './types';
 
 export const AccordionContent = (props: AccordionContentProps) => {
   const theme = useComponentTheme('AccordionContent');
+  // Reading the same context Spar's CollapsibleContent uses keeps `data-open`
+  // attached even when `forceMount` keeps a closed panel rendered.
+  const { isOpen } = useCollapsibleContext();
   const merged = AccordionContentBase.resolveProps(props, theme?.defaultProps);
   const { className, classNames, slotProps, children, ...rest } = merged;
 
@@ -20,7 +23,7 @@ export const AccordionContent = (props: AccordionContentProps) => {
   });
 
   return (
-    <SparAccordionContent {...rest} {...rootAttrs}>
+    <SparAccordionContent {...rest} {...rootAttrs} data-open={isOpen ? '' : undefined}>
       {children}
     </SparAccordionContent>
   );

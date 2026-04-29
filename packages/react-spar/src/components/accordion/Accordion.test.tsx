@@ -228,6 +228,7 @@ describe('Accordion — compound anatomy', () => {
 
     const trigger = getByTestId('anatomy-trigger');
     expect(trigger).toHaveClass('tk-accordion-item-header');
+    expect(trigger.querySelector('.tk-accordion-item-title')).not.toBeNull();
 
     const content = getByTestId('anatomy-content');
     expect(content).toHaveClass('tk-accordion-item-content');
@@ -239,6 +240,51 @@ describe('Accordion — compound anatomy', () => {
     expect(Accordion.Header.displayName).toBe('Accordion.Header');
     expect(Accordion.Trigger.displayName).toBe('Accordion.Trigger');
     expect(Accordion.Content.displayName).toBe('Accordion.Content');
+  });
+});
+
+describe('Accordion — takeoff-design data-open contract', () => {
+  it('marks the active item and its content with data-open so [data-open] CSS rules apply', () => {
+    const { getByTestId } = render(
+      <Accordion defaultActiveIndex="a">
+        {renderItem('a')}
+        {renderItem('b')}
+      </Accordion>,
+    );
+
+    const itemA = getByTestId('item-a');
+    expect(itemA).toHaveAttribute('data-open', '');
+    const contentA = getByTestId('content-a');
+    expect(contentA).toHaveAttribute('data-open', '');
+
+    const itemB = getByTestId('item-b');
+    expect(itemB).not.toHaveAttribute('data-open');
+  });
+
+  it('updates data-open when a new item is selected', () => {
+    const { getByTestId } = render(
+      <Accordion defaultActiveIndex="a">
+        {renderItem('a')}
+        {renderItem('b')}
+      </Accordion>,
+    );
+
+    fireEvent.click(getByTestId('trigger-b'));
+
+    expect(getByTestId('item-a')).not.toHaveAttribute('data-open');
+    expect(getByTestId('item-b')).toHaveAttribute('data-open', '');
+  });
+
+  it('flags every active item in allowMultiple mode', () => {
+    const { getByTestId } = render(
+      <Accordion allowMultiple defaultActiveIndex={['a', 'b']}>
+        {renderItems(['a', 'b', 'c'])}
+      </Accordion>,
+    );
+
+    expect(getByTestId('item-a')).toHaveAttribute('data-open', '');
+    expect(getByTestId('item-b')).toHaveAttribute('data-open', '');
+    expect(getByTestId('item-c')).not.toHaveAttribute('data-open');
   });
 });
 

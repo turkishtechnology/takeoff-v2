@@ -1,17 +1,16 @@
 import type { ReactNode } from 'react';
 
-import { createSafeContext } from '../../utils';
+import { createSafeContext } from '../../hooks';
 
 import type { AccordionArrowPosition, AccordionMode, AccordionSize, AccordionType } from './types';
 
 /**
- * Context value handed to descendant subcomponents. The legacy `'compact'`
- * value of {@link AccordionType} is normalized away before the provider
- * mounts, so subcomponents only see the canonical visual-grouping vocabulary.
+ * Visual state cascaded from the root to descendant subcomponents.
  *
- * The arrow visual props live on the root and cascade through this context
- * so {@link AccordionTrigger} can render the arrow without consumers having
- * to place it manually.
+ * `type` is narrowed: the legacy `'compact'` value is normalized away in
+ * `Accordion.tsx` before this provider mounts, so subcomponents only see the
+ * canonical grouping vocabulary. The arrow visuals live here so the trigger
+ * can render its own arrow span without consumers placing it manually.
  */
 export interface AccordionVariantContextValue {
   type: Exclude<AccordionType, 'compact'>;
