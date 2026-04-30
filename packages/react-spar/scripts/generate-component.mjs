@@ -92,7 +92,7 @@ export const ${name}Base = createComponentBase<${name}Props, 'root'>({
 
 writeFileSync(
   resolve(componentDir, `${name}.tsx`),
-  `import { buildSlotAttrs } from '../../core';
+  `import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { ${name}Base } from './base';
@@ -102,19 +102,11 @@ import type { ${name}Props } from './types';
 // ${name}Props with its public surface. Until then this renders a plain <div>.
 export const ${name} = (props: ${name}Props) => {
   const theme = useComponentTheme('${name}');
-  const merged = ${name}Base.resolveProps(props, theme?.defaultProps);
-  const { className, classNames, slotProps, children, ...rest } = merged;
-
-  const rootAttrs = buildSlotAttrs(${name}Base.getSlotProps('root', { className }), 'root', {
-    themeSlotProps: theme?.slotProps,
-    themeClassNames: theme?.classNames,
-    themeClassName: theme?.className,
-    instanceSlotProps: slotProps,
-    instanceClassNames: classNames,
-  });
+  const { rootAttrs, rest } = composeRootAttrs(${name}Base, props, theme);
+  const { children, ...domProps } = rest;
 
   return (
-    <div {...rest} {...rootAttrs}>
+    <div {...domProps} {...rootAttrs}>
       {children}
     </div>
   );

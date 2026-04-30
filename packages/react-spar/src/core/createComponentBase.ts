@@ -2,6 +2,14 @@ import { clsx, type ClassValue } from 'clsx';
 
 import type { SlotClassNames } from './types';
 
+type KebabCase<S extends string> = S extends `${infer First}${infer Rest}`
+  ? First extends Lowercase<First>
+    ? `${First}${KebabCase<Rest>}`
+    : `-${Lowercase<First>}${KebabCase<Rest>}`
+  : S;
+
+export type DataSlotName<TSlot extends string> = KebabCase<TSlot>;
+
 export interface CreateComponentBaseConfig<TProps, TSlot extends string> {
   name: string;
   slots: readonly TSlot[];
@@ -17,17 +25,25 @@ export interface ComponentBase<TProps, TSlot extends string> {
   readonly classes: SlotClassNames<TSlot>;
   readonly defaultProps: Partial<TProps>;
   cx(...inputs: ClassValue[]): string;
-  /** Returns `{ 'data-slot', className }` plus the rest of the passed attrs, with the canonical class concatenated. */
-  getSlotProps<TAttrs extends { className?: string }>(slot: TSlot, attrs?: TAttrs): Omit<TAttrs, 'className'> & { 'data-slot': TSlot; 'className': string | undefined };
+  /** Returns `{ 'data-slot', className }` plus attrs, with the canonical class concatenated. */
+  getSlotProps<TAttrs extends { className?: string }>(
+    slot: TSlot,
+    attrs?: TAttrs,
+  ): Omit<TAttrs, 'className'> & { 'data-slot': DataSlotName<TSlot>; 'className': string | undefined };
   /** Layer order: author defaults → theme defaults → instance props (instance wins). */
   resolveProps<P extends Partial<TProps>>(props: P, themeDefaults?: Partial<TProps>): P;
 }
+
+const toDataSlotName = (slot: string): string =>
+  slot.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
 
 /**
  * Mint the tiny kit each component uses for class composition, slot tagging
  * and default-prop merging. Keeps every wrapper a thin adapter over Spar.
  */
-export const createComponentBase = <TProps, TSlot extends string>(config: CreateComponentBaseConfig<TProps, TSlot>): ComponentBase<TProps, TSlot> => {
+export const createComponentBase = <TProps, TSlot extends string>(
+  config: CreateComponentBaseConfig<TProps, TSlot>,
+): ComponentBase<TProps, TSlot> => {
   const { name, slots, classes, defaultProps = {} as Partial<TProps> } = config;
 
   const cx = (...inputs: ClassValue[]): string => clsx(...inputs);
@@ -35,12 +51,12 @@ export const createComponentBase = <TProps, TSlot extends string>(config: Create
   const getSlotProps = <TAttrs extends { className?: string }>(
     slot: TSlot,
     attrs?: TAttrs,
-  ): Omit<TAttrs, 'className'> & { 'data-slot': TSlot; 'className': string | undefined } => {
+  ): Omit<TAttrs, 'className'> & { 'data-slot': DataSlotName<TSlot>; 'className': string | undefined } => {
     const { className: instanceClassName, ...rest } = (attrs ?? {}) as TAttrs;
     const composed = cx(classes[slot], instanceClassName);
     return {
       ...(rest as Omit<TAttrs, 'className'>),
-      'data-slot': slot,
+      'data-slot': toDataSlotName(slot) as DataSlotName<TSlot>,
       'className': composed || undefined,
     };
   };

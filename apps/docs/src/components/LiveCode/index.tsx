@@ -30,9 +30,26 @@ interface LiveCodeProps {
    * is `false` (single JSX expression).
    */
   noInline?: boolean;
+  /**
+   * When `false`, the code panel becomes display-only: react-live still
+   * renders the preview, but the editable textarea, prettier formatting,
+   * and reset/error tooling are skipped. Use it for the supporting demos
+   * on a component page so only the single Playground stays interactive.
+   * Default is `true`.
+   */
+  editable?: boolean;
 }
 
-export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 220, previewWrapper, scope = {}, noInline = false }: LiveCodeProps) => {
+export const LiveCode = ({
+  code,
+  cssCode,
+  defaultTab = 'js',
+  previewMinHeight = 220,
+  previewWrapper,
+  scope = {},
+  noInline = false,
+  editable = true,
+}: LiveCodeProps) => {
   const { colorMode } = useColorMode();
   const selectedTheme = colorMode === 'dark' ? themes.vsDark : themes.github;
   const [activeTab, setActiveTab] = useState<LiveCodeTab>(defaultTab);
@@ -62,6 +79,11 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
   useEffect(() => {
     if (!code) {
       setFormattedCode('');
+      return;
+    }
+
+    if (!editable) {
+      setFormattedCode(code);
       return;
     }
 
@@ -101,7 +123,7 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
     return () => {
       isCancelled = true;
     };
-  }, [code]);
+  }, [code, editable]);
 
   useEffect(() => {
     if (!cssCode) {
@@ -236,14 +258,16 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
           <div className="live-preview-card">
             <div className="live-preview-wrapper" style={{ minHeight: `${previewMinHeight}px` }}>
               <SnapshotPreview onHasRendered={() => setHasRenderedOnce(true)} previewWrapper={previewWrapper} scope={liveScope} noInline={noInline} />
-              <PreviewErrorOverlay hasRenderedOnce={hasRenderedOnce} onShowInCode={handleShowInCode} onReset={handleReset} />
+              {editable && <PreviewErrorOverlay hasRenderedOnce={hasRenderedOnce} onShowInCode={handleShowInCode} onReset={handleReset} />}
             </div>
-            <PreviewErrorFooter hasRenderedOnce={hasRenderedOnce} isCodePanelOpen={!isCodeCollapsed} onShowInCode={handleShowInCode} onReset={handleReset} />
+            {editable && (
+              <PreviewErrorFooter hasRenderedOnce={hasRenderedOnce} isCodePanelOpen={!isCodeCollapsed} onShowInCode={handleShowInCode} onReset={handleReset} />
+            )}
           </div>
 
           <CollapsibleCodeBlock codeBlockRef={codeBlockRef} isCollapsed={isCodeCollapsed} onToggle={handleToggleCode}>
             <div className="live-code-wrapper">
-              <CodeErrorBanner onCopy={handleCopyError} onDismiss={handleDismissError} />
+              {editable && <CodeErrorBanner onCopy={handleCopyError} onDismiss={handleDismissError} />}
               <div className="live-code-header">
                 <span className="live-code-icon">
                   {activeTab === 'js' ? (
@@ -339,7 +363,32 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
               </div>
 
               {activeTab === 'js' ? (
-                <LiveEditor theme={selectedTheme} className="live-editor" code={formattedCode} />
+                editable ? (
+                  <LiveEditor theme={selectedTheme} className="live-editor" code={formattedCode} />
+                ) : (
+                  <Highlight theme={selectedTheme} code={formattedCode} language="tsx">
+                    {({ className, style, tokens, getLineProps, getTokenProps }) => (
+                      <pre
+                        className={`live-editor ${className}`}
+                        style={{
+                          ...style,
+                          overflowX: 'auto',
+                          overflowY: 'auto',
+                          whiteSpace: 'pre',
+                          wordWrap: 'normal',
+                        }}
+                      >
+                        {tokens.map((line, lineIndex) => (
+                          <div key={lineIndex} {...getLineProps({ line })}>
+                            {line.map((token, tokenIndex) => (
+                              <span key={tokenIndex} {...getTokenProps({ token })} />
+                            ))}
+                          </div>
+                        ))}
+                      </pre>
+                    )}
+                  </Highlight>
+                )
               ) : (
                 <Highlight theme={selectedTheme} code={formattedCssCode} language="css">
                   {({ className, style, tokens, getLineProps, getTokenProps }) => (

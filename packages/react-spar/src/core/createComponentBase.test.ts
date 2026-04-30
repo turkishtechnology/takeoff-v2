@@ -7,6 +7,7 @@ interface FixtureProps {
   size?: 'base' | 'large';
 }
 type FixtureSlot = 'root' | 'arrow';
+type CompoundSlot = 'root' | 'leadingIcon';
 
 const buildFixture = () =>
   createComponentBase<FixtureProps, FixtureSlot>({
@@ -25,6 +26,15 @@ describe('createComponentBase — getSlotProps', () => {
   it('appends instance className onto the canonical class', () => {
     const Base = buildFixture();
     expect(Base.getSlotProps('root', { className: 'custom' })).toEqual({ 'data-slot': 'root', 'className': 'tk-fixture custom' });
+  });
+
+  it('serializes camelCase slot keys as kebab-case data-slot values', () => {
+    const Base = createComponentBase<FixtureProps, CompoundSlot>({
+      name: 'CompoundFixture',
+      slots: ['root', 'leadingIcon'] as const,
+      classes: { root: 'tk-fixture', leadingIcon: 'tk-fixture-leading-icon' },
+    });
+    expect(Base.getSlotProps('leadingIcon')).toEqual({ 'data-slot': 'leading-icon', 'className': 'tk-fixture-leading-icon' });
   });
 
   it('forwards extra attrs (style, aria-*) verbatim', () => {

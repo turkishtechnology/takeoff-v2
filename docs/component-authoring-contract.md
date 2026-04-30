@@ -270,13 +270,64 @@ Accordion uses `data-open` as the public open-state hook.
 
 `Accordion.Item` and `Accordion.Content` both emit `data-open` when open.
 takeoff-design recipes key open-state CSS off this attribute instead of Spar's
-`data-state` so rules stay attached when `forceMount` keeps closed panels in
-the DOM.
+`data-state` so rules stay attached when `forceMount` keeps closed panels in the
+DOM.
 
-`AccordionItem` mirrors Spar's active-index match in a `useMemo` because the
-attribute is set on `<SparAccordionItem>` itself, before Spar's item context is
-visible. Both `data-open` writes (item + content) are intentional. Do not
-collapse the duplication.
+`AccordionItem` computes the match locally (a pure `isItemActive` helper)
+because the attribute is set on `<SparAccordionItem>` itself, before Spar's item
+context is visible. Both `data-open` writes (item + content) are intentional. Do
+not collapse the duplication.
+
+---
+
+## Wrapper boilerplate
+
+Single-slot wrappers use `composeRootAttrs` from `core/`. It runs the merge
+every wrapper needs: layer
+`(author defaults → theme defaults → instance props)`, then compose the
+canonical root-slot attrs (`data-slot`, `tk-*` class, theme/instance overrides).
+Returns the attrs and the leftover props with the layering keys (`className`,
+`classNames`, `slotProps`) already stripped.
+
+```tsx
+export const Header = (props: HeaderProps) => {
+  const theme = useComponentTheme('Header');
+  const { rootAttrs, rest } = composeRootAttrs(HeaderBase, props, theme);
+  const { children, ...spar } = rest;
+
+  return (
+    <SparHeader {...spar} {...rootAttrs}>
+      {children}
+    </SparHeader>
+  );
+};
+```
+
+Do not inline the `resolveProps` + `buildSlotAttrs` chain. Any contract change
+(slotProps precedence, theme-className shortcut, etc.) lives in one place.
+
+`composeRootAttrs` takes `theme` as a parameter. Wrappers call
+`useComponentTheme(...)` themselves so the theme dependency stays visible at the
+top of the function and the helper stays pure (no context read or React state
+inside).
+
+---
+
+## Default placement
+
+Visual defaults live at the destructure site of the consuming wrapper, not in
+`base.defaultProps`:
+
+```tsx
+const { type = 'grouped', size = 'base', ... } = rest;
+```
+
+Single source of truth, next to the prop it fills, narrowed by TypeScript.
+
+Exception: leave a prop undefaulted when downstream code must detect "consumer
+did not pass it" — for example, the legacy `type='compact'` migration in
+Accordion has to see `mode === undefined` before the fallback fills in. Document
+the exception inline at the destructure site.
 
 ---
 
@@ -330,6 +381,24 @@ interface AccordionProps extends Omit<
 
 If Spar and takeoff-spar props are identical after upstream alignment, pass them
 through directly.
+
+---
+
+## Docs demos
+
+Each component page in `apps/docs` has exactly one editable demo. It is named
+`Playground` and uses `<LiveCode>` with default `editable={true}`. Authors run
+prettier on its source at runtime, so the source string can stay in
+template-literal-friendly indentation.
+
+All other demos on the page are display-only and pass `editable={false}`. They
+still render the live preview, but skip the editable textarea, prettier
+formatting, and reset/error tooling. Pre-format their source strings the way
+they should appear; runtime prettier does not run on them.
+
+This keeps each page weight bounded — one editable surface per component instead
+of one per example — without losing the rendered preview for the supporting
+demos.
 
 ---
 

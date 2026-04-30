@@ -11,6 +11,10 @@ identifiers. The corresponding `data-slot` value in rendered DOM uses
 
 Example: `leadingIcon` (key) → `data-slot="leading-icon"` (DOM).
 
+`createComponentBase().getSlotProps(...)` performs this conversion. Component
+wrappers should not hand-write `data-slot` values unless a lower-level primitive
+already owns the slot node.
+
 ## Anatomy hooks
 
 | Attribute   | Purpose                                      | Convention                                                     |

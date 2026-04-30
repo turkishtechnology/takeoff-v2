@@ -1,43 +1,32 @@
-import { useMemo } from 'react';
-
 import { AccordionItem as SparAccordionItem, type AccordionItemProps as SparAccordionItemProps, useAccordionContext } from '@turkish-technology/spar';
 
-import { buildSlotAttrs } from '../../core';
+import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { AccordionItemBase } from './base';
 import { useAccordionVariant } from './context';
-import type { AccordionItemProps } from './types';
+import type { AccordionActiveIndex, AccordionItemKey, AccordionItemProps } from './types';
+
+const isItemActive = (activeIndex: AccordionActiveIndex | undefined, itemKey: AccordionItemKey, allowMultiple: boolean | undefined): boolean => {
+  if (allowMultiple) {
+    return Array.isArray(activeIndex) && activeIndex.includes(itemKey);
+  }
+  return activeIndex === itemKey;
+};
 
 export const AccordionItem = (props: AccordionItemProps) => {
   const theme = useComponentTheme('AccordionItem');
   const { type, mode, size } = useAccordionVariant('Accordion.Item');
-  const accordionContext = useAccordionContext();
-  const merged = AccordionItemBase.resolveProps(props, theme?.defaultProps);
-  const { className, classNames, slotProps, children, itemKey, ...rest } = merged;
+  const { activeIndex, allowMultiple } = useAccordionContext();
 
-  // Mirror Spar's active-index match into a `data-open` flag so the takeoff
-  // recipe — which keys all "open" rules off `[data-open]` — stays attached
-  // alongside Spar's own `data-state`.
-  const isOpen = useMemo(() => {
-    if (!accordionContext.allowMultiple) {
-      return accordionContext.activeIndex === itemKey;
-    }
-    const activeArray = Array.isArray(accordionContext.activeIndex) ? accordionContext.activeIndex : [];
-    return activeArray.includes(itemKey);
-  }, [accordionContext.allowMultiple, accordionContext.activeIndex, itemKey]);
+  const { rootAttrs, rest } = composeRootAttrs(AccordionItemBase, props, theme);
+  const { itemKey, children, ...spar } = rest;
 
-  const rootAttrs = buildSlotAttrs(AccordionItemBase.getSlotProps('root', { className }), 'root', {
-    themeSlotProps: theme?.slotProps,
-    themeClassNames: theme?.classNames,
-    themeClassName: theme?.className,
-    instanceSlotProps: slotProps,
-    instanceClassNames: classNames,
-  });
+  const isOpen = isItemActive(activeIndex, itemKey, allowMultiple);
 
   return (
     <SparAccordionItem
-      {...(rest as SparAccordionItemProps)}
+      {...(spar as SparAccordionItemProps)}
       itemKey={itemKey}
       {...rootAttrs}
       data-type={type}

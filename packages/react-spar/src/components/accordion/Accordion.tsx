@@ -1,6 +1,6 @@
 import { Accordion as SparAccordion, type AccordionProps as SparAccordionProps } from '@turkish-technology/spar';
 
-import { buildSlotAttrs } from '../../core';
+import { composeRootAttrs } from '../../core';
 import { useDeprecationWarning } from '../../hooks';
 import { useComponentTheme } from '../../provider';
 
@@ -23,33 +23,25 @@ const normalizeTypeAndMode = (type: AccordionType, mode: AccordionMode | undefin
 
 export const Accordion = (props: AccordionProps) => {
   const theme = useComponentTheme('Accordion');
-  const merged = AccordionBase.resolveProps(props, theme?.defaultProps);
+  const { rootAttrs, rest } = composeRootAttrs(AccordionBase, props, theme);
+
   const {
     type = DEFAULT_TYPE,
+    // `mode` is left undefaulted so `normalizeTypeAndMode` can detect the
+    // legacy `type='compact'` migration case (see Default placement rule).
     mode,
     size = DEFAULT_SIZE,
     arrowPosition = DEFAULT_ARROW_POSITION,
     hideArrows = false,
     expandIcon,
     collapseIcon,
-    classNames,
-    slotProps,
-    className,
     children,
     ...behavior
-  } = merged;
+  } = rest;
 
   useDeprecationWarning(type === 'compact', LEGACY_COMPACT_TYPE_MESSAGE);
 
   const { type: effectiveType, mode: effectiveMode } = normalizeTypeAndMode(type, mode);
-
-  const rootAttrs = buildSlotAttrs(AccordionBase.getSlotProps('root', { className }), 'root', {
-    themeSlotProps: theme?.slotProps,
-    themeClassNames: theme?.classNames,
-    themeClassName: theme?.className,
-    instanceSlotProps: slotProps,
-    instanceClassNames: classNames,
-  });
 
   return (
     <AccordionVariantProvider

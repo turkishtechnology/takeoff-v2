@@ -1,7 +1,10 @@
 /* ==========================================================================
-   LiveCode — interactive preview + editor used inside Playground MDX demos.
-   Every surface flexes on --docs-* tokens defined in docusaurus-overrides.css,
-   so this card sits inside the same runway visual family as the landing.
+   LiveCode — preview + code panel used by component MDX demos. The Playground
+   demo on each page is editable; the rest pass editable={false} and reuse the
+   same shell with the textarea, prettier formatting, and error tooling
+   skipped. Every surface flexes on --docs-* tokens defined in
+   docusaurus-overrides.css, so this card sits inside the same runway visual
+   family as the landing.
    ========================================================================== */
 
 .live-code-container {

@@ -2,28 +2,35 @@ import type { ReactNode } from 'react';
 
 import { AccordionTrigger as SparAccordionTrigger, useAccordionItemContext } from '@turkish-technology/spar';
 
-import { buildSlotAttrs } from '../../core';
+import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { AccordionTriggerBase } from './base';
 import { useAccordionVariant } from './context';
 import type { AccordionArrowPosition, AccordionTriggerProps } from './types';
 
-const DefaultExpandIcon = () => (
+const DEFAULT_EXPAND_ICON: ReactNode = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
     <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
-const DefaultCollapseIcon = () => (
+const DEFAULT_COLLAPSE_ICON: ReactNode = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
     <path d="M4 10L8 6L12 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
-const renderArrow = (isOpen: boolean, expandIcon: ReactNode, collapseIcon: ReactNode, arrowPosition: AccordionArrowPosition): ReactNode => (
+interface AccordionArrowProps {
+  isOpen: boolean;
+  arrowPosition: AccordionArrowPosition;
+  expandIcon?: ReactNode;
+  collapseIcon?: ReactNode;
+}
+
+const AccordionArrow = ({ isOpen, arrowPosition, expandIcon, collapseIcon }: AccordionArrowProps) => (
   <span className="tk-accordion-item-arrow" aria-hidden="true" data-state={isOpen ? 'open' : 'closed'} data-position={arrowPosition}>
-    {isOpen ? (collapseIcon ?? <DefaultCollapseIcon />) : (expandIcon ?? <DefaultExpandIcon />)}
+    {isOpen ? (collapseIcon ?? DEFAULT_COLLAPSE_ICON) : (expandIcon ?? DEFAULT_EXPAND_ICON)}
   </span>
 );
 
@@ -31,21 +38,14 @@ export const AccordionTrigger = (props: AccordionTriggerProps) => {
   const theme = useComponentTheme('AccordionTrigger');
   const { arrowPosition, hideArrows, expandIcon, collapseIcon } = useAccordionVariant('Accordion.Trigger');
   const { isOpen } = useAccordionItemContext();
-  const merged = AccordionTriggerBase.resolveProps(props, theme?.defaultProps);
-  const { className, classNames, slotProps, children, ...rest } = merged;
 
-  const rootAttrs = buildSlotAttrs(AccordionTriggerBase.getSlotProps('root', { className }), 'root', {
-    themeSlotProps: theme?.slotProps,
-    themeClassNames: theme?.classNames,
-    themeClassName: theme?.className,
-    instanceSlotProps: slotProps,
-    instanceClassNames: classNames,
-  });
+  const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerBase, props, theme);
+  const { children, ...spar } = rest;
 
-  const arrow = hideArrows ? null : renderArrow(isOpen, expandIcon, collapseIcon, arrowPosition);
+  const arrow = hideArrows ? null : <AccordionArrow isOpen={isOpen} arrowPosition={arrowPosition} expandIcon={expandIcon} collapseIcon={collapseIcon} />;
 
   return (
-    <SparAccordionTrigger {...rest} {...rootAttrs}>
+    <SparAccordionTrigger {...spar} {...rootAttrs}>
       {arrowPosition === 'left' && arrow}
       <span className="tk-accordion-item-title">{children}</span>
       {arrowPosition === 'right' && arrow}
