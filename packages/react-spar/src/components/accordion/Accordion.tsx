@@ -35,6 +35,7 @@ export const Accordion = (props: AccordionProps) => {
     hideArrows = false,
     expandIcon,
     collapseIcon,
+    disabled = false,
     children,
     ...behavior
   } = rest;
@@ -55,7 +56,15 @@ export const Accordion = (props: AccordionProps) => {
         collapseIcon,
       }}
     >
-      <SparAccordion {...(behavior as SparAccordionProps)} {...rootAttrs} data-mode={effectiveMode} data-size={size} data-arrow-position={arrowPosition}>
+      <SparAccordion
+        {...(behavior as SparAccordionProps)}
+        disabled={disabled}
+        {...rootAttrs}
+        data-mode={effectiveMode}
+        data-size={size}
+        data-arrow-position={arrowPosition}
+        data-disabled={disabled ? '' : undefined}
+      >
         {children}
       </SparAccordion>
     </AccordionVariantProvider>

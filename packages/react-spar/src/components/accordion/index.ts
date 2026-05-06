@@ -15,8 +15,10 @@ export { Accordion };
 
 export type {
   AccordionActiveIndex,
+  AccordionActiveIndexChangeHandler,
   AccordionArrowPosition,
   AccordionContentProps,
+  AccordionHeadingLevel,
   AccordionHeaderProps,
   AccordionItemKey,
   AccordionItemProps,

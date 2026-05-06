@@ -290,9 +290,9 @@ props on the root so Spar owns the open/closed state model.
 
 #### Events {#accordion-events}
 
-| Name                                     | Type                                                 | Default   | Description                        |
-| ---------------------------------------- | ---------------------------------------------------- | --------- | ---------------------------------- |
-| <ApiBadge label="onActiveIndexChange" /> | <code>(next: AccordionActiveIndex) =&gt; void</code> | undefined | Fired when the active set changes. |
+| Name                                     | Type                                           | Default   | Description                        |
+| ---------------------------------------- | ---------------------------------------------- | --------- | ---------------------------------- |
+| <ApiBadge label="onActiveIndexChange" /> | <code>AccordionActiveIndexChangeHandler</code> | undefined | Fired when the active set changes. |
 
 #### Data attributes {#accordion-data-attributes}
 
@@ -333,7 +333,7 @@ props on the root so Spar owns the open/closed state model.
 | Name                            | Type                                                                                | Default   | Description                                                  |
 | ------------------------------- | ----------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
 | <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | undefined | `Accordion.Trigger` element rendered inside the heading tag. |
-| <ApiBadge label="level" />      | <code>number</code>                                                                 | undefined | HTML heading level (1-6).                                    |
+| <ApiBadge label="level" />      | <code>AccordionHeadingLevel</code>                                                  | undefined | HTML heading level (1-6).                                    |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | undefined | Per-slot class name overrides.                               |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | undefined | Per-slot HTML attribute overrides.                           |
 | <ApiBadge label="className" />  | <code>string</code>                                                                 | undefined | Appends custom classes to the root slot of this part.        |

@@ -23,12 +23,14 @@ export const AccordionItem = (props: AccordionItemProps) => {
   const { itemKey, children, ...spar } = rest;
 
   const isOpen = isItemActive(activeIndex, itemKey, allowMultiple);
+  const itemClassName = AccordionItemBase.cx(rootAttrs.className, type, mode, size, isOpen && 'open');
 
   return (
     <SparAccordionItem
       {...(spar as SparAccordionItemProps)}
       itemKey={itemKey}
       {...rootAttrs}
+      className={itemClassName}
       data-type={type}
       data-mode={mode}
       data-size={size}

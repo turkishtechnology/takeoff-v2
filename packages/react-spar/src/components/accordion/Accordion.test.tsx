@@ -27,7 +27,7 @@ describe('Accordion — type / mode contract', () => {
     warnSpy.mockRestore();
   });
 
-  it('emits the default mode and size on root and the canonical type/mode/size on the item', () => {
+  it('emits root mode/size and item visual type/mode/size hooks', () => {
     const { container, getByTestId } = render(<Accordion>{renderItem('one')}</Accordion>);
     const root = container.querySelector('[data-slot="root"]');
     expect(root).toHaveAttribute('data-mode', 'default');
@@ -75,11 +75,46 @@ describe('Accordion — type / mode contract', () => {
     expect(getByTestId('item-one')).toHaveAttribute('data-type', 'divided');
     expect(warnSpy).not.toHaveBeenCalled();
   });
+
+  it('reflects disabled root state for styling while disabling item triggers', () => {
+    const { container, getByTestId } = render(<Accordion disabled>{renderItem('one')}</Accordion>);
+    const root = container.querySelector('[data-slot="root"]');
+    expect(root).toHaveAttribute('data-disabled', '');
+    expect(getByTestId('item-one')).toHaveAttribute('data-disabled', '');
+    expect(getByTestId('trigger-one')).toBeDisabled();
+  });
 });
 
 describe('Accordion — Takeoff state API', () => {
   it('uses defaultActiveIndex for uncontrolled initial state (single mode)', () => {
     const { getByTestId } = render(<Accordion defaultActiveIndex="b">{renderItems(['a', 'b', 'c'])}</Accordion>);
+    expect(getByTestId('trigger-a')).toHaveAttribute('aria-expanded', 'false');
+    expect(getByTestId('trigger-b')).toHaveAttribute('aria-expanded', 'true');
+    expect(getByTestId('trigger-c')).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('does not reset uncontrolled state when defaultActiveIndex changes after mount', () => {
+    const { getByTestId, rerender } = render(<Accordion defaultActiveIndex="a">{renderItems(['a', 'b'])}</Accordion>);
+    expect(getByTestId('trigger-a')).toHaveAttribute('aria-expanded', 'true');
+
+    rerender(<Accordion defaultActiveIndex="b">{renderItems(['a', 'b'])}</Accordion>);
+
+    expect(getByTestId('trigger-a')).toHaveAttribute('aria-expanded', 'true');
+    expect(getByTestId('trigger-b')).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('normalizes an array activeIndex to the last item in single mode', () => {
+    const { getByTestId } = render(<Accordion activeIndex={['a', 'c']}>{renderItems(['a', 'b', 'c'])}</Accordion>);
+    expect(getByTestId('trigger-a')).toHaveAttribute('aria-expanded', 'false');
+    expect(getByTestId('trigger-c')).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('normalizes a scalar activeIndex to an active item in allowMultiple mode', () => {
+    const { getByTestId } = render(
+      <Accordion allowMultiple activeIndex="b">
+        {renderItems(['a', 'b', 'c'])}
+      </Accordion>,
+    );
     expect(getByTestId('trigger-a')).toHaveAttribute('aria-expanded', 'false');
     expect(getByTestId('trigger-b')).toHaveAttribute('aria-expanded', 'true');
     expect(getByTestId('trigger-c')).toHaveAttribute('aria-expanded', 'false');
@@ -131,6 +166,27 @@ describe('Accordion — Takeoff state API', () => {
     expect(getByTestId('trigger-b')).toHaveAttribute('aria-expanded', 'true');
   });
 
+  it('treats allowMultiple activeIndex as controlled and waits for the parent array update', () => {
+    const onChange = vi.fn();
+    const { getByTestId, rerender } = render(
+      <Accordion allowMultiple activeIndex={['a']} onActiveIndexChange={onChange}>
+        {renderItems(['a', 'b'])}
+      </Accordion>,
+    );
+
+    fireEvent.click(getByTestId('trigger-b'));
+
+    expect(onChange).toHaveBeenCalledWith(['a', 'b']);
+    expect(getByTestId('trigger-b')).toHaveAttribute('aria-expanded', 'false');
+
+    rerender(
+      <Accordion allowMultiple activeIndex={['a', 'b']} onActiveIndexChange={onChange}>
+        {renderItems(['a', 'b'])}
+      </Accordion>,
+    );
+    expect(getByTestId('trigger-b')).toHaveAttribute('aria-expanded', 'true');
+  });
+
   it('preserves numeric itemKey shape on the onActiveIndexChange payload', () => {
     const onChange = vi.fn();
     const { getByTestId } = render(
@@ -157,6 +213,70 @@ describe('Accordion — Takeoff state API', () => {
 
     fireEvent.click(getByTestId('trigger-a'));
     expect(onChange).toHaveBeenLastCalledWith(['b']);
+  });
+
+  it('does not toggle a disabled item', () => {
+    const onChange = vi.fn();
+    const { getByTestId } = render(
+      <Accordion onActiveIndexChange={onChange}>
+        <Accordion.Item itemKey="a" disabled data-testid="disabled-item">
+          <Accordion.Header>
+            <Accordion.Trigger data-testid="disabled-trigger">Disabled</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content data-testid="disabled-content">Disabled body</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+
+    fireEvent.click(getByTestId('disabled-trigger'));
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(getByTestId('disabled-trigger')).toHaveAttribute('aria-expanded', 'false');
+    expect(getByTestId('disabled-item')).toHaveAttribute('data-disabled', '');
+  });
+
+  it('does not crash when a currently active dynamic child is removed', () => {
+    const { getByTestId, queryByTestId, rerender } = render(<Accordion defaultActiveIndex="b">{renderItems(['a', 'b'])}</Accordion>);
+    expect(getByTestId('trigger-b')).toHaveAttribute('aria-expanded', 'true');
+
+    rerender(<Accordion defaultActiveIndex="b">{renderItems(['a'])}</Accordion>);
+
+    expect(queryByTestId('trigger-b')).toBeNull();
+    expect(getByTestId('trigger-a')).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('keeps nested accordion state independent from its parent', () => {
+    const { getByTestId } = render(
+      <Accordion defaultActiveIndex="outer">
+        <Accordion.Item itemKey="outer" data-testid="outer-item">
+          <Accordion.Header>
+            <Accordion.Trigger data-testid="outer-trigger">Outer</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>
+            <Accordion defaultActiveIndex="inner-a">
+              <Accordion.Item itemKey="inner-a">
+                <Accordion.Header>
+                  <Accordion.Trigger data-testid="inner-trigger-a">Inner A</Accordion.Trigger>
+                </Accordion.Header>
+                <Accordion.Content>Inner A body</Accordion.Content>
+              </Accordion.Item>
+              <Accordion.Item itemKey="inner-b">
+                <Accordion.Header>
+                  <Accordion.Trigger data-testid="inner-trigger-b">Inner B</Accordion.Trigger>
+                </Accordion.Header>
+                <Accordion.Content>Inner B body</Accordion.Content>
+              </Accordion.Item>
+            </Accordion>
+          </Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+
+    fireEvent.click(getByTestId('inner-trigger-b'));
+
+    expect(getByTestId('outer-trigger')).toHaveAttribute('aria-expanded', 'true');
+    expect(getByTestId('inner-trigger-a')).toHaveAttribute('aria-expanded', 'false');
+    expect(getByTestId('inner-trigger-b')).toHaveAttribute('aria-expanded', 'true');
   });
 });
 
@@ -224,6 +344,10 @@ describe('Accordion — compound anatomy', () => {
 
     const item = getByTestId('anatomy-item');
     expect(item).toHaveClass('tk-accordion-item');
+    expect(item).toHaveClass('grouped');
+    expect(item).toHaveClass('default');
+    expect(item).toHaveClass('base');
+    expect(item).toHaveClass('open');
     expect(item).toHaveAttribute('data-slot', 'root');
 
     const trigger = getByTestId('anatomy-trigger');
@@ -232,6 +356,28 @@ describe('Accordion — compound anatomy', () => {
 
     const content = getByTestId('anatomy-content');
     expect(content).toHaveClass('tk-accordion-item-content');
+  });
+
+  it('renders valid heading levels and safely falls back to h3 for invalid levels', () => {
+    const { getByRole } = render(
+      <Accordion>
+        <Accordion.Item itemKey="valid">
+          <Accordion.Header level={2}>
+            <Accordion.Trigger>Valid heading</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>Valid body</Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item itemKey="invalid">
+          <Accordion.Header level={9 as never}>
+            <Accordion.Trigger>Invalid heading</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>Invalid body</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+
+    expect(getByRole('heading', { level: 2, name: 'Valid heading' })).toBeInTheDocument();
+    expect(getByRole('heading', { level: 3, name: 'Invalid heading' })).toBeInTheDocument();
   });
 
   it('exposes dotted displayName on every public subcomponent for DevTools', () => {
@@ -286,6 +432,25 @@ describe('Accordion — takeoff-design data-open contract', () => {
     expect(getByTestId('item-b')).toHaveAttribute('data-open', '');
     expect(getByTestId('item-c')).not.toHaveAttribute('data-open');
   });
+
+  it('keeps force-mounted closed content in the DOM without data-open', () => {
+    const { getByTestId } = render(
+      <Accordion>
+        <Accordion.Item itemKey="a" data-testid="force-item">
+          <Accordion.Header>
+            <Accordion.Trigger data-testid="force-trigger">Force mounted</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content forceMount data-testid="force-content">
+            Force body
+          </Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+
+    expect(getByTestId('force-item')).not.toHaveAttribute('data-open');
+    expect(getByTestId('force-content')).toBeInTheDocument();
+    expect(getByTestId('force-content')).not.toHaveAttribute('data-open');
+  });
 });
 
 describe('Accordion — customization', () => {
@@ -299,6 +464,24 @@ describe('Accordion — customization', () => {
     expect(root).toHaveClass('tk-accordion');
     expect(root).toHaveClass('instance-extra');
     expect(root).toHaveAttribute('aria-label', 'Inst label');
+  });
+
+  it('merges item className without dropping canonical or variant classes', () => {
+    const { getByTestId } = render(
+      <Accordion type="divided" defaultActiveIndex="a">
+        <Accordion.Item itemKey="a" className="item-extra" data-testid="custom-item">
+          <Accordion.Header>
+            <Accordion.Trigger>Custom item</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>Body</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+    const item = getByTestId('custom-item');
+    expect(item).toHaveClass('tk-accordion-item');
+    expect(item).toHaveClass('divided');
+    expect(item).toHaveClass('open');
+    expect(item).toHaveClass('item-extra');
   });
 
   it('appends instance classNames after theme classNames so instance wins on order', () => {

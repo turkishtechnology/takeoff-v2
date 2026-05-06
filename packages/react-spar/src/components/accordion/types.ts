@@ -19,6 +19,8 @@ export type AccordionMode = 'default' | 'compact';
 
 export type AccordionSize = 'base' | 'large';
 
+export type AccordionHeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
 /**
  * Identity of a single Accordion item. Mirrors Takeoff Core's
  * `tk-accordion-item.itemKey` and is forwarded to the Spar primitive
@@ -31,6 +33,8 @@ export type AccordionItemKey = string | number;
  * `allowMultiple` is set.
  */
 export type AccordionActiveIndex = AccordionItemKey | AccordionItemKey[];
+
+export type AccordionActiveIndexChangeHandler = (next: AccordionActiveIndex) => void;
 
 /**
  * Position of the auto-rendered arrow inside the trigger.
@@ -97,7 +101,7 @@ export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
   /** Uncontrolled initial active item identifier(s). */
   defaultActiveIndex?: AccordionActiveIndex;
   /** Fired when the active set changes. */
-  onActiveIndexChange?: (next: AccordionActiveIndex) => void;
+  onActiveIndexChange?: AccordionActiveIndexChangeHandler;
   /** When `true`, single-mode items cannot be collapsed by clicking again. */
   preventCollapse?: boolean;
   /** Disables every item in the accordion. */
@@ -131,7 +135,7 @@ export interface AccordionItemProps extends Omit<ComponentPropsWithoutRef<'div'>
 
 export interface AccordionHeaderProps extends Omit<ComponentPropsWithoutRef<'h3'>, 'classNames'> {
   /** HTML heading level (1-6). */
-  level?: number;
+  level?: AccordionHeadingLevel;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionHeaderSlot>;
   /** Per-slot HTML attribute overrides. */
