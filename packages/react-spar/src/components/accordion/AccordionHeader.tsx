@@ -15,11 +15,11 @@ const normalizeHeadingLevel = (level: AccordionHeaderProps['level']): AccordionH
 export const AccordionHeader = (props: AccordionHeaderProps) => {
   const theme = useComponentTheme('AccordionHeader');
   const { rootAttrs, rest } = composeRootAttrs(AccordionHeaderBase, props, theme);
-  const { children, level, ...spar } = rest;
+  const { children, level, ref, ...spar } = rest;
   const safeLevel = normalizeHeadingLevel(level);
 
   return (
-    <SparAccordionHeader {...spar} level={safeLevel} {...rootAttrs}>
+    <SparAccordionHeader {...spar} level={safeLevel} {...rootAttrs} ref={ref}>
       {children}
     </SparAccordionHeader>
   );

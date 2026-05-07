@@ -140,6 +140,7 @@ export interface AccordionHeaderProps extends Omit<ComponentPropsWithoutRef<'h3'
   classNames?: ClassNamesMap<AccordionHeaderSlot>;
   /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<AccordionHeaderSlot>;
+  ref?: Ref<HTMLHeadingElement>;
 }
 
 export interface AccordionTriggerProps extends Omit<ComponentPropsWithoutRef<'button'>, 'classNames'> {
@@ -147,6 +148,7 @@ export interface AccordionTriggerProps extends Omit<ComponentPropsWithoutRef<'bu
   classNames?: ClassNamesMap<AccordionTriggerSlot>;
   /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<AccordionTriggerSlot>;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 export interface AccordionContentProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
@@ -156,4 +158,5 @@ export interface AccordionContentProps extends Omit<ComponentPropsWithoutRef<'di
   classNames?: ClassNamesMap<AccordionContentSlot>;
   /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<AccordionContentSlot>;
+  ref?: Ref<HTMLDivElement>;
 }

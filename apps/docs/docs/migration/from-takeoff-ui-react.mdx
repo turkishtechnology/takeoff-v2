@@ -116,3 +116,72 @@ Community codemods for the flat-to-compound transform are tracked in issue
 [#TBD](https://github.com/turkishtechnology/takeoff-spar/issues). For now, the
 migration is primarily mechanical find-and-replace; the type system flags
 missing compound parts at build time.
+
+## Per-component notes
+
+### Accordion
+
+| Concern            | `@takeoff-ui/react` (`TkAccordion`)                                                                       | `@takeoff-ui/react-spar` (`Accordion`)                                                               |
+| ------------------ | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Anatomy            | `<TkAccordion>` + `<TkAccordionItem header="…">`                                                          | `<Accordion>` + compound `Item` / `Header` / `Trigger` / `Content`                                   |
+| Active state event | `onTk-active-index-change` (custom DOM event)                                                             | `onActiveIndexChange` (React handler, payload unchanged)                                             |
+| Active state props | `activeIndex`, `allowMultiple`                                                                            | `activeIndex`, `defaultActiveIndex`, `allowMultiple` (controlled / uncontrolled split)               |
+| Header content     | `header` prop or `slot="header"`                                                                          | `<Accordion.Header>` containing `<Accordion.Trigger>`                                                |
+| Body content       | `slot="content"`                                                                                          | `<Accordion.Content>`                                                                                |
+| Visual props       | `type="grouped" / "divided"`, `mode`, `size`, `arrowPosition`, `expandIcon`, `collapseIcon`, `hideArrows` | Identical names; `type="compact"` is a deprecated alias for `mode="compact"` and emits a dev warning |
+| Item identity      | `itemKey?: string \| number`                                                                              | `itemKey: string \| number` (required at the type level)                                             |
+| Disabled           | (not in core)                                                                                             | `disabled` on the root or per-`Accordion.Item`                                                       |
+| Stable ids         | n/a                                                                                                       | Set `id` on `Accordion.Item`; trigger / content / aria wiring derive from it                         |
+
+```tsx
+// Before — @takeoff-ui/react
+<TkAccordion
+  activeIndex={activeIndex}
+  allowMultiple
+  type="grouped"
+  mode="compact"
+  size="base"
+  onTk-active-index-change={(e) => setActiveIndex(e.detail)}
+>
+  <TkAccordionItem itemKey="fare" header="Fare conditions">
+    Refund windows and change fees.
+  </TkAccordionItem>
+  <TkAccordionItem itemKey="bag" header="Baggage allowance">
+    Carry-on, checked baggage, and sports equipment.
+  </TkAccordionItem>
+</TkAccordion>
+
+// After — @takeoff-ui/react-spar
+<Accordion
+  activeIndex={activeIndex}
+  allowMultiple
+  type="grouped"
+  mode="compact"
+  size="base"
+  onActiveIndexChange={setActiveIndex}
+>
+  <Accordion.Item itemKey="fare">
+    <Accordion.Header>
+      <Accordion.Trigger>Fare conditions</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>Refund windows and change fees.</Accordion.Content>
+  </Accordion.Item>
+  <Accordion.Item itemKey="bag">
+    <Accordion.Header>
+      <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Carry-on, checked baggage, and sports equipment.
+    </Accordion.Content>
+  </Accordion.Item>
+</Accordion>
+```
+
+Intentional differences:
+
+- `Accordion.Arrow` stays internal; customize via `expandIcon` / `collapseIcon`
+  / `hideArrows` / `arrowPosition` on the root.
+- `defaultActiveIndex` is the React-idiomatic uncontrolled hook; treat it as
+  initial-only state (it does not reset when re-rendered with a new value).
+- `Accordion.Header` always renders a real heading element (`h1`–`h6`); pass
+  `level` to align with the surrounding document outline.

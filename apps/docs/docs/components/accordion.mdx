@@ -209,6 +209,75 @@ render(
 );
 `;
 
+export const disabledDemo = `
+<Accordion className="accordion-demo" defaultActiveIndex="open">
+  <Accordion.Item itemKey="open">
+    <Accordion.Header>
+      <Accordion.Trigger>Refundable fares</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Active items respond to click and keyboard activation as usual.
+    </Accordion.Content>
+  </Accordion.Item>
+
+  <Accordion.Item itemKey="locked" disabled>
+    <Accordion.Header>
+      <Accordion.Trigger>Loyalty upgrades (coming soon)</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Disabled items render a disabled trigger and ignore both pointer and
+      keyboard activation.
+    </Accordion.Content>
+  </Accordion.Item>
+</Accordion>
+`;
+
+export const hideArrowsDemo = `
+<Accordion className="accordion-demo" hideArrows>
+  <Accordion.Item itemKey="info">
+    <Accordion.Header>
+      <Accordion.Trigger>Travel insurance options</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      hideArrows removes the auto-rendered arrow when the surrounding layout
+      already telegraphs disclosure.
+    </Accordion.Content>
+  </Accordion.Item>
+  <Accordion.Item itemKey="contact">
+    <Accordion.Header>
+      <Accordion.Trigger>Customer support hours</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Trigger semantics, focus, and keyboard navigation stay intact even
+      without the visual indicator.
+    </Accordion.Content>
+  </Accordion.Item>
+</Accordion>
+`;
+
+export const forceMountDemo = `
+<Accordion className="accordion-demo">
+  <Accordion.Item itemKey="search">
+    <Accordion.Header>
+      <Accordion.Trigger>Search-friendly content</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content forceMount>
+      Use forceMount when in-page search must reach the panel body even when
+      the section is collapsed.
+    </Accordion.Content>
+  </Accordion.Item>
+  <Accordion.Item itemKey="default">
+    <Accordion.Header>
+      <Accordion.Trigger>Default mounting</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Without forceMount the panel mounts only while open, keeping the DOM
+      lean.
+    </Accordion.Content>
+  </Accordion.Item>
+</Accordion>
+`;
+
 # Accordion
 
 `Accordion` is a compound disclosure component. Compose `Accordion.Item`,
@@ -259,6 +328,60 @@ props on the root so Spar owns the open/closed state model.
   previewWrapper={ReactSparDemoRoot}
   scope={accordionScope}
 />
+
+## Disabled Item
+
+<LiveCode
+  code={disabledDemo}
+  cssCode={accordionDemoCss}
+  editable={false}
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={accordionScope}
+/>
+
+## Hide Arrows
+
+<LiveCode
+  code={hideArrowsDemo}
+  cssCode={accordionDemoCss}
+  editable={false}
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={accordionScope}
+/>
+
+## Force-Mounted Content
+
+<LiveCode
+  code={forceMountDemo}
+  cssCode={accordionDemoCss}
+  editable={false}
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={accordionScope}
+/>
+
+## Accessibility & Keyboard
+
+- Each `Accordion.Trigger` renders a native `<button>` and exposes
+  `aria-expanded` plus `aria-controls` pointing at its panel.
+- Each `Accordion.Content` is a `role="region"` labelled by the matching trigger
+  via `aria-labelledby`.
+- `Accordion.Header` renders an `h1`–`h6` heading; pick the level that fits the
+  surrounding document outline.
+- Stable trigger / panel ids derive from the `id` set on `Accordion.Item`;
+  override there if you need deterministic markup.
+
+| Key                                 | Behavior                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Toggle the focused trigger.                                             |
+| <kbd>↓</kbd> / <kbd>↑</kbd>         | Move focus to the next / previous trigger (vertical orientation).       |
+| <kbd>→</kbd> / <kbd>←</kbd>         | Move focus to the next / previous trigger (`orientation="horizontal"`). |
+| <kbd>Home</kbd> / <kbd>End</kbd>    | Move focus to the first / last trigger.                                 |
+
+Disabled items skip both pointer and keyboard activation and surface
+`data-disabled` on the item root for theme recipes.
 
 ## API Reference
 
@@ -336,6 +459,7 @@ props on the root so Spar owns the open/closed state model.
 | <ApiBadge label="level" />      | <code>AccordionHeadingLevel</code>                                                  | undefined | HTML heading level (1-6).                                    |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | undefined | Per-slot class name overrides.                               |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | undefined | Per-slot HTML attribute overrides.                           |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLHeadingElement&gt;</code>                                          | undefined |                                                              |
 | <ApiBadge label="className" />  | <code>string</code>                                                                 | undefined | Appends custom classes to the root slot of this part.        |
 
 #### Data attributes {#accordion-header-data-attributes}
@@ -353,6 +477,7 @@ props on the root so Spar owns the open/closed state model.
 | <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | undefined | Accessible label for the trigger button.              |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | undefined | Per-slot class name overrides.                        |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | undefined | Per-slot HTML attribute overrides.                    |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLButtonElement&gt;</code>                                           | undefined |                                                       |
 | <ApiBadge label="className" />  | <code>string</code>                                                                 | undefined | Appends custom classes to the root slot of this part. |
 
 #### Data attributes {#accordion-trigger-data-attributes}
@@ -371,6 +496,7 @@ props on the root so Spar owns the open/closed state model.
 | <ApiBadge label="forceMount" /> | <code>boolean</code>                                                                | undefined | Render content even while collapsed.                  |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | undefined | Per-slot class name overrides.                        |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | undefined | Per-slot HTML attribute overrides.                    |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLDivElement&gt;</code>                                              | undefined |                                                       |
 | <ApiBadge label="className" />  | <code>string</code>                                                                 | undefined | Appends custom classes to the root slot of this part. |
 
 #### Data attributes {#accordion-content-data-attributes}

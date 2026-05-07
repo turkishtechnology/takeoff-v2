@@ -40,12 +40,12 @@ export const AccordionTrigger = (props: AccordionTriggerProps) => {
   const { isOpen } = useAccordionItemContext();
 
   const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerBase, props, theme);
-  const { children, ...spar } = rest;
+  const { children, ref, ...spar } = rest;
 
   const arrow = hideArrows ? null : <AccordionArrow isOpen={isOpen} arrowPosition={arrowPosition} expandIcon={expandIcon} collapseIcon={collapseIcon} />;
 
   return (
-    <SparAccordionTrigger {...spar} {...rootAttrs}>
+    <SparAccordionTrigger {...spar} {...rootAttrs} ref={ref}>
       {arrowPosition === 'left' && arrow}
       <span className="tk-accordion-item-title">{children}</span>
       {arrowPosition === 'right' && arrow}

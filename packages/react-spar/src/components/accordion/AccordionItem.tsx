@@ -20,7 +20,7 @@ export const AccordionItem = (props: AccordionItemProps) => {
   const { activeIndex, allowMultiple } = useAccordionContext();
 
   const { rootAttrs, rest } = composeRootAttrs(AccordionItemBase, props, theme);
-  const { itemKey, children, ...spar } = rest;
+  const { itemKey, children, ref, ...spar } = rest;
 
   const isOpen = isItemActive(activeIndex, itemKey, allowMultiple);
   const itemClassName = AccordionItemBase.cx(rootAttrs.className, type, mode, size, isOpen && 'open');
@@ -30,6 +30,7 @@ export const AccordionItem = (props: AccordionItemProps) => {
       {...(spar as SparAccordionItemProps)}
       itemKey={itemKey}
       {...rootAttrs}
+      ref={ref}
       className={itemClassName}
       data-type={type}
       data-mode={mode}

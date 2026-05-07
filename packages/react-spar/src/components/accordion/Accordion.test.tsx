@@ -1,5 +1,10 @@
+import { createRef, useRef, useState } from 'react';
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { fireEvent, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { axe } from 'vitest-axe';
 
 import { SparReactProvider } from '../../provider';
 
@@ -515,5 +520,377 @@ describe('Accordion — customization', () => {
     const root = container.querySelector('[data-slot="root"]');
     expect(root).not.toBeNull();
     expect(root?.getAttribute('data-slot')).toBe('root');
+  });
+});
+
+describe('Accordion — accessibility wiring', () => {
+  it('wires trigger aria-expanded, aria-controls, and content role/labelling', () => {
+    const { getByTestId } = render(
+      <Accordion defaultActiveIndex="a">
+        {renderItem('a')}
+        {renderItem('b')}
+      </Accordion>,
+    );
+
+    const triggerA = getByTestId('trigger-a');
+    expect(triggerA).toHaveAttribute('type', 'button');
+    expect(triggerA).toHaveAttribute('aria-expanded', 'true');
+
+    const contentA = getByTestId('content-a');
+    expect(contentA).toHaveAttribute('role', 'region');
+    expect(contentA).toHaveAttribute('aria-labelledby', triggerA.id);
+    expect(triggerA).toHaveAttribute('aria-controls', contentA.id);
+
+    const triggerB = getByTestId('trigger-b');
+    expect(triggerB).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('produces unique trigger/content ids across two Accordion instances', () => {
+    const { getAllByRole } = render(
+      <>
+        <Accordion>{renderItem('a')}</Accordion>
+        <Accordion>{renderItem('a')}</Accordion>
+      </>,
+    );
+    const triggers = getAllByRole('button');
+    expect(triggers).toHaveLength(2);
+    expect(triggers[0]?.id).not.toBe(triggers[1]?.id);
+    expect(triggers[0]?.getAttribute('aria-controls')).not.toBe(triggers[1]?.getAttribute('aria-controls'));
+  });
+
+  it('passes axe with default rendering', async () => {
+    const { container } = render(<Accordion defaultActiveIndex="a">{renderItems(['a', 'b'])}</Accordion>);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe('Accordion — keyboard interaction', () => {
+  it('toggles a panel with Enter and with Space', async () => {
+    const user = userEvent.setup();
+    const { getByTestId } = render(<Accordion>{renderItems(['a', 'b'])}</Accordion>);
+
+    const triggerA = getByTestId('trigger-a');
+    triggerA.focus();
+    await user.keyboard('{Enter}');
+    expect(triggerA).toHaveAttribute('aria-expanded', 'true');
+
+    await user.keyboard(' ');
+    expect(triggerA).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('moves focus through triggers with ArrowDown/ArrowUp in vertical orientation', async () => {
+    const user = userEvent.setup();
+    const { getByTestId } = render(<Accordion>{renderItems(['a', 'b', 'c'])}</Accordion>);
+
+    const triggerA = getByTestId('trigger-a');
+    const triggerB = getByTestId('trigger-b');
+    const triggerC = getByTestId('trigger-c');
+
+    triggerA.focus();
+    await user.keyboard('{ArrowDown}');
+    expect(triggerB).toHaveFocus();
+
+    await user.keyboard('{ArrowDown}');
+    expect(triggerC).toHaveFocus();
+
+    await user.keyboard('{ArrowUp}');
+    expect(triggerB).toHaveFocus();
+  });
+
+  it('moves focus with ArrowRight/ArrowLeft in horizontal orientation', async () => {
+    const user = userEvent.setup();
+    const { getByTestId } = render(<Accordion orientation="horizontal">{renderItems(['a', 'b'])}</Accordion>);
+
+    const triggerA = getByTestId('trigger-a');
+    const triggerB = getByTestId('trigger-b');
+
+    triggerA.focus();
+    await user.keyboard('{ArrowRight}');
+    expect(triggerB).toHaveFocus();
+
+    await user.keyboard('{ArrowLeft}');
+    expect(triggerA).toHaveFocus();
+  });
+
+  it('jumps to first/last trigger with Home/End', async () => {
+    const user = userEvent.setup();
+    const { getByTestId } = render(<Accordion>{renderItems(['a', 'b', 'c'])}</Accordion>);
+
+    const triggerA = getByTestId('trigger-a');
+    const triggerB = getByTestId('trigger-b');
+    const triggerC = getByTestId('trigger-c');
+
+    triggerB.focus();
+    await user.keyboard('{Home}');
+    expect(triggerA).toHaveFocus();
+
+    await user.keyboard('{End}');
+    expect(triggerC).toHaveFocus();
+  });
+
+  it('does not toggle a disabled item via keyboard activation', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const { getByTestId } = render(
+      <Accordion onActiveIndexChange={onChange}>
+        <Accordion.Item itemKey="a" disabled>
+          <Accordion.Header>
+            <Accordion.Trigger data-testid="disabled-trigger">Disabled</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>Body</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+
+    const trigger = getByTestId('disabled-trigger');
+    trigger.focus();
+    await user.keyboard('{Enter}');
+    await user.keyboard(' ');
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+});
+
+describe('Accordion — ref forwarding', () => {
+  it('exposes object refs on every public part with the canonical owner element', () => {
+    const rootRef = createRef<HTMLDivElement>();
+    const itemRef = createRef<HTMLDivElement>();
+    const headerRef = createRef<HTMLHeadingElement>();
+    const triggerRef = createRef<HTMLButtonElement>();
+    const contentRef = createRef<HTMLDivElement>();
+
+    render(
+      <Accordion ref={rootRef} defaultActiveIndex="a">
+        <Accordion.Item itemKey="a" ref={itemRef}>
+          <Accordion.Header ref={headerRef} level={2}>
+            <Accordion.Trigger ref={triggerRef}>Title</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content ref={contentRef}>Body</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+
+    expect(rootRef.current).toBeInstanceOf(HTMLDivElement);
+    expect(itemRef.current).toBeInstanceOf(HTMLDivElement);
+    expect(headerRef.current).toBeInstanceOf(HTMLHeadingElement);
+    expect(headerRef.current?.tagName).toBe('H2');
+    expect(triggerRef.current).toBeInstanceOf(HTMLButtonElement);
+    expect(contentRef.current).toBeInstanceOf(HTMLDivElement);
+  });
+
+  it('invokes callback refs for every public part', () => {
+    const rootCb = vi.fn();
+    const itemCb = vi.fn();
+    const triggerCb = vi.fn();
+    const contentCb = vi.fn();
+
+    render(
+      <Accordion ref={rootCb} defaultActiveIndex="a">
+        <Accordion.Item itemKey="a" ref={itemCb}>
+          <Accordion.Header>
+            <Accordion.Trigger ref={triggerCb}>Title</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content ref={contentCb}>Body</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+
+    expect(rootCb).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+    expect(itemCb).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+    expect(triggerCb).toHaveBeenCalledWith(expect.any(HTMLButtonElement));
+    expect(contentCb).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+  });
+
+  it('keeps internal trigger registry working when consumer also passes a ref', async () => {
+    // If the consumer ref clobbered the internal trigger registry, ArrowDown
+    // would have nothing to focus. This test pins that contract.
+    const user = userEvent.setup();
+    const ConsumerRefHarness = () => {
+      const triggerRef = useRef<HTMLButtonElement>(null);
+      return (
+        <Accordion>
+          <Accordion.Item itemKey="a">
+            <Accordion.Header>
+              <Accordion.Trigger ref={triggerRef} data-testid="trigger-a">
+                A
+              </Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>A body</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item itemKey="b">
+            <Accordion.Header>
+              <Accordion.Trigger data-testid="trigger-b">B</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>B body</Accordion.Content>
+          </Accordion.Item>
+        </Accordion>
+      );
+    };
+    const { getByTestId } = render(<ConsumerRefHarness />);
+
+    const triggerA = getByTestId('trigger-a');
+    triggerA.focus();
+    await user.keyboard('{ArrowDown}');
+    expect(getByTestId('trigger-b')).toHaveFocus();
+  });
+});
+
+describe('Accordion — passthrough composition', () => {
+  it('composes consumer onClick with internal toggle on the trigger', () => {
+    const consumerClick = vi.fn();
+    const onChange = vi.fn();
+    const { getByTestId } = render(
+      <Accordion onActiveIndexChange={onChange}>
+        <Accordion.Item itemKey="a">
+          <Accordion.Header>
+            <Accordion.Trigger data-testid="trigger-a" onClick={consumerClick}>
+              A
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>A body</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+
+    fireEvent.click(getByTestId('trigger-a'));
+    expect(consumerClick).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith('a');
+  });
+
+  it('composes consumer onKeyDown with internal arrow-key navigation', async () => {
+    const user = userEvent.setup();
+    const consumerKeyDown = vi.fn();
+    const { getByTestId } = render(
+      <Accordion>
+        <Accordion.Item itemKey="a">
+          <Accordion.Header>
+            <Accordion.Trigger data-testid="trigger-a" onKeyDown={consumerKeyDown}>
+              A
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>A body</Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item itemKey="b">
+          <Accordion.Header>
+            <Accordion.Trigger data-testid="trigger-b">B</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>B body</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+
+    getByTestId('trigger-a').focus();
+    await user.keyboard('{ArrowDown}');
+
+    // Consumer handler still fires; internal navigation moves focus to the next trigger.
+    expect(consumerKeyDown).toHaveBeenCalled();
+    expect(getByTestId('trigger-b')).toHaveFocus();
+  });
+
+  it('lets consumers stamp a stable id by setting it on Accordion.Item, keeping aria wiring consistent', () => {
+    // The supported way to give the trigger/content stable ids is to set
+    // `id` on `Accordion.Item`. Spar derives `${id}-trigger` and
+    // `${id}-content` from that and threads both through the Collapsible
+    // context, so aria-labelledby and aria-controls stay in sync.
+    const { getByTestId } = render(
+      <Accordion defaultActiveIndex="a">
+        <Accordion.Item id="faq-1" itemKey="a">
+          <Accordion.Header>
+            <Accordion.Trigger data-testid="trigger-a">A</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content data-testid="content-a">A body</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+
+    const trigger = getByTestId('trigger-a');
+    const content = getByTestId('content-a');
+    expect(trigger.id).toBe('faq-1-trigger');
+    expect(content.id).toBe('faq-1-content');
+    expect(content.getAttribute('aria-labelledby')).toBe(trigger.id);
+    expect(trigger.getAttribute('aria-controls')).toBe(content.id);
+  });
+
+  it('forwards data-* and aria-* on every part', () => {
+    const { getByTestId } = render(
+      <Accordion data-testid="root" data-analytics="acc-root" aria-label="FAQ" defaultActiveIndex="a">
+        <Accordion.Item itemKey="a" data-testid="item" data-analytics="acc-item">
+          <Accordion.Header data-testid="header">
+            <Accordion.Trigger data-testid="trigger" data-analytics="acc-trigger" aria-describedby="hint">
+              A
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content data-testid="content" data-analytics="acc-content">
+            Body
+          </Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+
+    expect(getByTestId('root')).toHaveAttribute('aria-label', 'FAQ');
+    expect(getByTestId('root')).toHaveAttribute('data-analytics', 'acc-root');
+    expect(getByTestId('item')).toHaveAttribute('data-analytics', 'acc-item');
+    expect(getByTestId('trigger')).toHaveAttribute('data-analytics', 'acc-trigger');
+    expect(getByTestId('trigger')).toHaveAttribute('aria-describedby', 'hint');
+    expect(getByTestId('content')).toHaveAttribute('data-analytics', 'acc-content');
+  });
+});
+
+describe('Accordion — robustness', () => {
+  it('renders an empty Accordion without crashing', () => {
+    const { container } = render(<Accordion />);
+    expect(container.querySelector('[data-slot="root"]')).toHaveClass('tk-accordion');
+  });
+
+  it('survives an item being added after mount and toggling it', async () => {
+    const user = userEvent.setup();
+    const Harness = () => {
+      const [items, setItems] = useState(['a']);
+      return (
+        <>
+          <button type="button" data-testid="add" onClick={() => setItems(prev => [...prev, 'b'])}>
+            Add
+          </button>
+          <Accordion>{items.map(k => renderItem(k))}</Accordion>
+        </>
+      );
+    };
+    const { getByTestId, queryByTestId } = render(<Harness />);
+
+    expect(queryByTestId('trigger-b')).toBeNull();
+    await user.click(getByTestId('add'));
+
+    const triggerB = getByTestId('trigger-b');
+    await user.click(triggerB);
+    expect(triggerB).toHaveAttribute('aria-expanded', 'true');
+  });
+});
+
+describe('Accordion — SSR safety', () => {
+  it('renders to a string with default props', () => {
+    const html = renderToString(
+      <Accordion defaultActiveIndex="a">
+        {renderItem('a')}
+        {renderItem('b')}
+      </Accordion>,
+    );
+    expect(html).toContain('tk-accordion');
+    expect(html).toContain('aria-expanded="true"');
+    expect(html).toContain('data-open=""');
+  });
+
+  it('renders force-mounted closed content during SSR without crashing', () => {
+    const html = renderToString(
+      <Accordion>
+        <Accordion.Item itemKey="a">
+          <Accordion.Header>
+            <Accordion.Trigger>Title</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content forceMount>Body</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>,
+    );
+    expect(html).toContain('Body');
   });
 });

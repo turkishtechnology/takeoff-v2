@@ -1,6 +1,16 @@
+import type { Ref } from 'react';
+
 import { describe, expectTypeOf, it } from 'vitest';
 
-import type { AccordionActiveIndex, AccordionActiveIndexChangeHandler, AccordionHeaderProps, AccordionItemProps, AccordionProps } from './types';
+import type {
+  AccordionActiveIndex,
+  AccordionActiveIndexChangeHandler,
+  AccordionContentProps,
+  AccordionHeaderProps,
+  AccordionItemProps,
+  AccordionProps,
+  AccordionTriggerProps,
+} from './types';
 
 describe('Accordion public type surface', () => {
   it('requires explicit itemKey on Accordion.Item', () => {
@@ -29,5 +39,13 @@ describe('Accordion public type surface', () => {
   it('exports the active-index change handler and narrows heading levels', () => {
     expectTypeOf<AccordionActiveIndexChangeHandler>().toEqualTypeOf<(next: AccordionActiveIndex) => void>();
     expectTypeOf<AccordionHeaderProps['level']>().toEqualTypeOf<1 | 2 | 3 | 4 | 5 | 6 | undefined>();
+  });
+
+  it('types refs to the canonical owner element on every public part', () => {
+    expectTypeOf<AccordionProps['ref']>().toEqualTypeOf<Ref<HTMLDivElement> | undefined>();
+    expectTypeOf<AccordionItemProps['ref']>().toEqualTypeOf<Ref<HTMLDivElement> | undefined>();
+    expectTypeOf<AccordionHeaderProps['ref']>().toEqualTypeOf<Ref<HTMLHeadingElement> | undefined>();
+    expectTypeOf<AccordionTriggerProps['ref']>().toEqualTypeOf<Ref<HTMLButtonElement> | undefined>();
+    expectTypeOf<AccordionContentProps['ref']>().toEqualTypeOf<Ref<HTMLDivElement> | undefined>();
   });
 });
