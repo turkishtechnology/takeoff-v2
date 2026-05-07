@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Takeoff component recipe</title>
+    <style>
+      :root {
+        --bg: #f7f7f8;
+        --panel: #ffffff;
+        --text: #1f2328;
+        --muted: #667085;
+        --border: #d0d5dd;
+        --soft: #eef2f6;
+        --soft-2: #f9fafb;
+        --code-bg: #101828;
+        --code-text: #f2f4f7;
+        --ok: #0f7b4f;
+        --warn: #a15c00;
+        --bad: #b42318;
+        --info: #175cd3;
+        --shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        line-height: 1.45;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(247, 247, 248, 0.94);
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(10px);
+      }
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .hero {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: flex-start;
+      }
+      h1 {
+        margin: 0 0 6px;
+        font-size: 28px;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        margin: 0 0 14px;
+        font-size: 20px;
+        letter-spacing: -0.01em;
+      }
+      h3 {
+        margin: 18px 0 8px;
+        font-size: 16px;
+      }
+      h4 {
+        margin: 16px 0 8px;
+        font-size: 14px;
+      }
+      p {
+        margin: 8px 0;
+      }
+      code,
+      pre,
+      textarea,
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+      }
+      code {
+        background: var(--soft);
+        border-radius: 6px;
+        padding: 1px 5px;
+      }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+      nav a,
+      .button,
+      .mini-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 8px 12px;
+        text-decoration: none;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .mini-button {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      nav a:hover,
+      .button:hover,
+      .mini-button:hover {
+        border-color: #98a2b3;
+      }
+      main .section {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 22px;
+        margin: 18px 0;
+        box-shadow: var(--shadow);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 14px;
+      }
+      .card {
+        grid-column: span 3;
+        background: var(--soft);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px;
+        min-height: 90px;
+      }
+      .content-grid .card {
+        grid-column: span 4;
+      }
+      .card strong {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .card span {
+        display: block;
+        font-size: 16px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid var(--border);
+        padding: 10px 8px;
+      }
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      .table-scroll {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #fff;
+      }
+      .table-scroll table {
+        min-width: 760px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 3px 8px;
+        font-size: 12px;
+        font-weight: 700;
+        background: var(--soft);
+        color: var(--muted);
+        border: 1px solid var(--border);
+        white-space: nowrap;
+      }
+      .chip.ok {
+        color: var(--ok);
+        background: #ecfdf3;
+        border-color: #abefc6;
+      }
+      .chip.warn {
+        color: var(--warn);
+        background: #fffaeb;
+        border-color: #fedf89;
+      }
+      .chip.bad {
+        color: var(--bad);
+        background: #fef3f2;
+        border-color: #fecdca;
+      }
+      .chip.info {
+        color: var(--info);
+        background: #eff8ff;
+        border-color: #b2ddff;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .list {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .list li {
+        margin: 6px 0;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .decision {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        margin: 12px 0;
+        background: #fff;
+      }
+      .decision-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      textarea {
+        width: 100%;
+        min-height: 110px;
+        resize: vertical;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        background: #fcfcfd;
+        color: var(--text);
+        font-size: 13px;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 12px 0;
+      }
+      .output {
+        min-height: 220px;
+      }
+      .content-block {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        margin: 14px 0;
+        background: #fff;
+      }
+      .content-block > h3:first-child,
+      .content-block > h4:first-child {
+        margin-top: 0;
+      }
+      .block-description {
+        color: var(--muted);
+        margin-top: -2px;
+      }
+      .callout {
+        border-left: 4px solid var(--info);
+        background: #eff8ff;
+        padding: 12px 14px;
+        border-radius: 12px;
+        margin: 12px 0;
+      }
+      .callout.warn {
+        border-left-color: var(--warn);
+        background: #fffaeb;
+      }
+      .callout.bad,
+      .callout.danger {
+        border-left-color: var(--bad);
+        background: #fef3f2;
+      }
+      .callout.ok,
+      .callout.success {
+        border-left-color: var(--ok);
+        background: #ecfdf3;
+      }
+      .callout strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+      .code-block {
+        margin: 14px 0;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid #344054;
+        background: var(--code-bg);
+      }
+      .code-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: #1d2939;
+        color: var(--code-text);
+        border-bottom: 1px solid #344054;
+      }
+      .code-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        font-size: 12px;
+        color: #d0d5dd;
+      }
+      .code-meta .file {
+        font-weight: 700;
+        color: #fff;
+        overflow-wrap: anywhere;
+      }
+      pre {
+        margin: 0;
+        overflow: auto;
+        background: var(--code-bg);
+        color: var(--code-text);
+        padding: 14px;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      pre code {
+        background: transparent;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+      }
+      .code-line {
+        display: grid;
+        grid-template-columns: 44px 1fr;
+        gap: 12px;
+        min-width: max-content;
+      }
+      .line-no {
+        color: #98a2b3;
+        text-align: right;
+        user-select: none;
+      }
+      .line-code {
+        white-space: pre;
+      }
+      .kv {
+        display: grid;
+        grid-template-columns: minmax(180px, 280px) 1fr;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .kv dt,
+      .kv dd {
+        margin: 0;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .kv dt {
+        background: var(--soft-2);
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .kv dd {
+        background: #fff;
+        overflow-wrap: anywhere;
+      }
+      .kv dt:last-of-type,
+      .kv dd:last-of-type {
+        border-bottom: 0;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 8px 0;
+      }
+      .checklist li {
+        display: grid;
+        grid-template-columns: 26px 1fr auto;
+        gap: 8px;
+        align-items: start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .checklist li:last-child {
+        border-bottom: 0;
+      }
+      .tick {
+        font-weight: 900;
+        color: var(--muted);
+      }
+      .tick.done {
+        color: var(--ok);
+      }
+      .steps {
+        counter-reset: step;
+        list-style: none;
+        padding: 0;
+      }
+      .steps li {
+        counter-increment: step;
+        position: relative;
+        padding: 10px 0 10px 44px;
+        border-bottom: 1px solid var(--border);
+      }
+      .steps li:last-child {
+        border-bottom: 0;
+      }
+      .steps li::before {
+        content: counter(step);
+        position: absolute;
+        left: 0;
+        top: 9px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--soft);
+        border: 1px solid var(--border);
+        font-weight: 800;
+      }
+      details.content-block summary {
+        cursor: pointer;
+        font-weight: 800;
+      }
+      blockquote {
+        margin: 12px 0;
+        padding: 10px 14px;
+        border-left: 4px solid var(--border);
+        color: var(--muted);
+        background: var(--soft-2);
+        border-radius: 12px;
+      }
+      .file-tree {
+        background: var(--soft-2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .file-tree ul {
+        list-style: none;
+        padding-left: 18px;
+        margin: 0;
+      }
+      .file-tree li {
+        margin: 4px 0;
+      }
+      .file-tree .folder {
+        font-weight: 800;
+      }
+      .markdown-lite h1,
+      .markdown-lite h2,
+      .markdown-lite h3 {
+        margin-top: 16px;
+      }
+      footer {
+        color: var(--muted);
+        font-size: 12px;
+        padding-bottom: 32px;
+      }
+      @media (max-width: 900px) {
+        .hero,
+        .two-col {
+          display: block;
+        }
+        .card,
+        .content-grid .card {
+          grid-column: span 6;
+        }
+        .kv {
+          grid-template-columns: 1fr;
+        }
+        .kv dt {
+          border-bottom: 0;
+        }
+      }
+      @media (max-width: 600px) {
+        .wrap {
+          padding: 16px;
+        }
+        .card,
+        .content-grid .card {
+          grid-column: span 12;
+        }
+        .decision-header {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <div class="hero">
+          <div>
+            <h1 id="title">Takeoff component recipe</h1>
+            <p id="subtitle" class="muted"></p>
+          </div>
+          <div id="decision-count"></div>
+        </div>
+        <nav aria-label="Recipe sections">
+          <a href="#overview">Overview</a>
+          <a href="#repos">Repos</a>
+          <a href="#discovery">Discovery</a>
+          <a href="#evidence-gates">Evidence Gates</a>
+          <a href="#api">API</a>
+          <a href="#compound">Compound</a>
+          <a href="#dom">DOM</a>
+          <a href="#spar">Spar</a>
+          <a href="#plan">Plan</a>
+          <a href="#content">Content</a>
+          <a href="#decisions">Decisions</a>
+          <a href="#export">Export MD</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section id="overview" class="section"></section>
+      <section id="repos" class="section"></section>
+      <section id="discovery" class="section"></section>
+      <section id="evidence-gates" class="section"></section>
+      <section id="api" class="section"></section>
+      <section id="compound" class="section"></section>
+      <section id="dom" class="section"></section>
+      <section id="spar" class="section"></section>
+      <section id="plan" class="section"></section>
+      <section id="content" class="section"></section>
+      <section id="decisions" class="section"></section>
+      <section id="export" class="section"></section>
+    </main>
+
+    <footer class="wrap">Generated from a local static template. No external scripts or network calls are used.</footer>
+
+    <script>
+      window.__TAKEOFF_RECIPE__ = /*__RECIPE_DATA__*/;
+
+      const data = window.__TAKEOFF_RECIPE__ || {};
+      const codeStore = {};
+      let codeId = 0;
+      const $ = (id) => document.getElementById(id);
+      const esc = (value) => String(value ?? '').replace(/[&<>'"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+      const arr = (value) => Array.isArray(value) ? value : (value ? [value] : []);
+      const text = (value, fallback = '—') => value === undefined || value === null || value === '' ? fallback : String(value);
+
+      function statusClass(status) {
+        const normalized = String(status || '').toLowerCase();
+        if (['aligned','approved','pass','passed','clean','found','planned','done','ok','public','required','success'].includes(normalized)) return 'ok';
+        if (['needed','decision needed','decision-needed','spar gap','design gap','dirty','blocked','blocking','fail','failed','error','danger'].includes(normalized)) return 'bad';
+        if (['wrapper mapping','proposed','warning','warn','unknown','not found','deferred','optional','open','minor','major'].includes(normalized)) return 'warn';
+        return 'info';
+      }
+
+      function chip(status) {
+        return `<span class="chip ${statusClass(status)}">${esc(text(status))}</span>`;
+      }
+
+      function list(items, ordered = false) {
+        const values = arr(items);
+        if (!values.length) return '<p class="muted">No items recorded.</p>';
+        const tag = ordered ? 'ol' : 'ul';
+        return `<${tag} class="list">${values.map((item) => `<li>${renderValue(item)}</li>`).join('')}</${tag}>`;
+      }
+
+      function renderValue(value, options = {}) {
+        if (value && typeof value === 'object' && !Array.isArray(value) && value.type) return renderBlock(value);
+        if (Array.isArray(value)) return list(value);
+        if (value && typeof value === 'object') return `<code>${esc(JSON.stringify(value))}</code>`;
+        if (options.code) return `<code>${esc(text(value))}</code>`;
+        return esc(text(value));
+      }
+
+      function renderCell(row, header) {
+        if (header.render) return header.render(row);
+        const value = row ? row[header.key] : undefined;
+        const type = header.type || header.kind;
+        if (type === 'status' || type === 'chip') return chip(value);
+        if (type === 'code') return `<code>${esc(text(value))}</code>`;
+        if (type === 'list') return list(value);
+        if (type === 'boolean') return chip(value ? 'yes' : 'no');
+        if (type === 'link' && value) return `<a href="${esc(value)}">${esc(value)}</a>`;
+        return renderValue(value);
+      }
+
+      function deriveColumns(rows) {
+        const keys = [];
+        arr(rows).forEach((row) => {
+          if (!row || typeof row !== 'object' || Array.isArray(row)) return;
+          Object.keys(row).forEach((key) => { if (!keys.includes(key)) keys.push(key); });
+        });
+        return keys.map((key) => ({ key, label: key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()) }));
+      }
+
+      function table(headers, rows) {
+        const safeRows = arr(rows);
+        const safeHeaders = arr(headers).length ? arr(headers) : deriveColumns(safeRows);
+        if (!safeRows.length) return '<p class="muted">No rows recorded.</p>';
+        return `<div class="table-scroll"><table><thead><tr>${safeHeaders.map(h => `<th>${esc(h.label || h.key || '')}</th>`).join('')}</tr></thead><tbody>${safeRows.map(row => `<tr>${safeHeaders.map(h => `<td>${renderCell(row, h)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      }
+
+      function blockHeading(block, level = 3) {
+        const title = block.title || block.heading || block.name;
+        const desc = block.description || block.caption;
+        return `${title ? `<h${level}>${esc(title)}</h${level}>` : ''}${desc ? `<p class="block-description">${esc(desc)}</p>` : ''}`;
+      }
+
+      function renderCodeBlock(block, forceLanguage) {
+        const id = `code-${++codeId}`;
+        const language = forceLanguage || block.language || block.lang || 'text';
+        const file = block.file || block.filename || block.path || '';
+        const content = text(block.content ?? block.code ?? block.value, '');
+        codeStore[id] = content;
+        const lineNumbers = Boolean(block.lineNumbers || block.showLineNumbers);
+        const body = lineNumbers
+          ? content.split(/\r?\n/).map((line, index) => `<span class="code-line"><span class="line-no">${index + 1}</span><span class="line-code">${esc(line)}</span></span>`).join('\n')
+          : esc(content);
+        return `<figure class="code-block content-block">
+          <figcaption class="code-head">
+            <span class="code-meta">${file ? `<span class="file">${esc(file)}</span>` : ''}<span>${esc(language)}</span>${block.title ? `<span>· ${esc(block.title)}</span>` : ''}</span>
+            <button class="mini-button" type="button" data-copy-code="${id}">Copy</button>
+          </figcaption>
+          <pre><code class="language-${esc(language)}">${body}</code></pre>
+        </figure>`;
+      }
+
+      function renderMarkdownLite(markdown) {
+        const lines = String(markdown || '').split(/\r?\n/);
+        const out = [];
+        let paragraph = [];
+        let listItems = [];
+        let inFence = false;
+        let fenceLang = 'text';
+        let fence = [];
+        const flushParagraph = () => {
+          if (!paragraph.length) return;
+          out.push(`<p>${esc(paragraph.join(' '))}</p>`);
+          paragraph = [];
+        };
+        const flushList = () => {
+          if (!listItems.length) return;
+          out.push(`<ul class="list">${listItems.map(item => `<li>${esc(item)}</li>`).join('')}</ul>`);
+          listItems = [];
+        };
+        lines.forEach((line) => {
+          const fenceMatch = line.match(/^```\s*([\w-]+)?\s*$/);
+          if (fenceMatch && !inFence) {
+            flushParagraph(); flushList(); inFence = true; fenceLang = fenceMatch[1] || 'text'; fence = []; return;
+          }
+          if (fenceMatch && inFence) {
+            out.push(renderCodeBlock({ language: fenceLang, content: fence.join('\n') }));
+            inFence = false; fence = []; return;
+          }
+          if (inFence) { fence.push(line); return; }
+          if (!line.trim()) { flushParagraph(); flushList(); return; }
+          const heading = line.match(/^(#{1,4})\s+(.*)$/);
+          if (heading) { flushParagraph(); flushList(); const level = Math.min(4, heading[1].length + 2); out.push(`<h${level}>${esc(heading[2])}</h${level}>`); return; }
+          const bullet = line.match(/^[-*]\s+(.*)$/);
+          if (bullet) { flushParagraph(); listItems.push(bullet[1]); return; }
+          const quote = line.match(/^>\s?(.*)$/);
+          if (quote) { flushParagraph(); flushList(); out.push(`<blockquote>${esc(quote[1])}</blockquote>`); return; }
+          paragraph.push(line.trim());
+        });
+        flushParagraph(); flushList();
+        if (inFence) out.push(renderCodeBlock({ language: fenceLang, content: fence.join('\n') }));
+        return `<div class="markdown-lite">${out.join('')}</div>`;
+      }
+
+      function renderKeyValue(block) {
+        const items = arr(block.items || block.rows || block.values);
+        if (!items.length) return '<p class="muted">No key/value items recorded.</p>';
+        return `<dl class="kv">${items.map((item) => `<dt>${esc(item.key || item.label || item.name || 'Key')}</dt><dd>${renderValue(item.value ?? item.description ?? item.notes)}</dd>`).join('')}</dl>`;
+      }
+
+      function renderChecklist(block) {
+        const items = arr(block.items || block.rows);
+        if (!items.length) return '<p class="muted">No checklist items recorded.</p>';
+        return `<ul class="checklist">${items.map((item) => {
+          const checked = Boolean(item.checked || item.done || ['done','pass','passed','ok'].includes(String(item.status || '').toLowerCase()));
+          return `<li><span class="tick ${checked ? 'done' : ''}">${checked ? '✓' : '○'}</span><span>${esc(text(item.label || item.name || item.task))}${item.note || item.notes ? `<br><span class="muted">${esc(item.note || item.notes)}</span>` : ''}</span><span>${item.status ? chip(item.status) : ''}</span></li>`;
+        }).join('')}</ul>`;
+      }
+
+      function renderCards(block) {
+        const items = arr(block.items || block.cards);
+        if (!items.length) return '<p class="muted">No cards recorded.</p>';
+        return `<div class="grid content-grid">${items.map(item => `<div class="card"><strong>${esc(item.title || item.label || item.name || 'Card')}</strong><span>${renderValue(item.value ?? item.metric ?? item.description ?? '')}</span>${item.status ? `<p>${chip(item.status)}</p>` : ''}${item.note ? `<p class="muted">${esc(item.note)}</p>` : ''}</div>`).join('')}</div>`;
+      }
+
+      function renderSteps(block) {
+        const items = arr(block.items || block.steps);
+        if (!items.length) return '<p class="muted">No steps recorded.</p>';
+        return `<ol class="steps">${items.map((item) => `<li><strong>${esc(text(item.title || item.label || item.name || item))}</strong>${item.body || item.description ? `<p>${esc(item.body || item.description)}</p>` : ''}${item.blocks ? renderBlocks(item.blocks) : ''}</li>`).join('')}</ol>`;
+      }
+
+      function renderFileTreeNode(node) {
+        if (typeof node === 'string') return `<li>${esc(node)}</li>`;
+        const children = arr(node.children);
+        return `<li><span class="${children.length ? 'folder' : ''}">${esc(node.name || node.path || 'item')}</span>${node.note ? ` <span class="muted">— ${esc(node.note)}</span>` : ''}${children.length ? `<ul>${children.map(renderFileTreeNode).join('')}</ul>` : ''}</li>`;
+      }
+
+      function renderBlock(block) {
+        if (typeof block === 'string') return `<div class="content-block"><p>${esc(block)}</p></div>`;
+        if (!block || typeof block !== 'object') return '';
+        const type = String(block.type || '').toLowerCase();
+        if (type === 'code') return renderCodeBlock(block);
+        if (type === 'diff') return renderCodeBlock(block, 'diff');
+        if (type === 'table') return `<div class="content-block">${blockHeading(block)}${table(block.columns || block.headers, block.rows || block.items)}</div>`;
+        if (type === 'keyvalue' || type === 'key-value' || type === 'kv') return `<div class="content-block">${blockHeading(block)}${renderKeyValue(block)}</div>`;
+        if (type === 'checklist') return `<div class="content-block">${blockHeading(block)}${renderChecklist(block)}</div>`;
+        if (type === 'cards' || type === 'metrics') return `<div class="content-block">${blockHeading(block)}${renderCards(block)}</div>`;
+        if (type === 'steps') return `<div class="content-block">${blockHeading(block)}${renderSteps(block)}</div>`;
+        if (type === 'callout' || type === 'note' || type === 'warning' || type === 'danger') {
+          const tone = block.tone || type;
+          return `<div class="callout ${esc(tone)}"><strong>${esc(block.title || block.heading || 'Note')}</strong>${block.body || block.content ? `<p>${esc(block.body || block.content)}</p>` : ''}${block.items ? list(block.items) : ''}${block.blocks ? renderBlocks(block.blocks) : ''}</div>`;
+        }
+        if (type === 'markdown' || type === 'md') return `<div class="content-block">${blockHeading(block)}${renderMarkdownLite(block.content || block.body || '')}</div>`;
+        if (type === 'paragraph' || type === 'text') return `<div class="content-block">${blockHeading(block)}<p>${esc(block.body || block.content || block.text || '')}</p></div>`;
+        if (type === 'list') return `<div class="content-block">${blockHeading(block)}${list(block.items, block.ordered)}</div>`;
+        if (type === 'quote') return `<div class="content-block">${blockHeading(block)}<blockquote>${esc(block.content || block.body || block.quote || '')}</blockquote></div>`;
+        if (type === 'details' || type === 'accordion') return `<details class="content-block" ${block.open ? 'open' : ''}><summary>${esc(block.title || block.summary || 'Details')}</summary>${block.description ? `<p class="block-description">${esc(block.description)}</p>` : ''}${renderBlocks(block.blocks || block.contentBlocks || [])}</details>`;
+        if (type === 'filetree' || type === 'file-tree') return `<div class="content-block">${blockHeading(block)}<div class="file-tree"><ul>${arr(block.items || block.children || block.tree).map(renderFileTreeNode).join('')}</ul></div></div>`;
+        if (type === 'tabs') return `<div class="content-block">${blockHeading(block)}${arr(block.tabs || block.items).map((tab, index) => `<details ${index === 0 ? 'open' : ''}><summary>${esc(tab.title || tab.label || `Tab ${index + 1}`)}</summary>${renderBlocks(tab.blocks || tab.contentBlocks || [{ type: 'markdown', content: tab.content || tab.body || '' }])}</details>`).join('')}</div>`;
+        if (block.rows || block.columns || block.headers) return `<div class="content-block">${blockHeading(block)}${table(block.columns || block.headers, block.rows || block.items)}</div>`;
+        return `<div class="content-block">${blockHeading(block)}${renderCodeBlock({ language: 'json', content: JSON.stringify(block, null, 2) })}</div>`;
+      }
+
+      function renderBlocks(blocks) {
+        const values = arr(blocks);
+        return values.length ? values.map(renderBlock).join('') : '';
+      }
+
+      function renderOverview() {
+        const component = text(data.componentPascal || data.component, 'Component');
+        $('title').textContent = `${component} component recipe`;
+        $('subtitle').textContent = `${text(data.component)} · spar primitive: ${text(data.sparPrimitive)} · generated: ${text(data.generatedAt)}`;
+        const decisions = arr(data.decisions);
+        const blockers = decisions.filter(d => d.blocking && !['approved','rejected'].includes(String(d.status || '').toLowerCase()));
+        $('decision-count').innerHTML = `${chip(`${decisions.length} decisions`)} ${blockers.length ? chip(`${blockers.length} blockers`) : chip('no blockers')}`;
+        $('overview').innerHTML = `
+          <h2>Overview</h2>
+          <p>${esc(text(data.summary, 'No summary recorded.'))}</p>
+          <div class="grid">
+            <div class="card"><strong>Component</strong><span>${esc(text(data.component))}</span></div>
+            <div class="card"><strong>React root</strong><span>${esc(text(data.componentPascal || data.component))}</span></div>
+            <div class="card"><strong>Spar primitive</strong><span>${esc(text(data.sparPrimitive))}</span></div>
+            <div class="card"><strong>Repo root</strong><span>${esc(text(data.repoRoot))}</span></div>
+          </div>${renderBlocks(data.overviewBlocks)}`;
+      }
+
+      function renderRepos() {
+        $('repos').innerHTML = `<h2>Repos & cut-off</h2>` + table([
+          { label: 'Repo', key: 'name' },
+          { label: 'Path', key: 'path', type: 'code' },
+          { label: 'Branch', key: 'branch' },
+          { label: 'Commit', key: 'commit' },
+          { label: 'Dirty', render: row => chip(row.dirty || 'unknown') },
+          { label: 'Files / notes', render: row => list([...(arr(row.dirtyFiles)), ...(arr(row.notes))]) }
+        ], data.repos);
+      }
+
+      function compactFileRows(files) {
+        return arr(files).map((file) => {
+          if (typeof file === 'string') return { path: file, status: 'recorded', lineCount: '', sizeBytes: '', sha256: '' };
+          return {
+            path: file.path || file.absolutePath || 'Unknown',
+            status: file.status || (file.exists === false ? 'not found' : 'found'),
+            lineCount: file.lineCount || '',
+            sizeBytes: file.sizeBytes || '',
+            sha256: file.sha256 ? String(file.sha256).slice(0, 12) : ''
+          };
+        });
+      }
+
+      function excerptBlocks(files) {
+        const blocks = [];
+        arr(files).forEach((file) => {
+          if (!file || typeof file !== 'object') return;
+          if (file.matches && file.matches.length) {
+            blocks.push({
+              type: 'table',
+              title: `Matches · ${file.path || 'source file'}`,
+              columns: [
+                { key: 'line', label: 'Line', type: 'code' },
+                { key: 'kind', label: 'Kind' },
+                { key: 'text', label: 'Text', type: 'code' }
+              ],
+              rows: file.matches
+            });
+          }
+          if (file.excerpt) {
+            blocks.push({ type: 'code', language: 'text', title: `Excerpt · ${file.path || 'source file'}`, lineNumbers: false, content: file.excerpt });
+          }
+        });
+        return blocks.length ? [{ type: 'details', title: 'Local source matches and excerpts', open: false, blocks }] : [];
+      }
+
+      function sourcePanel(title, source) {
+        source = source || {};
+        return `<div class="section" style="box-shadow:none;margin:0;padding:16px">
+          <h3>${esc(title)}</h3>
+          <p class="muted">Required paths</p>${table([
+            { label: 'Path', key: 'path', type: 'code' },
+            { label: 'Required', render: row => chip(row.required ? 'required' : 'optional') },
+            { label: 'Exists', render: row => chip(row.exists ? 'found' : 'not found') }
+          ], source.requiredPaths)}
+          <p class="muted">Files</p>${table([
+            { label: 'Path', key: 'path', type: 'code' },
+            { label: 'Status', render: row => chip(row.status) },
+            { label: 'Lines', key: 'lineCount' },
+            { label: 'Bytes', key: 'sizeBytes' },
+            { label: 'SHA', key: 'sha256', type: 'code' }
+          ], compactFileRows(source.files))}
+          <p class="muted">Findings</p>${list(source.findings)}
+          ${renderBlocks(source.blocks || source.contentBlocks || source.evidenceBlocks)}
+          ${renderBlocks(excerptBlocks(source.files))}
+        </div>`;
+      }
+
+      function renderDiscovery() {
+        const s = data.sources || {};
+        $('discovery').innerHTML = `<h2>Discovery summary</h2><div class="two-col">
+          ${sourcePanel('takeoff-ui core', s.takeoffUi)}
+          ${sourcePanel('spar primitive', s.spar)}
+          ${sourcePanel('takeoff-design', s.takeoffDesign)}
+          ${sourcePanel('takeoff-spar', s.takeoffSpar)}
+        </div>`;
+      }
+
+
+
+      function renderEvidenceGates() {
+        $('evidence-gates').innerHTML = `<h2>Evidence & self-check gates</h2>
+          <p class="muted">Observable audit summary. These rows show what was checked, what evidence supports it, and where decisions or risks remain.</p>
+          <h3>Self-checks</h3>${table([
+            { label: 'ID', key: 'id', type: 'code' },
+            { label: 'Question', key: 'question' },
+            { label: 'Status', render: row => chip(row.status) },
+            { label: 'Answer', key: 'answer' },
+            { label: 'Evidence', key: 'evidence' },
+            { label: 'Follow-up', render: row => renderValue(row.followUp || row.risk || row.notes) }
+          ], data.selfChecks)}
+          <h3>Evidence ledger</h3>${table([
+            { label: 'ID', key: 'id', type: 'code' },
+            { label: 'Claim', key: 'claim' },
+            { label: 'Repo', key: 'repo' },
+            { label: 'Path', key: 'path', type: 'code' },
+            { label: 'Lines', key: 'lines', type: 'code' },
+            { label: 'Status', render: row => chip(row.status) },
+            { label: 'Confidence', render: row => chip(row.confidence) },
+            { label: 'Decision', key: 'decisionId', type: 'code' }
+          ], data.evidenceLedger)}
+          <h3>Contradictions</h3>${table([
+            { label: 'Area', render: row => renderValue(row.area || row.id) },
+            { label: 'Conflict', render: row => renderValue(row.conflict || row.claim) },
+            { label: 'Sources', key: 'sources', type: 'list' },
+            { label: 'Status', render: row => chip(row.status) },
+            { label: 'Resolution', key: 'resolution' }
+          ], data.contradictions)}
+          <h3>Assumptions under watch</h3>${table([
+            { label: 'ID', key: 'id', type: 'code' },
+            { label: 'Assumption', render: row => renderValue(row.assumption || row.claim) },
+            { label: 'Evidence', key: 'evidence' },
+            { label: 'Status', render: row => chip(row.status) },
+            { label: 'Decision', key: 'decisionId', type: 'code' }
+          ], data.assumptions)}${renderBlocks(data.reasoningBlocks || data.evidenceGateBlocks)}`;
+      }
+
+      function renderApi() {
+        $('api').innerHTML = `<h2>Public API & events</h2><h3>Props / types</h3>` + table([
+          { label: 'Name', key: 'name', type: 'code' },
+          { label: 'Type', key: 'type', type: 'code' },
+          { label: 'Default', key: 'default', type: 'code' },
+          { label: 'Source', key: 'source' },
+          { label: 'Status', render: row => chip(row.status) },
+          { label: 'Notes', key: 'notes' }
+        ], data.api) + `<h3>Events</h3>` + table([
+          { label: 'Web component', key: 'webComponent', type: 'code' },
+          { label: 'React', key: 'react', type: 'code' },
+          { label: 'Payload', key: 'payload', type: 'code' },
+          { label: 'Source', key: 'source' },
+          { label: 'Status', render: row => chip(row.status) },
+          { label: 'Notes', key: 'notes' }
+        ], data.events) + renderBlocks(data.apiBlocks);
+      }
+
+      function renderCompound() {
+        const c = data.compound || {};
+        $('compound').innerHTML = `<h2>Compound structure</h2>
+          <p><strong>Root:</strong> <code>${esc(text(c.root))}</code></p>
+          <p><strong>Tree:</strong> <code>${esc(text(c.tree))}</code></p>
+          <h3>Public parts</h3>${table([
+            { label: 'Part', key: 'name', type: 'code' },
+            { label: 'Element', key: 'element', type: 'code' },
+            { label: 'displayName', key: 'displayName', type: 'code' },
+            { label: 'Public', render: row => chip(row.public ? 'public' : 'internal') },
+            { label: 'Source', key: 'source' }
+          ], c.parts)}
+          <h3>Internal-only visual parts</h3>${table([
+            { label: 'Name', key: 'name', type: 'code' },
+            { label: 'Reason', key: 'reason' }
+          ], c.internalOnly)}${renderBlocks(c.blocks || data.compoundBlocks)}`;
+      }
+
+      function renderDom() {
+        $('dom').innerHTML = `<h2>DOM / class / data-state contract</h2>` + table([
+          { label: 'Level', key: 'level' },
+          { label: 'Class', key: 'class', type: 'code' },
+          { label: 'Data attr', key: 'dataAttr', type: 'code' },
+          { label: 'Values', render: row => esc(arr(row.values).join(', ') || '—') },
+          { label: 'Required', render: row => chip(row.required ? 'required' : 'optional') },
+          { label: 'Source', key: 'source' },
+          { label: 'Status', render: row => chip(row.status) },
+          { label: 'Notes', key: 'notes' }
+        ], data.domContract) + renderBlocks(data.domBlocks);
+      }
+
+      function renderSpar() {
+        $('spar').innerHTML = `<h2>Spar compatibility</h2>` + table([
+          { label: 'Capability', key: 'capability' },
+          { label: 'Spar', key: 'spar' },
+          { label: 'takeoff-spar wrapper', key: 'wrapper' },
+          { label: 'Status', render: row => chip(row.status) },
+          { label: 'Resolution', key: 'resolution' }
+        ], data.sparCompatibility) + renderBlocks(data.sparBlocks);
+      }
+
+      function renderPlan() {
+        $('plan').innerHTML = `<h2>Implementation, tests, docs, validation</h2>
+          <h3>Implementation plan</h3>${table([
+            { label: 'Area', key: 'area' },
+            { label: 'Action', key: 'action' },
+            { label: 'Files', render: row => list(row.files) }
+          ], data.implementationPlan)}
+          <h3>Tests</h3>${table([
+            { label: 'Name', key: 'name' },
+            { label: 'Coverage', key: 'coverage' },
+            { label: 'Status', render: row => chip(row.status) }
+          ], data.tests)}
+          <h3>Docs</h3>${table([
+            { label: 'Name', key: 'name' },
+            { label: 'Status', render: row => chip(row.status) },
+            { label: 'Notes', key: 'notes' }
+          ], data.docs)}
+          <h3>Validation</h3>${table([
+            { label: 'Command', key: 'command', type: 'code' },
+            { label: 'Required', render: row => chip(row.required ? 'required' : 'optional') },
+            { label: 'Notes', key: 'notes' }
+          ], data.validation)}
+          <h3>Remaining risks</h3>${table([
+            { label: 'Risk', key: 'risk' },
+            { label: 'Mitigation', key: 'mitigation' },
+            { label: 'Status', render: row => chip(row.status) }
+          ], data.risks)}${renderBlocks(data.planBlocks)}`;
+      }
+
+      function renderContent() {
+        const blocks = arr(data.contentBlocks || data.evidenceBlocks || []);
+        const sections = arr(data.sections || data.extraSections || []);
+        const sectionHtml = sections.map((section, index) => `<article class="content-block" id="extra-section-${index + 1}"><h3>${esc(section.title || section.name || `Section ${index + 1}`)}</h3>${section.description ? `<p class="block-description">${esc(section.description)}</p>` : ''}${renderBlocks(section.blocks || section.contentBlocks || section.items)}</article>`).join('');
+        const blockHtml = renderBlocks(blocks);
+        $('content').innerHTML = `<h2>Additional content blocks</h2><p class="muted">Optional evidence, code snippets, tables, checklists, file trees, notes, diffs, and other rich recipe content.</p>${blockHtml || sectionHtml ? blockHtml + sectionHtml : '<p class="muted">No additional content blocks recorded.</p>'}`;
+      }
+
+      function decisionNoteFor(id) {
+        const fields = Array.from(document.querySelectorAll('[data-decision-note]'));
+        const match = fields.find(field => field.getAttribute('data-decision-note') === String(id || ''));
+        return match ? match.value : '';
+      }
+
+      function decisionMarkdown(decision) {
+        const note = decisionNoteFor(decision.id) || decision.decision || '_pending_';
+        return `### ${decision.id || 'D?'} — ${decision.title || 'Untitled decision'}\n\n` +
+          `- Status: ${decision.status || 'needed'}\n` +
+          `- Blocking: ${decision.blocking ? 'yes' : 'no'}\n` +
+          `- Question: ${decision.question || 'Unknown'}\n` +
+          `- Evidence:\n${arr(decision.evidence).map(e => `  - ${typeof e === 'string' ? e : JSON.stringify(e)}`).join('\n') || '  - Unknown'}\n` +
+          `- Impact: ${decision.impact || 'Unknown'}\n` +
+          `- Options:\n${arr(decision.options).map((o, i) => `  ${i + 1}. ${typeof o === 'string' ? o : JSON.stringify(o)}`).join('\n') || '  1. Unknown'}\n` +
+          `- Recommendation: ${decision.recommendation || 'None'}\n` +
+          `- Decision: ${note}\n` +
+          `- Follow-up:\n${arr(decision.followUp).map(f => `  - ${f}`).join('\n') || '  - None recorded'}\n`;
+      }
+
+      function renderDecisions() {
+        const decisions = arr(data.decisions);
+        const body = decisions.length ? decisions.map((d, index) => `<article class="decision">
+          <div class="decision-header">
+            <div><h3>${esc(d.id || 'D?')} — ${esc(text(d.title, 'Untitled decision'))}</h3></div>
+            <div>${chip(d.status || 'needed')} ${d.blocking ? chip('blocking') : chip('non-blocking')}</div>
+          </div>
+          <p><strong>Question:</strong> ${esc(text(d.question, 'Unknown'))}</p>
+          <p><strong>Impact:</strong> ${esc(text(d.impact, 'Unknown'))}</p>
+          <p><strong>Evidence:</strong></p>${list(d.evidence)}
+          <p><strong>Options:</strong></p>${list(d.options, true)}
+          <p><strong>Recommendation:</strong> ${esc(text(d.recommendation, 'None'))}</p>
+          ${renderBlocks(d.blocks || d.contentBlocks)}
+          <label for="decision-${index}"><strong>Decision / note to export</strong></label>
+          <textarea id="decision-${index}" data-decision-note="${esc(d.id || '')}" placeholder="Write the approved decision, rationale, owner, or follow-up here.">${esc(d.decision || '')}</textarea>
+        </article>`).join('') : '<p class="muted">No decisions recorded.</p>';
+        $('decisions').innerHTML = `<h2>Decision Needed</h2>${body}`;
+      }
+
+      function buildFullDecisionMarkdown() {
+        const component = data.componentPascal || data.component || 'Component';
+        const decisions = arr(data.decisions);
+        const header = `# ${component} decisions\n\n- Component: ${data.component || 'Unknown'}\n- Spar primitive: ${data.sparPrimitive || 'Unknown'}\n- Generated from recipe: ${data.generatedAt || 'Unknown'}\n\n`;
+        if (!decisions.length) return header + 'No open decisions recorded.\n';
+        return header + decisions.map(decisionMarkdown).join('\n');
+      }
+
+      async function copyMarkdown() {
+        const md = buildFullDecisionMarkdown();
+        $('markdown-output').value = md;
+        try { await navigator.clipboard.writeText(md); } catch (_) {}
+        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = $('download-link');
+        link.href = url;
+        link.download = `${data.component || 'component'}.decisions.md`;
+        link.style.display = 'inline-flex';
+      }
+
+      function renderExport() {
+        $('export').innerHTML = `<h2>Export decisions as Markdown</h2>
+          <p class="muted">Edit decision fields above, then copy or download Markdown. Feed the exported Markdown into the implementation handoff.</p>
+          <div class="actions">
+            <button class="button" type="button" id="copy-md">Copy / refresh Markdown</button>
+            <a class="button" id="download-link" href="#" style="display:none">Download decisions.md</a>
+          </div>
+          <textarea class="output" id="markdown-output" readonly placeholder="Decision Markdown will appear here."></textarea>`;
+        $('copy-md').addEventListener('click', copyMarkdown);
+      }
+
+      document.addEventListener('click', async (event) => {
+        const button = event.target.closest('[data-copy-code]');
+        if (!button) return;
+        const id = button.getAttribute('data-copy-code');
+        try {
+          await navigator.clipboard.writeText(codeStore[id] || '');
+          const old = button.textContent;
+          button.textContent = 'Copied';
+          setTimeout(() => { button.textContent = old; }, 1200);
+        } catch (_) {}
+      });
+
+      renderOverview();
+      renderRepos();
+      renderDiscovery();
+      renderEvidenceGates();
+      renderApi();
+      renderCompound();
+      renderDom();
+      renderSpar();
+      renderPlan();
+      renderContent();
+      renderDecisions();
+      renderExport();
+    </script>
+  </body>
+</html>
