@@ -1,6 +1,6 @@
 ---
 title: Contributing
-description: How to propose changes, port a new component, and ship a release.
+description: How to propose changes and port a new component.
 sidebar_label: Contributing
 sidebar_position: 10
 slug: /contributing
@@ -15,12 +15,11 @@ component at the same level of polish.
 
 ## The readiness gate
 
-Before a new component can merge, it has to pass
-[`docs/component-port-readiness.md`](https://github.com/turkishtechnology/takeoff-spar/blob/main/docs/component-port-readiness.md):
+Before a new component can merge, it has to follow the
+[`component authoring contract`](https://github.com/turkishtechnology/takeoff-spar/blob/main/docs/component-authoring-contract.md):
 
 - Wrapper + types + base metadata.
 - Full public-surface unit tests.
-- Changeset landed.
 - Smoke test in `e2e/smoke-verifier.spec.ts`.
 
 ## Starting a port
@@ -34,9 +33,8 @@ Before a new component can merge, it has to pass
 ## Review workflow
 
 - One code owner + one docs owner review.
-- Every public change ships with a changeset via `pnpm changeset`.
-- Breaking changes (surface contract violations) require an ADR in
-  `docs/decisions/`.
+- Breaking changes (surface contract violations) require explicit maintainer
+  approval before merge.
 
 ## Style & formatting
 

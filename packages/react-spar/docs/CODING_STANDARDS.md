@@ -3,7 +3,7 @@
 This document explains how we build components under
 `packages/react-spar/src/components`.
 
-`@takeoff-ui/react-spar` is a React adapter layer on top of
+`@takeoff-ui/react-spar` is a React wrapper layer on top of
 `@turkish-technology/spar`, not a second component framework. Every component is
 authored as a **compound surface**: a root that owns state plus a fixed list of
 named subcomponents that own structure. The standards below keep that model
@@ -180,11 +180,12 @@ Examples of explicit precedence that should be documented and tested:
 
 ### Wrapper responsibility
 
-- Each component is a thin React adapter.
+- Each component is a thin React wrapper.
 - Spar owns behavior, keyboard handling, and ARIA whenever it already provides
   them.
-- The root owns API translation, state, context, DOM required for styling, value
-  normalization, and stable `data-*` hooks.
+- The root owns Takeoff visual props, visual context, DOM required for styling,
+  and stable `data-*` hooks.
+- Behavior props pass through to Spar when Spar supports the Takeoff vocabulary.
 - Subcomponents own their canonical slot owner nodes (tag, class, `data-slot`,
   and any behavior such as dismiss). They read shared state from context and
   apply `classNames`/`slotProps` on render.
@@ -213,13 +214,15 @@ Typical structural subcomponents include `Root`, `Mask`, `Panel`, `Body`,
   wiring.
 - Prefer `createComponentBase` for `cx`, `getSlotProps`, and `resolveProps`.
 
-### Adapter hook responsibility
+### Upstream-first wrapper responsibility
 
-- Use `useComponentNameAdapter` when state translation is non-trivial.
-- Adapter hooks own controlled and uncontrolled reconciliation, normalization,
-  equality checks, and child processing.
-- Keep heavy derivation out of the JSX return block.
-- Keep adapter helpers pure where possible.
+- Spar owns controlled and uncontrolled reconciliation, normalization, keyboard
+  behavior, focus behavior, ARIA wiring, and item registration.
+- Keep prop renames or visual-only derivation inline when they are small.
+- If behavior-heavy translation is needed, fix Spar first so the wrapper can
+  pass through the behavior props directly.
+- Do not add `useComponentNameAdapter` hooks unless there is a real React
+  lifecycle/state/ref/effect reason and the design has been explicitly approved.
 
 ## Component Implementation
 
@@ -235,16 +238,12 @@ import {
   useMyComponentContext,
 } from './MyComponentBase';
 import type { MyComponentProps, MyComponentPartProps } from './types';
-import { useMyComponentAdapter } from './useMyComponentAdapter';
 
 function MyComponent({
   ref,
   ...rawProps
 }: MyComponentProps & { ref?: Ref<HTMLDivElement> }) {
   const {
-    value: controlledValue,
-    defaultValue,
-    onValueChange,
     children,
     className,
     classNames,
@@ -252,15 +251,9 @@ function MyComponent({
     ...restProps
   } = MyComponentBase.resolveProps(rawProps);
 
-  const { normalizedValue, handleValueChange } = useMyComponentAdapter({
-    controlledValue,
-    defaultValue,
-    onValueChange,
-    children,
-  });
-
   const contextValue = {
-    /* state flags + classNames + slotProps */
+    classNames,
+    slotProps,
   };
 
   return (
@@ -270,10 +263,7 @@ function MyComponent({
         ref={ref}
         {...MyComponentBase.getSlotProps('root', {
           className,
-          'data-state': normalizedValue ? 'open' : undefined,
         })}
-        value={normalizedValue}
-        onValueChange={handleValueChange}
       >
         {children}
       </Primitive>
@@ -310,7 +300,9 @@ export { MyComponentCompound as MyComponent };
 ### Implementation rules
 
 - Call `resolveProps` once near the top of the root component.
-- Normalize values and derive booleans above the return block.
+- Keep visual-only derivation above the return block.
+- Do not re-implement Spar behavior in the wrapper. If behavior props cannot be
+  passed through directly, fix Spar first.
 - Keep JSX shallow. Move repeated or branching rendering into subcomponents.
 - Use `getSlotProps` for slot nodes. Use `cx` when you only need class
   composition without extra slot metadata.
@@ -369,8 +361,8 @@ The rules:
    re-implemented in React. If there is, the correct path is to delegate through
    the upstream part and restrict the wrapper to styling and API translation.
 
-Canonical examples per archetype, as of the composition audit absorbed into this
-section:
+Canonical examples per archetype, as of the composition review absorbed into
+this section:
 
 - **Inherited root, inherited parts** — `Accordion`. Delegates through every
   `SparAccordion.*` part it uses, with only styling enhancements layered in.

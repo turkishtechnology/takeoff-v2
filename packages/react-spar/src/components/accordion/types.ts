@@ -160,3 +160,13 @@ export interface AccordionContentProps extends Omit<ComponentPropsWithoutRef<'di
   slotProps?: SlotPropsMap<AccordionContentSlot>;
   ref?: Ref<HTMLDivElement>;
 }
+
+declare module '../../core/theme' {
+  interface ComponentThemeRegistry {
+    Accordion: import('../../core').ComponentThemeConfig<AccordionProps>;
+    AccordionItem: import('../../core').ComponentThemeConfig<AccordionItemProps>;
+    AccordionHeader: import('../../core').ComponentThemeConfig<AccordionHeaderProps>;
+    AccordionTrigger: import('../../core').ComponentThemeConfig<AccordionTriggerProps>;
+    AccordionContent: import('../../core').ComponentThemeConfig<AccordionContentProps>;
+  }
+}

@@ -18,7 +18,8 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "paths": {
-      "@turkish-technology/spar": ["../../packages/react-spar/node_modules/@turkish-technology/spar"],
+      "react": ["./node_modules/@types/react"],
+      "react/jsx-runtime": ["./node_modules/@types/react/jsx-runtime"],
       "@takeoff-ui/react-spar": ["../../packages/react-spar/src/index.ts"]
     }
   },

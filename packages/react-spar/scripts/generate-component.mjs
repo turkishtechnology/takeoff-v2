@@ -11,7 +11,7 @@
  *
  * Produces the bare directory skeleton that mirrors the Accordion reference
  * (see src/components/accordion/). The generated wrapper is intentionally a
- * minimal Spar-primitive adapter — wire it to the real Spar primitive,
+ * minimal Spar-primitive wrapper — wire it to the real Spar primitive,
  * extend the Props interface, and add tests by hand. The base.ts pattern
  * (one createComponentBase per public sub-component, all in one file)
  * scales to compound components like Accordion.
@@ -72,6 +72,12 @@ export interface ${name}Props extends Omit<ComponentPropsWithoutRef<'div'>, 'cla
   classNames?: ClassNamesMap<${name}Slot>;
   /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<${name}Slot>;
+}
+
+declare module '../../core/theme' {
+  interface ComponentThemeRegistry {
+    ${name}: import('../../core').ComponentThemeConfig<${name}Props>;
+  }
 }
 `,
 );
@@ -180,6 +186,5 @@ console.log(`    base.ts`);
 console.log(`    index.ts`);
 console.log(`    types.ts`);
 console.log(`\nNext steps:`);
-console.log(`  1. Register '${name}' on src/core/theme.ts → ComponentThemeRegistry.`);
-console.log(`  2. Replace the <div> placeholder in ${name}.tsx with the real Spar primitive.`);
-console.log(`  3. See src/components/accordion/ for the compound-component pattern.`);
+console.log(`  1. Replace the <div> placeholder in ${name}.tsx with the real Spar primitive.`);
+console.log(`  2. See src/components/accordion/ for the compound-component pattern.`);

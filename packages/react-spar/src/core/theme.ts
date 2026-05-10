@@ -1,5 +1,3 @@
-import type { AccordionContentProps, AccordionHeaderProps, AccordionItemProps, AccordionProps, AccordionTriggerProps } from '../components/accordion/types';
-
 import type { ClassNamesMap, SlotPropsMap } from './types';
 
 /**
@@ -27,11 +25,6 @@ export interface ComponentThemeConfig<TProps = unknown, TSlot extends string = '
  * `interface` so consumers can augment it via TypeScript declaration merging.
  */
 export interface ComponentThemeRegistry {
-  Accordion: ComponentThemeConfig<AccordionProps>;
-  AccordionItem: ComponentThemeConfig<AccordionItemProps>;
-  AccordionHeader: ComponentThemeConfig<AccordionHeaderProps>;
-  AccordionTrigger: ComponentThemeConfig<AccordionTriggerProps>;
-  AccordionContent: ComponentThemeConfig<AccordionContentProps>;
 }
 
 export type ComponentName = keyof ComponentThemeRegistry;

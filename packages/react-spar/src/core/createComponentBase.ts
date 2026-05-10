@@ -39,7 +39,7 @@ const toDataSlotName = (slot: string): string =>
 
 /**
  * Mint the tiny kit each component uses for class composition, slot tagging
- * and default-prop merging. Keeps every wrapper a thin adapter over Spar.
+ * and default-prop merging. Keeps every wrapper thin over Spar.
  */
 export const createComponentBase = <TProps, TSlot extends string>(
   config: CreateComponentBaseConfig<TProps, TSlot>,
