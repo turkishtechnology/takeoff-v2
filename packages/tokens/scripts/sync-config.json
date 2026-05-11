@@ -1,0 +1,96 @@
+{
+  "defaultBrand": "thy",
+
+  "typoModeToBrand": {
+    "Geologica": "thy",
+    "TK": "ajet",
+    "clearview": "aviation",
+    "Inter": "technology",
+    "SARP": "sarp"
+  },
+
+  "weightMap": {
+    "Thin": 100,
+    "Extralight": 200,
+    "Light": 300,
+    "Regular": 400,
+    "Medium": 500,
+    "Semibold": 600,
+    "Bold": 700,
+    "Extrabold": 800,
+    "Black": 900
+  },
+
+  "responsiveModes": {
+    "Desktop (lg-xl)": "desktop",
+    "Tablet": "tablet",
+    "Mobile": "mobile"
+  },
+
+  "componentCollections": [
+    "buttons",
+    "input",
+    "switcher",
+    "breadcrumbs",
+    "pagination",
+    "badge",
+    "dialog",
+    "dropdown",
+    "datepicker",
+    "tabs",
+    "chips",
+    "card",
+    "header",
+    "sidebar",
+    "alert",
+    "table",
+    "tooltips",
+    "accordion",
+    "notification",
+    "slider",
+    "rich text editor",
+    "rating",
+    "tree-view",
+    "spinner",
+    "popconfirm",
+    "progress bar",
+    "quote",
+    "empty-state",
+    "result",
+    "comment",
+    "error 404",
+    "login",
+    "persona",
+    "timestampt",
+    "helpertext",
+    "popover",
+    "Timeline",
+    "file upload",
+    "anchor",
+    "calendar",
+    "description",
+    "countdown",
+    "sign",
+    "avatar",
+    "stepper",
+    "list",
+    "timepicker",
+    "settings"
+  ],
+
+  "componentNameMap": {
+    "buttons": "button",
+    "tooltips": "tooltip",
+    "switcher": "radio-checkbox",
+    "breadcrumbs": "breadcrumb",
+    "notification": "drawer",
+    "rich text editor": "editor",
+    "tree-view": "tree-view",
+    "error 404": "error-404",
+    "empty-state": "empty-state",
+    "progress bar": "progress-bar",
+    "file upload": "upload",
+    "timestampt": "timestamp",
+    "Timeline": "timeline"
+  }
+}

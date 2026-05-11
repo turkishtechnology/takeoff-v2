@@ -1,0 +1,11 @@
+{
+  "static": {
+    "$type": "color",
+    "black": {
+      "$value": "#F2F3F5"
+    },
+    "white": {
+      "$value": "#13171C"
+    }
+  }
+}

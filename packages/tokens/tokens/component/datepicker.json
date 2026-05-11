@@ -1,0 +1,67 @@
+{
+  "component": {
+    "datepicker": {
+      "$type": "dimension",
+      "datepicker-items-base-size": {
+        "$value": "{base.spacing.10xl}"
+      },
+      "datepicker-items-base-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "datepicker-items-small-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "datepicker-items-small-size": {
+        "$value": "{base.spacing.8xl}"
+      },
+      "datepicker-footer-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "datepicker-footer-base-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "datepicker-footer-base-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "datepicker-header-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "datepicker-header-base-top-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "datepicker-header-base-date-text-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "datepicker-header-base-bottom-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "datepicker-header-base-navigation-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "datepicker-header-base-date-text-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "datepicker-body-base-day-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "datepicker-body-base-day-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "datepicker-body-base-day-row-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "datepicker-body-base-day-row-group-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "datepicker-body-base-month-year-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "datepicker-body-base-month-year-v-padding": {
+        "$value": "{base.spacing.7xl}"
+      },
+      "datepicker-body-base-month-year-row-gap": {
+        "$value": "{base.spacing.xs}"
+      }
+    }
+  }
+}

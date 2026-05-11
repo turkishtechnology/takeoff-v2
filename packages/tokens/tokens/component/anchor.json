@@ -1,0 +1,61 @@
+{
+  "component": {
+    "anchore": {
+      "$type": "dimension",
+      "anchore-items-nest-large-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "anchore-items-nest-large-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "anchore-items-nest-large-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "anchore-items-nest-base-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "anchore-items-nest-base-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "anchore-items-nest-base-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "anchore-items-nest-small-h-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "anchore-items-nest-small-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "anchore-items-nest-small-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "anchore-items-normal-large-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "anchore-items-normal-large-v-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "anchore-items-normal-large-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "anchore-items-normal-base-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "anchore-items-normal-base-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "anchore-items-normal-base-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "anchore-items-normal-small-h-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "anchore-items-normal-small-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "anchore-items-normal-small-gap": {
+        "$value": "{base.spacing.xs}"
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "component": {
+    "result": {
+      "$type": "dimension",
+      "result-base-button-group-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "result-base-gap": {
+        "$value": "{base.spacing.xl}"
+      },
+      "result-base-text-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "result-base-content-gap": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "result-base-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "result-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "result-small-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "result-small-button-group-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "result-small-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "result-small-gap": {
+        "$value": "{base.spacing.l}"
+      },
+      "result-small-text-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "result-small-content-gap": {
+        "$value": "{base.spacing.xl}"
+      }
+    }
+  }
+}

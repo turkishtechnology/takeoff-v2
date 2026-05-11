@@ -1,0 +1,88 @@
+{
+  "component": {
+    "input": {
+      "$type": "dimension",
+      "external-label-large-text-area-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "external-label-large-icon-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "external-label-large-container-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "external-label-large-text-field-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "external-label-large-label-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "external-label-large-label-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "external-label-large-input-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "external-label-large-input-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "external-label-large-input-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "external-label-base-text-area-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "external-label-base-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "external-label-base-div-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "external-label-base-text-field-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "external-label-base-label-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "external-label-base-label-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "external-label-base-input-h-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "external-label-base-input-v-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "external-label-base-input-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "external-label-small-text-area-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "external-label-small-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "external-label-small-container-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "external-label-small-text-field-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "external-label-small-label-h-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "external-label-small-label-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "external-label-small-input-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "external-label-small-input-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "external-label-small-input-gap": {
+        "$value": "{base.spacing.xs}"
+      }
+    }
+  }
+}

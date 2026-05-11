@@ -1,0 +1,16 @@
+{
+  "component": {
+    "login": {
+      "$type": "dimension",
+      "login-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "login-base-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "login-base-gap": {
+        "$value": "{base.spacing.4xl}"
+      }
+    }
+  }
+}

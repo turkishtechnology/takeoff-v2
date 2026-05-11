@@ -1,0 +1,16 @@
+{
+  "family": {
+    "title": {
+      "$value": "Inter"
+    },
+    "subheading": {
+      "$value": "Inter"
+    },
+    "label": {
+      "$value": "Inter"
+    },
+    "body": {
+      "$value": "Inter"
+    }
+  }
+}

@@ -1,0 +1,238 @@
+// Accordion recipe — shared style contract for tk-accordion + tk-accordion-item.
+
+@use '../abstracts/mixins' as mixins;
+
+@mixin accordion {
+  display: block;
+}
+
+// Closing border for the last item in compact mode. Exported so light-DOM
+// consumers can apply it via `&:last-of-type` and shadow-DOM consumers
+// (tk-accordion-item) via `:host(:last-of-type)`.
+@mixin accordion-item-compact-last-border {
+  border-bottom: 1px solid var(--border-light);
+}
+
+@mixin accordion-item-disabled-header {
+  cursor: not-allowed;
+  color: var(--text-sub-base);
+  background: transparent !important;
+
+  .tk-accordion-item-arrow {
+    color: var(--text-sub-base);
+  }
+}
+
+@mixin accordion-item-disabled-divided-header {
+  border-color: var(--border-sub-base);
+  background: var(--background-sub-base) !important;
+}
+
+@mixin accordion-item-interactive {
+  &:where(:not(:disabled, [data-disabled], [aria-disabled='true'])) {
+    @content;
+  }
+}
+
+@mixin accordion-item {
+  margin: 10px auto;
+  display: flex;
+  flex-direction: column;
+  transition: gap 0.2s ease-in-out;
+  gap: 0;
+  font-family: var(--family-body);
+
+  // Light-DOM compound consumers wrap the trigger in a direct child heading
+  // for the document outline. Neutralize only that wrapper so content headings
+  // keep their own typography rhythm.
+  > :where(h1, h2, h3, h4, h5, h6)[data-level] {
+    margin: 0;
+    padding: 0;
+  }
+
+  &[data-open] {
+    gap: var(--accordion-base-content-gap);
+  }
+
+  .tk-accordion-item-header {
+    // React/Spar renders this slot as a real <button>.
+    @include mixins.host-button-reset;
+
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-darkest);
+    width: 100%;
+
+    @include accordion-item-interactive {
+      &:hover {
+        background: var(--background-lightest) !important;
+      }
+    }
+
+    @include mixins.focus-ring(var(--primary-focus));
+
+    @include mixins.disabled-state {
+      @include accordion-item-disabled-header;
+    }
+  }
+
+  .tk-accordion-item-title {
+    flex-grow: 1;
+  }
+
+  .tk-accordion-item-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+    color: var(--text-dark);
+    transition: color 0.2s ease-in-out;
+  }
+
+  &[data-open] .tk-accordion-item-arrow {
+    color: var(--primary-base);
+  }
+
+  &[data-disabled] .tk-accordion-item-header {
+    @include accordion-item-disabled-header;
+  }
+
+  .tk-accordion-item-content {
+    color: var(--text-dark);
+    max-height: 0;
+    overflow: hidden;
+    font-weight: 300;
+
+    &[data-open] {
+      max-height: 100%;
+    }
+  }
+
+  // Type: grouped
+  &[data-type='grouped'] {
+    border-radius: var(--accordion-base-radius);
+    border: 1px solid var(--border-light);
+    background: var(--static-light);
+
+    &[data-open] {
+      .tk-accordion-item-header {
+        padding-bottom: 0;
+
+        @include accordion-item-interactive {
+          &:hover {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+          }
+        }
+      }
+    }
+
+    .tk-accordion-item-content[data-open] {
+      padding: 0 var(--accordion-base-v-padding) var(--accordion-base-h-padding);
+    }
+  }
+
+  // Type: divided
+  &[data-type='divided'] {
+    .tk-accordion-item-header {
+      border: 1px solid var(--border-light);
+      background: var(--static-light);
+
+      @include mixins.disabled-state {
+        @include accordion-item-disabled-divided-header;
+      }
+    }
+
+    .tk-accordion-item-content[data-open] {
+      padding: var(--accordion-base-v-padding) var(--accordion-base-h-padding);
+      border-radius: var(--accordion-base-radius);
+      border: 1px solid var(--border-light);
+      background: var(--background-lightest);
+    }
+
+    &[data-disabled] .tk-accordion-item-header {
+      @include accordion-item-disabled-divided-header;
+    }
+  }
+
+  // Size: base
+  &[data-size='base'] {
+    &[data-open] {
+      gap: var(--accordion-base-content-gap);
+    }
+
+    // Header gap is unconditional — `flex gap` is invisible at one child and
+    // useful at two or more, so we don't gate it on a `:has(.tk-accordion-item-icon)`
+    // class probe. Compound consumers (Accordion.Trigger children, header slot)
+    // can't be expected to stamp the canonical icon class on every leading
+    // element they pass in.
+    .tk-accordion-item-header {
+      font-size: var(--desktop-body-s-size);
+      line-height: var(--desktop-body-s-line-height);
+      padding: var(--accordion-base-v-padding) var(--accordion-base-h-padding);
+      border-radius: var(--accordion-base-radius);
+      gap: var(--accordion-base-gap);
+    }
+
+    .tk-accordion-item-content {
+      font-size: var(--desktop-body-xs-size);
+      line-height: var(--desktop-body-xs-line-height);
+    }
+  }
+
+  // Size: large
+  &[data-size='large'] {
+    &[data-open] {
+      gap: var(--accordion-large-gap);
+    }
+
+    // See `data-size='base'` for why header gap is unconditional.
+    .tk-accordion-item-header {
+      font-size: var(--desktop-body-m-size, var(--desktop-body-m-base-size));
+      line-height: var(--desktop-body-m-line-height, var(--desktop-body-m-base-line-height));
+      padding: var(--accordion-large-v-padding) var(--accordion-large-h-padding);
+      border-radius: var(--accordion-large-radius);
+      gap: var(--accordion-large-gap);
+    }
+
+    .tk-accordion-item-content {
+      font-size: var(--desktop-body-s-size);
+      line-height: var(--desktop-body-s-line-height);
+    }
+  }
+
+  // Mode: compact
+  &[data-mode='compact'] {
+    margin: 0;
+    border-radius: 0;
+    border-bottom: 0;
+
+    .tk-accordion-item-header {
+      @include accordion-item-interactive {
+        &:hover {
+          border-radius: 0;
+        }
+      }
+    }
+
+    &[data-type='divided'] {
+      gap: 0;
+
+      .tk-accordion-item-header,
+      .tk-accordion-item-content {
+        border-radius: 0;
+        border-bottom: 0;
+      }
+    }
+
+    &:last-of-type {
+      &[data-type='grouped'],
+      &[data-type='divided']:not([data-open]) .tk-accordion-item-header,
+      &[data-type='divided'] .tk-accordion-item-content[data-open] {
+        @include accordion-item-compact-last-border;
+      }
+    }
+  }
+}

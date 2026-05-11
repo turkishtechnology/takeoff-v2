@@ -1,0 +1,36 @@
+// Design system shared mixins.
+//
+// Recipe convention (consumed by takeoff-spar today, takeoff-ui/core later):
+//   - Slot identity uses class names (`.tk-foo-bar`).
+//   - State and variant flags use data-attributes (`[data-open]`,
+//     `[data-checked]`, `[data-type='card']`, `[data-size='base']`, ...).
+// New recipes and convention drift in existing ones should converge on
+// this so consumers do not have to learn per-recipe dialects.
+
+@mixin focus-ring($shadow) {
+  &:focus-visible {
+    outline: none;
+    box-shadow: $shadow;
+  }
+}
+
+@mixin disabled-state {
+  &[data-disabled],
+  &:disabled,
+  &[aria-disabled='true'] {
+    @content;
+  }
+}
+
+// Reset native <button> styles for recipe slots that may render as buttons
+// in light-DOM consumers. Keep layout choices in the recipe itself.
+@mixin host-button-reset {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  margin: 0;
+  text-align: start;
+}

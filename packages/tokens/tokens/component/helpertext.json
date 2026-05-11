@@ -1,0 +1,10 @@
+{
+  "component": {
+    "helpertext": {
+      "$type": "dimension",
+      "base-gap": {
+        "$value": "{base.spacing.xs}"
+      }
+    }
+  }
+}

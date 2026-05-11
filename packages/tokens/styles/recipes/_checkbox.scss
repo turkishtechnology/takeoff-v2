@@ -1,0 +1,261 @@
+@use '../abstracts/mixins' as mixins;
+
+// ---------------------------------------------------------------------------
+// Checkbox recipe — apply to `.tk-checkbox` root.
+//
+// The React wrapper renders the spar `Checkbox` primitive as the root. The
+// primitive is the interactive owner (role=checkbox, space-toggles, focus) and
+// emits state as data attributes on the root: `data-checked`,
+// `data-indeterminate`, `data-disabled`, `data-readonly`, `data-focus`,
+// `data-hover`, `data-active`, `data-required`. The wrapper additionally
+// stamps `data-size`, `data-type`, and `data-invalid` on the root.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-checkbox                — root (primitive span, interactive owner)
+//   .tk-checkbox-indicator      — visible box (border + fill background)
+//   .tk-checkbox-icon           — check / indeterminate icon holder
+//   .tk-checkbox-text           — label + description wrapper
+//   .tk-checkbox-label          — visible label text
+//   .tk-checkbox-description    — helper text
+// ---------------------------------------------------------------------------
+
+@mixin checkbox {
+  font-family: var(--family-body, 'Geologica', sans-serif);
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--basic-switcher-content-gap);
+  padding: 2px;
+  color: var(--text-darkest);
+  font-size: var(--desktop-body-s-size);
+  line-height: var(--desktop-body-s-line-height);
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+
+  // ---- Indicator (outer box) ----
+
+  .tk-checkbox-indicator {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-color: var(--static-light);
+    border: 2px solid var(--border-sub-base);
+    border-radius: var(--radius-s);
+    transition:
+      border-color 0.15s ease-in-out,
+      background-color 0.15s ease-in-out;
+  }
+
+  // ---- Icon (inner fill + glyph) ----
+
+  .tk-checkbox-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--states-info-base);
+    color: var(--static-light);
+    border-radius: 2px;
+    visibility: hidden;
+    line-height: 1;
+  }
+
+  .tk-checkbox-icon-symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: 1;
+    text-transform: none;
+    white-space: nowrap;
+    direction: ltr;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+  }
+
+  // ---- Text (label + description) ----
+
+  .tk-checkbox-text {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--basic-switcher-text-gap);
+  }
+
+  .tk-checkbox-label {
+    color: var(--text-darkest);
+    font-size: var(--desktop-body-s-size);
+    line-height: var(--desktop-body-s-line-height);
+    font-weight: 400;
+  }
+
+  .tk-checkbox-description {
+    color: var(--text-base);
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+    font-weight: 400;
+  }
+
+  // ---- Hover (unchecked) ----
+
+  &[data-hover]:not([data-disabled]):not([data-readonly]) {
+    .tk-checkbox-indicator {
+      background-color: var(--background-lightest);
+    }
+  }
+
+  // ---- Checked / indeterminate ----
+
+  &[data-checked],
+  &[data-indeterminate] {
+    .tk-checkbox-indicator {
+      border-color: var(--states-info-light);
+      background-color: var(--static-light);
+    }
+
+    .tk-checkbox-icon {
+      visibility: visible;
+    }
+  }
+
+  &[data-hover][data-checked]:not([data-disabled]):not([data-readonly]),
+  &[data-hover][data-indeterminate]:not([data-disabled]):not([data-readonly]) {
+    .tk-checkbox-indicator {
+      border-color: var(--states-info-sub-base);
+      background-color: var(--states-info-light);
+    }
+  }
+
+  // ---- Focus ----
+
+  &[data-focus] {
+    .tk-checkbox-indicator {
+      border-color: var(--states-info-base);
+      outline: none;
+    }
+  }
+
+  // ---- Disabled ----
+
+  &[data-disabled] {
+    pointer-events: none;
+    color: var(--text-sub-base);
+
+    .tk-checkbox-label {
+      color: var(--text-sub-base);
+    }
+
+    .tk-checkbox-indicator {
+      border-color: var(--border-sub-base);
+      background-color: var(--background-light);
+    }
+
+    .tk-checkbox-icon {
+      background-color: var(--background-sub-base);
+    }
+  }
+
+  // ---- Read-only ----
+
+  &[data-readonly] {
+    cursor: default;
+
+    .tk-checkbox-label {
+      color: var(--text-sub-base);
+    }
+
+    .tk-checkbox-indicator {
+      background-color: var(--background-lightest);
+    }
+  }
+
+  // ---- Invalid ----
+
+  &[data-invalid] {
+    .tk-checkbox-indicator {
+      border-color: var(--states-danger-base);
+      background-color: var(--static-light);
+    }
+
+    &[data-checked] .tk-checkbox-indicator,
+    &[data-indeterminate] .tk-checkbox-indicator {
+      border-color: var(--states-danger-light);
+    }
+
+    &[data-checked] .tk-checkbox-icon,
+    &[data-indeterminate] .tk-checkbox-icon {
+      background-color: var(--states-danger-base);
+    }
+
+    &[data-hover][data-checked]:not([data-disabled]):not([data-readonly]) .tk-checkbox-indicator,
+    &[data-hover][data-indeterminate]:not([data-disabled]):not([data-readonly]) .tk-checkbox-indicator {
+      border-color: var(--states-danger-sub-base);
+      background-color: var(--states-danger-light);
+    }
+  }
+
+  // ---- Sizes ----
+
+  &[data-size='base'] {
+    .tk-checkbox-indicator {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .tk-checkbox-icon {
+      width: 12px;
+      height: 12px;
+    }
+
+    .tk-checkbox-icon-symbol {
+      font-size: 10px;
+    }
+  }
+
+  &[data-size='small'] {
+    .tk-checkbox-indicator {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      padding: 1px;
+    }
+
+    .tk-checkbox-icon {
+      width: 10px;
+      height: 10px;
+    }
+
+    .tk-checkbox-icon-symbol {
+      font-size: 8px;
+    }
+  }
+
+  // ---- Variants ----
+
+  // Card variant — shared with tk-radio via `--card-switcher-*`
+  // (tokens/component/radio-checkbox.json).
+  &[data-type='card'] {
+    border-radius: var(--card-switcher-container-radius);
+    border: 1px solid var(--border-light);
+    background-color: var(--static-light);
+    gap: var(--card-switcher-container-gap);
+    padding: var(--card-switcher-container-v-padding) var(--card-switcher-container-h-padding);
+
+    &[data-hover]:not([data-disabled]):not([data-readonly]) {
+      background-color: var(--background-lightest);
+    }
+  }
+}

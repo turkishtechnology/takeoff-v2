@@ -1,0 +1,49 @@
+{
+  "component": {
+    "upload": {
+      "$type": "dimension",
+      "upload-card-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "upload-card-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "upload-card-gap": {
+        "$value": "{base.spacing.xl}"
+      },
+      "upload-card-content-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "upload-basic-h-padding": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "upload-basic-v-padding": {
+        "$value": "{base.spacing.8xl}"
+      },
+      "upload-basic-gap": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "upload-basic-content-gap": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "upload-basic-text-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "upload-compact-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "upload-compact-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "upload-compact-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "upload-compact-content-gap": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "upload-compact-text-gap": {
+        "$value": "{base.spacing.none}"
+      }
+    }
+  }
+}

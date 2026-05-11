@@ -1,0 +1,49 @@
+{
+  "component": {
+    "settings": {
+      "$type": "dimension",
+      "settings-header-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "settings-header-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "settings-header-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "settings-header-button-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "settings-footer-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "settings-footer-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "settings-footer-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "settings-body-basic-gap": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "settings-body-basic-explanation-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "settings-body-compact-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "settings-extra-items-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "settings-extra-items-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "settings-extra-items-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "settings-extra-items-radius": {
+        "$value": "{base.radius.m-base}"
+      }
+    }
+  }
+}

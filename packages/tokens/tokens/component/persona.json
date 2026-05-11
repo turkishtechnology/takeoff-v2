@@ -1,0 +1,46 @@
+{
+  "component": {
+    "persona": {
+      "$type": "dimension",
+      "persona-base-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "persona-base-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "persona-base-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "persona-base-content-gap": {
+        "$value": "{base.spacing.px}"
+      },
+      "persona-base-text-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "persona-small-h-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "persona-small-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "persona-small-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "persona-small-content-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "persona-small-text-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "persona-card-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "persona-card-base-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "persona-card-base-gap": {
+        "$value": "{base.spacing.xl}"
+      }
+    }
+  }
+}

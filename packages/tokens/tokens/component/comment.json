@@ -1,0 +1,49 @@
+{
+  "component": {
+    "comment": {
+      "$type": "dimension",
+      "comment-header-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "comment-header-base-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "comment-header-base-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "comment-body-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "comment-body-base-top-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "comment-body-base-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "comment-body-base-bottom-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "comment-footer-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "comment-footer-base-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "comment-footer-base-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "comment-text-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "comment-text-base-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "comment-text-base-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "comment-text-base-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      }
+    }
+  }
+}

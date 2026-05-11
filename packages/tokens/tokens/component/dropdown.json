@@ -1,0 +1,139 @@
+{
+  "component": {
+    "dropdown": {
+      "$type": "dimension",
+      "items-basic-base-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-basic-base-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-basic-base-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-basic-base-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "items-basic-base-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "items-basic-large-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "items-basic-large-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-basic-large-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-basic-large-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-basic-large-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "items-basic-small-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "items-basic-small-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-basic-small-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "items-basic-small-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-basic-small-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "items-avatar-base-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "items-avatar-base-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-avatar-base-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-avatar-base-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-avatar-base-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "items-avatar-large-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "items-avatar-large-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-avatar-large-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-avatar-large-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-avatar-large-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "items-avatar-small-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "items-avatar-small-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-avatar-small-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "items-avatar-small-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-avatar-small-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "items-radio-checkbox-base-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "items-radio-checkbox-base-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-radio-checkbox-base-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "items-radio-checkbox-base-container-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-radio-checkbox-large-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "items-radio-checkbox-large-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-radio-checkbox-large-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-radio-checkbox-large-container-gap": {
+        "$value": "{base.spacing.l}"
+      },
+      "items-radio-checkbox-small-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "items-radio-checkbox-small-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-radio-checkbox-small-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-radio-checkbox-small-container-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "cascade2": {
+        "$value": false
+      },
+      "cascade1": {
+        "$value": false
+      }
+    }
+  }
+}

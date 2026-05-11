@@ -1,0 +1,22 @@
+// Foundation: Base typography rules (html/body defaults)
+//
+// All values use token CSS custom properties with sensible fallbacks.
+// Sourced from takeoff-spar's _typography.scss and standardized for all consumers.
+
+@use 'fonts' as *;
+
+html {
+  font-family: var(--family-body, #{$tk-font-family-base});
+  line-height: var(--desktop-body-m-base-line-height, 1.5);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--background-lightest);
+  color: var(--text-darkest);
+  font-family: var(--family-body, #{$tk-font-family-base});
+  font-size: var(--desktop-body-m-base-size, 1rem);
+  font-weight: var(--desktop-body-m-base-line-weight, 400);
+  line-height: var(--desktop-body-m-base-line-height, 1.5);
+}

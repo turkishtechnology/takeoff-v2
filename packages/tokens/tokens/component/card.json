@@ -1,0 +1,79 @@
+{
+  "component": {
+    "card": {
+      "$type": "dimension",
+      "card-header-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "card-header-base-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "card-header-base-more-icon-size": {
+        "$value": "{base.spacing.10xl}"
+      },
+      "card-header-base-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "card-header-small-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "card-header-small-v-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "card-header-small-more-icon-size": {
+        "$value": "{base.spacing.10xl}"
+      },
+      "card-header-small-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "card-body-relaxed-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "card-body-relaxed-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "card-body-relaxed-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "card-body-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "card-body-base-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "card-body-base-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "card-body-tight-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "card-body-tight-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "card-body-tight-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "card-image-full-screen-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "card-image-full-screen-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "card-image-windowed-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "card-image-windowed-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "card-footer-base-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "card-footer-base-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "card-footer-base-gap": {
+        "$value": "{base.spacing.m-base}"
+      }
+    }
+  }
+}

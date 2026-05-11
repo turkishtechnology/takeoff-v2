@@ -14,7 +14,7 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@takeoff-design/tokens": "link:../../../takeoff-design/packages/tokens",
+    "@takeoff-design/tokens": "workspace:*",
     "@takeoff-ui/react-spar": "workspace:*"
   },
   "devDependencies": {

@@ -1,0 +1,91 @@
+{
+  "component": {
+    "sign": {
+      "$type": "dimension",
+      "sign-base-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "sign-base-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "sign-base-h-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "sign-base-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "sign-small-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "sign-small-icon-size": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "sign-small-h-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "sign-small-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "sign-xsmall-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "sign-xsmall-icon-size": {
+        "$value": "{base.spacing.xl}"
+      },
+      "sign-xsmall-h-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "sign-xsmall-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "sign-xxsmall-radius": {
+        "$value": "{base.radius.xs}"
+      },
+      "sign-xxsmall-icon-size": {
+        "$value": "{base.spacing.l}"
+      },
+      "sign-xxsmall-h-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "sign-xxsmall-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "sign-large-radius": {
+        "$value": "{base.radius.l}"
+      },
+      "sign-large-icon-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "sign-large-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "sign-large-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "sign-xlarge-radius": {
+        "$value": "{base.radius.l}"
+      },
+      "sign-xlarge-icon-size": {
+        "$value": "{base.spacing.7xl}"
+      },
+      "sign-xlarge-h-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "sign-xlarge-v-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "sign-2xlarge-radius": {
+        "$value": "{base.radius.xl}"
+      },
+      "sign-2xlarge-icon-size": {
+        "$value": "{base.spacing.8xl}"
+      },
+      "sign-2xlarge-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "sign-2xlarge-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      }
+    }
+  }
+}

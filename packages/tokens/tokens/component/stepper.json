@@ -1,0 +1,16 @@
+{
+  "component": {
+    "stepper": {
+      "$type": "dimension",
+      "stepper-items-content-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "stepper-items-rail-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "stepper-segment-gap": {
+        "$value": "{base.spacing.xs}"
+      }
+    }
+  }
+}

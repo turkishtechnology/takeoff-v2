@@ -1,0 +1,49 @@
+{
+  "component": {
+    "avatar": {
+      "$type": "dimension",
+      "base-avatar-radius": {
+        "$value": "{base.radius.l}"
+      },
+      "base-avatar-size": {
+        "$value": "{base.spacing.12xl}"
+      },
+      "small-avatar-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "small-avatar-size": {
+        "$value": "{base.spacing.8xl}"
+      },
+      "xsmall-avatar-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "xsmall-avatar-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "xxsmall-avatar-radius": {
+        "$value": "{base.radius.xs}"
+      },
+      "xxsmall-avatar-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "large-avatar-radius": {
+        "$value": "{base.radius.xl}"
+      },
+      "large-avatar-size": {
+        "$value": "{base.spacing.16xl}"
+      },
+      "xlarge-avatar-radius": {
+        "$value": "{base.radius.2xl}"
+      },
+      "xlarge-avatar-size": {
+        "$value": "{base.spacing.24xl}"
+      },
+      "xxlarge-avatar-radius": {
+        "$value": "{base.radius.3xl}"
+      },
+      "xxlarge-avatar-size": {
+        "$value": "{base.spacing.40xl}"
+      }
+    }
+  }
+}

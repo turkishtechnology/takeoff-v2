@@ -1,0 +1,142 @@
+{
+  "component": {
+    "table": {
+      "$type": "dimension",
+      "table-items-body-base-text-h-padding": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "table-items-body-base-text-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "table-items-body-base-text-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-body-base-text+text-h-padding": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "table-items-body-base-text+text-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "table-items-body-base-text+text-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-body-base-text+text-content-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "table-items-body-base-nontext-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "table-items-body-base-nontext-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "table-items-body-base-nontext-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-body-small-text-h-padding": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "table-items-body-small-text-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-body-small-text-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-body-small-text+text-h-padding": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "table-items-body-small-text+text-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "table-items-body-small-text+text-content-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "table-items-body-small-text+text-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-body-small-nontext-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "table-items-body-small-nontext-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-body-small-nontext-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-head-h-padding": {
+        "$value": "0px"
+      },
+      "table-items-head-v-padding": {
+        "$value": "0px"
+      },
+      "table-items-head-base-text-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "table-items-head-base-text-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "table-items-head-base-text-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-head-base-text-content-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "table-items-head-base-text+text-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "table-items-head-base-text+text-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "table-items-head-base-text+text-content-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "table-items-head-base-text+text-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-head-base-text+text-content-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "table-items-head-base-nontext-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "table-items-head-base-nontext-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "table-items-head-base-nontext-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-head-small-text-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "table-items-head-small-text-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-head-small-text-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-head-small-text+text-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "table-items-head-small-text+text-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "table-items-head-small-text+text-content-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "table-items-head-small-text+text-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "table-items-head-small-text+text-content-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "table-items-head-small-nontext-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "table-items-head-small-nontext-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "table-items-head-small-nontext-gap": {
+        "$value": "{base.spacing.m-base}"
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "component": {
+    "drawer": {
+      "$type": "dimension",
+      "notification-body-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "notification-body-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "notification-body-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "notification-body-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "notification-body-text-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "notification-body-header-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "notification-body-head-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "notification-footer-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "notification-footer-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "notification-footer-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "notification-header-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "notification-header-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "notification-header-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "notification-header-button-gap": {
+        "$value": "{base.spacing.xs}"
+      }
+    }
+  }
+}

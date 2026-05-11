@@ -1,0 +1,25 @@
+{
+  "component": {
+    "tooltip": {
+      "$type": "dimension",
+      "tooltips-base-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "tooltips-base-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "tooltips-base-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "tooltips-base-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "tooltips-base-content-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "tooltips-base-max-width": {
+        "$value": "{base.spacing.52xl}"
+      }
+    }
+  }
+}

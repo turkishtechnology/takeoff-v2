@@ -1,0 +1,43 @@
+{
+  "component": {
+    "breadcrumb": {
+      "$type": "dimension",
+      "breadcrumb-symbol-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "breadcrumb-container-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "basic-item-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "basic-item-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "basic-item-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "basic-item-icon-size": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "backgrounded-item-h-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "backgrounded-item-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "backgrounded-item-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "backgrounded-item-icon-size": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "backgrounded-item-left-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "backgrounded-item-right-padding": {
+        "$value": "{base.spacing.l}"
+      }
+    }
+  }
+}
