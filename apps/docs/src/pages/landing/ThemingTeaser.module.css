@@ -48,20 +48,6 @@
   max-width: 50ch;
 }
 
-.studioLink {
-  font-family: var(--runway-type-mono-family);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--runway-cardinal-bright, #e6001f);
-  text-decoration: none;
-  margin-top: 0.5rem;
-}
-
-.studioLink:hover {
-  text-decoration: underline;
-}
-
 .panel {
   background: var(--runway-surface-dark, #111114);
   border: 1px solid var(--runway-surface-dark-border, #26262b);

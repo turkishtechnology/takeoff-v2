@@ -1,5 +1,4 @@
 import { useMemo, useState, type JSX } from 'react';
-import Link from '@docusaurus/Link';
 import styles from './ThemingTeaser.module.css';
 
 type Density = 'compact' | 'comfy' | 'loose';
@@ -51,9 +50,6 @@ export default function ThemingTeaser(): JSX.Element {
             Every visual property routes through <code>@takeoff-design/tokens</code> as CSS custom properties. Change three variables — primary hue, radius, density — and the whole
             library follows. The components themselves never change.
           </p>
-          <Link to="/theme-studio" className={styles.studioLink}>
-            Open the Theme Studio →
-          </Link>
         </div>
 
         <div className={styles.panel}>

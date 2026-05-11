@@ -32,11 +32,13 @@ is source-backed and any upstream Spar behavior gaps are resolved.
 `@takeoff-ui/react-spar` currently targets React 19.x only.
 
 ```bash
-pnpm add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar react react-dom
+pnpm add @takeoff-ui/react-spar @takeoff-design/tokens react react-dom
 ```
 
 `@takeoff-ui/react-spar` does not bundle component CSS. Install and import
 `@takeoff-design/tokens` once at the app shell or entrypoint.
+`@turkish-technology/spar` is installed by `@takeoff-ui/react-spar`; add it to
+your app only when importing Spar primitives directly.
 
 ## Usage
 

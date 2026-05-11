@@ -15,20 +15,23 @@ Three steps. No config file. No build tool wiring beyond a CSS import.
 
 ```bash
 # pnpm
-pnpm add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar
+pnpm add @takeoff-ui/react-spar @takeoff-design/tokens
 
 # npm
-npm install @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar
+npm install @takeoff-ui/react-spar @takeoff-design/tokens
 
 # yarn
-yarn add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar
+yarn add @takeoff-ui/react-spar @takeoff-design/tokens
 
 # bun
-bun add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar
+bun add @takeoff-ui/react-spar @takeoff-design/tokens
 ```
 
 **React version:** `@takeoff-ui/react-spar` targets React 19 only. If your app
 is on React 18, you'll get a runtime error; pin React 19 before installing.
+
+`@turkish-technology/spar` is installed by `@takeoff-ui/react-spar`. Install it
+directly only if your app imports Spar primitives itself.
 
 ## 2. Import the token stylesheet
 
@@ -80,5 +83,4 @@ components are plain React.
   CSS via `links()`.
 
 Visual customization is handled entirely through the Takeoff design tokens
-imported above — override CSS custom properties at the app root to rebrand, or
-explore [Theme Studio](/theme-studio) to live-edit tokens.
+imported above — override CSS custom properties at the app root to rebrand.

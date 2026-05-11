@@ -4,10 +4,10 @@ import styles from './InstallBlock.module.css';
 type PackageManager = 'pnpm' | 'npm' | 'yarn' | 'bun';
 
 const INSTALL_COMMANDS: Record<PackageManager, string> = {
-  pnpm: 'pnpm add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar',
-  npm: 'npm install @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar',
-  yarn: 'yarn add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar',
-  bun: 'bun add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar',
+  pnpm: 'pnpm add @takeoff-ui/react-spar @takeoff-design/tokens',
+  npm: 'npm install @takeoff-ui/react-spar @takeoff-design/tokens',
+  yarn: 'yarn add @takeoff-ui/react-spar @takeoff-design/tokens',
+  bun: 'bun add @takeoff-ui/react-spar @takeoff-design/tokens',
 };
 
 const CSS_IMPORT = `import '@takeoff-design/tokens/css/default/theme.css';`;
@@ -159,8 +159,8 @@ export default function InstallBlock(): JSX.Element {
             Install once. Theme from the root.
           </h2>
           <p className={styles.lede}>
-            Install the React package with its token and primitive peers, import one theme file, and wrap your app once. From there, color mode, tokens, and component defaults flow
-            from the root.
+            Install the React package with the token package, import one theme file, and wrap your app once. Spar primitives are pulled in by the React package unless you import them
+            directly.
           </p>
         </div>
 

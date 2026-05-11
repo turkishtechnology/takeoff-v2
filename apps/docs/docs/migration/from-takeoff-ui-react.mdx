@@ -95,8 +95,9 @@ from the old package, this guide walks the full migration.
 ## Step-by-step
 
 1. **Pin React to 19.** `pnpm up react@^19 react-dom@^19`.
-2. **Swap the package.** Remove `@takeoff-ui/react`, install
-   `@takeoff-ui/react-spar` and `@turkish-technology/spar`.
+2. **Swap the package.** Remove `@takeoff-ui/react` and install
+   `@takeoff-ui/react-spar`. `@turkish-technology/spar` is installed by the
+   React package unless your app imports Spar primitives directly.
 3. **Update imports.** Replace `TkButton` / `TkDialog` / etc. with the
    un-prefixed names (`Button`, `Dialog`).
 4. **Flatten → compound.** For each component, walk the prop surface; anywhere a
