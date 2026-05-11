@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { Accordion, SparReactProvider, type AccordionActiveIndex, type ComponentsThemeMap } from '@takeoff-ui/react-spar';
+import { Accordion, SparReactProvider, type AccordionCurrentValue, type ComponentsThemeMap } from '@takeoff-ui/react-spar';
 
 // TODO(takeoff-icons): These placeholder icons should be swapped for the
 // official Takeoff icon set before the first public release.
@@ -31,11 +31,8 @@ const sectionStyle: CSSProperties = {
   marginTop: '1.5rem',
 };
 
-// Canonical anatomy class names. These mirror the values declared in
-// packages/react-spar/src/components/accordion/base.ts and exist so the smoke
-// app can assert canonical DOM without leaking createComponentBase internals.
-const accordionClassNames = { root: 'tk-accordion' } as const;
-const accordionItemClassNames = { root: 'tk-accordion-item' } as const;
+const accordionRootClassName = 'tk-accordion';
+const accordionItemRootClassName = 'tk-accordion-item';
 
 type CheckResult = { id: string; label: string; ok: boolean; detail?: string };
 
@@ -43,12 +40,8 @@ const runContractChecks = (scope: HTMLElement): CheckResult[] => {
   const results: CheckResult[] = [];
 
   const check = (id: string, label: string, test: () => { ok: boolean; detail?: string }): void => {
-    try {
-      const { ok, detail } = test();
-      results.push({ id, label, ok, detail });
-    } catch (error) {
-      results.push({ id, label, ok: false, detail: error instanceof Error ? error.message : String(error) });
-    }
+    const { ok, detail } = test();
+    results.push({ id, label, ok, detail });
   };
 
   check('provider:data-theme', 'SparReactProvider writes data-theme="light" on its wrapper', () => {
@@ -62,21 +55,21 @@ const runContractChecks = (scope: HTMLElement): CheckResult[] => {
     return { ok: sample.length > 0, detail: sample || '(empty — token CSS missing)' };
   });
 
-  for (const [name, classMap] of [
-    ['Accordion', accordionClassNames],
-    ['AccordionItem', accordionItemClassNames],
-  ] as const) {
-    check(`anatomy:${name}`, `${name} renders canonical root .${classMap.root}[data-slot="root"]`, () => {
-      const node = scope.querySelector(`[data-slot="root"].${classMap.root}`);
-      return { ok: node !== null, detail: node ? 'found' : `expected .${classMap.root}[data-slot="root"]` };
-    });
-  }
+  check('anatomy:Accordion', `Accordion renders canonical root .${accordionRootClassName}[data-slot="root"]`, () => {
+    const node = scope.querySelector(`[data-slot="root"].${accordionRootClassName}`);
+    return { ok: node !== null, detail: node ? 'found' : `expected .${accordionRootClassName}[data-slot="root"]` };
+  });
+
+  check('anatomy:AccordionItem', `AccordionItem renders canonical root .${accordionItemRootClassName}[data-slot="root"]`, () => {
+    const node = scope.querySelector(`[data-slot="root"].${accordionItemRootClassName}`);
+    return { ok: node !== null, detail: node ? 'found' : `expected .${accordionItemRootClassName}[data-slot="root"]` };
+  });
 
   check('customization:provider-classNames', 'provider components.Accordion.classNames concatenates with canonical', () => {
     const node = scope.querySelector('[data-verify="provider"]');
     if (!node) return { ok: false, detail: 'no provider scenario node' };
     const className = node.className;
-    const hasBase = className.includes(accordionClassNames.root);
+    const hasBase = className.includes(accordionRootClassName);
     const hasOverride = className.includes('verify-provider-classnames');
     return { ok: hasBase && hasOverride, detail: className };
   });
@@ -85,7 +78,7 @@ const runContractChecks = (scope: HTMLElement): CheckResult[] => {
     const node = scope.querySelector('[data-verify="instance-classnames"]');
     if (!node) return { ok: false, detail: 'no instance-classnames node' };
     const className = node.className;
-    const hasBase = className.includes(accordionClassNames.root);
+    const hasBase = className.includes(accordionRootClassName);
     const hasOverride = className.includes('verify-instance-classnames');
     return { ok: hasBase && hasOverride, detail: className };
   });
@@ -165,7 +158,7 @@ const providerThemeForAccordion: ComponentsThemeMap = {
 };
 
 function App() {
-  const [activeIndex, setActiveIndex] = useState<AccordionActiveIndex>('flight-details');
+  const [accordionValue, setAccordionValue] = useState<AccordionCurrentValue>('flight-details');
   const [verifierResults, setVerifierResults] = useState<CheckResult[] | null>(null);
 
   const verifyScopeRef = useRef<HTMLElement | null>(null);
@@ -217,8 +210,8 @@ function App() {
           <div style={sectionStyle}>
             <strong>Accordion parity surface</strong>
             <div style={{ marginTop: '0.75rem' }}>
-              <Accordion activeIndex={activeIndex} onActiveIndexChange={index => setActiveIndex(Array.isArray(index) ? index[index.length - 1] : index)}>
-                <Accordion.Item itemKey="flight-details">
+              <Accordion value={accordionValue} onValueChange={setAccordionValue}>
+                <Accordion.Item value="flight-details">
                   <Accordion.Header>
                     <Accordion.Trigger>
                       <FlightIcon />
@@ -227,7 +220,7 @@ function App() {
                   </Accordion.Header>
                   <Accordion.Content>Review your departure and arrival windows, cabin, and seat assignment before check-in closes.</Accordion.Content>
                 </Accordion.Item>
-                <Accordion.Item itemKey="baggage-allowance">
+                <Accordion.Item value="baggage-allowance">
                   <Accordion.Header>
                     <Accordion.Trigger>
                       <LuggageIcon />
@@ -236,7 +229,7 @@ function App() {
                   </Accordion.Header>
                   <Accordion.Content>Confirm your carry-on and checked baggage limits, then add extra allowance if your fare needs it.</Accordion.Content>
                 </Accordion.Item>
-                <Accordion.Item itemKey="check-in-options">
+                <Accordion.Item value="check-in-options">
                   <Accordion.Header>
                     <Accordion.Trigger>
                       <TaskAltIcon />
@@ -258,7 +251,7 @@ function App() {
             <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <SparReactProvider components={providerThemeForAccordion}>
                 <Accordion data-verify="provider">
-                  <Accordion.Item itemKey="provider">
+                  <Accordion.Item value="provider">
                     <Accordion.Header>
                       <Accordion.Trigger>Provider-level customization</Accordion.Trigger>
                     </Accordion.Header>
@@ -268,7 +261,7 @@ function App() {
               </SparReactProvider>
 
               <Accordion classNames={{ root: 'verify-instance-classnames' }} data-verify="instance-classnames">
-                <Accordion.Item itemKey="instance">
+                <Accordion.Item value="instance">
                   <Accordion.Header>
                     <Accordion.Trigger>Instance classNames</Accordion.Trigger>
                   </Accordion.Header>
