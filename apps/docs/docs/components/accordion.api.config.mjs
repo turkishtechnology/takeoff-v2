@@ -88,7 +88,7 @@ export default {
       skipPropNames: ['ref'],
       sparDocsUrl: sparAccordionDocsUrl,
       sparDocsLabel: 'Spar Accordion docs',
-      sparBehaviorProps: ['disabled'],
+      sparBehaviorProps: ['value', 'disabled'],
       propOverrides: {
         children: childrenOverride('`Accordion.Header` and `Accordion.Content` elements that compose the item.'),
         className: classNameOverride,

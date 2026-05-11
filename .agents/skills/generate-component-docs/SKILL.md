@@ -107,6 +107,15 @@ the generator — author the `*.api.config.mjs` to match.
   them to `sparBehaviorProps` in the part's config; the generator drops them
   from the rendered table automatically and the `sparDocsUrl` link is where
   consumers go for that surface.
+- **Decide ownership from wrapper source, not from the Default column.** A prop
+  is Spar-owned when the wrapper only passes it through to a Spar primitive,
+  including required identity props like item `value`. Put those props in
+  `sparBehaviorProps` even when they have no default. Keep a prop in the table
+  only when takeoff-spar consumes it for wrapper-owned behavior or visuals, such
+  as context values, data attributes, classes, icons, or Takeoff vocabulary.
+- **Defaults in the table are only takeoff-spar defaults.** Do not copy or infer
+  Spar primitive defaults into takeoff-spar docs. If a default belongs to Spar,
+  the Spar docs link covers it.
 - **Drop the props table when only canonical wrapper plumbing remains.** If,
   after removing Spar-owned props, the only props left are in the plumbing set
   (`children`, `className`, `classNames`, `slotProps`), the generator skips the

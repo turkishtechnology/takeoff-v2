@@ -24,7 +24,6 @@ Each component directory should contain (Accordion is the reference — see
 component-name/
 ├── ComponentName.tsx          # Root component
 ├── ComponentNamePart.tsx      # One file per public sub-component
-├── ComponentName.test.tsx     # Compound-surface tests
 ├── base.ts                    # createComponentBase calls for every part
 ├── context.ts                 # Cross-part variant context (when needed)
 ├── defaults.ts                # DEFAULT_* literals (when needed)
@@ -48,11 +47,15 @@ Rules:
   `Dialog.Header`, …), not via direct named exports.
 - Mirror slot classes into `src/slot-registry.ts` (the generator script does
   this automatically when scaffolding a new component).
-- Prefer the generator script when scaffolding a new component:
+- Prefer the generator script after the component contract has named the public
+  compound parts:
 
 ```bash
-pnpm --filter @takeoff-ui/react-spar generate Tooltip
+pnpm --filter @takeoff-ui/react-spar generate Button --root=button Label=span LeadingIcon=span Spinner=span
 ```
+
+Component tests are phase 2; the generator does not create
+`ComponentName.test.tsx`.
 
 ## Compound-Only Baseline
 
