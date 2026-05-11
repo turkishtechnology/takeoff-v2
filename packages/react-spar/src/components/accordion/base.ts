@@ -33,11 +33,10 @@ export const AccordionHeaderBase = createComponentBase<AccordionHeaderProps, 'ro
 
 export const AccordionTriggerBase = createComponentBase<AccordionTriggerProps, AccordionTriggerSlot>({
   name: 'AccordionTrigger',
-  slots: ['root', 'icon', 'title', 'arrow'] as const,
+  slots: ['root', 'icon', 'arrow'] as const,
   classes: {
     root: 'tk-accordion-item-header',
     icon: 'tk-accordion-item-icon',
-    title: 'tk-accordion-item-title',
     arrow: 'tk-accordion-item-arrow',
   },
 });

@@ -5,7 +5,6 @@ import { AccordionTrigger as SparAccordionTrigger, useAccordionItemContext } fro
 import { buildSlotAttrs, composeRootAttrs } from '../../core';
 import { hasChildOfType } from '../../hooks';
 import { useComponentTheme } from '../../provider';
-import { isDevelopment } from '../../utils';
 
 import { AccordionTriggerBase, AccordionTriggerTitleBase } from './base';
 import { useAccordionOwnContext } from './context';
@@ -43,16 +42,9 @@ const AccordionTriggerRoot = (props: AccordionTriggerProps) => {
   const { isOpen } = useAccordionItemContext();
 
   const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerBase, props, theme);
-  const { children, title, icon, ref, ...spar } = rest;
+  const { children, icon, ref, ...spar } = rest;
 
   const childHasTitle = hasChildOfType(children, AccordionTriggerTitle);
-
-  if (isDevelopment() && title !== undefined && childHasTitle) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      '[Accordion.Trigger] Both `title` prop and `<Accordion.Trigger.Title>` child were provided. ' + 'The child wins; remove the `title` prop to silence this warning.',
-    );
-  }
 
   const iconNode = icon !== undefined && icon !== null && (
     <span
@@ -67,7 +59,7 @@ const AccordionTriggerRoot = (props: AccordionTriggerProps) => {
     </span>
   );
 
-  const titleNode = childHasTitle ? children : title !== undefined ? <AccordionTriggerTitle>{title}</AccordionTriggerTitle> : children;
+  const titleNode = childHasTitle ? children : <AccordionTriggerTitle>{children}</AccordionTriggerTitle>;
 
   const arrowNode = !hideArrows && (
     <span

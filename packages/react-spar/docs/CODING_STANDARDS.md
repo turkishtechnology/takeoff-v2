@@ -75,10 +75,12 @@ authoring model. Concretely:
   example, `Input.Asterisk` only renders when `required` is true on the root;
   `Input.ErrorMessage` only renders when `invalid` is true; `Button.Spinner`
   only renders when `loading` is true.
-- **Do not** add flat content props (`label`, `header`, `subheader`, `icon`,
-  `leadingIcon`, `description`, `error`, `footerActions`, `spinner`,
-  `containerSlot`, `headerSlot`, `contentSlot`, `footerSlot`). Translate them
-  into subcomponents.
+- **Do not** add flat **string** content props (`label`, `header`, `subheader`,
+  `title`, `description`, `error`, `footerActions`, `spinner`, `containerSlot`,
+  `headerSlot`, `contentSlot`, `footerSlot`). Translate them into subcomponents.
+  **`ReactNode` slot props** for decorative pieces (`icon`, `leadingIcon`) are
+  allowed when the slot has no independent theming surface or behavior —
+  consumers already control the node they pass in.
 - **Do not** add render-override props (`renderIcon`, `renderSpinner`,
   `renderLeadingIcon`, `renderTrailingIcon`, `renderClearIcon`,
   `renderCloseIcon`, `renderSignIcon`). Consumers override by passing children
