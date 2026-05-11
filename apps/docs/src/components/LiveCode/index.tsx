@@ -40,16 +40,7 @@ interface LiveCodeProps {
   editable?: boolean;
 }
 
-export const LiveCode = ({
-  code,
-  cssCode,
-  defaultTab = 'js',
-  previewMinHeight = 220,
-  previewWrapper,
-  scope = {},
-  noInline = false,
-  editable = true,
-}: LiveCodeProps) => {
+export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 220, previewWrapper, scope = {}, noInline = false, editable = true }: LiveCodeProps) => {
   const { colorMode } = useColorMode();
   const selectedTheme = colorMode === 'dark' ? themes.vsDark : themes.github;
   const [activeTab, setActiveTab] = useState<LiveCodeTab>(defaultTab);
@@ -260,9 +251,7 @@ export const LiveCode = ({
               <SnapshotPreview onHasRendered={() => setHasRenderedOnce(true)} previewWrapper={previewWrapper} scope={liveScope} noInline={noInline} />
               {editable && <PreviewErrorOverlay hasRenderedOnce={hasRenderedOnce} onShowInCode={handleShowInCode} onReset={handleReset} />}
             </div>
-            {editable && (
-              <PreviewErrorFooter hasRenderedOnce={hasRenderedOnce} isCodePanelOpen={!isCodeCollapsed} onShowInCode={handleShowInCode} onReset={handleReset} />
-            )}
+            {editable && <PreviewErrorFooter hasRenderedOnce={hasRenderedOnce} isCodePanelOpen={!isCodeCollapsed} onShowInCode={handleShowInCode} onReset={handleReset} />}
           </div>
 
           <CollapsibleCodeBlock codeBlockRef={codeBlockRef} isCollapsed={isCodeCollapsed} onToggle={handleToggleCode}>

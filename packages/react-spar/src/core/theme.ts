@@ -24,8 +24,7 @@ export interface ComponentThemeConfig<TProps = unknown, TSlot extends string = '
  * Registry of every component name the provider can override. Declared as
  * `interface` so consumers can augment it via TypeScript declaration merging.
  */
-export interface ComponentThemeRegistry {
-}
+export interface ComponentThemeRegistry {}
 
 export type ComponentName = keyof ComponentThemeRegistry;
 

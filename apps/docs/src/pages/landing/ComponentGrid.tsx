@@ -1,7 +1,14 @@
 import type { JSX } from 'react';
 import Link from '@docusaurus/Link';
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import { PlaceholderBadge, PlaceholderButton, PlaceholderInput, PlaceholderSwitchRow, PlaceholderProgress, PlaceholderAvatarGroup } from '@site/src/components/PlaceholderCustomComponents';
+import {
+  PlaceholderBadge,
+  PlaceholderButton,
+  PlaceholderInput,
+  PlaceholderSwitchRow,
+  PlaceholderProgress,
+  PlaceholderAvatarGroup,
+} from '@site/src/components/PlaceholderCustomComponents';
 import styles from './ComponentGrid.module.css';
 
 /*

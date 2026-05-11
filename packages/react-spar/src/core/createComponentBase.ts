@@ -34,16 +34,13 @@ export interface ComponentBase<TProps, TSlot extends string> {
   resolveProps<P extends Partial<TProps>>(props: P, themeDefaults?: Partial<TProps>): P;
 }
 
-const toDataSlotName = (slot: string): string =>
-  slot.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+const toDataSlotName = (slot: string): string => slot.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
 
 /**
  * Mint the tiny kit each component uses for class composition, slot tagging
  * and default-prop merging. Keeps every wrapper thin over Spar.
  */
-export const createComponentBase = <TProps, TSlot extends string>(
-  config: CreateComponentBaseConfig<TProps, TSlot>,
-): ComponentBase<TProps, TSlot> => {
+export const createComponentBase = <TProps, TSlot extends string>(config: CreateComponentBaseConfig<TProps, TSlot>): ComponentBase<TProps, TSlot> => {
   const { name, slots, classes, defaultProps = {} as Partial<TProps> } = config;
 
   const cx = (...inputs: ClassValue[]): string => clsx(...inputs);

@@ -159,8 +159,8 @@ export default function InstallBlock(): JSX.Element {
             Install once. Theme from the root.
           </h2>
           <p className={styles.lede}>
-            Install the React package with the token package, import one theme file, and wrap your app once. Spar primitives are pulled in by the React package unless you import them
-            directly.
+            Install the React package with the token package, import one theme file, and wrap your app once. Spar primitives are pulled in by the React package unless you import
+            them directly.
           </p>
         </div>
 
