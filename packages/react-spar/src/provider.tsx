@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 
 import type { ComponentName, ComponentThemeRegistry, ComponentsThemeMap } from './core';
+import { isDevelopment } from './utils';
 
 export type ColorMode = 'light' | 'dark';
 
@@ -45,10 +46,25 @@ export const SparReactProvider = ({ children, colorMode = 'light', locale, compo
   );
 };
 
+const DEFAULT_THEME: ThemeValue = { colorMode: 'light' };
+
+/**
+ * Read the active theme value. The provider is **optional**: when no
+ * `SparReactProvider` ancestor is present, the default theme
+ * (`{ colorMode: 'light' }`) is returned and a one-time dev-mode warning is
+ * emitted. Wrap the app in `SparReactProvider` to customize `colorMode` or
+ * `locale`.
+ */
 export const useTheme = (): ThemeValue => {
   const context = useContext(SparReactContext);
   if (context === undefined) {
-    throw new Error('useTheme must be used within a SparReactProvider');
+    if (isDevelopment()) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[SparReactProvider] `useTheme` was called outside a provider; falling back to `{ colorMode: "light" }`. ' + 'Wrap your app in <SparReactProvider> to customize.',
+      );
+    }
+    return DEFAULT_THEME;
   }
   return { colorMode: context.colorMode };
 };
@@ -58,6 +74,12 @@ export const useTheme = (): ThemeValue => {
  * type narrows by key: `useComponentTheme('Accordion')` returns
  * `ComponentThemeConfig<AccordionProps> | undefined`. Unknown names are a
  * compile-time error.
+ *
+ * The provider is **optional** — when no `SparReactProvider` ancestor is
+ * present, this hook returns `undefined` silently and the component falls
+ * back to its author defaults. No warning is emitted because the absence of
+ * a provider-level override is a legitimate use case (component used
+ * standalone).
  */
 export const useComponentTheme = <K extends ComponentName>(componentName: K): ComponentThemeRegistry[K] | undefined => {
   const context = useContext(SparReactContext);
