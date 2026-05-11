@@ -69,8 +69,8 @@ pattern:
 3. Demo CSS and demo snippets exported near the top of the MDX file.
 4. `# ComponentName` followed by the purpose-first intro paragraph.
 5. `## Usage` with only two unheaded code snippets: the package import line,
-   then the full compound anatomy. Include required structural props in the
-   anatomy snippet.
+   then the full compound anatomy as a tag-only skeleton. Do not include props,
+   sample content, controlled state, or uncontrolled state in this snippet.
 6. Short demo sections using `LiveCode`.
 7. Accessibility notes only when the component has meaningful semantics or
    keyboard behavior.
@@ -89,6 +89,10 @@ pattern:
   `Disabled Item`, `Hide Arrows`, `Force-Mounted Content`,
   `Accessibility & Keyboard`, `API Reference`.
 - Keep prop and data-attribute descriptions factual and short.
+- Pre-format every `LiveCode` source string exactly as it should appear in the
+  docs UI. Display-only demos do not run runtime Prettier. If Prettier would
+  rewrite visible demo source strings, wrap the demo constants block with MDX
+  `<!-- prettier-ignore-start -->` / `<!-- prettier-ignore-end -->`.
 - Do not add extra docs architecture files for component docs.
 
 ## API table policy
@@ -99,18 +103,17 @@ the generator — author the `*.api.config.mjs` to match.
 
 - **Do not document Spar-owned props in takeoff-spar tables.** Behavior props
   forwarded verbatim to the Spar primitive (state, controlled props, keyboard
-  hooks, heading level, `forceMount`, `disabled`, etc.) live in Spar's docs.
-  Add them to `sparBehaviorProps` in the part's config; the generator drops
-  them from the rendered table automatically and the `sparDocsUrl` link is
-  where consumers go for that surface.
+  hooks, heading level, `forceMount`, `disabled`, etc.) live in Spar's docs. Add
+  them to `sparBehaviorProps` in the part's config; the generator drops them
+  from the rendered table automatically and the `sparDocsUrl` link is where
+  consumers go for that surface.
 - **Drop the props table when only canonical wrapper plumbing remains.** If,
   after removing Spar-owned props, the only props left are in the plumbing set
-  (`children`, `className`, `classNames`, `slotProps`), the generator skips
-  the `#### Props` heading and table entirely. The part still renders its
-  heading, the Spar docs note, and any data-attributes table. This keeps the
-  shared customization model out of every part page — consumers learn it once
-  from the wrapper customization docs and the Spar link covers primitive
-  props.
+  (`children`, `className`, `classNames`, `slotProps`), the generator skips the
+  `#### Props` heading and table entirely. The part still renders its heading,
+  the Spar docs note, and any data-attributes table. This keeps the shared
+  customization model out of every part page — consumers learn it once from the
+  wrapper customization docs and the Spar link covers primitive props.
 - `skipPropNames` is reserved for non-Spar items that should also be hidden
   (such as `ref`). Do not duplicate Spar prop names in both lists.
 - The Spar docs link is required on every part — set `sparDocsUrl` (and an

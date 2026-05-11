@@ -45,6 +45,7 @@ import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { basename, dirname, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import prettier from 'prettier';
 import ts from 'typescript';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
@@ -327,6 +328,11 @@ function injectIntoMdx(source, generated, targetPath) {
   return before + block + after;
 }
 
+async function formatGeneratedMdx(generated, targetPath) {
+  const config = (await prettier.resolveConfig(targetPath)) ?? {};
+  return (await prettier.format(generated, { ...config, filepath: targetPath })).trimEnd();
+}
+
 async function generateForConfig(program, checker, configPath) {
   const url = pathToFileURL(configPath).href;
   const mod = await import(url);
@@ -355,7 +361,7 @@ async function generateForConfig(program, checker, configPath) {
     throw err;
   }
 
-  const generated = sections.join('\n\n');
+  const generated = await formatGeneratedMdx(sections.join('\n\n'), targetPath);
   const next = injectIntoMdx(source, generated, targetPath);
   if (next !== source) {
     await writeFile(targetPath, next, 'utf8');

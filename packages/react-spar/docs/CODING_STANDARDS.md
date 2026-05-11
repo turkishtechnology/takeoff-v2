@@ -514,6 +514,12 @@ Before submitting a component, make sure tests cover:
 
 - Public docs describe compound usage only. No flat content props appear in
   examples because no flat content props exist.
+- Usage anatomy snippets show component tags only. Props, sample content, and
+  state wiring belong in dedicated examples.
+- Pre-format `LiveCode` source strings exactly as they should appear in the docs
+  UI; display-only examples are not formatted at runtime. Use MDX
+  `prettier-ignore-start` / `prettier-ignore-end` when Prettier would rewrite
+  the visible source string.
 - Internal porting history, migration notes, or primitive quirks do not belong
   in component comments or public docs unless they affect consumers.
 - Keep type docs precise. Generated API tables are only as good as the JSDoc in

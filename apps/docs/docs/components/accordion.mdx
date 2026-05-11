@@ -17,25 +17,47 @@ import { ApiBadge } from '@site/src/components/ApiBadge';
 
 export const accordionScope = { Accordion };
 
-export const accordionDemoCss = `
+<!-- prettier-ignore-start -->
+
+export const accordionDemoCss = String.raw`
 .accordion-demo {
   width: min(100%, 720px);
 }
 
-.accordion-demo-stack { display: grid; width: min(100%, 720px); gap: 12px; }
+.accordion-demo-stack {
+  display: grid;
+  width: min(100%, 720px);
+  gap: 12px;
+}
 
-.accordion-demo-note { width: fit-content; border: 1px solid
-var(--border-light); border-radius: 999px; background: var(--static-light);
-color: var(--text-dark); font-size: 13px; font-weight: 600; line-height: 1;
-padding: 8px 12px; }
+.accordion-demo-note {
+  width: fit-content;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--static-light);
+  color: var(--text-dark);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 8px 12px;
+}
 
-.accordion-demo-icon { display: inline-grid; width: 24px; height: 24px;
-place-items: center; border-radius: 999px; background: var(--primary-base);
-color: var(--static-white); }
+.accordion-demo-icon {
+  display: inline-grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--primary-base);
+  color: var(--static-white);
+}
 
-.accordion-demo-icon svg { display: block; } `;
+.accordion-demo-icon svg {
+  display: block;
+}
+`;
 
-export const playgroundDemo = `
+export const playgroundDemo = String.raw`
 <Accordion className="accordion-demo" defaultValue="fare">
   <Accordion.Item value="fare">
     <Accordion.Header>
@@ -47,15 +69,15 @@ export const playgroundDemo = `
     </Accordion.Content>
   </Accordion.Item>
 
-<Accordion.Item value="baggage">
-  <Accordion.Header>
-    <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
-  </Accordion.Header>
-  <Accordion.Content>
-    Carry-on, checked baggage, and sports equipment allowances stay grouped in
-    one collapsible panel.
-  </Accordion.Content>
-</Accordion.Item>
+  <Accordion.Item value="baggage">
+    <Accordion.Header>
+      <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Carry-on, checked baggage, and sports equipment allowances stay grouped in
+      one collapsible panel.
+    </Accordion.Content>
+  </Accordion.Item>
 
   <Accordion.Item value="check-in">
     <Accordion.Header>
@@ -69,7 +91,7 @@ export const playgroundDemo = `
 </Accordion>
 `;
 
-export const multipleDemo = `
+export const multipleDemo = String.raw`
 <Accordion
   allowMultiple
   className="accordion-demo"
@@ -87,15 +109,15 @@ export const multipleDemo = `
     </Accordion.Content>
   </Accordion.Item>
 
-<Accordion.Item value="baggage">
-  <Accordion.Header>
-    <Accordion.Trigger>Bag drop</Accordion.Trigger>
-  </Accordion.Header>
-  <Accordion.Content>
-    Multiple panels can remain open when the workflow asks users to compare
-    related instructions.
-  </Accordion.Content>
-</Accordion.Item>
+  <Accordion.Item value="baggage">
+    <Accordion.Header>
+      <Accordion.Trigger>Bag drop</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Multiple panels can remain open when the workflow asks users to compare
+      related instructions.
+    </Accordion.Content>
+  </Accordion.Item>
 
   <Accordion.Item value="security">
     <Accordion.Header>
@@ -109,22 +131,28 @@ export const multipleDemo = `
 </Accordion>
 `;
 
-export const controlledDemo = `
+export const controlledDemo = String.raw`
 function ControlledAccordionDemo() {
   const [value, setValue] = useState('documents');
 
-return ( <div className="accordion-demo-stack">
-
-<div className="accordion-demo-note">Open panel: {value}</div>
-<Accordion
-        value={value}
+  return (
+    <div className="accordion-demo-stack">
+      <div className="accordion-demo-note">Open panel: {value}</div>
+      <Accordion
         className="accordion-demo"
+        value={value}
         onValueChange={setValue}
         preventCollapse
-      > <Accordion.Item value="documents"> <Accordion.Header>
-<Accordion.Trigger>Travel documents</Accordion.Trigger> </Accordion.Header>
-<Accordion.Content> Controlled state lets app logic decide which passenger task
-remains expanded. </Accordion.Content> </Accordion.Item>
+      >
+        <Accordion.Item value="documents">
+          <Accordion.Header>
+            <Accordion.Trigger>Travel documents</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>
+            Controlled state lets app logic decide which passenger task remains
+            expanded.
+          </Accordion.Content>
+        </Accordion.Item>
 
         <Accordion.Item value="seat">
           <Accordion.Header>
@@ -137,12 +165,13 @@ remains expanded. </Accordion.Content> </Accordion.Item>
         </Accordion.Item>
       </Accordion>
     </div>
+  );
+}
 
-); }
+render(<ControlledAccordionDemo />);
+`;
 
-render(<ControlledAccordionDemo />); `;
-
-export const customIconsDemo = `
+export const customIconsDemo = String.raw`
 const ExpandIcon = () => (
   <span className="accordion-demo-icon" aria-hidden="true">
     <svg
@@ -161,24 +190,22 @@ const ExpandIcon = () => (
 );
 
 const CollapseIcon = () => (
-
-<span className="accordion-demo-icon" aria-hidden="true">
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-  >
-    <line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-</span>
+  <span className="accordion-demo-icon" aria-hidden="true">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+    >
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  </span>
 );
 
 render(
-
   <Accordion
     arrowPosition="left"
     className="accordion-demo accordion-demo-large"
@@ -206,12 +233,11 @@ render(
         affordance before the label.
       </Accordion.Content>
     </Accordion.Item>
-
   </Accordion>,
 );
 `;
 
-export const disabledDemo = `
+export const disabledDemo = String.raw`
 <Accordion className="accordion-demo" defaultValue="open">
   <Accordion.Item value="open">
     <Accordion.Header>
@@ -234,7 +260,7 @@ export const disabledDemo = `
 </Accordion>
 `;
 
-export const hideArrowsDemo = `
+export const hideArrowsDemo = String.raw`
 <Accordion className="accordion-demo" hideArrows>
   <Accordion.Item value="info">
     <Accordion.Header>
@@ -257,7 +283,7 @@ export const hideArrowsDemo = `
 </Accordion>
 `;
 
-export const forceMountDemo = `
+export const forceMountDemo = String.raw`
 <Accordion className="accordion-demo">
   <Accordion.Item value="search">
     <Accordion.Header>
@@ -280,6 +306,8 @@ export const forceMountDemo = `
 </Accordion>
 `;
 
+<!-- prettier-ignore-end -->
+
 # Accordion
 
 `Accordion` organizes related content into collapsible sections so users can
@@ -294,7 +322,7 @@ import { Accordion } from '@takeoff-ui/react-spar';
 
 ```tsx
 <Accordion>
-  <Accordion.Item value="item-1">
+  <Accordion.Item>
     <Accordion.Header>
       <Accordion.Trigger />
     </Accordion.Header>

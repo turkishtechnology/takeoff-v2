@@ -378,12 +378,20 @@ through directly.
 Each component page in `apps/docs` has exactly one editable demo. It is named
 `Playground` and uses `<LiveCode>` with default `editable={true}`. Authors run
 prettier on its source at runtime, so the source string can stay in
-template-literal-friendly indentation.
+template-literal-friendly indentation, but keep it readable in source too.
 
 All other demos on the page are display-only and pass `editable={false}`. They
 still render the live preview, but skip the editable textarea, prettier
 formatting, and reset/error tooling. Pre-format their source strings the way
 they should appear; runtime prettier does not run on them.
+
+If Prettier would rewrite visible demo source strings, wrap the demo constants
+block with MDX `<!-- prettier-ignore-start -->` /
+`<!-- prettier-ignore-end -->`.
+
+The `Usage` anatomy snippet should show component tags only. Do not include
+props, sample content, or state wiring there; put those in dedicated demo
+sections.
 
 This keeps each page weight bounded — one editable surface per component instead
 of one per example — without losing the rendered preview for the supporting
