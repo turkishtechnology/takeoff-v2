@@ -1,0 +1,384 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      :root {
+        --bg: #fff;
+        --bg-subtle: #f4f5f7;
+        --bg-hover: #ecedf0;
+        --text: #1e1e1e;
+        --text-secondary: #6b7280;
+        --border: #e1e4ea;
+        --accent: #c90019;
+        --accent-light: #fae6e8;
+        --success: #16a34a;
+        --success-light: #dcfce7;
+        --error: #dc2626;
+        --error-light: #fee2e2;
+        --info: #2563eb;
+        --info-light: #dbeafe;
+        --radius: 6px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        font-size: 12px;
+        color: var(--text);
+        background: var(--bg);
+      }
+
+      /* Header */
+      .header {
+        padding: 14px 16px 12px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .header svg {
+        flex-shrink: 0;
+      }
+      .header-text h1 {
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+      .header-text span {
+        font-size: 11px;
+        color: var(--text-secondary);
+      }
+
+      /* Summary bar */
+      .summary {
+        display: flex;
+        padding: 10px 16px;
+        gap: 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-subtle);
+      }
+      .summary-item {
+        display: flex;
+        flex-direction: column;
+      }
+      .summary-item .label {
+        font-size: 10px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .summary-item .value {
+        font-size: 13px;
+        font-weight: 600;
+        margin-top: 1px;
+      }
+
+      /* Collections */
+      .collections {
+        padding: 10px 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid var(--border);
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px;
+        background: var(--bg-subtle);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        font-size: 11px;
+        color: var(--text-secondary);
+      }
+      .chip .count {
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      /* Status */
+      .status-bar {
+        padding: 10px 16px;
+        font-size: 12px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .status-bar.idle {
+        color: var(--text-secondary);
+      }
+      .status-bar.syncing {
+        color: var(--info);
+        background: var(--info-light);
+      }
+      .status-bar.success {
+        color: var(--success);
+        background: var(--success-light);
+      }
+      .status-bar.error {
+        color: var(--error);
+        background: var(--error-light);
+      }
+
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        flex-shrink: 0;
+      }
+      .syncing .dot {
+        animation: pulse 1s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      /* Actions */
+      .actions {
+        padding: 12px 16px;
+        display: flex;
+        gap: 8px;
+      }
+
+      button {
+        padding: 8px 0;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: var(--bg);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text);
+        flex: 1;
+        transition: background 0.15s;
+      }
+      button:hover {
+        background: var(--bg-hover);
+      }
+      button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      button.primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      button.primary:hover:not(:disabled) {
+        background: #b70017;
+      }
+
+      /* Log */
+      .log-container {
+        margin: 0 16px 12px;
+        border-radius: var(--radius);
+        background: #1a1b26;
+        max-height: 140px;
+        overflow-y: auto;
+        display: none;
+      }
+      .log-container.visible {
+        display: block;
+      }
+      .log-inner {
+        padding: 8px 10px;
+        font-family: 'SF Mono', 'JetBrains Mono', monospace;
+        font-size: 10px;
+        line-height: 1.6;
+        color: #9aa5ce;
+        white-space: pre-wrap;
+      }
+      .log-inner .ok {
+        color: #9ece6a;
+      }
+      .log-inner .err {
+        color: #f7768e;
+      }
+      .log-inner .info {
+        color: #7aa2f7;
+      }
+
+      /* Loading state */
+      .loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 16px;
+        gap: 12px;
+        color: var(--text-secondary);
+      }
+      .spinner {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <span>Reading variables...</span>
+    </div>
+
+    <div id="content" style="display: none">
+      <div class="header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c90019" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" />
+          <path d="M2 17l10 5 10-5" />
+          <path d="M2 12l10 5 10-5" />
+        </svg>
+        <div class="header-text">
+          <h1>Takeoff Token Sync</h1>
+          <span id="fileName"></span>
+        </div>
+      </div>
+
+      <div class="summary" id="summary"></div>
+      <div class="collections" id="collections"></div>
+
+      <div id="statusBar" class="status-bar idle">
+        <span class="dot"></span>
+        <span id="statusText">Ready to sync</span>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="syncBtn">Sync & Build</button>
+        <button id="exportBtn">Export JSON</button>
+      </div>
+
+      <div id="logContainer" class="log-container">
+        <div id="log" class="log-inner"></div>
+      </div>
+    </div>
+
+    <script>
+      const SYNC_URL = 'http://localhost:3456/sync';
+      let dtcgData = null;
+      let rawData = null;
+
+      function addLog(msg, type = '') {
+        const el = document.getElementById('log');
+        const container = document.getElementById('logContainer');
+        container.classList.add('visible');
+        const cls = type ? ` class="${type}"` : '';
+        el.innerHTML += `<span${cls}>${msg}</span>\n`;
+        el.scrollTop = el.scrollHeight;
+      }
+
+      function setStatus(text, cls) {
+        document.getElementById('statusBar').className = 'status-bar ' + cls;
+        document.getElementById('statusText').textContent = text;
+      }
+
+      window.onmessage = event => {
+        const msg = event.data.pluginMessage;
+        if (!msg) return;
+
+        if (msg.type === 'EXPORT_RESULT') {
+          rawData = msg.raw;
+          dtcgData = msg.dtcg;
+
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('content').style.display = 'block';
+
+          const meta = rawData._meta;
+          document.getElementById('fileName').textContent = meta.fileName;
+
+          const modeCount = Object.values(rawData.collections).reduce((sum, c) => sum + c.modes.length, 0);
+          document.getElementById('summary').innerHTML = `
+          <div class="summary-item"><span class="label">Variables</span><span class="value">${meta.totalVariables}</span></div>
+          <div class="summary-item"><span class="label">Collections</span><span class="value">${meta.totalCollections}</span></div>
+          <div class="summary-item"><span class="label">Modes</span><span class="value">${modeCount}</span></div>
+        `;
+
+          const collHtml = Object.entries(rawData.collections)
+            .map(([name, coll]) => {
+              const varCount = Object.keys(coll.variables).length;
+              return `<span class="chip"><span class="count">${varCount}</span> ${name}</span>`;
+            })
+            .join('');
+          document.getElementById('collections').innerHTML = collHtml;
+        }
+
+        if (msg.type === 'ERROR') {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('content').style.display = 'block';
+          setStatus('Failed to read variables: ' + msg.message, 'error');
+        }
+      };
+
+      document.getElementById('syncBtn').addEventListener('click', async () => {
+        if (!dtcgData) return;
+
+        const btn = document.getElementById('syncBtn');
+        btn.disabled = true;
+        btn.textContent = 'Syncing...';
+        setStatus('Syncing tokens and building outputs...', 'syncing');
+
+        try {
+          const resp = await fetch(SYNC_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dtcgData),
+          });
+
+          const result = await resp.json();
+
+          if (result.success) {
+            setStatus('Done — tokens synced and built', 'success');
+            if (result.log) result.log.forEach(l => addLog(l, 'ok'));
+          } else {
+            setStatus('Build failed', 'error');
+            addLog(result.error || 'Unknown error', 'err');
+            if (result.stderr) addLog(result.stderr, 'err');
+          }
+        } catch (err) {
+          setStatus('Connection failed — is dev server running?', 'error');
+          addLog(err.message, 'err');
+          addLog('Run: pnpm dev:figma', 'info');
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Sync & Build';
+      });
+
+      document.getElementById('exportBtn').addEventListener('click', () => {
+        if (!dtcgData) return;
+        const blob = new Blob([JSON.stringify(dtcgData, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'takeoff-tokens-dtcg.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+    </script>
+  </body>
+</html>
