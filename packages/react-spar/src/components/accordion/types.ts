@@ -36,7 +36,8 @@ export type AccordionArrowPosition = 'left' | 'right';
 export type AccordionSlot = 'root';
 export type AccordionItemSlot = 'root';
 export type AccordionHeaderSlot = 'root';
-export type AccordionTriggerSlot = 'root';
+export type AccordionTriggerSlot = 'root' | 'icon' | 'title' | 'arrow';
+export type AccordionTriggerTitleSlot = 'root';
 export type AccordionContentSlot = 'root';
 
 /**
@@ -130,12 +131,32 @@ export interface AccordionHeaderProps extends Omit<ComponentPropsWithoutRef<'h3'
   ref?: Ref<HTMLHeadingElement>;
 }
 
-export interface AccordionTriggerProps extends Omit<ComponentPropsWithoutRef<'button'>, 'classNames'> {
+export interface AccordionTriggerProps extends Omit<ComponentPropsWithoutRef<'button'>, 'classNames' | 'title'> {
+  /**
+   * Ergonomic shortcut for the title text. Renders inside the canonical
+   * `Accordion.Trigger.Title` wrapper. For complex content (badges,
+   * inline elements), pass `<Accordion.Trigger.Title>` as a child instead.
+   * Providing both emits a development warning and the child wins.
+   */
+  title?: string;
+  /**
+   * Leading icon rendered before the title. The wrapper node (class +
+   * `data-slot`) is invariant — only the icon node itself is consumer-supplied.
+   */
+  icon?: ReactNode;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionTriggerSlot>;
   /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<AccordionTriggerSlot>;
   ref?: Ref<HTMLButtonElement>;
+}
+
+export interface AccordionTriggerTitleProps extends Omit<ComponentPropsWithoutRef<'span'>, 'classNames'> {
+  /** Per-slot class name overrides. */
+  classNames?: ClassNamesMap<AccordionTriggerTitleSlot>;
+  /** Per-slot HTML attribute overrides. */
+  slotProps?: SlotPropsMap<AccordionTriggerTitleSlot>;
+  ref?: Ref<HTMLSpanElement>;
 }
 
 export interface AccordionContentProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
@@ -153,7 +174,8 @@ declare module '../../core/theme' {
     Accordion: import('../../core').ComponentThemeConfig<AccordionProps>;
     AccordionItem: import('../../core').ComponentThemeConfig<AccordionItemProps>;
     AccordionHeader: import('../../core').ComponentThemeConfig<AccordionHeaderProps>;
-    AccordionTrigger: import('../../core').ComponentThemeConfig<AccordionTriggerProps>;
+    AccordionTrigger: import('../../core').ComponentThemeConfig<AccordionTriggerProps, AccordionTriggerSlot>;
+    AccordionTriggerTitle: import('../../core').ComponentThemeConfig<AccordionTriggerTitleProps>;
     AccordionContent: import('../../core').ComponentThemeConfig<AccordionContentProps>;
   }
 }

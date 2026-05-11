@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from 'clsx';
+import { clsx } from 'clsx';
 
 import type { SlotClassNames } from './types';
 
@@ -24,7 +24,6 @@ export interface ComponentBase<TProps, TSlot extends string> {
   readonly slots: readonly TSlot[];
   readonly classes: SlotClassNames<TSlot>;
   readonly defaultProps: Partial<TProps>;
-  cx(...inputs: ClassValue[]): string;
   /** Returns `{ 'data-slot', className }` plus attrs, with the canonical class concatenated. */
   getSlotProps<TAttrs extends { className?: string }>(
     slot: TSlot,
@@ -43,14 +42,12 @@ const toDataSlotName = (slot: string): string => slot.replace(/[A-Z]/g, letter =
 export const createComponentBase = <TProps, TSlot extends string>(config: CreateComponentBaseConfig<TProps, TSlot>): ComponentBase<TProps, TSlot> => {
   const { name, slots, classes, defaultProps = {} as Partial<TProps> } = config;
 
-  const cx = (...inputs: ClassValue[]): string => clsx(...inputs);
-
   const getSlotProps = <TAttrs extends { className?: string }>(
     slot: TSlot,
     attrs?: TAttrs,
   ): Omit<TAttrs, 'className'> & { 'data-slot': DataSlotName<TSlot>; 'className': string | undefined } => {
     const { className: instanceClassName, ...rest } = (attrs ?? {}) as TAttrs;
-    const composed = cx(classes[slot], instanceClassName);
+    const composed = clsx(classes[slot], instanceClassName);
     return {
       ...(rest as Omit<TAttrs, 'className'>),
       'data-slot': toDataSlotName(slot) as DataSlotName<TSlot>,
@@ -70,7 +67,6 @@ export const createComponentBase = <TProps, TSlot extends string>(config: Create
     slots,
     classes,
     defaultProps: defaultProps as Partial<TProps>,
-    cx,
     getSlotProps,
     resolveProps,
   };

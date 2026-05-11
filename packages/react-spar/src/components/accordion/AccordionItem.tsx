@@ -11,11 +11,17 @@ export const AccordionItem = (props: AccordionItemProps) => {
   const theme = useComponentTheme('AccordionItem');
   const { type, mode, size } = useAccordionOwnContext('Accordion.Item');
 
-  const { rootAttrs, rest } = composeRootAttrs(AccordionItemBase, props, theme);
+  const { rootAttrs, rest } = composeRootAttrs(AccordionItemBase, props, theme, {
+    stateAttrs: {
+      'data-type': type,
+      'data-mode': mode,
+      'data-size': size,
+    },
+  });
   const { value, children, ref, ...spar } = rest;
 
   return (
-    <SparAccordionItem {...(spar as SparAccordionItemProps)} value={value} {...rootAttrs} ref={ref} data-type={type} data-mode={mode} data-size={size}>
+    <SparAccordionItem {...(spar as SparAccordionItemProps)} value={value} {...rootAttrs} ref={ref}>
       {children}
     </SparAccordionItem>
   );

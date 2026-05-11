@@ -1,13 +1,15 @@
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import { AccordionTrigger as SparAccordionTrigger, useAccordionItemContext } from '@turkish-technology/spar';
 
-import { composeRootAttrs } from '../../core';
+import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { hasChildOfType } from '../../hooks';
 import { useComponentTheme } from '../../provider';
+import { isDevelopment } from '../../utils';
 
-import { AccordionTriggerBase } from './base';
+import { AccordionTriggerBase, AccordionTriggerTitleBase } from './base';
 import { useAccordionOwnContext } from './context';
-import type { AccordionArrowPosition, AccordionTriggerProps } from './types';
+import type { AccordionArrowPosition, AccordionTriggerProps, AccordionTriggerTitleProps } from './types';
 
 const DEFAULT_EXPAND_ICON: ReactNode = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -21,36 +23,79 @@ const DEFAULT_COLLAPSE_ICON: ReactNode = (
   </svg>
 );
 
-interface AccordionArrowProps {
-  isOpen: boolean;
-  arrowPosition: AccordionArrowPosition;
-  expandIcon?: ReactNode;
-  collapseIcon?: ReactNode;
-}
+const AccordionTriggerTitle = (props: AccordionTriggerTitleProps) => {
+  const theme = useComponentTheme('AccordionTriggerTitle');
+  const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerTitleBase, props, theme);
+  const { children, ref, ...spar } = rest;
 
-const AccordionArrow = ({ isOpen, arrowPosition, expandIcon, collapseIcon }: AccordionArrowProps) => (
-  <span className="tk-accordion-item-arrow" aria-hidden="true" data-position={arrowPosition}>
-    {isOpen ? (collapseIcon ?? DEFAULT_COLLAPSE_ICON) : (expandIcon ?? DEFAULT_EXPAND_ICON)}
-  </span>
-);
+  return (
+    <span {...spar} {...rootAttrs} ref={ref}>
+      {children}
+    </span>
+  );
+};
 
-export const AccordionTrigger = (props: AccordionTriggerProps) => {
+AccordionTriggerTitle.displayName = 'Accordion.Trigger.Title';
+
+const AccordionTriggerRoot = (props: AccordionTriggerProps) => {
   const theme = useComponentTheme('AccordionTrigger');
   const { arrowPosition, hideArrows, expandIcon, collapseIcon } = useAccordionOwnContext('Accordion.Trigger');
   const { isOpen } = useAccordionItemContext();
 
   const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerBase, props, theme);
-  const { children, ref, ...spar } = rest;
+  const { children, title, icon, ref, ...spar } = rest;
 
-  const arrow = hideArrows ? null : <AccordionArrow isOpen={isOpen} arrowPosition={arrowPosition} expandIcon={expandIcon} collapseIcon={collapseIcon} />;
+  const childHasTitle = hasChildOfType(children, AccordionTriggerTitle);
+
+  if (isDevelopment() && title !== undefined && childHasTitle) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[Accordion.Trigger] Both `title` prop and `<Accordion.Trigger.Title>` child were provided. ' + 'The child wins; remove the `title` prop to silence this warning.',
+    );
+  }
+
+  const iconNode = icon !== undefined && icon !== null && (
+    <span
+      {...buildSlotAttrs(AccordionTriggerBase.getSlotProps('icon'), 'icon', {
+        themeSlotProps: theme?.slotProps,
+        themeClassNames: theme?.classNames,
+        instanceSlotProps: props.slotProps,
+        instanceClassNames: props.classNames,
+      })}
+    >
+      {icon}
+    </span>
+  );
+
+  const titleNode = childHasTitle ? children : title !== undefined ? <AccordionTriggerTitle>{title}</AccordionTriggerTitle> : children;
+
+  const arrowNode = !hideArrows && (
+    <span
+      {...buildSlotAttrs(AccordionTriggerBase.getSlotProps('arrow'), 'arrow', {
+        themeSlotProps: theme?.slotProps,
+        themeClassNames: theme?.classNames,
+        instanceSlotProps: props.slotProps,
+        instanceClassNames: props.classNames,
+      })}
+      data-position={arrowPosition satisfies AccordionArrowPosition}
+      aria-hidden="true"
+    >
+      {isOpen ? (collapseIcon ?? DEFAULT_COLLAPSE_ICON) : (expandIcon ?? DEFAULT_EXPAND_ICON)}
+    </span>
+  );
 
   return (
     <SparAccordionTrigger {...spar} {...rootAttrs} ref={ref}>
-      {arrowPosition === 'left' && arrow}
-      <span className="tk-accordion-item-title">{children}</span>
-      {arrowPosition === 'right' && arrow}
+      {arrowPosition === 'left' && arrowNode}
+      {iconNode}
+      {titleNode}
+      {arrowPosition === 'right' && arrowNode}
     </SparAccordionTrigger>
   );
 };
 
-AccordionTrigger.displayName = 'Accordion.Trigger';
+AccordionTriggerRoot.displayName = 'Accordion.Trigger';
+
+export const AccordionTrigger = Object.assign(AccordionTriggerRoot, {
+  Title: AccordionTriggerTitle,
+});

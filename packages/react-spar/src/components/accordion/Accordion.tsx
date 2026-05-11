@@ -10,7 +10,6 @@ import type { AccordionProps } from './types';
 
 export const Accordion = (props: AccordionProps) => {
   const theme = useComponentTheme('Accordion');
-  const { rootAttrs, rest } = composeRootAttrs(AccordionBase, props, theme);
 
   const {
     type = DEFAULT_TYPE,
@@ -25,7 +24,16 @@ export const Accordion = (props: AccordionProps) => {
     disabled = false,
     children,
     ...behavior
-  } = rest;
+  } = props;
+
+  const { rootAttrs, rest } = composeRootAttrs(AccordionBase, behavior as AccordionProps, theme, {
+    stateAttrs: {
+      'data-mode': mode,
+      'data-size': size,
+      'data-arrow-position': arrowPosition,
+      'data-disabled': disabled ? '' : undefined,
+    },
+  });
 
   return (
     <AccordionProvider
@@ -40,15 +48,11 @@ export const Accordion = (props: AccordionProps) => {
       }}
     >
       <SparAccordion
-        {...(behavior as SparAccordionProps)}
+        {...(rest as SparAccordionProps)}
         selectionMode={multiple ? 'multiple' : 'single'}
         isCollapsible={collapsible}
         disabled={disabled}
         {...rootAttrs}
-        data-mode={mode}
-        data-size={size}
-        data-arrow-position={arrowPosition}
-        data-disabled={disabled ? '' : undefined}
       >
         {children}
       </SparAccordion>

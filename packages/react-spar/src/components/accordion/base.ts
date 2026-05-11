@@ -1,6 +1,17 @@
 import { createComponentBase } from '../../core';
 
-import type { AccordionContentProps, AccordionHeaderProps, AccordionItemProps, AccordionProps, AccordionTriggerProps } from './types';
+import type {
+  AccordionContentProps,
+  AccordionHeaderProps,
+  AccordionItemProps,
+  AccordionProps,
+  AccordionTriggerProps,
+  AccordionTriggerSlot,
+  AccordionTriggerTitleProps,
+} from './types';
+
+// @archetype react-enhancement — Spar exposes only the leaf <button>; the wrapper
+// owns the icon/title/arrow anatomy (canonical class + data-slot per slot).
 
 export const AccordionBase = createComponentBase<AccordionProps, 'root'>({
   name: 'Accordion',
@@ -20,10 +31,21 @@ export const AccordionHeaderBase = createComponentBase<AccordionHeaderProps, 'ro
   classes: { root: '' },
 });
 
-export const AccordionTriggerBase = createComponentBase<AccordionTriggerProps, 'root'>({
+export const AccordionTriggerBase = createComponentBase<AccordionTriggerProps, AccordionTriggerSlot>({
   name: 'AccordionTrigger',
+  slots: ['root', 'icon', 'title', 'arrow'] as const,
+  classes: {
+    root: 'tk-accordion-item-header',
+    icon: 'tk-accordion-item-icon',
+    title: 'tk-accordion-item-title',
+    arrow: 'tk-accordion-item-arrow',
+  },
+});
+
+export const AccordionTriggerTitleBase = createComponentBase<AccordionTriggerTitleProps, 'root'>({
+  name: 'AccordionTriggerTitle',
   slots: ['root'] as const,
-  classes: { root: 'tk-accordion-item-header' },
+  classes: { root: 'tk-accordion-item-title' },
 });
 
 export const AccordionContentBase = createComponentBase<AccordionContentProps, 'root'>({
