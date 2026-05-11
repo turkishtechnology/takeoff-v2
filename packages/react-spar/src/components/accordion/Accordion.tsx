@@ -20,7 +20,7 @@ export const Accordion = (props: AccordionProps) => {
     expandIcon,
     collapseIcon,
     multiple = false,
-    collapsible = false,
+    collapsible = true,
     disabled = false,
     children,
     ...behavior
@@ -49,8 +49,8 @@ export const Accordion = (props: AccordionProps) => {
     >
       <SparAccordion
         {...(rest as SparAccordionProps)}
-        selectionMode={multiple ? 'multiple' : 'single'}
-        isCollapsible={collapsible}
+        multiple={multiple}
+        collapsible={collapsible}
         disabled={disabled}
         {...rootAttrs}
       >

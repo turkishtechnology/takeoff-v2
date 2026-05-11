@@ -17,7 +17,7 @@ export type AccordionSize = 'base' | 'large';
 
 export type AccordionHeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
-export type AccordionValue = string;
+export type AccordionValue = string | number;
 
 /**
  * Current panel identifier(s). Scalar in single mode, array when
