@@ -93,7 +93,7 @@ export const playgroundDemo = String.raw`
 
 export const multipleDemo = String.raw`
 <Accordion
-  allowMultiple
+  multiple
   className="accordion-demo"
   defaultValue={['boarding', 'baggage']}
   mode="compact"
@@ -142,7 +142,7 @@ function ControlledAccordionDemo() {
         className="accordion-demo"
         value={value}
         onValueChange={setValue}
-        preventCollapse
+        collapsible
       >
         <Accordion.Item value="documents">
           <Accordion.Header>

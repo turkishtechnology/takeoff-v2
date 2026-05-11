@@ -21,7 +21,7 @@ export type AccordionValue = string;
 
 /**
  * Current panel identifier(s). Scalar in single mode, array when
- * `allowMultiple` is set.
+ * `multiple` is set.
  */
 export type AccordionCurrentValue = AccordionValue | AccordionValue[];
 
@@ -83,15 +83,15 @@ export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
   collapseIcon?: ReactNode;
 
   /** When `true`, multiple items can be expanded simultaneously. */
-  allowMultiple?: boolean;
+  multiple?: boolean;
   /** Controlled item identifier(s). */
   value?: AccordionCurrentValue;
   /** Uncontrolled initial item identifier(s). */
   defaultValue?: AccordionCurrentValue;
   /** Fired when the open value changes. */
   onValueChange?: AccordionValueChangeHandler;
-  /** When `true`, single-mode items cannot be collapsed by clicking again. */
-  preventCollapse?: boolean;
+  /** When `true`, single-mode items can be collapsed by clicking again. */
+  collapsible?: boolean;
   /** Disables every item in the accordion. */
   disabled?: boolean;
   /** Orientation for keyboard navigation. */

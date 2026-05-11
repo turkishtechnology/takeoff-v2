@@ -126,7 +126,7 @@ missing compound parts at build time.
 | ------------------ | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | Anatomy            | `<TkAccordion>` + `<TkAccordionItem header="…">`                                                          | `<Accordion>` + compound `Item` / `Header` / `Trigger` / `Content`           |
 | Active state event | `onTk-active-index-change` (custom DOM event)                                                             | `onValueChange` (React handler, payload unchanged)                           |
-| Active state props | `activeIndex`, `allowMultiple`                                                                            | `value`, `defaultValue`, `allowMultiple` (controlled / uncontrolled split)   |
+| Active state props | `activeIndex`, `multiple`                                                                                 | `value`, `defaultValue`, `multiple` (controlled / uncontrolled split)        |
 | Header content     | `header` prop or `slot="header"`                                                                          | `<Accordion.Header>` containing `<Accordion.Trigger>`                        |
 | Body content       | `slot="content"`                                                                                          | `<Accordion.Content>`                                                        |
 | Visual props       | `type="grouped" / "divided"`, `mode`, `size`, `arrowPosition`, `expandIcon`, `collapseIcon`, `hideArrows` | Identical names                                                              |
@@ -138,7 +138,7 @@ missing compound parts at build time.
 // Before — @takeoff-ui/react
 <TkAccordion
   activeIndex={activeIndex}
-  allowMultiple
+  multiple
   type="grouped"
   mode="compact"
   size="base"
@@ -155,7 +155,7 @@ missing compound parts at build time.
 // After — @takeoff-ui/react-spar
 <Accordion
   value={value}
-  allowMultiple
+  multiple
   type="grouped"
   mode="compact"
   size="base"

@@ -81,7 +81,7 @@ provider renders a `display: contents` wrapper that writes `data-theme` from
 ## Accordion
 
 ```tsx
-<Accordion allowMultiple defaultValue={['one']} arrowPosition="right">
+<Accordion multiple defaultValue={['one']} arrowPosition="right">
   <Accordion.Item value="one">
     <Accordion.Header>
       <Accordion.Trigger>FAQ</Accordion.Trigger>
@@ -91,8 +91,8 @@ provider renders a `display: contents` wrapper that writes `data-theme` from
 </Accordion>
 ```
 
-- Root behavior props: `value`, `defaultValue`, `allowMultiple`,
-  `onValueChange`, `preventCollapse`, `disabled`, `orientation`.
+- Root behavior props: `value`, `defaultValue`, `multiple`, `onValueChange`,
+  `collapsible`, `disabled`, `orientation`.
 - Root visual props: `type`, `mode`, `size`, `arrowPosition`, `hideArrows`,
   `expandIcon`, `collapseIcon`.
 - Item props: required `value`, optional `disabled`.

@@ -18,7 +18,7 @@ Takeoff Core defines product-facing names and visual language:
 - `mode`
 - `activeIndex` (Core Accordion only; React Spar uses `value`)
 - `visible`
-- `allowMultiple`
+- `multiple`
 - `arrowPosition`
 - `expandIcon`
 - `collapseIcon`
@@ -41,7 +41,7 @@ Preserve Takeoff Core product vocabulary, not Web Component mechanics.
 Map these directly when Spar supports them:
 
 ```txt
-allowMultiple
+multiple
 type
 mode
 size
@@ -173,7 +173,7 @@ Good:
 ```tsx
 return (
   <SparAccordion
-    allowMultiple={allowMultiple}
+    multiple={multiple}
     value={value}
     defaultValue={defaultValue}
     onValueChange={onValueChange}
@@ -361,7 +361,7 @@ interface AccordionProps extends Omit<
   value?: AccordionCurrentValue;
   defaultValue?: AccordionCurrentValue;
   onValueChange?: (next: AccordionCurrentValue) => void;
-  allowMultiple?: boolean;
+  multiple?: boolean;
   type?: AccordionType;
   mode?: AccordionMode;
   size?: AccordionSize;

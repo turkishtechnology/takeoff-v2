@@ -62,7 +62,7 @@ export default {
       skipPropNames: ['ref'],
       sparDocsUrl: sparAccordionDocsUrl,
       sparDocsLabel: 'Spar Accordion docs',
-      sparBehaviorProps: ['allowMultiple', 'value', 'defaultValue', 'onValueChange', 'preventCollapse', 'disabled', 'orientation'],
+      sparBehaviorProps: ['multiple', 'value', 'defaultValue', 'onValueChange', 'collapsible', 'disabled', 'orientation'],
       propOverrides: {
         children: childrenOverride('`Accordion.Item` elements rendered inside the disclosure container.'),
         className: classNameOverride,
