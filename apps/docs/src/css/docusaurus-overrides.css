@@ -223,16 +223,30 @@
 
 .navbar {
   height: 66px;
-  padding: 0 40px;
+  padding: 0 35px;
   box-shadow: none;
+  background: transparent;
+  isolation: isolate;
+}
+
+/* Glass background lives on a pseudo so the navbar itself is not a containing
+   block for position:fixed descendants. Otherwise backdrop-filter on .navbar
+   would trap .navbar-sidebar inside the 66px navbar box. */
+.navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   transition:
     background-color 200ms ease,
     border-color 200ms ease;
 }
 
 .navbar__inner {
-  max-width: 1320px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   height: 66px;
   display: flex;
   align-items: center;
@@ -309,7 +323,7 @@
   background: currentColor;
 }
 
-[data-theme='light'] .navbar {
+[data-theme='light'] .navbar::before {
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: saturate(160%) blur(12px);
   -webkit-backdrop-filter: saturate(160%) blur(12px);
@@ -334,7 +348,7 @@
   color: var(--primary-base, #c90019);
 }
 
-[data-theme='dark'] .navbar {
+[data-theme='dark'] .navbar::before {
   background: rgba(10, 10, 13, 0.72);
   backdrop-filter: saturate(160%) blur(14px);
   -webkit-backdrop-filter: saturate(160%) blur(14px);
@@ -494,6 +508,34 @@
 
 [data-theme='dark'] .DocSearch-Button-Placeholder {
   color: #7a7a86 !important;
+}
+
+@media (max-width: 996px) {
+  .navbar {
+    padding: 0 32px;
+  }
+
+  .navbar__inner,
+  .navbar__items {
+    gap: 14px;
+  }
+
+  .navbar__title {
+    display: none;
+  }
+
+  .navbar__github-link {
+    width: 36px;
+    height: 36px;
+    justify-content: center;
+    gap: 0;
+    padding: 0 !important;
+    font-size: 0 !important;
+  }
+
+  .navbar__github-link svg {
+    display: none;
+  }
 }
 
 /* ==========================================================================

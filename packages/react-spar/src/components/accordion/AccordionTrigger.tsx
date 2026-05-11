@@ -6,7 +6,7 @@ import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { AccordionTriggerBase } from './base';
-import { useAccordionVariant } from './context';
+import { useAccordionOwnContext } from './context';
 import type { AccordionArrowPosition, AccordionTriggerProps } from './types';
 
 const DEFAULT_EXPAND_ICON: ReactNode = (
@@ -36,7 +36,7 @@ const AccordionArrow = ({ isOpen, arrowPosition, expandIcon, collapseIcon }: Acc
 
 export const AccordionTrigger = (props: AccordionTriggerProps) => {
   const theme = useComponentTheme('AccordionTrigger');
-  const { arrowPosition, hideArrows, expandIcon, collapseIcon } = useAccordionVariant('Accordion.Trigger');
+  const { arrowPosition, hideArrows, expandIcon, collapseIcon } = useAccordionOwnContext('Accordion.Trigger');
   const { isOpen } = useAccordionItemContext();
 
   const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerBase, props, theme);

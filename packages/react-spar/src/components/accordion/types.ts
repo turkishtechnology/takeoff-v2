@@ -4,12 +4,8 @@ import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 /**
  * Visual grouping vocabulary mirrored from Takeoff Core (`tk-accordion`).
- *
- * `'compact'` is supported during the current major as a deprecated alias for
- * `mode='compact'` and triggers a one-time dev warning when used. It will be
- * removed in the next major release.
  */
-export type AccordionType = 'grouped' | 'divided' | 'compact';
+export type AccordionType = 'grouped' | 'divided';
 
 /**
  * Density mode. `'compact'` reduces vertical rhythm; pairs with any
@@ -58,8 +54,7 @@ export type AccordionContentSlot = 'root';
  */
 export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames' | 'defaultValue' | 'onChange'> {
   /**
-   * Visual grouping. `'compact'` is a deprecated alias for
-   * `(type='grouped', mode='compact')` and emits a dev warning.
+   * Visual grouping.
    * @defaultValue 'grouped'
    */
   type?: AccordionType;

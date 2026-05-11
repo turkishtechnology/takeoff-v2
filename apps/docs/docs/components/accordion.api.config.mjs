@@ -7,6 +7,7 @@
  */
 
 const accordionTypesFile = 'packages/react-spar/src/components/accordion/types.ts';
+const sparAccordionDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Accordion';
 
 const childrenOverride = description => ({
   type: 'React.ReactNode',
@@ -15,7 +16,6 @@ const childrenOverride = description => ({
 
 const classNameOverride = {
   type: 'string',
-  default: 'undefined',
   description: 'Appends custom classes to the root slot of this part.',
 };
 
@@ -47,6 +47,9 @@ export default {
       prependPropNames: ['children'],
       appendPropNames: ['className'],
       skipPropNames: ['ref'],
+      sparDocsUrl: sparAccordionDocsUrl,
+      sparDocsLabel: 'Spar Accordion docs',
+      sparBehaviorProps: ['allowMultiple', 'activeIndex', 'defaultActiveIndex', 'onActiveIndexChange', 'preventCollapse', 'disabled', 'orientation'],
       propOverrides: {
         children: childrenOverride('`Accordion.Item` elements rendered inside the disclosure container.'),
         className: classNameOverride,
@@ -70,6 +73,9 @@ export default {
       prependPropNames: ['children'],
       appendPropNames: ['className'],
       skipPropNames: ['ref'],
+      sparDocsUrl: sparAccordionDocsUrl,
+      sparDocsLabel: 'Spar Accordion docs',
+      sparBehaviorProps: ['disabled'],
       propOverrides: {
         children: childrenOverride('`Accordion.Header` and `Accordion.Content` elements that compose the item.'),
         className: classNameOverride,
@@ -79,15 +85,14 @@ export default {
         {
           attribute: 'data-type',
           appliedWhen: 'Always',
-          purpose: 'Reflects the resolved `type` prop after legacy `compact` normalization. Theme recipes can target items per type.',
+          purpose: 'Reflects the resolved `type` prop. Theme recipes can target items per type.',
         },
         dataMode,
         dataSize,
         {
-          attribute: 'data-open',
-          appliedWhen: 'When the item is open.',
-          purpose:
-            'Stable open-state hook. Mirrors the active-index match independently of `data-state` so theme rules stay attached when `forceMount` keeps closed panels in the DOM.',
+          attribute: 'data-state',
+          appliedWhen: 'Always',
+          purpose: 'Spar open-state hook. `open` when expanded and `closed` when collapsed.',
         },
       ],
     },
@@ -98,6 +103,10 @@ export default {
       headingBase: 'accordion-header',
       prependPropNames: ['children'],
       appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparAccordionDocsUrl,
+      sparDocsLabel: 'Spar Accordion docs',
+      sparBehaviorProps: ['level'],
       propOverrides: {
         children: childrenOverride('`Accordion.Trigger` element rendered inside the heading tag.'),
         className: classNameOverride,
@@ -111,6 +120,9 @@ export default {
       headingBase: 'accordion-trigger',
       prependPropNames: ['children'],
       appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparAccordionDocsUrl,
+      sparDocsLabel: 'Spar Accordion docs',
       propOverrides: {
         children: childrenOverride('Accessible label for the trigger button.'),
         className: classNameOverride,
@@ -124,6 +136,10 @@ export default {
       headingBase: 'accordion-content',
       prependPropNames: ['children'],
       appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparAccordionDocsUrl,
+      sparDocsLabel: 'Spar Accordion docs',
+      sparBehaviorProps: ['forceMount'],
       propOverrides: {
         children: childrenOverride('Panel body. Animated open/closed by Spar.'),
         className: classNameOverride,
@@ -131,10 +147,9 @@ export default {
       dataAttributes: [
         dataSlotRoot,
         {
-          attribute: 'data-open',
-          appliedWhen: 'When the panel is open.',
-          purpose:
-            'Stable open-state hook for the panel. Mirrors `useCollapsibleContext().isOpen` so theme animations and `max-height` rules stay in sync even when `forceMount` keeps the panel rendered while closed.',
+          attribute: 'data-state',
+          appliedWhen: 'When the panel is rendered.',
+          purpose: 'Spar panel-state hook. `open` when expanded and `closed` when force-mounted while collapsed.',
         },
       ],
     },

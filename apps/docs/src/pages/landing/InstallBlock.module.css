@@ -6,6 +6,7 @@
 }
 
 .inner {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
@@ -54,6 +55,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-width: 0;
 }
 
 .step {
@@ -61,12 +63,14 @@
   border: 1px solid var(--runway-surface-dark-border, #26262b);
   border-radius: 10px;
   overflow: hidden;
+  min-width: 0;
 }
 
 .stepHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
   padding: 1rem 1.25rem;
   border-bottom: 1px solid var(--runway-surface-dark-border, #26262b);
 }
@@ -81,6 +85,7 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--runway-ink-dim, #b6b6be);
+  min-width: 0;
 }
 
 .stepIndex {
@@ -95,7 +100,10 @@
 
 .tabs {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.25rem;
+  min-width: 0;
 }
 
 .tab {
@@ -108,6 +116,7 @@
   color: var(--runway-ink-dim, #b6b6be);
   border: 1px solid transparent;
   cursor: pointer;
+  white-space: nowrap;
   transition: all var(--runway-duration-fast, 140ms) ease;
 }
 
@@ -123,6 +132,7 @@
 
 .codeWrap {
   position: relative;
+  min-width: 0;
 }
 
 .codeWrap code {
@@ -237,5 +247,45 @@
 
   .copy {
     position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 5rem 1rem;
+  }
+
+  .inner {
+    gap: 2rem;
+  }
+
+  .stepHead {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    gap: 0.375rem;
+  }
+
+  .tabs .tab {
+    display: inline-flex;
+    justify-content: center;
+    padding: 0.4375rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .stepHead > .tab {
+    align-self: flex-start;
+  }
+
+  .codeWrap pre {
+    padding: 3.25rem 1rem 1rem;
+    font-size: 0.8125rem;
   }
 }

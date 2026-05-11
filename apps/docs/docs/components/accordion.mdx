@@ -1,6 +1,8 @@
 ---
 title: Accordion
-description: Compound Accordion demos for @takeoff-ui/react-spar.
+description:
+  Organizes related content into collapsible sections so users can scan a page
+  and reveal details as needed.
 sidebar_label: Accordion
 sidebar_position: 1
 slug: /components/accordion
@@ -280,9 +282,26 @@ export const forceMountDemo = `
 
 # Accordion
 
-`Accordion` is a compound disclosure component. Compose `Accordion.Item`,
-`Accordion.Header`, `Accordion.Trigger`, and `Accordion.Content`; keep behavior
-props on the root so Spar owns the open/closed state model.
+`Accordion` organizes related content into collapsible sections so users can
+scan dense pages and open the details they need. Keep behavior props on the root
+so Spar owns the open/closed state model.
+
+## Usage
+
+```tsx
+import { Accordion } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Accordion>
+  <Accordion.Item itemKey="item-1">
+    <Accordion.Header>
+      <Accordion.Trigger />
+    </Accordion.Header>
+    <Accordion.Content />
+  </Accordion.Item>
+</Accordion>
+```
 
 ## Playground
 
@@ -389,33 +408,23 @@ Disabled items skip both pointer and keyboard activation and surface
 
 ### Accordion {#accordion}
 
+See [Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion) for primitive behavior.
+
 #### Props {#accordion-props}
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| <ApiBadge label="children" /> | <code>React.ReactNode</code> | undefined | `Accordion.Item` elements rendered inside the disclosure container. |
-| <ApiBadge label="type" /> | <code>AccordionType</code> | 'grouped' | Visual grouping. `'compact'` is a deprecated alias for `(type='grouped', mode='compact')` and emits a dev warning. |
+| <ApiBadge label="children" /> | <code>React.ReactNode</code> | - | `Accordion.Item` elements rendered inside the disclosure container. |
+| <ApiBadge label="type" /> | <code>AccordionType</code> | 'grouped' | Visual grouping. |
 | <ApiBadge label="mode" /> | <code>AccordionMode</code> | 'default' | Density mode. Pairs with any `AccordionType`. |
 | <ApiBadge label="size" /> | <code>AccordionSize</code> | 'base' | Size scale. |
 | <ApiBadge label="arrowPosition" /> | <code>AccordionArrowPosition</code> | 'right' | Position of the auto-rendered arrow inside each trigger. |
 | <ApiBadge label="hideArrows" /> | <code>boolean</code> | false | Hide the auto-rendered arrow on every trigger. |
 | <ApiBadge label="expandIcon" /> | <code>React.ReactNode</code> | a built-in chevron pointing down | Visual content for the arrow when an item is collapsed. |
 | <ApiBadge label="collapseIcon" /> | <code>React.ReactNode</code> | a built-in chevron pointing up | Visual content for the arrow when an item is expanded. |
-| <ApiBadge label="allowMultiple" /> | <code>boolean</code> | undefined | When `true`, multiple items can be expanded simultaneously. |
-| <ApiBadge label="activeIndex" /> | <code>AccordionActiveIndex</code> | undefined | Controlled active item identifier(s). |
-| <ApiBadge label="defaultActiveIndex" /> | <code>AccordionActiveIndex</code> | undefined | Uncontrolled initial active item identifier(s). |
-| <ApiBadge label="preventCollapse" /> | <code>boolean</code> | undefined | When `true`, single-mode items cannot be collapsed by clicking again. |
-| <ApiBadge label="disabled" /> | <code>boolean</code> | undefined | Disables every item in the accordion. |
-| <ApiBadge label="orientation" /> | <code>"vertical" &#124; "horizontal"</code> | undefined | Orientation for keyboard navigation. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code> | undefined | Per-slot class name overrides. |
-| <ApiBadge label="slotProps" /> | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | undefined | Per-slot HTML attribute overrides. |
-| <ApiBadge label="className" /> | <code>string</code> | undefined | Appends custom classes to the root slot of this part. |
-
-#### Events {#accordion-events}
-
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| <ApiBadge label="onActiveIndexChange" /> | <code>AccordionActiveIndexChangeHandler</code> | undefined | Fired when the active set changes. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code> | - | Per-slot class name overrides. |
+| <ApiBadge label="slotProps" /> | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | - | Per-slot HTML attribute overrides. |
+| <ApiBadge label="className" /> | <code>string</code> | - | Appends custom classes to the root slot of this part. |
 
 #### Data attributes {#accordion-data-attributes}
 
@@ -428,39 +437,31 @@ Disabled items skip both pointer and keyboard activation and surface
 
 ### Accordion.Item {#accordion-item}
 
+See [Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion) for primitive behavior.
+
 #### Props {#accordion-item-props}
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| <ApiBadge label="children" /> | <code>React.ReactNode</code> | undefined | `Accordion.Header` and `Accordion.Content` elements that compose the item. |
-| <ApiBadge label="itemKey" /> | <code>AccordionItemKey</code> | undefined | Stable identity for this item. Required so root controlled props (`activeIndex`, `defaultActiveIndex`) can target this item reliably. Forwarded to the Spar primitive verbatim. |
-| <ApiBadge label="disabled" /> | <code>boolean</code> | undefined | Disables this item only. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code> | undefined | Per-slot class name overrides. |
-| <ApiBadge label="slotProps" /> | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | undefined | Per-slot HTML attribute overrides. |
-| <ApiBadge label="className" /> | <code>string</code> | undefined | Appends custom classes to the root slot of this part. |
+| <ApiBadge label="children" /> | <code>React.ReactNode</code> | - | `Accordion.Header` and `Accordion.Content` elements that compose the item. |
+| <ApiBadge label="itemKey" /> | <code>AccordionItemKey</code> | - | Stable identity for this item. Required so root controlled props (`activeIndex`, `defaultActiveIndex`) can target this item reliably. Forwarded to the Spar primitive verbatim. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code> | - | Per-slot class name overrides. |
+| <ApiBadge label="slotProps" /> | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | - | Per-slot HTML attribute overrides. |
+| <ApiBadge label="className" /> | <code>string</code> | - | Appends custom classes to the root slot of this part. |
 
 #### Data attributes {#accordion-item-data-attributes}
 
 | Attribute | Applied when | Purpose |
 | --- | --- | --- |
 | `data-slot="root"` | Always | Stable selector for wrapper styling on the root slot. |
-| `data-type` | Always | Reflects the resolved `type` prop after legacy `compact` normalization. Theme recipes can target items per type. |
+| `data-type` | Always | Reflects the resolved `type` prop. Theme recipes can target items per type. |
 | `data-mode` | Always | Reflects the resolved `mode` prop. Theme recipes can scope per-mode rules without reading React props. |
 | `data-size` | Always | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| `data-open` | When the item is open. | Stable open-state hook. Mirrors the active-index match independently of `data-state` so theme rules stay attached when `forceMount` keeps closed panels in the DOM. |
+| `data-state` | Always | Spar open-state hook. `open` when expanded and `closed` when collapsed. |
 
 ### Accordion.Header {#accordion-header}
 
-#### Props {#accordion-header-props}
-
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| <ApiBadge label="children" /> | <code>React.ReactNode</code> | undefined | `Accordion.Trigger` element rendered inside the heading tag. |
-| <ApiBadge label="level" /> | <code>AccordionHeadingLevel</code> | undefined | HTML heading level (1-6). |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code> | undefined | Per-slot class name overrides. |
-| <ApiBadge label="slotProps" /> | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | undefined | Per-slot HTML attribute overrides. |
-| <ApiBadge label="ref" /> | <code>Ref&lt;HTMLHeadingElement&gt;</code> | undefined |  |
-| <ApiBadge label="className" /> | <code>string</code> | undefined | Appends custom classes to the root slot of this part. |
+See [Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion) for primitive behavior.
 
 #### Data attributes {#accordion-header-data-attributes}
 
@@ -470,15 +471,7 @@ Disabled items skip both pointer and keyboard activation and surface
 
 ### Accordion.Trigger {#accordion-trigger}
 
-#### Props {#accordion-trigger-props}
-
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| <ApiBadge label="children" /> | <code>React.ReactNode</code> | undefined | Accessible label for the trigger button. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code> | undefined | Per-slot class name overrides. |
-| <ApiBadge label="slotProps" /> | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | undefined | Per-slot HTML attribute overrides. |
-| <ApiBadge label="ref" /> | <code>Ref&lt;HTMLButtonElement&gt;</code> | undefined |  |
-| <ApiBadge label="className" /> | <code>string</code> | undefined | Appends custom classes to the root slot of this part. |
+See [Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion) for primitive behavior.
 
 #### Data attributes {#accordion-trigger-data-attributes}
 
@@ -488,22 +481,13 @@ Disabled items skip both pointer and keyboard activation and surface
 
 ### Accordion.Content {#accordion-content}
 
-#### Props {#accordion-content-props}
-
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| <ApiBadge label="children" /> | <code>React.ReactNode</code> | undefined | Panel body. Animated open/closed by Spar. |
-| <ApiBadge label="forceMount" /> | <code>boolean</code> | undefined | Render content even while collapsed. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code> | undefined | Per-slot class name overrides. |
-| <ApiBadge label="slotProps" /> | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | undefined | Per-slot HTML attribute overrides. |
-| <ApiBadge label="ref" /> | <code>Ref&lt;HTMLDivElement&gt;</code> | undefined |  |
-| <ApiBadge label="className" /> | <code>string</code> | undefined | Appends custom classes to the root slot of this part. |
+See [Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion) for primitive behavior.
 
 #### Data attributes {#accordion-content-data-attributes}
 
 | Attribute | Applied when | Purpose |
 | --- | --- | --- |
 | `data-slot="root"` | Always | Stable selector for wrapper styling on the root slot. |
-| `data-open` | When the panel is open. | Stable open-state hook for the panel. Mirrors `useCollapsibleContext().isOpen` so theme animations and `max-height` rules stay in sync even when `forceMount` keeps the panel rendered while closed. |
+| `data-state` | When the panel is rendered. | Spar panel-state hook. `open` when expanded and `closed` when force-mounted while collapsed. |
 
 {/* api-tables:end */}

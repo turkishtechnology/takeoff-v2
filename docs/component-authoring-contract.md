@@ -266,17 +266,11 @@ controlled root props (`activeIndex`, `defaultActiveIndex`) have a stable
 target. Spar may keep a runtime fallback for JavaScript or low-level usage, but
 takeoff-spar should guide TypeScript consumers toward explicit identity.
 
-Accordion uses `data-open` as the public open-state hook.
+Accordion open state comes from Spar.
 
-`Accordion.Item` and `Accordion.Content` both emit `data-open` when open.
-takeoff-design recipes key open-state CSS off this attribute instead of Spar's
-`data-state` so rules stay attached when `forceMount` keeps closed panels in the
-DOM.
-
-`AccordionItem` computes the match locally (a pure `isItemActive` helper)
-because the attribute is set on `<SparAccordionItem>` itself, before Spar's item
-context is visible. Both `data-open` writes (item + content) are intentional. Do
-not collapse the duplication.
+`Accordion.Item` and `Accordion.Content` expose Spar's
+`data-state="open|closed"` when they render. Do not mirror the same state with
+wrapper-owned `data-open` or local active-index matching.
 
 ---
 
@@ -323,11 +317,6 @@ const { type = 'grouped', size = 'base', ... } = rest;
 ```
 
 Single source of truth, next to the prop it fills, narrowed by TypeScript.
-
-Exception: leave a prop undefaulted when downstream code must detect "consumer
-did not pass it" — for example, the legacy `type='compact'` migration in
-Accordion has to see `mode === undefined` before the fallback fills in. Document
-the exception inline at the destructure site.
 
 ---
 
