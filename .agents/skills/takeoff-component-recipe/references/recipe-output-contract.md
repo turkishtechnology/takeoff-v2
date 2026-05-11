@@ -250,7 +250,7 @@ Supported block types:
   {
     "type": "diff",
     "title": "Minimal design selector change",
-    "content": "+ .tk-accordion-trigger[data-open] { ... }"
+    "content": "+ .tk-accordion-trigger[data-state='open'] { ... }"
   },
   {
     "type": "table",

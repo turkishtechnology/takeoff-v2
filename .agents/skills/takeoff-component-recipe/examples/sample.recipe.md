@@ -188,10 +188,10 @@ The template can render structured evidence, not just fixed recipe tables.
 
 ## 8. DOM / class / data-state contract
 
-| Level | Class                     | Data attr | Values               | Required | Source                | Status  | Notes                                                      |
-| ----- | ------------------------- | --------- | -------------------- | -------- | --------------------- | ------- | ---------------------------------------------------------- |
-| root  | tk-example-component      | data-size | small, medium, large | True     | takeoff-design recipe | planned | Canonical class must be preserved with consumer className. |
-| item  | tk-example-component-item | data-open | true, false          | True     | takeoff-design recipe | planned | Source level must be confirmed.                            |
+| Level | Class                     | Data attr         | Values               | Required | Source                | Status  | Notes                                                      |
+| ----- | ------------------------- | ----------------- | -------------------- | -------- | --------------------- | ------- | ---------------------------------------------------------- |
+| root  | tk-example-component      | data-size         | small, medium, large | True     | takeoff-design recipe | planned | Canonical class must be preserved with consumer className. |
+| item  | tk-example-component-item | data-state='open' | true, false          | True     | takeoff-design recipe | planned | Source level must be confirmed.                            |
 
 ## 9. Spar compatibility
 

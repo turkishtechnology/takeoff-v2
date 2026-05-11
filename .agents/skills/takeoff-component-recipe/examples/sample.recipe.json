@@ -129,7 +129,7 @@
     {
       "level": "item",
       "class": "tk-example-component-item",
-      "dataAttr": "data-open",
+      "dataAttr": "data-state='open'",
       "values": ["true", "false"],
       "source": "takeoff-design recipe",
       "required": true,

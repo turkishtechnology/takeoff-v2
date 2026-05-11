@@ -39,12 +39,12 @@ const dataSize = {
 
 const dataOpenClosed = [
   {
-    attribute: 'data-open',
+    attribute: 'data-state="open"',
     appliedWhen: 'When expanded.',
     purpose: 'Spar open-state hook.',
   },
   {
-    attribute: 'data-closed',
+    attribute: 'data-state="closed"',
     appliedWhen: 'When collapsed.',
     purpose: 'Spar closed-state hook.',
   },

@@ -2,7 +2,7 @@
 //
 // Recipe convention (consumed by takeoff-spar today, takeoff-ui/core later):
 //   - Slot identity uses class names (`.tk-foo-bar`).
-//   - State and variant flags use data-attributes (`[data-open]`,
+//   - State and variant flags use data-attributes (`[data-state='open']`,
 //     `[data-checked]`, `[data-type='card']`, `[data-size='base']`, ...).
 // New recipes and convention drift in existing ones should converge on
 // this so consumers do not have to learn per-recipe dialects.

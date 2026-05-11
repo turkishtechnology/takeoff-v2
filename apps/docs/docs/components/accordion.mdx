@@ -473,14 +473,14 @@ for primitive behavior.
 
 #### Data attributes {#accordion-item-data-attributes}
 
-| Attribute          | Applied when    | Purpose                                                                                                |
-| ------------------ | --------------- | ------------------------------------------------------------------------------------------------------ |
-| `data-slot="root"` | Always          | Stable selector for wrapper styling on the root slot.                                                  |
-| `data-type`        | Always          | Reflects the resolved `type` prop. Theme recipes can target items per type.                            |
-| `data-mode`        | Always          | Reflects the resolved `mode` prop. Theme recipes can scope per-mode rules without reading React props. |
-| `data-size`        | Always          | Reflects the resolved `size` prop so theme recipes can scope size variants.                            |
-| `data-open`        | When expanded.  | Spar open-state hook.                                                                                  |
-| `data-closed`      | When collapsed. | Spar closed-state hook.                                                                                |
+| Attribute             | Applied when    | Purpose                                                                                                |
+| --------------------- | --------------- | ------------------------------------------------------------------------------------------------------ |
+| `data-slot="root"`    | Always          | Stable selector for wrapper styling on the root slot.                                                  |
+| `data-type`           | Always          | Reflects the resolved `type` prop. Theme recipes can target items per type.                            |
+| `data-mode`           | Always          | Reflects the resolved `mode` prop. Theme recipes can scope per-mode rules without reading React props. |
+| `data-size`           | Always          | Reflects the resolved `size` prop so theme recipes can scope size variants.                            |
+| `data-state="open"`   | When expanded.  | Spar open-state hook.                                                                                  |
+| `data-state="closed"` | When collapsed. | Spar closed-state hook.                                                                                |
 
 ### Accordion.Header {#accordion-header}
 
@@ -490,11 +490,11 @@ for primitive behavior.
 
 #### Data attributes {#accordion-header-data-attributes}
 
-| Attribute          | Applied when    | Purpose                                               |
-| ------------------ | --------------- | ----------------------------------------------------- |
-| `data-slot="root"` | Always          | Stable selector for wrapper styling on the root slot. |
-| `data-open`        | When expanded.  | Spar open-state hook.                                 |
-| `data-closed`      | When collapsed. | Spar closed-state hook.                               |
+| Attribute             | Applied when    | Purpose                                               |
+| --------------------- | --------------- | ----------------------------------------------------- |
+| `data-slot="root"`    | Always          | Stable selector for wrapper styling on the root slot. |
+| `data-state="open"`   | When expanded.  | Spar open-state hook.                                 |
+| `data-state="closed"` | When collapsed. | Spar closed-state hook.                               |
 
 ### Accordion.Trigger {#accordion-trigger}
 
@@ -504,11 +504,11 @@ for primitive behavior.
 
 #### Data attributes {#accordion-trigger-data-attributes}
 
-| Attribute          | Applied when    | Purpose                                               |
-| ------------------ | --------------- | ----------------------------------------------------- |
-| `data-slot="root"` | Always          | Stable selector for wrapper styling on the root slot. |
-| `data-open`        | When expanded.  | Spar open-state hook.                                 |
-| `data-closed`      | When collapsed. | Spar closed-state hook.                               |
+| Attribute             | Applied when    | Purpose                                               |
+| --------------------- | --------------- | ----------------------------------------------------- |
+| `data-slot="root"`    | Always          | Stable selector for wrapper styling on the root slot. |
+| `data-state="open"`   | When expanded.  | Spar open-state hook.                                 |
+| `data-state="closed"` | When collapsed. | Spar closed-state hook.                               |
 
 ### Accordion.Content {#accordion-content}
 
@@ -518,10 +518,10 @@ for primitive behavior.
 
 #### Data attributes {#accordion-content-data-attributes}
 
-| Attribute          | Applied when    | Purpose                                               |
-| ------------------ | --------------- | ----------------------------------------------------- |
-| `data-slot="root"` | Always          | Stable selector for wrapper styling on the root slot. |
-| `data-open`        | When expanded.  | Spar open-state hook.                                 |
-| `data-closed`      | When collapsed. | Spar closed-state hook.                               |
+| Attribute             | Applied when    | Purpose                                               |
+| --------------------- | --------------- | ----------------------------------------------------- |
+| `data-slot="root"`    | Always          | Stable selector for wrapper styling on the root slot. |
+| `data-state="open"`   | When expanded.  | Spar open-state hook.                                 |
+| `data-state="closed"` | When collapsed. | Spar closed-state hook.                               |
 
 {/* api-tables:end */}

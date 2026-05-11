@@ -268,9 +268,9 @@ controlled root props (`value`, `defaultValue`) have a stable target.
 
 Accordion open state comes from Spar.
 
-`Accordion.Item` and `Accordion.Content` expose Spar's `data-open` /
-`data-closed` when they render. Do not mirror the same state with wrapper-owned
-state attributes or local value matching.
+`Accordion.Item` and `Accordion.Content` expose Spar's `data-state="open"` /
+`data-state="closed"` when they render. Do not mirror the same state with
+wrapper-owned state attributes or local value matching.
 
 ---
 
