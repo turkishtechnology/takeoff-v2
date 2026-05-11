@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
 
 import type { ComponentName, ComponentThemeRegistry, ComponentsThemeMap } from './core';
 import { isDevelopment } from './utils';
@@ -15,35 +15,50 @@ export interface ThemeValue {
   colorMode: ColorMode;
 }
 
-type SparReactProviderElementProps = Omit<HTMLAttributes<HTMLDivElement>, keyof SparReactProviderValue | 'children'>;
-
-const providerStyle: CSSProperties = {
-  display: 'contents',
-};
-
 const SparReactContext = createContext<SparReactProviderValue | undefined>(undefined);
 
-export interface SparReactProviderProps extends SparReactProviderElementProps, Partial<SparReactProviderValue> {
+export interface SparReactProviderProps extends Partial<SparReactProviderValue> {
   children: ReactNode;
 }
 
-export const SparReactProvider = ({ children, colorMode = 'light', locale, components, style, ...restProps }: SparReactProviderProps) => {
+/**
+ * Top-level provider for Takeoff React components. Writes `data-theme` and
+ * `lang` to `document.documentElement` so styling and language attributes
+ * propagate to portal-mounted descendants (Dialog, Popover, Tooltip, …) and
+ * are picked up by global CSS selectors.
+ *
+ * Renders no DOM of its own — only a React context. For SSR apps, set
+ * `<html data-theme="…" lang="…">` on the server (e.g. with a small inline
+ * script that reads stored preferences) to avoid a first-paint flash before
+ * the provider's effect runs.
+ */
+export const SparReactProvider = ({ children, colorMode = 'light', locale, components }: SparReactProviderProps) => {
+  useEffect(() => {
+    const html = document.documentElement;
+    const previous = html.dataset.theme;
+    html.dataset.theme = colorMode;
+    return () => {
+      if (previous === undefined) {
+        delete html.dataset.theme;
+      } else {
+        html.dataset.theme = previous;
+      }
+    };
+  }, [colorMode]);
+
+  useEffect(() => {
+    if (!locale) return;
+    const html = document.documentElement;
+    const previous = html.lang;
+    html.lang = locale;
+    return () => {
+      html.lang = previous;
+    };
+  }, [locale]);
+
   const value = useMemo(() => ({ colorMode, locale, components }), [colorMode, locale, components]);
 
-  return (
-    <SparReactContext.Provider value={value}>
-      <div
-        {...restProps}
-        lang={locale}
-        data-theme={colorMode}
-        // `display: contents` is part of the provider contract (ADR-0005);
-        // consumer `style` is merged underneath so the invariant always wins.
-        style={style ? { ...style, ...providerStyle } : providerStyle}
-      >
-        {children}
-      </div>
-    </SparReactContext.Provider>
-  );
+  return <SparReactContext.Provider value={value}>{children}</SparReactContext.Provider>;
 };
 
 const DEFAULT_THEME: ThemeValue = { colorMode: 'light' };
