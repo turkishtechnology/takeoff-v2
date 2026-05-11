@@ -12,10 +12,10 @@ export const AccordionItem = (props: AccordionItemProps) => {
   const { type, mode, size } = useAccordionOwnContext('Accordion.Item');
 
   const { rootAttrs, rest } = composeRootAttrs(AccordionItemBase, props, theme);
-  const { itemKey, children, ref, ...spar } = rest;
+  const { value, children, ref, ...spar } = rest;
 
   return (
-    <SparAccordionItem {...(spar as SparAccordionItemProps)} itemKey={itemKey} {...rootAttrs} ref={ref} data-type={type} data-mode={mode} data-size={size}>
+    <SparAccordionItem {...(spar as SparAccordionItemProps)} value={value} {...rootAttrs} ref={ref} data-type={type} data-mode={mode} data-size={size}>
       {children}
     </SparAccordionItem>
   );

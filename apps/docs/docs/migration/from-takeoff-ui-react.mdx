@@ -121,17 +121,17 @@ missing compound parts at build time.
 
 ### Accordion
 
-| Concern            | `@takeoff-ui/react` (`TkAccordion`)                                                                       | `@takeoff-ui/react-spar` (`Accordion`)                                                               |
-| ------------------ | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Anatomy            | `<TkAccordion>` + `<TkAccordionItem header="…">`                                                          | `<Accordion>` + compound `Item` / `Header` / `Trigger` / `Content`                                   |
-| Active state event | `onTk-active-index-change` (custom DOM event)                                                             | `onActiveIndexChange` (React handler, payload unchanged)                                             |
-| Active state props | `activeIndex`, `allowMultiple`                                                                            | `activeIndex`, `defaultActiveIndex`, `allowMultiple` (controlled / uncontrolled split)               |
-| Header content     | `header` prop or `slot="header"`                                                                          | `<Accordion.Header>` containing `<Accordion.Trigger>`                                                |
-| Body content       | `slot="content"`                                                                                          | `<Accordion.Content>`                                                                                |
-| Visual props       | `type="grouped" / "divided"`, `mode`, `size`, `arrowPosition`, `expandIcon`, `collapseIcon`, `hideArrows` | Identical names                                                                                      |
-| Item identity      | `itemKey?: string \| number`                                                                              | `itemKey: string \| number` (required at the type level)                                             |
-| Disabled           | (not in core)                                                                                             | `disabled` on the root or per-`Accordion.Item`                                                       |
-| Stable ids         | n/a                                                                                                       | Set `id` on `Accordion.Item`; trigger / content / aria wiring derive from it                         |
+| Concern            | `@takeoff-ui/react` (`TkAccordion`)                                                                       | `@takeoff-ui/react-spar` (`Accordion`)                                       |
+| ------------------ | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Anatomy            | `<TkAccordion>` + `<TkAccordionItem header="…">`                                                          | `<Accordion>` + compound `Item` / `Header` / `Trigger` / `Content`           |
+| Active state event | `onTk-active-index-change` (custom DOM event)                                                             | `onValueChange` (React handler, payload unchanged)                           |
+| Active state props | `activeIndex`, `allowMultiple`                                                                            | `value`, `defaultValue`, `allowMultiple` (controlled / uncontrolled split)   |
+| Header content     | `header` prop or `slot="header"`                                                                          | `<Accordion.Header>` containing `<Accordion.Trigger>`                        |
+| Body content       | `slot="content"`                                                                                          | `<Accordion.Content>`                                                        |
+| Visual props       | `type="grouped" / "divided"`, `mode`, `size`, `arrowPosition`, `expandIcon`, `collapseIcon`, `hideArrows` | Identical names                                                              |
+| Item identity      | `itemKey?: string \| number`                                                                              | `value: string \| number` (required at the type level)                       |
+| Disabled           | (not in core)                                                                                             | `disabled` on the root or per-`Accordion.Item`                               |
+| Stable ids         | n/a                                                                                                       | Set `id` on `Accordion.Item`; trigger / content / aria wiring derive from it |
 
 ```tsx
 // Before — @takeoff-ui/react
@@ -153,20 +153,20 @@ missing compound parts at build time.
 
 // After — @takeoff-ui/react-spar
 <Accordion
-  activeIndex={activeIndex}
+  value={value}
   allowMultiple
   type="grouped"
   mode="compact"
   size="base"
-  onActiveIndexChange={setActiveIndex}
+  onValueChange={setValue}
 >
-  <Accordion.Item itemKey="fare">
+  <Accordion.Item value="fare">
     <Accordion.Header>
       <Accordion.Trigger>Fare conditions</Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>Refund windows and change fees.</Accordion.Content>
   </Accordion.Item>
-  <Accordion.Item itemKey="bag">
+  <Accordion.Item value="bag">
     <Accordion.Header>
       <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
     </Accordion.Header>
@@ -181,7 +181,7 @@ Intentional differences:
 
 - `Accordion.Arrow` stays internal; customize via `expandIcon` / `collapseIcon`
   / `hideArrows` / `arrowPosition` on the root.
-- `defaultActiveIndex` is the React-idiomatic uncontrolled hook; treat it as
+- `defaultValue` is the React-idiomatic uncontrolled hook; treat it as
   initial-only state (it does not reset when re-rendered with a new value).
 - `Accordion.Header` always renders a real heading element (`h1`–`h6`); pass
   `level` to align with the surrounding document outline.

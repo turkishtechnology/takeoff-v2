@@ -100,7 +100,7 @@ function-as-children:
 - Public props and type aliases live in `types.ts`. Each subcomponent has its
   own props interface (`ButtonLabelProps`, `DialogHeaderProps`, ...).
 - Internal helper names should describe the domain behavior they own, such as
-  `encodeAccordionItemValue` or `normalizeAccordionItemKeys`.
+  `encodeAccordionItemValue` or `normalizeAccordionValues`.
 
 ### Slot names and emitted classes
 
@@ -146,7 +146,7 @@ export const buttonClassNames = {
 - Keep the root's public surface narrow — only state. Content flows through
   subcomponents.
 - Prefer clear controlled and uncontrolled pairs for stateful components, such
-  as `activeIndex` and `defaultActiveIndex`.
+  as `value` and `defaultValue`.
 - When two state inputs overlap, define and document precedence explicitly.
 - Reflect defaults in both `ComponentBase.defaultProps` and `@defaultValue`
   JSDoc.
@@ -171,7 +171,7 @@ new content hook, add a new compound subcomponent.
 
 Examples of explicit precedence that should be documented and tested:
 
-- `activeIndex` overrides `Accordion.Item.active`
+- `value` controls Accordion open state when provided.
 - `indeterminate` overrides `value` / `defaultValue` on `Checkbox`
 - instance `slotProps` / `classNames` override theme-level counterparts of the
   same slot
@@ -243,13 +243,8 @@ function MyComponent({
   ref,
   ...rawProps
 }: MyComponentProps & { ref?: Ref<HTMLDivElement> }) {
-  const {
-    children,
-    className,
-    classNames,
-    slotProps,
-    ...restProps
-  } = MyComponentBase.resolveProps(rawProps);
+  const { children, className, classNames, slotProps, ...restProps } =
+    MyComponentBase.resolveProps(rawProps);
 
   const contextValue = {
     classNames,

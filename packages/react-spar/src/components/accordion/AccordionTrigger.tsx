@@ -29,7 +29,7 @@ interface AccordionArrowProps {
 }
 
 const AccordionArrow = ({ isOpen, arrowPosition, expandIcon, collapseIcon }: AccordionArrowProps) => (
-  <span className="tk-accordion-item-arrow" aria-hidden="true" data-state={isOpen ? 'open' : 'closed'} data-position={arrowPosition}>
+  <span className="tk-accordion-item-arrow" aria-hidden="true" data-position={arrowPosition}>
     {isOpen ? (collapseIcon ?? DEFAULT_COLLAPSE_ICON) : (expandIcon ?? DEFAULT_EXPAND_ICON)}
   </span>
 );

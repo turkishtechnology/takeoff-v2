@@ -17,20 +17,15 @@ export type AccordionSize = 'base' | 'large';
 
 export type AccordionHeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
-/**
- * Identity of a single Accordion item. Mirrors Takeoff Core's
- * `tk-accordion-item.itemKey` and is forwarded to the Spar primitive
- * unchanged.
- */
-export type AccordionItemKey = string | number;
+export type AccordionValue = string | number;
 
 /**
- * Currently active panel identifier(s). Scalar in single mode, array when
+ * Current panel identifier(s). Scalar in single mode, array when
  * `allowMultiple` is set.
  */
-export type AccordionActiveIndex = AccordionItemKey | AccordionItemKey[];
+export type AccordionCurrentValue = AccordionValue | AccordionValue[];
 
-export type AccordionActiveIndexChangeHandler = (next: AccordionActiveIndex) => void;
+export type AccordionValueChangeHandler = (next: AccordionCurrentValue) => void;
 
 /**
  * Position of the auto-rendered arrow inside the trigger.
@@ -45,12 +40,10 @@ export type AccordionTriggerSlot = 'root';
 export type AccordionContentSlot = 'root';
 
 /**
- * Public props for the Accordion root. Behavior props (`allowMultiple`,
- * `activeIndex`, `defaultActiveIndex`, `onActiveIndexChange`,
- * `preventCollapse`, `disabled`, `orientation`) are forwarded to the Spar
- * primitive unchanged. Visual props (`type`, `mode`, `size`, `arrowPosition`,
- * `hideArrows`, `expandIcon`, `collapseIcon`) are takeoff-spar's own and
- * cascade to descendants through the visual context.
+ * Public props for the Accordion root. Behavior props are forwarded to the
+ * Spar primitive unchanged. Visual props (`type`, `mode`, `size`,
+ * `arrowPosition`, `hideArrows`, `expandIcon`, `collapseIcon`) are
+ * takeoff-spar's own and cascade to descendants through the visual context.
  */
 export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames' | 'defaultValue' | 'onChange'> {
   /**
@@ -91,12 +84,12 @@ export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
 
   /** When `true`, multiple items can be expanded simultaneously. */
   allowMultiple?: boolean;
-  /** Controlled active item identifier(s). */
-  activeIndex?: AccordionActiveIndex;
-  /** Uncontrolled initial active item identifier(s). */
-  defaultActiveIndex?: AccordionActiveIndex;
-  /** Fired when the active set changes. */
-  onActiveIndexChange?: AccordionActiveIndexChangeHandler;
+  /** Controlled item identifier(s). */
+  value?: AccordionCurrentValue;
+  /** Uncontrolled initial item identifier(s). */
+  defaultValue?: AccordionCurrentValue;
+  /** Fired when the open value changes. */
+  onValueChange?: AccordionValueChangeHandler;
   /** When `true`, single-mode items cannot be collapsed by clicking again. */
   preventCollapse?: boolean;
   /** Disables every item in the accordion. */
@@ -114,11 +107,10 @@ export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
 
 export interface AccordionItemProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
   /**
-   * Stable identity for this item. Required so root controlled props
-   * (`activeIndex`, `defaultActiveIndex`) can target this item reliably.
-   * Forwarded to the Spar primitive verbatim.
+   * Stable identity for this item. Required so root controlled props can
+   * target this item reliably. Forwarded to the Spar primitive verbatim.
    */
-  itemKey: AccordionItemKey;
+  value: AccordionValue;
   /** Disables this item only. */
   disabled?: boolean;
   /** Per-slot class name overrides. */

@@ -14,17 +14,17 @@ const Accordion = Object.assign(AccordionRoot, {
 export { Accordion };
 
 export type {
-  AccordionActiveIndex,
-  AccordionActiveIndexChangeHandler,
   AccordionArrowPosition,
   AccordionContentProps,
+  AccordionCurrentValue,
   AccordionHeadingLevel,
   AccordionHeaderProps,
-  AccordionItemKey,
   AccordionItemProps,
   AccordionMode,
   AccordionProps,
   AccordionSize,
   AccordionTriggerProps,
   AccordionType,
+  AccordionValue,
+  AccordionValueChangeHandler,
 } from './types';

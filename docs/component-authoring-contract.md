@@ -16,7 +16,7 @@ Takeoff Core defines product-facing names and visual language:
 - `type`
 - `size`
 - `mode`
-- `activeIndex`
+- `activeIndex` (Core Accordion only; React Spar uses `value`)
 - `visible`
 - `allowMultiple`
 - `arrowPosition`
@@ -30,6 +30,10 @@ Takeoff Core defines product-facing names and visual language:
 React Spar should preserve this vocabulary unless there is a strong
 React-specific reason not to.
 
+Accordion is an approved exception: React Spar uses the cleaner primitive
+`value` / `defaultValue` / `onValueChange` API and `Accordion.Item value`
+instead of the Takeoff Core active-index and item-key names.
+
 ### React owns framework ergonomics
 
 Preserve Takeoff Core product vocabulary, not Web Component mechanics.
@@ -37,9 +41,7 @@ Preserve Takeoff Core product vocabulary, not Web Component mechanics.
 Map these directly when Spar supports them:
 
 ```txt
-activeIndex
 allowMultiple
-itemKey
 type
 mode
 size
@@ -52,8 +54,8 @@ hideArrows
 Translate framework mechanics into React conventions:
 
 ```txt
-tk-active-index-change -> onActiveIndexChange
-initial active state   -> defaultActiveIndex
+tk-active-index-change -> onValueChange
+initial open value     -> defaultValue
 slots                  -> compound components
 ```
 
@@ -64,7 +66,7 @@ Accordion.Item active
 Accordion.Item header
 slot="header"
 slot="content"
-onTkActiveIndexChange
+custom active-index DOM events
 ```
 
 If mapping is only prop naming or event naming, keep it inline or fix Spar so
@@ -172,9 +174,9 @@ Good:
 return (
   <SparAccordion
     allowMultiple={allowMultiple}
-    activeIndex={activeIndex}
-    defaultActiveIndex={defaultActiveIndex}
-    onActiveIndexChange={onActiveIndexChange}
+    value={value}
+    defaultValue={defaultValue}
+    onValueChange={onValueChange}
   />
 );
 ```
@@ -259,18 +261,16 @@ Do not require:
 
 The trigger renders an internal arrow slot with stable styling hooks.
 
-Accordion item identity is `itemKey`.
+Accordion item identity is `value`.
 
-React examples and public types should require `Accordion.Item itemKey` so
-controlled root props (`activeIndex`, `defaultActiveIndex`) have a stable
-target. Spar may keep a runtime fallback for JavaScript or low-level usage, but
-takeoff-spar should guide TypeScript consumers toward explicit identity.
+React examples and public types should require `Accordion.Item value` so
+controlled root props (`value`, `defaultValue`) have a stable target.
 
 Accordion open state comes from Spar.
 
-`Accordion.Item` and `Accordion.Content` expose Spar's
-`data-state="open|closed"` when they render. Do not mirror the same state with
-wrapper-owned `data-open` or local active-index matching.
+`Accordion.Item` and `Accordion.Content` expose Spar's `data-open` /
+`data-closed` when they render. Do not mirror the same state with wrapper-owned
+state attributes or local value matching.
 
 ---
 
@@ -358,9 +358,9 @@ interface AccordionProps extends Omit<
   ComponentPropsWithoutRef<'div'>,
   'classNames' | 'defaultValue' | 'onChange'
 > {
-  activeIndex?: AccordionActiveIndex;
-  defaultActiveIndex?: AccordionActiveIndex;
-  onActiveIndexChange?: (next: AccordionActiveIndex) => void;
+  value?: AccordionCurrentValue;
+  defaultValue?: AccordionCurrentValue;
+  onValueChange?: (next: AccordionCurrentValue) => void;
   allowMultiple?: boolean;
   type?: AccordionType;
   mode?: AccordionMode;

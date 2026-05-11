@@ -37,6 +37,19 @@ const dataSize = {
   purpose: 'Reflects the resolved `size` prop so theme recipes can scope size variants.',
 };
 
+const dataOpenClosed = [
+  {
+    attribute: 'data-open',
+    appliedWhen: 'When expanded.',
+    purpose: 'Spar open-state hook.',
+  },
+  {
+    attribute: 'data-closed',
+    appliedWhen: 'When collapsed.',
+    purpose: 'Spar closed-state hook.',
+  },
+];
+
 export default {
   components: [
     {
@@ -49,7 +62,7 @@ export default {
       skipPropNames: ['ref'],
       sparDocsUrl: sparAccordionDocsUrl,
       sparDocsLabel: 'Spar Accordion docs',
-      sparBehaviorProps: ['allowMultiple', 'activeIndex', 'defaultActiveIndex', 'onActiveIndexChange', 'preventCollapse', 'disabled', 'orientation'],
+      sparBehaviorProps: ['allowMultiple', 'value', 'defaultValue', 'onValueChange', 'preventCollapse', 'disabled', 'orientation'],
       propOverrides: {
         children: childrenOverride('`Accordion.Item` elements rendered inside the disclosure container.'),
         className: classNameOverride,
@@ -89,11 +102,7 @@ export default {
         },
         dataMode,
         dataSize,
-        {
-          attribute: 'data-state',
-          appliedWhen: 'Always',
-          purpose: 'Spar open-state hook. `open` when expanded and `closed` when collapsed.',
-        },
+        ...dataOpenClosed,
       ],
     },
     {
@@ -111,7 +120,7 @@ export default {
         children: childrenOverride('`Accordion.Trigger` element rendered inside the heading tag.'),
         className: classNameOverride,
       },
-      dataAttributes: [dataSlotRoot],
+      dataAttributes: [dataSlotRoot, ...dataOpenClosed],
     },
     {
       sourceFile: accordionTypesFile,
@@ -127,7 +136,7 @@ export default {
         children: childrenOverride('Accessible label for the trigger button.'),
         className: classNameOverride,
       },
-      dataAttributes: [dataSlotRoot],
+      dataAttributes: [dataSlotRoot, ...dataOpenClosed],
     },
     {
       sourceFile: accordionTypesFile,
@@ -144,14 +153,7 @@ export default {
         children: childrenOverride('Panel body. Animated open/closed by Spar.'),
         className: classNameOverride,
       },
-      dataAttributes: [
-        dataSlotRoot,
-        {
-          attribute: 'data-state',
-          appliedWhen: 'When the panel is rendered.',
-          purpose: 'Spar panel-state hook. `open` when expanded and `closed` when force-mounted while collapsed.',
-        },
-      ],
+      dataAttributes: [dataSlotRoot, ...dataOpenClosed],
     },
   ],
 };

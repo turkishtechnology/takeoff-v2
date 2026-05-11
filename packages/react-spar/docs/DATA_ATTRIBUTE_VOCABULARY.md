@@ -36,13 +36,15 @@ already owns the slot node.
 Boolean presence attributes use an empty string when active and are omitted when
 inactive. Primitive-owned finite states use string values.
 
-| Attribute       | Meaning                       | Values           | Scope                          |
-| --------------- | ----------------------------- | ---------------- | ------------------------------ |
-| `data-disabled` | Component is disabled         | presence         | Root                           |
-| `data-loading`  | Component is in loading state | presence         | Root                           |
-| `data-state`    | Primitive state               | `open`, `closed` | Spar disclosure item / content |
-| `data-selected` | Item is selected              | presence         | Root (reserved for future use) |
-| `data-invalid`  | Input is invalid              | presence         | Root (reserved for future use) |
+| Attribute       | Meaning                       | Values       | Scope                                    |
+| --------------- | ----------------------------- | ------------ | ---------------------------------------- |
+| `data-disabled` | Component is disabled         | presence     | Root                                     |
+| `data-loading`  | Component is in loading state | presence     | Root                                     |
+| `data-open`     | Disclosure item is open       | presence     | Spar Accordion item/header/trigger/panel |
+| `data-closed`   | Disclosure item is closed     | presence     | Spar Accordion item/header/trigger/panel |
+| `data-state`    | Primitive finite state        | string value | Primitive-owned state                    |
+| `data-selected` | Item is selected              | presence     | Root (reserved for future use)           |
+| `data-invalid`  | Input is invalid              | presence     | Root (reserved for future use)           |
 
 ## Variant hooks
 
@@ -69,11 +71,11 @@ Boolean presence attributes for layout or content semantics.
 
 ## Compatibility table
 
-| Attribute        | Component             | Classification | Notes                                     |
-| ---------------- | --------------------- | -------------- | ----------------------------------------- |
-| `data-type`      | Button                | keep           | Visual type, distinct from `data-variant` |
-| `data-state`     | AccordionItem         | keep           | Provided by Spar disclosure primitives    |
-| `data-icon-kind` | Button, AccordionItem | keep           | Stable hook for icon styling              |
+| Attribute                 | Component             | Classification | Notes                                     |
+| ------------------------- | --------------------- | -------------- | ----------------------------------------- |
+| `data-type`               | Button                | keep           | Visual type, distinct from `data-variant` |
+| `data-open`/`data-closed` | AccordionItem         | keep           | Provided by Spar Accordion primitives     |
+| `data-icon-kind`          | Button, AccordionItem | keep           | Stable hook for icon styling              |
 
 ## Decision rules for new components
 

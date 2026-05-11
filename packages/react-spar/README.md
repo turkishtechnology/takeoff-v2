@@ -4,8 +4,9 @@ Current-phase React package for Takeoff components backed by
 `@turkish-technology/spar`. Components ship as compound surfaces: state lives on
 the root and structure lives in named subcomponents.
 
-The public API preserves Takeoff Core product vocabulary (`activeIndex`,
-`itemKey`, `type`, `mode`, `size`) while translating framework mechanics into
+The public API uses React primitive vocabulary for Accordion state (`value`,
+`defaultValue`, `onValueChange`, item `value`) while preserving visual Takeoff
+vocabulary (`type`, `mode`, `size`) and translating framework mechanics into
 React conventions (`default*` props, `on*` callbacks, and compound children
 instead of Web Component slots).
 
@@ -46,8 +47,8 @@ import { Accordion, SparReactProvider } from '@takeoff-ui/react-spar';
 export function Example() {
   return (
     <SparReactProvider>
-      <Accordion defaultActiveIndex="baggage">
-        <Accordion.Item itemKey="baggage">
+      <Accordion defaultValue="baggage">
+        <Accordion.Item value="baggage">
           <Accordion.Header>
             <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
           </Accordion.Header>
@@ -56,7 +57,7 @@ export function Example() {
           </Accordion.Content>
         </Accordion.Item>
 
-        <Accordion.Item itemKey="changes">
+        <Accordion.Item value="changes">
           <Accordion.Header>
             <Accordion.Trigger>Flight changes</Accordion.Trigger>
           </Accordion.Header>
@@ -78,8 +79,8 @@ provider renders a `display: contents` wrapper that writes `data-theme` from
 ## Accordion
 
 ```tsx
-<Accordion allowMultiple defaultActiveIndex={['one']} arrowPosition="right">
-  <Accordion.Item itemKey="one">
+<Accordion allowMultiple defaultValue={['one']} arrowPosition="right">
+  <Accordion.Item value="one">
     <Accordion.Header>
       <Accordion.Trigger>FAQ</Accordion.Trigger>
     </Accordion.Header>
@@ -88,19 +89,19 @@ provider renders a `display: contents` wrapper that writes `data-theme` from
 </Accordion>
 ```
 
-- Root behavior props: `activeIndex`, `defaultActiveIndex`, `allowMultiple`,
-  `onActiveIndexChange`, `preventCollapse`, `disabled`, `orientation`.
+- Root behavior props: `value`, `defaultValue`, `allowMultiple`,
+  `onValueChange`, `preventCollapse`, `disabled`, `orientation`.
 - Root visual props: `type`, `mode`, `size`, `arrowPosition`, `hideArrows`,
   `expandIcon`, `collapseIcon`.
-- Item props: required `itemKey`, optional `disabled`.
+- Item props: required `value`, optional `disabled`.
 - Public parts: `Accordion.Item`, `Accordion.Header`, `Accordion.Trigger`,
   `Accordion.Content`.
 - The arrow is rendered automatically inside every `Accordion.Trigger`. Hide it
   with `hideArrows`, swap glyphs with `expandIcon`/`collapseIcon`, or move it
   with `arrowPosition`.
-- Web Component shortcuts such as item-level `active`, `header`, and
-  `onTkActiveIndexChange` are intentionally not part of the React surface; use
-  root state props and compound children instead.
+- Web Component shortcuts such as item-level `active`, `header`, and custom DOM
+  active-index events are intentionally not part of the React surface; use root
+  state props and compound children instead.
 
 ## Customization
 
@@ -141,7 +142,7 @@ remain in place.
 ### Per-instance Classes
 
 ```tsx
-<Accordion.Item itemKey="faq" classNames={{ root: 'faq-item' }}>
+<Accordion.Item value="faq" classNames={{ root: 'faq-item' }}>
   <Accordion.Header>
     <Accordion.Trigger classNames={{ root: 'faq-trigger' }}>
       FAQ
@@ -155,7 +156,7 @@ remain in place.
 
 ```tsx
 <Accordion.Item
-  itemKey="faq"
+  value="faq"
   slotProps={{
     root: { 'aria-describedby': 'faq-note' },
   }}
@@ -174,7 +175,7 @@ remain in place.
   expandIcon={<span aria-hidden="true">+</span>}
   collapseIcon={<span aria-hidden="true">-</span>}
 >
-  <Accordion.Item itemKey="faq">
+  <Accordion.Item value="faq">
     <Accordion.Header>
       <Accordion.Trigger>FAQ</Accordion.Trigger>
     </Accordion.Header>
