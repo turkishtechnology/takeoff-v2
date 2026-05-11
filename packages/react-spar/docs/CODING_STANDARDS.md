@@ -179,6 +179,35 @@ Examples of explicit precedence that should be documented and tested:
 - instance `slotProps` / `classNames` override theme-level counterparts of the
   same slot
 
+### `slotProps` scope — what it is and isn't for
+
+`slotProps` is **DOM-level customization**. It is shallow-merged underneath
+canonical attrs (`data-slot`, `tk-*` class) at every slot's render site, so
+consumers can attach anything that lives on the DOM element to that slot.
+
+**Use `slotProps` for:**
+
+- `aria-*`, `data-*` attributes
+- `id`, `style`, additional className contributions
+- DOM event handlers that do not drive component state: `onMouseEnter`,
+  `onFocus`, `onKeyDown`, decorative `onClick` (analytics, tooltips)
+
+**Do not use `slotProps` for:**
+
+- Controlled state props (`value`, `defaultValue`, `checked`, `open`,
+  `disabled`) — these are root props
+- State-change callbacks owned by the component contract (`onValueChange`,
+  `onOpenChange`, `onCheckedChange`) — these are root props
+- Anything documented as a behavior prop on the root component
+
+This boundary is **not enforced at runtime.** A consumer who routes a behavior
+prop through `slotProps.root` will silently override the component's controlled
+wiring and the component will appear broken. The contract belongs in
+documentation; the library does not police it.
+
+Rule of thumb: _Customizing a DOM attribute? → `slotProps`. Driving component
+behavior? → root prop._
+
 ## Component Architecture
 
 ### Wrapper responsibility
