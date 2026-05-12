@@ -1,4 +1,4 @@
-import { AccordionItem as SparAccordionItem, type AccordionItemProps as SparAccordionItemProps } from '@turkish-technology/spar';
+import { AccordionItem as SparAccordionItem } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
@@ -18,10 +18,10 @@ export const AccordionItem = (props: AccordionItemProps) => {
       'data-size': size,
     },
   });
-  const { value, children, ref, ...spar } = rest;
+  const { children, ref, ...spar } = rest;
 
   return (
-    <SparAccordionItem {...(spar as SparAccordionItemProps)} value={value} {...rootAttrs} ref={ref}>
+    <SparAccordionItem {...spar} {...rootAttrs} ref={ref}>
       {children}
     </SparAccordionItem>
   );

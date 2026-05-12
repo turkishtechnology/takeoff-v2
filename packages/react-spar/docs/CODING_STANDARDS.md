@@ -9,6 +9,15 @@ authored as a **compound surface**: a root that owns state plus a fixed list of
 named subcomponents that own structure. The standards below keep that model
 consistent across the package.
 
+> **Canonical authoring rules live in
+> [`docs/component-authoring-contract.md`](../../../docs/component-authoring-contract.md).**
+> That document is the single source of truth for layer responsibilities, the
+> no-adapter-hook rule, the upstream-first rule, public compound parts policy,
+> and the review checklist. This file complements it with **package-local
+> detail**: folder structure, naming, slot vocabulary, testing stack, styling
+> contract, and the per-package merge checklist. If a rule appears in both
+> places, the contract wins and this file should link rather than restate.
+
 Consistency goals:
 
 - idiomatic React APIs for consumers
@@ -110,6 +119,12 @@ function-as-children:
 ### Slot names and emitted classes
 
 - Slot keys in `*Base.ts` use `lowerCamelCase`.
+- Slot keys must have **single uppercase boundaries** between lowercase runs
+  (`leadingIcon`, `errorMessage`). Avoid consecutive uppercase (`leadingICON`,
+  `aPIKey`): both the type-level `KebabCase<S>` transform and the runtime
+  `toDataSlotName` helper insert a hyphen before every uppercase letter, so
+  `'leadingICON'` produces `data-slot="leading-i-c-o-n"`. The convention keeps
+  `data-slot` legible without complicating the transform.
 - Rendered `data-slot` values use `kebab-case`.
 - Emitted class names use stable `tk-*` selectors.
 - Slot arrays and class name maps should be `as const` and satisfy
@@ -214,15 +229,11 @@ behavior? → root prop._
 
 ### Wrapper responsibility
 
-- Each component is a thin React wrapper.
-- Spar owns behavior, keyboard handling, and ARIA whenever it already provides
-  them.
-- The root owns Takeoff visual props, visual context, DOM required for styling,
-  and stable `data-*` hooks.
-- Behavior props pass through to Spar when Spar supports the Takeoff vocabulary.
-- Subcomponents own their canonical slot owner nodes (tag, class, `data-slot`,
-  and any behavior such as dismiss). They read shared state from context and
-  apply `classNames`/`slotProps` on render.
+Layer responsibilities (Takeoff Core / React Spar / Spar) are defined in
+[`docs/component-authoring-contract.md` → Layer responsibilities](../../../docs/component-authoring-contract.md#layer-responsibilities).
+The wrapper-level summary is: components are thin; Spar owns behavior; the root
+owns Takeoff visual props plus stable `data-*` hooks; subcomponents own their
+canonical slot owner nodes and read shared state from context.
 
 ### Customization ownership
 
@@ -250,13 +261,15 @@ Typical structural subcomponents include `Root`, `Mask`, `Panel`, `Body`,
 
 ### Upstream-first wrapper responsibility
 
-- Spar owns controlled and uncontrolled reconciliation, normalization, keyboard
-  behavior, focus behavior, ARIA wiring, and item registration.
-- Keep prop renames or visual-only derivation inline when they are small.
-- If behavior-heavy translation is needed, fix Spar first so the wrapper can
-  pass through the behavior props directly.
-- Do not add `useComponentNameAdapter` hooks unless there is a real React
-  lifecycle/state/ref/effect reason and the design has been explicitly approved.
+See
+[`docs/component-authoring-contract.md` → Upstream-first rule](../../../docs/component-authoring-contract.md#upstream-first-rule)
+and
+[No adapter hook rule](../../../docs/component-authoring-contract.md#no-adapter-hook-rule)
+for the canonical rules. In short: Spar owns controlled/uncontrolled
+reconciliation, keyboard behavior, focus, ARIA, and item registration; if
+behavior-heavy translation is needed, fix Spar first so the wrapper can pass the
+prop through. Adapter hooks (`useComponentNameAdapter`) are forbidden unless a
+real React lifecycle/state/ref/effect reason has been approved.
 
 ## Component Implementation
 

@@ -25,6 +25,10 @@ export const AccordionItemBase = createComponentBase<AccordionItemProps, 'root'>
   classes: { root: 'tk-accordion-item' },
 });
 
+// AccordionHeader has no takeoff-v2 visual layer — the heading element is
+// styled upstream by `<SparAccordionHeader>`. The empty root class keeps the
+// canonical `data-slot="root"` hook (for selector parity with other parts)
+// without emitting an unused `tk-*` class.
 export const AccordionHeaderBase = createComponentBase<AccordionHeaderProps, 'root'>({
   name: 'AccordionHeader',
   slots: ['root'] as const,

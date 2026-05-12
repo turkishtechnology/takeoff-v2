@@ -1,4 +1,4 @@
-import { Accordion as SparAccordion, type AccordionProps as SparAccordionProps } from '@turkish-technology/spar';
+import { Accordion as SparAccordion } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
@@ -11,6 +11,11 @@ import type { AccordionProps } from './types';
 export const Accordion = (props: AccordionProps) => {
   const theme = useComponentTheme('Accordion');
 
+  // Single destructure: visual props (cascade via context), customization layers
+  // (consumed by composeRootAttrs), Spar behavior props, composition. `sparProps`
+  // is everything else (Spar behavior overflow + native HTML attrs targeting root).
+  // Stripping `className`/`classNames`/`slotProps` here prevents them from
+  // leaking onto `<SparAccordion>` as unknown DOM attributes.
   const {
     type = DEFAULT_TYPE,
     mode = DEFAULT_MODE,
@@ -19,14 +24,18 @@ export const Accordion = (props: AccordionProps) => {
     hideArrows = false,
     expandIcon,
     collapseIcon,
+    className,
+    classNames,
+    slotProps,
     multiple = false,
     collapsible = true,
     disabled = false,
     children,
-    ...behavior
+    ref,
+    ...sparProps
   } = props;
 
-  const { rootAttrs, rest } = composeRootAttrs(AccordionBase, behavior as AccordionProps, theme, {
+  const { rootAttrs } = composeRootAttrs(AccordionBase, { className, classNames, slotProps }, theme, {
     stateAttrs: {
       'data-mode': mode,
       'data-size': size,
@@ -47,13 +56,7 @@ export const Accordion = (props: AccordionProps) => {
         collapseIcon,
       }}
     >
-      <SparAccordion
-        {...(rest as SparAccordionProps)}
-        multiple={multiple}
-        collapsible={collapsible}
-        disabled={disabled}
-        {...rootAttrs}
-      >
+      <SparAccordion {...sparProps} multiple={multiple} collapsible={collapsible} disabled={disabled} ref={ref} {...rootAttrs}>
         {children}
       </SparAccordion>
     </AccordionProvider>

@@ -35,6 +35,11 @@ final verify
 
 ## Non-negotiable rules
 
+> These are quick-reference bullets. The canonical, full statements (with
+> rationale, exceptions, and review checklist) live in
+> [`docs/component-authoring-contract.md`](./docs/component-authoring-contract.md).
+> Update the contract first, then sync these bullets — not the other way.
+
 - No component implementation before a contract.
 - No adapter hooks by default.
 - No `use<Component>Adapter.ts` unless explicitly approved.

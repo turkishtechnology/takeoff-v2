@@ -8,6 +8,10 @@ import type { AccordionHeadingLevel, AccordionHeaderProps } from './types';
 
 const DEFAULT_HEADING_LEVEL: AccordionHeadingLevel = 3;
 
+// Runtime guard at the public library boundary: JS callers (or `as any` casts)
+// can bypass the `AccordionHeadingLevel = 1..6` type and pass invalid values
+// like `0`, `7`, or a string. Clamp to the default so we never render `<h7>`
+// or hand Spar a non-integer level.
 const isHeadingLevel = (level: unknown): level is AccordionHeadingLevel => typeof level === 'number' && Number.isInteger(level) && level >= 1 && level <= 6;
 
 const normalizeHeadingLevel = (level: AccordionHeaderProps['level']): AccordionHeadingLevel => (isHeadingLevel(level) ? level : DEFAULT_HEADING_LEVEL);

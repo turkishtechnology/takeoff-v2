@@ -63,6 +63,10 @@ export const SparReactProvider = ({ children, colorMode = 'light', locale, compo
 
 const DEFAULT_THEME: ThemeValue = { colorMode: 'light' };
 
+// Module-level latch so the dev-mode warning fires at most once per process.
+// Without this, tests and provider-less render loops flood the console.
+let useThemeWarningEmitted = false;
+
 /**
  * Read the active theme value. The provider is **optional**: when no
  * `SparReactProvider` ancestor is present, the default theme
@@ -73,7 +77,8 @@ const DEFAULT_THEME: ThemeValue = { colorMode: 'light' };
 export const useTheme = (): ThemeValue => {
   const context = useContext(SparReactContext);
   if (context === undefined) {
-    if (isDevelopment()) {
+    if (isDevelopment() && !useThemeWarningEmitted) {
+      useThemeWarningEmitted = true;
       // eslint-disable-next-line no-console
       console.warn(
         '[SparReactProvider] `useTheme` was called outside a provider; falling back to `{ colorMode: "light" }`. ' + 'Wrap your app in <SparReactProvider> to customize.',
