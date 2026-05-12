@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build:tokens": "pnpm --filter @takeoff-design/tokens build",
+    "predev": "pnpm run build:tokens",
     "dev": "vite",
+    "prebuild": "pnpm run build:tokens",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "check-types": "tsc --noEmit",
