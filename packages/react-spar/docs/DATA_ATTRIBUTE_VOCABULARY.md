@@ -36,15 +36,16 @@ already owns the slot node.
 Boolean presence attributes use an empty string when active and are omitted when
 inactive. Primitive-owned finite states use string values.
 
-| Attribute             | Meaning                       | Values       | Scope                                    |
-| --------------------- | ----------------------------- | ------------ | ---------------------------------------- |
-| `data-disabled`       | Component is disabled         | presence     | Root                                     |
-| `data-loading`        | Component is in loading state | presence     | Root                                     |
-| `data-state='open'`   | Disclosure item is open       | presence     | Spar Accordion item/header/trigger/panel |
-| `data-state='closed'` | Disclosure item is closed     | presence     | Spar Accordion item/header/trigger/panel |
-| `data-state`          | Primitive finite state        | string value | Primitive-owned state                    |
-| `data-selected`       | Item is selected              | presence     | Root (reserved for future use)           |
-| `data-invalid`        | Input is invalid              | presence     | Root (reserved for future use)           |
+| Attribute             | Meaning                                     | Values       | Scope                                    |
+| --------------------- | ------------------------------------------- | ------------ | ---------------------------------------- |
+| `data-disabled`       | Component is disabled                       | presence     | Root                                     |
+| `data-loading`        | Component is in loading state               | presence     | Root                                     |
+| `data-hide-arrows`    | Auto-rendered arrows are hidden (Accordion) | presence     | Root                                     |
+| `data-state='open'`   | Disclosure item is open                     | presence     | Spar Accordion item/header/trigger/panel |
+| `data-state='closed'` | Disclosure item is closed                   | presence     | Spar Accordion item/header/trigger/panel |
+| `data-state`          | Primitive finite state                      | string value | Primitive-owned state                    |
+| `data-selected`       | Item is selected                            | presence     | Root (reserved for future use)           |
+| `data-invalid`        | Input is invalid                            | presence     | Root (reserved for future use)           |
 
 ## Variant hooks
 
@@ -76,6 +77,27 @@ Boolean presence attributes for layout or content semantics.
 | `data-type`                               | Button                | keep           | Visual type, distinct from `data-variant` |
 | `data-state='open'`/`data-state='closed'` | AccordionItem         | keep           | Provided by Spar Accordion primitives     |
 | `data-icon-kind`                          | Button, AccordionItem | keep           | Stable hook for icon styling              |
+
+## Component-specific decisions
+
+### Accordion
+
+- **`data-type` lives on `AccordionItem`, not on the root.** Spar's
+  `<Accordion>` root already emits its own `data-type="multiple"|"single"` for
+  behavior mode. Adding takeoff-spar's visual `data-type="grouped"|"divided"` to
+  the same element would shadow Spar's attribute and confuse CSS that relies on
+  either vocabulary. Style accordion visual types via
+  `.tk-accordion-item[data-type="grouped"]` /
+  `.tk-accordion-item[data-type="divided"]`.
+- **`data-mode` and `data-size` are emitted on both the root and the item.**
+  Both elements receive the same value (cascade through context). The root copy
+  is the global cascade anchor; the item copy gives CSS recipes a
+  higher-specificity per-item selector without requiring an ancestor lookup
+  (`.tk-accordion-item[data-mode="compact"][data-size="large"] { ... }`). This
+  duplication is intentional, not a redundancy bug.
+- **`data-arrow-position` and `data-hide-arrows` live on the root.** They
+  describe layout intent for the whole accordion and cascade naturally to every
+  trigger via descendant selectors.
 
 ## Decision rules for new components
 

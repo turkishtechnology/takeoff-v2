@@ -11,11 +11,12 @@ import type { AccordionProps } from './types';
 export const Accordion = (props: AccordionProps) => {
   const theme = useComponentTheme('Accordion');
 
-  // Single destructure: visual props (cascade via context), customization layers
-  // (consumed by composeRootAttrs), Spar behavior props, composition. `sparProps`
-  // is everything else (Spar behavior overflow + native HTML attrs targeting root).
-  // Stripping `className`/`classNames`/`slotProps` here prevents them from
-  // leaking onto `<SparAccordion>` as unknown DOM attributes.
+  // Resolve `(author defaults → theme defaults → instance props)` in
+  // composeRootAttrs, then destructure from `rest` so theme.defaultProps for
+  // visual props (type, mode, size, arrowPosition, hideArrows) actually
+  // applies. Destructuring from `props` directly bypasses the theme layer.
+  const { rootAttrs: baseRootAttrs, rest } = composeRootAttrs(AccordionBase, props, theme);
+
   const {
     type = DEFAULT_TYPE,
     mode = DEFAULT_MODE,
@@ -24,25 +25,30 @@ export const Accordion = (props: AccordionProps) => {
     hideArrows = false,
     expandIcon,
     collapseIcon,
-    className,
-    classNames,
-    slotProps,
     multiple = false,
     collapsible = true,
     disabled = false,
     children,
     ref,
     ...sparProps
-  } = props;
+  } = rest;
 
-  const { rootAttrs } = composeRootAttrs(AccordionBase, { className, classNames, slotProps }, theme, {
-    stateAttrs: {
-      'data-mode': mode,
-      'data-size': size,
-      'data-arrow-position': arrowPosition,
-      'data-disabled': disabled ? '' : undefined,
-    },
-  });
+  // Layer canonical state-driven `data-*` after the theme-merged values are
+  // known. Canonical attrs still win over any `slotProps.root` override
+  // because they spread last on the SparAccordion element.
+  //
+  // Note on `data-type`: takeoff-spar's `data-type="grouped"|"divided"` lives
+  // on `AccordionItem`, not the root, because Spar's Accordion already emits
+  // `data-type="multiple"|"single"` on its own root for behavior mode. Mixing
+  // the two vocabularies on the same element would be ambiguous.
+  const rootAttrs = {
+    ...baseRootAttrs,
+    'data-mode': mode,
+    'data-size': size,
+    'data-arrow-position': arrowPosition,
+    'data-disabled': disabled ? '' : undefined,
+    'data-hide-arrows': hideArrows ? '' : undefined,
+  };
 
   return (
     <AccordionProvider
