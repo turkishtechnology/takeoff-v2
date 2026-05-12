@@ -176,11 +176,11 @@
 }
 
 .kw {
-  color: #c792ea;
+  color: var(--runway-syntax-keyword);
 }
 
 .tag {
-  color: #ff6b7a;
+  color: var(--runway-syntax-tag);
 }
 
 .attr {
@@ -188,11 +188,11 @@
 }
 
 .str {
-  color: #a5d6a7;
+  color: var(--runway-syntax-string);
 }
 
 .fn {
-  color: #ffcb6b;
+  color: var(--runway-syntax-function);
 }
 
 .punct {
@@ -200,7 +200,7 @@
 }
 
 .cliTool {
-  color: #ffcb6b;
+  color: var(--runway-syntax-function);
 }
 
 .cliVerb {
@@ -215,7 +215,7 @@
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  background: rgba(17, 17, 20, 0.9);
+  background: var(--runway-bg-2);
   border: 1px solid var(--runway-surface-dark-border, #26262b);
   color: var(--runway-ink-dim, #b6b6be);
   font-family: var(--runway-type-mono-family);

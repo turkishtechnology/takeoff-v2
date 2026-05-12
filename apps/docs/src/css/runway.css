@@ -95,6 +95,12 @@
   --runway-accent-amber: var(--states-warning-base, #ffb84d);
   --runway-accent-green: var(--states-success-base, #4ade80);
 
+  /* Syntax accents — tuned for light editor surfaces */
+  --runway-syntax-keyword: #7c3aed;
+  --runway-syntax-string: #147a55;
+  --runway-syntax-function: #9a5b00;
+  --runway-syntax-tag: var(--primary-base, #c90019);
+
   /* Hero grid + HUD decorations — LIGHT mode */
   --runway-grid-color: color-mix(in srgb, var(--text-darkest) 4%, transparent);
   --runway-grid-size: 64px;
@@ -137,6 +143,10 @@
   --runway-accent-cyan: #7dd3fc;
   --runway-accent-amber: #ffb84d;
   --runway-accent-green: #4ade80;
+  --runway-syntax-keyword: #c792ea;
+  --runway-syntax-string: #a5d6a7;
+  --runway-syntax-function: #ffcb6b;
+  --runway-syntax-tag: #ff6b7a;
 
   /* Reference hero grid + HUD */
   --runway-grid-color: rgba(255, 255, 255, 0.025);

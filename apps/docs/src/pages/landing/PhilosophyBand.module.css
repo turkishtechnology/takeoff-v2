@@ -89,7 +89,7 @@
   flex-direction: column;
   gap: 1rem;
   padding: 2rem 1.75rem 2rem;
-  background: rgba(17, 17, 20, 0.7);
+  background: var(--runway-surface-dark);
   border: 1px solid var(--runway-surface-dark-border, #26262b);
   border-radius: 12px;
   backdrop-filter: blur(10px);
@@ -103,7 +103,7 @@
 
 .pillar:hover {
   transform: translateY(-3px);
-  border-color: rgba(230, 0, 31, 0.45);
+  border-color: color-mix(in srgb, var(--runway-cardinal) 45%, transparent);
   text-decoration: none;
   color: inherit;
 }
