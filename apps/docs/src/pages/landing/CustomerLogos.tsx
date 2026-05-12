@@ -1,7 +1,7 @@
 import type { JSX } from 'react';
 import styles from './CustomerLogos.module.css';
 
-const BRANDS = ['Turkish Airlines', 'TK Technology', 'Miles & Smiles', 'TK Cargo', 'THY Opet', 'Anadolujet', 'TK Academy'];
+const BRANDS = ['Turkish Airlines', 'TK Technology', 'Miles & Smiles', 'TK Cargo', 'THY Opet', 'AJet', 'TK Academy'];
 
 // Double the list so the infinite marquee has no visual break at the wrap.
 const TRACK = [...BRANDS, ...BRANDS];

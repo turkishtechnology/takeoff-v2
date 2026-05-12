@@ -1,0 +1,25 @@
+{
+  "component": {
+    "description": {
+      "$type": "dimension",
+      "description-item-inline-h-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "description-item-inline-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "description-item-inline-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "description-item-block-h-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "description-item-block-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "description-item-block-gap": {
+        "$value": "{base.spacing.xxs}"
+      }
+    }
+  }
+}

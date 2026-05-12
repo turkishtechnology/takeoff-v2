@@ -1,0 +1,52 @@
+{
+  "component": {
+    "sidebar": {
+      "$type": "dimension",
+      "sidebar-elements-base-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "sidebar-elements-base-h-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "sidebar-elements-base-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "sidebar-elements-base-full-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "sidebar-elements-base-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "sidebar-elements-small-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "sidebar-elements-small-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "sidebar-elements-small-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "sidebar-elements-small-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "sidebar-elements-small-full-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "sidebar-elements-large-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "sidebar-elements-large-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "sidebar-elements-large-v-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "sidebar-elements-large-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "sidebar-elements-large-full-padding": {
+        "$value": "{base.spacing.l}"
+      }
+    }
+  }
+}

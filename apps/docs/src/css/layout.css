@@ -173,6 +173,25 @@
   line-height: 1;
 }
 
+@media (max-width: 996px) {
+  [class^='navbarSearchContainer'] {
+    position: static !important;
+    right: auto !important;
+  }
+
+  .DocSearch-Button {
+    min-width: 36px;
+    width: 36px;
+    padding: 0 !important;
+    justify-content: center;
+  }
+
+  .DocSearch-Button-Placeholder,
+  .DocSearch-Button-Keys {
+    display: none !important;
+  }
+}
+
 /* --- Modal container + overlay ------------------------------------------ */
 .DocSearch-Container {
   backdrop-filter: saturate(140%) blur(3px);

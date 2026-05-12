@@ -3,48 +3,29 @@ import { AccordionItem } from './AccordionItem';
 import { AccordionHeader } from './AccordionHeader';
 import { AccordionTrigger } from './AccordionTrigger';
 import { AccordionContent } from './AccordionContent';
-import { AccordionArrow } from './AccordionArrow';
-import { AccordionArrowBase, AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItemBase, AccordionTriggerBase } from './base';
 
-const Accordion = AccordionRoot as typeof AccordionRoot & {
-  Root: typeof AccordionRoot;
-  Item: typeof AccordionItem;
-  Header: typeof AccordionHeader;
-  Trigger: typeof AccordionTrigger;
-  Content: typeof AccordionContent;
-  Arrow: typeof AccordionArrow;
-};
+const Accordion = Object.assign(AccordionRoot, {
+  Item: AccordionItem,
+  Header: AccordionHeader,
+  Trigger: AccordionTrigger,
+  Content: AccordionContent,
+});
 
-Accordion.Root = AccordionRoot;
-Accordion.Item = AccordionItem;
-Accordion.Header = AccordionHeader;
-Accordion.Trigger = AccordionTrigger;
-Accordion.Content = AccordionContent;
-Accordion.Arrow = AccordionArrow;
-
-export {
-  Accordion,
-  AccordionRoot,
-  AccordionItem,
-  AccordionHeader,
-  AccordionTrigger,
-  AccordionContent,
-  AccordionArrow,
-  AccordionBase,
-  AccordionItemBase,
-  AccordionHeaderBase,
-  AccordionTriggerBase,
-  AccordionContentBase,
-  AccordionArrowBase,
-};
+export { Accordion };
 
 export type {
-  AccordionArrowProps,
+  AccordionArrowPosition,
   AccordionContentProps,
+  AccordionCurrentValue,
+  AccordionHeadingLevel,
   AccordionHeaderProps,
   AccordionItemProps,
+  AccordionMode,
   AccordionProps,
   AccordionSize,
   AccordionTriggerProps,
+  AccordionTriggerTitleProps,
   AccordionType,
+  AccordionValue,
+  AccordionValueChangeHandler,
 } from './types';

@@ -1,0 +1,76 @@
+{
+  "component": {
+    "radio-checkbox": {
+      "$type": "dimension",
+      "basic-switcher-container-radius": {
+        "$value": "{base.radius.none}"
+      },
+      "basic-switcher-container-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "basic-switcher-container-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "basic-switcher-container-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "basic-switcher-button-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "basic-switcher-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "basic-switcher-text-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "card-switcher-container-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "card-switcher-container-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "card-switcher-container-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "card-switcher-container-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "card-switcher-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "card-switcher-text-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "card-switcher-button-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "avatar-switcher-container-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "avatar-switcher-container-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "avatar-switcher-container-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "avatar-switcher-container-gap": {
+        "$value": "{base.spacing.xl}"
+      },
+      "avatar-switcher-v-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "avatar-switcher-text-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "avatar-switcher-button-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "avatar-switcher-avatar-size": {
+        "$value": "{base.spacing.12xl}"
+      },
+      "avatar-switcher-h-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      }
+    }
+  }
+}

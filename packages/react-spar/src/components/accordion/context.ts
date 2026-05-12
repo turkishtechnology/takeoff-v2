@@ -1,10 +1,17 @@
-import { createSafeContext } from '../../utils';
+import type { ReactNode } from 'react';
 
-import type { AccordionSize, AccordionType } from './types';
+import { createSafeContext } from '../../hooks';
 
-export interface AccordionVariantContextValue {
+import type { AccordionArrowPosition, AccordionMode, AccordionSize, AccordionType } from './types';
+
+export interface AccordionOwnContextValue {
   type: AccordionType;
+  mode: AccordionMode;
   size: AccordionSize;
+  arrowPosition: AccordionArrowPosition;
+  hideArrows: boolean;
+  expandIcon?: ReactNode;
+  collapseIcon?: ReactNode;
 }
 
-export const [AccordionVariantProvider, useAccordionVariant] = createSafeContext<AccordionVariantContextValue>('AccordionVariantProvider');
+export const [AccordionProvider, useAccordionOwnContext] = createSafeContext<AccordionOwnContextValue>('AccordionProvider');

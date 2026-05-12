@@ -1,0 +1,52 @@
+{
+  "component": {
+    "tree-view": {
+      "$type": "dimension",
+      "items-tree-base-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-tree-base-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "items-tree-base-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-tree-base-content-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-tree-small-h-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "items-tree-small-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-tree-small-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-tree-small-content-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "items-tree-large-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "items-tree-large-v-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "items-tree-large-gap": {
+        "$value": "{base.spacing.l}"
+      },
+      "items-tree-large-content-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "tree-h-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "tree-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "tree-gap": {
+        "$value": "{base.spacing.xxs}"
+      }
+    }
+  }
+}

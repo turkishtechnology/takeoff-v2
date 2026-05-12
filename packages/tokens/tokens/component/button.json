@@ -1,0 +1,223 @@
+{
+  "component": {
+    "button": {
+      "$type": "dimension",
+      "sizes-base-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "sizes-base-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "sizes-base-h-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "sizes-base-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "sizes-base-full-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "sizes-base-icon-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "sizes-small-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "sizes-small-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "sizes-small-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "sizes-small-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "sizes-small-full-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "sizes-small-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "sizes-large-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "sizes-large-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "sizes-large-h-padding": {
+        "$value": "{base.spacing.2xl}"
+      },
+      "sizes-large-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "sizes-large-full-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "sizes-large-icon-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "link-button-sizes-base-radius": {
+        "$value": "{base.radius.none}"
+      },
+      "link-button-sizes-base-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "link-button-sizes-base-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "link-button-sizes-base-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "link-button-sizes-base-full-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "link-button-sizes-base-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "link-button-sizes-large-radius": {
+        "$value": "{base.radius.none}"
+      },
+      "link-button-sizes-large-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "link-button-sizes-large-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "link-button-sizes-large-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "link-button-sizes-large-full-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "link-button-sizes-large-icon-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "link-button-sizes-small-radius": {
+        "$value": "{base.radius.none}"
+      },
+      "link-button-sizes-small-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "link-button-sizes-small-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "link-button-sizes-small-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "link-button-sizes-small-full-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "link-button-sizes-small-icon-size": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "fab-button-sizes-base-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "fab-button-sizes-base-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "fab-button-sizes-base-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "fab-button-sizes-base-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "fab-button-sizes-base-full-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "fab-button-sizes-base-icon-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "fab-button-sizes-small-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "fab-button-sizes-small-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "fab-button-sizes-small-h-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "fab-button-sizes-small-v-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "fab-button-sizes-small-full-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "fab-button-sizes-small-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "fab-button-sizes-large-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "fab-button-sizes-large-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "fab-button-sizes-large-h-padding": {
+        "$value": "{base.spacing.2xl}"
+      },
+      "fab-button-sizes-large-v-padding": {
+        "$value": "{base.spacing.2xl}"
+      },
+      "fab-button-sizes-large-full-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "fab-button-sizes-large-icon-size": {
+        "$value": "{base.spacing.7xl}"
+      },
+      "segmented-button-sizes-base-radius": {
+        "$value": "{base.radius.none}"
+      },
+      "segmented-button-sizes-base-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "segmented-button-sizes-base-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "segmented-button-sizes-base-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "segmented-button-sizes-base-full-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "segmented-button-sizes-base-icon-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "segmented-button-sizes-small-radius": {
+        "$value": "{base.radius.none}"
+      },
+      "segmented-button-sizes-small-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "segmented-button-sizes-small-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "segmented-button-sizes-small-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "segmented-button-sizes-small-full-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "segmented-button-sizes-small-icon-size": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "segmented-button-sizes-large-radius": {
+        "$value": "{base.radius.none}"
+      },
+      "segmented-button-sizes-large-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "segmented-button-sizes-large-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "segmented-button-sizes-large-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "segmented-button-sizes-large-full-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "segmented-button-sizes-large-icon-size": {
+        "$value": "{base.spacing.6xl}"
+      }
+    }
+  }
+}

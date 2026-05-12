@@ -1,0 +1,79 @@
+{
+  "component": {
+    "tabs": {
+      "$type": "dimension",
+      "tabs-items-base-h-padding": {
+        "$value": "{base.spacing.2xl}"
+      },
+      "tabs-items-base-v-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "tabs-items-base-tab-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "tabs-items-base-tab-label-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "tabs-items-base-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "tabs-items-base-basic-active-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "tabs-items-base-basic-vertical-active-gap": {
+        "$value": "{base.spacing.xl}"
+      },
+      "tabs-items-small-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "tabs-items-small-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "tabs-items-small-basic-active-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "tabs-items-small-basic-vertical-active-gap": {
+        "$value": "{base.spacing.l}"
+      },
+      "tabs-items-small-tab-content-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "tabs-items-small-tab-label-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "tabs-items-small-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "tabs-items-large-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "tabs-items-large-v-padding": {
+        "$value": "{base.spacing.2xl}"
+      },
+      "tabs-items-large-basic-active-gap": {
+        "$value": "{base.spacing.xl}"
+      },
+      "tabs-items-large-basic-vertical-active-gap": {
+        "$value": "{base.spacing.2xl}"
+      },
+      "tabs-items-large-tab-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "tabs-items-large-tab-label-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "tabs-items-large-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "tab1": {
+        "$value": false
+      },
+      "tab2": {
+        "$value": false
+      },
+      "tab3": {
+        "$value": false
+      }
+    }
+  }
+}

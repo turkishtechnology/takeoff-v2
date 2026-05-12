@@ -1,0 +1,25 @@
+{
+  "component": {
+    "spinner": {
+      "$type": "dimension",
+      "spinner-size-base": {
+        "$value": "{base.spacing.8xl}"
+      },
+      "spinner-size-small": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "spinner-size-large": {
+        "$value": "{base.spacing.10xl}"
+      },
+      "spinner-size-xlarge": {
+        "$value": "{base.spacing.12xl}"
+      },
+      "spinner-default-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "spinner-centered-gap": {
+        "$value": "{base.spacing.xs}"
+      }
+    }
+  }
+}

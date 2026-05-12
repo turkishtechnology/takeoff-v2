@@ -1,0 +1,537 @@
+---
+title: Accordion
+description:
+  Organizes related content into collapsible sections so users can scan a page
+  and reveal details as needed.
+sidebar_label: Accordion
+sidebar_position: 1
+slug: /components/accordion
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Accordion,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const accordionScope = { Accordion };
+
+<!-- prettier-ignore-start -->
+
+export const accordionDemoCss = String.raw`
+.accordion-demo {
+  width: min(100%, 720px);
+}
+
+.accordion-demo-stack {
+  display: grid;
+  width: min(100%, 720px);
+  gap: 12px;
+}
+
+.accordion-demo-note {
+  width: fit-content;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--static-light);
+  color: var(--text-dark);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 8px 12px;
+}
+
+.accordion-demo-icon {
+  display: inline-grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--primary-base);
+  color: var(--static-white);
+}
+
+.accordion-demo-icon svg {
+  display: block;
+}
+`;
+
+export const playgroundDemo = String.raw`
+<Accordion className="accordion-demo" defaultValue="fare">
+  <Accordion.Item value="fare">
+    <Accordion.Header>
+      <Accordion.Trigger>Fare conditions</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Review refund windows, change fees, and cabin rules before confirming the
+      itinerary.
+    </Accordion.Content>
+  </Accordion.Item>
+
+  <Accordion.Item value="baggage">
+    <Accordion.Header>
+      <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Carry-on, checked baggage, and sports equipment allowances stay grouped in
+      one collapsible panel.
+    </Accordion.Content>
+  </Accordion.Item>
+
+  <Accordion.Item value="check-in">
+    <Accordion.Header>
+      <Accordion.Trigger>Online check-in</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Use the trigger text as the accessible heading, then place rich content in
+      the content part.
+    </Accordion.Content>
+  </Accordion.Item>
+</Accordion>
+`;
+
+export const multipleDemo = String.raw`
+<Accordion
+  multiple
+  className="accordion-demo"
+  defaultValue={['boarding', 'baggage']}
+  mode="compact"
+  type="divided"
+>
+  <Accordion.Item value="boarding">
+    <Accordion.Header>
+      <Accordion.Trigger>Boarding pass</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Show mobile pass availability, airport counter fallbacks, and printable
+      document rules together.
+    </Accordion.Content>
+  </Accordion.Item>
+
+  <Accordion.Item value="baggage">
+    <Accordion.Header>
+      <Accordion.Trigger>Bag drop</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Multiple panels can remain open when the workflow asks users to compare
+      related instructions.
+    </Accordion.Content>
+  </Accordion.Item>
+
+  <Accordion.Item value="security">
+    <Accordion.Header>
+      <Accordion.Trigger>Security notes</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Compact mode keeps dense operational guidance scannable without changing
+      the compound anatomy.
+    </Accordion.Content>
+  </Accordion.Item>
+</Accordion>
+`;
+
+export const controlledDemo = String.raw`
+function ControlledAccordionDemo() {
+  const [value, setValue] = useState('documents');
+
+  return (
+    <div className="accordion-demo-stack">
+      <div className="accordion-demo-note">Open panel: {value}</div>
+      <Accordion
+        className="accordion-demo"
+        value={value}
+        onValueChange={setValue}
+        collapsible
+      >
+        <Accordion.Item value="documents">
+          <Accordion.Header>
+            <Accordion.Trigger>Travel documents</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>
+            Controlled state lets app logic decide which passenger task remains
+            expanded.
+          </Accordion.Content>
+        </Accordion.Item>
+
+        <Accordion.Item value="seat">
+          <Accordion.Header>
+            <Accordion.Trigger>Seat selection</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>
+            Pair value with onValueChange when the open panel should
+            sync with route state, analytics, or form progress.
+          </Accordion.Content>
+        </Accordion.Item>
+      </Accordion>
+    </div>
+  );
+}
+
+render(<ControlledAccordionDemo />);
+`;
+
+export const customIconsDemo = String.raw`
+const ExpandIcon = () => (
+  <span className="accordion-demo-icon" aria-hidden="true">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+    >
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  </span>
+);
+
+const CollapseIcon = () => (
+  <span className="accordion-demo-icon" aria-hidden="true">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+    >
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  </span>
+);
+
+render(
+  <Accordion
+    arrowPosition="left"
+    className="accordion-demo accordion-demo-large"
+    collapseIcon={<CollapseIcon />}
+    defaultValue="service"
+    expandIcon={<ExpandIcon />}
+    size="large"
+  >
+    <Accordion.Item value="service">
+      <Accordion.Header level={2}>
+        <Accordion.Trigger>Service options</Accordion.Trigger>
+      </Accordion.Header>
+      <Accordion.Content>
+        Custom icons are decorative and stay inside Accordion.Trigger, so the
+        public anatomy remains Item, Header, Trigger, and Content.
+      </Accordion.Content>
+    </Accordion.Item>
+
+    <Accordion.Item value="support">
+      <Accordion.Header level={2}>
+        <Accordion.Trigger>Support channels</Accordion.Trigger>
+      </Accordion.Header>
+      <Accordion.Content>
+        Use arrowPosition when the surrounding layout expects the disclosure
+        affordance before the label.
+      </Accordion.Content>
+    </Accordion.Item>
+  </Accordion>,
+);
+`;
+
+export const disabledDemo = String.raw`
+<Accordion className="accordion-demo" defaultValue="open">
+  <Accordion.Item value="open">
+    <Accordion.Header>
+      <Accordion.Trigger>Refundable fares</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Active items respond to click and keyboard activation as usual.
+    </Accordion.Content>
+  </Accordion.Item>
+
+  <Accordion.Item value="locked" disabled>
+    <Accordion.Header>
+      <Accordion.Trigger>Loyalty upgrades (coming soon)</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Disabled items render a disabled trigger and ignore both pointer and
+      keyboard activation.
+    </Accordion.Content>
+  </Accordion.Item>
+</Accordion>
+`;
+
+export const hideArrowsDemo = String.raw`
+<Accordion className="accordion-demo" hideArrows>
+  <Accordion.Item value="info">
+    <Accordion.Header>
+      <Accordion.Trigger>Travel insurance options</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      hideArrows removes the auto-rendered arrow when the surrounding layout
+      already telegraphs disclosure.
+    </Accordion.Content>
+  </Accordion.Item>
+  <Accordion.Item value="contact">
+    <Accordion.Header>
+      <Accordion.Trigger>Customer support hours</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Trigger semantics, focus, and keyboard navigation stay intact even
+      without the visual indicator.
+    </Accordion.Content>
+  </Accordion.Item>
+</Accordion>
+`;
+
+export const forceMountDemo = String.raw`
+<Accordion className="accordion-demo">
+  <Accordion.Item value="search">
+    <Accordion.Header>
+      <Accordion.Trigger>Search-friendly content</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content forceMount>
+      Use forceMount when in-page search must reach the panel body even when
+      the section is collapsed.
+    </Accordion.Content>
+  </Accordion.Item>
+  <Accordion.Item value="default">
+    <Accordion.Header>
+      <Accordion.Trigger>Default mounting</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Without forceMount the panel mounts only while open, keeping the DOM
+      lean.
+    </Accordion.Content>
+  </Accordion.Item>
+</Accordion>
+`;
+
+<!-- prettier-ignore-end -->
+
+# Accordion
+
+`Accordion` organizes related content into collapsible sections so users can
+scan dense pages and open the details they need. Keep behavior props on the root
+so Spar owns the open/closed state model.
+
+## Usage
+
+```tsx
+import { Accordion } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Accordion>
+  <Accordion.Item>
+    <Accordion.Header>
+      <Accordion.Trigger />
+    </Accordion.Header>
+    <Accordion.Content />
+  </Accordion.Item>
+</Accordion>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  cssCode={accordionDemoCss}
+  previewMinHeight={360}
+  previewWrapper={ReactSparDemoRoot}
+  scope={accordionScope}
+/>
+
+## Multiple Panels
+
+<LiveCode
+  code={multipleDemo}
+  cssCode={accordionDemoCss}
+  editable={false}
+  previewMinHeight={360}
+  previewWrapper={ReactSparDemoRoot}
+  scope={accordionScope}
+/>
+
+## Controlled
+
+<LiveCode
+  code={controlledDemo}
+  cssCode={accordionDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={320}
+  previewWrapper={ReactSparDemoRoot}
+  scope={accordionScope}
+/>
+
+## Custom Arrows
+
+<LiveCode
+  code={customIconsDemo}
+  cssCode={accordionDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={300}
+  previewWrapper={ReactSparDemoRoot}
+  scope={accordionScope}
+/>
+
+## Disabled Item
+
+<LiveCode
+  code={disabledDemo}
+  cssCode={accordionDemoCss}
+  editable={false}
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={accordionScope}
+/>
+
+## Hide Arrows
+
+<LiveCode
+  code={hideArrowsDemo}
+  cssCode={accordionDemoCss}
+  editable={false}
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={accordionScope}
+/>
+
+## Force-Mounted Content
+
+<LiveCode
+  code={forceMountDemo}
+  cssCode={accordionDemoCss}
+  editable={false}
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={accordionScope}
+/>
+
+## Accessibility & Keyboard
+
+- Each `Accordion.Trigger` renders a native `<button>` and exposes
+  `aria-expanded` plus `aria-controls` pointing at its panel.
+- Each `Accordion.Content` is a `role="region"` labelled by the matching trigger
+  via `aria-labelledby`.
+- `Accordion.Header` renders an `h1`–`h6` heading; pick the level that fits the
+  surrounding document outline.
+- Stable trigger / panel ids derive from the `id` set on `Accordion.Item`;
+  override there if you need deterministic markup.
+
+| Key                                 | Behavior                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Toggle the focused trigger.                                             |
+| <kbd>↓</kbd> / <kbd>↑</kbd>         | Move focus to the next / previous trigger (vertical orientation).       |
+| <kbd>→</kbd> / <kbd>←</kbd>         | Move focus to the next / previous trigger (`orientation="horizontal"`). |
+| <kbd>Home</kbd> / <kbd>End</kbd>    | Move focus to the first / last trigger.                                 |
+
+Disabled items skip both pointer and keyboard activation and surface
+`data-disabled` on the item root for theme recipes.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Accordion {#accordion}
+
+See
+[Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion)
+for primitive behavior.
+
+#### Props {#accordion-props}
+
+| Name                               | Type                                                                                | Default                          | Description                                                         |
+| ---------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------- |
+| <ApiBadge label="children" />      | <code>React.ReactNode</code>                                                        | -                                | `Accordion.Item` elements rendered inside the disclosure container. |
+| <ApiBadge label="type" />          | <code>AccordionType</code>                                                          | 'grouped'                        | Visual grouping.                                                    |
+| <ApiBadge label="mode" />          | <code>AccordionMode</code>                                                          | 'default'                        | Density mode. Pairs with any `AccordionType`.                       |
+| <ApiBadge label="size" />          | <code>AccordionSize</code>                                                          | 'base'                           | Size scale.                                                         |
+| <ApiBadge label="arrowPosition" /> | <code>AccordionArrowPosition</code>                                                 | 'right'                          | Position of the auto-rendered arrow inside each trigger.            |
+| <ApiBadge label="hideArrows" />    | <code>boolean</code>                                                                | false                            | Hide the auto-rendered arrow on every trigger.                      |
+| <ApiBadge label="expandIcon" />    | <code>React.ReactNode</code>                                                        | a built-in chevron pointing down | Visual content for the arrow when an item is collapsed.             |
+| <ApiBadge label="collapseIcon" />  | <code>React.ReactNode</code>                                                        | a built-in chevron pointing up   | Visual content for the arrow when an item is expanded.              |
+| <ApiBadge label="classNames" />    | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -                                | Per-slot class name overrides.                                      |
+| <ApiBadge label="slotProps" />     | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -                                | Per-slot HTML attribute overrides.                                  |
+| <ApiBadge label="className" />     | <code>string</code>                                                                 | -                                | Appends custom classes to the root slot of this part.               |
+
+#### Data attributes {#accordion-data-attributes}
+
+| Attribute             | Applied when | Purpose                                                                                                |
+| --------------------- | ------------ | ------------------------------------------------------------------------------------------------------ |
+| `data-slot="root"`    | Always       | Stable selector for wrapper styling on the root slot.                                                  |
+| `data-mode`           | Always       | Reflects the resolved `mode` prop. Theme recipes can scope per-mode rules without reading React props. |
+| `data-size`           | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants.                            |
+| `data-arrow-position` | Always       | Reflects `arrowPosition`. Theme recipes can flip arrow alignment without reading the React prop.       |
+
+### Accordion.Item {#accordion-item}
+
+See
+[Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion)
+for primitive behavior.
+
+#### Data attributes {#accordion-item-data-attributes}
+
+| Attribute             | Applied when    | Purpose                                                                                                |
+| --------------------- | --------------- | ------------------------------------------------------------------------------------------------------ |
+| `data-slot="root"`    | Always          | Stable selector for wrapper styling on the root slot.                                                  |
+| `data-type`           | Always          | Reflects the resolved `type` prop. Theme recipes can target items per type.                            |
+| `data-mode`           | Always          | Reflects the resolved `mode` prop. Theme recipes can scope per-mode rules without reading React props. |
+| `data-size`           | Always          | Reflects the resolved `size` prop so theme recipes can scope size variants.                            |
+| `data-state="open"`   | When expanded.  | Spar open-state hook.                                                                                  |
+| `data-state="closed"` | When collapsed. | Spar closed-state hook.                                                                                |
+
+### Accordion.Header {#accordion-header}
+
+See
+[Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion)
+for primitive behavior.
+
+#### Data attributes {#accordion-header-data-attributes}
+
+| Attribute             | Applied when    | Purpose                                               |
+| --------------------- | --------------- | ----------------------------------------------------- |
+| `data-slot="root"`    | Always          | Stable selector for wrapper styling on the root slot. |
+| `data-state="open"`   | When expanded.  | Spar open-state hook.                                 |
+| `data-state="closed"` | When collapsed. | Spar closed-state hook.                               |
+
+### Accordion.Trigger {#accordion-trigger}
+
+See
+[Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion)
+for primitive behavior.
+
+#### Props {#accordion-trigger-props}
+
+| Name                            | Type                                                                                              | Default | Description                                                                                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                                      | -       | Accessible label for the trigger button.                                                                                                      |
+| <ApiBadge label="icon" />       | <code>React.ReactNode</code>                                                                      | -       | Leading icon rendered before the title. The wrapper node (class + `data-slot`) is invariant — only the icon node itself is consumer-supplied. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;AccordionTriggerSlot, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;AccordionTriggerSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                            |
+| <ApiBadge label="className" />  | <code>string</code>                                                                               | -       | Appends custom classes to the root slot of this part.                                                                                         |
+
+#### Data attributes {#accordion-trigger-data-attributes}
+
+| Attribute             | Applied when    | Purpose                                               |
+| --------------------- | --------------- | ----------------------------------------------------- |
+| `data-slot="root"`    | Always          | Stable selector for wrapper styling on the root slot. |
+| `data-state="open"`   | When expanded.  | Spar open-state hook.                                 |
+| `data-state="closed"` | When collapsed. | Spar closed-state hook.                               |
+
+### Accordion.Content {#accordion-content}
+
+See
+[Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion)
+for primitive behavior.
+
+#### Data attributes {#accordion-content-data-attributes}
+
+| Attribute             | Applied when    | Purpose                                               |
+| --------------------- | --------------- | ----------------------------------------------------- |
+| `data-slot="root"`    | Always          | Stable selector for wrapper styling on the root slot. |
+| `data-state="open"`   | When expanded.  | Spar open-state hook.                                 |
+| `data-state="closed"` | When collapsed. | Spar closed-state hook.                               |
+
+{/* api-tables:end */}

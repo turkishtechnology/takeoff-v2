@@ -1,0 +1,55 @@
+{
+  "name": "@takeoff-design/tokens",
+  "version": "0.1.0",
+  "description": "Design tokens, CSS variables, SCSS, JS exports, and component recipe styles for Takeoff Design.",
+  "type": "module",
+  "author": "Turkish Technology Frontend Infrastructure Team <takeoffui@thy.com>",
+  "homepage": "https://takeoffui.com",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/turkishtechnology/takeoff-design.git",
+    "directory": "packages/tokens"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/js/default/tokens.mjs"
+    },
+    "./js/*": "./dist/js/*",
+    "./scss/*": "./dist/scss/*",
+    "./css/*": {
+      "style": "./dist/css/*",
+      "default": "./dist/css/*"
+    },
+    "./tailwind/theme": {
+      "style": "./dist/tailwind/theme.css",
+      "default": "./dist/tailwind/theme.css"
+    },
+    "./tailwind/*": "./dist/tailwind/*",
+    "./fonts.css": {
+      "style": "./dist/css/fonts.css",
+      "default": "./dist/css/fonts.css"
+    }
+  },
+  "scripts": {
+    "sync": "node scripts/sync-figma.mjs",
+    "build": "node scripts/build-tokens.mjs",
+    "validate": "node scripts/validate-tokens.mjs",
+    "test": "vitest run",
+    "pack:check": "node ../../tools/check-package-pack.mjs tokens"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "devDependencies": {
+    "sass": "^1.98.0",
+    "style-dictionary": "4",
+    "vitest": "^4.1.2"
+  }
+}

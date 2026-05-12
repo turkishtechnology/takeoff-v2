@@ -1,0 +1,16 @@
+{
+  "family": {
+    "title": {
+      "$value": "TK DISPLAY"
+    },
+    "subheading": {
+      "$value": "TK Text"
+    },
+    "label": {
+      "$value": "TK Text"
+    },
+    "body": {
+      "$value": "TK Text"
+    }
+  }
+}

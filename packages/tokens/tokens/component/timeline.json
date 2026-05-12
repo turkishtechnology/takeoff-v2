@@ -1,0 +1,22 @@
+{
+  "component": {
+    "timeline": {
+      "$type": "dimension",
+      "h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "content-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "text-gap": {
+        "$value": "{base.spacing.m-base}"
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "effect": {
+    "$type": "shadow",
+    "effect-1-default-xl": {
+      "$value": "0px 2px 2px -1px var(--shadow-black-alpha-darkest), 0px 6px 12px -2px var(--shadow-black-alpha-darkest), 0px 8px 20px 0px var(--shadow-black-alpha-darkest)"
+    },
+    "effect-1-default-lg": {
+      "$value": "0px 2px 2px -1px var(--shadow-black-alpha-dark), 0px 6px 12px -2px var(--shadow-black-alpha-dark), 0px 8px 20px 0px var(--shadow-black-alpha-dark)"
+    },
+    "effect-1-default-base": {
+      "$value": "0px 2px 2px -1px var(--shadow-black-alpha-base), 0px 6px 12px -2px var(--shadow-black-alpha-base), 0px 8px 20px 0px var(--shadow-black-alpha-base)"
+    },
+    "effect-1-default-sm": {
+      "$value": "0px 2px 2px -1px var(--shadow-black-alpha-light), 0px 6px 12px -2px var(--shadow-black-alpha-light), 0px 8px 20px 0px var(--shadow-black-alpha-light)"
+    },
+    "effect-1-default-xs": {
+      "$value": "0px 2px 2px -1px var(--shadow-black-alpha-lightest), 0px 6px 12px -2px var(--shadow-black-alpha-lightest), 0px 8px 20px 0px var(--shadow-black-alpha-lightest)"
+    },
+    "effect-1-hover-xl": {
+      "$value": "0px 2px 2px -1px var(--shadow-black-alpha-darkest), 0px 6px 12px -2px var(--shadow-black-alpha-darkest), 0px 8px 20px 0px var(--shadow-black-alpha-darkest)"
+    },
+    "effect-1-hover-lg": {
+      "$value": "0px 2px 2px -1px var(--shadow-black-alpha-dark), 0px 6px 12px 2px var(--shadow-black-alpha-dark), 0px 8px 20px 4px var(--shadow-black-alpha-dark)"
+    },
+    "effect-1-hover-base": {
+      "$value": "0px 2px 2px -1px var(--shadow-black-alpha-base), 0px 6px 12px 2px var(--shadow-black-alpha-base), 0px 8px 20px 4px var(--shadow-black-alpha-base)"
+    },
+    "effect-1-hover-sm": {
+      "$value": "0px 2px 2px -1px var(--shadow-black-alpha-light), 0px 6px 12px 2px var(--shadow-black-alpha-light), 0px 8px 20px 4px var(--shadow-black-alpha-light)"
+    },
+    "effect-1-hover-xs": {
+      "$value": "0px 2px 2px -1px var(--shadow-black-alpha-lightest), 0px 6px 12px 2px var(--shadow-black-alpha-lightest), 0px 8px 20px 4px var(--shadow-black-alpha-lightest)"
+    },
+    "effect-2-default-xl": {
+      "$value": "0px 0px 20px 3px var(--shadow-black-alpha-darkest)"
+    },
+    "effect-2-default-lg": {
+      "$value": "0px 0px 20px 3px var(--shadow-black-alpha-dark)"
+    },
+    "effect-2-default-base": {
+      "$value": "0px 0px 20px 3px var(--shadow-black-alpha-base)"
+    },
+    "effect-2-default-sm": {
+      "$value": "0px 0px 20px 3px var(--shadow-black-alpha-light)"
+    },
+    "effect-2-default-xs": {
+      "$value": "0px 0px 20px 6px var(--shadow-black-alpha-lightest)"
+    },
+    "effect-2-hover-xl": {
+      "$value": "0px 0px 20px 8px var(--shadow-black-alpha-darkest)"
+    },
+    "effect-2-hover-lg": {
+      "$value": "0px 0px 20px 8px var(--shadow-black-alpha-dark)"
+    },
+    "effect-2-hover-base": {
+      "$value": "0px 0px 20px 8px var(--shadow-black-alpha-base)"
+    },
+    "effect-2-hover-sm": {
+      "$value": "0px 0px 20px 8px var(--shadow-black-alpha-light)"
+    },
+    "effect-2-hover-xs": {
+      "$value": "0px 0px 20px 8px var(--shadow-black-alpha-lightest)"
+    },
+    "primary-focus": {
+      "$value": "0px 0px 0px 2px var(--static-light), 0px 0px 0px 4px var(--primary-light)"
+    },
+    "secondary-focus": {
+      "$value": "0px 0px 0px 2px var(--static-light), 0px 0px 0px 4px var(--states-info-base)"
+    },
+    "info-focus": {
+      "$value": "0px 0px 0px 2px var(--static-light), 0px 0px 0px 4px var(--states-info-sub-base)"
+    },
+    "secondary-light-focus": {
+      "$value": "0px 0px 0px 1px var(--static-light), 0px 0px 0px 2px var(--states-info-base)"
+    },
+    "neutral-focus": {
+      "$value": "0px 0px 0px 2px var(--static-light), 0px 0px 0px 4px var(--background-light)"
+    }
+  }
+}

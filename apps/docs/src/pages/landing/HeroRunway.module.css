@@ -211,13 +211,15 @@
 .install {
   display: flex;
   align-items: center;
+  align-self: flex-start;
   gap: 14px;
   padding: 10px 14px;
   background: var(--runway-bg-1, #111116);
   border: 1px solid var(--runway-surface-dark-border, #24242e);
   border-radius: 10px;
-  width: min(100%, 36rem);
-  max-width: 100%;
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: min(100%, 36rem);
   font-family: var(--runway-type-mono-family);
   font-size: 13px;
   color: var(--runway-ink-dim, #b8b8c2);
@@ -232,8 +234,13 @@
 
 .installCmd {
   display: block;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
   color: var(--runway-ink, #f6f6f8);
   white-space: nowrap;
   overflow-x: auto;
@@ -472,6 +479,19 @@
     letter-spacing: -1.5px;
   }
   .install {
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    gap: 10px;
+    padding: 10px 12px;
     font-size: 12px;
+  }
+
+  .installCmd {
+    flex: 1 1 auto;
+  }
+
+  .installCopy {
+    margin-left: 0;
   }
 }

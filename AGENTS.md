@@ -1,66 +1,59 @@
 # AGENTS.md
 
-## Project overview
+## Repository purpose
 
-- This repository is the monorepo for `@takeoff-ui/react-spar`.
-- Primary package code lives in `packages/react-spar/`.
-- Public docs live in `apps/docs/`.
-- Local smoke/integration app lives in `apps/react-app/`.
+This repository builds `@takeoff-ui/react-spar`, a thin React wrapper layer for
+Takeoff components built on top of Spar primitives.
 
-## Canonical contract
+This package should not hide upstream Spar behavior problems.
 
-Before proposing API changes or new customization surfaces, consult:
+If a behavior belongs in Spar, fix Spar first.
 
-- `docs/contract-model.md` — parity, divergence taxonomy, breaking-change rules
-- `docs/api-decision-framework.md` — per-component API decision template
-- `docs/decisions/README.md` — durable repo-wide decisions (ADRs)
+## Required workflow
 
-Cross-component architectural choices must be recorded as ADRs under
-`docs/decisions/`. Single-component port notes belong with the component, not
-here.
+For component work, use:
 
-## Repository expectations
+```txt
+.agents/skills/takeoff-component-workflow/SKILL.md
+```
 
-- Use `pnpm` for workspace commands.
-- Preserve the React 19-only contract across code, tests, docs, and examples.
-- Treat `takeoff-ui` as a parity reference, not a build dependency.
-- Treat `@turkish-technology/spar` as the only external runtime primitive.
-- Do not introduce bundled component CSS in `@takeoff-ui/react-spar`.
-- Preserve the stable Takeoff parity wrapper surface even when adding React-only
-  customization layers.
-- Treat emitted slot classes and documented `data-*` hooks as styling contract,
-  not incidental implementation detail.
+Before component work, read:
 
-## Skill routing
+```txt
+docs/component-authoring-contract.md
+```
 
-- Use `$generate-component` before scaffolding a new React Spar component.
-- Use `$generate-api-alignment` when creating or refreshing a component API
-  alignment worksheet, especially for scratch ports where the `react-spar`
-  column should stay blank for manual decisions.
-- Use `$takeoff-component-port` when porting, reviewing, or correcting component
-  parity across `takeoff-ui`, `takeoff-design`, `spar`, and `takeoff-spar`.
-- Use `$takeoff-component-port` when deciding whether a component should remain
-  wrapper-only or add `slotProps`, render overrides, or public compound parts.
+## Supported AI commands
 
-## Build and test commands
+```txt
+contract <ComponentName>
+implement <ComponentName>
+review current branch
+fix review blockers only
+final verify
+```
 
-Pure validation boundaries (no codegen, no package builds run as side effects):
+## Non-negotiable rules
 
-- `pnpm check-types` — every package runs `tsc --noEmit` only
-- `pnpm lint` — every package runs `eslint .` only
-- `pnpm --filter @takeoff-ui/react-spar test` — vitest against source
+- No component implementation before a contract.
+- No adapter hooks by default.
+- No `use<Component>Adapter.ts` unless explicitly approved.
+- Fix Spar first when behavior/API belongs to Spar.
+- takeoff-spar should stay thin.
+- Do not expose full Spar props through public wrapper types.
+- Do not expose decorative parts as public compound components by default.
+- Do not create extra markdown architecture files unless explicitly requested.
+- Keep outputs source-backed and concise.
 
-Doc-integrity gate (re-runs codegen and fails on diff in
-`apps/docs/src/docs-files`):
+## Validation
 
-- `pnpm --filter docs verify:generated-api`
+Use the repo's package scripts for validation.
 
-Prep + build (where docs codegen and package builds intentionally run):
+At minimum, component work should run:
 
-- `pnpm install`
-- `pnpm dev:docs` / `pnpm dev:react`
-- `pnpm --filter @takeoff-ui/react-spar build`
-- `pnpm build` (full workspace build via turbo)
+```txt
+pnpm --filter @takeoff-ui/react-spar check-types
+pnpm --filter @takeoff-ui/react-spar test
+```
 
-See [README — Validation workflow](./README.md#validation-workflow) for the
-canonical contract on what each command guarantees.
+If Spar was changed, also run Spar package tests/typecheck.

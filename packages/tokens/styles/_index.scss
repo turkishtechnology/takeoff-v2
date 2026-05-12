@@ -1,0 +1,40 @@
+// Takeoff Design System — compiled style output
+
+@forward 'foundations';
+
+@use 'recipes/button';
+@use 'recipes/accordion';
+@use 'recipes/dialog';
+@use 'recipes/input';
+@use 'recipes/checkbox';
+
+@include button.button-keyframes;
+@include input.input-keyframes;
+
+.tk-button {
+  @include button.button;
+}
+
+.tk-accordion {
+  @include accordion.accordion;
+}
+
+.tk-accordion-item {
+  @include accordion.accordion-item;
+}
+
+.tk-dialog-mask {
+  @include dialog.dialog-mask;
+}
+
+.tk-dialog {
+  @include dialog.dialog;
+}
+
+.tk-input {
+  @include input.input;
+}
+
+.tk-checkbox {
+  @include checkbox.checkbox;
+}

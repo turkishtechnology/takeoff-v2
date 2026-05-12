@@ -1,0 +1,38 @@
+{
+  "radius": {
+    "$type": "dimension",
+    "s": {
+      "$value": "6px"
+    },
+    "m-base": {
+      "$value": "8px"
+    },
+    "xxs": {
+      "$value": "2px"
+    },
+    "l": {
+      "$value": "12px"
+    },
+    "xl": {
+      "$value": "16px"
+    },
+    "2xl": {
+      "$value": "20px"
+    },
+    "3xl": {
+      "$value": "24px"
+    },
+    "4xl": {
+      "$value": "32px"
+    },
+    "full": {
+      "$value": "999px"
+    },
+    "none": {
+      "$value": "0px"
+    },
+    "xs": {
+      "$value": "4px"
+    }
+  }
+}

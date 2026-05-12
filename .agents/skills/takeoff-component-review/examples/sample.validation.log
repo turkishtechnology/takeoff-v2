@@ -1,0 +1,6 @@
+pnpm install
+pnpm exec vitest run example-component
+pnpm exec vitest run
+pnpm exec tsc --noEmit
+pnpm exec eslint .
+pnpm build

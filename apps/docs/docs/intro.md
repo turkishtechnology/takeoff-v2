@@ -17,12 +17,11 @@ React 19 peers.
 token package for component CSS.
 
 ```bash
-pnpm add @takeoff-ui/react-spar @takeoff-design/tokens @turkish-technology/spar react react-dom
+pnpm add @takeoff-ui/react-spar @takeoff-design/tokens react react-dom
 ```
 
 ## Start Here
 
-- [Installation](/docs/installation) — add `@takeoff-ui/react-spar` and its peer
-  packages to your project
+- [Installation](/docs/installation) — add `@takeoff-ui/react-spar` and its
+  token peer to your project
 - [Roadmap](/docs/roadmap) — component port status and release readiness
-- [Theme Studio](/theme-studio) — live-edit Takeoff tokens and export a CSS file

@@ -1,25 +1,62 @@
-import type { ElementType } from 'react';
+import { Accordion as SparAccordion, type AccordionProps as SparAccordionProps } from '@turkish-technology/spar';
 
-import { Accordion as SparAccordion } from '@turkish-technology/spar';
-
-import { resolveSlotClass } from '../../customization';
+import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { AccordionBase } from './base';
-import { AccordionVariantProvider } from './context';
-import { DEFAULT_SIZE, DEFAULT_TYPE } from './defaults';
+import { AccordionProvider } from './context';
+import { DEFAULT_ARROW_POSITION, DEFAULT_MODE, DEFAULT_SIZE, DEFAULT_TYPE } from './defaults';
 import type { AccordionProps } from './types';
 
-export const Accordion = <T extends ElementType = 'div'>(props: AccordionProps<T>) => {
+export const Accordion = (props: AccordionProps) => {
   const theme = useComponentTheme('Accordion');
-  const { type = DEFAULT_TYPE, size = DEFAULT_SIZE, className, children, ...rest } = { ...theme?.defaultProps, ...props } as AccordionProps<T>;
+
+  const {
+    type = DEFAULT_TYPE,
+    mode = DEFAULT_MODE,
+    size = DEFAULT_SIZE,
+    arrowPosition = DEFAULT_ARROW_POSITION,
+    hideArrows = false,
+    expandIcon,
+    collapseIcon,
+    multiple = false,
+    collapsible = true,
+    disabled = false,
+    children,
+    ...behavior
+  } = props;
+
+  const { rootAttrs, rest } = composeRootAttrs(AccordionBase, behavior as AccordionProps, theme, {
+    stateAttrs: {
+      'data-mode': mode,
+      'data-size': size,
+      'data-arrow-position': arrowPosition,
+      'data-disabled': disabled ? '' : undefined,
+    },
+  });
 
   return (
-    <AccordionVariantProvider value={{ type, size }}>
-      <SparAccordion {...(rest as AccordionProps<T>)} className={resolveSlotClass(AccordionBase.classes.root, className, theme?.className)} data-slot="root">
+    <AccordionProvider
+      value={{
+        type,
+        mode,
+        size,
+        arrowPosition,
+        hideArrows,
+        expandIcon,
+        collapseIcon,
+      }}
+    >
+      <SparAccordion
+        {...(rest as SparAccordionProps)}
+        multiple={multiple}
+        collapsible={collapsible}
+        disabled={disabled}
+        {...rootAttrs}
+      >
         {children}
       </SparAccordion>
-    </AccordionVariantProvider>
+    </AccordionProvider>
   );
 };
 

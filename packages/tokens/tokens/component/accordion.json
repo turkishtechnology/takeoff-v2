@@ -1,0 +1,37 @@
+{
+  "component": {
+    "accordion": {
+      "$type": "dimension",
+      "accordion-base-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "accordion-base-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "accordion-base-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "accordion-base-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "accordion-base-content-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "accordion-large-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "accordion-large-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "accordion-large-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "accordion-large-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "accordion-large-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      }
+    }
+  }
+}

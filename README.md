@@ -28,45 +28,25 @@ Monorepo for `@takeoff-ui/react-spar` — a React 19 component library that wrap
 - `packages/react-spar` — `@takeoff-ui/react-spar`, the published package
 - `apps/docs` — Docusaurus site for public docs and component demos
 - `apps/react-app` — local integration / smoke app
-- `.agents/skills` — repo-local Codex skills (canonical discovery path)
-- `docs/proposals` — open research and design proposals awaiting resolution
+- `.agents/skills` — repo-local skills (component workflow, changelog)
+- `docs/` — component authoring contract
 - `.changeset` — changesets-driven release automation
 
 ## Documentation
 
-Repo contract (canonical):
-
-- [Source-of-truth matrix](./docs/source-of-truth.md) — where every claim about
-  this repo is authoritatively stated
-- [Contract model](./docs/contract-model.md) — parity rules, divergence
-  taxonomy, breaking-change and migration-safety definitions
-- [Public API decision framework](./docs/api-decision-framework.md) — how
-  per-component API shapes are decided
-- [Architectural decisions](./docs/decisions/README.md) — durable repo-wide
-  decision records
-
-Live reference:
-
+- [Component authoring contract](./docs/component-authoring-contract.md) — layer
+  responsibilities, the no-adapter-hook rule, the upstream-first rule, public
+  compound policy, and the review checklist
 - [Coding standards](./packages/react-spar/docs/CODING_STANDARDS.md)
 - [Data attribute vocabulary](./packages/react-spar/docs/DATA_ATTRIBUTE_VOCABULARY.md)
 
-Current component customization and compound-surface decisions belong in those
-reference docs plus the internal component-port skill resources.
+AI workflows:
 
-Agent skills:
-
-- [Component port skill](./.agents/skills/takeoff-component-port/SKILL.md)
-- [Generate component skill](./.agents/skills/generate-component/SKILL.md)
-
-Open work:
-
-- [Monorepo professionalization execution plan](./docs/proposals/monorepo-professionalization-execution-plan.md)
-  — the active milestone tracker. The only doc under `docs/proposals/`.
-
-Archive (frozen historical narratives, never trust over live code):
-
-- [Documentation archive](./docs/archive/README.md) — Phase 1 / Phase 2
-  implementation checklists.
+- [`.agents/skills/takeoff-component-workflow`](./.agents/skills/takeoff-component-workflow/SKILL.md)
+  — contract / implement / review / fix-blockers / final-verify modes for
+  component work
+- [`.agents/skills/generate-changelog`](./.agents/skills/generate-changelog/SKILL.md)
+  — append a release entry to the docs changelog
 
 ## Getting started
 

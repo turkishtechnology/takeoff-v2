@@ -1,0 +1,43 @@
+{
+  "component": {
+    "calendar": {
+      "$type": "dimension",
+      "calendar-header-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "calendar-header-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "calendar-header-selector-gap": {
+        "$value": "{base.spacing.xl}"
+      },
+      "calendar-header-actions-gap": {
+        "$value": "{base.spacing.xl}"
+      },
+      "calendar-activity-h-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "calendar-activity-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "calendar-activity-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "calendar-month-cell-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "calendar-month-cell-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "calendar-week-cell-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "calendar-week-cell-v-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "calendar-week-cell-gap": {
+        "$value": "{base.spacing.xs}"
+      }
+    }
+  }
+}

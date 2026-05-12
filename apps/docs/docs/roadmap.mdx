@@ -9,18 +9,25 @@ slug: /roadmap
 # Roadmap
 
 We ship components one at a time, fully tested and fully documented, against the
-gate in
-[`docs/component-port-readiness.md`](https://github.com/turkishtechnology/takeoff-spar/blob/main/docs/component-port-readiness.md).
+[`component authoring contract`](https://github.com/turkishtechnology/takeoff-spar/blob/main/docs/component-authoring-contract.md).
 
 ## Shipped
 
 | Component | Shipped    | Status |
 | --------- | ---------- | ------ |
 | Accordion | 2026-04-13 | Stable |
-| Dialog    | (early)    | Stable |
-| Input     | 2026-04-16 | Stable |
-| Checkbox  | 2026-04-17 | Stable |
-| Button    | 2026-04-18 | Stable |
+
+## In flight (active port batch)
+
+These components are candidates for the next source-backed contracts. Their
+public API and ownership decisions should be finalized before implementation.
+
+| Component | Status          | Notes                                                                                                        |
+| --------- | --------------- | ------------------------------------------------------------------------------------------------------------ |
+| Button    | Contract needed | New port from scratch.                                                                                       |
+| Dialog    | Contract needed | New port from scratch. Compound-only; `header`/`subheader`/`showCloseButton` intentionally omitted.          |
+| Checkbox  | Refactor        | Compound surface (`Checkbox.Label`, `Checkbox.Description`, `Checkbox.Icon`); flat content props deprecated. |
+| Input     | Refactor        | Compound surface; render-overrides deprecated; counter/chips/password/mask split into siblings.              |
 
 ## In the hangar (priority order)
 
@@ -46,7 +53,7 @@ or a consumer team signals a blocker.
 
 ## How decisions happen
 
-Every new component runs through the
-[API decision framework](https://github.com/turkishtechnology/takeoff-spar/blob/main/docs/api-decision-framework.md)
-before a line of code is written. The framework answers: leaf or compound, which
-parts are real, which props align with Core, which `data-*` hooks are emitted.
+Every new component starts with a source-backed contract before a line of code
+is written. The contract answers: leaf or compound, which parts are real, which
+props align with Core, which `data-*` hooks are emitted, and which behavior
+belongs upstream in Spar.

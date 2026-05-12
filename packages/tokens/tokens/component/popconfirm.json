@@ -1,0 +1,25 @@
+{
+  "component": {
+    "popconfirm": {
+      "$type": "dimension",
+      "popconfirm-base-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "popconfirm-base-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "popconfirm-base-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "popconfirm-base-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "popconfirm-base-text-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "popconfirm-base-button-group-gap": {
+        "$value": "{base.spacing.m-base}"
+      }
+    }
+  }
+}

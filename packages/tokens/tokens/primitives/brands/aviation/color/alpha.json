@@ -1,0 +1,28 @@
+{
+  "alpha": {
+    "alpha-brand-primary-500-24": {
+      "$value": "#1D4ED83D",
+      "$type": "color"
+    },
+    "alpha-brand-primary-500-16": {
+      "$value": "#1D4ED829",
+      "$type": "color"
+    },
+    "alpha-brand-primary-500-8": {
+      "$value": "#1D4ED814",
+      "$type": "color"
+    },
+    "alpha-brand-primary-500-4": {
+      "$value": "#1D4ED80A",
+      "$type": "color"
+    },
+    "alpha-brand-primary-500-2": {
+      "$value": "#1D4ED805",
+      "$type": "color"
+    },
+    "alpha-brand-primary-500-48": {
+      "$value": "#1D4ED87A",
+      "$type": "color"
+    }
+  }
+}

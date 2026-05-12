@@ -10,6 +10,12 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Components',
+      collapsed: false,
+      items: ['components/accordion'],
+    },
+    {
+      type: 'category',
       label: 'Discover',
       collapsed: false,
       items: ['roadmap', 'contributing'],

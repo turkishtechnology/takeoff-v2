@@ -11,6 +11,10 @@ identifiers. The corresponding `data-slot` value in rendered DOM uses
 
 Example: `leadingIcon` (key) → `data-slot="leading-icon"` (DOM).
 
+`createComponentBase().getSlotProps(...)` performs this conversion. Component
+wrappers should not hand-write `data-slot` values unless a lower-level primitive
+already owns the slot node.
+
 ## Anatomy hooks
 
 | Attribute   | Purpose                                      | Convention                                                     |
@@ -29,15 +33,18 @@ Example: `leadingIcon` (key) → `data-slot="leading-icon"` (DOM).
 
 ## State hooks
 
-Boolean presence attributes: empty string when active, omitted when inactive.
+Boolean presence attributes use an empty string when active and are omitted when
+inactive. Primitive-owned finite states use string values.
 
-| Attribute       | Meaning                       | Scope                                                                                                                                    |
-| --------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `data-disabled` | Component is disabled         | Root                                                                                                                                     |
-| `data-loading`  | Component is in loading state | Root                                                                                                                                     |
-| `data-open`     | Disclosure item is expanded   | Root (primary). Content slot carries a legacy copy for existing CSS selectors; new components should not duplicate state on child slots. |
-| `data-selected` | Item is selected              | Root (reserved for future use)                                                                                                           |
-| `data-invalid`  | Input is invalid              | Root (reserved for future use)                                                                                                           |
+| Attribute             | Meaning                       | Values       | Scope                                    |
+| --------------------- | ----------------------------- | ------------ | ---------------------------------------- |
+| `data-disabled`       | Component is disabled         | presence     | Root                                     |
+| `data-loading`        | Component is in loading state | presence     | Root                                     |
+| `data-state='open'`   | Disclosure item is open       | presence     | Spar Accordion item/header/trigger/panel |
+| `data-state='closed'` | Disclosure item is closed     | presence     | Spar Accordion item/header/trigger/panel |
+| `data-state`          | Primitive finite state        | string value | Primitive-owned state                    |
+| `data-selected`       | Item is selected              | presence     | Root (reserved for future use)           |
+| `data-invalid`        | Input is invalid              | presence     | Root (reserved for future use)           |
 
 ## Variant hooks
 
@@ -64,20 +71,19 @@ Boolean presence attributes for layout or content semantics.
 
 ## Compatibility table
 
-| Attribute              | Component             | Classification   | Notes                                                                                                         |
-| ---------------------- | --------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------- |
-| `data-type`            | Button                | keep             | Visual type, distinct from `data-variant`                                                                     |
-| `data-open` on root    | AccordionItem         | keep             | Primary state signal                                                                                          |
-| `data-open` on content | AccordionItem         | legacy-supported | Redundant with root. Kept for existing CSS selectors. New components must not duplicate state on child slots. |
-| `data-icon-kind`       | Button, AccordionItem | keep             | Stable hook for icon styling                                                                                  |
+| Attribute                                 | Component             | Classification | Notes                                     |
+| ----------------------------------------- | --------------------- | -------------- | ----------------------------------------- |
+| `data-type`                               | Button                | keep           | Visual type, distinct from `data-variant` |
+| `data-state='open'`/`data-state='closed'` | AccordionItem         | keep           | Provided by Spar Accordion primitives     |
+| `data-icon-kind`                          | Button, AccordionItem | keep           | Stable hook for icon styling              |
 
 ## Decision rules for new components
 
-1. State on root only. Child slots inherit via CSS selectors
-   (`[data-open] [data-slot="content"]`).
+1. State on root only unless the underlying primitive already owns a state
+   attribute on a child slot.
 2. Boolean states use empty-string presence / absence pattern.
-3. Compound `data-state` values only when multiple mutually exclusive states
-   exist on the same element (no current use case).
+3. Compound `data-state` values are allowed when a primitive already exposes
+   mutually exclusive state on the same element.
 4. Every emitted `data-*` hook must have a real consumer in styling, semantics,
    or docs.
 5. One-off attributes require explicit justification in the component base file.

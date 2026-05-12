@@ -1,0 +1,424 @@
+@use '../abstracts/mixins' as mixins;
+
+// ---------------------------------------------------------------------------
+// Keyframes (emit via @include input-keyframes at root level)
+// ---------------------------------------------------------------------------
+
+@mixin input-keyframes {
+  @keyframes tk-input-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Size mixin — applies size-scoped tokens to label, container, field, prefix
+// ---------------------------------------------------------------------------
+
+@mixin input-size(
+  $height,
+  $container-gap,
+  $input-v-padding,
+  $input-h-padding,
+  $input-gap,
+  $radius,
+  $label-v-padding,
+  $label-h-padding,
+  $label-size,
+  $label-line-height,
+  $field-size,
+  $field-line-height,
+  $icon-size
+) {
+  gap: $container-gap;
+
+  .tk-input-label {
+    font-size: $label-size;
+    line-height: $label-line-height;
+    padding: $label-v-padding $label-h-padding;
+  }
+
+  .tk-input-container {
+    height: $height;
+    gap: $input-gap;
+    padding: $input-v-padding $input-h-padding;
+    border-radius: $radius;
+  }
+
+  .tk-input-field {
+    font-size: $field-size;
+    line-height: $field-line-height;
+  }
+
+  .tk-input-prefix,
+  .tk-input-suffix {
+    font-size: $field-size;
+    line-height: $field-line-height;
+  }
+
+  .tk-input-leading-icon,
+  .tk-input-trailing-icon,
+  .tk-input-clear-button,
+  .tk-input-spinner {
+    width: $icon-size;
+    height: $icon-size;
+    font-size: $icon-size;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Input recipe mixin — apply to .tk-input root
+// ---------------------------------------------------------------------------
+
+@mixin input {
+  font-family: var(--family-body, 'Geologica', sans-serif);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+
+  // ---- Label ----
+
+  .tk-input-label {
+    color: var(--text-darkest);
+    font-weight: 400;
+    cursor: default;
+  }
+
+  .tk-input-asterisk {
+    color: var(--states-danger-base);
+    font-size: var(--desktop-label-s-size);
+    font-weight: 300;
+    line-height: var(--desktop-label-s-line-height);
+    margin-inline-start: 0.125rem;
+  }
+
+  // ---- Container (bordered input row) ----
+
+  .tk-input-container {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid var(--border-light);
+    background-color: var(--static-light);
+    transition:
+      border-color 0.2s ease-in-out,
+      background-color 0.2s ease-in-out;
+  }
+
+  .tk-input-container:hover {
+    background-color: var(--background-lightest);
+  }
+
+  .tk-input-container:focus-within {
+    border-color: var(--states-info-base);
+  }
+
+  .tk-input-container[data-invalid] {
+    border-color: var(--states-danger-base);
+  }
+
+  .tk-input-container[data-disabled] {
+    pointer-events: none;
+    background-color: var(--background-lightest);
+  }
+
+  .tk-input-container[data-readonly] {
+    background-color: var(--background-lightest);
+  }
+
+  &[data-disabled] {
+    .tk-input-label,
+    .tk-input-field {
+      color: var(--text-sub-base);
+    }
+  }
+
+  &[data-readonly] .tk-input-label {
+    color: var(--text-sub-base);
+  }
+
+  // ---- Field (native input) ----
+
+  .tk-input-field {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: var(--text-darkest);
+    font-family: var(--desktop-body-m-base-font, 'Geologica', sans-serif);
+
+    &::placeholder {
+      color: var(--text-sub-base);
+    }
+
+    &:disabled {
+      color: var(--text-sub-base);
+      cursor: not-allowed;
+    }
+
+    &[type='number'] {
+      appearance: none;
+      -moz-appearance: textfield;
+    }
+
+    &[type='number']::-webkit-outer-spin-button,
+    &[type='number']::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &[type='search']::-webkit-search-cancel-button,
+    &[type='search']::-webkit-search-decoration {
+      -webkit-appearance: none;
+    }
+  }
+
+  // ---- Prefix / Suffix ----
+
+  .tk-input-prefix,
+  .tk-input-suffix {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--text-sub-base);
+    font-weight: 300;
+    user-select: none;
+  }
+
+  .tk-input-prefix {
+    position: relative;
+    padding-inline-end: 0.5rem;
+    margin-inline-end: 0.5rem;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: 0;
+      width: 1px;
+      background-color: var(--background-light);
+    }
+  }
+
+  .tk-input-suffix {
+    position: relative;
+    padding-inline-start: 0.5rem;
+    margin-inline-start: 0.5rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      width: 1px;
+      background-color: var(--background-light);
+    }
+  }
+
+  // ---- Icons (leading / trailing) ----
+
+  .tk-input-leading-icon,
+  .tk-input-trailing-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--icon-base);
+    line-height: 1;
+  }
+
+  .tk-input-trailing-icon {
+    margin-inline-start: auto;
+  }
+
+  .tk-input-icon-symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: 1;
+    text-transform: none;
+    white-space: nowrap;
+    direction: ltr;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+  }
+
+  // ---- Clear button ----
+
+  .tk-input-clear-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-inline-start: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--icon-sub-base);
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s ease-in-out;
+
+    &:hover {
+      color: var(--icon-darkest);
+    }
+
+    @include mixins.focus-ring(var(--neutral-focus));
+
+    @include mixins.disabled-state {
+      cursor: not-allowed;
+      color: var(--icon-sub-base);
+      pointer-events: none;
+    }
+  }
+
+  .tk-input-clear-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    line-height: 1;
+  }
+
+  .tk-input-clear-icon-symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: 1;
+    text-transform: none;
+    white-space: nowrap;
+    direction: ltr;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+  }
+
+  // ---- Spinner ----
+
+  .tk-input-spinner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-inline-start: auto;
+    color: var(--icon-sub-base);
+    line-height: 1;
+  }
+
+  .tk-input-default-spinner {
+    box-sizing: border-box;
+    display: inline-block;
+    width: 72%;
+    height: 72%;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 999px;
+    animation: tk-input-spin 0.8s linear infinite;
+  }
+
+  // When clear button or spinner is present, prevent trailing-icon from
+  // also claiming margin-inline-start: auto (first one wins).
+  .tk-input-container:has(.tk-input-clear-button),
+  .tk-input-container:has(.tk-input-spinner) {
+    .tk-input-trailing-icon {
+      margin-inline-start: 0;
+    }
+  }
+
+  // ---- Description / Error message ----
+
+  .tk-input-description,
+  .tk-input-error-message {
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+    font-weight: 400;
+    margin-block-start: var(--spacing-xxs);
+  }
+
+  .tk-input-description {
+    color: var(--text-base);
+  }
+
+  .tk-input-error-message {
+    color: var(--states-danger-base);
+  }
+
+  // ---- Sizes ----
+
+  &[data-size='large'] {
+    @include input-size(
+      3rem,
+      var(--input-external-label-large-container-gap),
+      var(--input-external-label-large-input-v-padding),
+      var(--input-external-label-large-input-h-padding),
+      var(--input-external-label-large-input-gap),
+      var(--input-external-label-large-text-area-radius),
+      var(--input-external-label-large-label-v-padding),
+      var(--input-external-label-large-label-h-padding),
+      var(--desktop-label-l-size),
+      var(--desktop-label-l-line-height),
+      var(--desktop-body-m-base-size),
+      var(--desktop-body-m-base-line-height),
+      var(--input-external-label-large-icon-size)
+    );
+  }
+
+  &[data-size='base'] {
+    @include input-size(
+      2.5rem,
+      var(--input-external-label-base-div-gap),
+      var(--input-external-label-base-input-v-padding),
+      var(--input-external-label-base-input-h-padding),
+      var(--input-external-label-base-input-gap),
+      var(--input-external-label-base-text-area-radius),
+      var(--input-external-label-base-label-v-padding),
+      var(--input-external-label-base-label-h-padding),
+      var(--desktop-label-m-base-size),
+      var(--desktop-label-m-base-line-height),
+      var(--desktop-body-s-size),
+      var(--desktop-body-s-line-height),
+      var(--input-external-label-base-icon-size)
+    );
+  }
+
+  &[data-size='small'] {
+    @include input-size(
+      2rem,
+      var(--input-external-label-small-container-gap),
+      var(--input-external-label-small-input-v-padding),
+      var(--input-external-label-small-input-h-padding),
+      var(--input-external-label-small-input-gap),
+      var(--input-external-label-small-text-area-radius),
+      var(--input-external-label-small-label-v-padding),
+      var(--input-external-label-small-label-h-padding),
+      var(--desktop-label-s-size),
+      var(--desktop-label-s-line-height),
+      var(--desktop-body-xs-size),
+      var(--desktop-body-xs-line-height),
+      var(--input-external-label-small-icon-size)
+    );
+  }
+}

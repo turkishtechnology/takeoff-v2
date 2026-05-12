@@ -251,7 +251,7 @@
 .editorBody {
   padding: 22px 24px;
   font-family: var(--runway-type-mono-family);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.7;
   color: var(--runway-ink-dim);
   overflow-x: auto;
@@ -263,9 +263,12 @@
   margin: 0;
   font-family: inherit;
   color: inherit;
-  background: transparent;
+  background: transparent !important;
   padding: 0;
   white-space: pre;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 @media (max-width: 960px) {

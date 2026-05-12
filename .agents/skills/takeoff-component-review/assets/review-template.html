@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Takeoff component review</title>
+    <style>
+      :root {
+        --bg: #f7f7f8;
+        --panel: #fff;
+        --text: #1f2328;
+        --muted: #667085;
+        --border: #d0d5dd;
+        --soft: #eef2f6;
+        --soft-2: #f9fafb;
+        --code-bg: #101828;
+        --code-text: #f2f4f7;
+        --ok: #0f7b4f;
+        --warn: #a15c00;
+        --bad: #b42318;
+        --info: #175cd3;
+        --shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        line-height: 1.45;
+      }
+      .wrap {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        background: rgba(247, 247, 248, 0.94);
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(10px);
+        z-index: 5;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        margin: 0 0 14px;
+        font-size: 20px;
+      }
+      h3 {
+        margin: 16px 0 8px;
+        font-size: 16px;
+      }
+      p {
+        margin: 8px 0;
+      }
+      code,
+      pre,
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+      }
+      code {
+        background: var(--soft);
+        border-radius: 6px;
+        padding: 1px 5px;
+      }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      nav a,
+      .mini-button {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text);
+        border-radius: 999px;
+        padding: 7px 10px;
+        text-decoration: none;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .mini-button {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      .section {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 22px;
+        margin: 18px 0;
+        box-shadow: var(--shadow);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+      .content-grid {
+        grid-template-columns: repeat(12, 1fr);
+      }
+      .card {
+        background: var(--soft);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px;
+      }
+      .content-grid .card {
+        grid-column: span 4;
+      }
+      .card strong {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 6px;
+      }
+      .card span {
+        font-weight: 800;
+        font-size: 18px;
+        overflow-wrap: anywhere;
+      }
+      .chip {
+        display: inline-flex;
+        border-radius: 999px;
+        padding: 3px 8px;
+        font-size: 12px;
+        font-weight: 800;
+        border: 1px solid var(--border);
+        background: var(--soft);
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .chip.ok {
+        color: var(--ok);
+        background: #ecfdf3;
+        border-color: #abefc6;
+      }
+      .chip.warn {
+        color: var(--warn);
+        background: #fffaeb;
+        border-color: #fedf89;
+      }
+      .chip.bad {
+        color: var(--bad);
+        background: #fef3f2;
+        border-color: #fecdca;
+      }
+      .chip.info {
+        color: var(--info);
+        background: #eff8ff;
+        border-color: #b2ddff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid var(--border);
+        padding: 10px 8px;
+      }
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      .table-scroll {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #fff;
+      }
+      .table-scroll table {
+        min-width: 760px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .issue {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px;
+        margin: 12px 0;
+        background: #fff;
+      }
+      .issue-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      ul {
+        margin: 8px 0;
+        padding-left: 20px;
+      }
+      .content-block {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        margin: 14px 0;
+        background: #fff;
+      }
+      .content-block > h3:first-child {
+        margin-top: 0;
+      }
+      .block-description {
+        color: var(--muted);
+        margin-top: -2px;
+      }
+      .callout {
+        border-left: 4px solid var(--info);
+        background: #eff8ff;
+        padding: 12px 14px;
+        border-radius: 12px;
+        margin: 12px 0;
+      }
+      .callout.warn {
+        border-left-color: var(--warn);
+        background: #fffaeb;
+      }
+      .callout.bad,
+      .callout.danger {
+        border-left-color: var(--bad);
+        background: #fef3f2;
+      }
+      .callout.ok,
+      .callout.success {
+        border-left-color: var(--ok);
+        background: #ecfdf3;
+      }
+      .callout strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+      .code-block {
+        margin: 14px 0;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid #344054;
+        background: var(--code-bg);
+      }
+      .code-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: #1d2939;
+        color: var(--code-text);
+        border-bottom: 1px solid #344054;
+      }
+      .code-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        font-size: 12px;
+        color: #d0d5dd;
+      }
+      .code-meta .file {
+        font-weight: 700;
+        color: #fff;
+        overflow-wrap: anywhere;
+      }
+      pre {
+        margin: 0;
+        overflow: auto;
+        background: var(--code-bg);
+        color: var(--code-text);
+        padding: 14px;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      pre code {
+        background: transparent;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+      }
+      .kv {
+        display: grid;
+        grid-template-columns: minmax(180px, 280px) 1fr;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .kv dt,
+      .kv dd {
+        margin: 0;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .kv dt {
+        background: var(--soft-2);
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .kv dd {
+        overflow-wrap: anywhere;
+      }
+      .kv dt:last-of-type,
+      .kv dd:last-of-type {
+        border-bottom: 0;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 8px 0;
+      }
+      .checklist li {
+        display: grid;
+        grid-template-columns: 26px 1fr auto;
+        gap: 8px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .checklist li:last-child {
+        border-bottom: 0;
+      }
+      .tick {
+        font-weight: 900;
+        color: var(--muted);
+      }
+      .tick.done {
+        color: var(--ok);
+      }
+      blockquote {
+        margin: 12px 0;
+        padding: 10px 14px;
+        border-left: 4px solid var(--border);
+        color: var(--muted);
+        background: var(--soft-2);
+        border-radius: 12px;
+      }
+      .file-tree {
+        background: var(--soft-2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .file-tree ul {
+        list-style: none;
+        padding-left: 18px;
+        margin: 0;
+      }
+      .file-tree li {
+        margin: 4px 0;
+      }
+      .file-tree .folder {
+        font-weight: 800;
+      }
+      @media (max-width: 800px) {
+        .grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .content-grid .card {
+          grid-column: span 6;
+        }
+        .kv {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 520px) {
+        .wrap {
+          padding: 16px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .content-grid .card {
+          grid-column: span 12;
+        }
+        .issue-head {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1 id="title">Takeoff component review</h1>
+        <p id="subtitle" class="muted"></p>
+        <nav aria-label="Review sections">
+          <a href="#verdict">Verdict</a>
+          <a href="#evidence">Evidence</a>
+          <a href="#self-check">Self-check</a>
+          <a href="#issues">Issues</a>
+          <a href="#coverage">Coverage</a>
+          <a href="#validation">Validation</a>
+          <a href="#content">Content</a>
+          <a href="#next">Next</a>
+        </nav>
+      </div>
+    </header>
+    <main class="wrap">
+      <section class="section" id="verdict"></section>
+      <section class="section" id="evidence"></section>
+      <section class="section" id="self-check"></section>
+      <section class="section" id="issues"></section>
+      <section class="section" id="coverage"></section>
+      <section class="section" id="validation"></section>
+      <section class="section" id="content"></section>
+      <section class="section" id="next"></section>
+    </main>
+    <script>
+      window.__TAKEOFF_REVIEW__ = /*__REVIEW_DATA__*/;
+      const data = window.__TAKEOFF_REVIEW__ || {};
+      const codeStore = {};
+      let codeId = 0;
+      const $ = id => document.getElementById(id);
+      const esc = value => String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+      const arr = value => Array.isArray(value) ? value : (value ? [value] : []);
+      const text = (value, fallback = '—') => value === undefined || value === null || value === '' ? fallback : String(value);
+      const statusClass = value => {
+        const s = String(value || '').toLowerCase();
+        if (['pass','passed','ok','confirmed','clean','done','approved','success'].includes(s)) return 'ok';
+        if (['fail','failed','blocker','blocking','error','danger'].includes(s)) return 'bad';
+        if (['conditional','major','minor','warning','warn','needs evidence','not run','open'].includes(s)) return 'warn';
+        return 'info';
+      };
+      const chip = value => `<span class="chip ${statusClass(value)}">${esc(value || 'unknown')}</span>`;
+      function list(items) { const values = arr(items); return values.length ? `<ul>${values.map(i => `<li>${renderValue(i)}</li>`).join('')}</ul>` : '<p class="muted">None recorded.</p>'; }
+      function renderValue(value, options = {}) {
+        if (value && typeof value === 'object' && !Array.isArray(value) && value.type) return renderBlock(value);
+        if (Array.isArray(value)) return list(value);
+        if (value && typeof value === 'object') return `<code>${esc(JSON.stringify(value))}</code>`;
+        if (options.code) return `<code>${esc(text(value))}</code>`;
+        return esc(text(value));
+      }
+      function renderCell(row, header) {
+        if (header.render) return header.render(row);
+        const value = row ? row[header.key] : undefined;
+        const type = header.type || header.kind;
+        if (type === 'status' || type === 'chip') return chip(value);
+        if (type === 'code') return `<code>${esc(text(value))}</code>`;
+        if (type === 'list') return list(value);
+        if (type === 'boolean') return chip(value ? 'yes' : 'no');
+        return renderValue(value);
+      }
+      function deriveColumns(rows) {
+        const keys = [];
+        arr(rows).forEach(row => { if (!row || typeof row !== 'object' || Array.isArray(row)) return; Object.keys(row).forEach(key => { if (!keys.includes(key)) keys.push(key); }); });
+        return keys.map(key => ({ key, label: key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()) }));
+      }
+      function table(headers, rows) {
+        const safe = arr(rows);
+        const cols = arr(headers).length ? arr(headers) : deriveColumns(safe);
+        if (!safe.length) return '<p class="muted">No rows recorded.</p>';
+        return `<div class="table-scroll"><table><thead><tr>${cols.map(h => `<th>${esc(h.label || h.key || '')}</th>`).join('')}</tr></thead><tbody>${safe.map(row => `<tr>${cols.map(h => `<td>${renderCell(row, h)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      }
+      function blockHeading(block) {
+        const title = block.title || block.heading || block.name;
+        const desc = block.description || block.caption;
+        return `${title ? `<h3>${esc(title)}</h3>` : ''}${desc ? `<p class="block-description">${esc(desc)}</p>` : ''}`;
+      }
+      function renderCodeBlock(block, forceLanguage) {
+        const id = `review-code-${++codeId}`;
+        const language = forceLanguage || block.language || block.lang || 'text';
+        const file = block.file || block.filename || block.path || '';
+        const content = text(block.content ?? block.code ?? block.value, '');
+        codeStore[id] = content;
+        return `<figure class="code-block content-block"><figcaption class="code-head"><span class="code-meta">${file ? `<span class="file">${esc(file)}</span>` : ''}<span>${esc(language)}</span>${block.title ? `<span>· ${esc(block.title)}</span>` : ''}</span><button class="mini-button" type="button" data-copy-code="${id}">Copy</button></figcaption><pre><code class="language-${esc(language)}">${esc(content)}</code></pre></figure>`;
+      }
+      function renderKeyValue(block) {
+        const items = arr(block.items || block.rows || block.values);
+        if (!items.length) return '<p class="muted">No key/value items recorded.</p>';
+        return `<dl class="kv">${items.map(item => `<dt>${esc(item.key || item.label || item.name || 'Key')}</dt><dd>${renderValue(item.value ?? item.description ?? item.notes)}</dd>`).join('')}</dl>`;
+      }
+      function renderChecklist(block) {
+        const items = arr(block.items || block.rows);
+        if (!items.length) return '<p class="muted">No checklist items recorded.</p>';
+        return `<ul class="checklist">${items.map(item => { const checked = Boolean(item.checked || item.done || ['done','pass','passed','ok'].includes(String(item.status || '').toLowerCase())); return `<li><span class="tick ${checked ? 'done' : ''}">${checked ? '✓' : '○'}</span><span>${esc(text(item.label || item.name || item.task))}${item.note || item.notes ? `<br><span class="muted">${esc(item.note || item.notes)}</span>` : ''}</span><span>${item.status ? chip(item.status) : ''}</span></li>`; }).join('')}</ul>`;
+      }
+      function renderCards(block) {
+        const items = arr(block.items || block.cards);
+        if (!items.length) return '<p class="muted">No cards recorded.</p>';
+        return `<div class="grid content-grid">${items.map(item => `<div class="card"><strong>${esc(item.title || item.label || item.name || 'Card')}</strong><span>${renderValue(item.value ?? item.metric ?? item.description ?? '')}</span>${item.status ? `<p>${chip(item.status)}</p>` : ''}${item.note ? `<p class="muted">${esc(item.note)}</p>` : ''}</div>`).join('')}</div>`;
+      }
+      function renderFileTreeNode(node) {
+        if (typeof node === 'string') return `<li>${esc(node)}</li>`;
+        const children = arr(node.children);
+        return `<li><span class="${children.length ? 'folder' : ''}">${esc(node.name || node.path || 'item')}</span>${node.note ? ` <span class="muted">— ${esc(node.note)}</span>` : ''}${children.length ? `<ul>${children.map(renderFileTreeNode).join('')}</ul>` : ''}</li>`;
+      }
+      function renderMarkdownLite(markdown) {
+        const lines = String(markdown || '').split(/\r?\n/);
+        const out = [];
+        let paragraph = [];
+        let bullets = [];
+        const flushP = () => { if (paragraph.length) { out.push(`<p>${esc(paragraph.join(' '))}</p>`); paragraph = []; } };
+        const flushB = () => { if (bullets.length) { out.push(`<ul>${bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>`); bullets = []; } };
+        lines.forEach(line => {
+          if (!line.trim()) { flushP(); flushB(); return; }
+          const heading = line.match(/^(#{1,4})\s+(.*)$/);
+          if (heading) { flushP(); flushB(); out.push(`<h3>${esc(heading[2])}</h3>`); return; }
+          const bullet = line.match(/^[-*]\s+(.*)$/);
+          if (bullet) { flushP(); bullets.push(bullet[1]); return; }
+          paragraph.push(line.trim());
+        });
+        flushP(); flushB();
+        return out.join('');
+      }
+      function renderBlock(block) {
+        if (typeof block === 'string') return `<div class="content-block"><p>${esc(block)}</p></div>`;
+        if (!block || typeof block !== 'object') return '';
+        const type = String(block.type || '').toLowerCase();
+        if (type === 'code') return renderCodeBlock(block);
+        if (type === 'diff') return renderCodeBlock(block, 'diff');
+        if (type === 'table') return `<div class="content-block">${blockHeading(block)}${table(block.columns || block.headers, block.rows || block.items)}</div>`;
+        if (type === 'keyvalue' || type === 'key-value' || type === 'kv') return `<div class="content-block">${blockHeading(block)}${renderKeyValue(block)}</div>`;
+        if (type === 'checklist') return `<div class="content-block">${blockHeading(block)}${renderChecklist(block)}</div>`;
+        if (type === 'cards' || type === 'metrics') return `<div class="content-block">${blockHeading(block)}${renderCards(block)}</div>`;
+        if (type === 'callout' || type === 'note' || type === 'warning' || type === 'danger') return `<div class="callout ${esc(block.tone || type)}"><strong>${esc(block.title || block.heading || 'Note')}</strong>${block.body || block.content ? `<p>${esc(block.body || block.content)}</p>` : ''}${block.items ? list(block.items) : ''}${block.blocks ? renderBlocks(block.blocks) : ''}</div>`;
+        if (type === 'markdown' || type === 'md') return `<div class="content-block">${blockHeading(block)}${renderMarkdownLite(block.content || block.body || '')}</div>`;
+        if (type === 'list') return `<div class="content-block">${blockHeading(block)}${list(block.items)}</div>`;
+        if (type === 'quote') return `<div class="content-block">${blockHeading(block)}<blockquote>${esc(block.content || block.body || block.quote || '')}</blockquote></div>`;
+        if (type === 'details' || type === 'accordion') return `<details class="content-block" ${block.open ? 'open' : ''}><summary>${esc(block.title || block.summary || 'Details')}</summary>${renderBlocks(block.blocks || block.contentBlocks || [])}</details>`;
+        if (type === 'filetree' || type === 'file-tree') return `<div class="content-block">${blockHeading(block)}<div class="file-tree"><ul>${arr(block.items || block.children || block.tree).map(renderFileTreeNode).join('')}</ul></div></div>`;
+        if (block.rows || block.columns || block.headers) return `<div class="content-block">${blockHeading(block)}${table(block.columns || block.headers, block.rows || block.items)}</div>`;
+        return `<div class="content-block">${blockHeading(block)}${renderCodeBlock({ language: 'json', content: JSON.stringify(block, null, 2) })}</div>`;
+      }
+      function renderBlocks(blocks) { const values = arr(blocks); return values.length ? values.map(renderBlock).join('') : ''; }
+      function render() {
+        const component = data.componentPascal || data.component || 'Component';
+        $('title').textContent = `${component} implementation review`;
+        $('subtitle').textContent = `${data.component || 'unknown'} · generated: ${data.generatedAt || 'unknown'}`;
+        $('verdict').innerHTML = `<h2>Verdict</h2><div class="grid">
+          <div class="card"><strong>Verdict</strong><span>${chip(data.verdict || 'Needs evidence')}</span></div>
+          <div class="card"><strong>Blockers</strong><span>${arr(data.blockingIssues).length}</span></div>
+          <div class="card"><strong>Majors</strong><span>${arr(data.majorIssues).length}</span></div>
+          <div class="card"><strong>Validation</strong><span>${chip(data.validationStatus || 'unknown')}</span></div>
+        </div><p>${esc(data.summary || 'No summary recorded.')}</p>${renderBlocks(data.verdictBlocks)}`;
+        $('evidence').innerHTML = `<h2>Evidence reviewed</h2>${table([
+          {label:'Artifact', key:'artifact'}, {label:'Status', render:r=>chip(r.status)}, {label:'Notes', key:'notes'}
+        ], data.evidenceReviewed)}${renderBlocks(data.evidenceBlocks)}`;
+        $('self-check').innerHTML = `<h2>Reviewer self-checks</h2><p class="muted">Observable skeptical-pass summary. These rows are audit notes, not hidden chain-of-thought.</p>${table([
+          {label:'ID', key:'id', type:'code'},
+          {label:'Question', key:'question'},
+          {label:'Status', render:r=>chip(r.status)},
+          {label:'Answer', key:'answer'},
+          {label:'Evidence', key:'evidence'},
+          {label:'Follow-up', render:r=>renderValue(r.followUp || r.risk || r.notes)}
+        ], data.reviewSelfChecks)}${renderBlocks(data.selfCheckBlocks || data.reasoningBlocks)}`;
+        const renderIssues = (title, rows) => `<h3>${esc(title)}</h3>` + (arr(rows).length ? arr(rows).map(issue => `<article class="issue"><div class="issue-head"><strong>${esc(issue.title || 'Untitled')}</strong>${chip(issue.severity || title)}</div><p><strong>Evidence:</strong> ${renderValue(issue.evidence || 'Needs evidence')}</p><p><strong>Why it matters:</strong> ${esc(issue.why || 'Unknown')}</p><p><strong>Minimal fix:</strong> ${esc(issue.fix || 'Unknown')}</p><p><strong>Owner:</strong> ${esc(issue.owner || 'Unknown')}</p>${renderBlocks(issue.blocks || issue.contentBlocks)}</article>`).join('') : '<p class="muted">None.</p>');
+        $('issues').innerHTML = `<h2>Issues</h2>${renderIssues('Blocking issues', data.blockingIssues)}${renderIssues('Major issues', data.majorIssues)}${renderIssues('Minor issues', data.minorIssues)}${renderIssues('Nits', data.nits)}<h3>Good / confirmed</h3>${list(data.good)}`;
+        $('coverage').innerHTML = `<h2>Contract coverage matrix</h2>${table([
+          {label:'Area', key:'area'}, {label:'Status', render:r=>chip(r.status)}, {label:'Evidence', key:'evidence'}, {label:'Notes', key:'notes'}
+        ], data.contractCoverage)}${renderBlocks(data.coverageBlocks)}`;
+        $('validation').innerHTML = `<h2>Validation assessment</h2>${table([
+          {label:'Command', key:'command', type:'code'}, {label:'Result', render:r=>chip(r.result)}, {label:'Triage', key:'triage'}, {label:'Notes', key:'notes'}
+        ], data.validation)}${renderBlocks(data.validationBlocks)}`;
+        const blocks = renderBlocks(data.contentBlocks || data.sections || []);
+        $('content').innerHTML = `<h2>Additional review content</h2><p class="muted">Optional review details: code snippets, diffs, tables, callouts, checklists, and file trees.</p>${blocks || '<p class="muted">No additional content blocks recorded.</p>'}`;
+        $('next').innerHTML = `<h2>Decision follow-up & next action</h2><h3>Decision follow-up</h3>${list(data.decisionFollowUp)}<h3>Recommended next action</h3><p>${esc(data.nextAction || 'No next action recorded.')}</p>${renderBlocks(data.nextBlocks)}`;
+      }
+      document.addEventListener('click', async event => {
+        const button = event.target.closest('[data-copy-code]');
+        if (!button) return;
+        const id = button.getAttribute('data-copy-code');
+        try { await navigator.clipboard.writeText(codeStore[id] || ''); const old = button.textContent; button.textContent = 'Copied'; setTimeout(() => { button.textContent = old; }, 1200); } catch (_) {}
+      });
+      render();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "component": {
+    "quote": {
+      "$type": "dimension",
+      "quote-body-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "quote-body-top-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "quote-body-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "quote-body-bottom-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "quote-body-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "quote-footer-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "quote-footer-v-padding": {
+        "$value": "{base.spacing.xl}"
+      }
+    }
+  }
+}

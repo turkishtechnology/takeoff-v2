@@ -1,0 +1,40 @@
+{
+  "component": {
+    "rating": {
+      "$type": "dimension",
+      "basic-rate-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "basic-rate-content-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "basic-rate-content-h-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "basic-rate-content-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "emoji-rate-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "bar-rate-compact-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "bar-rate-default-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "number-rate-compact-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "number-rate-cells-h": {
+        "$value": "{base.spacing.8xl}"
+      },
+      "number-rate-cells-w": {
+        "$value": "{base.spacing.8xl}"
+      },
+      "number-rate-default-gap": {
+        "$value": "{base.spacing.xs}"
+      }
+    }
+  }
+}

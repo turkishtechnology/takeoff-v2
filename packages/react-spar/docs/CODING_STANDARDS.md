@@ -3,7 +3,7 @@
 This document explains how we build components under
 `packages/react-spar/src/components`.
 
-`@takeoff-ui/react-spar` is a React adapter layer on top of
+`@takeoff-ui/react-spar` is a React wrapper layer on top of
 `@turkish-technology/spar`, not a second component framework. Every component is
 authored as a **compound surface**: a root that owns state plus a fixed list of
 named subcomponents that own structure. The standards below keep that model
@@ -17,45 +17,45 @@ Consistency goals:
 
 ## Folder Structure
 
-Each component directory should contain:
+Each component directory should contain (Accordion is the reference — see
+`src/components/accordion/`):
 
 ```plaintext
 component-name/
-├── ComponentName.tsx          # Root + all compound subcomponents (Object.assign export)
-├── ComponentNameBase.ts       # Slots, class names, defaults, context, helpers
-├── useComponentNameAdapter.ts # State translation hook (when needed)
-├── types.ts                   # Public types for the root and every subcomponent
-├── ComponentName.test.tsx     # Tests covering the compound surface
-└── index.ts                   # Local barrel
+├── ComponentName.tsx          # Root component
+├── ComponentNamePart.tsx      # One file per public sub-component
+├── base.ts                    # createComponentBase calls for every part
+├── context.ts                 # Cross-part variant context (when needed)
+├── defaults.ts                # DEFAULT_* literals (when needed)
+├── types.ts                   # Public types for the root and every part
+├── types.test-d.ts            # Compile-time type tests (when needed)
+└── index.ts                   # Local barrel — Object.assign compound export
 ```
-
-Large families (Accordion, Dialog, Input) often benefit from a single
-`ComponentName.tsx` that declares every subcomponent and exports the compound
-surface via `Object.assign`. Split into separate files only when the single file
-becomes hard to read.
 
 Rules:
 
 - Folder names use `kebab-case`.
-- Component files and exports use `PascalCase`.
-- Not every component needs an adapter hook. Add one when the root must
-  reconcile controlled and uncontrolled state, normalize values, or build shared
-  context that drives the subcomponents.
+- Component files and exports use `PascalCase`. Infrastructure files (`base.ts`,
+  `context.ts`, `defaults.ts`) stay lowercase.
 - Every component **does** ship compound subcomponents. Even leaf controls
   (Button, Checkbox) expose at minimum a `Label` and adornment subcomponents so
   the content surface stays structural, not prop-driven.
-- `ComponentNameBase.ts` is the source of truth for slot names, emitted class
-  names, default props, and the context hook that subcomponents consume.
+- `base.ts` is the source of truth for slot names and emitted class names. One
+  `createComponentBase` call per public sub-component, all colocated.
 - Export the root from the local barrel and from `src/components/index.ts`.
   Subcomponents are reached exclusively via the root (`Button.Label`,
   `Dialog.Header`, …), not via direct named exports.
-- Mirror slot classes into `src/styling/slot-registry.ts` (the generator script
-  does this automatically when scaffolding a new component).
-- Prefer the generator script when scaffolding a new component:
+- Mirror slot classes into `src/slot-registry.ts` (the generator script does
+  this automatically when scaffolding a new component).
+- Prefer the generator script after the component contract has named the public
+  compound parts:
 
 ```bash
-pnpm --filter @takeoff-ui/react-spar generate Tooltip
+pnpm --filter @takeoff-ui/react-spar generate Button --root=button Label=span LeadingIcon=span Spinner=span
 ```
+
+Component tests are phase 2; the generator does not create
+`ComponentName.test.tsx`.
 
 ## Compound-Only Baseline
 
@@ -75,10 +75,12 @@ authoring model. Concretely:
   example, `Input.Asterisk` only renders when `required` is true on the root;
   `Input.ErrorMessage` only renders when `invalid` is true; `Button.Spinner`
   only renders when `loading` is true.
-- **Do not** add flat content props (`label`, `header`, `subheader`, `icon`,
-  `leadingIcon`, `description`, `error`, `footerActions`, `spinner`,
-  `containerSlot`, `headerSlot`, `contentSlot`, `footerSlot`). Translate them
-  into subcomponents.
+- **Do not** add flat **string** content props (`label`, `header`, `subheader`,
+  `title`, `description`, `error`, `footerActions`, `spinner`, `containerSlot`,
+  `headerSlot`, `contentSlot`, `footerSlot`). Translate them into subcomponents.
+  **`ReactNode` slot props** for decorative pieces (`icon`, `leadingIcon`) are
+  allowed when the slot has no independent theming surface or behavior —
+  consumers already control the node they pass in.
 - **Do not** add render-override props (`renderIcon`, `renderSpinner`,
   `renderLeadingIcon`, `renderTrailingIcon`, `renderClearIcon`,
   `renderCloseIcon`, `renderSignIcon`). Consumers override by passing children
@@ -87,8 +89,7 @@ authoring model. Concretely:
 
 When a subcomponent needs to expose render-time state to consumers, use
 function-as-children:
-`<Checkbox.Icon>{({ checked, indeterminate }) => …}</Checkbox.Icon>`,
-`<Accordion.Arrow>{({ isOpen }) => …}</Accordion.Arrow>`.
+`<Checkbox.Icon>{({ checked, indeterminate }) => …}</Checkbox.Icon>`.
 
 ## Naming Conventions
 
@@ -99,12 +100,12 @@ function-as-children:
   part of the root's compound surface: `Button.Label`, `Accordion.Item`,
   `Dialog.Header`, etc. Their `displayName` follows the dotted form
   (`displayName = 'Dialog.Header'`).
-- Base objects use `ComponentNameBase`.
-- Adapter hooks use `useComponentNameAdapter`.
+- Base objects (inside `base.ts`) use `ComponentNameBase` — e.g.
+  `AccordionBase`, `AccordionItemBase`. Each is one `createComponentBase` call.
 - Public props and type aliases live in `types.ts`. Each subcomponent has its
   own props interface (`ButtonLabelProps`, `DialogHeaderProps`, ...).
 - Internal helper names should describe the domain behavior they own, such as
-  `encodeAccordionItemValue` or `normalizeAccordionItemKeys`.
+  `encodeAccordionItemValue` or `normalizeAccordionValues`.
 
 ### Slot names and emitted classes
 
@@ -150,7 +151,7 @@ export const buttonClassNames = {
 - Keep the root's public surface narrow — only state. Content flows through
   subcomponents.
 - Prefer clear controlled and uncontrolled pairs for stateful components, such
-  as `activeIndex` and `defaultActiveIndex`.
+  as `value` and `defaultValue`.
 - When two state inputs overlap, define and document precedence explicitly.
 - Reflect defaults in both `ComponentBase.defaultProps` and `@defaultValue`
   JSDoc.
@@ -175,20 +176,50 @@ new content hook, add a new compound subcomponent.
 
 Examples of explicit precedence that should be documented and tested:
 
-- `activeIndex` overrides `Accordion.Item.active`
+- `value` controls Accordion open state when provided.
 - `indeterminate` overrides `value` / `defaultValue` on `Checkbox`
 - instance `slotProps` / `classNames` override theme-level counterparts of the
   same slot
+
+### `slotProps` scope — what it is and isn't for
+
+`slotProps` is **DOM-level customization**. It is shallow-merged underneath
+canonical attrs (`data-slot`, `tk-*` class) at every slot's render site, so
+consumers can attach anything that lives on the DOM element to that slot.
+
+**Use `slotProps` for:**
+
+- `aria-*`, `data-*` attributes
+- `id`, `style`, additional className contributions
+- DOM event handlers that do not drive component state: `onMouseEnter`,
+  `onFocus`, `onKeyDown`, decorative `onClick` (analytics, tooltips)
+
+**Do not use `slotProps` for:**
+
+- Controlled state props (`value`, `defaultValue`, `checked`, `open`,
+  `disabled`) — these are root props
+- State-change callbacks owned by the component contract (`onValueChange`,
+  `onOpenChange`, `onCheckedChange`) — these are root props
+- Anything documented as a behavior prop on the root component
+
+This boundary is **not enforced at runtime.** A consumer who routes a behavior
+prop through `slotProps.root` will silently override the component's controlled
+wiring and the component will appear broken. The contract belongs in
+documentation; the library does not police it.
+
+Rule of thumb: _Customizing a DOM attribute? → `slotProps`. Driving component
+behavior? → root prop._
 
 ## Component Architecture
 
 ### Wrapper responsibility
 
-- Each component is a thin React adapter.
+- Each component is a thin React wrapper.
 - Spar owns behavior, keyboard handling, and ARIA whenever it already provides
   them.
-- The root owns API translation, state, context, DOM required for styling, value
-  normalization, and stable `data-*` hooks.
+- The root owns Takeoff visual props, visual context, DOM required for styling,
+  and stable `data-*` hooks.
+- Behavior props pass through to Spar when Spar supports the Takeoff vocabulary.
 - Subcomponents own their canonical slot owner nodes (tag, class, `data-slot`,
   and any behavior such as dismiss). They read shared state from context and
   apply `classNames`/`slotProps` on render.
@@ -209,20 +240,23 @@ Typical structural subcomponents include `Root`, `Mask`, `Panel`, `Body`,
 
 ### Base file responsibility
 
-- Define slots, class names, and default props in `ComponentNameBase.ts`.
-- Declare the context that subcomponents consume (`createSafeContext` from
-  `src/utils`).
+- Define slots, class names, and default props in `base.ts` (one
+  `createComponentBase` call per public sub-component, all colocated).
+- Declare the context that subcomponents consume in `context.ts`
+  (`createSafeContext` from `src/hooks`).
 - Keep the base file focused on static metadata, pure helpers, and light context
   wiring.
 - Prefer `createComponentBase` for `cx`, `getSlotProps`, and `resolveProps`.
 
-### Adapter hook responsibility
+### Upstream-first wrapper responsibility
 
-- Use `useComponentNameAdapter` when state translation is non-trivial.
-- Adapter hooks own controlled and uncontrolled reconciliation, normalization,
-  equality checks, and child processing.
-- Keep heavy derivation out of the JSX return block.
-- Keep adapter helpers pure where possible.
+- Spar owns controlled and uncontrolled reconciliation, normalization, keyboard
+  behavior, focus behavior, ARIA wiring, and item registration.
+- Keep prop renames or visual-only derivation inline when they are small.
+- If behavior-heavy translation is needed, fix Spar first so the wrapper can
+  pass through the behavior props directly.
+- Do not add `useComponentNameAdapter` hooks unless there is a real React
+  lifecycle/state/ref/effect reason and the design has been explicitly approved.
 
 ## Component Implementation
 
@@ -238,32 +272,17 @@ import {
   useMyComponentContext,
 } from './MyComponentBase';
 import type { MyComponentProps, MyComponentPartProps } from './types';
-import { useMyComponentAdapter } from './useMyComponentAdapter';
 
 function MyComponent({
   ref,
   ...rawProps
 }: MyComponentProps & { ref?: Ref<HTMLDivElement> }) {
-  const {
-    value: controlledValue,
-    defaultValue,
-    onValueChange,
-    children,
-    className,
-    classNames,
-    slotProps,
-    ...restProps
-  } = MyComponentBase.resolveProps(rawProps);
-
-  const { normalizedValue, handleValueChange } = useMyComponentAdapter({
-    controlledValue,
-    defaultValue,
-    onValueChange,
-    children,
-  });
+  const { children, className, classNames, slotProps, ...restProps } =
+    MyComponentBase.resolveProps(rawProps);
 
   const contextValue = {
-    /* state flags + classNames + slotProps */
+    classNames,
+    slotProps,
   };
 
   return (
@@ -273,10 +292,7 @@ function MyComponent({
         ref={ref}
         {...MyComponentBase.getSlotProps('root', {
           className,
-          'data-state': normalizedValue ? 'open' : undefined,
         })}
-        value={normalizedValue}
-        onValueChange={handleValueChange}
       >
         {children}
       </Primitive>
@@ -313,12 +329,14 @@ export { MyComponentCompound as MyComponent };
 ### Implementation rules
 
 - Call `resolveProps` once near the top of the root component.
-- Normalize values and derive booleans above the return block.
+- Keep visual-only derivation above the return block.
+- Do not re-implement Spar behavior in the wrapper. If behavior props cannot be
+  passed through directly, fix Spar first.
 - Keep JSX shallow. Move repeated or branching rendering into subcomponents.
 - Use `getSlotProps` for slot nodes. Use `cx` when you only need class
   composition without extra slot metadata.
-- Use `buildSlotAttrs` (from `src/customization`) inside subcomponents to
-  compose canonical slot attrs with context-resolved `classNames`/`slotProps`.
+- Use `buildSlotAttrs` (from `src/core`) inside subcomponents to compose
+  canonical slot attrs with context-resolved `classNames`/`slotProps`.
 - Use `clsx` through `createComponentBase` or directly. Do not add local
   string-join helpers.
 - Use small pure helpers for normalization, encoding, and equality checks.
@@ -329,8 +347,8 @@ export { MyComponentCompound as MyComponent };
   navigation, set `aria-disabled`, manage `tabIndex`, and block activation keys.
 - Memoization is allowed only when identity or repeated derivation actually
   matters. Do not add `useMemo` or `useCallback` by default.
-- Use `createSafeContext` (from `src/utils/createSafeContext`) so that a
-  subcomponent used outside its root raises a descriptive error.
+- Use `createSafeContext` (from `src/hooks`) so that a subcomponent used outside
+  its root raises a descriptive error.
 - Set `displayName` on the root (`'Button'`) and every subcomponent
   (`'Button.Label'`, `'Dialog.Header'`).
 
@@ -348,15 +366,16 @@ part falls into exactly one of three archetypes:
 
 The rules:
 
-1. **Every compound part declares its archetype in `ComponentNameBase.ts`.** A
-   one-line JSDoc on the slot or part reference is enough
+1. **Every compound part declares its archetype in `base.ts`.** A one-line JSDoc
+   on the slot or part reference is enough
    (`// @archetype inherited — wraps SparDialog.Title`). Reviewers should be
    able to read the base file and know which parts delegate, which are pure
    React, and which intentionally bypass upstream.
 2. **Inherited parts must render their upstream counterpart, not a plain tag.**
    A compound part that has an upstream equivalent but renders a plain `<div>` /
    `<span>` is a bug unless it is explicitly classified as Bypass with a reason.
-   This is the letter of ADR-0003 applied at the slot level.
+   This is the upstream-first rule (see `docs/component-authoring-contract.md`)
+   applied at the slot level.
 3. **React-enhancement parts must have no upstream equivalent.** If the upstream
    primitive grows a matching part later, the react-enhancement classification
    must migrate to Inherited in the same release.
@@ -364,14 +383,15 @@ The rules:
    and a `@bypass` line in the base file** giving the concrete reason (e.g.
    upstream behavior conflicts with the React wrapper's semantics, upstream
    hasn't shipped the part yet). "Felt easier" is not a reason.
-5. **Wrappers must not re-implement behavior Spar already owns** (ADR-0003).
-   When a wrapper bypasses an upstream part, it inherits the burden of proving
-   that no behavior (keyboarding, focus, ARIA lifecycle) is being silently
+5. **Wrappers must not re-implement behavior Spar already owns** (see
+   `docs/component-authoring-contract.md` — "Spar owns behavior"). When a
+   wrapper bypasses an upstream part, it inherits the burden of proving that no
+   behavior (keyboarding, focus, ARIA lifecycle) is being silently
    re-implemented in React. If there is, the correct path is to delegate through
    the upstream part and restrict the wrapper to styling and API translation.
 
-Canonical examples per archetype, as of the composition audit absorbed into this
-section:
+Canonical examples per archetype, as of the composition review absorbed into
+this section:
 
 - **Inherited root, inherited parts** — `Accordion`. Delegates through every
   `SparAccordion.*` part it uses, with only styling enhancements layered in.
@@ -388,8 +408,9 @@ section:
   anchor's navigation. The rationale lives in `ButtonBase.ts`.
 
 Every new component port must classify its parts against this table as part of
-the component-port decision note. The readiness gate
-(`docs/component-port-readiness.md`) treats a missing archetype as a blocker.
+the contract produced by the
+[`takeoff-component-workflow`](../../../.agents/skills/takeoff-component-workflow/SKILL.md)
+skill. A missing archetype classification is a contract blocker.
 
 ## Styling Contract
 
@@ -527,6 +548,12 @@ Before submitting a component, make sure tests cover:
 
 - Public docs describe compound usage only. No flat content props appear in
   examples because no flat content props exist.
+- Usage anatomy snippets show component tags only. Props, sample content, and
+  state wiring belong in dedicated examples.
+- Pre-format `LiveCode` source strings exactly as they should appear in the docs
+  UI; display-only examples are not formatted at runtime. Use MDX
+  `prettier-ignore-start` / `prettier-ignore-end` when Prettier would rewrite
+  the visible source string.
 - Internal porting history, migration notes, or primitive quirks do not belong
   in component comments or public docs unless they affect consumers.
 - Keep type docs precise. Generated API tables are only as good as the JSDoc in
@@ -541,11 +568,11 @@ Before submitting a component, make sure tests cover:
 
 ## Merge Checklist
 
-The authoritative gate for new component work is
-[`docs/component-port-readiness.md`](../../../docs/component-port-readiness.md).
-That doc carries the full readiness checklist, artifact manifest, and review
-templates. The list below is the subset local to this package — keep it truthful
-but do not duplicate the readiness doc.
+The authoritative gate for new component work is the contract produced by the
+[`takeoff-component-workflow`](../../../.agents/skills/takeoff-component-workflow/SKILL.md)
+skill, governed by
+[`docs/component-authoring-contract.md`](../../../docs/component-authoring-contract.md).
+The list below is the subset local to this package.
 
 Before considering a component complete:
 
@@ -553,14 +580,11 @@ Before considering a component complete:
 - `pnpm lint`
 - `pnpm build`
 - `pnpm --filter @takeoff-ui/react-spar test`
-- `python3 .agents/skills/takeoff-component-port/scripts/verify_port_artifacts.py <Name> --repo-root .`
-  (enforces the artifact manifest: wrapper, recipe, docs page, smoke scenario,
-  changeset, export, no emitted CSS)
 - regenerate docs API output when public types changed
 - confirm the root is exported from `src/components/index.ts` (subcomponents are
   reached exclusively through the root)
 - confirm no CSS is emitted from `packages/react-spar/dist`
-- confirm slot classes are mirrored in `src/styling/slot-registry.ts`
+- confirm slot classes are mirrored in `src/slot-registry.ts`
 - confirm at least one smoke scenario in
   [`apps/react-app/src/App.tsx`](../../../apps/react-app/src/App.tsx) exercises
   the new compound anatomy end to end against the real tokens CSS import. If a
@@ -569,7 +593,6 @@ Before considering a component complete:
   intentional and reviewable.
 - confirm docs, generated API tables, tests, and component types describe the
   same compound contract
-- write the parity-review report (and the React-enhancement review report when
-  any additive surface is introduced) into the PR description, using the
-  templates in
-  [`docs/component-port-readiness.md`](../../../docs/component-port-readiness.md)
+- include the parity-review summary (and any React-enhancement justification) in
+  the PR description, following
+  [`docs/component-authoring-contract.md`](../../../docs/component-authoring-contract.md)

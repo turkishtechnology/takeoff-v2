@@ -1,0 +1,14 @@
+{
+  "v3ThemeFiles": {
+    "colors": "colors.js",
+    "spacing": "spacing.js",
+    "radius": "radius.js",
+    "effects": "effects.js",
+    "screens": "screens.js"
+  },
+  "v3ComponentFiles": {
+    "typography": "typography.js"
+  },
+  "v4ThemeFile": "theme.css",
+  "v4ComponentFile": "_components.css"
+}

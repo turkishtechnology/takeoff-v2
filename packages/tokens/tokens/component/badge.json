@@ -1,0 +1,169 @@
+{
+  "component": {
+    "badge": {
+      "$type": "dimension",
+      "badge-base-basic-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "badge-base-basic-left-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "badge-base-basic-right-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "badge-base-basic-gap": {
+        "$value": "0px"
+      },
+      "badge-base-basic-v-padding": {
+        "$value": "{base.spacing.px}"
+      },
+      "badge-base-basic-icon-size": {
+        "$value": "0px"
+      },
+      "badge-base-left-icon-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "badge-base-left-icon-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "badge-base-left-icon-left-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "badge-base-left-icon-right-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "badge-base-left-icon-v-padding": {
+        "$value": "{base.spacing.px}"
+      },
+      "badge-base-left-icon-icon-size": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "badge-base-right-icon-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "badge-base-right-icon-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "badge-base-right-icon-left-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "badge-base-right-icon-right-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "badge-base-right-icon-v-padding": {
+        "$value": "{base.spacing.px}"
+      },
+      "badge-base-right-icon-icon-size": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "badge-large-basic-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "badge-large-basic-gap": {
+        "$value": "0px"
+      },
+      "badge-large-basic-left-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "badge-large-basic-right-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "badge-large-basic-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "badge-large-basic-icon-size": {
+        "$value": "0px"
+      },
+      "badge-large-left-icon-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "badge-large-left-icon-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "badge-large-left-icon-left-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "badge-large-left-icon-right-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "badge-large-left-icon-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "badge-large-left-icon-icon-size": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "badge-large-right-icon-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "badge-large-right-icon-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "badge-large-right-icon-left-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "badge-large-right-icon-right-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "badge-large-right-icon-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "badge-large-right-icon-icon-size": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "badge-small-basic-radius": {
+        "$value": "{base.radius.xs}"
+      },
+      "badge-small-basic-gap": {
+        "$value": "0px"
+      },
+      "badge-small-basic-left-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "badge-small-basic-right-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "badge-small-basic-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "badge-small-basic-icon-size": {
+        "$value": "0px"
+      },
+      "badge-small-left-icon-radius": {
+        "$value": "{base.radius.xs}"
+      },
+      "badge-small-left-icon-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "badge-small-left-icon-left-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "badge-small-left-icon-right-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "badge-small-left-icon-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "badge-small-left-icon-icon-size": {
+        "$value": "{base.spacing.2xl}"
+      },
+      "badge-small-right-icon-radius": {
+        "$value": "{base.radius.xs}"
+      },
+      "badge-small-right-icon-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "badge-small-right-icon-left-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "badge-small-right-icon-right-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "badge-small-right-icon-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "badge-small-right-icon-icon-size": {
+        "$value": "{base.spacing.2xl}"
+      }
+    }
+  }
+}

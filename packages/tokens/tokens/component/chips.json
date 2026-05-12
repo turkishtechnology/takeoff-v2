@@ -1,0 +1,52 @@
+{
+  "component": {
+    "chips": {
+      "$type": "dimension",
+      "chips-base-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "chips-base-h-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "chips-base-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "chips-base-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "chips-base-icon-size": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "chips-small-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "chips-small-h-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "chips-small-v-padding": {
+        "$value": "{base.spacing.px}"
+      },
+      "chips-small-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "chips-small-icon-size": {
+        "$value": "{base.spacing.2xl}"
+      },
+      "chips-large-radius": {
+        "$value": "{base.radius.s}"
+      },
+      "chips-large-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "chips-large-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "chips-large-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "chips-large-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      }
+    }
+  }
+}

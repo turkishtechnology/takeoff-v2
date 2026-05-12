@@ -1,0 +1,124 @@
+{
+  "component": {
+    "progress-bar": {
+      "$type": "dimension",
+      "linear-sign-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "linear-bar-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "linear-bar-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "linear-bar-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "linear-bar-content-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "linear-bar-progress-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "linear-bar-progress-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "linear-card-basic-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "linear-card-basic-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "linear-card-basic-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "linear-card-card-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "linear-card-card-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "linear-card-card-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "linear-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "circular-card-basic-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-card-basic-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-card-basic-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "circular-card-card-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "circular-card-card-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "circular-card-card-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "circular-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "circular-sign-percentage-base-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-sign-percentage-base-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-sign-percentage-base-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "circular-sign-percentage-small-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-sign-percentage-small-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "circular-sign-percentage-small-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-sign-percentage-large-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-sign-percentage-large-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "circular-sign-percentage-large-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-sign-status-large-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-sign-status-large-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "circular-sign-status-large-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "circular-sign-status-base-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-sign-status-base-v-padding": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "circular-sign-status-base-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "circular-sign-status-small-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-sign-status-small-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "circular-sign-status-small-gap": {
+        "$value": "{base.spacing.none}"
+      }
+    }
+  }
+}

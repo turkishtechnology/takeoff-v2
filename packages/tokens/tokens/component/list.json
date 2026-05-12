@@ -1,0 +1,40 @@
+{
+  "component": {
+    "list": {
+      "$type": "dimension",
+      "items-basic-h-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-basic-v-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-basic-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-basic-content-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "items-divided-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "items-divided-top-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "items-divided-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "items-divided-content-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "list-segment-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "list-cascade-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "list-cascade-left-padding": {
+        "$value": "{base.spacing.6xl}"
+      }
+    }
+  }
+}

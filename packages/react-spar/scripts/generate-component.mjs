@@ -6,23 +6,27 @@
 /**
  * Component scaffold generator for @takeoff-ui/react-spar.
  *
- * Usage:
- *   node scripts/generate-component.mjs <ComponentName>
+ * Usage: node scripts/generate-component.mjs <PascalCaseName>
+ * Example: node scripts/generate-component.mjs Tooltip
  *
- * Example:
- *   node scripts/generate-component.mjs Tooltip
+ * Produces the bare directory skeleton that mirrors the Accordion reference
+ * (see src/components/accordion/). The generated wrapper is intentionally a
+ * minimal Spar-primitive wrapper — wire it to the real Spar primitive,
+ * extend the Props interface, and add tests by hand. The base.ts pattern
+ * (one createComponentBase per public sub-component, all in one file)
+ * scales to compound components like Accordion.
  *
  * Creates:
- *   src/components/<component-name>/
- *     <ComponentName>.tsx
- *     <ComponentName>.test.tsx
- *     <ComponentName>Base.ts
- *     types.ts
+ *   src/components/<kebab>/
+ *     <Name>.tsx
+ *     <Name>.test.tsx
+ *     base.ts
  *     index.ts
+ *     types.ts
  *
- * Also updates:
- *   src/components/index.ts            (adds barrel export)
- *   src/styling/slot-registry.ts       (adds slot-class entry)
+ * Updates:
+ *   src/components/index.ts   (barrel export)
+ *   src/slot-registry.ts      (slot-class entry)
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -32,7 +36,7 @@ import { fileURLToPath } from 'node:url';
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const packageDir = resolve(scriptDir, '..');
 const componentsDir = resolve(packageDir, 'src/components');
-const slotRegistryPath = resolve(packageDir, 'src/styling/slot-registry.ts');
+const slotRegistryPath = resolve(packageDir, 'src/slot-registry.ts');
 const componentsIndexPath = resolve(componentsDir, 'index.ts');
 
 const name = process.argv[2];
@@ -55,110 +59,101 @@ if (existsSync(componentDir)) {
 
 mkdirSync(componentDir, { recursive: true });
 
-// --- types.ts ---
 writeFileSync(
   resolve(componentDir, 'types.ts'),
   `import type { ComponentPropsWithoutRef } from 'react';
 
-type ${name}NativeProps = Omit<ComponentPropsWithoutRef<'div'>, 'children'>;
+import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
-export interface ${name}Props extends ${name}NativeProps {
-  children?: React.ReactNode;
+export type ${name}Slot = 'root';
+
+export interface ${name}Props extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
+  /** Per-slot class name overrides. */
+  classNames?: ClassNamesMap<${name}Slot>;
+  /** Per-slot HTML attribute overrides. */
+  slotProps?: SlotPropsMap<${name}Slot>;
+}
+
+declare module '../../core/theme' {
+  interface ComponentThemeRegistry {
+    ${name}: import('../../core').ComponentThemeConfig<${name}Props>;
+  }
 }
 `,
 );
 
-// --- <Name>Base.ts ---
 writeFileSync(
-  resolve(componentDir, `${name}Base.ts`),
-  `export const ${name}Base = { classes: { root: '${prefix}' } } as const;
+  resolve(componentDir, 'base.ts'),
+  `import { createComponentBase } from '../../core';
+
+import type { ${name}Props } from './types';
+
+export const ${name}Base = createComponentBase<${name}Props, 'root'>({
+  name: '${name}',
+  slots: ['root'] as const,
+  classes: { root: '${prefix}' },
+});
 `,
 );
 
-// --- <Name>.tsx ---
 writeFileSync(
   resolve(componentDir, `${name}.tsx`),
-  `import { type Ref } from 'react';
+  `import { composeRootAttrs } from '../../core';
+import { useComponentTheme } from '../../provider';
 
-import { ${name}Base } from './${name}Base';
+import { ${name}Base } from './base';
 import type { ${name}Props } from './types';
 
-function ${name}({ ref, ...rawProps }: ${name}Props & { ref?: Ref<HTMLDivElement> }) {
-  const {
-    children,
-    className,
-    ...restProps
-  } = ${name}Base.resolveProps(rawProps);
+// TODO: wire to the matching Spar primitive (e.g. <Spar${name}>) and extend
+// ${name}Props with its public surface. Until then this renders a plain <div>.
+export const ${name} = (props: ${name}Props) => {
+  const theme = useComponentTheme('${name}');
+  const { rootAttrs, rest } = composeRootAttrs(${name}Base, props, theme);
+  const { children, ...domProps } = rest;
 
   return (
-    <div
-      ref={ref}
-      {...restProps}
-      className={${name}Base.cx('root', className)}
-      data-slot="root"
-    >
+    <div {...domProps} {...rootAttrs}>
       {children}
     </div>
   );
-}
+};
 
 ${name}.displayName = '${name}';
-
-export { ${name} };
 `,
 );
 
-// --- <Name>.test.tsx ---
 writeFileSync(
   resolve(componentDir, `${name}.test.tsx`),
-  `import { describe, it, expect } from 'vitest';
+  `import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
-import { axe } from 'vitest-axe';
+
 import { ${name} } from './${name}';
 
-describe('${name}', () => {
-  describe('rendering', () => {
-    it('should render with ${prefix} root class', () => {
-      const { container } = render(<${name}>Content</${name}>);
-      const root = container.querySelector('[data-slot="root"]')!;
-      expect(root).toBeInTheDocument();
-      expect(root.className).toContain('${prefix}');
-    });
-
-    it('should set data-slot="root" on root element', () => {
-      const { container } = render(<${name}>Content</${name}>);
-      const root = container.querySelector('[data-slot="root"]')!;
-      expect(root).toHaveAttribute('data-slot', 'root');
-    });
-
-    it('should merge custom className', () => {
-      const { container } = render(<${name} className="custom">Content</${name}>);
-      const root = container.querySelector('[data-slot="root"]')!;
-      expect(root.className).toContain('${prefix}');
-      expect(root.className).toContain('custom');
-    });
+describe('${name} — anatomy', () => {
+  it('renders the canonical tk-* class on the root slot', () => {
+    const { container } = render(<${name}>content</${name}>);
+    const root = container.querySelector('[data-slot="root"]');
+    expect(root).not.toBeNull();
+    expect(root).toHaveClass('${prefix}');
   });
 
-  describe('accessibility', () => {
-    it('should have no a11y violations', async () => {
-      const { container } = render(<${name}>Content</${name}>);
-      const results = await axe(container);
-      expect(results).toHaveNoViolations();
-    });
+  it('appends instance className without dropping the canonical class', () => {
+    const { container } = render(<${name} className="extra">content</${name}>);
+    const root = container.querySelector('[data-slot="root"]') as HTMLElement;
+    expect(root.className).toContain('${prefix}');
+    expect(root.className).toContain('extra');
   });
 });
 `,
 );
 
-// --- index.ts ---
 writeFileSync(
   resolve(componentDir, 'index.ts'),
-  `export * from './${name}';
-export * from './types';
+  `export { ${name} } from './${name}';
+export type { ${name}Props, ${name}Slot } from './types';
 `,
 );
 
-// --- Update src/components/index.ts ---
 const componentsIndex = readFileSync(componentsIndexPath, 'utf8');
 if (!componentsIndex.includes(`./${kebab}`)) {
   const updatedIndex = componentsIndex.trimEnd() + `\nexport * from './${kebab}';\n`;
@@ -166,30 +161,30 @@ if (!componentsIndex.includes(`./${kebab}`)) {
   console.log(`Updated src/components/index.ts`);
 }
 
-// --- Update src/styling/slot-registry.ts ---
 const slotRegistry = readFileSync(slotRegistryPath, 'utf8');
 if (!slotRegistry.includes(`${name}Base`)) {
-  const importLine = `import { ${name}Base } from '../components/${kebab}/${name}Base';`;
-  const slotEntry = `  ${camel}: {\n    slots: ${name}Base.classes,\n  },`;
+  const importLine = `import { ${name}Base } from './components/${kebab}/base';`;
+  const slotEntry = `  ${camel}: { slots: ${name}Base.classes },`;
 
   let updated = slotRegistry;
 
-  // Add import after last import
   const lastImportIndex = updated.lastIndexOf('import ');
   const lastImportEnd = updated.indexOf('\n', lastImportIndex);
   updated = updated.slice(0, lastImportEnd + 1) + importLine + '\n' + updated.slice(lastImportEnd + 1);
 
-  // Add slot-class entry before closing `} as const`
   updated = updated.replace(/} as const;/, `${slotEntry}\n} as const;`);
 
   writeFileSync(slotRegistryPath, updated);
-  console.log(`Updated src/styling/slot-registry.ts`);
+  console.log(`Updated src/slot-registry.ts`);
 }
 
 console.log(`\nGenerated component: ${name}`);
 console.log(`  src/components/${kebab}/`);
 console.log(`    ${name}.tsx`);
 console.log(`    ${name}.test.tsx`);
-console.log(`    ${name}Base.ts`);
-console.log(`    types.ts`);
+console.log(`    base.ts`);
 console.log(`    index.ts`);
+console.log(`    types.ts`);
+console.log(`\nNext steps:`);
+console.log(`  1. Replace the <div> placeholder in ${name}.tsx with the real Spar primitive.`);
+console.log(`  2. See src/components/accordion/ for the compound-component pattern.`);

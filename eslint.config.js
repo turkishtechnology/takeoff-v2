@@ -32,24 +32,17 @@ export default tseslint.config(
     },
   },
   {
-    files: ['tools/**/*.js'],
+    files: ['packages/*/scripts/**/*.{js,mjs,cjs}'],
     languageOptions: {
       globals: {
-        window: 'readonly',
-        document: 'readonly',
-        navigator: 'readonly',
-        localStorage: 'readonly',
-        sessionStorage: 'readonly',
-        confirm: 'readonly',
-        alert: 'readonly',
-        setTimeout: 'readonly',
-        clearTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearInterval: 'readonly',
-        fetch: 'readonly',
-        URL: 'readonly',
-        Blob: 'readonly',
+        console: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        __dirname: 'readonly',
       },
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
   {
@@ -65,6 +58,7 @@ export default tseslint.config(
       'apps/docs/build/**',
       'apps/*/dist/**',
       'packages/*/dist/**',
+      'tools/**',
     ],
   },
 );

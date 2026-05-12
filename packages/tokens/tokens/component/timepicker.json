@@ -1,0 +1,73 @@
+{
+  "component": {
+    "timepicker": {
+      "$type": "dimension",
+      "timer-header-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "timer-header-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "timer-header-content-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "timer-footer-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "timer-footer-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "timer-footer-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "timer-body-basic-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "timer-body-basic-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "timer-body-basic-content-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "timer-body-basic-content-h-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "timer-body-basic-timer-column-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "timer-body-basic-timer-number-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "timer-body-compact-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "timer-body-compact-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "timer-body-compact-content-gap": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "timer-body-compact-input-group-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "timer-body-compact-input-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "timer-body-clock-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "timer-body-clock-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "timer-body-clock-gap": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "timer-body-clock-input-group-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "timer-body-clock-input-gap": {
+        "$value": "{base.spacing.none}"
+      }
+    }
+  }
+}

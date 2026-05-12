@@ -1,0 +1,25 @@
+{
+  "component": {
+    "slider": {
+      "$type": "dimension",
+      "slider-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "slider-content-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "slider-h-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "slider-v-padding": {
+        "$value": "{base.spacing.none}"
+      },
+      "slider-slider-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "slider-slider-v-padding": {
+        "$value": "{base.spacing.s}"
+      }
+    }
+  }
+}

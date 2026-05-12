@@ -1,0 +1,19 @@
+// Foundation: Font-face declarations (Geologica + fallbacks)
+//
+// Default mode: Google Fonts CDN @import (used by both takeoff-ui and takeoff-spar).
+// Optional: Set $tk-font-self-hosted: true for intranet/offline deployments
+// where the consumer provides local woff2 files.
+
+$tk-font-self-hosted: false !default;
+
+// Standardized fallback stack — unified across all consumer repos.
+$tk-font-family-base:
+  'Geologica',
+  system-ui,
+  -apple-system,
+  'Segoe UI',
+  sans-serif !default;
+
+@if not $tk-font-self-hosted {
+  @import url('https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap');
+}

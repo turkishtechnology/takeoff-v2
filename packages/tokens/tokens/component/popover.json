@@ -1,0 +1,31 @@
+{
+  "component": {
+    "popover": {
+      "$type": "dimension",
+      "popover-head-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "popover-head-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "popover-head-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "popover-head-content-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "popover-body-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "popover-body-top-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "popover-body-bottom-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "popover-body-gap": {
+        "$value": "{base.spacing.m-base}"
+      }
+    }
+  }
+}

@@ -1,22 +1,93 @@
-import type { ElementType } from 'react';
+import { type ReactNode } from 'react';
 
-import { AccordionTrigger as SparAccordionTrigger } from '@turkish-technology/spar';
+import { AccordionTrigger as SparAccordionTrigger, useAccordionItemContext } from '@turkish-technology/spar';
 
-import { resolveSlotClass } from '../../customization';
+import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { hasChildOfType } from '../../hooks';
 import { useComponentTheme } from '../../provider';
 
-import { AccordionTriggerBase } from './base';
-import type { AccordionTriggerProps } from './types';
+import { AccordionTriggerBase, AccordionTriggerTitleBase } from './base';
+import { useAccordionOwnContext } from './context';
+import type { AccordionArrowPosition, AccordionTriggerProps, AccordionTriggerTitleProps } from './types';
 
-export const AccordionTrigger = <T extends ElementType = 'button'>(props: AccordionTriggerProps<T>) => {
-  const theme = useComponentTheme('AccordionTrigger');
-  const { className, children, ...rest } = { ...theme?.defaultProps, ...props } as AccordionTriggerProps<T>;
+const DEFAULT_EXPAND_ICON: ReactNode = (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const DEFAULT_COLLAPSE_ICON: ReactNode = (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <path d="M4 10L8 6L12 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const AccordionTriggerTitle = (props: AccordionTriggerTitleProps) => {
+  const theme = useComponentTheme('AccordionTriggerTitle');
+  const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerTitleBase, props, theme);
+  const { children, ref, ...spar } = rest;
 
   return (
-    <SparAccordionTrigger {...(rest as AccordionTriggerProps<T>)} className={resolveSlotClass(AccordionTriggerBase.classes.root, className, theme?.className)} data-slot="root">
+    <span {...spar} {...rootAttrs} ref={ref}>
       {children}
+    </span>
+  );
+};
+
+AccordionTriggerTitle.displayName = 'Accordion.Trigger.Title';
+
+const AccordionTriggerRoot = (props: AccordionTriggerProps) => {
+  const theme = useComponentTheme('AccordionTrigger');
+  const { arrowPosition, hideArrows, expandIcon, collapseIcon } = useAccordionOwnContext('Accordion.Trigger');
+  const { isOpen } = useAccordionItemContext();
+
+  const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerBase, props, theme);
+  const { children, icon, ref, ...spar } = rest;
+
+  const childHasTitle = hasChildOfType(children, AccordionTriggerTitle);
+
+  const iconNode = icon !== undefined && icon !== null && (
+    <span
+      {...buildSlotAttrs(AccordionTriggerBase.getSlotProps('icon'), 'icon', {
+        themeSlotProps: theme?.slotProps,
+        themeClassNames: theme?.classNames,
+        instanceSlotProps: props.slotProps,
+        instanceClassNames: props.classNames,
+      })}
+    >
+      {icon}
+    </span>
+  );
+
+  const titleNode = childHasTitle ? children : <AccordionTriggerTitle>{children}</AccordionTriggerTitle>;
+
+  const arrowNode = !hideArrows && (
+    <span
+      {...buildSlotAttrs(AccordionTriggerBase.getSlotProps('arrow'), 'arrow', {
+        themeSlotProps: theme?.slotProps,
+        themeClassNames: theme?.classNames,
+        instanceSlotProps: props.slotProps,
+        instanceClassNames: props.classNames,
+      })}
+      data-position={arrowPosition satisfies AccordionArrowPosition}
+      aria-hidden="true"
+    >
+      {isOpen ? (collapseIcon ?? DEFAULT_COLLAPSE_ICON) : (expandIcon ?? DEFAULT_EXPAND_ICON)}
+    </span>
+  );
+
+  return (
+    <SparAccordionTrigger {...spar} {...rootAttrs} ref={ref}>
+      {arrowPosition === 'left' && arrowNode}
+      {iconNode}
+      {titleNode}
+      {arrowPosition === 'right' && arrowNode}
     </SparAccordionTrigger>
   );
 };
 
-AccordionTrigger.displayName = 'AccordionTrigger';
+AccordionTriggerRoot.displayName = 'Accordion.Trigger';
+
+export const AccordionTrigger = Object.assign(AccordionTriggerRoot, {
+  Title: AccordionTriggerTitle,
+});

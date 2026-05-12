@@ -1,0 +1,340 @@
+{
+  "line-height": {
+    "xxs-normal": {
+      "$value": "16px",
+      "$type": "dimension"
+    },
+    "normal-xxs": {
+      "$value": 16,
+      "$type": "number"
+    },
+    "xs-normal": {
+      "$value": "18px",
+      "$type": "dimension"
+    },
+    "normal-xs": {
+      "$value": 18,
+      "$type": "number"
+    },
+    "sm-normal": {
+      "$value": "20px",
+      "$type": "dimension"
+    },
+    "normal-sm": {
+      "$value": 20,
+      "$type": "number"
+    },
+    "base-normal": {
+      "$value": "24px",
+      "$type": "dimension"
+    },
+    "normal-base": {
+      "$value": 24,
+      "$type": "number"
+    },
+    "lg-normal": {
+      "$value": "27px",
+      "$type": "dimension"
+    },
+    "normal-lg": {
+      "$value": 27,
+      "$type": "number"
+    },
+    "xl-normal": {
+      "$value": "30px",
+      "$type": "dimension"
+    },
+    "normal-xl": {
+      "$value": 30,
+      "$type": "number"
+    },
+    "2xl-normal": {
+      "$value": "36px",
+      "$type": "dimension"
+    },
+    "normal-2xl": {
+      "$value": 36,
+      "$type": "number"
+    },
+    "3xl-normal": {
+      "$value": "45px",
+      "$type": "dimension"
+    },
+    "normal-3xl": {
+      "$value": 45,
+      "$type": "number"
+    },
+    "4xl-normal": {
+      "$value": "54px",
+      "$type": "dimension"
+    },
+    "normal-4xl": {
+      "$value": 54,
+      "$type": "number"
+    },
+    "5xl-normal": {
+      "$value": "72px",
+      "$type": "dimension"
+    },
+    "normal-5xl": {
+      "$value": 72,
+      "$type": "number"
+    },
+    "6xl-normal": {
+      "$value": "90px",
+      "$type": "dimension"
+    },
+    "normal-6xl": {
+      "$value": 90,
+      "$type": "number"
+    },
+    "7xl-normal": {
+      "$value": "108px",
+      "$type": "dimension"
+    },
+    "normal-7xl": {
+      "$value": 108,
+      "$type": "number"
+    },
+    "8xl-normal": {
+      "$value": "128px",
+      "$type": "dimension"
+    },
+    "normal-8xl": {
+      "$value": 128,
+      "$type": "number"
+    },
+    "9xl-normal": {
+      "$value": "144px",
+      "$type": "dimension"
+    },
+    "normal-9xl": {
+      "$value": 144,
+      "$type": "number"
+    },
+    "xxs-tight": {
+      "$value": "14px",
+      "$type": "dimension"
+    },
+    "tight-xxs": {
+      "$value": 14,
+      "$type": "number"
+    },
+    "xs-tight": {
+      "$value": "15px",
+      "$type": "dimension"
+    },
+    "tight-xs": {
+      "$value": 15,
+      "$type": "number"
+    },
+    "sm-tight": {
+      "$value": "17.5px",
+      "$type": "dimension"
+    },
+    "tight-sm": {
+      "$value": 17.5,
+      "$type": "number"
+    },
+    "base-tight": {
+      "$value": "20px",
+      "$type": "dimension"
+    },
+    "tight-base": {
+      "$value": 20,
+      "$type": "number"
+    },
+    "lg-tight": {
+      "$value": "22.5px",
+      "$type": "dimension"
+    },
+    "tight-lg": {
+      "$value": 22.5,
+      "$type": "number"
+    },
+    "xl-tight": {
+      "$value": "25px",
+      "$type": "dimension"
+    },
+    "tight-xl": {
+      "$value": 25,
+      "$type": "number"
+    },
+    "2xl-tight": {
+      "$value": "30px",
+      "$type": "dimension"
+    },
+    "tight-2xl": {
+      "$value": 30,
+      "$type": "number"
+    },
+    "3xl-tight": {
+      "$value": "37.5px",
+      "$type": "dimension"
+    },
+    "tight-3xl": {
+      "$value": 37.5,
+      "$type": "number"
+    },
+    "4xl-tight": {
+      "$value": "45px",
+      "$type": "dimension"
+    },
+    "tight-4xl": {
+      "$value": 45,
+      "$type": "number"
+    },
+    "5xl-tight": {
+      "$value": "60px",
+      "$type": "dimension"
+    },
+    "tight-5xl": {
+      "$value": 60,
+      "$type": "number"
+    },
+    "6xl-tight": {
+      "$value": "75px",
+      "$type": "dimension"
+    },
+    "tight-6xl": {
+      "$value": 75,
+      "$type": "number"
+    },
+    "7xl-tight": {
+      "$value": "90px",
+      "$type": "dimension"
+    },
+    "tight-7xl": {
+      "$value": 90,
+      "$type": "number"
+    },
+    "8xl-tight": {
+      "$value": "120px",
+      "$type": "dimension"
+    },
+    "tight-8xl": {
+      "$value": 120,
+      "$type": "number"
+    },
+    "9xl-tight": {
+      "$value": "128px",
+      "$type": "dimension"
+    },
+    "tight-9xl": {
+      "$value": 128,
+      "$type": "number"
+    },
+    "xxs-none": {
+      "$value": "11px",
+      "$type": "dimension"
+    },
+    "none-xxs": {
+      "$value": 11,
+      "$type": "number"
+    },
+    "xs-none": {
+      "$value": "12px",
+      "$type": "dimension"
+    },
+    "none-xs": {
+      "$value": 12,
+      "$type": "number"
+    },
+    "sm-none": {
+      "$value": "14px",
+      "$type": "dimension"
+    },
+    "none-sm": {
+      "$value": 14,
+      "$type": "number"
+    },
+    "base-none": {
+      "$value": "16px",
+      "$type": "dimension"
+    },
+    "none-base": {
+      "$value": 16,
+      "$type": "number"
+    },
+    "lg-none": {
+      "$value": "18px",
+      "$type": "dimension"
+    },
+    "none-lg": {
+      "$value": 18,
+      "$type": "number"
+    },
+    "xl-none": {
+      "$value": "20px",
+      "$type": "dimension"
+    },
+    "none-xl": {
+      "$value": 20,
+      "$type": "number"
+    },
+    "2xl-none": {
+      "$value": "24px",
+      "$type": "dimension"
+    },
+    "none-2xl": {
+      "$value": 24,
+      "$type": "number"
+    },
+    "3xl-none": {
+      "$value": "30px",
+      "$type": "dimension"
+    },
+    "none-3xl": {
+      "$value": 30,
+      "$type": "number"
+    },
+    "4xl-none": {
+      "$value": "36px",
+      "$type": "dimension"
+    },
+    "none-4xl": {
+      "$value": 36,
+      "$type": "number"
+    },
+    "5xl-none": {
+      "$value": "48px",
+      "$type": "dimension"
+    },
+    "none-5xl": {
+      "$value": 48,
+      "$type": "number"
+    },
+    "6xl-none": {
+      "$value": "60px",
+      "$type": "dimension"
+    },
+    "none-6xl": {
+      "$value": 60,
+      "$type": "number"
+    },
+    "7xl-none": {
+      "$value": "72px",
+      "$type": "dimension"
+    },
+    "none-7xl": {
+      "$value": 72,
+      "$type": "number"
+    },
+    "8xl-none": {
+      "$value": "96px",
+      "$type": "dimension"
+    },
+    "none-8xl": {
+      "$value": 96,
+      "$type": "number"
+    },
+    "9xl-none": {
+      "$value": "128px",
+      "$type": "dimension"
+    },
+    "none-9xl": {
+      "$value": 128,
+      "$type": "number"
+    }
+  }
+}

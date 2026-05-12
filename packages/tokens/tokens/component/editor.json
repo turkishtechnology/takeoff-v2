@@ -1,0 +1,46 @@
+{
+  "component": {
+    "editor": {
+      "$type": "dimension",
+      "editor-header-compact-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "editor-header-compact-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "editor-header-compact-operation-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "editor-header-compact-gap": {
+        "$value": "{base.spacing.xl}"
+      },
+      "editor-header-normal-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "editor-header-normal-v-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "editor-header-normal-operation-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "editor-header-normal-gap": {
+        "$value": "{base.spacing.xl}"
+      },
+      "editor-body-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "editor-body-v-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "editor-body-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "editor-body-content-gap": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "editor-gap": {
+        "$value": "{base.spacing.m-base}"
+      }
+    }
+  }
+}

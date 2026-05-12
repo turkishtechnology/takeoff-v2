@@ -1,0 +1,25 @@
+{
+  "component": {
+    "countdown": {
+      "$type": "dimension",
+      "seconds": {
+        "$value": "59px"
+      },
+      "minutes": {
+        "$value": "59px"
+      },
+      "hours": {
+        "$value": "13px"
+      },
+      "zero": {
+        "$value": "0px"
+      },
+      "secondsretournd": {
+        "$value": "59px"
+      },
+      "minus": {
+        "$value": "1px"
+      }
+    }
+  }
+}

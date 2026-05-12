@@ -1,0 +1,19 @@
+{
+  "component": {
+    "timestamp": {
+      "$type": "dimension",
+      "timestamp-base-gap": {
+        "$value": "{base.spacing.xxs}"
+      },
+      "timestamp-base-content-gap": {
+        "$value": "{base.spacing.xs}"
+      },
+      "timestamp-small-gap": {
+        "$value": "{base.spacing.none}"
+      },
+      "timestamp-small-content-gap": {
+        "$value": "{base.spacing.xxs}"
+      }
+    }
+  }
+}

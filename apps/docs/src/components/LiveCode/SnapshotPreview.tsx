@@ -5,9 +5,10 @@ interface SnapshotPreviewProps {
   onHasRendered: () => void;
   previewWrapper?: ComponentType<PropsWithChildren>;
   scope: Record<string, unknown>;
+  noInline?: boolean;
 }
 
-export const SnapshotPreview = ({ onHasRendered, previewWrapper: PreviewWrapper, scope }: SnapshotPreviewProps) => {
+export const SnapshotPreview = ({ onHasRendered, previewWrapper: PreviewWrapper, scope, noInline = false }: SnapshotPreviewProps) => {
   const { error, code } = useContext(LiveContext);
   const lastGoodCodeRef = useRef<string>('');
   const hasCalledRenderedRef = useRef(false);
@@ -35,7 +36,7 @@ export const SnapshotPreview = ({ onHasRendered, previewWrapper: PreviewWrapper,
           <LivePreview className="live-preview" />
         ))}
       {showSnapshot && (
-        <LiveProvider code={lastGoodCodeRef.current} scope={scope} noInline={false}>
+        <LiveProvider code={lastGoodCodeRef.current} scope={scope} noInline={noInline}>
           {PreviewWrapper ? (
             <PreviewWrapper>
               <LivePreview className="live-preview live-preview-snapshot" />

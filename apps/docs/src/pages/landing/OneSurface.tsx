@@ -82,15 +82,17 @@ import { Button, Input } from '@turkish-technology/spar';
 
 export function FlightSearch() {
   return (
-    <Input defaultValue="IST">
-      <Input.Label>From</Input.Label>
-      <Input.Field />
-    </Input>
-    <Input defaultValue="FRA">
-      <Input.Label>To</Input.Label>
-      <Input.Field />
-    </Input>
-    <Button>Search flights</Button>
+    <>
+      <Input defaultValue="IST">
+        <Input.Label>From</Input.Label>
+        <Input.Field />
+      </Input>
+      <Input defaultValue="FRA">
+        <Input.Label>To</Input.Label>
+        <Input.Field />
+      </Input>
+      <Button>Search flights</Button>
+    </>
   );
 }`;
 
@@ -112,15 +114,17 @@ import { Button, Input } from '@takeoff-ui/react-spar';
 
 export function FlightSearch() {
   return (
-    <Input defaultValue="IST">
-      <Input.Label>From</Input.Label>
-      <Input.Container><Input.Field /></Input.Container>
-    </Input>
-    <Input defaultValue="FRA">
-      <Input.Label>To</Input.Label>
-      <Input.Container><Input.Field /></Input.Container>
-    </Input>
-    <Button variant="primary">Search flights</Button>
+    <>
+      <Input defaultValue="IST">
+        <Input.Label>From</Input.Label>
+        <Input.Container><Input.Field /></Input.Container>
+      </Input>
+      <Input defaultValue="FRA">
+        <Input.Label>To</Input.Label>
+        <Input.Container><Input.Field /></Input.Container>
+      </Input>
+      <Button variant="primary">Search flights</Button>
+    </>
   );
 }`;
 

@@ -1,0 +1,109 @@
+{
+  "component": {
+    "header": {
+      "$type": "dimension",
+      "links-basic-base-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "links-basic-base-active-gap": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "links-basic-base-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "links-basic-base-v-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "links-basic-base-content-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "links-basic-large-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "links-basic-large-active-gap": {
+        "$value": "{base.spacing.6xl}"
+      },
+      "links-basic-large-content-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "links-basic-large-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "links-basic-large-v-padding": {
+        "$value": "{base.spacing.2xl}"
+      },
+      "links-basic-small-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "links-basic-small-active-gap": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "links-basic-small-content-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "links-basic-small-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "links-basic-small-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "links-pill-small-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "links-pill-small-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "links-pill-small-content-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "links-pill-small-h-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "links-pill-small-v-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "links-pill-base-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "links-pill-base-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "links-pill-base-content-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "links-pill-base-h-padding": {
+        "$value": "{base.spacing.xl}"
+      },
+      "links-pill-base-v-padding": {
+        "$value": "{base.spacing.l}"
+      },
+      "links-pill-large-radius": {
+        "$value": "{base.radius.m-base}"
+      },
+      "links-pill-large-icon-size": {
+        "$value": "{base.spacing.5xl}"
+      },
+      "links-pill-large-content-gap": {
+        "$value": "{base.spacing.s}"
+      },
+      "links-pill-large-h-padding": {
+        "$value": "{base.spacing.4xl}"
+      },
+      "links-pill-large-v-padding": {
+        "$value": "{base.spacing.2xl}"
+      },
+      "elements-xsmall-full-padding": {
+        "$value": "{base.spacing.xs}"
+      },
+      "elements-small-full-padding": {
+        "$value": "{base.spacing.s}"
+      },
+      "elements-base-full-padding": {
+        "$value": "{base.spacing.m-base}"
+      },
+      "elements-large-full-padding": {
+        "$value": "{base.spacing.l}"
+      }
+    }
+  }
+}
