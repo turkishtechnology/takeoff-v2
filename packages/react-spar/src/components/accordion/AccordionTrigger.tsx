@@ -8,7 +8,7 @@ import { useComponentTheme } from '../../provider';
 
 import { AccordionTriggerBase, AccordionTriggerTitleBase } from './base';
 import { useAccordionOwnContext } from './context';
-import type { AccordionArrowPosition, AccordionTriggerProps, AccordionTriggerTitleProps } from './types';
+import type { AccordionTriggerProps, AccordionTriggerTitleProps } from './types';
 
 const DEFAULT_EXPAND_ICON: ReactNode = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -69,7 +69,6 @@ const AccordionTriggerRoot = (props: AccordionTriggerProps) => {
         instanceSlotProps: props.slotProps,
         instanceClassNames: props.classNames,
       })}
-      data-position={arrowPosition satisfies AccordionArrowPosition}
       aria-hidden="true"
     >
       {isOpen ? (collapseIcon ?? DEFAULT_COLLAPSE_ICON) : (expandIcon ?? DEFAULT_EXPAND_ICON)}

@@ -275,82 +275,128 @@ real React lifecycle/state/ref/effect reason has been approved.
 
 ### Code organization template
 
-```tsx
-import { Primitive } from '@turkish-technology/spar';
-import { type Ref } from 'react';
+Single-slot wrappers (root, or a sub-component that only renders one owner node)
+go through `composeRootAttrs`. Multi-slot sub-components compose the root with
+`composeRootAttrs` and each additional slot with `buildSlotAttrs` at its own
+render site. Do not inline the `resolveProps` + slot-attr chain.
 
-import {
-  MyComponentBase,
-  MyComponentProvider,
-  useMyComponentContext,
-} from './MyComponentBase';
+```tsx
+import { Primitive as SparPrimitive } from '@turkish-technology/spar';
+
+import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { useComponentTheme } from '../../provider';
+
+import { MyComponentBase } from './base';
+import { MyComponentProvider, useMyComponentOwnContext } from './context';
 import type { MyComponentProps, MyComponentPartProps } from './types';
 
-function MyComponent({
-  ref,
-  ...rawProps
-}: MyComponentProps & { ref?: Ref<HTMLDivElement> }) {
-  const { children, className, classNames, slotProps, ...restProps } =
-    MyComponentBase.resolveProps(rawProps);
-
-  const contextValue = {
-    classNames,
-    slotProps,
-  };
+// Root: single slot, may layer canonical state-driven data-* via stateAttrs.
+export const MyComponent = (props: MyComponentProps) => {
+  const theme = useComponentTheme('MyComponent');
+  const { rootAttrs, rest } = composeRootAttrs(MyComponentBase, props, theme, {
+    stateAttrs: {
+      'data-variant': props.variant,
+      'data-disabled': props.disabled ? '' : undefined,
+    },
+  });
+  const { children, ref, ...spar } = rest;
 
   return (
-    <MyComponentProvider value={contextValue}>
-      <Primitive
-        {...restProps}
-        ref={ref}
-        {...MyComponentBase.getSlotProps('root', {
-          className,
-        })}
-      >
+    <MyComponentProvider value={{ variant: props.variant }}>
+      <SparPrimitive {...spar} {...rootAttrs} ref={ref}>
         {children}
-      </Primitive>
+      </SparPrimitive>
     </MyComponentProvider>
   );
-}
+};
 
-function MyComponentPart({
-  children,
-  className,
-  ...rest
-}: MyComponentPartProps) {
-  const context = useMyComponentContext('MyComponent.Part');
-  const attrs = buildSlotAttrs(
-    MyComponentBase.getSlotProps('part', { className }),
-    context.slotProps,
-    'part',
-    context.classNames?.part,
+MyComponent.displayName = 'MyComponent';
+
+// Single-slot sub-component: same composeRootAttrs call shape as the root.
+export const MyComponentPart = (props: MyComponentPartProps) => {
+  const theme = useComponentTheme('MyComponentPart');
+  const { rootAttrs, rest } = composeRootAttrs(
+    MyComponentPartBase,
+    props,
+    theme,
   );
+  const { children, ref, ...spar } = rest;
+
   return (
-    <span {...attrs} {...rest}>
+    <SparPrimitivePart {...spar} {...rootAttrs} ref={ref}>
       {children}
-    </span>
+    </SparPrimitivePart>
   );
-}
+};
+
 MyComponentPart.displayName = 'MyComponent.Part';
 
+// Multi-slot sub-component: composeRootAttrs for the root slot, buildSlotAttrs
+// at each additional slot's render site.
+export const MyComponentTrigger = (props: MyComponentTriggerProps) => {
+  const theme = useComponentTheme('MyComponentTrigger');
+  const { rootAttrs, rest } = composeRootAttrs(
+    MyComponentTriggerBase,
+    props,
+    theme,
+  );
+  const { children, icon, ref, ...spar } = rest;
+
+  const iconNode = icon != null && (
+    <span
+      {...buildSlotAttrs(MyComponentTriggerBase.getSlotProps('icon'), 'icon', {
+        themeSlotProps: theme?.slotProps,
+        themeClassNames: theme?.classNames,
+        instanceSlotProps: props.slotProps,
+        instanceClassNames: props.classNames,
+      })}
+    >
+      {icon}
+    </span>
+  );
+
+  return (
+    <SparPrimitiveTrigger {...spar} {...rootAttrs} ref={ref}>
+      {iconNode}
+      {children}
+    </SparPrimitiveTrigger>
+  );
+};
+
+MyComponentTrigger.displayName = 'MyComponent.Trigger';
+```
+
+Local barrel (`index.ts`) attaches sub-components with `Object.assign`:
+
+```ts
 const MyComponentCompound = Object.assign(MyComponent, {
   Part: MyComponentPart,
+  Trigger: MyComponentTrigger,
 });
+
 export { MyComponentCompound as MyComponent };
 ```
 
 ### Implementation rules
 
-- Call `resolveProps` once near the top of the root component.
+- Compose the root with `composeRootAttrs(Base, props, theme)` — never inline
+  the `resolveProps` + slot-attr chain. The helper resolves
+  `(author defaults → theme defaults → instance props)` and returns
+  `{ rootAttrs, rest }` with `className`/`classNames`/`slotProps` already
+  stripped.
+- Layer canonical state-driven `data-*` (variant, size, disabled, …) via
+  `composeRootAttrs(..., { stateAttrs: { ... } })`. These attrs spread on top of
+  `slotProps.root` so the design-system invariants cannot be overridden by
+  consumer slot props. Pass `''` for "present" and `undefined` for "absent" —
+  `undefined` entries are dropped.
+- For additional slot owner nodes inside a sub-component, call
+  `buildSlotAttrs(Base.getSlotProps('slotName'), 'slotName', { themeSlotProps, themeClassNames, instanceSlotProps, instanceClassNames })`
+  at the render site. Do not invent ad-hoc slot composition.
 - Keep visual-only derivation above the return block.
 - Do not re-implement Spar behavior in the wrapper. If behavior props cannot be
   passed through directly, fix Spar first.
 - Keep JSX shallow. Move repeated or branching rendering into subcomponents.
-- Use `getSlotProps` for slot nodes. Use `cx` when you only need class
-  composition without extra slot metadata.
-- Use `buildSlotAttrs` (from `src/core`) inside subcomponents to compose
-  canonical slot attrs with context-resolved `classNames`/`slotProps`.
-- Use `clsx` through `createComponentBase` or directly. Do not add local
+- Use `clsx` through `createComponentBase` (`cx`) or directly. Do not add local
   string-join helpers.
 - Use small pure helpers for normalization, encoding, and equality checks.
 - Fire callbacks exactly once per user-visible state change.
@@ -362,8 +408,23 @@ export { MyComponentCompound as MyComponent };
   matters. Do not add `useMemo` or `useCallback` by default.
 - Use `createSafeContext` (from `src/hooks`) so that a subcomponent used outside
   its root raises a descriptive error.
+- When a sub-component conditionally renders based on whether the consumer
+  already supplied a specific child (e.g. `Accordion.Trigger.Title`), detect it
+  with `hasChildOfType` (from `src/hooks`) rather than ad-hoc `React.Children`
+  iteration.
 - Set `displayName` on the root (`'Button'`) and every subcomponent
   (`'Button.Label'`, `'Dialog.Header'`).
+
+### Wrapper helpers — quick reference
+
+| Need                                       | Helper                                                   | Where it lives |
+| ------------------------------------------ | -------------------------------------------------------- | -------------- |
+| Compose canonical root attrs (single slot) | `composeRootAttrs(Base, props, theme)`                   | `src/core`     |
+| Layer canonical `data-*` on root           | `composeRootAttrs(..., { stateAttrs })`                  | `src/core`     |
+| Compose canonical attrs for an extra slot  | `buildSlotAttrs(Base.getSlotProps(slot), slot, { ... })` | `src/core`     |
+| Read theme defaults                        | `useComponentTheme('Name')`                              | `src/provider` |
+| Share root state with sub-components       | `createSafeContext('NameProvider')`                      | `src/hooks`    |
+| Detect a specific child sub-component      | `hasChildOfType`                                         | `src/hooks`    |
 
 ## Composition Archetypes
 
