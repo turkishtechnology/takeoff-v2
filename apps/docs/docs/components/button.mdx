@@ -77,16 +77,16 @@ export const disabledDemo = String.raw`
 
 export const toggleDemo = String.raw`
 function ToggleButtonDemo() {
-  const [pressed, setPressed] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
 
   return (
     <div className="button-demo">
       <Button
-        variant={pressed ? 'primary' : 'secondary'}
-        pressed={pressed}
-        onPressedChange={setPressed}
+        variant={isPressed ? 'primary' : 'secondary'}
+        isPressed={isPressed}
+        onPressedChange={setIsPressed}
       >
-        {pressed ? 'On' : 'Off'}
+        {isPressed ? 'On' : 'Off'}
       </Button>
     </div>
   );

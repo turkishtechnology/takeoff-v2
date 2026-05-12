@@ -16,8 +16,6 @@ export const Button = (props: ButtonProps) => {
     size = DEFAULT_SIZE,
     rounded = false,
     loading = false,
-    pressed,
-    onPressedChange,
     startIcon,
     endIcon,
     disabled = false,
@@ -66,15 +64,7 @@ export const Button = (props: ButtonProps) => {
   });
 
   return (
-    <SparButton
-      {...(sparProps as unknown as SparButtonProps)}
-      disabled={disabled}
-      isLoading={loading}
-      isPressed={pressed}
-      onPressedChange={onPressedChange}
-      ref={ref}
-      {...rootAttrs}
-    >
+    <SparButton {...(sparProps as unknown as SparButtonProps)} disabled={disabled} isLoading={loading} ref={ref} {...rootAttrs}>
       {loading && <span {...spinnerSlotAttrs} />}
       {startIcon && !loading && <span {...iconSlotAttrs}>{startIcon}</span>}
       {children && <span {...labelSlotAttrs}>{children}</span>}

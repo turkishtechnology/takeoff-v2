@@ -37,14 +37,6 @@ export interface ButtonOwnProps {
    */
   loading?: boolean;
   /**
-   * Toggle state — when defined, creates a toggle button.
-   */
-  pressed?: boolean;
-  /**
-   * Callback fired when toggle state changes.
-   */
-  onPressedChange?: (pressed: boolean) => void;
-  /**
    * Icon placed before children.
    */
   startIcon?: ReactNode;
