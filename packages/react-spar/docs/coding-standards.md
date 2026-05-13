@@ -672,12 +672,6 @@ Before considering a component complete:
   reached exclusively through the root)
 - confirm no CSS is emitted from `packages/react-spar/dist`
 - confirm slot classes are mirrored in `src/slot-registry.ts`
-- confirm at least one smoke scenario in
-  [`apps/react-app/src/App.tsx`](../../../apps/react-app/src/App.tsx) exercises
-  the new compound anatomy end to end against the real tokens CSS import. If a
-  customization surface is genuinely not part of the component's public
-  contract, mark the omission inline as `// exemption: <reason>` so it is
-  intentional and reviewable.
 - confirm docs, generated API tables, tests, and component types describe the
   same compound contract
 - include the parity-review summary (and any React-enhancement justification) in
