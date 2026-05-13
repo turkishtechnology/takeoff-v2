@@ -13,11 +13,11 @@ export const AccordionItem = <T extends ElementType = 'div'>(props: AccordionIte
   const { type, mode, size } = useAccordionOwnContext('Accordion.Item');
 
   const { rootAttrs, rest } = composeRootAttrs(AccordionItemBase, props as AccordionItemProps<'div'>, theme, {
-    stateAttrs: {
+    stateAttrs: () => ({
       'data-type': type,
       'data-mode': mode,
       'data-size': size,
-    },
+    }),
   });
   const { children, ref, ...spar } = rest;
 

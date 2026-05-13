@@ -11,18 +11,17 @@ import type { DrawerOverlayProps } from './types';
 export const DrawerOverlay = <T extends ElementType = 'div'>(props: DrawerOverlayProps<T>) => {
   const theme = useComponentTheme('DrawerOverlay');
 
-  const { rootAttrs, rest } = composeRootAttrs(DrawerOverlayBase, props as DrawerOverlayProps<'div'>, theme);
+  const { rootAttrs, rest } = composeRootAttrs(DrawerOverlayBase, props as DrawerOverlayProps<'div'>, theme, {
+    stateAttrs: ({ intensity = DEFAULT_INTENSITY, invisible }) => ({
+      'data-intensity': intensity,
+      'data-invisible': invisible ? '' : undefined,
+    }),
+  });
 
-  const { intensity = DEFAULT_INTENSITY, invisible = false, children, ref, ...overlayProps } = rest;
-
-  const finalRootAttrs = {
-    ...rootAttrs,
-    'data-intensity': intensity,
-    'data-invisible': invisible ? '' : undefined,
-  };
+  const { intensity: _intensity, invisible: _invisible, children, ref, ...overlayProps } = rest;
 
   return (
-    <SparDialogOverlay {...overlayProps} ref={ref} {...finalRootAttrs}>
+    <SparDialogOverlay {...overlayProps} ref={ref} {...rootAttrs}>
       {children}
     </SparDialogOverlay>
   );

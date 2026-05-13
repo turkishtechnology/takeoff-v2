@@ -14,14 +14,13 @@ export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelPro
   const theme = useComponentTheme('DrawerPanel');
   const { placement, dismissable } = useDrawerOwnContext();
 
-  const { rootAttrs: baseRootAttrs, rest } = composeRootAttrs(DrawerPanelBase, props as DrawerPanelProps<'div'>, theme);
+  const { rootAttrs, rest } = composeRootAttrs(DrawerPanelBase, props as DrawerPanelProps<'div'>, theme, {
+    stateAttrs: () => ({
+      'data-placement': placement,
+    }),
+  });
 
   const { container, children, ref, ...panelProps } = rest;
-
-  const rootAttrs = {
-    ...baseRootAttrs,
-    'data-placement': placement,
-  };
 
   const dismissHandlers = !dismissable && {
     onEscapeKeyDown: preventDefault,

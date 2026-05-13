@@ -11,12 +11,13 @@ export const DrawerBody = <T extends ElementType = 'div'>(props: DrawerBodyProps
 
   const { rootAttrs, rest } = composeRootAttrs(DrawerBodyBase, props as DrawerBodyProps<'div'>, theme);
 
-  const { children, ref, ...bodyProps } = rest;
+  const { as, children, ref, ...bodyProps } = rest;
+  const Component = (as ?? 'div') as ElementType;
 
   return (
-    <div {...bodyProps} ref={ref} {...rootAttrs}>
+    <Component {...bodyProps} ref={ref} {...rootAttrs}>
       {children}
-    </div>
+    </Component>
   );
 };
 

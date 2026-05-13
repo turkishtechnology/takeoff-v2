@@ -10,19 +10,19 @@ import type { DrawerFooterProps } from './types';
 export const DrawerFooter = <T extends ElementType = 'div'>(props: DrawerFooterProps<T>) => {
   const theme = useComponentTheme('DrawerFooter');
 
-  const { rootAttrs, rest } = composeRootAttrs(DrawerFooterBase, props as DrawerFooterProps<'div'>, theme);
+  const { rootAttrs, rest } = composeRootAttrs(DrawerFooterBase, props as DrawerFooterProps<'div'>, theme, {
+    stateAttrs: ({ footerType = DEFAULT_FOOTER_TYPE }) => ({
+      'data-footer-type': footerType,
+    }),
+  });
 
-  const { footerType = DEFAULT_FOOTER_TYPE, children, ref, ...footerProps } = rest;
-
-  const finalRootAttrs = {
-    ...rootAttrs,
-    'data-footer-type': footerType,
-  };
+  const { as, footerType: _footerType, children, ref, ...footerProps } = rest;
+  const Component = (as ?? 'div') as ElementType;
 
   return (
-    <div {...footerProps} ref={ref} {...finalRootAttrs}>
+    <Component {...footerProps} ref={ref} {...rootAttrs}>
       {children}
-    </div>
+    </Component>
   );
 };
 

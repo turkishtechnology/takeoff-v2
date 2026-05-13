@@ -11,57 +11,68 @@ import type { ButtonProps, ButtonSlot } from './types';
 export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) => {
   const theme = useComponentTheme('Button');
 
+  const { rootAttrs, rest } = composeRootAttrs<ButtonProps, ButtonSlot>(ButtonBase, props as ButtonProps<'button'>, theme, {
+    stateAttrs: ({
+      variant = DEFAULT_VARIANT,
+      appearance = DEFAULT_APPEARANCE,
+      size = DEFAULT_SIZE,
+      rounded,
+      isLoading,
+      disabled,
+      startIcon,
+      endIcon,
+      children,
+    }) => {
+      const hasIcon = !!(startIcon || endIcon);
+      const isIconOnly = hasIcon && !children;
+      return {
+        'data-variant': variant,
+        'data-type': appearance,
+        'data-size': size,
+        'data-rounded': rounded ? '' : undefined,
+        'data-icon-only': isIconOnly ? '' : undefined,
+        'data-loading': isLoading ? '' : undefined,
+        'data-disabled': disabled ? '' : undefined,
+      };
+    },
+  });
+
   const {
-    variant = DEFAULT_VARIANT,
-    appearance = DEFAULT_APPEARANCE,
-    size = DEFAULT_SIZE,
-    rounded = false,
+    // Visual props are consumed by `stateAttrs` above; destructured here to
+    // keep them off the underlying button DOM (otherwise they would leak via
+    // `...sparProps` as raw HTML attributes).
+    variant: _variant,
+    appearance: _appearance,
+    size: _size,
+    rounded: _rounded,
     isLoading = false,
     startIcon,
     endIcon,
     disabled = false,
-    className,
-    classNames,
-    slotProps,
     children,
     ref,
     ...sparProps
-  } = props as ButtonProps<'button'>;
-
-  const hasIcon = !!(startIcon || endIcon);
-  const isIconOnly = hasIcon && !children;
-
-  const { rootAttrs } = composeRootAttrs<ButtonProps, ButtonSlot>(ButtonBase, { className, classNames, slotProps }, theme, {
-    stateAttrs: {
-      'data-variant': variant,
-      'data-type': appearance,
-      'data-size': size,
-      'data-rounded': rounded ? '' : undefined,
-      'data-icon-only': isIconOnly ? '' : undefined,
-      'data-loading': isLoading ? '' : undefined,
-      'data-disabled': disabled ? '' : undefined,
-    },
-  });
+  } = rest;
 
   const iconSlotAttrs = buildSlotAttrs(ButtonBase.getSlotProps('icon'), 'icon' as ButtonSlot, {
     themeSlotProps: theme?.slotProps,
     themeClassNames: theme?.classNames,
-    instanceSlotProps: slotProps,
-    instanceClassNames: classNames,
+    instanceSlotProps: props.slotProps,
+    instanceClassNames: props.classNames,
   });
 
   const labelSlotAttrs = buildSlotAttrs(ButtonBase.getSlotProps('label'), 'label' as ButtonSlot, {
     themeSlotProps: theme?.slotProps,
     themeClassNames: theme?.classNames,
-    instanceSlotProps: slotProps,
-    instanceClassNames: classNames,
+    instanceSlotProps: props.slotProps,
+    instanceClassNames: props.classNames,
   });
 
   const spinnerSlotAttrs = buildSlotAttrs(ButtonBase.getSlotProps('spinner'), 'spinner' as ButtonSlot, {
     themeSlotProps: theme?.slotProps,
     themeClassNames: theme?.classNames,
-    instanceSlotProps: slotProps,
-    instanceClassNames: classNames,
+    instanceSlotProps: props.slotProps,
+    instanceClassNames: props.classNames,
   });
 
   return (

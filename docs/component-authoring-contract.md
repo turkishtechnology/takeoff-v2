@@ -311,7 +311,36 @@ needs `asChild` semantics, fix Spar first (upstream-first rule), then expose it
 through the wrapper.
 
 State-only roots that render no DOM (e.g. `Tooltip`, `Drawer` root) are exempt
-from polymorphism — they accept no `as` and no native HTML props.
+from polymorphism — they accept no `as`, no native HTML props, and **no styling
+layers** (`className`, `classNames`, `slotProps`). There is no rendered element
+to receive any of these, so adding them is a silent contract bug: the values are
+swallowed by the underlying state-only Spar primitive and never reach the DOM.
+State-driven styling hooks (`data-placement`, `data-disabled`, …) belong on the
+child DOM-rendering parts (`Drawer.Panel`, `Tooltip.Content`, …) where they
+actually have a DOM target.
+
+State-only roots also skip `composeRootAttrs`. Read theme `defaultProps`
+directly and register the root with `StateOnlyComponentThemeConfig` (which
+exposes only `defaultProps`):
+
+```ts
+declare module '@takeoff-ui/react-spar' {
+  interface ComponentThemeRegistry {
+    Drawer: StateOnlyComponentThemeConfig<DrawerProps>;
+  }
+}
+
+export const Drawer = (props: DrawerProps) => {
+  const theme = useComponentTheme('Drawer');
+  const merged = { ...theme?.defaultProps, ...props };
+  const { placement = 'right', children, ...sparProps } = merged;
+  return (
+    <DrawerProvider value={{ placement }}>
+      <SparDialog {...sparProps}>{children}</SparDialog>
+    </DrawerProvider>
+  );
+};
+```
 
 ### Render-prop children where Spar provides them
 
