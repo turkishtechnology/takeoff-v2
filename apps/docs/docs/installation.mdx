@@ -11,27 +11,30 @@ slug: /installation
 
 Three steps. No config file. No build tool wiring beyond a CSS import.
 
-## 1. Install the packages
+## 1. Install the package
 
 ```bash
 # pnpm
-pnpm add @takeoff-ui/react-spar @takeoff-design/tokens
+pnpm add @takeoff-ui/react-spar
 
 # npm
-npm install @takeoff-ui/react-spar @takeoff-design/tokens
+npm install @takeoff-ui/react-spar
 
 # yarn
-yarn add @takeoff-ui/react-spar @takeoff-design/tokens
+yarn add @takeoff-ui/react-spar
 
 # bun
-bun add @takeoff-ui/react-spar @takeoff-design/tokens
+bun add @takeoff-ui/react-spar
 ```
+
+`@takeoff-design/tokens` and `@turkish-technology/spar` come along as direct
+dependencies of `@takeoff-ui/react-spar`. Add either of them to your own
+`package.json` only if your app imports from them directly (for example, when
+overriding token CSS variables from an entry stylesheet or using Spar primitives
+that `react-spar` does not re-export).
 
 **React version:** `@takeoff-ui/react-spar` targets React 19 only. If your app
 is on React 18, you'll get a runtime error; pin React 19 before installing.
-
-`@turkish-technology/spar` is installed by `@takeoff-ui/react-spar`. Install it
-directly only if your app imports Spar primitives itself.
 
 ## 2. Import the token stylesheet
 
