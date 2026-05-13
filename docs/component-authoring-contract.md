@@ -1,91 +1,64 @@
 # Component Authoring Contract
 
-This document defines how `@takeoff-ui/react-spar` components are designed and
-reviewed.
+This document defines **how `@takeoff-ui/react-spar` components are designed and
+reviewed**. It is the single source of truth for layer responsibilities, the
+upstream-first rule, the no-adapter-hook rule, the public compound parts policy,
+and the merge gate.
 
 The package is not a second design system. It is a React wrapper layer for
 Takeoff components built on top of Spar primitives.
 
+## Document scope
+
+This contract is **layer-policy, not implementation detail**. It governs what
+each layer owns, what wrappers may and may not do, and which rules block a
+merge.
+
+Implementation specifics — file layout, naming conventions, slot vocabulary, the
+`composeRootAttrs` / `buildSlotAttrs` API, testing stack, docs demos mechanics —
+live in the package-local
+[Coding Standards](../packages/react-spar/docs/coding-standards.md). If a rule
+appears in both documents, **this one wins**.
+
 ## Layer responsibilities
+
+Four layers, in dependency order: Takeoff Core → Spar → takeoff-spar → React.
+Each layer owns a disjoint slice of the contract. A wrapper that reaches into
+another layer's slice is a contract violation.
 
 ### Takeoff Core owns product vocabulary
 
-Takeoff Core defines product-facing names and visual language:
+Takeoff Core defines product-facing names and the visual language. React Spar
+preserves this vocabulary unless there is a strong React-specific reason not to.
 
-- `variant`
-- `type`
-- `size`
-- `mode`
-- `activeIndex` (Core Accordion only; React Spar uses `value`)
-- `visible`
-- `multiple`
-- `arrowPosition`
-- `expandIcon`
-- `collapseIcon`
-- `hideArrows`
-- `invalid`
-- `loading`
-- `clearable`
+Canonical names that React Spar must preserve:
 
-React Spar should preserve this vocabulary unless there is a strong
-React-specific reason not to.
+```txt
+variant   type   size   mode
+visible   multiple
+arrowPosition   expandIcon   collapseIcon   hideArrows
+invalid   loading   clearable
+```
 
-Accordion is an approved exception: React Spar uses the cleaner primitive
+**Approved exception — Accordion:** React Spar uses the cleaner primitive
 `value` / `defaultValue` / `onValueChange` API and `Accordion.Item value`
-instead of the Takeoff Core active-index and item-key names.
-
-### React owns framework ergonomics
-
-Preserve Takeoff Core product vocabulary, not Web Component mechanics.
-
-Map these directly when Spar supports them:
-
-```txt
-multiple
-type
-mode
-size
-arrowPosition
-expandIcon
-collapseIcon
-hideArrows
-```
-
-Translate framework mechanics into React conventions:
-
-```txt
-tk-active-index-change -> onValueChange
-initial open value     -> defaultValue
-slots                  -> compound components
-```
-
-Do not expose Web Component-only shortcuts when React has a clearer shape:
-
-```txt
-Accordion.Item active
-Accordion.Item header
-slot="header"
-slot="content"
-custom active-index DOM events
-```
-
-If mapping is only prop naming or event naming, keep it inline or fix Spar so
-the wrapper can pass the prop through. Do not create an adapter hook for this.
+instead of Core's `activeIndex` and item-key names. New exceptions require an
+explicit decision in the component contract.
 
 ### Spar owns behavior
 
 Spar owns:
 
-- controlled/uncontrolled state
+- controlled/uncontrolled state reconciliation
 - keyboard behavior
-- focus behavior
+- focus management
 - ARIA wiring
 - item registration
 - open/closed logic
-- disabled/readOnly behavior
+- disabled/readOnly semantics
 
-If Spar behavior or API is wrong, fix Spar first. Do not hide the problem inside
-a takeoff-spar adapter hook.
+If Spar behavior or API is wrong, **fix Spar first**. Do not hide the problem
+inside a takeoff-spar adapter hook.
 
 ### takeoff-spar owns visual wrapping
 
@@ -98,22 +71,49 @@ takeoff-spar owns:
 - icon rendering
 - public React component anatomy
 
-takeoff-spar should be thin.
+takeoff-spar should be thin. Visual chrome only — never behavior
+re-implementation.
 
----
+### React owns framework ergonomics
 
-## No adapter hook rule
+Preserve Takeoff Core product vocabulary, **not** Web Component mechanics.
 
-Do not create hooks like:
+Map these props directly when Spar supports them: `multiple`, `type`, `mode`,
+`size`, `arrowPosition`, `expandIcon`, `collapseIcon`, `hideArrows`.
 
-```txt
-useAccordionAdapter
-useButtonAdapter
-useDialogAdapter
-useInputAdapter
-```
+Translate framework mechanics into React conventions:
 
-unless there is a real React reason:
+| Web Component            | React                 |
+| ------------------------ | --------------------- |
+| `tk-active-index-change` | `onValueChange`       |
+| initial open value attr  | `defaultValue`        |
+| `slot="header"`          | compound subcomponent |
+| custom DOM events        | `on*` callback prop   |
+
+Do not expose Web Component-only shortcuts when React has a clearer shape (e.g.
+`Accordion.Item active`, `slot="content"`, custom active-index DOM events).
+
+If a mapping is only prop renaming or event renaming, **keep it inline or fix
+Spar so the wrapper can pass the prop through**. Do not create an adapter hook
+for renaming alone.
+
+## Upstream-first rule
+
+When takeoff-spar would need to translate behavior-heavy props, follow this
+decision order:
+
+1. Can **Spar** expose the correct primitive API directly?
+2. Can **Spar** support the Takeoff-compatible name as the primary or alias API?
+3. Can **takeoff-spar** pass the prop through directly?
+4. Only then consider a **tiny pure helper**.
+5. Adapter hooks are forbidden by default — see No adapter hook rule below.
+
+### No adapter hook rule
+
+Do not create adapter hooks like `useAccordionAdapter`, `useButtonAdapter`,
+`useDialogAdapter`, `useInputAdapter`.
+
+An adapter hook is permitted **only** when there is a real React reason:
 
 - internal state
 - effect
@@ -123,54 +123,25 @@ unless there is a real React reason:
 - layout measurement
 - lifecycle coordination
 
-Prop mapping is not a hook.
+The following are explicitly **not** reasons to introduce an adapter hook:
 
-Value normalization is not a hook.
+- prop renaming or mapping → use inline mapping or fix Spar
+- value normalization → use a pure helper
+- class name generation → use `composeRootAttrs`
+- "the wrapper got long" → break out subcomponents, don't introduce a hook
 
-Class name generation is not a hook.
-
-If a wrapper needs a large adapter hook, first ask whether Spar should be fixed.
-
-Allowed alternatives:
-
-```txt
-pure helper function
-inline mapping
-upstream Spar API change
-```
-
-Preferred:
-
-```txt
-fix Spar -> keep takeoff-spar thin
-```
-
----
-
-## Upstream-first rule
-
-When takeoff-spar needs to translate behavior-heavy props, use this decision
-order:
-
-1. Can Spar expose the correct primitive API directly?
-2. Can Spar support the Takeoff-compatible name as the primary or alias API?
-3. Can takeoff-spar pass the prop through directly?
-4. Only then consider a tiny pure helper.
-5. Do not create an adapter hook unless React lifecycle/state/ref/effect is
-   required.
+If a wrapper appears to need a large adapter hook, first ask whether **Spar
+should be fixed instead**. The preferred outcome is always: fix Spar → keep
+takeoff-spar thin.
 
 Example:
 
-Bad:
-
 ```tsx
+// Bad — hides the mapping inside a hook with no React lifecycle reason
 const sparProps = useAccordionAdapter(props);
 return <SparAccordion {...sparProps} />;
-```
 
-Good:
-
-```tsx
+// Good — direct pass-through, behavior owned by Spar
 return (
   <SparAccordion
     multiple={multiple}
@@ -181,179 +152,60 @@ return (
 );
 ```
 
-If Spar does not support this, fix Spar first.
-
----
+If Spar does not support this shape, the fix is upstream — not a wrapper hook.
 
 ## Compound component rule
 
-Expose public compound components only for meaningful anatomy.
+Expose public compound components **only for meaningful anatomy**.
 
-Public compound parts usually include:
+### Public by default
 
-```txt
-Accordion.Item
-Accordion.Header
-Accordion.Trigger
-Accordion.Content
-
-Dialog.Trigger
-Dialog.Panel
-Dialog.Header
-Dialog.Title
-Dialog.Description
-Dialog.Body
-Dialog.Footer
-Dialog.CloseButton
-
-Input.Label
-Input.Field
-Input.Description
-Input.ErrorMessage
-```
-
-Do not expose decorative pieces by default.
-
-Usually internal:
+Compound parts that compose anatomy, own semantics, or anchor a documented slot
+are public:
 
 ```txt
-Accordion.Arrow
-Button.Spinner
-Button.Label wrapper span
-Input.Spinner
-Input.ClearIcon
-Dialog.SignIcon
+Accordion.Item   Accordion.Header   Accordion.Trigger   Accordion.Content
+
+Dialog.Trigger   Dialog.Panel    Dialog.Header   Dialog.Title
+Dialog.Description   Dialog.Body   Dialog.Footer   Dialog.CloseButton
+
+Input.Label   Input.Field   Input.Description   Input.ErrorMessage
 ```
 
-A decorative part may become public only if at least one is true:
+### Internal by default
 
-1. Consumers must place it manually.
-2. It owns accessibility semantics.
-3. It has independent behavior.
-4. It is a public Takeoff Core slot.
-5. Product/design explicitly requires manual anatomy control.
-
----
-
-## Accordion-specific decision
-
-Accordion arrow is internal.
-
-Takeoff Core controls arrow through root props:
-
-```tsx
-<Accordion
-  arrowPosition="right"
-  expandIcon={<ChevronDown />}
-  collapseIcon={<ChevronUp />}
-  hideArrows={false}
-/>
-```
-
-Do not require:
-
-```tsx
-<Accordion.Trigger>
-  Title
-  <Accordion.Arrow />
-</Accordion.Trigger>
-```
-
-The trigger renders an internal arrow slot with stable styling hooks.
-
-Accordion item identity is `value`.
-
-React examples and public types should require `Accordion.Item value` so
-controlled root props (`value`, `defaultValue`) have a stable target.
-
-Accordion open state comes from Spar.
-
-`Accordion.Item` and `Accordion.Content` expose Spar's `data-state="open"` /
-`data-state="closed"` when they render. Do not mirror the same state with
-wrapper-owned state attributes or local value matching.
-
----
-
-## Wrapper boilerplate
-
-Single-slot wrappers use `composeRootAttrs` from `core/`. It runs the merge
-every wrapper needs: layer
-`(author defaults → theme defaults → instance props)`, then compose the
-canonical root-slot attrs (`data-slot`, `tk-*` class, theme/instance overrides).
-Returns the attrs and the leftover props with the layering keys (`className`,
-`classNames`, `slotProps`) already stripped.
-
-```tsx
-export const Header = (props: HeaderProps) => {
-  const theme = useComponentTheme('Header');
-  const { rootAttrs, rest } = composeRootAttrs(HeaderBase, props, theme);
-  const { children, ...spar } = rest;
-
-  return (
-    <SparHeader {...spar} {...rootAttrs}>
-      {children}
-    </SparHeader>
-  );
-};
-```
-
-Do not inline the `resolveProps` + `buildSlotAttrs` chain. Any contract change
-(slotProps precedence, theme-className shortcut, etc.) lives in one place.
-
-`composeRootAttrs` takes `theme` as a parameter. Wrappers call
-`useComponentTheme(...)` themselves so the theme dependency stays visible at the
-top of the function and the helper stays pure (no context read or React state
-inside).
-
----
-
-## Default placement
-
-Visual defaults live at the destructure site of the consuming wrapper, not in
-`base.defaultProps`:
-
-```tsx
-const { type = 'grouped', size = 'base', ... } = rest;
-```
-
-Single source of truth, next to the prop it fills, narrowed by TypeScript.
-
----
-
-## Component structure
-
-Keep component files small and direct.
-
-Recommended structure:
+Decorative ornaments are **internal** unless they meet a justification criterion
+below:
 
 ```txt
-components/<component>/
-  <Component>.tsx
-  <Component>Base.ts
-  types.ts
-  index.ts
-  <Component>.test.tsx
+Accordion.Arrow   Button.Spinner   Button.Label wrapper span
+Input.Spinner   Input.ClearIcon   Dialog.SignIcon
 ```
 
-Only add extra files when they remove real complexity.
+### Justification for promoting a decorative part to public
 
-Do not add `use<Component>Adapter.ts` by default.
+A decorative part may become public **only** if at least one of these is true:
 
----
+1. Consumers must place it manually for the anatomy to render correctly.
+2. It owns accessibility semantics (focus target, labelling).
+3. It has independent behavior (its own controlled state, event surface).
+4. It is a public Takeoff Core slot that consumers expect to compose.
+5. Product or design explicitly requires manual anatomy control.
 
-## Public type rule
+"Some consumer might want to customize it" is **not** a justification — that is
+what `slotProps`, `classNames`, and theme overrides are for. Promoting a
+decorative part is a contract change and must be approved in the component
+contract before implementation.
 
-Do not expose full Spar props through wrapper public types.
+## Public type boundary
 
-Avoid:
+Public component types must **not** extend full Spar prop types.
 
 ```ts
+// Bad — leaks every Spar prop into the public API
 type AccordionProps = SparAccordionProps & AccordionOwnProps;
-```
 
-Prefer explicit props:
-
-```ts
+// Good — explicit, intentional surface
 interface AccordionProps extends Omit<
   ComponentPropsWithoutRef<'div'>,
   'classNames' | 'defaultValue' | 'onChange'
@@ -368,48 +220,34 @@ interface AccordionProps extends Omit<
 }
 ```
 
-If Spar and takeoff-spar props are identical after upstream alignment, pass them
-through directly.
+The wrapper is a public contract. Spar's prop surface can grow, shrink, or
+rename freely; the wrapper must not propagate those changes silently to
+consumers. If Spar and takeoff-spar props are identical after upstream
+alignment, pass them through by name — never by spread of an `&`-extended type.
 
----
-
-## Docs demos
-
-Each component page in `apps/docs` has exactly one editable demo. It is named
-`Playground` and uses `<LiveCode>` with default `editable={true}`. Authors run
-prettier on its source at runtime, so the source string can stay in
-template-literal-friendly indentation, but keep it readable in source too.
-
-All other demos on the page are display-only and pass `editable={false}`. They
-still render the live preview, but skip the editable textarea, prettier
-formatting, and reset/error tooling. Pre-format their source strings the way
-they should appear; runtime prettier does not run on them.
-
-If Prettier would rewrite visible demo source strings, wrap the demo constants
-block with MDX `<!-- prettier-ignore-start -->` /
-`<!-- prettier-ignore-end -->`.
-
-The `Usage` anatomy snippet should show component tags only. Do not include
-props, sample content, or state wiring there; put those in dedicated demo
-sections.
-
-This keeps each page weight bounded — one editable surface per component instead
-of one per example — without losing the rendered preview for the supporting
-demos.
-
----
+For naming, slot vocabulary, callback conventions, and the `composeRootAttrs` /
+`buildSlotAttrs` API, see
+[Coding Standards](../packages/react-spar/docs/coding-standards.md).
 
 ## Review checklist
 
-A component is not ready unless:
+A component is not ready to merge unless:
 
-- Spar behavior is correct upstream.
-- takeoff-spar does not hide Spar behavior problems.
-- Public API preserves Takeoff vocabulary.
-- React callbacks use React naming.
-- Public types do not leak unwanted Spar props.
-- Decorative pieces are internal unless explicitly justified.
-- Tests cover controlled and uncontrolled usage.
-- Tests cover callback payload shape.
-- Tests cover styling hooks.
-- Tests cover accessibility happy path.
+- [ ] Spar behavior is correct upstream — no behavior re-implemented in the
+      wrapper
+- [ ] takeoff-spar does not hide a Spar behavior problem inside an adapter or
+      helper
+- [ ] No adapter hook was introduced, or the React lifecycle/state/ref/effect
+      reason is documented and approved
+- [ ] Public API preserves Takeoff Core vocabulary
+- [ ] React callbacks use React `on*` naming, not Web Component event names
+- [ ] Public types do not extend full Spar prop types
+- [ ] Decorative compound parts are internal unless a justification criterion is
+      met and recorded
+- [ ] Composition archetype (Inherited / React-enhancement / Bypass) is
+      classified for every compound part — see
+      [Coding Standards → Composition archetypes](../packages/react-spar/docs/coding-standards.md#composition-archetypes)
+- [ ] Tests cover controlled and uncontrolled usage
+- [ ] Tests cover callback payload shape
+- [ ] Tests cover documented styling hooks (`data-*`, `tk-*`)
+- [ ] Tests cover the accessibility happy path (`axe`)

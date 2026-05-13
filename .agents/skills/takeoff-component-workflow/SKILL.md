@@ -21,13 +21,33 @@ fix review blockers only
 final verify
 ```
 
-Always read:
+## Required reading
+
+Before producing any output in any mode, you MUST read the following files in
+full using the Read tool. Do not rely on memory, summaries, or prior context —
+re-read them on every invocation.
+
+Always required:
 
 ```txt
 docs/component-authoring-contract.md
+packages/react-spar/docs/coding-standards.md
 ```
 
-before component work.
+Conditionally required:
+
+```txt
+packages/react-spar/docs/data-attribute-vocabulary.md
+  → required whenever the work emits, consumes, or styles any `data-*`
+    attribute, slot anchor, or compound part.
+```
+
+If you cannot read any required file (missing, moved, permission error), stop
+and report it as a blocker instead of proceeding.
+
+Begin every mode's output with a `## Required reading` section that lists each
+file you read and its current line count, proving the read happened. Output
+produced without this section is invalid and must be rejected.
 
 ---
 
@@ -60,6 +80,11 @@ styling/token recipe if relevant
 
 ```md
 # <ComponentName> Contract
+
+## Required reading
+
+| File | Lines read |
+| ---- | ---------- |
 
 ## Sources inspected
 
@@ -157,6 +182,11 @@ large ADR/doc generation
 ```md
 # Implementation Summary
 
+## Required reading
+
+| File | Lines read |
+| ---- | ---------- |
+
 ## Spar changes
 
 | File | Change |
@@ -212,6 +242,11 @@ Purpose: strict review.
 
 Decision: APPROVE | REQUEST_CHANGES | COMMENT
 
+## Required reading
+
+| File | Lines read |
+| ---- | ---------- |
+
 ## Blockers
 
 | #   | Issue | File | Why it matters | Fix |
@@ -255,6 +290,11 @@ Output:
 ```md
 # Fix Summary
 
+## Required reading
+
+| File | Lines read |
+| ---- | ---------- |
+
 ## Fixed blockers
 
 | Blocker | Fix |
@@ -294,6 +334,11 @@ Output:
 # Final Verification
 
 Decision: READY_FOR_DEVELOPER_REVIEW | NOT_READY
+
+## Required reading
+
+| File | Lines read |
+| ---- | ---------- |
 
 ## Contract compliance
 

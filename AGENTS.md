@@ -54,11 +54,16 @@ final verify
 
 Use the repo's package scripts for validation.
 
-At minimum, component work should run:
+Component work should run:
 
 ```txt
 pnpm --filter @takeoff-ui/react-spar check-types
+pnpm --filter @takeoff-ui/react-spar lint
+pnpm --filter @takeoff-ui/react-spar build
 pnpm --filter @takeoff-ui/react-spar test
 ```
+
+The full merge checklist lives in
+[`packages/react-spar/docs/coding-standards.md`](./packages/react-spar/docs/coding-standards.md#merge-checklist).
 
 If Spar was changed, also run Spar package tests/typecheck.

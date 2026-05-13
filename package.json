@@ -6,15 +6,12 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "dev:docs": "turbo run dev --filter=docs",
-    "dev:react": "turbo run dev --filter=react-app",
     "dev:figma": "node tools/figma-token-exporter/server.mjs",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "check-types": "turbo run check-types",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,cjs,css,scss,json,md,mdx,yml,yaml,html}\" --cache",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,cjs,css,scss,json,md,mdx,yml,yaml,html}\"",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -28,7 +25,6 @@
     "@commitlint/cli": "^20.4.2",
     "@commitlint/config-conventional": "^20.4.2",
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.59.1",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",

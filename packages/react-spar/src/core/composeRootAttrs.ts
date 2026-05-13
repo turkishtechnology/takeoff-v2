@@ -24,7 +24,7 @@ export interface ComposeRootOptions {
    * Layered **on top** of `slotProps.root` so design-system invariants survive
    * theme/instance overrides. Entries whose value is `undefined` are dropped,
    * which mirrors the boolean-presence convention in
-   * `docs/DATA_ATTRIBUTE_VOCABULARY.md` — pass `''` for "present", `undefined`
+   * `docs/data-attribute-vocabulary.md` — pass `''` for "present", `undefined`
    * for "absent".
    */
   stateAttrs?: Record<string, string | undefined>;

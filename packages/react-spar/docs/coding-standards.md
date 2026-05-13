@@ -63,8 +63,8 @@ Rules:
 pnpm --filter @takeoff-ui/react-spar generate Button --root=button Label=span LeadingIcon=span Spinner=span
 ```
 
-Component tests are phase 2; the generator does not create
-`ComponentName.test.tsx`.
+The generator does not scaffold `ComponentName.test.tsx`. Tests are added
+manually following the [Testing Standards](#testing-standards) below.
 
 ## Compound-Only Baseline
 
@@ -168,8 +168,13 @@ export const buttonClassNames = {
 - Prefer clear controlled and uncontrolled pairs for stateful components, such
   as `value` and `defaultValue`.
 - When two state inputs overlap, define and document precedence explicitly.
-- Reflect defaults in both `ComponentBase.defaultProps` and `@defaultValue`
-  JSDoc.
+- Apply visual defaults at the destructure site of `rest`, after
+  `composeRootAttrs` has merged
+  `(author defaults → theme defaults → instance props)`. Do not pass
+  `defaultProps` to `createComponentBase` for visual props — theme defaults must
+  layer correctly, which only happens when defaults are applied post-merge.
+  Mirror each default in `@defaultValue` JSDoc on the prop type so generated API
+  tables stay accurate.
 - Avoid broad polymorphism. Support only the render modes the package is
   prepared to test and document.
 
@@ -217,10 +222,12 @@ consumers can attach anything that lives on the DOM element to that slot.
   `onOpenChange`, `onCheckedChange`) — these are root props
 - Anything documented as a behavior prop on the root component
 
-This boundary is **not enforced at runtime.** A consumer who routes a behavior
-prop through `slotProps.root` will silently override the component's controlled
-wiring and the component will appear broken. The contract belongs in
-documentation; the library does not police it.
+> [!WARNING] **This boundary is not enforced at runtime.** A consumer who routes
+> a behavior prop (e.g. `onValueChange`, `checked`, `disabled`) through
+> `slotProps.root` will silently override the component's controlled wiring and
+> the component will appear broken with no error thrown. Debugging this
+> typically takes longer than the wiring took to write. The contract belongs in
+> documentation; the library does not police it.
 
 Rule of thumb: _Customizing a DOM attribute? → `slotProps`. Driving component
 behavior? → root prop._
@@ -259,117 +266,11 @@ Typical structural subcomponents include `Root`, `Mask`, `Panel`, `Body`,
   wiring.
 - Prefer `createComponentBase` for `cx`, `getSlotProps`, and `resolveProps`.
 
-### Upstream-first wrapper responsibility
+### Composition archetypes
 
-See
-[`docs/component-authoring-contract.md` → Upstream-first rule](../../../docs/component-authoring-contract.md#upstream-first-rule)
-and
-[No adapter hook rule](../../../docs/component-authoring-contract.md#no-adapter-hook-rule)
-for the canonical rules. In short: Spar owns controlled/uncontrolled
-reconciliation, keyboard behavior, focus, ARIA, and item registration; if
-behavior-heavy translation is needed, fix Spar first so the wrapper can pass the
-prop through. Adapter hooks (`useComponentNameAdapter`) are forbidden unless a
-real React lifecycle/state/ref/effect reason has been approved.
-
-## Component Implementation
-
-### Code organization template
-
-```tsx
-import { Primitive } from '@turkish-technology/spar';
-import { type Ref } from 'react';
-
-import {
-  MyComponentBase,
-  MyComponentProvider,
-  useMyComponentContext,
-} from './MyComponentBase';
-import type { MyComponentProps, MyComponentPartProps } from './types';
-
-function MyComponent({
-  ref,
-  ...rawProps
-}: MyComponentProps & { ref?: Ref<HTMLDivElement> }) {
-  const { children, className, classNames, slotProps, ...restProps } =
-    MyComponentBase.resolveProps(rawProps);
-
-  const contextValue = {
-    classNames,
-    slotProps,
-  };
-
-  return (
-    <MyComponentProvider value={contextValue}>
-      <Primitive
-        {...restProps}
-        ref={ref}
-        {...MyComponentBase.getSlotProps('root', {
-          className,
-        })}
-      >
-        {children}
-      </Primitive>
-    </MyComponentProvider>
-  );
-}
-
-function MyComponentPart({
-  children,
-  className,
-  ...rest
-}: MyComponentPartProps) {
-  const context = useMyComponentContext('MyComponent.Part');
-  const attrs = buildSlotAttrs(
-    MyComponentBase.getSlotProps('part', { className }),
-    context.slotProps,
-    'part',
-    context.classNames?.part,
-  );
-  return (
-    <span {...attrs} {...rest}>
-      {children}
-    </span>
-  );
-}
-MyComponentPart.displayName = 'MyComponent.Part';
-
-const MyComponentCompound = Object.assign(MyComponent, {
-  Part: MyComponentPart,
-});
-export { MyComponentCompound as MyComponent };
-```
-
-### Implementation rules
-
-- Call `resolveProps` once near the top of the root component.
-- Keep visual-only derivation above the return block.
-- Do not re-implement Spar behavior in the wrapper. If behavior props cannot be
-  passed through directly, fix Spar first.
-- Keep JSX shallow. Move repeated or branching rendering into subcomponents.
-- Use `getSlotProps` for slot nodes. Use `cx` when you only need class
-  composition without extra slot metadata.
-- Use `buildSlotAttrs` (from `src/core`) inside subcomponents to compose
-  canonical slot attrs with context-resolved `classNames`/`slotProps`.
-- Use `clsx` through `createComponentBase` or directly. Do not add local
-  string-join helpers.
-- Use small pure helpers for normalization, encoding, and equality checks.
-- Fire callbacks exactly once per user-visible state change.
-- Preserve native semantics for button, link, form, disabled, and loading
-  states.
-- If rendering as an anchor while simulating disabled behavior, also remove
-  navigation, set `aria-disabled`, manage `tabIndex`, and block activation keys.
-- Memoization is allowed only when identity or repeated derivation actually
-  matters. Do not add `useMemo` or `useCallback` by default.
-- Use `createSafeContext` (from `src/hooks`) so that a subcomponent used outside
-  its root raises a descriptive error.
-- Set `displayName` on the root (`'Button'`) and every subcomponent
-  (`'Button.Label'`, `'Dialog.Header'`).
-
-## Composition Archetypes
-
-The compound-only baseline (above) decides _that_ every component has compound
-parts. This section decides _what each part renders underneath_. Every compound
-part falls into exactly one of three archetypes:
+The compound-only baseline decides _that_ every component has compound parts.
+This section decides _what each part renders underneath_. Every compound part
+falls into exactly one of three archetypes:
 
 | Archetype             | When it applies                                                                             | Canonical example                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
@@ -377,7 +278,12 @@ part falls into exactly one of three archetypes:
 | **React-enhancement** | No upstream part exists for this slot; the wrapper owns the DOM tag and styling hooks alone | `Button.Spinner`, `Input.Container`, `Dialog.SignIcon`                            |
 | **Bypass**            | An upstream part exists but the wrapper renders a plain tag for a specific, recorded reason | `Dialog.Mask` is the class to avoid; justified bypasses carry an inline rationale |
 
-The rules:
+Classification happens at contract time, before implementation begins. A missing
+archetype classification is a contract blocker — see the
+[`takeoff-component-workflow`](../../../.agents/skills/takeoff-component-workflow/SKILL.md)
+skill.
+
+Rules:
 
 1. **Every compound part declares its archetype in `base.ts`.** A one-line JSDoc
    on the slot or part reference is enough
@@ -403,8 +309,7 @@ The rules:
    re-implemented in React. If there is, the correct path is to delegate through
    the upstream part and restrict the wrapper to styling and API translation.
 
-Canonical examples per archetype, as of the composition review absorbed into
-this section:
+Canonical examples:
 
 - **Inherited root, inherited parts** — `Accordion`. Delegates through every
   `SparAccordion.*` part it uses, with only styling enhancements layered in.
@@ -420,10 +325,172 @@ this section:
   preventDefaults Enter/Space on non-native elements, which would block a native
   anchor's navigation. The rationale lives in `ButtonBase.ts`.
 
-Every new component port must classify its parts against this table as part of
-the contract produced by the
-[`takeoff-component-workflow`](../../../.agents/skills/takeoff-component-workflow/SKILL.md)
-skill. A missing archetype classification is a contract blocker.
+### Upstream-first wrapper responsibility
+
+See
+[`docs/component-authoring-contract.md` → Upstream-first rule](../../../docs/component-authoring-contract.md#upstream-first-rule)
+and
+[No adapter hook rule](../../../docs/component-authoring-contract.md#no-adapter-hook-rule)
+for the canonical rules. In short: Spar owns controlled/uncontrolled
+reconciliation, keyboard behavior, focus, ARIA, and item registration; if
+behavior-heavy translation is needed, fix Spar first so the wrapper can pass the
+prop through. Adapter hooks (`useComponentNameAdapter`) are forbidden unless a
+real React lifecycle/state/ref/effect reason has been approved.
+
+## Component Implementation
+
+### Code organization template
+
+Single-slot wrappers (root, or a sub-component that only renders one owner node)
+go through `composeRootAttrs`. Multi-slot sub-components compose the root with
+`composeRootAttrs` and each additional slot with `buildSlotAttrs` at its own
+render site. Do not inline the `resolveProps` + slot-attr chain.
+
+```tsx
+import { Primitive as SparPrimitive } from '@turkish-technology/spar';
+
+import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { useComponentTheme } from '../../provider';
+
+import { MyComponentBase } from './base';
+import { MyComponentProvider, useMyComponentOwnContext } from './context';
+import type { MyComponentProps, MyComponentPartProps } from './types';
+
+// Root: single slot, may layer canonical state-driven data-* via stateAttrs.
+export const MyComponent = (props: MyComponentProps) => {
+  const theme = useComponentTheme('MyComponent');
+  const { rootAttrs, rest } = composeRootAttrs(MyComponentBase, props, theme, {
+    stateAttrs: {
+      'data-variant': props.variant,
+      'data-disabled': props.disabled ? '' : undefined,
+    },
+  });
+  const { children, ref, ...spar } = rest;
+
+  return (
+    <MyComponentProvider value={{ variant: props.variant }}>
+      <SparPrimitive {...spar} {...rootAttrs} ref={ref}>
+        {children}
+      </SparPrimitive>
+    </MyComponentProvider>
+  );
+};
+
+MyComponent.displayName = 'MyComponent';
+
+// Single-slot sub-component: same composeRootAttrs call shape as the root.
+export const MyComponentPart = (props: MyComponentPartProps) => {
+  const theme = useComponentTheme('MyComponentPart');
+  const { rootAttrs, rest } = composeRootAttrs(
+    MyComponentPartBase,
+    props,
+    theme,
+  );
+  const { children, ref, ...spar } = rest;
+
+  return (
+    <SparPrimitivePart {...spar} {...rootAttrs} ref={ref}>
+      {children}
+    </SparPrimitivePart>
+  );
+};
+
+MyComponentPart.displayName = 'MyComponent.Part';
+
+// Multi-slot sub-component: composeRootAttrs for the root slot, buildSlotAttrs
+// at each additional slot's render site.
+export const MyComponentTrigger = (props: MyComponentTriggerProps) => {
+  const theme = useComponentTheme('MyComponentTrigger');
+  const { rootAttrs, rest } = composeRootAttrs(
+    MyComponentTriggerBase,
+    props,
+    theme,
+  );
+  const { children, icon, ref, ...spar } = rest;
+
+  const iconNode = icon != null && (
+    <span
+      {...buildSlotAttrs(MyComponentTriggerBase.getSlotProps('icon'), 'icon', {
+        themeSlotProps: theme?.slotProps,
+        themeClassNames: theme?.classNames,
+        instanceSlotProps: props.slotProps,
+        instanceClassNames: props.classNames,
+      })}
+    >
+      {icon}
+    </span>
+  );
+
+  return (
+    <SparPrimitiveTrigger {...spar} {...rootAttrs} ref={ref}>
+      {iconNode}
+      {children}
+    </SparPrimitiveTrigger>
+  );
+};
+
+MyComponentTrigger.displayName = 'MyComponent.Trigger';
+```
+
+Local barrel (`index.ts`) attaches sub-components with `Object.assign`:
+
+```ts
+const MyComponentCompound = Object.assign(MyComponent, {
+  Part: MyComponentPart,
+  Trigger: MyComponentTrigger,
+});
+
+export { MyComponentCompound as MyComponent };
+```
+
+### Implementation rules
+
+- Compose the root with `composeRootAttrs(Base, props, theme)` — never inline
+  the `resolveProps` + slot-attr chain. The helper resolves
+  `(author defaults → theme defaults → instance props)` and returns
+  `{ rootAttrs, rest }` with `className`/`classNames`/`slotProps` already
+  stripped.
+- Layer canonical state-driven `data-*` (variant, size, disabled, …) via
+  `composeRootAttrs(..., { stateAttrs: { ... } })`. These attrs spread on top of
+  `slotProps.root` so the design-system invariants cannot be overridden by
+  consumer slot props. Pass `''` for "present" and `undefined` for "absent" —
+  `undefined` entries are dropped.
+- For additional slot owner nodes inside a sub-component, call
+  `buildSlotAttrs(Base.getSlotProps('slotName'), 'slotName', { themeSlotProps, themeClassNames, instanceSlotProps, instanceClassNames })`
+  at the render site. Do not invent ad-hoc slot composition.
+- Keep visual-only derivation above the return block.
+- Do not re-implement Spar behavior in the wrapper. If behavior props cannot be
+  passed through directly, fix Spar first.
+- Keep JSX shallow. Move repeated or branching rendering into subcomponents.
+- Use `clsx` through `createComponentBase` (`cx`) or directly. Do not add local
+  string-join helpers.
+- Use small pure helpers for normalization, encoding, and equality checks.
+- Fire callbacks exactly once per user-visible state change.
+- Preserve native semantics for button, link, form, disabled, and loading
+  states.
+- If rendering as an anchor while simulating disabled behavior, also remove
+  navigation, set `aria-disabled`, manage `tabIndex`, and block activation keys.
+- Memoization is allowed only when identity or repeated derivation actually
+  matters. Do not add `useMemo` or `useCallback` by default.
+- Use `createSafeContext` (from `src/hooks`) so that a subcomponent used outside
+  its root raises a descriptive error.
+- When a sub-component conditionally renders based on whether the consumer
+  already supplied a specific child (e.g. `Accordion.Trigger.Title`), detect it
+  with `hasChildOfType` (from `src/hooks`) rather than ad-hoc `React.Children`
+  iteration.
+- Set `displayName` on the root (`'Button'`) and every subcomponent
+  (`'Button.Label'`, `'Dialog.Header'`).
+
+### Wrapper helpers — quick reference
+
+| Need                                       | Helper                                                   | Where it lives |
+| ------------------------------------------ | -------------------------------------------------------- | -------------- |
+| Compose canonical root attrs (single slot) | `composeRootAttrs(Base, props, theme)`                   | `src/core`     |
+| Layer canonical `data-*` on root           | `composeRootAttrs(..., { stateAttrs })`                  | `src/core`     |
+| Compose canonical attrs for an extra slot  | `buildSlotAttrs(Base.getSlotProps(slot), slot, { ... })` | `src/core`     |
+| Read theme defaults                        | `useComponentTheme('Name')`                              | `src/provider` |
+| Share root state with sub-components       | `createSafeContext('NameProvider')`                      | `src/hooks`    |
+| Detect a specific child sub-component      | `hasChildOfType`                                         | `src/hooks`    |
 
 ## Styling Contract
 
@@ -432,7 +499,7 @@ skill. A missing archetype classification is a contract blocker.
 - `*Base.ts` is the source of truth for slot names and emitted classes.
 - Use `data-slot` for anatomy.
 - Use canonical `data-*` attributes for state, variant, size, and other styling
-  hooks. See `docs/DATA_ATTRIBUTE_VOCABULARY.md`.
+  hooks. See `docs/data-attribute-vocabulary.md`.
 - Every emitted class or `data-*` hook must have a real consumer in styling,
   semantics, or docs.
 - Avoid anonymous wrapper nodes that only add DOM weight.
@@ -563,16 +630,23 @@ Before submitting a component, make sure tests cover:
   examples because no flat content props exist.
 - Usage anatomy snippets show component tags only. Props, sample content, and
   state wiring belong in dedicated examples.
-- Pre-format `LiveCode` source strings exactly as they should appear in the docs
-  UI; display-only examples are not formatted at runtime. Use MDX
-  `prettier-ignore-start` / `prettier-ignore-end` when Prettier would rewrite
-  the visible source string.
+- Each component page has exactly one editable demo, named `Playground`, using
+  `<LiveCode>` with the default `editable={true}`. Authors run prettier on its
+  source at runtime, so the source string can stay in template-literal-friendly
+  indentation as long as it is readable in source.
+- All other demos on the page are display-only and pass `editable={false}`. They
+  still render the live preview, but skip the editable textarea, prettier
+  formatting, and reset/error tooling. Pre-format their source strings the way
+  they should appear; runtime prettier does not run on them.
+- If Prettier would rewrite visible demo source strings, wrap the demo constants
+  block with MDX `<!-- prettier-ignore-start -->` /
+  `<!-- prettier-ignore-end -->`.
 - Internal porting history, migration notes, or primitive quirks do not belong
   in component comments or public docs unless they affect consumers.
 - Keep type docs precise. Generated API tables are only as good as the JSDoc in
   `types.ts`.
-- If a prop or callback has a default, keep `defaultProps` and `@defaultValue`
-  aligned.
+- If a prop or callback has a default, keep the destructure-site default and the
+  `@defaultValue` JSDoc aligned.
 - If a slot, prop, event, or data attribute changes, regenerate the docs output
   in `apps/docs/src/docs-files`.
 - Generated API output should expose callback props under the `Events` section
@@ -598,12 +672,6 @@ Before considering a component complete:
   reached exclusively through the root)
 - confirm no CSS is emitted from `packages/react-spar/dist`
 - confirm slot classes are mirrored in `src/slot-registry.ts`
-- confirm at least one smoke scenario in
-  [`apps/react-app/src/App.tsx`](../../../apps/react-app/src/App.tsx) exercises
-  the new compound anatomy end to end against the real tokens CSS import. If a
-  customization surface is genuinely not part of the component's public
-  contract, mark the omission inline as `// exemption: <reason>` so it is
-  intentional and reviewable.
 - confirm docs, generated API tables, tests, and component types describe the
   same compound contract
 - include the parity-review summary (and any React-enhancement justification) in
