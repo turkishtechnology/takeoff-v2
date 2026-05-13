@@ -168,8 +168,13 @@ export const buttonClassNames = {
 - Prefer clear controlled and uncontrolled pairs for stateful components, such
   as `value` and `defaultValue`.
 - When two state inputs overlap, define and document precedence explicitly.
-- Reflect defaults in both `ComponentBase.defaultProps` and `@defaultValue`
-  JSDoc.
+- Apply visual defaults at the destructure site of `rest`, after
+  `composeRootAttrs` has merged
+  `(author defaults → theme defaults → instance props)`. Do not pass
+  `defaultProps` to `createComponentBase` for visual props — theme defaults must
+  layer correctly, which only happens when defaults are applied post-merge.
+  Mirror each default in `@defaultValue` JSDoc on the prop type so generated API
+  tables stay accurate.
 - Avoid broad polymorphism. Support only the render modes the package is
   prepared to test and document.
 
@@ -625,16 +630,23 @@ Before submitting a component, make sure tests cover:
   examples because no flat content props exist.
 - Usage anatomy snippets show component tags only. Props, sample content, and
   state wiring belong in dedicated examples.
-- Pre-format `LiveCode` source strings exactly as they should appear in the docs
-  UI; display-only examples are not formatted at runtime. Use MDX
-  `prettier-ignore-start` / `prettier-ignore-end` when Prettier would rewrite
-  the visible source string.
+- Each component page has exactly one editable demo, named `Playground`, using
+  `<LiveCode>` with the default `editable={true}`. Authors run prettier on its
+  source at runtime, so the source string can stay in template-literal-friendly
+  indentation as long as it is readable in source.
+- All other demos on the page are display-only and pass `editable={false}`. They
+  still render the live preview, but skip the editable textarea, prettier
+  formatting, and reset/error tooling. Pre-format their source strings the way
+  they should appear; runtime prettier does not run on them.
+- If Prettier would rewrite visible demo source strings, wrap the demo constants
+  block with MDX `<!-- prettier-ignore-start -->` /
+  `<!-- prettier-ignore-end -->`.
 - Internal porting history, migration notes, or primitive quirks do not belong
   in component comments or public docs unless they affect consumers.
 - Keep type docs precise. Generated API tables are only as good as the JSDoc in
   `types.ts`.
-- If a prop or callback has a default, keep `defaultProps` and `@defaultValue`
-  aligned.
+- If a prop or callback has a default, keep the destructure-site default and the
+  `@defaultValue` JSDoc aligned.
 - If a slot, prop, event, or data attribute changes, regenerate the docs output
   in `apps/docs/src/docs-files`.
 - Generated API output should expose callback props under the `Events` section

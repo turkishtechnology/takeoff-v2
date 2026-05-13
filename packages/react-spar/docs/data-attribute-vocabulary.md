@@ -132,6 +132,10 @@ should explain **why** the deviation exists so reviewers do not "fix" it later.
   higher-specificity per-item selector without requiring an ancestor lookup
   (`.tk-accordion-item[data-mode="compact"][data-size="large"] { ... }`). This
   duplication is intentional, not a redundancy bug.
+- **Open/closed state is owned by Spar.** `Accordion.Item` and
+  `Accordion.Content` expose Spar's `data-state="open"` / `data-state="closed"`
+  when they render. Do not mirror the same state with wrapper-owned attributes
+  or local value matching — see rule 7 in the [Rules section](#rules).
 - **`data-arrow-position` and `data-hide-arrows` live on the root.** They
   describe layout intent for the whole accordion and cascade naturally to every
   trigger via descendant selectors.
