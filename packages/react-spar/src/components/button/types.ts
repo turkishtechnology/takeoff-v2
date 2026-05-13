@@ -1,4 +1,5 @@
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
+import type { ButtonProps as SparButtonProps } from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
@@ -10,7 +11,7 @@ export type ButtonSize = 'small' | 'base' | 'large';
 
 export type ButtonSlot = 'root' | 'icon' | 'label' | 'spinner';
 
-export interface ButtonOwnProps {
+export interface ButtonProps extends Omit<ComponentPropsWithoutRef<'button'>, 'classNames' | 'slotProps'>, Pick<SparButtonProps, 'isPressed' | 'onPressedChange'> {
   /**
    * Color variant.
    * @defaultValue 'primary'
@@ -51,8 +52,6 @@ export interface ButtonOwnProps {
   /** Ref forwarded to the root button element. */
   ref?: Ref<HTMLButtonElement>;
 }
-
-export type ButtonProps = ButtonOwnProps & Omit<ComponentPropsWithoutRef<'button'>, keyof ButtonOwnProps>;
 
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {

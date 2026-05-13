@@ -218,15 +218,24 @@ animation library is required.
 
 #### Props {#drawer-props}
 
-| Name                             | Type                                                                                | Default | Description                                                                 |
-| -------------------------------- | ----------------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------------- |
-| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                        | -       | Drawer parts rendered inside the root.                                      |
-| <ApiBadge label="placement" />   | <code>DrawerPlacement</code>                                                        | -       | Side the drawer slides in from.                                             |
-| <ApiBadge label="disabled" />    | <code>boolean</code>                                                                | -       | Disables the trigger.                                                       |
-| <ApiBadge label="dismissable" /> | <code>boolean</code>                                                                | true    | Whether the drawer can be dismissed by clicking outside or pressing Escape. |
-| <ApiBadge label="className" />   | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                       |
-| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                              |
-| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                          |
+| Name                             | Type                                                                                | Default | Description                                                                                                                                                                      |
+| -------------------------------- | ----------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                        | -       | Drawer parts rendered inside the root.                                                                                                                                           |
+| <ApiBadge label="placement" />   | <code>DrawerPlacement</code>                                                        | -       | Side the drawer slides in from.                                                                                                                                                  |
+| <ApiBadge label="dismissable" /> | <code>boolean</code>                                                                | true    | Whether the drawer can be dismissed by clicking outside or pressing Escape.                                                                                                      |
+| <ApiBadge label="className" />   | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                                                                                                                            |
+| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                                   |
+| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                               |
+| <ApiBadge label="id" />          | <code>string</code>                                                                 | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-title`, `${id}-description`, `${id}-content`. |
+| <ApiBadge label="disabled" />    | <code>boolean</code>                                                                | false   | Disables all dialog triggers (prevents opening)                                                                                                                                  |
+| <ApiBadge label="open" />        | <code>boolean</code>                                                                | -       | Controlled open state                                                                                                                                                            |
+| <ApiBadge label="defaultOpen" /> | <code>boolean</code>                                                                | false   | Initial open state (uncontrolled)                                                                                                                                                |
+
+#### Events {#drawer-events}
+
+| Name                              | Type                                    | Default | Description                      |
+| --------------------------------- | --------------------------------------- | ------- | -------------------------------- |
+| <ApiBadge label="onOpenChange" /> | <code>(open: boolean) =&gt; void</code> | -       | Callback when open state changes |
 
 #### Data attributes {#drawer-data-attributes}
 
@@ -256,13 +265,14 @@ animation library is required.
 
 #### Props {#drawer-overlay-props}
 
-| Name                            | Type                                                                                | Default | Description                                                |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------- |
-| <ApiBadge label="invisible" />  | <code>boolean</code>                                                                | false   | When true, the overlay is rendered but visually invisible. |
-| <ApiBadge label="intensity" />  | <code>DrawerOverlayIntensity</code>                                                 | 'base'  | Overlay backdrop intensity.                                |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                                                            |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                                                            |
-| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLDivElement&gt;</code>                                              | -       |                                                            |
+| Name                            | Type                                                                                | Default       | Description                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="invisible" />  | <code>boolean</code>                                                                | false         | When true, the overlay is rendered but visually invisible.                 |
+| <ApiBadge label="intensity" />  | <code>DrawerOverlayIntensity</code>                                                 | 'base'        | Overlay backdrop intensity.                                                |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             |                                                                            |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             |                                                                            |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLDivElement&gt;</code>                                              | -             |                                                                            |
+| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
 
 #### Data attributes {#drawer-overlay-data-attributes}
 
@@ -277,12 +287,26 @@ animation library is required.
 
 #### Props {#drawer-panel-props}
 
-| Name                            | Type                                                                                | Default | Description                                                |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------- |
-| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | -       | DOM container for the portal. Defaults to `document.body`. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                                                            |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                                                            |
-| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLDivElement&gt;</code>                                              | -       |                                                            |
+| Name                              | Type                                                                                | Default       | Description                                                                |
+| --------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             |                                                                            |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             |                                                                            |
+| <ApiBadge label="ref" />          | <code>Ref&lt;HTMLDivElement&gt;</code>                                              | -             |                                                                            |
+| <ApiBadge label="container" />    | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
+| <ApiBadge label="trapFocus" />    | <code>boolean</code>                                                                | true          | Enable focus trapping                                                      |
+| <ApiBadge label="restoreFocus" /> | <code>boolean</code>                                                                | true          | Restore focus on close                                                     |
+| <ApiBadge label="initialFocus" /> | <code>HTMLElement &#124; (() =&gt; HTMLElement)</code>                              | -             | Element to focus on open                                                   |
+| <ApiBadge label="finalFocus" />   | <code>HTMLElement &#124; (() =&gt; HTMLElement)</code>                              | -             | Element to focus on close                                                  |
+
+#### Events {#drawer-panel-events}
+
+| Name                                      | Type                                           | Default | Description                                                |
+| ----------------------------------------- | ---------------------------------------------- | ------- | ---------------------------------------------------------- |
+| <ApiBadge label="onOpenAutoFocus" />      | <code>(event: Event) =&gt; void</code>         | -       | Callback before auto-focus                                 |
+| <ApiBadge label="onCloseAutoFocus" />     | <code>(event: Event) =&gt; void</code>         | -       | Callback before focus restore                              |
+| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code> | -       | Escape key handler                                         |
+| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>  | -       | Outside click handler                                      |
+| <ApiBadge label="onInteractOutside" />    | <code>(event: PointerEvent) =&gt; void</code>  | -       | Outside interaction handler with preventDefault capability |
 
 #### Data attributes {#drawer-panel-data-attributes}
 
@@ -314,12 +338,12 @@ animation library is required.
 
 #### Props {#drawer-title-props}
 
-| Name                            | Type                                                                                | Default | Description                                                             |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------- |
-| <ApiBadge label="level" />      | <code>1 &#124; 2 &#124; 3 &#124; 4 &#124; 5 &#124; 6</code>                         | 5       | HTML heading level (1–6). Controls both the rendered tag and font size. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                                                                         |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                                                                         |
-| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLHeadingElement&gt;</code>                                          | -       |                                                                         |
+| Name                            | Type                                                                                | Default | Description         |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLHeadingElement&gt;</code>                                          | -       |                     |
+| <ApiBadge label="level" />      | <code>number</code>                                                                 | 2       | Heading level (1-6) |
 
 #### Data attributes {#drawer-title-data-attributes}
 

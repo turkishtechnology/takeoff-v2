@@ -62,7 +62,6 @@ export default {
       skipPropNames: ['ref'],
       sparDocsUrl: sparAccordionDocsUrl,
       sparDocsLabel: 'Spar Accordion docs',
-      sparBehaviorProps: ['multiple', 'value', 'defaultValue', 'onValueChange', 'collapsible', 'disabled', 'orientation'],
       propOverrides: {
         children: childrenOverride('`Accordion.Item` elements rendered inside the disclosure container.'),
         className: classNameOverride,
@@ -88,7 +87,6 @@ export default {
       skipPropNames: ['ref'],
       sparDocsUrl: sparAccordionDocsUrl,
       sparDocsLabel: 'Spar Accordion docs',
-      sparBehaviorProps: ['value', 'disabled'],
       propOverrides: {
         children: childrenOverride('`Accordion.Header` and `Accordion.Content` elements that compose the item.'),
         className: classNameOverride,
@@ -115,7 +113,6 @@ export default {
       skipPropNames: ['ref'],
       sparDocsUrl: sparAccordionDocsUrl,
       sparDocsLabel: 'Spar Accordion docs',
-      sparBehaviorProps: ['level'],
       propOverrides: {
         children: childrenOverride('`Accordion.Trigger` element rendered inside the heading tag.'),
         className: classNameOverride,
@@ -148,7 +145,6 @@ export default {
       skipPropNames: ['ref'],
       sparDocsUrl: sparAccordionDocsUrl,
       sparDocsLabel: 'Spar Accordion docs',
-      sparBehaviorProps: ['forceMount'],
       propOverrides: {
         children: childrenOverride('Panel body. Animated open/closed by Spar.'),
         className: classNameOverride,

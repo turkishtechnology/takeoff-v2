@@ -1,12 +1,12 @@
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
+import type {
+  TooltipProps as SparTooltipProps,
+  TooltipContentProps as SparTooltipContentProps,
+} from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type TooltipVariant = 'dark' | 'white' | 'info' | 'success' | 'warning' | 'danger' | 'neutral';
-
-export type TooltipSide = 'top' | 'right' | 'bottom' | 'left';
-
-export type TooltipAlign = 'start' | 'center' | 'end';
 
 export type TooltipTriggerSlot = 'root';
 
@@ -18,41 +18,15 @@ export type TooltipDescriptionSlot = 'root';
 
 export type TooltipArrowSlot = 'root';
 
-export interface TooltipProps {
+export interface TooltipProps
+  extends Pick<SparTooltipProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'delay' | 'hideDelay' | 'disabled'> {
   /**
    * Tooltip trigger and content components.
    */
   children?: ReactNode;
-  /**
-   * Controlled state for tooltip visibility.
-   */
-  open?: boolean;
-  /**
-   * Default open state for uncontrolled tooltip.
-   * @defaultValue false
-   */
-  defaultOpen?: boolean;
-  /**
-   * Callback when tooltip open state changes.
-   */
-  onOpenChange?: (open: boolean) => void;
-  /**
-   * Delay in ms before the tooltip appears.
-   */
-  delay?: number;
-  /**
-   * Delay in ms before the tooltip hides.
-   * @defaultValue 0
-   */
-  hideDelay?: number;
-  /**
-   * Whether the tooltip is disabled.
-   * @defaultValue false
-   */
-  disabled?: boolean;
 }
 
-export interface TooltipTriggerOwnProps {
+export interface TooltipTriggerProps extends Omit<ComponentPropsWithoutRef<'button'>, 'classNames' | 'slotProps'> {
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<TooltipTriggerSlot>;
   /** Per-slot HTML-attribute overrides. */
@@ -61,24 +35,14 @@ export interface TooltipTriggerOwnProps {
   ref?: Ref<HTMLButtonElement>;
 }
 
-export type TooltipTriggerProps = TooltipTriggerOwnProps & Omit<ComponentPropsWithoutRef<'button'>, keyof TooltipTriggerOwnProps>;
-
-export interface TooltipContentOwnProps {
+export interface TooltipContentProps
+  extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames' | 'slotProps'>,
+    Pick<SparTooltipContentProps, 'side' | 'align' | 'container' | 'onEscapeKeyDown' | 'onPointerDownOutside' | 'onOpenAutoFocus' | 'onCloseAutoFocus'> {
   /**
    * Color variant.
    * @defaultValue 'dark'
    */
   variant?: TooltipVariant;
-  /**
-   * Preferred side relative to the trigger.
-   * @defaultValue 'top'
-   */
-  side?: TooltipSide;
-  /**
-   * Alignment relative to the trigger.
-   * @defaultValue 'center'
-   */
-  align?: TooltipAlign;
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<TooltipContentSlot>;
   /** Per-slot HTML-attribute overrides. */
@@ -87,9 +51,7 @@ export interface TooltipContentOwnProps {
   ref?: Ref<HTMLDivElement>;
 }
 
-export type TooltipContentProps = TooltipContentOwnProps & Omit<ComponentPropsWithoutRef<'div'>, keyof TooltipContentOwnProps>;
-
-export interface TooltipHeaderOwnProps {
+export interface TooltipHeaderProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames' | 'slotProps'> {
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<TooltipHeaderSlot>;
   /** Per-slot HTML-attribute overrides. */
@@ -98,9 +60,7 @@ export interface TooltipHeaderOwnProps {
   ref?: Ref<HTMLDivElement>;
 }
 
-export type TooltipHeaderProps = TooltipHeaderOwnProps & Omit<ComponentPropsWithoutRef<'div'>, keyof TooltipHeaderOwnProps>;
-
-export interface TooltipDescriptionOwnProps {
+export interface TooltipDescriptionProps extends Omit<ComponentPropsWithoutRef<'p'>, 'classNames' | 'slotProps'> {
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<TooltipDescriptionSlot>;
   /** Per-slot HTML-attribute overrides. */
@@ -109,9 +69,7 @@ export interface TooltipDescriptionOwnProps {
   ref?: Ref<HTMLParagraphElement>;
 }
 
-export type TooltipDescriptionProps = TooltipDescriptionOwnProps & Omit<ComponentPropsWithoutRef<'p'>, keyof TooltipDescriptionOwnProps>;
-
-export interface TooltipArrowOwnProps {
+export interface TooltipArrowProps extends Omit<ComponentPropsWithoutRef<'svg'>, 'classNames' | 'slotProps'> {
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<TooltipArrowSlot>;
   /** Per-slot HTML-attribute overrides. */
@@ -119,8 +77,6 @@ export interface TooltipArrowOwnProps {
   /** Ref forwarded to the arrow SVG element. */
   ref?: Ref<SVGSVGElement>;
 }
-
-export type TooltipArrowProps = TooltipArrowOwnProps & Omit<ComponentPropsWithoutRef<'svg'>, keyof TooltipArrowOwnProps>;
 
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {

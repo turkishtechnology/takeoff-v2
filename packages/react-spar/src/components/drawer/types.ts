@@ -1,4 +1,10 @@
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
+import type {
+  DialogProps as SparDialogProps,
+  DialogTitleProps as SparDialogTitleProps,
+  DialogContentProps as SparDialogContentProps,
+  DialogOverlayProps as SparDialogOverlayProps,
+} from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
@@ -21,11 +27,9 @@ export type DrawerCloseButtonSlot = 'root';
  * Public props for the Drawer root. Wraps Spar's Dialog in modal mode to
  * create a slide-in side panel.
  */
-export interface DrawerProps {
+export interface DrawerProps extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled'> {
   /** Side the drawer slides in from. */
   placement?: DrawerPlacement;
-  /** Disables the trigger. */
-  disabled?: boolean;
   /** Whether the drawer can be dismissed by clicking outside or pressing Escape. @defaultValue true */
   dismissable?: boolean;
   children?: ReactNode;
@@ -45,7 +49,7 @@ export interface DrawerTriggerProps extends Omit<ComponentPropsWithoutRef<'butto
 
 export type DrawerOverlayIntensity = 'lightest' | 'light' | 'base' | 'dark' | 'darkest';
 
-export interface DrawerOverlayProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
+export interface DrawerOverlayProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'>, Pick<SparDialogOverlayProps, 'container'> {
   /** When true, the overlay is rendered but visually invisible. @defaultValue false */
   invisible?: boolean;
   /** Overlay backdrop intensity. @defaultValue 'base' */
@@ -55,9 +59,22 @@ export interface DrawerOverlayProps extends Omit<ComponentPropsWithoutRef<'div'>
   ref?: Ref<HTMLDivElement>;
 }
 
-export interface DrawerPanelProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
-  /** DOM container for the portal. Defaults to `document.body`. */
-  container?: HTMLElement | null;
+export interface DrawerPanelProps
+  extends
+    Omit<ComponentPropsWithoutRef<'div'>, 'classNames'>,
+    Pick<
+      SparDialogContentProps,
+      | 'container'
+      | 'trapFocus'
+      | 'restoreFocus'
+      | 'initialFocus'
+      | 'finalFocus'
+      | 'onOpenAutoFocus'
+      | 'onCloseAutoFocus'
+      | 'onEscapeKeyDown'
+      | 'onPointerDownOutside'
+      | 'onInteractOutside'
+    > {
   classNames?: ClassNamesMap<DrawerPanelSlot>;
   slotProps?: SlotPropsMap<DrawerPanelSlot>;
   ref?: Ref<HTMLDivElement>;
@@ -73,9 +90,7 @@ export interface DrawerHeaderProps extends Omit<ComponentPropsWithoutRef<'div'>,
   ref?: Ref<HTMLDivElement>;
 }
 
-export interface DrawerTitleProps extends Omit<ComponentPropsWithoutRef<'h2'>, 'classNames'> {
-  /** HTML heading level (1–6). Controls both the rendered tag and font size. @defaultValue 5 */
-  level?: 1 | 2 | 3 | 4 | 5 | 6;
+export interface DrawerTitleProps extends Omit<ComponentPropsWithoutRef<'h2'>, 'classNames'>, Pick<SparDialogTitleProps, 'level'> {
   classNames?: ClassNamesMap<DrawerTitleSlot>;
   slotProps?: SlotPropsMap<DrawerTitleSlot>;
   ref?: Ref<HTMLHeadingElement>;

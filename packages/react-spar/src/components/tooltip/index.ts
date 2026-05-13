@@ -16,22 +16,15 @@ const Tooltip = Object.assign(TooltipRoot, {
 export { Tooltip };
 
 export type {
-  TooltipAlign,
-  TooltipArrowOwnProps,
   TooltipArrowProps,
   TooltipArrowSlot,
-  TooltipContentOwnProps,
   TooltipContentProps,
   TooltipContentSlot,
-  TooltipDescriptionOwnProps,
   TooltipDescriptionProps,
   TooltipDescriptionSlot,
-  TooltipHeaderOwnProps,
   TooltipHeaderProps,
   TooltipHeaderSlot,
   TooltipProps,
-  TooltipSide,
-  TooltipTriggerOwnProps,
   TooltipTriggerProps,
   TooltipTriggerSlot,
   TooltipVariant,

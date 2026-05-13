@@ -199,31 +199,34 @@ contract before implementation.
 
 ## Public type boundary
 
-Public component types must **not** extend full Spar prop types.
+Public component types must **not** extend full Spar prop types directly.
+
+Use `Pick<SparFooProps, ...>` to selectively inherit Spar props that this layer
+intentionally exposes. This keeps the API surface explicit while staying in sync
+with Spar's type definitions.
 
 ```ts
 // Bad — leaks every Spar prop into the public API
 type AccordionProps = SparAccordionProps & AccordionOwnProps;
 
-// Good — explicit, intentional surface
-interface AccordionProps extends Omit<
-  ComponentPropsWithoutRef<'div'>,
-  'classNames' | 'defaultValue' | 'onChange'
+// Bad — manually duplicates Spar's type definitions
+interface TooltipProps {
+  open?: boolean; // duplicated from Spar
+  onOpenChange?: (open: boolean) => void; // duplicated from Spar
+}
+
+// Good — explicit, intentional surface, DRY with Spar
+interface TooltipProps extends Pick<
+  SparTooltipProps,
+  'open' | 'defaultOpen' | 'onOpenChange' | 'delay' | 'hideDelay' | 'disabled'
 > {
-  value?: AccordionCurrentValue;
-  defaultValue?: AccordionCurrentValue;
-  onValueChange?: (next: AccordionCurrentValue) => void;
-  multiple?: boolean;
-  type?: AccordionType;
-  mode?: AccordionMode;
-  size?: AccordionSize;
+  children?: ReactNode;
 }
 ```
 
-The wrapper is a public contract. Spar's prop surface can grow, shrink, or
-rename freely; the wrapper must not propagate those changes silently to
-consumers. If Spar and takeoff-spar props are identical after upstream
-alignment, pass them through by name — never by spread of an `&`-extended type.
+The wrapper is a public contract. `Pick` ensures only chosen props are exposed
+while keeping type definitions in sync with Spar — if a Spar prop type changes,
+the wrapper inherits it automatically.
 
 For naming, slot vocabulary, callback conventions, and the `composeRootAttrs` /
 `buildSlotAttrs` API, see

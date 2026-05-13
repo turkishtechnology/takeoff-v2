@@ -1,4 +1,10 @@
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
+import type {
+  AccordionProps as SparAccordionProps,
+  AccordionItemProps as SparAccordionItemProps,
+  AccordionHeaderProps as SparAccordionHeaderProps,
+  AccordionContentProps as SparAccordionContentProps,
+} from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
@@ -46,7 +52,9 @@ export type AccordionContentSlot = 'root';
  * `arrowPosition`, `hideArrows`, `expandIcon`, `collapseIcon`) are
  * takeoff-spar's own and cascade to descendants through the visual context.
  */
-export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames' | 'defaultValue' | 'onChange'> {
+export interface AccordionProps
+  extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames' | 'defaultValue' | 'onChange'>,
+    Pick<SparAccordionProps, 'multiple' | 'value' | 'defaultValue' | 'onValueChange' | 'collapsible' | 'disabled' | 'orientation'> {
   /**
    * Visual grouping.
    * @defaultValue 'grouped'
@@ -83,21 +91,6 @@ export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
    */
   collapseIcon?: ReactNode;
 
-  /** When `true`, multiple items can be expanded simultaneously. */
-  multiple?: boolean;
-  /** Controlled item identifier(s). */
-  value?: AccordionCurrentValue;
-  /** Uncontrolled initial item identifier(s). */
-  defaultValue?: AccordionCurrentValue;
-  /** Fired when the open value changes. */
-  onValueChange?: AccordionValueChangeHandler;
-  /** When `true`, single-mode items can be collapsed by clicking again. */
-  collapsible?: boolean;
-  /** Disables every item in the accordion. */
-  disabled?: boolean;
-  /** Orientation for keyboard navigation. */
-  orientation?: 'vertical' | 'horizontal';
-
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -106,14 +99,9 @@ export interface AccordionProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
   ref?: Ref<HTMLDivElement>;
 }
 
-export interface AccordionItemProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
-  /**
-   * Stable identity for this item. Required so root controlled props can
-   * target this item reliably. Forwarded to the Spar primitive verbatim.
-   */
-  value: AccordionValue;
-  /** Disables this item only. */
-  disabled?: boolean;
+export interface AccordionItemProps
+  extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'>,
+    Pick<SparAccordionItemProps, 'value' | 'disabled'> {
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionItemSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -121,9 +109,9 @@ export interface AccordionItemProps extends Omit<ComponentPropsWithoutRef<'div'>
   ref?: Ref<HTMLDivElement>;
 }
 
-export interface AccordionHeaderProps extends Omit<ComponentPropsWithoutRef<'h3'>, 'classNames'> {
-  /** HTML heading level (1-6). */
-  level?: AccordionHeadingLevel;
+export interface AccordionHeaderProps
+  extends Omit<ComponentPropsWithoutRef<'h3'>, 'classNames'>,
+    Pick<SparAccordionHeaderProps, 'level'> {
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionHeaderSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -152,9 +140,9 @@ export interface AccordionTriggerTitleProps extends Omit<ComponentPropsWithoutRe
   ref?: Ref<HTMLSpanElement>;
 }
 
-export interface AccordionContentProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
-  /** Render content even while collapsed. */
-  forceMount?: boolean;
+export interface AccordionContentProps
+  extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'>,
+    Pick<SparAccordionContentProps, 'forceMount' | 'onBeforeMatch'> {
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionContentSlot>;
   /** Per-slot HTML attribute overrides. */

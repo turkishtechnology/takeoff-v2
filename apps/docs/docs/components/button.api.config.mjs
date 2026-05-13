@@ -37,7 +37,6 @@ export default {
       skipPropNames: ['ref'],
       sparDocsUrl: sparButtonDocsUrl,
       sparDocsLabel: 'Spar Button docs',
-      sparBehaviorProps: ['loading', 'pressed', 'onPressedChange', 'disabled'],
       propOverrides: {
         children: childrenOverride('Button label content.'),
         className: classNameOverride,
