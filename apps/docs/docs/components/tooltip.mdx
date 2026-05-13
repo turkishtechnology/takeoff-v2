@@ -291,7 +291,47 @@ See
 [Spar Tooltip docs](https://spar.app.turkishtechlab.com/docs/Components/Tooltip)
 for primitive behavior.
 
+#### Props {#tooltip-props}
+
+| Name                             | Type                         | Default | Description                                                                                                                                                      |
+| -------------------------------- | ---------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code> | -       | Tooltip trigger and content components.                                                                                                                          |
+| <ApiBadge label="id" />          | <code>string</code>          | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
+| <ApiBadge label="disabled" />    | <code>boolean</code>         | false   | Whether tooltip is disabled                                                                                                                                      |
+| <ApiBadge label="open" />        | <code>boolean</code>         | -       | Controlled state for tooltip visibility                                                                                                                          |
+| <ApiBadge label="defaultOpen" /> | <code>boolean</code>         | false   | Default open state for uncontrolled tooltip                                                                                                                      |
+| <ApiBadge label="delay" />       | <code>number</code>          | -       | Override provider delay for this tooltip                                                                                                                         |
+| <ApiBadge label="hideDelay" />   | <code>number</code>          | 0       | Override provider hide delay for this tooltip                                                                                                                    |
+
+#### Events {#tooltip-events}
+
+| Name                              | Type                                    | Default | Description                              |
+| --------------------------------- | --------------------------------------- | ------- | ---------------------------------------- |
+| <ApiBadge label="onOpenChange" /> | <code>(open: boolean) =&gt; void</code> | -       | Callback when tooltip open state changes |
+
 ### Tooltip.Content {#tooltip-content}
+
+#### Props {#tooltip-content-props}
+
+| Name                            | Type                                                                                | Default       | Description                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -             |                                                                            |
+| <ApiBadge label="variant" />    | <code>TooltipVariant</code>                                                         | 'dark'        | Color variant.                                                             |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             | Per-slot extra classes.                                                    |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |
+| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
+| <ApiBadge label="side" />       | <code>Side</code>                                                                   | 'top'         | Preferred placement relative to trigger                                    |
+| <ApiBadge label="align" />      | <code>Align</code>                                                                  | 'center'      | Alignment relative to trigger                                              |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -             |                                                                            |
+
+#### Events {#tooltip-content-events}
+
+| Name                                      | Type                                           | Default | Description                        |
+| ----------------------------------------- | ---------------------------------------------- | ------- | ---------------------------------- |
+| <ApiBadge label="onOpenAutoFocus" />      | <code>(event: Event) =&gt; void</code>         | -       | Called when auto-focusing on open  |
+| <ApiBadge label="onCloseAutoFocus" />     | <code>(event: Event) =&gt; void</code>         | -       | Called when auto-focusing on close |
+| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code> | -       | Escape key handler                 |
+| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>  | -       | Outside pointer down handler       |
 
 #### Data attributes {#tooltip-content-data-attributes}
 

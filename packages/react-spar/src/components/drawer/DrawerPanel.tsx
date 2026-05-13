@@ -1,3 +1,4 @@
+import type { ElementType } from 'react';
 import { DialogContent as SparDialogContent } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
@@ -9,11 +10,11 @@ import type { DrawerPanelProps } from './types';
 
 const preventDefault = (e: Event) => e.preventDefault();
 
-export const DrawerPanel = (props: DrawerPanelProps) => {
+export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelProps<T>) => {
   const theme = useComponentTheme('DrawerPanel');
   const { placement, dismissable } = useDrawerOwnContext();
 
-  const { rootAttrs: baseRootAttrs, rest } = composeRootAttrs(DrawerPanelBase, props, theme);
+  const { rootAttrs: baseRootAttrs, rest } = composeRootAttrs(DrawerPanelBase, props as DrawerPanelProps<'div'>, theme);
 
   const { container, children, ref, ...panelProps } = rest;
 

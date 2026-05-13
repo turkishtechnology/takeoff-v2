@@ -162,6 +162,14 @@ export const buttonClassNames = {
 
 - Start from native React props with `ComponentPropsWithoutRef` and remove
   conflicts deliberately with `Omit`.
+- **Inherit Spar behavior props via `Pick<SparFooProps, ...>`** instead of
+  manually rewriting them. This keeps types in sync with Spar while controlling
+  which props are exposed. Never extend full Spar prop types directly. Every
+  `Pick<>` must have an **intent comment** above it explaining why these props
+  (and not others) are exposed — see
+  [Component Authoring Contract — Public type boundary](../../../docs/component-authoring-contract.md#public-type-boundary).
+- Visual-layer props (`variant`, `size`, `mode`, `appearance`, etc.) that have
+  no Spar counterpart are defined inline in the interface.
 - Expose idiomatic React props and callbacks, not raw primitive internals.
 - Keep the root's public surface narrow — only state. Content flows through
   subcomponents.

@@ -1,3 +1,4 @@
+import type { ElementType } from 'react';
 import { Button as SparButton, type ButtonProps as SparButtonProps } from '@turkish-technology/spar';
 
 import { buildSlotAttrs, composeRootAttrs } from '../../core';
@@ -7,7 +8,7 @@ import { ButtonBase } from './base';
 import { DEFAULT_APPEARANCE, DEFAULT_SIZE, DEFAULT_VARIANT } from './defaults';
 import type { ButtonProps, ButtonSlot } from './types';
 
-export const Button = (props: ButtonProps) => {
+export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) => {
   const theme = useComponentTheme('Button');
 
   const {
@@ -15,7 +16,7 @@ export const Button = (props: ButtonProps) => {
     appearance = DEFAULT_APPEARANCE,
     size = DEFAULT_SIZE,
     rounded = false,
-    loading = false,
+    isLoading = false,
     startIcon,
     endIcon,
     disabled = false,
@@ -25,7 +26,7 @@ export const Button = (props: ButtonProps) => {
     children,
     ref,
     ...sparProps
-  } = props;
+  } = props as ButtonProps<'button'>;
 
   const hasIcon = !!(startIcon || endIcon);
   const isIconOnly = hasIcon && !children;
@@ -37,7 +38,7 @@ export const Button = (props: ButtonProps) => {
       'data-size': size,
       'data-rounded': rounded ? '' : undefined,
       'data-icon-only': isIconOnly ? '' : undefined,
-      'data-loading': loading ? '' : undefined,
+      'data-loading': isLoading ? '' : undefined,
       'data-disabled': disabled ? '' : undefined,
     },
   });
@@ -64,11 +65,11 @@ export const Button = (props: ButtonProps) => {
   });
 
   return (
-    <SparButton {...(sparProps as unknown as SparButtonProps)} disabled={disabled} isLoading={loading} ref={ref} {...rootAttrs}>
-      {loading && <span {...spinnerSlotAttrs} />}
-      {startIcon && !loading && <span {...iconSlotAttrs}>{startIcon}</span>}
+    <SparButton {...(sparProps as unknown as SparButtonProps)} disabled={disabled} isLoading={isLoading} ref={ref} {...rootAttrs}>
+      {isLoading && <span {...spinnerSlotAttrs} />}
+      {startIcon && !isLoading && <span {...iconSlotAttrs}>{startIcon}</span>}
       {children && <span {...labelSlotAttrs}>{children}</span>}
-      {endIcon && !loading && <span {...iconSlotAttrs}>{endIcon}</span>}
+      {endIcon && !isLoading && <span {...iconSlotAttrs}>{endIcon}</span>}
     </SparButton>
   );
 };

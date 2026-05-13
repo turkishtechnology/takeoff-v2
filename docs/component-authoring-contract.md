@@ -199,31 +199,153 @@ contract before implementation.
 
 ## Public type boundary
 
-Public component types must **not** extend full Spar prop types.
+Public component types must **not** extend full Spar prop types directly.
+
+Use `Pick<SparFooProps, ...>` to selectively inherit Spar props that this layer
+intentionally exposes. This keeps the API surface explicit while staying in sync
+with Spar's type definitions.
 
 ```ts
 // Bad — leaks every Spar prop into the public API
 type AccordionProps = SparAccordionProps & AccordionOwnProps;
 
-// Good — explicit, intentional surface
-interface AccordionProps extends Omit<
-  ComponentPropsWithoutRef<'div'>,
-  'classNames' | 'defaultValue' | 'onChange'
+// Bad — manually duplicates Spar's type definitions
+interface TooltipProps {
+  open?: boolean; // duplicated from Spar
+  onOpenChange?: (open: boolean) => void; // duplicated from Spar
+}
+
+// Good — explicit, intentional surface, DRY with Spar
+interface TooltipProps extends Pick<
+  SparTooltipProps,
+  'open' | 'defaultOpen' | 'onOpenChange' | 'delay' | 'hideDelay' | 'disabled'
 > {
-  value?: AccordionCurrentValue;
-  defaultValue?: AccordionCurrentValue;
-  onValueChange?: (next: AccordionCurrentValue) => void;
-  multiple?: boolean;
-  type?: AccordionType;
-  mode?: AccordionMode;
-  size?: AccordionSize;
+  children?: ReactNode;
 }
 ```
 
-The wrapper is a public contract. Spar's prop surface can grow, shrink, or
-rename freely; the wrapper must not propagate those changes silently to
-consumers. If Spar and takeoff-spar props are identical after upstream
-alignment, pass them through by name — never by spread of an `&`-extended type.
+The wrapper is a public contract. `Pick` ensures only chosen props are exposed
+while keeping type definitions in sync with Spar — if a Spar prop type changes,
+the wrapper inherits it automatically.
+
+### Intent comment above every `Pick<>`
+
+Every `Pick<SparFooProps, ...>` clause must be preceded by a short comment
+explaining **why these props and not others**. This is the rationale that used
+to live in the now-removed `sparBehaviorProps` config; without it, future
+readers cannot tell whether an unlisted Spar prop was forgotten or excluded on
+purpose. Keep the comment to 1–3 lines.
+
+```ts
+// Good — intent is captured in code
+interface DrawerProps
+  // Dialog root identity, controlled state, and trigger disable. Other Spar
+  // Dialog root props (e.g. `modal`) are intentionally not exposed — the
+  // Drawer's modality is part of its visual contract, not a consumer knob.
+  extends Pick<
+    SparDialogProps,
+    'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled'
+  > {}
+```
+
+Naming the **excluded** props (or families of them) is more valuable than
+listing the included ones — the type itself already names the included ones.
+
+### Renaming follows Spar
+
+When Spar renames a behavior prop (e.g. `pressed` → `isPressed`, or `loading` →
+`isLoading`), the wrapper follows verbatim. Do not preserve the old name as a
+wrapper-local alias, and do not coin a wrapper-local synonym ("`loading` here,
+`isLoading` there"). Pre-release, this is a silent change; post-release, it
+requires a migration note.
+
+### Polymorphism: `as` prop, no `asChild`
+
+Every wrapper Props type that renders DOM must be **polymorphic** via Spar's
+`PolymorphicProps<TDefault, T, OwnProps>`. The wrapper preserves Spar's `as`
+prop and the polymorphic generic; consumers can render
+`<Accordion as="section">`, `<Button as="a" href="...">`, etc.
+
+```ts
+import type { PolymorphicProps } from '@turkish-technology/spar';
+
+interface AccordionOwnProps {
+  type?: AccordionType;
+  classNames?: ClassNamesMap<AccordionSlot>;
+  slotProps?: SlotPropsMap<AccordionSlot>;
+}
+
+export type AccordionProps<T extends ElementType = 'div'> = PolymorphicProps<
+  'div',
+  T,
+  AccordionOwnProps &
+    // Spar Accordion root state & a11y surface. Visual concerns are in
+    // AccordionOwnProps above, not picked.
+    Pick<
+      SparAccordionProps,
+      | 'multiple'
+      | 'value'
+      | 'defaultValue'
+      | 'onValueChange'
+      | 'collapsible'
+      | 'disabled'
+      | 'orientation'
+    >
+>;
+```
+
+The wrapper component itself is generic:
+
+```ts
+export const Accordion = <T extends ElementType = 'div'>(props: AccordionProps<T>) => {
+  // Cast to default-element shape for internal destructuring; the `as` prop
+  // flows through `...sparProps` and the consumer's `T` is preserved at the
+  // call site via the prop type.
+  const { ... } = props as AccordionProps<'div'>;
+  // ...
+};
+```
+
+`asChild` is **not** supported because Spar does not implement it. If a consumer
+needs `asChild` semantics, fix Spar first (upstream-first rule), then expose it
+through the wrapper.
+
+State-only roots that render no DOM (e.g. `Tooltip`, `Drawer` root) are exempt
+from polymorphism — they accept no `as` and no native HTML props.
+
+### Render-prop children where Spar provides them
+
+When a Spar trigger/close component accepts function-as-children for state
+access (e.g. `DialogTrigger`, `DialogClose`, `CollapsibleTrigger`), the wrapper
+picks `children` from the Spar type so the function form flows through:
+
+```ts
+export type DrawerTriggerProps<T extends ElementType = 'button'> =
+  PolymorphicProps<
+    'button',
+    T,
+    DrawerTriggerOwnProps &
+      // Trigger surface from Spar. `children` is picked so it accepts both
+      // ReactNode and the render-prop function form for accessing open/close
+      // state without a separate hook.
+      Pick<SparDialogTriggerProps, 'children'>
+  >;
+```
+
+Render-prop children are **not** exposed on wrapper subcomponents whose visual
+chrome (icon, arrow, title-wrap) is invariant — exposing a function child there
+would conflict with the wrapper-owned anatomy. Example: `AccordionTrigger` does
+**not** expose render-prop children because the wrapper always renders arrow +
+icon + title around the consumer's content.
+
+### Standard HTML omit set
+
+`@takeoff-ui/react-spar` exports a `TakeoffSlotOverrides` constant
+(`'classNames' | 'slotProps'`) and a `TakeoffHTMLProps<T>` alias that applies
+it. Use `TakeoffHTMLProps<T>` for **non-polymorphic** wrappers (rare). For
+polymorphic wrappers (the default), `PolymorphicProps` already omits these keys
+automatically via `keyof Props`, provided `classNames` and `slotProps` are
+declared in the OwnProps interface — which is the required pattern.
 
 For naming, slot vocabulary, callback conventions, and the `composeRootAttrs` /
 `buildSlotAttrs` API, see
@@ -242,6 +364,11 @@ A component is not ready to merge unless:
 - [ ] Public API preserves Takeoff Core vocabulary
 - [ ] React callbacks use React `on*` naming, not Web Component event names
 - [ ] Public types do not extend full Spar prop types
+- [ ] DOM-rendering wrappers are polymorphic via
+      `PolymorphicProps<TDefault, T, OwnProps>`; `classNames`/`slotProps` are
+      declared in OwnProps
+- [ ] Render-prop children are picked from Spar where Spar provides them,
+      **except** on wrappers with invariant visual chrome
 - [ ] Decorative compound parts are internal unless a justification criterion is
       met and recorded
 - [ ] Composition archetype (Inherited / React-enhancement / Bypass) is

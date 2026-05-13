@@ -28,6 +28,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "generate": "node ./scripts/generate-component.mjs",
+    "lint:spar-pick": "node ./scripts/check-spar-pick.mjs",
     "prepack": "tsup"
   },
   "dependencies": {

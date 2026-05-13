@@ -20,7 +20,6 @@ export default {
       skipPropNames: [],
       sparDocsUrl: sparTooltipDocsUrl,
       sparDocsLabel: 'Spar Tooltip docs',
-      sparBehaviorProps: ['open', 'defaultOpen', 'onOpenChange', 'delay', 'hideDelay', 'disabled'],
     },
     {
       sourceFile: tooltipTypesFile,

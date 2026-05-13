@@ -46,6 +46,18 @@ final verify
 - Fix Spar first when behavior/API belongs to Spar.
 - takeoff-spar should stay thin.
 - Do not expose full Spar props through public wrapper types.
+- Wrapper Props inherit Spar props **only** via `Pick<SparXxxProps, ...>` with a
+  mandatory intent comment above naming what is EXCLUDED. Enforced by
+  `pnpm --filter @takeoff-ui/react-spar lint:spar-pick`.
+- DOM-rendering wrappers are polymorphic:
+  `PolymorphicProps<TDefault, T, OwnProps & Pick<Spar..., ...>>`. State-only
+  roots (e.g. Tooltip/Drawer root) are exempt. `asChild` is not supported (Spar
+  doesn't implement it).
+- Wrapper naming follows Spar verbatim — no local synonyms (`isLoading`, not
+  `loading`; `isPressed`, not `pressed`).
+- Render-prop children from Spar are exposed only where the wrapper has no
+  invariant visual chrome. Pick `'children'` from Spar where applicable; do not
+  pick on wrappers like AccordionTrigger whose anatomy wraps the content.
 - Do not expose decorative parts as public compound components by default.
 - Do not create extra markdown architecture files unless explicitly requested.
 - Keep outputs source-backed and concise.
