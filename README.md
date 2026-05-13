@@ -9,7 +9,9 @@ Monorepo for `@takeoff-ui/react-spar` — a React 19 component library that wrap
 - `takeoff-ui` (Stencil) is a parity reference, not a build dependency.
 - `@turkish-technology/spar` is the sole external runtime primitive.
 - Tokens, icons, fonts, reset, recipes, and global styles are consumed from
-  `@takeoff-design/tokens` (peer dependency). The package does not bundle CSS.
+  `@takeoff-design/tokens`, which `@takeoff-ui/react-spar` declares as a direct
+  dependency. The package does not bundle CSS — the token stylesheet must be
+  imported explicitly by the consumer.
 - `@takeoff-ui/vue-spar`, `@spar/utils`, and further monorepo splits are
   future-state ideas only. Do not document or implement them as active
   dependencies in this repo.

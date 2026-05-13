@@ -13,15 +13,15 @@ React 19 peers.
 
 ## Install
 
-`@takeoff-ui/react-spar` ships JS and types only. Install the shared Takeoff
-token package for component CSS.
+`@takeoff-ui/react-spar` ships JS and types only. The component CSS lives in
+`@takeoff-design/tokens`, which comes along as a direct dependency.
 
 ```bash
-pnpm add @takeoff-ui/react-spar @takeoff-design/tokens react react-dom
+pnpm add @takeoff-ui/react-spar react react-dom
 ```
 
 ## Start Here
 
-- [Installation](/docs/installation) — add `@takeoff-ui/react-spar` and its
-  token peer to your project
+- [Installation](/docs/installation) — add `@takeoff-ui/react-spar` to your
+  project and import the token stylesheet
 - [Roadmap](/docs/roadmap) — component port status and release readiness
