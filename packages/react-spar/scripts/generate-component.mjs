@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 /* eslint-disable no-console */
-/* global process, console */
 
 /**
  * Component scaffold generator for @takeoff-ui/react-spar.
@@ -61,18 +60,54 @@ mkdirSync(componentDir, { recursive: true });
 
 writeFileSync(
   resolve(componentDir, 'types.ts'),
-  `import type { ComponentPropsWithoutRef } from 'react';
+  `import type { ElementType } from 'react';
+// TODO: import the matching Spar prop type alongside PolymorphicProps:
+// import type { ${name}Props as Spar${name}Props, PolymorphicProps } from '@turkish-technology/spar';
+import type { PolymorphicProps } from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type ${name}Slot = 'root';
 
-export interface ${name}Props extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames'> {
+/**
+ * Visual + slot props owned by takeoff-v2 (not exposed by Spar).
+ * Declaring \`classNames\`/\`slotProps\` here means PolymorphicProps' built-in
+ * \`keyof Props\` omit cleans them off the native element automatically.
+ */
+export interface ${name}OwnProps {
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<${name}Slot>;
   /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<${name}Slot>;
 }
+
+/**
+ * Public props for ${name}. Polymorphic via \`as\` (e.g. render as a different
+ * element). Ref and native attributes of the rendered element are inherited
+ * from Spar's \`PolymorphicProps\`.
+ */
+// TODO: intersect a Pick<Spar${name}Props, '...'> clause inside the third
+// generic argument below, listing only the Spar behavior props this wrapper
+// intentionally exposes. Above the Pick<>, write a 1–3 line intent comment
+// naming what is EXCLUDED and why — that is the rationale future readers
+// need. Example:
+//
+//   export type ${name}Props<T extends ElementType = 'div'> = PolymorphicProps<
+//     'div',
+//     T,
+//     ${name}OwnProps &
+//       // Spar behavior surface this wrapper exposes. Visual concerns are in
+//       // ${name}OwnProps above, not picked.
+//       Pick<Spar${name}Props, 'foo' | 'bar' | 'onBaz'>
+//   >;
+//
+// See docs/component-authoring-contract.md#public-type-boundary for the rule
+// and #polymorphism-as-prop-no-aschild for the polymorphic wrapper template.
+export type ${name}Props<T extends ElementType = 'div'> = PolymorphicProps<
+  'div',
+  T,
+  ${name}OwnProps
+>;
 
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {
@@ -98,17 +133,24 @@ export const ${name}Base = createComponentBase<${name}Props, 'root'>({
 
 writeFileSync(
   resolve(componentDir, `${name}.tsx`),
-  `import { composeRootAttrs } from '../../core';
+  `import type { ElementType } from 'react';
+
+import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { ${name}Base } from './base';
 import type { ${name}Props } from './types';
 
 // TODO: wire to the matching Spar primitive (e.g. <Spar${name}>) and extend
-// ${name}Props with its public surface. Until then this renders a plain <div>.
-export const ${name} = (props: ${name}Props) => {
+// ${name}Props with its public surface (Pick clause in types.ts). Until then
+// this renders a plain <div>.
+//
+// The component is generic so consumers can pass \`as\` for polymorphism. The
+// inner cast to ${name}Props<'div'> stabilizes destructuring; the consumer's
+// T is preserved at the call site via the prop type.
+export const ${name} = <T extends ElementType = 'div'>(props: ${name}Props<T>) => {
   const theme = useComponentTheme('${name}');
-  const { rootAttrs, rest } = composeRootAttrs(${name}Base, props, theme);
+  const { rootAttrs, rest } = composeRootAttrs(${name}Base, props as ${name}Props<'div'>, theme);
   const { children, ...domProps } = rest;
 
   return (
@@ -168,9 +210,17 @@ if (!slotRegistry.includes(`${name}Base`)) {
 
   let updated = slotRegistry;
 
-  const lastImportIndex = updated.lastIndexOf('import ');
-  const lastImportEnd = updated.indexOf('\n', lastImportIndex);
-  updated = updated.slice(0, lastImportEnd + 1) + importLine + '\n' + updated.slice(lastImportEnd + 1);
+  // Find the last real `import ... from '...';` at line start. Using
+  // `lastIndexOf('import ')` would also match the word "import" appearing
+  // inside JSDoc prose, leading to an import line inserted mid-comment.
+  const importLineRegex = /^import\b[^\n]*from\s+['"][^'"]+['"];?[^\n]*$/gm;
+  let lastMatch = null;
+  let m;
+  while ((m = importLineRegex.exec(updated)) !== null) {
+    lastMatch = m;
+  }
+  const lastImportEnd = lastMatch ? lastMatch.index + lastMatch[0].length : 0;
+  updated = updated.slice(0, lastImportEnd) + '\n' + importLine + updated.slice(lastImportEnd);
 
   updated = updated.replace(/} as const;/, `${slotEntry}\n} as const;`);
 
@@ -187,4 +237,12 @@ console.log(`    index.ts`);
 console.log(`    types.ts`);
 console.log(`\nNext steps:`);
 console.log(`  1. Replace the <div> placeholder in ${name}.tsx with the real Spar primitive.`);
-console.log(`  2. See src/components/accordion/ for the compound-component pattern.`);
+console.log(`  2. In types.ts, intersect a Pick<Spar${name}Props, '...'> clause inside the`);
+console.log(`     PolymorphicProps third generic, with an intent comment above it naming`);
+console.log(`     what is EXCLUDED and why.`);
+console.log(`     (See docs/component-authoring-contract.md — sections #public-type-boundary,`);
+console.log(`     #polymorphism-as-prop-no-aschild, #render-prop-children-where-spar-provides-them.)`);
+console.log(`  3. If Spar exposes function-as-children on this component (typical for Trigger/Close`);
+console.log(`     parts), add 'children' to the Pick<>. Skip it if the wrapper has invariant chrome.`);
+console.log(`  4. Run: pnpm --filter @takeoff-ui/react-spar lint:spar-pick (CI guard).`);
+console.log(`  5. See src/components/accordion/ for the compound-component pattern.`);

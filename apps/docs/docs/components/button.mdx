@@ -45,18 +45,18 @@ export const sizesDemo = String.raw`
 
 export const loadingDemo = String.raw`
 function LoadingDemo() {
-  const [loading, setLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   return (
     <div className="button-demo">
-      <Button loading>Saving…</Button>
-      <Button variant="secondary" loading>Loading</Button>
+      <Button isLoading>Saving…</Button>
+      <Button variant="secondary" isLoading>Loading</Button>
       <Button
         variant="primary"
-        loading={loading}
+        isLoading={isLoading}
         onClick={() => {
-          setLoading(true);
-          setTimeout(() => setLoading(false), 2000);
+          setIsLoading(true);
+          setTimeout(() => setIsLoading(false), 2000);
         }}
       >
         Click to load

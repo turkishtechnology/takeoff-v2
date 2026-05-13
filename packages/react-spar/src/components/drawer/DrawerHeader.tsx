@@ -1,3 +1,5 @@
+import type { ElementType } from 'react';
+
 import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
@@ -5,10 +7,10 @@ import { DrawerHeaderBase } from './base';
 import { DEFAULT_HEADER_TYPE } from './defaults';
 import type { DrawerHeaderProps } from './types';
 
-export const DrawerHeader = (props: DrawerHeaderProps) => {
+export const DrawerHeader = <T extends ElementType = 'div'>(props: DrawerHeaderProps<T>) => {
   const theme = useComponentTheme('DrawerHeader');
 
-  const { rootAttrs, rest } = composeRootAttrs(DrawerHeaderBase, props, theme);
+  const { rootAttrs, rest } = composeRootAttrs(DrawerHeaderBase, props as DrawerHeaderProps<'div'>, theme);
 
   const { headerType = DEFAULT_HEADER_TYPE, children, ref, ...headerProps } = rest;
 

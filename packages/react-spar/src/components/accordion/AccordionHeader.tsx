@@ -1,3 +1,4 @@
+import type { ElementType } from 'react';
 import { AccordionHeader as SparAccordionHeader } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
@@ -16,9 +17,9 @@ const isHeadingLevel = (level: unknown): level is AccordionHeadingLevel => typeo
 
 const normalizeHeadingLevel = (level: AccordionHeaderProps['level']): AccordionHeadingLevel => (isHeadingLevel(level) ? level : DEFAULT_HEADING_LEVEL);
 
-export const AccordionHeader = (props: AccordionHeaderProps) => {
+export const AccordionHeader = <T extends ElementType = 'h3'>(props: AccordionHeaderProps<T>) => {
   const theme = useComponentTheme('AccordionHeader');
-  const { rootAttrs, rest } = composeRootAttrs(AccordionHeaderBase, props, theme);
+  const { rootAttrs, rest } = composeRootAttrs(AccordionHeaderBase, props as AccordionHeaderProps<'h3'>, theme);
   const { children, level, ref, ...spar } = rest;
   const safeLevel = normalizeHeadingLevel(level);
 

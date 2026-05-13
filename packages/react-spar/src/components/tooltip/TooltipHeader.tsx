@@ -1,13 +1,15 @@
+import type { ElementType } from 'react';
+
 import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { TooltipHeaderBase } from './base';
 import type { TooltipHeaderProps, TooltipHeaderSlot } from './types';
 
-export const TooltipHeader = (props: TooltipHeaderProps) => {
+export const TooltipHeader = <T extends ElementType = 'div'>(props: TooltipHeaderProps<T>) => {
   const theme = useComponentTheme('TooltipHeader');
 
-  const { rootAttrs, rest } = composeRootAttrs<TooltipHeaderProps, TooltipHeaderSlot>(TooltipHeaderBase, props, theme);
+  const { rootAttrs, rest } = composeRootAttrs<TooltipHeaderProps, TooltipHeaderSlot>(TooltipHeaderBase, props as TooltipHeaderProps<'div'>, theme);
   const { children, ref, ...nativeProps } = rest;
 
   return (

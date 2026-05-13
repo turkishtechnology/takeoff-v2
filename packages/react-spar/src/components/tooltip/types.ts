@@ -1,8 +1,5 @@
-import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
-import type {
-  TooltipProps as SparTooltipProps,
-  TooltipContentProps as SparTooltipContentProps,
-} from '@turkish-technology/spar';
+import type { ElementType } from 'react';
+import type { TooltipProps as SparTooltipProps, TooltipContentProps as SparTooltipContentProps, PolymorphicProps } from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
@@ -18,26 +15,25 @@ export type TooltipDescriptionSlot = 'root';
 
 export type TooltipArrowSlot = 'root';
 
-export interface TooltipProps
-  extends Pick<SparTooltipProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'delay' | 'hideDelay' | 'disabled'> {
-  /**
-   * Tooltip trigger and content components.
-   */
-  children?: ReactNode;
-}
+/**
+ * Public props for the Tooltip root. State-only — renders no DOM, so no
+ * polymorphic `as` and no native HTML props.
+ */
+// Spar Tooltip root: identity, controlled state, timing, disable, and the
+// trigger+content children. Tooltip root is state-only and renders no DOM,
+// so no native HTML props beyond `children` are exposed.
+export type TooltipProps = Pick<SparTooltipProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'delay' | 'hideDelay' | 'disabled' | 'children'>;
 
-export interface TooltipTriggerProps extends Omit<ComponentPropsWithoutRef<'button'>, 'classNames' | 'slotProps'> {
+export interface TooltipTriggerOwnProps {
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<TooltipTriggerSlot>;
   /** Per-slot HTML-attribute overrides. */
   slotProps?: SlotPropsMap<TooltipTriggerSlot>;
-  /** Ref forwarded to the trigger element. */
-  ref?: Ref<HTMLButtonElement>;
 }
 
-export interface TooltipContentProps
-  extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames' | 'slotProps'>,
-    Pick<SparTooltipContentProps, 'side' | 'align' | 'container' | 'onEscapeKeyDown' | 'onPointerDownOutside' | 'onOpenAutoFocus' | 'onCloseAutoFocus'> {
+export type TooltipTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, TooltipTriggerOwnProps>;
+
+export interface TooltipContentOwnProps {
   /**
    * Color variant.
    * @defaultValue 'dark'
@@ -47,36 +43,44 @@ export interface TooltipContentProps
   classNames?: ClassNamesMap<TooltipContentSlot>;
   /** Per-slot HTML-attribute overrides. */
   slotProps?: SlotPropsMap<TooltipContentSlot>;
-  /** Ref forwarded to the content element. */
-  ref?: Ref<HTMLDivElement>;
 }
 
-export interface TooltipHeaderProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNames' | 'slotProps'> {
+export type TooltipContentProps<T extends ElementType = 'div'> = PolymorphicProps<
+  'div',
+  T,
+  TooltipContentOwnProps &
+    // Positioning (side/align), portal container, and dismiss/focus event hooks.
+    // `variant` is takeoff-v2's own visual token — in TooltipContentOwnProps
+    // above, not picked.
+    Pick<SparTooltipContentProps, 'side' | 'align' | 'container' | 'onEscapeKeyDown' | 'onPointerDownOutside' | 'onOpenAutoFocus' | 'onCloseAutoFocus'>
+>;
+
+export interface TooltipHeaderOwnProps {
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<TooltipHeaderSlot>;
   /** Per-slot HTML-attribute overrides. */
   slotProps?: SlotPropsMap<TooltipHeaderSlot>;
-  /** Ref forwarded to the header element. */
-  ref?: Ref<HTMLDivElement>;
 }
 
-export interface TooltipDescriptionProps extends Omit<ComponentPropsWithoutRef<'p'>, 'classNames' | 'slotProps'> {
+export type TooltipHeaderProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, TooltipHeaderOwnProps>;
+
+export interface TooltipDescriptionOwnProps {
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<TooltipDescriptionSlot>;
   /** Per-slot HTML-attribute overrides. */
   slotProps?: SlotPropsMap<TooltipDescriptionSlot>;
-  /** Ref forwarded to the description element. */
-  ref?: Ref<HTMLParagraphElement>;
 }
 
-export interface TooltipArrowProps extends Omit<ComponentPropsWithoutRef<'svg'>, 'classNames' | 'slotProps'> {
+export type TooltipDescriptionProps<T extends ElementType = 'p'> = PolymorphicProps<'p', T, TooltipDescriptionOwnProps>;
+
+export interface TooltipArrowOwnProps {
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<TooltipArrowSlot>;
   /** Per-slot HTML-attribute overrides. */
   slotProps?: SlotPropsMap<TooltipArrowSlot>;
-  /** Ref forwarded to the arrow SVG element. */
-  ref?: Ref<SVGSVGElement>;
 }
+
+export type TooltipArrowProps<T extends ElementType = 'svg'> = PolymorphicProps<'svg', T, TooltipArrowOwnProps>;
 
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {

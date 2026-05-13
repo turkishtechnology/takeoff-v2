@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ElementType, type ReactNode } from 'react';
 
 import { AccordionTrigger as SparAccordionTrigger, useAccordionItemContext } from '@turkish-technology/spar';
 
@@ -22,9 +22,9 @@ const DEFAULT_COLLAPSE_ICON: ReactNode = (
   </svg>
 );
 
-const AccordionTriggerTitle = (props: AccordionTriggerTitleProps) => {
+const AccordionTriggerTitle = <T extends ElementType = 'span'>(props: AccordionTriggerTitleProps<T>) => {
   const theme = useComponentTheme('AccordionTriggerTitle');
-  const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerTitleBase, props, theme);
+  const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerTitleBase, props as AccordionTriggerTitleProps<'span'>, theme);
   const { children, ref, ...spar } = rest;
 
   return (
@@ -36,12 +36,12 @@ const AccordionTriggerTitle = (props: AccordionTriggerTitleProps) => {
 
 AccordionTriggerTitle.displayName = 'Accordion.Trigger.Title';
 
-const AccordionTriggerRoot = (props: AccordionTriggerProps) => {
+const AccordionTriggerRoot = <T extends ElementType = 'button'>(props: AccordionTriggerProps<T>) => {
   const theme = useComponentTheme('AccordionTrigger');
   const { arrowPosition, hideArrows, expandIcon, collapseIcon } = useAccordionOwnContext('Accordion.Trigger');
   const { isOpen } = useAccordionItemContext();
 
-  const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerBase, props, theme);
+  const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerBase, props as AccordionTriggerProps<'button'>, theme);
   const { children, icon, ref, ...spar } = rest;
 
   const childHasTitle = hasChildOfType(children, AccordionTriggerTitle);

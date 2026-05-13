@@ -34,6 +34,9 @@ jobs:
       - name: Validate lint (pure eslint)
         run: pnpm turbo lint
 
+      - name: Validate Spar prop Pick<> discipline
+        run: pnpm --filter @takeoff-ui/react-spar lint:spar-pick
+
       - name: Validate markdown link integrity
         uses: lycheeverse/lychee-action@v2
         with:

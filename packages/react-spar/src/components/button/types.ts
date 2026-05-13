@@ -1,5 +1,5 @@
-import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
-import type { ButtonProps as SparButtonProps } from '@turkish-technology/spar';
+import type { ElementType, ReactNode } from 'react';
+import type { ButtonProps as SparButtonProps, PolymorphicProps } from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
@@ -11,7 +11,10 @@ export type ButtonSize = 'small' | 'base' | 'large';
 
 export type ButtonSlot = 'root' | 'icon' | 'label' | 'spinner';
 
-export interface ButtonProps extends Omit<ComponentPropsWithoutRef<'button'>, 'classNames' | 'slotProps'>, Pick<SparButtonProps, 'isPressed' | 'onPressedChange'> {
+/**
+ * Visual + slot props owned by takeoff-v2 (not exposed by Spar).
+ */
+export interface ButtonOwnProps {
   /**
    * Color variant.
    * @defaultValue 'primary'
@@ -33,11 +36,6 @@ export interface ButtonProps extends Omit<ComponentPropsWithoutRef<'button'>, 'c
    */
   rounded?: boolean;
   /**
-   * Loading state with screen reader support.
-   * @defaultValue false
-   */
-  loading?: boolean;
-  /**
    * Icon placed before children.
    */
   startIcon?: ReactNode;
@@ -49,9 +47,21 @@ export interface ButtonProps extends Omit<ComponentPropsWithoutRef<'button'>, 'c
   classNames?: ClassNamesMap<ButtonSlot>;
   /** Per-slot HTML-attribute overrides. */
   slotProps?: SlotPropsMap<ButtonSlot>;
-  /** Ref forwarded to the root button element. */
-  ref?: Ref<HTMLButtonElement>;
 }
+
+/**
+ * Public props for the Button. Polymorphic via `as` (e.g. render as `<a>` for
+ * link-styled buttons) — `as`, ref, and the native attributes of the rendered
+ * element are inherited from Spar's `PolymorphicProps`.
+ */
+export type ButtonProps<T extends ElementType = 'button'> = PolymorphicProps<
+  'button',
+  T,
+  ButtonOwnProps &
+    // Toggle-button + loading surface from Spar. `disabled` is inherited from
+    // the polymorphic element's native attributes (not picked).
+    Pick<SparButtonProps, 'isPressed' | 'onPressedChange' | 'isLoading'>
+>;
 
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {

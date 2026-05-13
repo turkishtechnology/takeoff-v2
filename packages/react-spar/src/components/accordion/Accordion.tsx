@@ -1,3 +1,4 @@
+import type { ElementType } from 'react';
 import { Accordion as SparAccordion } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
@@ -8,14 +9,14 @@ import { AccordionProvider } from './context';
 import { DEFAULT_ARROW_POSITION, DEFAULT_MODE, DEFAULT_SIZE, DEFAULT_TYPE } from './defaults';
 import type { AccordionProps } from './types';
 
-export const Accordion = (props: AccordionProps) => {
+export const Accordion = <T extends ElementType = 'div'>(props: AccordionProps<T>) => {
   const theme = useComponentTheme('Accordion');
 
   // Resolve `(author defaults → theme defaults → instance props)` in
   // composeRootAttrs, then destructure from `rest` so theme.defaultProps for
   // visual props (type, mode, size, arrowPosition, hideArrows) actually
   // applies. Destructuring from `props` directly bypasses the theme layer.
-  const { rootAttrs: baseRootAttrs, rest } = composeRootAttrs(AccordionBase, props, theme);
+  const { rootAttrs: baseRootAttrs, rest } = composeRootAttrs(AccordionBase, props as AccordionProps<'div'>, theme);
 
   const {
     type = DEFAULT_TYPE,
