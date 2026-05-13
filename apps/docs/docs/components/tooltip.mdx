@@ -1,0 +1,321 @@
+---
+title: Tooltip
+description:
+  A floating label that appears on hover or focus to provide contextual
+  information. Built on Spar's headless Tooltip primitive.
+sidebar_label: Tooltip
+sidebar_position: 4
+slug: /components/tooltip
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import { Tooltip, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const tooltipScope = { Tooltip };
+
+{/* prettier-ignore-start */}
+
+export const tooltipDemoCss = String.raw`
+.tooltip-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  padding: 40px 20px;
+}
+.tooltip-demo button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  background: var(--background-lightest);
+  cursor: pointer;
+}
+`;
+
+export const playgroundDemo = String.raw`
+<div className="tooltip-demo">
+  <Tooltip>
+    <Tooltip.Trigger>Hover me</Tooltip.Trigger>
+    <Tooltip.Content>
+      <Tooltip.Description>Simple tooltip</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+</div>
+`;
+
+export const variantsDemo = String.raw`
+<div className="tooltip-demo">
+  <Tooltip>
+    <Tooltip.Trigger>Dark</Tooltip.Trigger>
+    <Tooltip.Content variant="dark">
+      <Tooltip.Description>Dark variant</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+  <Tooltip>
+    <Tooltip.Trigger>White</Tooltip.Trigger>
+    <Tooltip.Content variant="white">
+      <Tooltip.Description>White variant</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+  <Tooltip>
+    <Tooltip.Trigger>Info</Tooltip.Trigger>
+    <Tooltip.Content variant="info">
+      <Tooltip.Description>Info variant</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+  <Tooltip>
+    <Tooltip.Trigger>Success</Tooltip.Trigger>
+    <Tooltip.Content variant="success">
+      <Tooltip.Description>Success variant</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+  <Tooltip>
+    <Tooltip.Trigger>Warning</Tooltip.Trigger>
+    <Tooltip.Content variant="warning">
+      <Tooltip.Description>Warning variant</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+  <Tooltip>
+    <Tooltip.Trigger>Danger</Tooltip.Trigger>
+    <Tooltip.Content variant="danger">
+      <Tooltip.Description>Danger variant</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+</div>
+`;
+
+export const placementDemo = String.raw`
+<div className="tooltip-demo">
+  <Tooltip>
+    <Tooltip.Trigger>Top</Tooltip.Trigger>
+    <Tooltip.Content side="top">
+      <Tooltip.Description>Positioned top</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+  <Tooltip>
+    <Tooltip.Trigger>Bottom</Tooltip.Trigger>
+    <Tooltip.Content side="bottom">
+      <Tooltip.Description>Positioned bottom</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+  <Tooltip>
+    <Tooltip.Trigger>Left</Tooltip.Trigger>
+    <Tooltip.Content side="left">
+      <Tooltip.Description>Positioned left</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+  <Tooltip>
+    <Tooltip.Trigger>Right</Tooltip.Trigger>
+    <Tooltip.Content side="right">
+      <Tooltip.Description>Positioned right</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+</div>
+`;
+
+export const headerDemo = String.raw`
+<div className="tooltip-demo">
+  <Tooltip>
+    <Tooltip.Trigger>With header</Tooltip.Trigger>
+    <Tooltip.Content variant="info">
+      <Tooltip.Header>Important</Tooltip.Header>
+      <Tooltip.Description>This tooltip has a header and description.</Tooltip.Description>
+    </Tooltip.Content>
+  </Tooltip>
+</div>
+`;
+
+export const arrowDemo = String.raw`
+<div className="tooltip-demo">
+  <Tooltip>
+    <Tooltip.Trigger>With arrow</Tooltip.Trigger>
+    <Tooltip.Content>
+      <Tooltip.Description>Tooltip with arrow</Tooltip.Description>
+      <Tooltip.Arrow />
+    </Tooltip.Content>
+  </Tooltip>
+</div>
+`;
+
+export const controlledDemo = String.raw`
+function ControlledDemo() {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div className="tooltip-demo">
+      <Tooltip open={open} onOpenChange={setOpen}>
+        <Tooltip.Trigger>Controlled</Tooltip.Trigger>
+        <Tooltip.Content>
+          <Tooltip.Description>Controlled tooltip</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+      <button onClick={() => setOpen(!open)}>
+        {open ? 'Hide' : 'Show'}
+      </button>
+    </div>
+  );
+}
+
+render(<ControlledDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Tooltip
+
+`Tooltip` displays a floating label on hover or focus to provide brief
+contextual information. It wraps the Spar headless Tooltip primitive and adds
+Takeoff visual vocabulary — variant, header, description, and arrow slots.
+
+## Usage
+
+```tsx
+import { Tooltip } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Tooltip>
+  <Tooltip.Trigger>Hover me</Tooltip.Trigger>
+  <Tooltip.Content>
+    <Tooltip.Description>Helpful info</Tooltip.Description>
+  </Tooltip.Content>
+</Tooltip>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  cssCode={tooltipDemoCss}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tooltipScope}
+/>
+
+## Variants
+
+<LiveCode
+  code={variantsDemo}
+  cssCode={tooltipDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tooltipScope}
+/>
+
+## Placement
+
+<LiveCode
+  code={placementDemo}
+  cssCode={tooltipDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tooltipScope}
+/>
+
+## Header & Description
+
+<LiveCode
+  code={headerDemo}
+  cssCode={tooltipDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tooltipScope}
+/>
+
+## Arrow
+
+<LiveCode
+  code={arrowDemo}
+  cssCode={tooltipDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tooltipScope}
+/>
+
+## Controlled
+
+<LiveCode
+  code={controlledDemo}
+  cssCode={tooltipDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tooltipScope}
+/>
+
+## Accessibility & Keyboard
+
+- Trigger uses `aria-describedby` pointing to the content element.
+- Content has `role="tooltip"`.
+- Tooltip respects `WCAG 1.4.13` — hoverable content remains visible while the
+  pointer is over it.
+- Escape key dismisses the tooltip and returns focus to the trigger.
+
+| Key               | Behavior                                    |
+| ----------------- | ------------------------------------------- |
+| <kbd>Escape</kbd> | Dismiss the tooltip.                        |
+| <kbd>Tab</kbd>    | Focus trigger shows tooltip; blur hides it. |
+
+## Anatomy
+
+```tsx
+<Tooltip>
+  {' '}
+  {/* Root — state management */}
+  <Tooltip.Trigger> {/* Hover/focus target */}…</Tooltip.Trigger>
+  <Tooltip.Content>
+    {' '}
+    {/* Floating popup */}
+    <Tooltip.Header>…</Tooltip.Header> {/* Optional bold heading */}
+    <Tooltip.Description>…</Tooltip.Description> {/* Body text */}
+    <Tooltip.Arrow /> {/* Optional arrow */}
+  </Tooltip.Content>
+</Tooltip>
+```
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Tooltip {#tooltip}
+
+See
+[Spar Tooltip docs](https://spar.app.turkishtechlab.com/docs/Components/Tooltip)
+for primitive behavior.
+
+### Tooltip.Content {#tooltip-content}
+
+#### Data attributes {#tooltip-content-data-attributes}
+
+| Attribute          | Applied when | Purpose                                                   |
+| ------------------ | ------------ | --------------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.     |
+| `data-variant`     | Always       | Reflects the resolved `variant` for theme recipe scoping. |
+
+### Tooltip.Header {#tooltip-header}
+
+#### Data attributes {#tooltip-header-data-attributes}
+
+| Attribute          | Applied when | Purpose                         |
+| ------------------ | ------------ | ------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for the header. |
+
+### Tooltip.Description {#tooltip-description}
+
+#### Data attributes {#tooltip-description-data-attributes}
+
+| Attribute          | Applied when | Purpose                              |
+| ------------------ | ------------ | ------------------------------------ |
+| `data-slot="root"` | Always       | Stable selector for the description. |
+
+### Tooltip.Trigger {#tooltip-trigger}
+
+### Tooltip.Arrow {#tooltip-arrow}
+
+{/* api-tables:end */}
