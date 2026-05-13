@@ -63,8 +63,8 @@ Rules:
 pnpm --filter @takeoff-ui/react-spar generate Button --root=button Label=span LeadingIcon=span Spinner=span
 ```
 
-Component tests are phase 2; the generator does not create
-`ComponentName.test.tsx`.
+The generator does not scaffold `ComponentName.test.tsx`. Tests are added
+manually following the [Testing Standards](#testing-standards) below.
 
 ## Compound-Only Baseline
 
@@ -217,10 +217,12 @@ consumers can attach anything that lives on the DOM element to that slot.
   `onOpenChange`, `onCheckedChange`) — these are root props
 - Anything documented as a behavior prop on the root component
 
-This boundary is **not enforced at runtime.** A consumer who routes a behavior
-prop through `slotProps.root` will silently override the component's controlled
-wiring and the component will appear broken. The contract belongs in
-documentation; the library does not police it.
+> [!WARNING] **This boundary is not enforced at runtime.** A consumer who routes
+> a behavior prop (e.g. `onValueChange`, `checked`, `disabled`) through
+> `slotProps.root` will silently override the component's controlled wiring and
+> the component will appear broken with no error thrown. Debugging this
+> typically takes longer than the wiring took to write. The contract belongs in
+> documentation; the library does not police it.
 
 Rule of thumb: _Customizing a DOM attribute? → `slotProps`. Driving component
 behavior? → root prop._
@@ -258,6 +260,65 @@ Typical structural subcomponents include `Root`, `Mask`, `Panel`, `Body`,
 - Keep the base file focused on static metadata, pure helpers, and light context
   wiring.
 - Prefer `createComponentBase` for `cx`, `getSlotProps`, and `resolveProps`.
+
+### Composition archetypes
+
+The compound-only baseline decides _that_ every component has compound parts.
+This section decides _what each part renders underneath_. Every compound part
+falls into exactly one of three archetypes:
+
+| Archetype             | When it applies                                                                             | Canonical example                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **Inherited**         | The upstream Spar primitive already exports a part for this slot                            | `Input.Label` → `SparInputLabel`                                                  |
+| **React-enhancement** | No upstream part exists for this slot; the wrapper owns the DOM tag and styling hooks alone | `Button.Spinner`, `Input.Container`, `Dialog.SignIcon`                            |
+| **Bypass**            | An upstream part exists but the wrapper renders a plain tag for a specific, recorded reason | `Dialog.Mask` is the class to avoid; justified bypasses carry an inline rationale |
+
+Classification happens at contract time, before implementation begins. A missing
+archetype classification is a contract blocker — see the
+[`takeoff-component-workflow`](../../../.agents/skills/takeoff-component-workflow/SKILL.md)
+skill.
+
+Rules:
+
+1. **Every compound part declares its archetype in `base.ts`.** A one-line JSDoc
+   on the slot or part reference is enough
+   (`// @archetype inherited — wraps SparDialog.Title`). Reviewers should be
+   able to read the base file and know which parts delegate, which are pure
+   React, and which intentionally bypass upstream.
+2. **Inherited parts must render their upstream counterpart, not a plain tag.**
+   A compound part that has an upstream equivalent but renders a plain `<div>` /
+   `<span>` is a bug unless it is explicitly classified as Bypass with a reason.
+   This is the upstream-first rule (see `docs/component-authoring-contract.md`)
+   applied at the slot level.
+3. **React-enhancement parts must have no upstream equivalent.** If the upstream
+   primitive grows a matching part later, the react-enhancement classification
+   must migrate to Inherited in the same release.
+4. **Bypass parts must carry an inline `exemption:` comment at the render site
+   and a `@bypass` line in the base file** giving the concrete reason (e.g.
+   upstream behavior conflicts with the React wrapper's semantics, upstream
+   hasn't shipped the part yet). "Felt easier" is not a reason.
+5. **Wrappers must not re-implement behavior Spar already owns** (see
+   `docs/component-authoring-contract.md` — "Spar owns behavior"). When a
+   wrapper bypasses an upstream part, it inherits the burden of proving that no
+   behavior (keyboarding, focus, ARIA lifecycle) is being silently
+   re-implemented in React. If there is, the correct path is to delegate through
+   the upstream part and restrict the wrapper to styling and API translation.
+
+Canonical examples:
+
+- **Inherited root, inherited parts** — `Accordion`. Delegates through every
+  `SparAccordion.*` part it uses, with only styling enhancements layered in.
+- **Inherited root, mix of inherited + react-enhancement parts** — `Input` and
+  `Dialog`. Upstream compound parts exist for semantic anchors (`Label`,
+  `Title`, `Description`, `Field`, …) and are inherited; visual chrome parts
+  (`Container`, `LeadingIcon`, `SignIcon`, `Header`, …) are react-enhancement.
+- **Compound-in-react over a leaf upstream** — `Button` and `Checkbox`.
+  `SparButton` and `SparCheckbox` are leaves; every `.Label` / `.Icon` /
+  `.Indicator` / `.Spinner` part is react-enhancement.
+- **Bypass with documented rationale** — `Button` link-mode renders a bare `<a>`
+  rather than `<SparButton as="a">` because the upstream keyboard handler
+  preventDefaults Enter/Space on non-native elements, which would block a native
+  anchor's navigation. The rationale lives in `ButtonBase.ts`.
 
 ### Upstream-first wrapper responsibility
 
@@ -425,66 +486,6 @@ export { MyComponentCompound as MyComponent };
 | Read theme defaults                        | `useComponentTheme('Name')`                              | `src/provider` |
 | Share root state with sub-components       | `createSafeContext('NameProvider')`                      | `src/hooks`    |
 | Detect a specific child sub-component      | `hasChildOfType`                                         | `src/hooks`    |
-
-## Composition Archetypes
-
-The compound-only baseline (above) decides _that_ every component has compound
-parts. This section decides _what each part renders underneath_. Every compound
-part falls into exactly one of three archetypes:
-
-| Archetype             | When it applies                                                                             | Canonical example                                                                 |
-| --------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| **Inherited**         | The upstream Spar primitive already exports a part for this slot                            | `Input.Label` → `SparInputLabel`                                                  |
-| **React-enhancement** | No upstream part exists for this slot; the wrapper owns the DOM tag and styling hooks alone | `Button.Spinner`, `Input.Container`, `Dialog.SignIcon`                            |
-| **Bypass**            | An upstream part exists but the wrapper renders a plain tag for a specific, recorded reason | `Dialog.Mask` is the class to avoid; justified bypasses carry an inline rationale |
-
-The rules:
-
-1. **Every compound part declares its archetype in `base.ts`.** A one-line JSDoc
-   on the slot or part reference is enough
-   (`// @archetype inherited — wraps SparDialog.Title`). Reviewers should be
-   able to read the base file and know which parts delegate, which are pure
-   React, and which intentionally bypass upstream.
-2. **Inherited parts must render their upstream counterpart, not a plain tag.**
-   A compound part that has an upstream equivalent but renders a plain `<div>` /
-   `<span>` is a bug unless it is explicitly classified as Bypass with a reason.
-   This is the upstream-first rule (see `docs/component-authoring-contract.md`)
-   applied at the slot level.
-3. **React-enhancement parts must have no upstream equivalent.** If the upstream
-   primitive grows a matching part later, the react-enhancement classification
-   must migrate to Inherited in the same release.
-4. **Bypass parts must carry an inline `exemption:` comment at the render site
-   and a `@bypass` line in the base file** giving the concrete reason (e.g.
-   upstream behavior conflicts with the React wrapper's semantics, upstream
-   hasn't shipped the part yet). "Felt easier" is not a reason.
-5. **Wrappers must not re-implement behavior Spar already owns** (see
-   `docs/component-authoring-contract.md` — "Spar owns behavior"). When a
-   wrapper bypasses an upstream part, it inherits the burden of proving that no
-   behavior (keyboarding, focus, ARIA lifecycle) is being silently
-   re-implemented in React. If there is, the correct path is to delegate through
-   the upstream part and restrict the wrapper to styling and API translation.
-
-Canonical examples per archetype, as of the composition review absorbed into
-this section:
-
-- **Inherited root, inherited parts** — `Accordion`. Delegates through every
-  `SparAccordion.*` part it uses, with only styling enhancements layered in.
-- **Inherited root, mix of inherited + react-enhancement parts** — `Input` and
-  `Dialog`. Upstream compound parts exist for semantic anchors (`Label`,
-  `Title`, `Description`, `Field`, …) and are inherited; visual chrome parts
-  (`Container`, `LeadingIcon`, `SignIcon`, `Header`, …) are react-enhancement.
-- **Compound-in-react over a leaf upstream** — `Button` and `Checkbox`.
-  `SparButton` and `SparCheckbox` are leaves; every `.Label` / `.Icon` /
-  `.Indicator` / `.Spinner` part is react-enhancement.
-- **Bypass with documented rationale** — `Button` link-mode renders a bare `<a>`
-  rather than `<SparButton as="a">` because the upstream keyboard handler
-  preventDefaults Enter/Space on non-native elements, which would block a native
-  anchor's navigation. The rationale lives in `ButtonBase.ts`.
-
-Every new component port must classify its parts against this table as part of
-the contract produced by the
-[`takeoff-component-workflow`](../../../.agents/skills/takeoff-component-workflow/SKILL.md)
-skill. A missing archetype classification is a contract blocker.
 
 ## Styling Contract
 
