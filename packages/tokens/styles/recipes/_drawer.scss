@@ -1,0 +1,347 @@
+@use '../abstracts/mixins' as mixins;
+
+// ---------------------------------------------------------------------------
+// Drawer — slide-in panel recipe
+// ---------------------------------------------------------------------------
+// Slot identity: class names (.tk-drawer-*)
+// Variant/state flags: data-attributes ([data-placement], [data-state])
+// ---------------------------------------------------------------------------
+
+@mixin drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background-color: var(--overlay-black-base);
+  opacity: 1;
+  transition:
+    opacity 0.3s ease-in-out,
+    visibility 0s linear 0s;
+
+  &[data-state='closed'] {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition:
+      opacity 0.3s ease-in-out,
+      visibility 0s linear 0.3s;
+  }
+
+  // ─── Invisible overlay (rendered but visually hidden) ─────────────
+  &[data-invisible] {
+    background-color: transparent;
+  }
+
+  // ─── Intensity variants ──────────────────────────────────────────
+  &:not([data-invisible]) {
+    &[data-intensity='lightest'] {
+      background-color: var(--overlay-black-lightest);
+    }
+
+    &[data-intensity='light'] {
+      background-color: var(--overlay-black-light);
+    }
+
+    &[data-intensity='base'] {
+      background-color: var(--overlay-black-base);
+    }
+
+    &[data-intensity='dark'] {
+      background-color: var(--overlay-black-dark);
+    }
+
+    &[data-intensity='darkest'] {
+      background-color: var(--overlay-black-darkest);
+    }
+  }
+}
+
+@mixin drawer-panel {
+  font-family: var(--family-body, 'Geologica', sans-serif);
+  position: fixed;
+  z-index: 1501;
+  display: flex;
+  flex-direction: column;
+  background: var(--static-light);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0s linear 0s;
+  will-change: transform;
+
+  &[data-state='closed'] {
+    pointer-events: none;
+    visibility: hidden;
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      visibility 0s linear 0.3s;
+  }
+
+  // ─── Placement: right (default) ──────────────────────────────────
+  &[data-placement='right'] {
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 344px;
+    border-radius: 8px 0 0 8px;
+
+    .tk-drawer-header {
+      border-top-left-radius: var(--radius-m-base);
+    }
+
+    .tk-drawer-footer {
+      border-bottom-left-radius: var(--radius-m-base);
+    }
+  }
+
+  &[data-placement='right'][data-state='closed'] {
+    transform: translateX(100%);
+  }
+
+  // ─── Placement: left ─────────────────────────────────────────────
+  &[data-placement='left'] {
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 344px;
+    border-radius: 0 8px 8px 0;
+
+    .tk-drawer-header {
+      border-top-right-radius: var(--radius-m-base);
+    }
+
+    .tk-drawer-footer {
+      border-bottom-right-radius: var(--radius-m-base);
+    }
+  }
+
+  &[data-placement='left'][data-state='closed'] {
+    transform: translateX(-100%);
+  }
+
+  // ─── Placement: top ──────────────────────────────────────────────
+  &[data-placement='top'] {
+    inset-block-start: 0;
+    inset-inline: 0;
+    width: 100%;
+    height: 344px;
+    border-radius: 0 0 8px 8px;
+
+    .tk-drawer-header {
+      border-radius: 0;
+    }
+
+    .tk-drawer-footer {
+      border-bottom-left-radius: var(--radius-m-base);
+      border-bottom-right-radius: var(--radius-m-base);
+    }
+  }
+
+  &[data-placement='top'][data-state='closed'] {
+    transform: translateY(-100%);
+  }
+
+  // ─── Placement: bottom ───────────────────────────────────────────
+  &[data-placement='bottom'] {
+    inset-block-end: 0;
+    inset-inline: 0;
+    width: 100%;
+    height: 344px;
+    border-radius: 8px 8px 0 0;
+
+    .tk-drawer-header {
+      border-top-left-radius: var(--radius-m-base);
+      border-top-right-radius: var(--radius-m-base);
+    }
+
+    .tk-drawer-footer {
+      border-radius: 0;
+    }
+  }
+
+  &[data-placement='bottom'][data-state='closed'] {
+    transform: translateY(100%);
+  }
+
+  // ─── Placement: full-screen ──────────────────────────────────────
+  &[data-placement='full-screen'] {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    transition: none;
+    transform: none;
+  }
+
+  &[data-placement='full-screen'][data-state='closed'] {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+@mixin drawer-header {
+  display: flex;
+  width: 100%;
+  padding: var(--notification-header-v-padding) var(--notification-header-h-padding);
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--notification-header-gap);
+  flex-shrink: 0;
+
+  // ─── Header type: basic (default) ────────────────────────────────
+  // No border, no background.
+
+  // ─── Header type: divided ────────────────────────────────────────
+  &[data-header-type='divided'] {
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  // ─── Header type: light ──────────────────────────────────────────
+  &[data-header-type='light'] {
+    border-bottom: 1px solid var(--border-light);
+    background: var(--background-lightest);
+  }
+
+  // ─── Header type: dark ───────────────────────────────────────────
+  &[data-header-type='dark'] {
+    background: var(--background-darkest);
+
+    .tk-drawer-title {
+      color: var(--text-lightest);
+    }
+
+    .tk-drawer-close-button {
+      color: var(--icon-base);
+    }
+  }
+
+  // ─── Header type: primary ────────────────────────────────────────
+  &[data-header-type='primary'] {
+    background: var(--primary-base);
+
+    .tk-drawer-title {
+      color: var(--text-lightest);
+    }
+
+    .tk-drawer-close-button {
+      color: var(--primary-lightest);
+    }
+  }
+}
+
+@mixin drawer-title {
+  color: var(--text-darkest);
+  font-weight: 400;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  // Default (h2–h6 or no data-level)
+  font-family: var(--desktop-title-h5-font);
+  font-size: var(--desktop-title-h5-size);
+  line-height: var(--desktop-title-h5-line-height);
+
+  &[data-level='1'] {
+    font-family: var(--desktop-title-h1-font);
+    font-size: var(--desktop-title-h1-size);
+    line-height: var(--desktop-title-h1-line-height);
+  }
+
+  &[data-level='2'] {
+    font-family: var(--desktop-title-h2-font);
+    font-size: var(--desktop-title-h2-size);
+    line-height: var(--desktop-title-h2-line-height);
+  }
+
+  &[data-level='3'] {
+    font-family: var(--desktop-title-h3-font);
+    font-size: var(--desktop-title-h3-size);
+    line-height: var(--desktop-title-h3-line-height);
+  }
+
+  &[data-level='4'] {
+    font-family: var(--desktop-title-h4-font);
+    font-size: var(--desktop-title-h4-size);
+    line-height: var(--desktop-title-h4-line-height);
+  }
+
+  &[data-level='5'] {
+    font-family: var(--desktop-title-h5-font);
+    font-size: var(--desktop-title-h5-size);
+    line-height: var(--desktop-title-h5-line-height);
+  }
+
+  &[data-level='6'] {
+    font-family: var(--desktop-title-h6-font);
+    font-size: var(--desktop-title-h6-size);
+    line-height: var(--desktop-title-h6-line-height);
+  }
+}
+
+@mixin drawer-description {
+  color: var(--text-base);
+  font-family: var(--desktop-body-m-base-font);
+  font-size: var(--desktop-body-m-base-size);
+  font-weight: 400;
+  line-height: var(--desktop-body-m-base-line-height);
+  margin: 0;
+}
+
+@mixin drawer-body {
+  width: 100%;
+  min-width: 0;
+  padding: 0 var(--notification-body-h-padding);
+  flex: 1 1 auto;
+  overflow-y: auto;
+  color: var(--text-dark);
+}
+
+@mixin drawer-footer {
+  display: flex;
+  width: 100%;
+  padding: var(--notification-footer-v-padding) var(--notification-footer-h-padding);
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--notification-footer-gap);
+  flex-shrink: 0;
+  box-shadow: var(--effect-2-default-base);
+
+  // ─── Footer type: basic (default) ────────────────────────────────
+  // No border, no background.
+
+  // ─── Footer type: divided ────────────────────────────────────────
+  &[data-footer-type='divided'] {
+    border-top: 1px solid var(--border-light);
+  }
+
+  // ─── Footer type: light ──────────────────────────────────────────
+  &[data-footer-type='light'] {
+    border-top: 1px solid var(--border-light);
+    background: var(--background-lightest);
+  }
+}
+
+@mixin drawer-close-button {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  padding: var(--spacing-xs);
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: var(--radius-m-base);
+  background: transparent;
+  color: var(--icon-sub-base);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease-in-out,
+    color 0.2s ease-in-out;
+
+  @include mixins.focus-ring(var(--neutral-focus));
+
+  &:hover {
+    background-color: var(--overlay-black-lightest);
+  }
+}
