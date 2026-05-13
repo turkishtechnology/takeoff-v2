@@ -17,7 +17,7 @@ React 19 peers.
 `@takeoff-design/tokens`, which comes along as a direct dependency.
 
 ```bash
-pnpm add @takeoff-ui/react-spar react react-dom
+pnpm add @takeoff-ui/react-spar
 ```
 
 ## Start Here
