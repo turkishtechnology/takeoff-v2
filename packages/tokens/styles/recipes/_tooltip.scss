@@ -1,0 +1,192 @@
+@use '../abstracts/mixins' as mixins;
+
+// ---------------------------------------------------------------------------
+// Tooltip recipe
+// ---------------------------------------------------------------------------
+
+@mixin tooltip-content {
+  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-size: var(--desktop-body-s-size, 0.75rem);
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.01em;
+  position: relative;
+  z-index: 1300;
+  display: flex;
+  gap: 8px;
+  max-width: 300px;
+  width: max-content;
+  padding: var(--tooltips-base-v-padding, 8px) var(--tooltips-base-h-padding, 12px);
+  border-radius: var(--tooltips-base-radius, 8px);
+  word-wrap: break-word;
+  white-space: normal;
+  pointer-events: auto;
+  animation: tk-tooltip-fade-in 150ms ease-out;
+
+  // ---------------------------------------------------------------------------
+  // Variants
+  // ---------------------------------------------------------------------------
+
+  &[data-variant='dark'] {
+    background: var(--background-darkest);
+    color: var(--static-white);
+    border: 1px solid var(--border-dark);
+
+    .tk-tooltip-header {
+      color: var(--text-lightest);
+    }
+
+    .tk-tooltip-description {
+      color: var(--text-sub-base);
+    }
+
+    .tk-tooltip-arrow {
+      color: var(--background-darkest);
+    }
+  }
+
+  &[data-variant='white'] {
+    background: var(--background-lightest);
+    color: var(--text-darkest);
+    border: 1px solid var(--border-light);
+
+    .tk-tooltip-header {
+      color: var(--text-darkest);
+    }
+
+    .tk-tooltip-description {
+      color: var(--text-dark);
+    }
+
+    .tk-tooltip-arrow {
+      color: var(--background-lightest);
+    }
+  }
+
+  &[data-variant='info'] {
+    background-color: var(--states-info-lightest);
+    color: var(--text-darkest);
+    border: 1px solid var(--states-info-light);
+
+    .tk-tooltip-header {
+      color: var(--text-darkest);
+    }
+
+    .tk-tooltip-description {
+      color: var(--text-dark);
+    }
+
+    .tk-tooltip-arrow {
+      color: var(--states-info-lightest);
+    }
+  }
+
+  &[data-variant='success'] {
+    background-color: var(--states-success-lightest);
+    color: var(--text-darkest);
+    border: 1px solid var(--states-success-light);
+
+    .tk-tooltip-header {
+      color: var(--text-darkest);
+    }
+
+    .tk-tooltip-description {
+      color: var(--text-dark);
+    }
+
+    .tk-tooltip-arrow {
+      color: var(--states-success-lightest);
+    }
+  }
+
+  &[data-variant='warning'] {
+    background-color: var(--states-warning-lightest);
+    color: var(--text-darkest);
+    border: 1px solid var(--states-warning-light);
+
+    .tk-tooltip-header {
+      color: var(--text-darkest);
+    }
+
+    .tk-tooltip-description {
+      color: var(--text-dark);
+    }
+
+    .tk-tooltip-arrow {
+      color: var(--states-warning-lightest);
+    }
+  }
+
+  &[data-variant='danger'] {
+    background-color: var(--states-danger-lightest);
+    color: var(--text-darkest);
+    border: 1px solid var(--states-danger-light);
+
+    .tk-tooltip-header {
+      color: var(--text-darkest);
+    }
+
+    .tk-tooltip-description {
+      color: var(--text-dark);
+    }
+
+    .tk-tooltip-arrow {
+      color: var(--states-danger-lightest);
+    }
+  }
+
+  &[data-variant='neutral'] {
+    background-color: var(--background-light);
+    color: var(--text-darkest);
+    border: 1px solid var(--states-light);
+
+    .tk-tooltip-header {
+      color: var(--text-darkest);
+    }
+
+    .tk-tooltip-description {
+      color: var(--text-dark);
+    }
+
+    .tk-tooltip-arrow {
+      color: var(--background-light);
+    }
+  }
+}
+
+@mixin tooltip-header {
+  text-align: left;
+  font-weight: 400;
+  font-size: var(--desktop-body-s-size, 0.75rem);
+  font-style: normal;
+  line-height: 20px;
+  margin: 0;
+}
+
+@mixin tooltip-description {
+  font-weight: 300;
+  font-size: var(--desktop-body-xs-size, 0.625rem);
+  line-height: 20px;
+  margin: 0;
+}
+
+@mixin tooltip-arrow {
+  display: block;
+  pointer-events: none;
+}
+
+// ---------------------------------------------------------------------------
+// Keyframes
+// ---------------------------------------------------------------------------
+
+@mixin tooltip-keyframes {
+  @keyframes tk-tooltip-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+}

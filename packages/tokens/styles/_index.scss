@@ -8,9 +8,11 @@
 @use 'recipes/drawer';
 @use 'recipes/input';
 @use 'recipes/checkbox';
+@use 'recipes/tooltip';
 
 @include button.button-keyframes;
 @include input.input-keyframes;
+@include tooltip.tooltip-keyframes;
 
 .tk-button {
   @include button.button;
@@ -70,4 +72,20 @@
 
 .tk-checkbox {
   @include checkbox.checkbox;
+}
+
+.tk-tooltip-content {
+  @include tooltip.tooltip-content;
+}
+
+.tk-tooltip-header {
+  @include tooltip.tooltip-header;
+}
+
+.tk-tooltip-description {
+  @include tooltip.tooltip-description;
+}
+
+.tk-tooltip-arrow {
+  @include tooltip.tooltip-arrow;
 }
