@@ -5,6 +5,7 @@
 @use 'recipes/button';
 @use 'recipes/accordion';
 @use 'recipes/dialog';
+@use 'recipes/drawer';
 @use 'recipes/input';
 @use 'recipes/checkbox';
 
@@ -29,6 +30,38 @@
 
 .tk-dialog {
   @include dialog.dialog;
+}
+
+.tk-drawer-overlay {
+  @include drawer.drawer-overlay;
+}
+
+.tk-drawer-panel {
+  @include drawer.drawer-panel;
+}
+
+.tk-drawer-header {
+  @include drawer.drawer-header;
+}
+
+.tk-drawer-title {
+  @include drawer.drawer-title;
+}
+
+.tk-drawer-description {
+  @include drawer.drawer-description;
+}
+
+.tk-drawer-body {
+  @include drawer.drawer-body;
+}
+
+.tk-drawer-footer {
+  @include drawer.drawer-footer;
+}
+
+.tk-drawer-close-button {
+  @include drawer.drawer-close-button;
 }
 
 .tk-input {

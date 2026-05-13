@@ -1,0 +1,396 @@
+---
+title: Drawer
+description:
+  A slide-in side panel built on top of Spar's Dialog primitive. Use it for
+  navigation menus, detail views, filters, or any content that should overlay
+  the current page without a full-page transition.
+sidebar_label: Drawer
+sidebar_position: 2
+slug: /components/drawer
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import { Drawer, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const drawerScope = { Drawer };
+
+<!-- prettier-ignore-start -->
+
+export const drawerDemoCss = String.raw`
+.drawer-demo-trigger {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--primary-base);
+  color: var(--static-white);
+  font-weight: 600;
+  cursor: pointer;
+}
+`;
+
+export const playgroundDemo = String.raw`
+<Drawer placement="right">
+  <Drawer.Trigger className="drawer-demo-trigger">
+    Open Drawer
+  </Drawer.Trigger>
+  <Drawer.Overlay />
+  <Drawer.Panel>
+    <Drawer.Header>
+      <Drawer.Title>Flight Details</Drawer.Title>
+      <Drawer.CloseButton>✕</Drawer.CloseButton>
+    </Drawer.Header>
+    <Drawer.Body>
+      <Drawer.Description>
+        Review your selected flight information and passenger details before
+        confirming the booking.
+      </Drawer.Description>
+    </Drawer.Body>
+    <Drawer.Footer>
+      <Drawer.CloseButton>Close</Drawer.CloseButton>
+    </Drawer.Footer>
+  </Drawer.Panel>
+</Drawer>
+`;
+
+export const placementDemo = String.raw`
+function PlacementDemo() {
+  const [placement, setPlacement] = useState('right');
+
+  return (
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      {['left', 'right', 'top', 'bottom', 'full-screen'].map((p) => (
+        <Drawer key={p} placement={p}>
+          <Drawer.Trigger className="drawer-demo-trigger">
+            {p}
+          </Drawer.Trigger>
+          <Drawer.Overlay />
+          <Drawer.Panel>
+            <Drawer.Header>
+              <Drawer.Title>Drawer from {p}</Drawer.Title>
+              <Drawer.CloseButton>✕</Drawer.CloseButton>
+            </Drawer.Header>
+            <Drawer.Body>
+              This drawer slides in from the <strong>{p}</strong> side.
+            </Drawer.Body>
+          </Drawer.Panel>
+        </Drawer>
+      ))}
+    </div>
+  );
+}
+
+render(<PlacementDemo />);
+`;
+
+export const controlledDemo = String.raw`
+function ControlledDrawerDemo() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <button
+        className="drawer-demo-trigger"
+        onClick={() => setOpen(true)}
+      >
+        Open (external)
+      </button>
+      <span style={{ fontSize: 13, opacity: 0.7 }}>
+        State: {open ? 'open' : 'closed'}
+      </span>
+      <Drawer open={open} onOpenChange={setOpen}>
+        <Drawer.Overlay />
+        <Drawer.Panel>
+          <Drawer.Header>
+            <Drawer.Title>Controlled Drawer</Drawer.Title>
+            <Drawer.CloseButton>✕</Drawer.CloseButton>
+          </Drawer.Header>
+          <Drawer.Body>
+            This drawer is controlled externally via open/onOpenChange props.
+          </Drawer.Body>
+        </Drawer.Panel>
+      </Drawer>
+    </div>
+  );
+}
+
+render(<ControlledDrawerDemo />);
+`;
+
+<!-- prettier-ignore-end -->
+
+# Drawer
+
+`Drawer` is a slide-in side panel that wraps Spar's Dialog primitive in modal
+mode. It provides a compound component API for building navigation menus, detail
+views, filters, or contextual forms that overlay the current page.
+
+## Usage
+
+```tsx
+import { Drawer } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Drawer>
+  <Drawer.Trigger />
+  <Drawer.Overlay />
+  <Drawer.Panel>
+    <Drawer.Header>
+      <Drawer.Title />
+      <Drawer.CloseButton>✕</Drawer.CloseButton>
+    </Drawer.Header>
+    <Drawer.Body />
+    <Drawer.Footer />
+  </Drawer.Panel>
+</Drawer>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  cssCode={drawerDemoCss}
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={drawerScope}
+/>
+
+## Placement
+
+The `placement` prop controls from which side the drawer slides in.
+
+<LiveCode
+  code={placementDemo}
+  cssCode={drawerDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={100}
+  previewWrapper={ReactSparDemoRoot}
+  scope={drawerScope}
+/>
+
+## Controlled
+
+Use `open` and `onOpenChange` for full control over the drawer state from
+outside.
+
+<LiveCode
+  code={controlledDemo}
+  cssCode={drawerDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={100}
+  previewWrapper={ReactSparDemoRoot}
+  scope={drawerScope}
+/>
+
+## Accessibility & Keyboard
+
+- The drawer renders as a modal `role="dialog"` with proper `aria-labelledby`
+  and `aria-describedby` relationships.
+- Focus is trapped inside the panel while open and restored on close.
+- `Drawer.Title` provides the accessible label; `Drawer.Description` provides
+  the accessible description.
+- When `dismissable={false}`, pressing Escape and clicking outside will not
+  close the drawer.
+
+| Key                                   | Behavior                                          |
+| ------------------------------------- | ------------------------------------------------- |
+| <kbd>Escape</kbd>                     | Closes the drawer (unless `dismissable={false}`). |
+| <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> | Cycles focus within the panel.                    |
+
+## Animation
+
+The drawer animates automatically via CSS transitions. The panel slides in from
+the configured `placement` direction and the overlay fades in. No JavaScript
+animation library is required.
+
+- **Panel:** `transform` 0.3s with `cubic-bezier(0.4, 0, 0.2, 1)`
+- **Overlay:** `opacity` 0.3s with `ease-in-out`
+- **Full-screen:** Scale + opacity transition instead of slide.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Drawer {#drawer}
+
+#### Props {#drawer-props}
+
+| Name                             | Type                                                                                | Default | Description                                                                 |
+| -------------------------------- | ----------------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                        | -       | Drawer parts rendered inside the root.                                      |
+| <ApiBadge label="placement" />   | <code>DrawerPlacement</code>                                                        | -       | Side the drawer slides in from.                                             |
+| <ApiBadge label="disabled" />    | <code>boolean</code>                                                                | -       | Disables the trigger.                                                       |
+| <ApiBadge label="dismissable" /> | <code>boolean</code>                                                                | true    | Whether the drawer can be dismissed by clicking outside or pressing Escape. |
+| <ApiBadge label="className" />   | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                       |
+| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                              |
+| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                          |
+
+#### Data attributes {#drawer-data-attributes}
+
+| Attribute          | Applied when                         | Purpose                                                       |
+| ------------------ | ------------------------------------ | ------------------------------------------------------------- |
+| `data-slot="root"` | Always                               | Stable selector for wrapper styling on the root slot.         |
+| `data-placement`   | Always                               | Reflects the resolved `placement` prop for CSS styling.       |
+| `data-dismissable` | When `dismissable` is true (default) | Indicates the drawer can be dismissed by outside interaction. |
+
+### Drawer.Trigger {#drawer-trigger}
+
+#### Props {#drawer-trigger-props}
+
+| Name                            | Type                                                                                | Default | Description |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ----------- |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |             |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |             |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLButtonElement&gt;</code>                                           | -       |             |
+
+#### Data attributes {#drawer-trigger-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Drawer.Overlay {#drawer-overlay}
+
+#### Props {#drawer-overlay-props}
+
+| Name                            | Type                                                                                | Default | Description                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------- |
+| <ApiBadge label="invisible" />  | <code>boolean</code>                                                                | false   | When true, the overlay is rendered but visually invisible. |
+| <ApiBadge label="intensity" />  | <code>DrawerOverlayIntensity</code>                                                 | 'base'  | Overlay backdrop intensity.                                |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                                                            |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                                                            |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLDivElement&gt;</code>                                              | -       |                                                            |
+
+#### Data attributes {#drawer-overlay-data-attributes}
+
+| Attribute          | Applied when             | Purpose                                                     |
+| ------------------ | ------------------------ | ----------------------------------------------------------- |
+| `data-slot="root"` | Always                   | Stable selector for wrapper styling on the root slot.       |
+| `data-state`       | Always                   | `"open"` or `"closed"` — used for entry/exit animations.    |
+| `data-intensity`   | Always                   | Reflects the resolved `intensity` prop.                     |
+| `data-invisible`   | When `invisible` is true | Indicates overlay is visually hidden but still interactive. |
+
+### Drawer.Panel {#drawer-panel}
+
+#### Props {#drawer-panel-props}
+
+| Name                            | Type                                                                                | Default | Description                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------- |
+| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | -       | DOM container for the portal. Defaults to `document.body`. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                                                            |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                                                            |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLDivElement&gt;</code>                                              | -       |                                                            |
+
+#### Data attributes {#drawer-panel-data-attributes}
+
+| Attribute          | Applied when | Purpose                                                 |
+| ------------------ | ------------ | ------------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.   |
+| `data-state`       | Always       | `"open"` or `"closed"` — drives slide/scale animations. |
+| `data-placement`   | Always       | Reflects placement for directional CSS transitions.     |
+
+### Drawer.Header {#drawer-header}
+
+#### Props {#drawer-header-props}
+
+| Name                            | Type                                                                                | Default | Description         |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
+| <ApiBadge label="headerType" /> | <code>DrawerHeaderType</code>                                                       | 'basic' | Type of the header. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLDivElement&gt;</code>                                              | -       |                     |
+
+#### Data attributes {#drawer-header-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| `data-header-type` | Always       | Reflects the resolved `headerType` prop.              |
+
+### Drawer.Title {#drawer-title}
+
+#### Props {#drawer-title-props}
+
+| Name                            | Type                                                                                | Default | Description                                                             |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------- |
+| <ApiBadge label="level" />      | <code>1 &#124; 2 &#124; 3 &#124; 4 &#124; 5 &#124; 6</code>                         | 5       | HTML heading level (1–6). Controls both the rendered tag and font size. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                                                                         |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                                                                         |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLHeadingElement&gt;</code>                                          | -       |                                                                         |
+
+#### Data attributes {#drawer-title-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Drawer.Description {#drawer-description}
+
+#### Props {#drawer-description-props}
+
+| Name                            | Type                                                                                | Default | Description |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ----------- |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |             |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |             |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLParagraphElement&gt;</code>                                        | -       |             |
+
+#### Data attributes {#drawer-description-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Drawer.Body {#drawer-body}
+
+#### Props {#drawer-body-props}
+
+| Name                            | Type                                                                                | Default | Description |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ----------- |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |             |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |             |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLDivElement&gt;</code>                                              | -       |             |
+
+#### Data attributes {#drawer-body-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Drawer.Footer {#drawer-footer}
+
+#### Props {#drawer-footer-props}
+
+| Name                            | Type                                                                                | Default | Description         |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
+| <ApiBadge label="footerType" /> | <code>DrawerFooterType</code>                                                       | 'basic' | Type of the footer. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLDivElement&gt;</code>                                              | -       |                     |
+
+#### Data attributes {#drawer-footer-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| `data-footer-type` | Always       | Reflects the resolved `footerType` prop.              |
+
+### Drawer.CloseButton {#drawer-close-button}
+
+#### Props {#drawer-close-button-props}
+
+| Name                            | Type                                                                                | Default | Description |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ----------- |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |             |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |             |
+| <ApiBadge label="ref" />        | <code>Ref&lt;HTMLButtonElement&gt;</code>                                           | -       |             |
+
+#### Data attributes {#drawer-close-button-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+{/* api-tables:end */}
