@@ -19,6 +19,13 @@ export const Drawer = (props: DrawerProps) => {
 
   return (
     <DrawerProvider value={{ placement, dismissable }}>
+      {/*
+        forceMount is hardcoded: the Drawer's slide-in/out transition needs
+        the panel to stay in the DOM across the open → closed boundary, so
+        CSS exit animations can run before unmount. Exposing it as a knob
+        would let consumers break the visual contract; if a use case ever
+        needs unmount-on-close, treat it as a contract change.
+      */}
       <SparDialog {...sparProps} disabled={disabled} forceMount>
         {children}
       </SparDialog>

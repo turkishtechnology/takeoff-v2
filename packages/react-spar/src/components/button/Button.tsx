@@ -12,17 +12,11 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
   const theme = useComponentTheme('Button');
 
   const { rootAttrs, rest } = composeRootAttrs<ButtonProps, ButtonSlot>(ButtonBase, props as ButtonProps<'button'>, theme, {
-    stateAttrs: ({
-      variant = DEFAULT_VARIANT,
-      appearance = DEFAULT_APPEARANCE,
-      size = DEFAULT_SIZE,
-      rounded,
-      isLoading,
-      disabled,
-      startIcon,
-      endIcon,
-      children,
-    }) => {
+    // `data-disabled` and `data-loading` are intentionally NOT set here —
+    // Spar's Button already emits them (see SparButton dataAttributes), so
+    // setting them again would create two sources of truth that drift the
+    // moment Spar renames or extends its vocabulary.
+    stateAttrs: ({ variant = DEFAULT_VARIANT, appearance = DEFAULT_APPEARANCE, size = DEFAULT_SIZE, rounded, startIcon, endIcon, children }) => {
       const hasIcon = !!(startIcon || endIcon);
       const isIconOnly = hasIcon && !children;
       return {
@@ -31,8 +25,6 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
         'data-size': size,
         'data-rounded': rounded ? '' : undefined,
         'data-icon-only': isIconOnly ? '' : undefined,
-        'data-loading': isLoading ? '' : undefined,
-        'data-disabled': disabled ? '' : undefined,
       };
     },
   });
