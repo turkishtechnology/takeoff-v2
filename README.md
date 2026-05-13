@@ -37,8 +37,8 @@ Monorepo for `@takeoff-ui/react-spar` — a React 19 component library that wrap
 - [Component authoring contract](./docs/component-authoring-contract.md) — layer
   responsibilities, the no-adapter-hook rule, the upstream-first rule, public
   compound policy, and the review checklist
-- [Coding standards](./packages/react-spar/docs/CODING_STANDARDS.md)
-- [Data attribute vocabulary](./packages/react-spar/docs/DATA_ATTRIBUTE_VOCABULARY.md)
+- [Coding standards](./packages/react-spar/docs/coding-standards.md)
+- [Data attribute vocabulary](./packages/react-spar/docs/data-attribute-vocabulary.md)
 
 AI workflows:
 

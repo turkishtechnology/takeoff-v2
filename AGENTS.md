@@ -64,6 +64,6 @@ pnpm --filter @takeoff-ui/react-spar test
 ```
 
 The full merge checklist lives in
-[`packages/react-spar/docs/CODING_STANDARDS.md`](./packages/react-spar/docs/CODING_STANDARDS.md#merge-checklist).
+[`packages/react-spar/docs/coding-standards.md`](./packages/react-spar/docs/coding-standards.md#merge-checklist).
 
 If Spar was changed, also run Spar package tests/typecheck.

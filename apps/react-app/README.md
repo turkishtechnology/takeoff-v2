@@ -47,7 +47,7 @@ it can ship to npm. If a component genuinely cannot exercise a given
 customization surface (because that surface is not part of its public contract),
 add the scenario as `// exemption: <reason>` so the omission is intentional and
 reviewable. The same rule lives in
-[`packages/react-spar/docs/CODING_STANDARDS.md`](../../packages/react-spar/docs/CODING_STANDARDS.md)
+[`packages/react-spar/docs/coding-standards.md`](../../packages/react-spar/docs/coding-standards.md)
 and the release gate in the execution plan.
 
 ## Local commands

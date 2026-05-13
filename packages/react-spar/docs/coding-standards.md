@@ -493,7 +493,7 @@ skill. A missing archetype classification is a contract blocker.
 - `*Base.ts` is the source of truth for slot names and emitted classes.
 - Use `data-slot` for anatomy.
 - Use canonical `data-*` attributes for state, variant, size, and other styling
-  hooks. See `docs/DATA_ATTRIBUTE_VOCABULARY.md`.
+  hooks. See `docs/data-attribute-vocabulary.md`.
 - Every emitted class or `data-*` hook must have a real consumer in styling,
   semantics, or docs.
 - Avoid anonymous wrapper nodes that only add DOM weight.
