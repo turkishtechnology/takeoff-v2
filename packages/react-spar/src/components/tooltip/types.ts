@@ -20,6 +20,28 @@ export interface TooltipProps {
    */
   children?: ReactNode;
   /**
+   * Controlled state for tooltip visibility.
+   */
+  open?: boolean;
+  /**
+   * Default open state for uncontrolled tooltip.
+   * @defaultValue false
+   */
+  defaultOpen?: boolean;
+  /**
+   * Callback when tooltip open state changes.
+   */
+  onOpenChange?: (open: boolean) => void;
+  /**
+   * Delay in ms before the tooltip appears.
+   */
+  delay?: number;
+  /**
+   * Delay in ms before the tooltip hides.
+   * @defaultValue 0
+   */
+  hideDelay?: number;
+  /**
    * Whether the tooltip is disabled.
    * @defaultValue false
    */
