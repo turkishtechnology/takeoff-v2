@@ -4,6 +4,10 @@ import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type TooltipVariant = 'dark' | 'white' | 'info' | 'success' | 'warning' | 'danger' | 'neutral';
 
+export type TooltipSide = 'top' | 'right' | 'bottom' | 'left';
+
+export type TooltipAlign = 'start' | 'center' | 'end';
+
 export type TooltipTriggerSlot = 'root';
 
 export type TooltipContentSlot = 'root';
@@ -65,6 +69,16 @@ export interface TooltipContentOwnProps {
    * @defaultValue 'dark'
    */
   variant?: TooltipVariant;
+  /**
+   * Preferred side relative to the trigger.
+   * @defaultValue 'top'
+   */
+  side?: TooltipSide;
+  /**
+   * Alignment relative to the trigger.
+   * @defaultValue 'center'
+   */
+  align?: TooltipAlign;
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<TooltipContentSlot>;
   /** Per-slot HTML-attribute overrides. */
