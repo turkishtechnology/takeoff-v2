@@ -1,61 +1,64 @@
-import { type ElementType } from 'react';
+import { Children, isValidElement, type ElementType, type ReactNode } from 'react';
 
 import { AccordionTrigger as SparAccordionTrigger } from '@turkish-technology/spar';
 
 import { buildSlotAttrs, composeRootAttrs } from '../../core';
-import { hasChildOfType } from '../../hooks';
 import { useComponentTheme } from '../../provider';
 
-import { AccordionTriggerBase, AccordionTriggerTitleBase } from './base';
-import type { AccordionTriggerProps, AccordionTriggerTitleProps } from './types';
+import { AccordionIndicator } from './AccordionIndicator';
+import { AccordionTriggerBase } from './base';
+import type { AccordionTriggerProps } from './types';
 
-const AccordionTriggerTitle = <T extends ElementType = 'span'>(props: AccordionTriggerTitleProps<T>) => {
-  const theme = useComponentTheme('AccordionTriggerTitle');
-  const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerTitleBase, props as AccordionTriggerTitleProps<'span'>, theme);
-  const { children, ref, ...spar } = rest;
-
-  return (
-    <span {...spar} {...rootAttrs} ref={ref}>
-      {children}
-    </span>
-  );
-};
-
-AccordionTriggerTitle.displayName = 'Accordion.Trigger.Title';
-
-const AccordionTriggerRoot = <T extends ElementType = 'button'>(props: AccordionTriggerProps<T>) => {
+export const AccordionTrigger = <T extends ElementType = 'button'>(props: AccordionTriggerProps<T>) => {
   const theme = useComponentTheme('AccordionTrigger');
 
   const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerBase, props as AccordionTriggerProps<'button'>, theme);
   const { children, startContent, ref, ...spar } = rest;
 
-  const childHasTitle = hasChildOfType(children, AccordionTriggerTitle);
+  const slotLayers = {
+    themeSlotProps: theme?.slotProps,
+    themeClassNames: theme?.classNames,
+    instanceSlotProps: props.slotProps,
+    instanceClassNames: props.classNames,
+  };
 
   const startContentNode = startContent !== undefined && startContent !== null && (
-    <span
-      {...buildSlotAttrs(AccordionTriggerBase.getSlotProps('startContent'), 'startContent', {
-        themeSlotProps: theme?.slotProps,
-        themeClassNames: theme?.classNames,
-        instanceSlotProps: props.slotProps,
-        instanceClassNames: props.classNames,
-      })}
-    >
-      {startContent}
-    </span>
+    <span {...buildSlotAttrs(AccordionTriggerBase.getSlotProps('startContent'), 'startContent', slotLayers)}>{startContent}</span>
   );
 
-  const titleNode = childHasTitle ? children : <AccordionTriggerTitle>{children}</AccordionTriggerTitle>;
+  // Split direct children into title content and standalone indicators so the
+  // `tk-accordion-item-title` slot keeps `flex-grow: 1` and pushes any sibling
+  // indicator to the opposite edge — consumers drop in text and an
+  // `<Accordion.Indicator />` without reaching for a compound title part.
+  const inlineNodes: ReactNode[] = [];
+  let titleBuffer: ReactNode[] = [];
+  let titleKey = 0;
+  const flushTitle = () => {
+    if (titleBuffer.length === 0) return;
+    inlineNodes.push(
+      <span key={`title-${titleKey++}`} {...buildSlotAttrs(AccordionTriggerBase.getSlotProps('title'), 'title', slotLayers)}>
+        {titleBuffer}
+      </span>,
+    );
+    titleBuffer = [];
+  };
+
+  Children.toArray(children).forEach(child => {
+    if (isValidElement(child) && child.type === AccordionIndicator) {
+      flushTitle();
+      inlineNodes.push(child);
+    } else {
+      titleBuffer.push(child);
+    }
+  });
+  flushTitle();
 
   return (
     <SparAccordionTrigger {...spar} {...rootAttrs} ref={ref}>
       {startContentNode}
-      {titleNode}
+      {inlineNodes}
     </SparAccordionTrigger>
   );
 };
 
-AccordionTriggerRoot.displayName = 'Accordion.Trigger';
-
-export const AccordionTrigger = Object.assign(AccordionTriggerRoot, {
-  Title: AccordionTriggerTitle,
-});
+AccordionTrigger.displayName = 'Accordion.Trigger';

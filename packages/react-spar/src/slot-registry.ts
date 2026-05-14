@@ -1,4 +1,4 @@
-import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItemBase, AccordionTriggerBase, AccordionTriggerTitleBase } from './components/accordion/base';
+import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItemBase, AccordionTriggerBase } from './components/accordion/base';
 import { BadgeBase } from './components/badge/base';
 import { ButtonBase } from './components/button/base';
 import {
@@ -55,7 +55,6 @@ export const slotClassRegistry = {
   accordionItem: { slots: AccordionItemBase.classes },
   accordionHeader: { slots: AccordionHeaderBase.classes },
   accordionTrigger: { slots: AccordionTriggerBase.classes },
-  accordionTriggerTitle: { slots: AccordionTriggerTitleBase.classes },
   accordionContent: { slots: AccordionContentBase.classes },
   badge: { slots: BadgeBase.classes },
   button: { slots: ButtonBase.classes },

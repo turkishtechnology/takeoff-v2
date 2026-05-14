@@ -37,8 +37,7 @@ export type AccordionValueChangeHandler = (next: AccordionCurrentValue) => void;
 export type AccordionSlot = 'root';
 export type AccordionItemSlot = 'root';
 export type AccordionHeaderSlot = 'root';
-export type AccordionTriggerSlot = 'root' | 'startContent';
-export type AccordionTriggerTitleSlot = 'root';
+export type AccordionTriggerSlot = 'root' | 'startContent' | 'title';
 export type AccordionIndicatorSlot = 'root';
 export type AccordionContentSlot = 'root';
 
@@ -138,15 +137,6 @@ export interface AccordionTriggerOwnProps {
 
 export type AccordionTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, AccordionTriggerOwnProps>;
 
-export interface AccordionTriggerTitleOwnProps {
-  /** Per-slot class name overrides. */
-  classNames?: ClassNamesMap<AccordionTriggerTitleSlot>;
-  /** Per-slot HTML attribute overrides. */
-  slotProps?: SlotPropsMap<AccordionTriggerTitleSlot>;
-}
-
-export type AccordionTriggerTitleProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, AccordionTriggerTitleOwnProps>;
-
 export interface AccordionIndicatorOwnProps {
   /**
    * Override the default chevron. Accepts a ReactNode (rendered in every
@@ -185,7 +175,6 @@ declare module '../../core/theme' {
     AccordionItem: import('../../core').ComponentThemeConfig<AccordionItemProps>;
     AccordionHeader: import('../../core').ComponentThemeConfig<AccordionHeaderProps>;
     AccordionTrigger: import('../../core').ComponentThemeConfig<AccordionTriggerProps, AccordionTriggerSlot>;
-    AccordionTriggerTitle: import('../../core').ComponentThemeConfig<AccordionTriggerTitleProps>;
     AccordionIndicator: import('../../core').ComponentThemeConfig<AccordionIndicatorProps, AccordionIndicatorSlot>;
     AccordionContent: import('../../core').ComponentThemeConfig<AccordionContentProps>;
   }

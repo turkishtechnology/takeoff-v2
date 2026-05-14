@@ -492,10 +492,6 @@ export { MyComponentCompound as MyComponent };
   matters. Do not add `useMemo` or `useCallback` by default.
 - Use `createSafeContext` (from `src/hooks`) so that a subcomponent used outside
   its root raises a descriptive error.
-- When a sub-component conditionally renders based on whether the consumer
-  already supplied a specific child (e.g. `Accordion.Trigger.Title`), detect it
-  with `hasChildOfType` (from `src/hooks`) rather than ad-hoc `React.Children`
-  iteration.
 - Set `displayName` on the root (`'Button'`) and every subcomponent
   (`'Button.Label'`, `'Dialog.Header'`).
 
@@ -509,7 +505,6 @@ export { MyComponentCompound as MyComponent };
 | Compose canonical attrs for an extra slot  | `buildSlotAttrs(Base.getSlotProps(slot), slot, { ... })`   | `src/core`     |
 | Read theme defaults                        | `useComponentTheme('Name')`                                | `src/provider` |
 | Share root state with sub-components       | `createSafeContext('NameProvider')`                        | `src/hooks`    |
-| Detect a specific child sub-component      | `hasChildOfType`                                           | `src/hooks`    |
 
 ## Styling Contract
 

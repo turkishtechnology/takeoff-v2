@@ -8,7 +8,6 @@ import type {
   AccordionProps,
   AccordionTriggerProps,
   AccordionTriggerSlot,
-  AccordionTriggerTitleProps,
 } from './types';
 
 // @archetype react-enhancement — Spar exposes only the leaf <button>; the wrapper
@@ -38,17 +37,12 @@ export const AccordionHeaderBase = createComponentBase<AccordionHeaderProps, 'ro
 
 export const AccordionTriggerBase = createComponentBase<AccordionTriggerProps, AccordionTriggerSlot>({
   name: 'AccordionTrigger',
-  slots: ['root', 'startContent'] as const,
+  slots: ['root', 'startContent', 'title'] as const,
   classes: {
     root: 'tk-accordion-item-header',
     startContent: 'tk-accordion-item-start-content',
+    title: 'tk-accordion-item-title',
   },
-});
-
-export const AccordionTriggerTitleBase = createComponentBase<AccordionTriggerTitleProps, 'root'>({
-  name: 'AccordionTriggerTitle',
-  slots: ['root'] as const,
-  classes: { root: 'tk-accordion-item-title' },
 });
 
 export const AccordionIndicatorBase = createComponentBase<AccordionIndicatorProps, 'root'>({
