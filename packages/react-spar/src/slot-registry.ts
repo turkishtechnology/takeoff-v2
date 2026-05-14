@@ -1,5 +1,6 @@
 import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItemBase, AccordionTriggerBase, AccordionTriggerTitleBase } from './components/accordion/base';
 import { ButtonBase } from './components/button/base';
+import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 
 /**
@@ -22,6 +23,10 @@ export const slotClassRegistry = {
   accordionTriggerTitle: { slots: AccordionTriggerTitleBase.classes },
   accordionContent: { slots: AccordionContentBase.classes },
   button: { slots: ButtonBase.classes },
+  popoverTrigger: { slots: PopoverTriggerBase.classes },
+  popoverContent: { slots: PopoverContentBase.classes },
+  popoverArrow: { slots: PopoverArrowBase.classes },
+  popoverClose: { slots: PopoverCloseBase.classes },
   tooltipTrigger: { slots: TooltipTriggerBase.classes },
   tooltipContent: { slots: TooltipContentBase.classes },
   tooltipHeader: { slots: TooltipHeaderBase.classes },

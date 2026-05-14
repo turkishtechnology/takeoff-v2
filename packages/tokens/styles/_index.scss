@@ -7,12 +7,14 @@
 @use 'recipes/dialog';
 @use 'recipes/drawer';
 @use 'recipes/input';
+@use 'recipes/popover';
 @use 'recipes/select';
 @use 'recipes/checkbox';
 @use 'recipes/tooltip';
 
 @include button.button-keyframes;
 @include input.input-keyframes;
+@include popover.popover-keyframes;
 @include tooltip.tooltip-keyframes;
 
 .tk-button {
@@ -125,4 +127,20 @@
 
 .tk-tooltip-arrow {
   @include tooltip.tooltip-arrow;
+}
+
+.tk-popover-trigger {
+  @include popover.popover-trigger;
+}
+
+.tk-popover-content {
+  @include popover.popover-content;
+}
+
+.tk-popover-arrow {
+  @include popover.popover-arrow;
+}
+
+.tk-popover-close {
+  @include popover.popover-close;
 }
