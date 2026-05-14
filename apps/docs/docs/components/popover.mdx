@@ -1,0 +1,363 @@
+---
+title: Popover
+description:
+  A floating panel that appears on click to display additional content or
+  actions. Built on Spar's headless Popover primitive.
+sidebar_label: Popover
+sidebar_position: 5
+slug: /components/popover
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import { Popover, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const popoverScope = { Popover };
+
+{/* prettier-ignore-start */}
+
+export const popoverDemoCss = String.raw`
+.popover-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  padding: 40px 20px;
+}
+.popover-demo button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--primary-base);
+  color: var(--static-white);
+  font-weight: 600;
+  cursor: pointer;
+}
+`;
+
+export const playgroundDemo = String.raw`
+<div className="popover-demo">
+  <Popover>
+    <Popover.Trigger>Click me</Popover.Trigger>
+    <Popover.Content>
+      <div>Popover content goes here.</div>
+    </Popover.Content>
+  </Popover>
+</div>
+`;
+
+export const typesDemo = String.raw`
+<div className="popover-demo">
+  <Popover>
+    <Popover.Trigger>Dark</Popover.Trigger>
+    <Popover.Content variant="dark">
+      <div>Dark variant popover</div>
+    </Popover.Content>
+  </Popover>
+  <Popover>
+    <Popover.Trigger>White</Popover.Trigger>
+    <Popover.Content variant="white">
+      <div>White variant popover</div>
+    </Popover.Content>
+  </Popover>
+  <Popover>
+    <Popover.Trigger>Info</Popover.Trigger>
+    <Popover.Content variant="info">
+      <div>Info variant popover</div>
+    </Popover.Content>
+  </Popover>
+  <Popover>
+    <Popover.Trigger>Success</Popover.Trigger>
+    <Popover.Content variant="success">
+      <div>Success variant popover</div>
+    </Popover.Content>
+  </Popover>
+  <Popover>
+    <Popover.Trigger>Warning</Popover.Trigger>
+    <Popover.Content variant="warning">
+      <div>Warning variant popover</div>
+    </Popover.Content>
+  </Popover>
+  <Popover>
+    <Popover.Trigger>Danger</Popover.Trigger>
+    <Popover.Content variant="danger">
+      <div>Danger variant popover</div>
+    </Popover.Content>
+  </Popover>
+  <Popover>
+    <Popover.Trigger>Neutral</Popover.Trigger>
+    <Popover.Content variant="neutral">
+      <div>Neutral variant popover</div>
+    </Popover.Content>
+  </Popover>
+</div>
+`;
+
+export const placementDemo = String.raw`
+<div className="popover-demo">
+  <Popover>
+    <Popover.Trigger>Top</Popover.Trigger>
+    <Popover.Content side="top">
+      <div>Positioned top</div>
+    </Popover.Content>
+  </Popover>
+  <Popover>
+    <Popover.Trigger>Bottom</Popover.Trigger>
+    <Popover.Content side="bottom">
+      <div>Positioned bottom</div>
+    </Popover.Content>
+  </Popover>
+  <Popover>
+    <Popover.Trigger>Left</Popover.Trigger>
+    <Popover.Content side="left">
+      <div>Positioned left</div>
+    </Popover.Content>
+  </Popover>
+  <Popover>
+    <Popover.Trigger>Right</Popover.Trigger>
+    <Popover.Content side="right">
+      <div>Positioned right</div>
+    </Popover.Content>
+  </Popover>
+</div>
+`;
+
+export const arrowDemo = String.raw`
+<div className="popover-demo">
+  <Popover>
+    <Popover.Trigger>With arrow</Popover.Trigger>
+    <Popover.Content>
+      <div>Popover with arrow</div>
+      <Popover.Arrow />
+    </Popover.Content>
+  </Popover>
+</div>
+`;
+
+export const closeDemo = String.raw`
+<div className="popover-demo">
+  <Popover>
+    <Popover.Trigger>Open</Popover.Trigger>
+    <Popover.Content>
+      <div>Click close to dismiss</div>
+      <Popover.Close>Close</Popover.Close>
+    </Popover.Content>
+  </Popover>
+</div>
+`;
+
+export const controlledDemo = String.raw`
+function ControlledDemo() {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div className="popover-demo">
+      <Popover open={open} onOpenChange={setOpen}>
+        <Popover.Trigger>Controlled</Popover.Trigger>
+        <Popover.Content>
+          <div>Controlled popover</div>
+          <Popover.Close>Done</Popover.Close>
+        </Popover.Content>
+      </Popover>
+      <button onClick={() => setOpen(!open)}>
+        {open ? 'Hide' : 'Show'}
+      </button>
+    </div>
+  );
+}
+
+render(<ControlledDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Popover
+
+`Popover` displays a floating panel on click or hover to surface additional
+content, forms, or actions. It wraps the Spar headless Popover primitive and
+adds Takeoff visual vocabulary — `variant`, close button, and arrow slots.
+
+## Usage
+
+```tsx
+import { Popover } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Popover>
+  <Popover.Trigger />
+  <Popover.Content>
+    <Popover.Arrow />
+    <Popover.Close />
+  </Popover.Content>
+</Popover>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  cssCode={popoverDemoCss}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={popoverScope}
+/>
+
+## Variants
+
+The `variant` prop controls the visual appearance of the popover content.
+
+<LiveCode
+  code={typesDemo}
+  cssCode={popoverDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={popoverScope}
+/>
+
+## Placement
+
+<LiveCode
+  code={placementDemo}
+  cssCode={popoverDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={popoverScope}
+/>
+
+## Arrow
+
+<LiveCode
+  code={arrowDemo}
+  cssCode={popoverDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={popoverScope}
+/>
+
+## Close Button
+
+<LiveCode
+  code={closeDemo}
+  cssCode={popoverDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={popoverScope}
+/>
+
+## Controlled
+
+<LiveCode
+  code={controlledDemo}
+  cssCode={popoverDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={popoverScope}
+/>
+
+## Accessibility & Keyboard
+
+- Trigger uses `aria-expanded` and `aria-controls` pointing to the content.
+- Content has `role="dialog"` (or `role="popover"`).
+- Focus is trapped inside the content when `modal` is `true`.
+- Escape key dismisses the popover and returns focus to the trigger.
+- Click outside the popover dismisses it (non-modal mode).
+
+| Key               | Behavior                         |
+| ----------------- | -------------------------------- |
+| <kbd>Escape</kbd> | Dismiss the popover.             |
+| <kbd>Tab</kbd>    | Navigate focusable content.      |
+| <kbd>Enter</kbd>  | Activate trigger / close button. |
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Popover {#popover}
+
+See
+[Spar Popover docs](https://spar.app.turkishtechlab.com/docs/Components/Popover)
+for primitive behavior.
+
+#### Props {#popover-props}
+
+| Name                             | Type                         | Default | Description                                                                                                                                                      |
+| -------------------------------- | ---------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code> | -       | PopoverTrigger and PopoverContent components                                                                                                                     |
+| <ApiBadge label="id" />          | <code>string</code>          | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
+| <ApiBadge label="disabled" />    | <code>boolean</code>         | false   | Disables all popover triggers (prevents opening)                                                                                                                 |
+| <ApiBadge label="open" />        | <code>boolean</code>         | -       | Controlled state for popover visibility                                                                                                                          |
+| <ApiBadge label="defaultOpen" /> | <code>boolean</code>         | false   | Initial open state for uncontrolled mode                                                                                                                         |
+| <ApiBadge label="modal" />       | <code>boolean</code>         | false   | Whether popover should behave modally (focus trap + backdrop)                                                                                                    |
+
+#### Events {#popover-events}
+
+| Name                              | Type                                    | Default | Description                              |
+| --------------------------------- | --------------------------------------- | ------- | ---------------------------------------- |
+| <ApiBadge label="onOpenChange" /> | <code>(open: boolean) =&gt; void</code> | -       | Callback when popover open state changes |
+
+### Popover.Content {#popover-content}
+
+#### Props {#popover-content-props}
+
+| Name                            | Type                                                                                | Default       | Description                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -             |                                                                            |
+| <ApiBadge label="variant" />    | <code>PopoverVariant</code>                                                         | 'dark'        | Color variant.                                                             |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             | Per-slot extra classes.                                                    |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |
+| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
+| <ApiBadge label="trapFocus" />  | <code>boolean</code>                                                                | false         | Whether to trap focus within content                                       |
+| <ApiBadge label="side" />       | <code>Side</code>                                                                   | 'bottom'      | Side of trigger to position against                                        |
+| <ApiBadge label="align" />      | <code>Align</code>                                                                  | 'center'      | Alignment relative to trigger                                              |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -             |                                                                            |
+
+#### Events {#popover-content-events}
+
+| Name                                      | Type                                                            | Default | Description                                             |
+| ----------------------------------------- | --------------------------------------------------------------- | ------- | ------------------------------------------------------- |
+| <ApiBadge label="onOpenAutoFocus" />      | <code>(event: Event) =&gt; void</code>                          | -       | Called when popover opens and focus moves inside        |
+| <ApiBadge label="onCloseAutoFocus" />     | <code>(event: Event) =&gt; void</code>                          | -       | Called when popover closes and focus returns to trigger |
+| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code>                  | -       | Called when escape is pressed                           |
+| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>                   | -       | Called when pointer down occurs outside the content     |
+| <ApiBadge label="onInteractOutside" />    | <code>(event: PointerEvent &#124; FocusEvent) =&gt; void</code> | -       | Called when interaction occurs outside the content      |
+| <ApiBadge label="onFocusOutside" />       | <code>(event: FocusEvent) =&gt; void</code>                     | -       | Called when focus moves outside the content             |
+
+#### Data attributes {#popover-content-data-attributes}
+
+| Attribute          | Applied when | Purpose                                                   |
+| ------------------ | ------------ | --------------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.     |
+| `data-variant`     | Always       | Reflects the resolved `variant` for theme recipe scoping. |
+
+### Popover.Trigger {#popover-trigger}
+
+#### Data attributes {#popover-trigger-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Popover.Arrow {#popover-arrow}
+
+#### Data attributes {#popover-arrow-data-attributes}
+
+| Attribute          | Applied when | Purpose                        |
+| ------------------ | ------------ | ------------------------------ |
+| `data-slot="root"` | Always       | Stable selector for the arrow. |
+
+### Popover.Close {#popover-close}
+
+#### Data attributes {#popover-close-data-attributes}
+
+| Attribute          | Applied when | Purpose                               |
+| ------------------ | ------------ | ------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for the close button. |
+
+{/* api-tables:end */}

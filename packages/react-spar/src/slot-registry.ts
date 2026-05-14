@@ -35,6 +35,7 @@ import {
   SelectValueBase,
 } from './components/select/base';
 import { SwitchBase } from './components/switch/base';
+import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 
 /**
@@ -86,6 +87,10 @@ export const slotClassRegistry = {
   selectItemText: { slots: SelectItemTextBase.classes },
   selectSeparator: { slots: SelectSeparatorBase.classes },
   switch: { slots: SwitchBase.classes },
+  popoverTrigger: { slots: PopoverTriggerBase.classes },
+  popoverContent: { slots: PopoverContentBase.classes },
+  popoverArrow: { slots: PopoverArrowBase.classes },
+  popoverClose: { slots: PopoverCloseBase.classes },
   tooltipTrigger: { slots: TooltipTriggerBase.classes },
   tooltipContent: { slots: TooltipContentBase.classes },
   tooltipHeader: { slots: TooltipHeaderBase.classes },
