@@ -1,4 +1,5 @@
 import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItemBase, AccordionTriggerBase, AccordionTriggerTitleBase } from './components/accordion/base';
+import { SwitchBase } from './components/switch/base';
 
 /**
  * Inventory of every shipped component's slot-class map. The styling recipes
@@ -19,4 +20,5 @@ export const slotClassRegistry = {
   accordionTrigger: { slots: AccordionTriggerBase.classes },
   accordionTriggerTitle: { slots: AccordionTriggerTitleBase.classes },
   accordionContent: { slots: AccordionContentBase.classes },
+  switch: { slots: SwitchBase.classes },
 } as const;

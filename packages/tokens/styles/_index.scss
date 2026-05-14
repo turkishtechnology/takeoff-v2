@@ -7,6 +7,7 @@
 @use 'recipes/dialog';
 @use 'recipes/input';
 @use 'recipes/checkbox';
+@use 'recipes/switch';
 
 @include button.button-keyframes;
 @include input.input-keyframes;
@@ -37,4 +38,8 @@
 
 .tk-checkbox {
   @include checkbox.checkbox;
+}
+
+.tk-toggle {
+  @include switch.switch;
 }
