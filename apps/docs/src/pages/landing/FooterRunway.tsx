@@ -20,9 +20,8 @@ const COLUMNS: Column[] = [
   {
     title: 'Product',
     links: [
-      { label: 'Components', href: '/docs/roadmap' },
+      { label: 'Components', href: '/docs/' },
       { label: 'Changelog', href: '/changelog' },
-      { label: 'Roadmap', href: '/docs/roadmap' },
     ],
   },
   {
