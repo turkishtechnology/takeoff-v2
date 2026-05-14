@@ -25,6 +25,7 @@
   background: var(--docs-surface-1);
   box-shadow: var(--docs-shadow-card);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .live-code-container .live-preview-wrapper {
@@ -43,6 +44,7 @@
   padding: 24px;
   display: flex;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .live-code-container .live-preview-wrapper .live-preview * {
@@ -289,72 +291,58 @@
   padding: 3px 5px;
 }
 
-/* --- Collapsible code block (below preview) ----------------------------- */
+/* --- Code block (below preview) ----------------------------------------- */
 .live-code-container .collapsible-code-block {
-  overflow: hidden;
   margin-top: 12px;
   width: 100%;
-}
-
-.live-code-container .collapsible-code-block .collapsible-toggle {
-  width: 100%;
-  padding: 12px 16px;
-  font-family: 'Geologica', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
   border-radius: var(--radius-l, 12px);
   border: 1px solid var(--docs-border-subtle);
-  background: var(--docs-surface-2);
-  color: var(--docs-ink-strong);
-  transition:
-    background 150ms ease,
-    border-color 150ms ease;
-}
-
-.live-code-container .collapsible-code-block .collapsible-toggle:hover {
-  background: var(--docs-surface-3);
-  border-color: var(--docs-border-strong);
-}
-
-.live-code-container .collapsible-code-block .collapsible-toggle .toggle-icon {
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid var(--docs-border-subtle);
   background: var(--docs-surface-1);
-  height: 30px;
-  width: 30px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.live-code-container .collapsible-code-block .collapsible-toggle .toggle-icon svg path {
-  fill: var(--docs-ink-strong);
-}
-
-.live-code-container .collapsible-code-block .collapsible-toggle .expand-icon {
-  padding: 6px;
-  margin-left: auto;
-  height: 30px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.live-code-container .collapsible-code-block .collapsible-toggle .expand-icon svg path {
-  fill: var(--docs-ink-base);
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .live-code-container .collapsible-code-block .collapsible-content {
   overflow: hidden;
-  margin-top: 12px;
-  border-radius: var(--radius-l, 12px);
-  border: 1px solid var(--docs-border-subtle);
-  background: var(--docs-surface-1);
+  max-height: 134px; /* ~3 lines of code */
+  transition: max-height 300ms ease;
+}
+
+.live-code-container .collapsible-code-block .collapsible-content.expanded {
+  max-height: none;
+}
+
+.live-code-container .collapsible-code-block .show-more-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 16px;
+  font-family: 'Geologica', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  border-top: 1px solid var(--docs-border-subtle);
+  background: var(--docs-surface-2);
+  color: var(--docs-ink-base);
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.live-code-container .collapsible-code-block .show-more-toggle:hover {
+  background: var(--docs-surface-3);
+  color: var(--docs-ink-strong);
+}
+
+.live-code-container .collapsible-code-block .show-more-toggle .show-more-chevron {
+  transition: transform 200ms ease;
+}
+
+.live-code-container .collapsible-code-block .show-more-toggle .show-more-chevron.rotated {
+  transform: rotate(180deg);
 }
 
 .live-code-container .collapsible-code-block .collapsible-content pre {
@@ -366,15 +354,15 @@
 
 .live-code-container .collapsible-code-block .collapsible-content .live-editor {
   overflow: visible;
-  max-height: 600px;
+  max-height: none;
 }
 
 .live-code-container .collapsible-code-block .collapsible-content .live-editor pre {
   white-space: pre !important;
   word-wrap: normal !important;
   overflow-x: auto;
-  overflow-y: auto;
-  max-height: 600px;
+  overflow-y: visible;
+  max-height: none;
   font-family: var(--docs-mono-family) !important;
 }
 
@@ -407,6 +395,7 @@
   background: var(--docs-surface-1);
   height: 30px;
   width: 30px;
+  box-sizing: border-box;
 }
 
 .live-code-wrapper .live-code-icon svg path {
