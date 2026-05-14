@@ -126,12 +126,3 @@ export const CodeToggleIcon = ({ size = 20, ...props }: IconProps) => (
     />
   </svg>
 );
-
-export const ChevronDownIcon = ({ size = 20, ...props }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" {...props}>
-    <path
-      d="M13.2292 7.49961L9.99583 10.7329L6.7625 7.49961C6.4375 7.17461 5.9125 7.17461 5.5875 7.49961C5.2625 7.82461 5.2625 8.34961 5.5875 8.67461L9.4125 12.4996C9.7375 12.8246 10.2625 12.8246 10.5875 12.4996L14.4125 8.67461C14.7375 8.34961 14.7375 7.82461 14.4125 7.49961C14.0875 7.18294 13.5542 7.17461 13.2292 7.49961Z"
-      fill="currentColor"
-    />
-  </svg>
-);

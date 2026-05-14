@@ -167,7 +167,7 @@ export default function ComponentGrid(): JSX.Element {
         </div>
 
         <div className={styles.grid}>
-          <Link to="/docs/roadmap" className={`${styles.card} ${styles.buttonsCard}`}>
+          <Link to="/docs/components/button" className={`${styles.card} ${styles.buttonsCard}`}>
             <div className={styles.cardTitle}>
               <h4>Buttons</h4>
               <span className={styles.cardMono}>Button</span>
@@ -175,7 +175,7 @@ export default function ComponentGrid(): JSX.Element {
             <BrowserOnly fallback={<div className={styles.demo} />}>{() => <ButtonsCardDemo />}</BrowserOnly>
           </Link>
 
-          <Link to="/docs/roadmap" className={styles.card}>
+          <Link to="/docs/components/input" className={styles.card}>
             <div className={styles.cardTitle}>
               <h4>Input</h4>
               <span className={styles.cardMono}>Input</span>
@@ -183,7 +183,7 @@ export default function ComponentGrid(): JSX.Element {
             <BrowserOnly fallback={<div className={styles.demo} />}>{() => <InputCardDemo />}</BrowserOnly>
           </Link>
 
-          <Link to="/docs/roadmap" className={styles.card} aria-label="Badge — planned">
+          <Link to="/docs/" className={styles.card} aria-label="Badge — planned">
             <div className={styles.cardTitle}>
               <h4>Badge</h4>
               <span className={styles.cardMono}>Badge</span>
@@ -191,7 +191,7 @@ export default function ComponentGrid(): JSX.Element {
             <BadgeCardDemo />
           </Link>
 
-          <Link to="/docs/roadmap" className={styles.card} aria-label="Switch — planned">
+          <Link to="/docs/" className={styles.card} aria-label="Switch — planned">
             <div className={styles.cardTitle}>
               <h4>Switch</h4>
               <span className={styles.cardMono}>Switch</span>
@@ -199,7 +199,7 @@ export default function ComponentGrid(): JSX.Element {
             <SwitchCardDemo />
           </Link>
 
-          <Link to="/docs/roadmap" className={styles.card} aria-label="Progress — planned">
+          <Link to="/docs/" className={styles.card} aria-label="Progress — planned">
             <div className={styles.cardTitle}>
               <h4>Progress</h4>
               <span className={styles.cardMono}>Progress</span>
@@ -207,7 +207,7 @@ export default function ComponentGrid(): JSX.Element {
             <ProgressCardDemo />
           </Link>
 
-          <Link to="/docs/roadmap" className={styles.card} aria-label="Avatar group — planned">
+          <Link to="/docs/" className={styles.card} aria-label="Avatar group — planned">
             <div className={styles.cardTitle}>
               <h4>Avatar group</h4>
               <span className={styles.cardMono}>AvatarGroup</span>
@@ -217,7 +217,7 @@ export default function ComponentGrid(): JSX.Element {
         </div>
 
         <div className={styles.exploreRow}>
-          <Link to="/docs/roadmap" className={styles.exploreLink}>
+          <Link to="/docs/" className={styles.exploreLink}>
             Browse the full component set
             <ArrowIcon />
           </Link>
