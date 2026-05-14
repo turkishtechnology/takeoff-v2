@@ -7,6 +7,7 @@
 @use 'recipes/dialog';
 @use 'recipes/drawer';
 @use 'recipes/input';
+@use 'recipes/select';
 @use 'recipes/checkbox';
 @use 'recipes/tooltip';
 
@@ -68,6 +69,42 @@
 
 .tk-input {
   @include input.input;
+}
+
+.tk-select {
+  @include select.select;
+}
+
+.tk-select-trigger {
+  @include select.select-trigger;
+}
+
+.tk-select-value {
+  @include select.select-value;
+}
+
+.tk-select-content {
+  @include select.select-content;
+}
+
+.tk-select-item {
+  @include select.select-item;
+}
+
+.tk-select-item-text {
+  @include select.select-item-text;
+}
+
+.tk-select-group {
+  @include select.select-group;
+}
+
+.tk-select-label {
+  @include select.select-label;
+}
+
+.tk-select-separator {
+  @include select.select-separator;
 }
 
 .tk-checkbox {
