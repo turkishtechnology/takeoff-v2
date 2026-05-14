@@ -136,10 +136,6 @@ const config: Config = {
               label: 'Installation',
               to: '/docs/installation',
             },
-            {
-              label: 'Roadmap',
-              to: '/docs/roadmap',
-            },
           ],
         },
         {

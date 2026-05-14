@@ -25,6 +25,7 @@
   background: var(--docs-surface-1);
   box-shadow: var(--docs-shadow-card);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .live-code-container .live-preview-wrapper {
@@ -43,6 +44,7 @@
   padding: 24px;
   display: flex;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .live-code-container .live-preview-wrapper .live-preview * {
@@ -411,7 +413,83 @@
 }
 
 .live-code-container .collapsible-code-block .collapsible-content {
+  position: relative;
   background: var(--docs-surface-1);
+}
+
+/* --- Show-more / show-less mechanism: caps height with fade overlay,
+       and a pill-shaped toggle pinned to the bottom of the panel. ---------- */
+.live-code-container .collapsible-code-block .live-code-expandable {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-height: 144px; /* ~3 lines of code */
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.live-code-container .collapsible-code-block .live-code-expandable::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: linear-gradient(to bottom, transparent, var(--docs-surface-1, #fff));
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 300ms ease;
+}
+
+.live-code-container .collapsible-code-block .live-code-expandable.expanded::after {
+  opacity: 0;
+}
+
+[data-theme='dark'] .live-code-container .collapsible-code-block .live-code-expandable::after {
+  background: linear-gradient(to bottom, transparent, rgba(15, 15, 20, 0.85));
+}
+
+.live-code-container .collapsible-code-block .live-code-expandable.expanded {
+  max-height: 2000px;
+  transition: max-height 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.live-code-container .collapsible-code-block .show-more-toggle {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 14px;
+  font-family: 'Geologica', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--docs-border-subtle);
+  border-radius: 16px;
+  background: var(--docs-surface-2);
+  color: var(--docs-ink-base);
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.live-code-container .collapsible-code-block .show-more-toggle:hover {
+  background: var(--docs-surface-3);
+  color: var(--docs-ink-strong);
+}
+
+.live-code-container .collapsible-code-block .show-more-toggle .show-more-chevron {
+  transform: rotate(0deg);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.live-code-container .collapsible-code-block .show-more-toggle .show-more-chevron.rotated {
+  transform: rotate(180deg);
 }
 
 .live-code-container .collapsible-code-block .collapsible-content pre {

@@ -19,10 +19,10 @@ import styles from './PlaceholderCustomComponents.module.css';
  *
  *   - <Button>      — Not yet shipped from react-spar; will replace PlaceholderButton
  *   - <Input>       — In progress; will replace PlaceholderInput
- *   - <Badge>       — Phase C candidate (not in current roadmap)
- *   - <Switch>      — Roadmap item #02 (Toggle); will replace PlaceholderSwitch
- *   - <Progress>    — Phase C candidate (not in current roadmap)
- *   - <AvatarGroup> — Phase C candidate (not in current roadmap)
+ *   - <Badge>       — Phase C candidate
+ *   - <Switch>      — Will replace PlaceholderSwitch
+ *   - <Progress>    — Phase C candidate
+ *   - <AvatarGroup> — Phase C candidate
  *
  * When a component ships, delete its export below and replace imports in
  * ComponentGrid.tsx (and anywhere else this file is referenced) with the

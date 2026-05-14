@@ -51,9 +51,11 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
   const [resetKey, setResetKey] = useState(0);
   const [hasRenderedOnce, setHasRenderedOnce] = useState(false);
   const [isCodeCollapsed, setIsCodeCollapsed] = useState(false);
+  const [isCodeExpanded, setIsCodeExpanded] = useState(false);
   const styleTagRef = useRef<HTMLStyleElement | null>(null);
   const copyFeedbackTimeoutRef = useRef<number | null>(null);
   const codeBlockRef = useRef<HTMLDivElement>(null);
+  const expandableRef = useRef<HTMLDivElement>(null);
 
   const liveScope = useMemo(
     () => ({
@@ -74,7 +76,7 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
     }
 
     if (!editable) {
-      setFormattedCode(code);
+      setFormattedCode(code.trim());
       return;
     }
 
@@ -100,11 +102,11 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
         });
 
         if (!isCancelled) {
-          setFormattedCode(nextCode);
+          setFormattedCode(nextCode.trim());
         }
       } catch {
         if (!isCancelled) {
-          setFormattedCode(code);
+          setFormattedCode(code.trim());
         }
       }
     };
@@ -139,11 +141,11 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
         });
 
         if (!isCancelled) {
-          setFormattedCssCode(nextCssCode);
+          setFormattedCssCode(nextCssCode.trim());
         }
       } catch {
         if (!isCancelled) {
-          setFormattedCssCode(cssCode);
+          setFormattedCssCode(cssCode.trim());
         }
       }
     };
@@ -218,6 +220,7 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
 
   const handleShowInCode = useCallback(() => {
     setIsCodeCollapsed(false);
+    setIsCodeExpanded(true);
     requestAnimationFrame(() => {
       if (codeBlockRef.current) {
         codeBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -235,6 +238,7 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
     setHasRenderedOnce(false);
     setResetKey(currentValue => currentValue + 1);
     setIsCodeCollapsed(false);
+    setIsCodeExpanded(false);
   }, []);
 
   const handleDismissError = useCallback(() => {}, []);
@@ -297,14 +301,43 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
               </>
             }
           >
-            <div className="live-code-wrapper">
-              {editable && <CodeErrorBanner onCopy={handleCopyError} onDismiss={handleDismissError} />}
+            <div
+              className={`live-code-expandable${isCodeExpanded ? ' expanded' : ''}`}
+              ref={expandableRef}
+              style={isCodeExpanded && expandableRef.current && expandableRef.current.scrollHeight > 0 ? { maxHeight: `${expandableRef.current.scrollHeight}px` } : undefined}
+            >
+              <div className="live-code-wrapper">
+                {editable && <CodeErrorBanner onCopy={handleCopyError} onDismiss={handleDismissError} />}
 
-              {activeTab === 'js' ? (
-                editable ? (
-                  <LiveEditor theme={selectedTheme} className="live-editor" code={formattedCode} />
+                {activeTab === 'js' ? (
+                  editable ? (
+                    <LiveEditor theme={selectedTheme} className="live-editor" code={formattedCode} />
+                  ) : (
+                    <Highlight theme={selectedTheme} code={formattedCode} language="tsx">
+                      {({ className, style, tokens, getLineProps, getTokenProps }) => (
+                        <pre
+                          className={`live-editor ${className}`}
+                          style={{
+                            ...style,
+                            overflowX: 'auto',
+                            overflowY: 'auto',
+                            whiteSpace: 'pre',
+                            wordWrap: 'normal',
+                          }}
+                        >
+                          {tokens.map((line, lineIndex) => (
+                            <div key={lineIndex} {...getLineProps({ line })}>
+                              {line.map((token, tokenIndex) => (
+                                <span key={tokenIndex} {...getTokenProps({ token })} />
+                              ))}
+                            </div>
+                          ))}
+                        </pre>
+                      )}
+                    </Highlight>
+                  )
                 ) : (
-                  <Highlight theme={selectedTheme} code={formattedCode} language="tsx">
+                  <Highlight theme={selectedTheme} code={formattedCssCode} language="css">
                     {({ className, style, tokens, getLineProps, getTokenProps }) => (
                       <pre
                         className={`live-editor ${className}`}
@@ -326,32 +359,15 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
                       </pre>
                     )}
                   </Highlight>
-                )
-              ) : (
-                <Highlight theme={selectedTheme} code={formattedCssCode} language="css">
-                  {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                    <pre
-                      className={`live-editor ${className}`}
-                      style={{
-                        ...style,
-                        overflowX: 'auto',
-                        overflowY: 'auto',
-                        whiteSpace: 'pre',
-                        wordWrap: 'normal',
-                      }}
-                    >
-                      {tokens.map((line, lineIndex) => (
-                        <div key={lineIndex} {...getLineProps({ line })}>
-                          {line.map((token, tokenIndex) => (
-                            <span key={tokenIndex} {...getTokenProps({ token })} />
-                          ))}
-                        </div>
-                      ))}
-                    </pre>
-                  )}
-                </Highlight>
-              )}
+                )}
+              </div>
             </div>
+            <button className="show-more-toggle" type="button" onClick={() => setIsCodeExpanded(prev => !prev)}>
+              {isCodeExpanded ? 'Show less' : 'Show more'}
+              <svg className={`show-more-chevron${isCodeExpanded ? ' rotated' : ''}`} xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </CollapsibleCodeBlock>
         </LiveProvider>
       </React.Fragment>
