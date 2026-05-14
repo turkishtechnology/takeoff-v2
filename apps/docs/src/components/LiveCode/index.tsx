@@ -248,7 +248,11 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
           </div>
 
           <div className="collapsible-code-block">
-            <div className={`collapsible-content${isCodeExpanded ? ' expanded' : ''}`} ref={codeBlockRef}>
+            <div
+              className={`collapsible-content${isCodeExpanded ? ' expanded' : ''}`}
+              ref={codeBlockRef}
+              style={isCodeExpanded && codeBlockRef.current ? { maxHeight: `${codeBlockRef.current.scrollHeight}px` } : undefined}
+            >
               <div className="live-code-wrapper">
                 {editable && <CodeErrorBanner onCopy={handleCopyError} onDismiss={handleDismissError} />}
                 <div className="live-code-header">

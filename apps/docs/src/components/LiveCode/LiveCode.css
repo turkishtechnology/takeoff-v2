@@ -293,6 +293,7 @@
 
 /* --- Code block (below preview) ----------------------------------------- */
 .live-code-container .collapsible-code-block {
+  position: relative;
   margin-top: 12px;
   width: 100%;
   border-radius: var(--radius-l, 12px);
@@ -303,35 +304,62 @@
 }
 
 .live-code-container .collapsible-code-block .collapsible-content {
+  position: relative;
   overflow: hidden;
-  max-height: 134px; /* ~3 lines of code */
-  transition: max-height 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  max-height: 144px; /* ~3 lines of code */
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.live-code-container .collapsible-code-block .collapsible-content::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: linear-gradient(to bottom, transparent, var(--docs-surface-2, #f9fafc));
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 300ms ease;
+}
+
+.live-code-container .collapsible-code-block .collapsible-content.expanded::after {
+  opacity: 0;
+}
+
+[data-theme='dark'] .live-code-container .collapsible-code-block .collapsible-content::after {
+  background: linear-gradient(to bottom, transparent, rgba(15, 15, 20, 0.85));
 }
 
 .live-code-container .collapsible-code-block .collapsible-content.expanded {
   max-height: 2000px;
-  transition: max-height 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: max-height 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .live-code-container .collapsible-code-block .show-more-toggle {
-  display: flex;
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  width: 100%;
-  padding: 8px 16px;
+  padding: 4px 14px;
   font-family: 'Geologica', sans-serif;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  border: none;
-  border-top: 1px solid var(--docs-border-subtle);
+  border: 1px solid var(--docs-border-subtle);
+  border-radius: 16px;
   background: var(--docs-surface-2);
   color: var(--docs-ink-base);
   transition:
     background 150ms ease,
     color 150ms ease,
-    transform 150ms ease;
+    border-color 150ms ease;
 }
 
 .live-code-container .collapsible-code-block .show-more-toggle:hover {
@@ -340,6 +368,7 @@
 }
 
 .live-code-container .collapsible-code-block .show-more-toggle .show-more-chevron {
+  transform: rotate(0deg);
   transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
