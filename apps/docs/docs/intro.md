@@ -24,4 +24,3 @@ pnpm add @takeoff-ui/react-spar
 
 - [Installation](/docs/installation) — add `@takeoff-ui/react-spar` to your
   project and import the token stylesheet
-- [Roadmap](/docs/roadmap) — component port status and release readiness

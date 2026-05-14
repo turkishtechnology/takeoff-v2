@@ -4,22 +4,22 @@ import styles from './InstallBlock.module.css';
 type PackageManager = 'pnpm' | 'npm' | 'yarn' | 'bun';
 
 const INSTALL_COMMANDS: Record<PackageManager, string> = {
-  pnpm: 'pnpm add @takeoff-ui/react-spar @takeoff-design/tokens',
-  npm: 'npm install @takeoff-ui/react-spar @takeoff-design/tokens',
-  yarn: 'yarn add @takeoff-ui/react-spar @takeoff-design/tokens',
-  bun: 'bun add @takeoff-ui/react-spar @takeoff-design/tokens',
+  pnpm: 'pnpm add @takeoff-ui/react-spar',
+  npm: 'npm install @takeoff-ui/react-spar',
+  yarn: 'yarn add @takeoff-ui/react-spar',
+  bun: 'bun add @takeoff-ui/react-spar',
 };
 
 const CSS_IMPORT = `import '@takeoff-design/tokens/css/default/theme.css';`;
 
-const PROVIDER_SNIPPET = `import { SparReactProvider } from '@takeoff-ui/react-spar';
+const PROVIDER_SNIPPET = `import { TakeoffSparProvider } from '@takeoff-ui/react-spar';
 import '@takeoff-design/tokens/css/default/theme.css';
 
 export function App({ children }) {
   return (
-    <SparReactProvider colorMode="light">
+    <TakeoffSparProvider colorMode="light">
       {children}
-    </SparReactProvider>
+    </TakeoffSparProvider>
   );
 }`;
 
@@ -81,7 +81,7 @@ function ProviderCode(): JSX.Element {
       <span className={styles.codeLine}>
         <span className={styles.kw}>import</span>
         <span className={styles.punct}> {'{ '}</span>
-        <span className={styles.fn}>SparReactProvider</span>
+        <span className={styles.fn}>TakeoffSparProvider</span>
         <span className={styles.punct}>{' }'}</span>
         <span className={styles.punct}> </span>
         <span className={styles.kw}>from</span>
@@ -116,7 +116,7 @@ function ProviderCode(): JSX.Element {
       <span className={styles.codeLine}>
         {'    '}
         <span className={styles.punct}>&lt;</span>
-        <span className={styles.tag}>SparReactProvider</span>
+        <span className={styles.tag}>TakeoffSparProvider</span>
         <span className={styles.punct}> </span>
         <span className={styles.attr}>colorMode</span>
         <span className={styles.punct}>=</span>
@@ -132,7 +132,7 @@ function ProviderCode(): JSX.Element {
       <span className={styles.codeLine}>
         {'    '}
         <span className={styles.punct}>&lt;/</span>
-        <span className={styles.tag}>SparReactProvider</span>
+        <span className={styles.tag}>TakeoffSparProvider</span>
         <span className={styles.punct}>&gt;</span>
       </span>
       <span className={styles.codeLine}>

@@ -52,10 +52,12 @@ and so on).
 ## 3. Wrap your tree in the provider
 
 ```tsx
-import { SparReactProvider } from '@takeoff-ui/react-spar';
+import { TakeoffSparProvider } from '@takeoff-ui/react-spar';
 
 export function App({ children }) {
-  return <SparReactProvider colorMode="light">{children}</SparReactProvider>;
+  return (
+    <TakeoffSparProvider colorMode="light">{children}</TakeoffSparProvider>
+  );
 }
 ```
 
@@ -78,12 +80,12 @@ components are plain React.
 
 ## Framework-specific notes
 
-- **Next.js App Router** — put `SparReactProvider` in your root
+- **Next.js App Router** — put `TakeoffSparProvider` in your root
   `app/layout.tsx`. The token CSS can import from `app/globals.css`.
 - **Vite** — import the token CSS anywhere in your entry; Vite handles CSS
   ordering.
-- **Remix** — wrap `root.tsx`'s `<App />` in `SparReactProvider`; link the token
-  CSS via `links()`.
+- **Remix** — wrap `root.tsx`'s `<App />` in `TakeoffSparProvider`; link the
+  token CSS via `links()`.
 
 Visual customization is handled entirely through the Takeoff design tokens
 imported above — override CSS custom properties at the app root to rebrand.

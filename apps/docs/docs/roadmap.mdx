@@ -1,6 +1,6 @@
 ---
 title: Roadmap
-description: Planned component ports in priority order.
+description: Component port status and active port batch.
 sidebar_label: Roadmap
 sidebar_position: 9
 slug: /roadmap
@@ -13,9 +13,20 @@ We ship components one at a time, fully tested and fully documented, against the
 
 ## Shipped
 
-| Component | Shipped    | Status |
-| --------- | ---------- | ------ |
-| Accordion | 2026-04-13 | Stable |
+These components are exported from `@takeoff-ui/react-spar` today and have
+published documentation.
+
+| Component                               | Status | Notes                                                                              |
+| --------------------------------------- | ------ | ---------------------------------------------------------------------------------- |
+| [Accordion](/docs/components/accordion) | Stable | Compound: `Accordion.Item`, `Accordion.Header`, `Accordion.Trigger`, `.Content`.   |
+| [Button](/docs/components/button)       | Stable | Polymorphic via `as`. Includes loading, toggle, and start/end icon slots.          |
+| [Drawer](/docs/components/drawer)       | Stable | Compound: `Drawer.Trigger`, `.Overlay`, `.Panel`, `.Header`, `.Body`, `.Footer`, … |
+| [Tooltip](/docs/components/tooltip)     | Stable | Compound: `Tooltip.Trigger`, `Tooltip.Content`, `Tooltip.Description`, `.Arrow`, … |
+
+The package also exports `TakeoffSparProvider` plus the customization and theme
+types (`ClassNamesMap`, `ComponentName`, `ComponentThemeConfig`,
+`ComponentThemeRegistry`, `ComponentsThemeMap`, `DataSlotName`,
+`SlotClassNames`, `SlotPropsMap`, `StateOnlyComponentThemeConfig`).
 
 ## In flight (active port batch)
 
@@ -24,29 +35,25 @@ public API and ownership decisions should be finalized before implementation.
 
 | Component | Status          | Notes                                                                                                        |
 | --------- | --------------- | ------------------------------------------------------------------------------------------------------------ |
-| Button    | Contract needed | New port from scratch.                                                                                       |
 | Dialog    | Contract needed | New port from scratch. Compound-only; `header`/`subheader`/`showCloseButton` intentionally omitted.          |
 | Checkbox  | Refactor        | Compound surface (`Checkbox.Label`, `Checkbox.Description`, `Checkbox.Icon`); flat content props deprecated. |
 | Input     | Refactor        | Compound surface; render-overrides deprecated; counter/chips/password/mask split into siblings.              |
 
 ## In the hangar (priority order)
 
-| #   | Component    | Body                                                                  | Spar dependency   |
-| --- | ------------ | --------------------------------------------------------------------- | ----------------- |
-| 01  | Radio        | Single-select form primitive. Shares Checkbox slot vocabulary.        | Spar · ready      |
-| 02  | Toggle       | Switch-style on/off. Shares Checkbox slots; distinct role.            | Spar · ready      |
-| 03  | Popover      | Anchor-positioned overlay. Blocker for Tooltip, DropdownMenu, Select. | Spar · in review  |
-| 04  | Tooltip      | Hover/focus descriptive surface.                                      | Depends · Popover |
-| 05  | DropdownMenu | Keyboard-complete menu with submenus.                                 | Depends · Popover |
-| 06  | Tabs         | Controlled/uncontrolled tablist, horizontal + vertical.               | Spar · ready      |
-| 07  | Select       | Listbox with filtering and keyboard navigation.                       | Depends · Popover |
+| #   | Component    | Body                                                           | Spar dependency |
+| --- | ------------ | -------------------------------------------------------------- | --------------- |
+| 01  | Radio        | Single-select form primitive. Shares Checkbox slot vocabulary. | Spar · ready    |
+| 02  | Toggle       | Switch-style on/off. Shares Checkbox slots; distinct role.     | Spar · ready    |
+| 03  | DropdownMenu | Keyboard-complete menu with submenus.                          | Spar · ready    |
+| 04  | Tabs         | Controlled/uncontrolled tablist, horizontal + vertical.        | Spar · ready    |
+| 05  | Select       | Listbox with filtering and keyboard navigation.                | Spar · ready    |
 
 ## What "priority order" means
 
-We ship **Popover before Tooltip/DropdownMenu/Select** because those three
-components all depend on Popover's positioning engine. We ship **Radio and
-Toggle before Popover** because they don't block anything and give form users
-immediate value.
+We ship **Radio and Toggle first** because they don't block anything and give
+form users immediate value. Menu-style components (DropdownMenu, Tabs, Select)
+follow once their behavioral contracts are finalized against Spar.
 
 Priority can shift when the Takeoff UI Core source of truth ships new primitives
 or a consumer team signals a blocker.

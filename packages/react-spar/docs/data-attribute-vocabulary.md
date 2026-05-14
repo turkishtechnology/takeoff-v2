@@ -109,7 +109,7 @@ These are emitted outside the component composition pipeline (`composeRootAttrs`
 
 | Attribute               | Layer                                                                 | Purpose                                          |
 | ----------------------- | --------------------------------------------------------------------- | ------------------------------------------------ |
-| `data-theme`            | [`<SparReactProvider>`](../src/provider.tsx) — written to `<html>`    | Active theme name (consumed by token CSS)        |
+| `data-theme`            | [`<TakeoffSparProvider>`](../src/provider.tsx) — written to `<html>`  | Active theme name (consumed by token CSS)        |
 | `data-placeholder-icon` | [`src/icons/placeholderIcons.tsx`](../src/icons/placeholderIcons.tsx) | Marks default decorative SVGs for swap targeting |
 
 ## Component-specific decisions

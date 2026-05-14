@@ -196,7 +196,7 @@ Every component exposes exactly these customization surfaces:
   `tk-*`;
 - **`slotProps`** — per-slot HTML attribute overrides, shallow-merged with
   instance winning;
-- **provider-level defaults** — `SparReactProvider` `components` map (theme
+- **provider-level defaults** — `TakeoffSparProvider` `components` map (theme
   defaultProps + classNames + slotProps).
 
 Do not add `renderX` props. Do not add flat content props. If consumers need a

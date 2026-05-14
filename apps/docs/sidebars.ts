@@ -6,19 +6,13 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Getting started',
       collapsed: false,
-      items: ['intro', 'installation'],
+      items: ['intro', 'installation', 'roadmap'],
     },
     {
       type: 'category',
       label: 'Components',
       collapsed: false,
       items: ['components/accordion', 'components/button', 'components/drawer', 'components/tooltip'],
-    },
-    {
-      type: 'category',
-      label: 'Discover',
-      collapsed: false,
-      items: ['roadmap', 'contributing'],
     },
   ],
 };

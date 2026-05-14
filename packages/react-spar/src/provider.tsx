@@ -5,7 +5,7 @@ import { isDevelopment } from './utils';
 
 export type ColorMode = 'light' | 'dark';
 
-export interface SparReactProviderValue {
+export interface TakeoffSparProviderValue {
   colorMode: ColorMode;
   locale?: string;
   components?: ComponentsThemeMap;
@@ -15,9 +15,9 @@ export interface ThemeValue {
   colorMode: ColorMode;
 }
 
-const SparReactContext = createContext<SparReactProviderValue | undefined>(undefined);
+const TakeoffSparContext = createContext<TakeoffSparProviderValue | undefined>(undefined);
 
-export interface SparReactProviderProps extends Partial<SparReactProviderValue> {
+export interface TakeoffSparProviderProps extends Partial<TakeoffSparProviderValue> {
   children: ReactNode;
 }
 
@@ -32,7 +32,7 @@ export interface SparReactProviderProps extends Partial<SparReactProviderValue> 
  * script that reads stored preferences) to avoid a first-paint flash before
  * the provider's effect runs.
  */
-export const SparReactProvider = ({ children, colorMode = 'light', locale, components }: SparReactProviderProps) => {
+export const TakeoffSparProvider = ({ children, colorMode = 'light', locale, components }: TakeoffSparProviderProps) => {
   useEffect(() => {
     const html = document.documentElement;
     const previous = html.dataset.theme;
@@ -58,7 +58,7 @@ export const SparReactProvider = ({ children, colorMode = 'light', locale, compo
 
   const value = useMemo(() => ({ colorMode, locale, components }), [colorMode, locale, components]);
 
-  return <SparReactContext.Provider value={value}>{children}</SparReactContext.Provider>;
+  return <TakeoffSparContext.Provider value={value}>{children}</TakeoffSparContext.Provider>;
 };
 
 const DEFAULT_THEME: ThemeValue = { colorMode: 'light' };
@@ -69,19 +69,19 @@ let useThemeWarningEmitted = false;
 
 /**
  * Read the active theme value. The provider is **optional**: when no
- * `SparReactProvider` ancestor is present, the default theme
+ * `TakeoffSparProvider` ancestor is present, the default theme
  * (`{ colorMode: 'light' }`) is returned and a one-time dev-mode warning is
- * emitted. Wrap the app in `SparReactProvider` to customize `colorMode` or
+ * emitted. Wrap the app in `TakeoffSparProvider` to customize `colorMode` or
  * `locale`.
  */
 export const useTheme = (): ThemeValue => {
-  const context = useContext(SparReactContext);
+  const context = useContext(TakeoffSparContext);
   if (context === undefined) {
     if (isDevelopment() && !useThemeWarningEmitted) {
       useThemeWarningEmitted = true;
       // eslint-disable-next-line no-console
       console.warn(
-        '[SparReactProvider] `useTheme` was called outside a provider; falling back to `{ colorMode: "light" }`. ' + 'Wrap your app in <SparReactProvider> to customize.',
+        '[TakeoffSparProvider] `useTheme` was called outside a provider; falling back to `{ colorMode: "light" }`. ' + 'Wrap your app in <TakeoffSparProvider> to customize.',
       );
     }
     return DEFAULT_THEME;
@@ -95,14 +95,14 @@ export const useTheme = (): ThemeValue => {
  * `ComponentThemeConfig<AccordionProps> | undefined`. Unknown names are a
  * compile-time error.
  *
- * The provider is **optional** — when no `SparReactProvider` ancestor is
+ * The provider is **optional** — when no `TakeoffSparProvider` ancestor is
  * present, this hook returns `undefined` silently and the component falls
  * back to its author defaults. No warning is emitted because the absence of
  * a provider-level override is a legitimate use case (component used
  * standalone).
  */
 export const useComponentTheme = <K extends ComponentName>(componentName: K): ComponentThemeRegistry[K] | undefined => {
-  const context = useContext(SparReactContext);
+  const context = useContext(TakeoffSparContext);
   // The runtime value is `ComponentThemeRegistry[K] | undefined` by
   // construction, but indexing a `Partial<...>`-shaped map with a generic
   // key keeps the optional modifier under non-strict-null tsconfigs (the
