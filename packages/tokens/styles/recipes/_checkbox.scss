@@ -15,17 +15,24 @@
 //   .tk-checkbox                — root (primitive span, interactive owner)
 //   .tk-checkbox-indicator      — visible box (border + fill background)
 //   .tk-checkbox-icon           — check / indeterminate icon holder
-//   .tk-checkbox-text           — label + description wrapper
 //   .tk-checkbox-label          — visible label text
+//   .tk-checkbox-asterisk       — required-state asterisk inside the label
 //   .tk-checkbox-description    — helper text
+//
+// Layout: the root is a 2-column inline grid. Indicator sits in (row 1, col 1);
+// Label in (row 1, col 2); Description in (row 2, col 2) so it stacks beneath
+// the Label rather than next to the Indicator. This keeps the canonical
+// anatomy a flat sibling list without an extra text-wrapper DOM node.
 // ---------------------------------------------------------------------------
 
 @mixin checkbox {
   font-family: var(--family-body, 'Geologica', sans-serif);
-  display: inline-flex;
-  align-items: center;
+  display: inline-grid;
+  grid-template-columns: auto auto;
   justify-content: flex-start;
-  gap: var(--basic-switcher-content-gap);
+  align-items: center;
+  column-gap: var(--basic-switcher-content-gap);
+  row-gap: var(--basic-switcher-text-gap);
   padding: 2px;
   color: var(--text-darkest);
   font-size: var(--desktop-body-s-size);
@@ -37,6 +44,8 @@
   // ---- Indicator (outer box) ----
 
   .tk-checkbox-indicator {
+    grid-column: 1;
+    grid-row: 1;
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
@@ -84,23 +93,24 @@
       'opsz' 24;
   }
 
-  // ---- Text (label + description) ----
-
-  .tk-checkbox-text {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--basic-switcher-text-gap);
-  }
+  // ---- Label + description ----
 
   .tk-checkbox-label {
+    grid-column: 2;
+    grid-row: 1;
     color: var(--text-darkest);
     font-size: var(--desktop-body-s-size);
     line-height: var(--desktop-body-s-line-height);
     font-weight: 400;
   }
 
+  .tk-checkbox-asterisk {
+    color: var(--states-danger-base);
+    margin-inline-start: 0.125rem;
+  }
+
   .tk-checkbox-description {
+    grid-column: 2;
     color: var(--text-base);
     font-size: var(--desktop-body-xs-size);
     line-height: var(--desktop-body-xs-line-height);
