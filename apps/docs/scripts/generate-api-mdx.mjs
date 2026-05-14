@@ -165,14 +165,17 @@ function getMemberName(name) {
   return null;
 }
 
-function collectDeclaredPropNames(declaration, checker) {
+function collectDeclaredPropNames(declaration, checker, seen = new Set()) {
   const names = [];
+  const addName = n => {
+    if (n && !names.includes(n)) names.push(n);
+  };
+
   if (ts.isInterfaceDeclaration(declaration)) {
     // Collect direct members
     for (const member of declaration.members) {
       if (ts.isPropertySignature(member)) {
-        const n = getMemberName(member.name);
-        if (n) names.push(n);
+        addName(getMemberName(member.name));
       }
     }
     // Collect inherited members from Pick<...> types in extends clauses.
@@ -188,15 +191,14 @@ function collectDeclaredPropNames(declaration, checker) {
           if (exprText !== 'Pick') continue;
           const heritageType = checker.getTypeAtLocation(typeExpr);
           for (const prop of heritageType.getProperties()) {
-            if (!names.includes(prop.name)) {
-              names.push(prop.name);
-            }
+            addName(prop.name);
           }
         }
       }
     }
     return names;
   }
+
   const visit = node => {
     if (ts.isParenthesizedTypeNode(node)) {
       visit(node.type);
@@ -205,8 +207,42 @@ function collectDeclaredPropNames(declaration, checker) {
     } else if (ts.isTypeLiteralNode(node)) {
       for (const m of node.members) {
         if (ts.isPropertySignature(m)) {
-          const n = getMemberName(m.name);
-          if (n) names.push(n);
+          addName(getMemberName(m.name));
+        }
+      }
+    } else if (ts.isTypeReferenceNode(node)) {
+      const refName = node.typeName?.getText?.() ?? '';
+      // PolymorphicProps<TDefault, T, OwnProps> — only walk the third arg.
+      // The wrapper itself adds `as` plus Omit<ComponentPropsWithRef<...>>,
+      // which would flood the table with native HTML attributes.
+      if (refName === 'PolymorphicProps') {
+        const args = node.typeArguments ?? [];
+        if (args.length >= 3) visit(args[2]);
+        return;
+      }
+      // Pick<T, K> — resolve via checker for the listed keys only.
+      if (refName === 'Pick' && checker) {
+        const picked = checker.getTypeAtLocation(node);
+        for (const prop of picked.getProperties()) {
+          addName(prop.name);
+        }
+        return;
+      }
+      // Other type references — typically a user-authored interface like
+      // `AccordionOwnProps`. Resolve the symbol to its declaration and recurse
+      // so nested intersections / Pick<>s inside it get the same treatment.
+      if (checker) {
+        const symbol = checker.getSymbolAtLocation(node.typeName);
+        const decls = symbol?.declarations ?? [];
+        for (const decl of decls) {
+          if (!(ts.isInterfaceDeclaration(decl) || ts.isTypeAliasDeclaration(decl))) continue;
+          // Guard against cycles (mutually-recursive aliases) and avoid
+          // re-walking the same declaration twice in a single pass.
+          if (seen.has(decl)) continue;
+          seen.add(decl);
+          for (const n of collectDeclaredPropNames(decl, checker, seen)) {
+            addName(n);
+          }
         }
       }
     }
