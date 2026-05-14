@@ -1,25 +1,27 @@
-import clsx from 'clsx';
+import { Badge, type BadgeAppearance, type BadgeSize, type BadgeVariant } from '@takeoff-ui/react-spar';
 
-import styles from './ApiBadge.module.css';
+type ApiBadgeType = 'filled' | 'filledlight' | 'outlined' | 'text';
 
-type BadgeVariant = 'primary' | 'secondary' | 'neutral' | 'info' | 'success' | 'danger' | 'warning' | 'verified' | 'purple' | 'cyan' | 'business' | 'teal';
-
-type BadgeSize = 'small' | 'base' | 'large';
-type BadgeType = 'filled' | 'filledlight' | 'outlined' | 'text';
+const TYPE_TO_APPEARANCE: Record<ApiBadgeType, BadgeAppearance> = {
+  filled: 'filled',
+  filledlight: 'filledLight',
+  outlined: 'outlined',
+  text: 'text',
+};
 
 export interface ApiBadgeProps {
   className?: string;
   label: string;
   rounded?: boolean;
   size?: BadgeSize;
-  type?: BadgeType;
+  type?: ApiBadgeType;
   variant?: BadgeVariant;
 }
 
 export function ApiBadge({ className, label, rounded = false, size = 'large', type = 'filledlight', variant = 'primary' }: ApiBadgeProps) {
   return (
-    <span className={clsx(styles.badge, styles[variant], styles[type], styles[size], rounded && styles.rounded, className)}>
-      <span className={styles.label}>{label}</span>
-    </span>
+    <Badge className={className} rounded={rounded} size={size} appearance={TYPE_TO_APPEARANCE[type]} variant={variant}>
+      {label}
+    </Badge>
   );
 }
