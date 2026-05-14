@@ -2,13 +2,14 @@
 
 @forward 'foundations';
 
-@use 'recipes/button';
 @use 'recipes/accordion';
+@use 'recipes/badge';
+@use 'recipes/button';
+@use 'recipes/checkbox';
 @use 'recipes/dialog';
 @use 'recipes/drawer';
 @use 'recipes/input';
 @use 'recipes/select';
-@use 'recipes/checkbox';
 @use 'recipes/tooltip';
 
 @include button.button-keyframes;
@@ -125,4 +126,8 @@
 
 .tk-tooltip-arrow {
   @include tooltip.tooltip-arrow;
+}
+
+.tk-badge {
+  @include badge.badge;
 }
