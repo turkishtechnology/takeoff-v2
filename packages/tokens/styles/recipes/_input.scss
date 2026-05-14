@@ -57,8 +57,8 @@
     line-height: $field-line-height;
   }
 
-  .tk-input-leading-icon,
-  .tk-input-trailing-icon,
+  .tk-input-start-content,
+  .tk-input-end-content,
   .tk-input-clear-button,
   .tk-input-spinner {
     width: $icon-size;
@@ -222,8 +222,8 @@
 
   // ---- Icons (leading / trailing) ----
 
-  .tk-input-leading-icon,
-  .tk-input-trailing-icon {
+  .tk-input-start-content,
+  .tk-input-end-content {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -232,7 +232,7 @@
     line-height: 1;
   }
 
-  .tk-input-trailing-icon {
+  .tk-input-end-content {
     margin-inline-start: auto;
   }
 
@@ -343,7 +343,7 @@
   // also claiming margin-inline-start: auto (first one wins).
   .tk-input-container:has(.tk-input-clear-button),
   .tk-input-container:has(.tk-input-spinner) {
-    .tk-input-trailing-icon {
+    .tk-input-end-content {
       margin-inline-start: 0;
     }
   }

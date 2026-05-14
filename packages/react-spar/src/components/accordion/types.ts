@@ -34,18 +34,22 @@ export type AccordionCurrentValue = AccordionValue | AccordionValue[];
 
 export type AccordionValueChangeHandler = (next: AccordionCurrentValue) => void;
 
-/**
- * Position of the auto-rendered arrow inside the trigger.
- * @defaultValue 'right'
- */
-export type AccordionArrowPosition = 'left' | 'right';
-
 export type AccordionSlot = 'root';
 export type AccordionItemSlot = 'root';
 export type AccordionHeaderSlot = 'root';
-export type AccordionTriggerSlot = 'root' | 'icon' | 'arrow';
+export type AccordionTriggerSlot = 'root' | 'startContent';
 export type AccordionTriggerTitleSlot = 'root';
+export type AccordionIndicatorSlot = 'root';
 export type AccordionContentSlot = 'root';
+
+/**
+ * State surface delivered to {@link AccordionIndicatorProps.children} when
+ * passed as a render function. Lets consumers swap icons by open state without
+ * pulling the item context themselves.
+ */
+export interface AccordionIndicatorRenderState {
+  isOpen: boolean;
+}
 
 /**
  * Visual + slot props owned by takeoff-v2 for the Accordion root. Cascades to
@@ -67,26 +71,6 @@ export interface AccordionOwnProps {
    * @defaultValue 'base'
    */
   size?: AccordionSize;
-  /**
-   * Position of the auto-rendered arrow inside each trigger.
-   * @defaultValue 'right'
-   */
-  arrowPosition?: AccordionArrowPosition;
-  /**
-   * Hide the auto-rendered arrow on every trigger.
-   * @defaultValue false
-   */
-  hideArrows?: boolean;
-  /**
-   * Visual content for the arrow when an item is collapsed.
-   * @defaultValue a built-in chevron pointing down
-   */
-  expandIcon?: ReactNode;
-  /**
-   * Visual content for the arrow when an item is expanded.
-   * @defaultValue a built-in chevron pointing up
-   */
-  collapseIcon?: ReactNode;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -141,10 +125,11 @@ export type AccordionHeaderProps<T extends ElementType = 'h3'> = PolymorphicProp
 
 export interface AccordionTriggerOwnProps {
   /**
-   * Leading icon rendered before the title. The wrapper node (class +
-   * `data-slot`) is invariant — only the icon node itself is consumer-supplied.
+   * Leading content rendered before the title — typically an icon, but
+   * accepts any node. The wrapper element (class + `data-slot`) is invariant;
+   * only the inner node is consumer-supplied.
    */
-  icon?: ReactNode;
+  startContent?: ReactNode;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionTriggerSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -170,6 +155,26 @@ export type AccordionTriggerTitleProps<T extends ElementType = 'span'> = Polymor
   AccordionTriggerTitleOwnProps
 >;
 
+export interface AccordionIndicatorOwnProps {
+  /**
+   * Override the default chevron. Accepts a ReactNode (rendered in every
+   * state) or a render function receiving the live `{ isOpen }` state — use
+   * the render-prop form to swap icons by open state without consuming the
+   * item context manually.
+   */
+  children?: ReactNode | ((state: AccordionIndicatorRenderState) => ReactNode);
+  /** Per-slot class name overrides. */
+  classNames?: ClassNamesMap<AccordionIndicatorSlot>;
+  /** Per-slot HTML attribute overrides. */
+  slotProps?: SlotPropsMap<AccordionIndicatorSlot>;
+}
+
+export type AccordionIndicatorProps<T extends ElementType = 'span'> = PolymorphicProps<
+  'span',
+  T,
+  AccordionIndicatorOwnProps
+>;
+
 export interface AccordionContentOwnProps {
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionContentSlot>;
@@ -193,6 +198,7 @@ declare module '../../core/theme' {
     AccordionHeader: import('../../core').ComponentThemeConfig<AccordionHeaderProps>;
     AccordionTrigger: import('../../core').ComponentThemeConfig<AccordionTriggerProps, AccordionTriggerSlot>;
     AccordionTriggerTitle: import('../../core').ComponentThemeConfig<AccordionTriggerTitleProps>;
+    AccordionIndicator: import('../../core').ComponentThemeConfig<AccordionIndicatorProps, AccordionIndicatorSlot>;
     AccordionContent: import('../../core').ComponentThemeConfig<AccordionContentProps>;
   }
 }

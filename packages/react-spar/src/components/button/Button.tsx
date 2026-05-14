@@ -16,8 +16,8 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
     // Spar's Button already emits them (see SparButton dataAttributes), so
     // setting them again would create two sources of truth that drift the
     // moment Spar renames or extends its vocabulary.
-    stateAttrs: ({ variant = DEFAULT_VARIANT, appearance = DEFAULT_APPEARANCE, size = DEFAULT_SIZE, rounded, startIcon, endIcon, children }) => {
-      const hasIcon = !!(startIcon || endIcon);
+    stateAttrs: ({ variant = DEFAULT_VARIANT, appearance = DEFAULT_APPEARANCE, size = DEFAULT_SIZE, rounded, startContent, endContent, children }) => {
+      const hasIcon = !!(startContent || endContent);
       const isIconOnly = hasIcon && !children;
       return {
         'data-variant': variant,
@@ -38,15 +38,15 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
     size: _size,
     rounded: _rounded,
     isLoading = false,
-    startIcon,
-    endIcon,
+    startContent,
+    endContent,
     disabled = false,
     children,
     ref,
     ...sparProps
   } = rest;
 
-  const iconSlotAttrs = buildSlotAttrs(ButtonBase.getSlotProps('icon'), 'icon' as ButtonSlot, {
+  const contentSlotAttrs = buildSlotAttrs(ButtonBase.getSlotProps('content'), 'content' as ButtonSlot, {
     themeSlotProps: theme?.slotProps,
     themeClassNames: theme?.classNames,
     instanceSlotProps: props.slotProps,
@@ -70,9 +70,9 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
   return (
     <SparButton {...(sparProps as unknown as SparButtonProps)} disabled={disabled} isLoading={isLoading} ref={ref} {...rootAttrs}>
       {isLoading && <span {...spinnerSlotAttrs} />}
-      {startIcon && !isLoading && <span {...iconSlotAttrs}>{startIcon}</span>}
+      {startContent && !isLoading && <span {...contentSlotAttrs}>{startContent}</span>}
       {children && <span {...labelSlotAttrs}>{children}</span>}
-      {endIcon && !isLoading && <span {...iconSlotAttrs}>{endIcon}</span>}
+      {endContent && !isLoading && <span {...contentSlotAttrs}>{endContent}</span>}
     </SparButton>
   );
 };

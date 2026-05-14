@@ -9,7 +9,7 @@ export type ButtonAppearance = 'filled' | 'filledLight' | 'outlined' | 'text';
 
 export type ButtonSize = 'small' | 'base' | 'large';
 
-export type ButtonSlot = 'root' | 'icon' | 'label' | 'spinner';
+export type ButtonSlot = 'root' | 'content' | 'label' | 'spinner';
 
 /**
  * Visual + slot props owned by takeoff-v2 (not exposed by Spar).
@@ -36,13 +36,14 @@ export interface ButtonOwnProps {
    */
   rounded?: boolean;
   /**
-   * Icon placed before children.
+   * Content rendered before children — typically an icon, but accepts any node
+   * (spinner, badge, kbd, etc.). Wrapped in the `icon` slot.
    */
-  startIcon?: ReactNode;
+  startContent?: ReactNode;
   /**
-   * Icon placed after children.
+   * Content rendered after children. Same shape as `startContent`.
    */
-  endIcon?: ReactNode;
+  endContent?: ReactNode;
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<ButtonSlot>;
   /** Per-slot HTML-attribute overrides. */

@@ -1,11 +1,11 @@
 import type { ElementType } from 'react';
 import { useInputContext } from '@turkish-technology/spar';
 
-import { composeRootAttrs } from '../../core';
+import { buildSlotAttrs, composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { InputContainerBase } from './base';
-import type { InputContainerProps } from './types';
+import type { InputContainerProps, InputContainerSlot } from './types';
 
 export const InputContainer = <T extends ElementType = 'div'>(props: InputContainerProps<T>) => {
   const theme = useComponentTheme('InputContainer');
@@ -25,11 +25,29 @@ export const InputContainer = <T extends ElementType = 'div'>(props: InputContai
     }),
   });
 
-  const { as: _as, children, ref, ...rendered } = rest;
+  const { as: _as, children, startContent, endContent, ref, ...rendered } = rest;
+
+  const slotAttrs = (slot: InputContainerSlot) =>
+    buildSlotAttrs(InputContainerBase.getSlotProps(slot), slot, {
+      themeSlotProps: theme?.slotProps,
+      themeClassNames: theme?.classNames,
+      instanceSlotProps: props.slotProps,
+      instanceClassNames: props.classNames,
+    });
 
   return (
     <Component {...rendered} ref={ref} {...rootAttrs}>
+      {startContent != null && (
+        <span aria-hidden="true" {...slotAttrs('startContent')}>
+          {startContent}
+        </span>
+      )}
       {children}
+      {endContent != null && (
+        <span aria-hidden="true" {...slotAttrs('endContent')}>
+          {endContent}
+        </span>
+      )}
     </Component>
   );
 };

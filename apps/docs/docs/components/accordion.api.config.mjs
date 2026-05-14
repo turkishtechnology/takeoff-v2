@@ -66,16 +66,7 @@ export default {
         children: childrenOverride('`Accordion.Item` elements rendered inside the disclosure container.'),
         className: classNameOverride,
       },
-      dataAttributes: [
-        dataSlotRoot,
-        dataMode,
-        dataSize,
-        {
-          attribute: 'data-arrow-position',
-          appliedWhen: 'Always',
-          purpose: 'Reflects `arrowPosition`. Theme recipes can flip arrow alignment without reading the React prop.',
-        },
-      ],
+      dataAttributes: [dataSlotRoot, dataMode, dataSize],
     },
     {
       sourceFile: accordionTypesFile,

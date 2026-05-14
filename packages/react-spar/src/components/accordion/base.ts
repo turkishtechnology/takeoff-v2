@@ -3,6 +3,7 @@ import { createComponentBase } from '../../core';
 import type {
   AccordionContentProps,
   AccordionHeaderProps,
+  AccordionIndicatorProps,
   AccordionItemProps,
   AccordionProps,
   AccordionTriggerProps,
@@ -37,11 +38,10 @@ export const AccordionHeaderBase = createComponentBase<AccordionHeaderProps, 'ro
 
 export const AccordionTriggerBase = createComponentBase<AccordionTriggerProps, AccordionTriggerSlot>({
   name: 'AccordionTrigger',
-  slots: ['root', 'icon', 'arrow'] as const,
+  slots: ['root', 'startContent'] as const,
   classes: {
     root: 'tk-accordion-item-header',
-    icon: 'tk-accordion-item-icon',
-    arrow: 'tk-accordion-item-arrow',
+    startContent: 'tk-accordion-item-start-content',
   },
 });
 
@@ -49,6 +49,12 @@ export const AccordionTriggerTitleBase = createComponentBase<AccordionTriggerTit
   name: 'AccordionTriggerTitle',
   slots: ['root'] as const,
   classes: { root: 'tk-accordion-item-title' },
+});
+
+export const AccordionIndicatorBase = createComponentBase<AccordionIndicatorProps, 'root'>({
+  name: 'AccordionIndicator',
+  slots: ['root'] as const,
+  classes: { root: 'tk-accordion-item-indicator' },
 });
 
 export const AccordionContentBase = createComponentBase<AccordionContentProps, 'root'>({

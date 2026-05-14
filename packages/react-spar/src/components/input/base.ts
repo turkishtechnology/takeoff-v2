@@ -2,16 +2,15 @@ import { createComponentBase } from '../../core';
 
 import type {
   InputContainerProps,
+  InputContainerSlot,
   InputDescriptionProps,
   InputErrorMessageProps,
   InputFieldProps,
   InputLabelProps,
   InputLabelSlot,
-  InputLeadingIconProps,
   InputPrefixProps,
   InputProps,
   InputSuffixProps,
-  InputTrailingIconProps,
 } from './types';
 
 export const InputBase = createComponentBase<InputProps, 'root'>({
@@ -20,10 +19,14 @@ export const InputBase = createComponentBase<InputProps, 'root'>({
   classes: { root: 'tk-input' },
 });
 
-export const InputContainerBase = createComponentBase<InputContainerProps, 'root'>({
+export const InputContainerBase = createComponentBase<InputContainerProps, InputContainerSlot>({
   name: 'InputContainer',
-  slots: ['root'] as const,
-  classes: { root: 'tk-input-container' },
+  slots: ['root', 'startContent', 'endContent'] as const,
+  classes: {
+    root: 'tk-input-container',
+    startContent: 'tk-input-start-content',
+    endContent: 'tk-input-end-content',
+  },
 });
 
 export const InputFieldBase = createComponentBase<InputFieldProps, 'root'>({
@@ -60,16 +63,4 @@ export const InputSuffixBase = createComponentBase<InputSuffixProps, 'root'>({
   name: 'InputSuffix',
   slots: ['root'] as const,
   classes: { root: 'tk-input-suffix' },
-});
-
-export const InputLeadingIconBase = createComponentBase<InputLeadingIconProps, 'root'>({
-  name: 'InputLeadingIcon',
-  slots: ['root'] as const,
-  classes: { root: 'tk-input-leading-icon' },
-});
-
-export const InputTrailingIconBase = createComponentBase<InputTrailingIconProps, 'root'>({
-  name: 'InputTrailingIcon',
-  slots: ['root'] as const,
-  classes: { root: 'tk-input-trailing-icon' },
 });

@@ -6,8 +6,6 @@ import { InputDescription } from './InputDescription';
 import { InputErrorMessage } from './InputErrorMessage';
 import { InputPrefix } from './InputPrefix';
 import { InputSuffix } from './InputSuffix';
-import { InputLeadingIcon } from './InputLeadingIcon';
-import { InputTrailingIcon } from './InputTrailingIcon';
 
 const Input = Object.assign(InputRoot, {
   Container: InputContainer,
@@ -17,8 +15,6 @@ const Input = Object.assign(InputRoot, {
   ErrorMessage: InputErrorMessage,
   Prefix: InputPrefix,
   Suffix: InputSuffix,
-  LeadingIcon: InputLeadingIcon,
-  TrailingIcon: InputTrailingIcon,
 });
 
 export { Input };
@@ -29,10 +25,8 @@ export type {
   InputErrorMessageProps,
   InputFieldProps,
   InputLabelProps,
-  InputLeadingIconProps,
   InputPrefixProps,
   InputProps,
   InputSize,
   InputSuffixProps,
-  InputTrailingIconProps,
 } from './types';
