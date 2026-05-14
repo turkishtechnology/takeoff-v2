@@ -21,6 +21,7 @@ const sidebars: SidebarsConfig = {
         'components/popover',
         'components/select',
         'components/switch',
+        'components/radio',
         'components/tooltip',
       ],
     },
