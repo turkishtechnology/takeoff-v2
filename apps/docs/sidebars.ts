@@ -12,7 +12,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Components',
       collapsed: false,
-      items: ['components/accordion'],
+      items: ['components/accordion', 'components/switch'],
     },
     {
       type: 'category',
