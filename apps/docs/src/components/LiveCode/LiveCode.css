@@ -305,11 +305,12 @@
 .live-code-container .collapsible-code-block .collapsible-content {
   overflow: hidden;
   max-height: 134px; /* ~3 lines of code */
-  transition: max-height 300ms ease;
+  transition: max-height 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .live-code-container .collapsible-code-block .collapsible-content.expanded {
-  max-height: none;
+  max-height: 2000px;
+  transition: max-height 600ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .live-code-container .collapsible-code-block .show-more-toggle {
@@ -329,7 +330,8 @@
   color: var(--docs-ink-base);
   transition:
     background 150ms ease,
-    color 150ms ease;
+    color 150ms ease,
+    transform 150ms ease;
 }
 
 .live-code-container .collapsible-code-block .show-more-toggle:hover {
@@ -338,7 +340,7 @@
 }
 
 .live-code-container .collapsible-code-block .show-more-toggle .show-more-chevron {
-  transition: transform 200ms ease;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .live-code-container .collapsible-code-block .show-more-toggle .show-more-chevron.rotated {
