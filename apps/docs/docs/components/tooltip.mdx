@@ -178,9 +178,9 @@ import { Tooltip } from '@takeoff-ui/react-spar';
 
 ```tsx
 <Tooltip>
-  <Tooltip.Trigger>Hover me</Tooltip.Trigger>
+  <Tooltip.Trigger />
   <Tooltip.Content>
-    <Tooltip.Description>Helpful info</Tooltip.Description>
+    <Tooltip.Description />
   </Tooltip.Content>
 </Tooltip>
 ```
@@ -263,23 +263,6 @@ import { Tooltip } from '@takeoff-ui/react-spar';
 | ----------------- | ------------------------------------------- |
 | <kbd>Escape</kbd> | Dismiss the tooltip.                        |
 | <kbd>Tab</kbd>    | Focus trigger shows tooltip; blur hides it. |
-
-## Anatomy
-
-```tsx
-<Tooltip>
-  {' '}
-  {/* Root — state management */}
-  <Tooltip.Trigger> {/* Hover/focus target */}…</Tooltip.Trigger>
-  <Tooltip.Content>
-    {' '}
-    {/* Floating popup */}
-    <Tooltip.Header>…</Tooltip.Header> {/* Optional bold heading */}
-    <Tooltip.Description>…</Tooltip.Description> {/* Body text */}
-    <Tooltip.Arrow /> {/* Optional arrow */}
-  </Tooltip.Content>
-</Tooltip>
-```
 
 ## API Reference
 

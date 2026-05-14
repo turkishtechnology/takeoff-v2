@@ -1,0 +1,376 @@
+// ---------------------------------------------------------------------------
+// Badge recipe — apply to `.tk-badge` root.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-badge       — root (span, visual container)
+//   .tk-badge-label — text content
+//   .tk-badge-icon  — icon slot (start or end)
+//
+// State/variant attributes on root:
+//   data-variant   — color variant
+//   data-type      — appearance (filled | filledLight | outlined | text)
+//   data-size      — size scale (small | base | large)
+//   data-rounded   — pill-shaped corners
+//   data-dot       — minimal 6×6 colored dot mode
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Variant mixins
+// ---------------------------------------------------------------------------
+
+@mixin badge-variant-filled($bg-color, $text-color: var(--static-white)) {
+  background-color: $bg-color;
+  border-color: transparent;
+  color: $text-color;
+
+  .tk-badge-icon {
+    color: $text-color;
+  }
+}
+
+@mixin badge-variant-filledLight($bg-color, $text-color) {
+  background-color: $bg-color;
+  border-color: transparent;
+  color: $text-color;
+
+  .tk-badge-icon {
+    color: $text-color;
+  }
+}
+
+@mixin badge-variant-outlined($text-color, $border-color) {
+  background-color: transparent;
+  border: 1px solid $border-color;
+  color: $text-color;
+
+  .tk-badge-icon {
+    color: $text-color;
+  }
+}
+
+@mixin badge-variant-text($text-color) {
+  background-color: transparent;
+  border-color: transparent;
+  color: $text-color;
+
+  .tk-badge-icon {
+    color: $text-color;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Badge recipe mixin
+// ---------------------------------------------------------------------------
+
+@mixin badge {
+  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  white-space: nowrap;
+  user-select: none;
+  vertical-align: middle;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+
+  .tk-badge-label {
+    display: inline-flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .tk-badge-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      color: inherit;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sizes
+  // ---------------------------------------------------------------------------
+
+  &[data-size='small'] {
+    height: 16px;
+    font-size: var(--desktop-body-2xs-size);
+    line-height: var(--desktop-body-2xs-line-height);
+    border-radius: var(--badge-small-basic-radius);
+    padding: var(--badge-small-basic-v-padding) var(--badge-small-basic-right-padding) var(--badge-small-basic-v-padding) var(--badge-small-basic-left-padding);
+    gap: var(--badge-small-left-icon-gap);
+
+    .tk-badge-icon {
+      width: 10px;
+      height: 10px;
+      font-size: 10px;
+    }
+  }
+
+  &[data-size='base'] {
+    height: 20px;
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+    border-radius: var(--badge-base-basic-radius);
+    padding: var(--badge-base-basic-v-padding) var(--badge-base-basic-right-padding) var(--badge-base-basic-v-padding) var(--badge-base-basic-left-padding);
+    gap: var(--badge-base-left-icon-gap);
+
+    .tk-badge-icon {
+      width: 12px;
+      height: 12px;
+      font-size: 12px;
+    }
+  }
+
+  &[data-size='large'] {
+    height: 24px;
+    font-size: var(--desktop-body-s-size);
+    line-height: var(--desktop-body-xs-line-height);
+    border-radius: var(--badge-large-basic-radius);
+    padding: var(--badge-large-basic-v-padding) var(--badge-large-basic-right-padding) var(--badge-large-basic-v-padding) var(--badge-large-basic-left-padding);
+    gap: var(--badge-large-left-icon-gap);
+
+    .tk-badge-icon {
+      width: 14px;
+      height: 14px;
+      font-size: 14px;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Rounded
+  // ---------------------------------------------------------------------------
+
+  &[data-rounded] {
+    border-radius: var(--radius-full);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Dot mode — 6×6 colored circle, no content
+  // ---------------------------------------------------------------------------
+
+  &[data-dot] {
+    width: 6px;
+    height: 6px;
+    min-width: 6px;
+    min-height: 6px;
+    max-width: 6px;
+    max-height: 6px;
+    padding: 0;
+    gap: 0;
+    border: none;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Variants × Appearances
+  // ---------------------------------------------------------------------------
+
+  &[data-variant='primary'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--primary-base), var(--static-white));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--primary-lightest), var(--primary-base));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--primary-base), var(--primary-base));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--primary-base));
+    }
+  }
+
+  &[data-variant='secondary'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--secondary-darkest), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--secondary-light), var(--secondary-darkest));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--secondary-darkest), var(--secondary-base));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--secondary-darkest));
+    }
+  }
+
+  &[data-variant='neutral'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--background-darkest), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--background-light), var(--text-darkest));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--text-darkest), var(--background-darkest));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--text-darkest));
+    }
+  }
+
+  &[data-variant='info'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--states-info-base), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--states-info-light), var(--states-info-base));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--states-info-base), var(--states-info-base));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--states-info-base));
+    }
+  }
+
+  &[data-variant='success'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--states-success-dark), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--states-success-light), var(--states-success-dark));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--states-success-dark), var(--states-success-dark));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--states-success-dark));
+    }
+  }
+
+  &[data-variant='danger'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--states-danger-dark), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--states-danger-light), var(--states-danger-dark));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--states-danger-dark), var(--states-danger-dark));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--states-danger-dark));
+    }
+  }
+
+  &[data-variant='warning'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--states-warning-dark), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--states-warning-light), var(--states-warning-dark));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--states-warning-dark), var(--states-warning-dark));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--states-warning-dark));
+    }
+  }
+
+  &[data-variant='verified'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--states-verified-dark), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--states-verified-light), var(--states-verified-dark));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--states-verified-dark), var(--states-verified-dark));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--states-verified-dark));
+    }
+  }
+
+  &[data-variant='purple'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--purple-600), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--purple-100), var(--purple-600));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--purple-600), var(--purple-600));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--purple-600));
+    }
+  }
+
+  &[data-variant='cyan'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--cyan-600), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--cyan-100), var(--cyan-600));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--cyan-600), var(--cyan-600));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--cyan-600));
+    }
+  }
+
+  &[data-variant='business'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--business-600), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--business-100), var(--business-600));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--business-600), var(--business-600));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--business-600));
+    }
+  }
+}

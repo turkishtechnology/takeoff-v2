@@ -389,6 +389,7 @@
   background: var(--docs-surface-2);
   color: var(--docs-ink-base);
   border: 1px solid var(--docs-border-subtle);
+  box-sizing: border-box;
 }
 
 .navbar__github-link {
@@ -783,11 +784,12 @@ pre,
   background: var(--docs-surface-1);
   border: 1px solid var(--docs-border-subtle);
   border-radius: 10px;
-  display: block;
+  display: table;
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .theme-doc-markdown th {

@@ -1,5 +1,10 @@
 import type { ElementType } from 'react';
-import type { TooltipProps as SparTooltipProps, TooltipContentProps as SparTooltipContentProps, TooltipTriggerProps as SparTooltipTriggerProps, PolymorphicProps } from '@turkish-technology/spar';
+import type {
+  TooltipProps as SparTooltipProps,
+  TooltipContentProps as SparTooltipContentProps,
+  TooltipTriggerProps as SparTooltipTriggerProps,
+  PolymorphicProps,
+} from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 

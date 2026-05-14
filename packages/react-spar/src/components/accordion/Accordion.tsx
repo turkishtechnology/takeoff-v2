@@ -28,17 +28,7 @@ export const Accordion = <T extends ElementType = 'div'>(props: AccordionProps<T
     }),
   });
 
-  const {
-    type = DEFAULT_TYPE,
-    mode = DEFAULT_MODE,
-    size = DEFAULT_SIZE,
-    multiple = false,
-    collapsible = true,
-    disabled = false,
-    children,
-    ref,
-    ...sparProps
-  } = rest;
+  const { type = DEFAULT_TYPE, mode = DEFAULT_MODE, size = DEFAULT_SIZE, multiple = false, collapsible = true, disabled = false, children, ref, ...sparProps } = rest;
 
   return (
     <AccordionProvider
