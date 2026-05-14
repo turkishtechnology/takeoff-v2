@@ -5,12 +5,13 @@ import { ChevronDownIcon, CodeToggleIcon } from './icons';
 
 interface CollapsibleCodeBlockProps {
   children?: ReactNode;
+  headerActions?: ReactNode;
   codeBlockRef?: RefObject<HTMLDivElement | null>;
   isCollapsed: boolean;
   onToggle: () => void;
 }
 
-export const CollapsibleCodeBlock = ({ children, codeBlockRef, isCollapsed, onToggle }: CollapsibleCodeBlockProps) => {
+export const CollapsibleCodeBlock = ({ children, headerActions, codeBlockRef, isCollapsed, onToggle }: CollapsibleCodeBlockProps) => {
   const { error } = useContext(LiveContext);
   const contentId = useId();
   const previousErrorRef = useRef(error);
@@ -25,18 +26,25 @@ export const CollapsibleCodeBlock = ({ children, codeBlockRef, isCollapsed, onTo
   }, [error, isCollapsed, onToggle]);
 
   return (
-    <div className="collapsible-code-block">
-      <button className="collapsible-toggle" onClick={onToggle} type="button" aria-controls={contentId} aria-expanded={!isCollapsed}>
-        <span className="toggle-icon">
-          <CodeToggleIcon />
-        </span>
-        <span className="toggle-text">
-          <Translate id="liveCode.codeToggle">Code</Translate>
-        </span>
-        <span className="expand-icon">
-          <ChevronDownIcon />
-        </span>
-      </button>
+    <div className="collapsible-code-block" data-state={isCollapsed ? 'closed' : 'open'}>
+      <div className="collapsible-header">
+        <button className="collapsible-toggle" onClick={onToggle} type="button" aria-controls={contentId} aria-expanded={!isCollapsed}>
+          <span className="toggle-icon">
+            <CodeToggleIcon />
+          </span>
+          <span className="toggle-text">
+            <Translate id="liveCode.codeToggle">Code</Translate>
+          </span>
+        </button>
+
+        {!isCollapsed && headerActions && <div className="collapsible-header-actions">{headerActions}</div>}
+
+        <button className="collapsible-chevron" onClick={onToggle} type="button" aria-controls={contentId} aria-expanded={!isCollapsed} aria-label="Toggle code panel">
+          <span className="expand-icon">
+            <ChevronDownIcon />
+          </span>
+        </button>
+      </div>
 
       <div className="collapsible-content" id={contentId} ref={codeBlockRef} aria-hidden={isCollapsed} style={{ display: isCollapsed ? 'none' : 'block' }}>
         {children}
