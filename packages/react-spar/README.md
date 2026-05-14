@@ -21,9 +21,9 @@ The package currently exports:
 - `TakeoffSparProvider`
 - customization and theme types from the package root
 
-See the [Roadmap](#roadmap) below for components queued next. Additional
-wrappers are added only after their component contract is source-backed and any
-upstream Spar behavior gaps are resolved.
+See the docs site for components queued next. Additional wrappers are added only
+after their component contract is source-backed and any upstream Spar behavior
+gaps are resolved.
 
 ## Reference
 
@@ -200,15 +200,3 @@ remain in place.
 
 Custom arrow content is rendered inside the canonical `.tk-accordion-item-arrow`
 owner node so recipes keep their stable selector.
-
-## Roadmap
-
-- **Additional wrappers**: Checkbox, Dialog, Input, Select, and the broader
-  parity set with the legacy Stencil `takeoff-ui` library are planned but not
-  yet exported. See the docs-site roadmap page for the live list.
-- **RTL / i18n**: currently out of scope. The wrapper sets `lang` from `locale`
-  and `data-theme` from `colorMode`; it does not flip leading/trailing, mirror
-  icons, or emit dir-aware tokens. Set `html[dir]` at the framework level until
-  a deliberate RTL pass lands.
-- **Shared hooks**: `useControllableValue` and `useMergedRef` should be
-  extracted only when repeated shipped components need them.
