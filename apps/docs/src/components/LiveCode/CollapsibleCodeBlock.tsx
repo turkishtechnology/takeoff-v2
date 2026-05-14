@@ -1,7 +1,7 @@
 import { useContext, useEffect, useId, useRef, type ReactNode, type RefObject } from 'react';
 import Translate from '@docusaurus/Translate';
 import { LiveContext } from 'react-live';
-import { ChevronDownIcon, CodeToggleIcon } from './icons';
+import { CodeToggleIcon } from './icons';
 
 interface CollapsibleCodeBlockProps {
   children?: ReactNode;
@@ -38,12 +38,6 @@ export const CollapsibleCodeBlock = ({ children, headerActions, codeBlockRef, is
         </button>
 
         {!isCollapsed && headerActions && <div className="collapsible-header-actions">{headerActions}</div>}
-
-        <button className="collapsible-chevron" onClick={onToggle} type="button" aria-controls={contentId} aria-expanded={!isCollapsed} aria-label="Toggle code panel">
-          <span className="expand-icon">
-            <ChevronDownIcon />
-          </span>
-        </button>
       </div>
 
       <div className="collapsible-content" id={contentId} ref={codeBlockRef} aria-hidden={isCollapsed} style={{ display: isCollapsed ? 'none' : 'block' }}>

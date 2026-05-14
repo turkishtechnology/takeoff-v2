@@ -372,46 +372,6 @@
   margin-left: auto;
 }
 
-.live-code-container .collapsible-code-block .collapsible-chevron {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--docs-ink-faint);
-  cursor: pointer;
-  transition:
-    background 150ms ease,
-    color 150ms ease;
-}
-
-.live-code-container .collapsible-code-block .collapsible-chevron:hover {
-  background: var(--docs-surface-3);
-  color: var(--docs-ink-strong);
-}
-
-.live-code-container .collapsible-code-block .collapsible-chevron .expand-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 200ms ease;
-}
-
-.live-code-container .collapsible-code-block[data-state='open'] .collapsible-chevron {
-  color: var(--docs-ink-strong);
-}
-
-.live-code-container .collapsible-code-block[data-state='open'] .collapsible-chevron .expand-icon {
-  transform: rotate(180deg);
-}
-
-.live-code-container .collapsible-code-block .collapsible-chevron .expand-icon svg path {
-  fill: currentColor;
-}
-
 .live-code-container .collapsible-code-block .collapsible-content {
   position: relative;
   background: var(--docs-surface-1);
