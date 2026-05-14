@@ -84,13 +84,14 @@ export const adornmentsDemo = String.raw`
 
   <Input>
     <Input.Label>Search flights</Input.Label>
-    <Input.Container>
-      <Input.LeadingIcon>
+    <Input.Container
+      startContent={
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="7" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-      </Input.LeadingIcon>
+      }
+    >
       <Input.Field placeholder="IST → LHR" />
     </Input.Container>
   </Input>
@@ -153,11 +154,9 @@ import { Input } from '@takeoff-ui/react-spar';
 ```tsx
 <Input>
   <Input.Label />
-  <Input.Container>
+  <Input.Container startContent={<Icon />} endContent={<Icon />}>
     <Input.Prefix />
-    <Input.LeadingIcon />
     <Input.Field />
-    <Input.TrailingIcon />
     <Input.Suffix />
   </Input.Container>
   <Input.Description />
@@ -226,7 +225,7 @@ import { Input } from '@takeoff-ui/react-spar';
   `aria-describedby`, `aria-invalid`).
 - The asterisk inside `Input.Label` is decorative — `required` is also surfaced
   to assistive tech via the field's native `required` / `aria-required`.
-- Adornment slots (`Input.LeadingIcon`, `Input.TrailingIcon`) render with
+- `Input.Container`'s `startContent` and `endContent` slots render with
   `aria-hidden="true"`; put any meaningful affordance inside `Input.Suffix` /
   `Input.Prefix` (or as a focusable button child) instead.
 
@@ -278,6 +277,17 @@ for primitive behavior.
 
 ### Input.Container {#input-container}
 
+#### Props {#input-container-props}
+
+| Name                              | Type                                                                                            | Default | Description                                                                                                                                                            |
+| --------------------------------- | ----------------------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                    | -       | `Input.Prefix`, `Input.Field`, `Input.Suffix`. Leading / trailing icons go through the `startContent` / `endContent` props.                                            |
+| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                    | -       | Content rendered before the field — typically an icon, but accepts any node (chip, button, etc.). Rendered inside the `startContent` slot (`.tk-input-start-content`). |
+| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                    | -       | Content rendered after the field. Same shape as `startContent`, rendered inside the `endContent` slot (`.tk-input-end-content`).                                       |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;InputContainerSlot, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                         |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;InputContainerSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                     |
+| <ApiBadge label="className" />    | <code>string</code>                                                                             | -       | Appends custom classes to the root slot of this part.                                                                                                                  |
+
 #### Data attributes {#input-container-data-attributes}
 
 | Attribute          | Applied when                       | Purpose                                                          |
@@ -319,22 +329,6 @@ for primitive behavior.
 ### Input.Suffix {#input-suffix}
 
 #### Data attributes {#input-suffix-data-attributes}
-
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
-
-### Input.LeadingIcon {#input-leading-icon}
-
-#### Data attributes {#input-leading-icon-data-attributes}
-
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
-
-### Input.TrailingIcon {#input-trailing-icon}
-
-#### Data attributes {#input-trailing-icon-data-attributes}
 
 | Attribute          | Applied when | Purpose                                               |
 | ------------------ | ------------ | ----------------------------------------------------- |

@@ -13,15 +13,13 @@ import type { ClassNamesMap, SlotPropsMap } from '../../core';
 export type InputSize = 'small' | 'base' | 'large';
 
 export type InputSlot = 'root';
-export type InputContainerSlot = 'root';
+export type InputContainerSlot = 'root' | 'startContent' | 'endContent';
 export type InputFieldSlot = 'root';
 export type InputLabelSlot = 'root' | 'asterisk';
 export type InputDescriptionSlot = 'root';
 export type InputErrorMessageSlot = 'root';
 export type InputPrefixSlot = 'root';
 export type InputSuffixSlot = 'root';
-export type InputLeadingIconSlot = 'root';
-export type InputTrailingIconSlot = 'root';
 
 /**
  * Visual + slot props owned by takeoff-v2 for the Input root. The `size`
@@ -123,6 +121,17 @@ export type InputErrorMessageProps<T extends ElementType = 'div'> = PolymorphicP
  * bordered input row.
  */
 export interface InputContainerOwnProps {
+  /**
+   * Content rendered before the field — typically an icon, but accepts any
+   * node (chip, button, etc.). Rendered inside the `startContent` slot
+   * (`.tk-input-start-content`).
+   */
+  startContent?: ReactNode;
+  /**
+   * Content rendered after the field. Same shape as `startContent`, rendered
+   * inside the `endContent` slot (`.tk-input-end-content`).
+   */
+  endContent?: ReactNode;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<InputContainerSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -152,26 +161,6 @@ export interface InputSuffixOwnProps {
 
 export type InputSuffixProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, InputSuffixOwnProps>;
 
-export interface InputLeadingIconOwnProps {
-  /** Per-slot class name overrides. */
-  classNames?: ClassNamesMap<InputLeadingIconSlot>;
-  /** Per-slot HTML attribute overrides. */
-  slotProps?: SlotPropsMap<InputLeadingIconSlot>;
-  children?: ReactNode;
-}
-
-export type InputLeadingIconProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, InputLeadingIconOwnProps>;
-
-export interface InputTrailingIconOwnProps {
-  /** Per-slot class name overrides. */
-  classNames?: ClassNamesMap<InputTrailingIconSlot>;
-  /** Per-slot HTML attribute overrides. */
-  slotProps?: SlotPropsMap<InputTrailingIconSlot>;
-  children?: ReactNode;
-}
-
-export type InputTrailingIconProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, InputTrailingIconOwnProps>;
-
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {
     Input: import('../../core').ComponentThemeConfig<InputProps, InputSlot>;
@@ -182,7 +171,5 @@ declare module '../../core/theme' {
     InputErrorMessage: import('../../core').ComponentThemeConfig<InputErrorMessageProps, InputErrorMessageSlot>;
     InputPrefix: import('../../core').ComponentThemeConfig<InputPrefixProps, InputPrefixSlot>;
     InputSuffix: import('../../core').ComponentThemeConfig<InputSuffixProps, InputSuffixSlot>;
-    InputLeadingIcon: import('../../core').ComponentThemeConfig<InputLeadingIconProps, InputLeadingIconSlot>;
-    InputTrailingIcon: import('../../core').ComponentThemeConfig<InputTrailingIconProps, InputTrailingIconSlot>;
   }
 }

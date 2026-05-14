@@ -97,7 +97,7 @@ export default {
       appendPropNames: ['className'],
       skipPropNames: ['ref'],
       propOverrides: {
-        children: childrenOverride('`Input.Prefix`, `Input.LeadingIcon`, `Input.Field`, `Input.TrailingIcon`, `Input.Suffix`.'),
+        children: childrenOverride('`Input.Prefix`, `Input.Field`, `Input.Suffix`. Leading / trailing icons go through the `startContent` / `endContent` props.'),
         className: classNameOverride,
       },
       dataAttributes: [
@@ -157,34 +157,6 @@ export default {
       skipPropNames: ['ref'],
       propOverrides: {
         children: childrenOverride('Plain text suffix (e.g. unit label).'),
-        className: classNameOverride,
-      },
-      dataAttributes: [dataSlotRoot],
-    },
-    {
-      sourceFile: inputTypesFile,
-      typeName: 'InputLeadingIconProps',
-      displayName: 'Input.LeadingIcon',
-      headingBase: 'input-leading-icon',
-      prependPropNames: ['children'],
-      appendPropNames: ['className'],
-      skipPropNames: ['ref'],
-      propOverrides: {
-        children: childrenOverride('Icon rendered before the field. Pure visual — `aria-hidden` is set automatically.'),
-        className: classNameOverride,
-      },
-      dataAttributes: [dataSlotRoot],
-    },
-    {
-      sourceFile: inputTypesFile,
-      typeName: 'InputTrailingIconProps',
-      displayName: 'Input.TrailingIcon',
-      headingBase: 'input-trailing-icon',
-      prependPropNames: ['children'],
-      appendPropNames: ['className'],
-      skipPropNames: ['ref'],
-      propOverrides: {
-        children: childrenOverride('Icon rendered after the field. Pure visual — `aria-hidden` is set automatically.'),
         className: classNameOverride,
       },
       dataAttributes: [dataSlotRoot],

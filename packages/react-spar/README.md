@@ -93,10 +93,13 @@ writes `data-theme` from `colorMode` and `lang` from `locale`.
 ## Accordion
 
 ```tsx
-<Accordion multiple defaultValue={['one']} arrowPosition="right">
+<Accordion multiple defaultValue={['one']}>
   <Accordion.Item value="one">
     <Accordion.Header>
-      <Accordion.Trigger>FAQ</Accordion.Trigger>
+      <Accordion.Trigger>
+        FAQ
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>Answer content</Accordion.Content>
   </Accordion.Item>
@@ -105,14 +108,15 @@ writes `data-theme` from `colorMode` and `lang` from `locale`.
 
 - Root behavior props: `value`, `defaultValue`, `multiple`, `onValueChange`,
   `collapsible`, `disabled`, `orientation`.
-- Root visual props: `type`, `mode`, `size`, `arrowPosition`, `hideArrows`,
-  `expandIcon`, `collapseIcon`.
+- Root visual props: `type`, `mode`, `size`.
+- Trigger leading content: `startContent` prop on `Accordion.Trigger`.
 - Item props: required `value`, optional `disabled`.
 - Public parts: `Accordion.Item`, `Accordion.Header`, `Accordion.Trigger`,
-  `Accordion.Content`.
-- The arrow is rendered automatically inside every `Accordion.Trigger`. Hide it
-  with `hideArrows`, swap glyphs with `expandIcon`/`collapseIcon`, or move it
-  with `arrowPosition`.
+  `Accordion.Indicator`, `Accordion.Content`.
+- The disclosure indicator is opt-in: drop `<Accordion.Indicator />` into the
+  trigger to render the default chevron, override its children to swap glyphs,
+  or omit it to ship a trigger without a visual affordance. Placement (left vs
+  right of the title) follows where you put it inside the trigger.
 - Web Component shortcuts such as item-level `active`, `header`, and custom DOM
   active-index events are intentionally not part of the React surface; use root
   state props and compound children instead.
@@ -182,24 +186,27 @@ remain in place.
 </Accordion.Item>
 ```
 
-### Custom Arrows
+### Custom Indicator
 
 ```tsx
-<Accordion
-  expandIcon={<span aria-hidden="true">+</span>}
-  collapseIcon={<span aria-hidden="true">-</span>}
->
+<Accordion>
   <Accordion.Item value="faq">
     <Accordion.Header>
-      <Accordion.Trigger>FAQ</Accordion.Trigger>
+      <Accordion.Trigger>
+        FAQ
+        <Accordion.Indicator>
+          {({ isOpen }) => (isOpen ? <span>-</span> : <span>+</span>)}
+        </Accordion.Indicator>
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>Answer text</Accordion.Content>
   </Accordion.Item>
 </Accordion>
 ```
 
-Custom arrow content is rendered inside the canonical `.tk-accordion-item-arrow`
-owner node so recipes keep their stable selector.
+`Accordion.Indicator` is opt-in — omit it to render a trigger without a
+disclosure affordance. Its owner node carries the canonical
+`.tk-accordion-item-indicator` class so recipes keep a stable selector.
 
 ## Roadmap
 

@@ -36,14 +36,23 @@ Canonical names that React Spar must preserve:
 ```txt
 variant   type   size   mode
 visible   multiple
-arrowPosition   expandIcon   collapseIcon   hideArrows
 invalid   loading   clearable
 ```
 
-**Approved exception — Accordion:** React Spar uses the cleaner primitive
-`value` / `defaultValue` / `onValueChange` API and `Accordion.Item value`
-instead of Core's `activeIndex` and item-key names. New exceptions require an
-explicit decision in the component contract.
+**Approved exceptions:**
+
+- **Accordion behavior**: React Spar uses the cleaner primitive `value` /
+  `defaultValue` / `onValueChange` API and `Accordion.Item value` instead of
+  Core's `activeIndex` and item-key names.
+- **Accordion indicator**: Core's `arrowPosition` / `expandIcon` /
+  `collapseIcon` / `hideArrows` are dropped in favor of the opt-in
+  `<Accordion.Indicator>` compound, which carries its own children (incl. a
+  `({ isOpen }) => ReactNode` render-prop) and is positioned by placement.
+- **Icon slots**: Core's `startIcon` / `endIcon` (Button) and `InputLeadingIcon`
+  / `InputTrailingIcon` (Input) collapse into the generic `startContent` /
+  `endContent` slot vocabulary (also used by `Accordion.Trigger.startContent`).
+
+New exceptions require an explicit decision in the component contract.
 
 ### Spar owns behavior
 
@@ -79,7 +88,8 @@ re-implementation.
 Preserve Takeoff Core product vocabulary, **not** Web Component mechanics.
 
 Map these props directly when Spar supports them: `multiple`, `type`, `mode`,
-`size`, `arrowPosition`, `expandIcon`, `collapseIcon`, `hideArrows`.
+`size`. See the icon-slot exception above for `startContent` / `endContent` and
+`<Accordion.Indicator>`.
 
 Translate framework mechanics into React conventions:
 
