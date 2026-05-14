@@ -46,6 +46,18 @@ final verify
 - Fix Spar first when behavior/API belongs to Spar.
 - takeoff-spar should stay thin.
 - Do not expose full Spar props through public wrapper types.
+- Wrapper Props inherit Spar props **only** via `Pick<SparXxxProps, ...>` with a
+  mandatory intent comment above naming what is EXCLUDED. Enforced by
+  `pnpm --filter @takeoff-ui/react-spar lint:spar-pick`.
+- DOM-rendering wrappers are polymorphic:
+  `PolymorphicProps<TDefault, T, OwnProps & Pick<Spar..., ...>>`. State-only
+  roots (e.g. Tooltip/Drawer root) are exempt. `asChild` is not supported (Spar
+  doesn't implement it).
+- Wrapper naming follows Spar verbatim — no local synonyms (`isLoading`, not
+  `loading`; `isPressed`, not `pressed`).
+- Render-prop children from Spar are exposed only where the wrapper has no
+  invariant visual chrome. Pick `'children'` from Spar where applicable; do not
+  pick on wrappers like AccordionTrigger whose anatomy wraps the content.
 - Do not expose decorative parts as public compound components by default.
 - Do not create extra markdown architecture files unless explicitly requested.
 - Keep outputs source-backed and concise.
@@ -54,11 +66,16 @@ final verify
 
 Use the repo's package scripts for validation.
 
-At minimum, component work should run:
+Component work should run:
 
 ```txt
 pnpm --filter @takeoff-ui/react-spar check-types
+pnpm --filter @takeoff-ui/react-spar lint
+pnpm --filter @takeoff-ui/react-spar build
 pnpm --filter @takeoff-ui/react-spar test
 ```
+
+The full merge checklist lives in
+[`packages/react-spar/docs/coding-standards.md`](./packages/react-spar/docs/coding-standards.md#merge-checklist).
 
 If Spar was changed, also run Spar package tests/typecheck.

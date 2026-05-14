@@ -18,16 +18,24 @@ export interface RootAttrsResult<TProps> {
   rest: Omit<TProps, 'className' | 'classNames' | 'slotProps'>;
 }
 
-export interface ComposeRootOptions {
+export interface ComposeRootOptions<TProps> {
   /**
    * Canonical state-driven `data-*` attributes (variant, size, disabled, …).
-   * Layered **on top** of `slotProps.root` so design-system invariants survive
-   * theme/instance overrides. Entries whose value is `undefined` are dropped,
-   * which mirrors the boolean-presence convention in
-   * `docs/DATA_ATTRIBUTE_VOCABULARY.md` — pass `''` for "present", `undefined`
-   * for "absent".
+   * Receives the **post-merge** props (`author defaults → theme defaults →
+   * instance props`) so theme-level `defaultProps` flow through correctly —
+   * a literal object cannot reference merged values and silently bypasses
+   * theme defaults.
+   *
+   * Layered **on top** of `slotProps.root` so design-system invariants
+   * survive theme/instance overrides. Entries whose value is `undefined`
+   * are dropped, which mirrors the boolean-presence convention in
+   * `docs/data-attribute-vocabulary.md` — pass `''` for "present",
+   * `undefined` for "absent".
+   *
+   * Authors who do not need merged values can ignore the argument:
+   * `stateAttrs: () => ({ 'data-foo': contextValue })`.
    */
-  stateAttrs?: Record<string, string | undefined>;
+  stateAttrs?: (merged: TProps) => Record<string, string | undefined>;
 }
 
 const dropUndefined = (attrs: Record<string, string | undefined>): Record<string, string> => {
@@ -63,7 +71,7 @@ export const composeRootAttrs = <TProps extends RootSlotShape<TSlot>, TSlot exte
   base: ComponentBase<TProps, TSlot>,
   props: TProps,
   theme: ComponentThemeConfig<TProps, TSlot> | undefined,
-  options?: ComposeRootOptions,
+  options?: ComposeRootOptions<TProps>,
 ): RootAttrsResult<TProps> => {
   const merged = base.resolveProps(props, theme?.defaultProps);
   const { className, classNames, slotProps, ...rest } = merged;
@@ -77,7 +85,7 @@ export const composeRootAttrs = <TProps extends RootSlotShape<TSlot>, TSlot exte
     instanceClassNames: classNames,
   });
 
-  const stateAttrs = options?.stateAttrs ? dropUndefined(options.stateAttrs) : undefined;
+  const stateAttrs = options?.stateAttrs ? dropUndefined(options.stateAttrs(merged)) : undefined;
   const composed = stateAttrs ? { ...rootAttrs, ...stateAttrs } : rootAttrs;
 
   return {

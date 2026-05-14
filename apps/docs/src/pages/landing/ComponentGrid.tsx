@@ -13,8 +13,9 @@ import styles from './ComponentGrid.module.css';
 
 /*
  * ComponentGrid — six live-preview cards for the landing.
- * Real react-spar components (Button) + mocks from
- * @site/src/components/PlaceholderCustomComponents. The TODO(react-spar)
+ * All cards use placeholder primitives from
+ * @site/src/components/PlaceholderCustomComponents so the landing demos stay
+ * decoupled from the in-flight react-spar export surface. The TODO(react-spar)
  * tracker lives in PlaceholderCustomComponents/index.tsx — one source of
  * truth for every component we're temporarily mocking.
  */
@@ -46,7 +47,7 @@ function ArrowIcon(): JSX.Element {
 }
 
 /* ──────────────────────────────────────────────────────────────────────
- * Real components — dogfooding @takeoff-ui/react-spar
+ * Placeholder demos for shipped surfaces (Button, Input)
  * ────────────────────────────────────────────────────────────────────── */
 
 function ButtonsCardDemo(): JSX.Element {
@@ -160,8 +161,8 @@ export default function ComponentGrid(): JSX.Element {
             <em>shipped with the full contract.</em>
           </h2>
           <p className={styles.lede}>
-            Buttons, Inputs, Checkbox, Dialog, and Accordion set the tone for the library. The previews alongside them show what is coming next, but nothing ships without docs,
-            examples, and API coverage in place.
+            Accordion, Button, Drawer, and Tooltip are shipped today. The previews alongside them show what is coming next, but nothing ships without docs, examples, and API
+            coverage in place.
           </p>
         </div>
 

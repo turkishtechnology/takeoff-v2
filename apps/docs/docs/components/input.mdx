@@ -1,0 +1,359 @@
+---
+title: Input
+description:
+  Accessible text input with compound parts for label, container, helper text,
+  error message, and adornments.
+sidebar_label: Input
+sidebar_position: 5
+slug: /components/input
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import { Input, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const inputScope = { Input };
+
+{/* prettier-ignore-start */}
+
+export const inputDemoCss = String.raw`
+.input-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(100%, 360px);
+}
+
+.input-demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.input-demo-row > * {
+  flex: 1 1 200px;
+}
+`;
+
+export const playgroundDemo = String.raw`
+<Input>
+  <Input.Label>Passenger name</Input.Label>
+  <Input.Container>
+    <Input.Field placeholder="Ada Lovelace" />
+  </Input.Container>
+  <Input.Description>
+    Match the name on your travel document.
+  </Input.Description>
+</Input>
+`;
+
+export const sizesDemo = String.raw`
+<div className="input-demo">
+  <Input size="small">
+    <Input.Label>Small</Input.Label>
+    <Input.Container>
+      <Input.Field placeholder="Compact" />
+    </Input.Container>
+  </Input>
+  <Input size="base">
+    <Input.Label>Base</Input.Label>
+    <Input.Container>
+      <Input.Field placeholder="Default" />
+    </Input.Container>
+  </Input>
+  <Input size="large">
+    <Input.Label>Large</Input.Label>
+    <Input.Container>
+      <Input.Field placeholder="Roomy" />
+    </Input.Container>
+  </Input>
+</div>
+`;
+
+export const adornmentsDemo = String.raw`
+<div className="input-demo">
+  <Input>
+    <Input.Label>Amount</Input.Label>
+    <Input.Container>
+      <Input.Prefix>USD</Input.Prefix>
+      <Input.Field placeholder="0.00" inputMode="decimal" />
+      <Input.Suffix>.00</Input.Suffix>
+    </Input.Container>
+  </Input>
+
+  <Input>
+    <Input.Label>Search flights</Input.Label>
+    <Input.Container
+      startContent={
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      }
+    >
+      <Input.Field placeholder="IST → LHR" />
+    </Input.Container>
+  </Input>
+</div>
+`;
+
+export const requiredAndInvalidDemo = String.raw`
+<div className="input-demo">
+  <Input required>
+    <Input.Label>Email</Input.Label>
+    <Input.Container>
+      <Input.Field type="email" placeholder="you@example.com" />
+    </Input.Container>
+    <Input.Description>We will send a booking confirmation.</Input.Description>
+  </Input>
+
+  <Input isInvalid>
+    <Input.Label>Phone number</Input.Label>
+    <Input.Container>
+      <Input.Field defaultValue="not-a-phone" />
+    </Input.Container>
+    <Input.ErrorMessage>Enter a valid phone number.</Input.ErrorMessage>
+  </Input>
+</div>
+`;
+
+export const disabledAndReadOnlyDemo = String.raw`
+<div className="input-demo">
+  <Input disabled>
+    <Input.Label>Disabled</Input.Label>
+    <Input.Container>
+      <Input.Field defaultValue="Booking locked" />
+    </Input.Container>
+  </Input>
+
+  <Input readOnly>
+    <Input.Label>Read-only</Input.Label>
+    <Input.Container>
+      <Input.Field defaultValue="TK-1928" />
+    </Input.Container>
+  </Input>
+</div>
+`;
+
+{/* prettier-ignore-end */}
+
+# Input
+
+`Input` is a compound, accessible text input. The root owns form state
+(`isInvalid`, `disabled`, `required`, `readOnly`), the `Input.Container` is the
+bordered row that hosts the field plus optional adornments, and helper / error
+text are siblings underneath.
+
+## Usage
+
+```tsx
+import { Input } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Input>
+  <Input.Label />
+  <Input.Container startContent={<Icon />} endContent={<Icon />}>
+    <Input.Prefix />
+    <Input.Field />
+    <Input.Suffix />
+  </Input.Container>
+  <Input.Description />
+  <Input.ErrorMessage />
+</Input>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  cssCode={inputDemoCss}
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={inputScope}
+/>
+
+## Sizes
+
+<LiveCode
+  code={sizesDemo}
+  cssCode={inputDemoCss}
+  editable={false}
+  previewMinHeight={340}
+  previewWrapper={ReactSparDemoRoot}
+  scope={inputScope}
+/>
+
+## Prefix, Suffix & Icons
+
+<LiveCode
+  code={adornmentsDemo}
+  cssCode={inputDemoCss}
+  editable={false}
+  previewMinHeight={240}
+  previewWrapper={ReactSparDemoRoot}
+  scope={inputScope}
+/>
+
+## Required & Invalid
+
+<LiveCode
+  code={requiredAndInvalidDemo}
+  cssCode={inputDemoCss}
+  editable={false}
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={inputScope}
+/>
+
+## Disabled & Read-only
+
+<LiveCode
+  code={disabledAndReadOnlyDemo}
+  cssCode={inputDemoCss}
+  editable={false}
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={inputScope}
+/>
+
+## Accessibility
+
+- `Input.Label`, `Input.Description`, and `Input.ErrorMessage` are wired to the
+  field via stable IDs derived from the root (`aria-labelledby`,
+  `aria-describedby`, `aria-invalid`).
+- The asterisk inside `Input.Label` is decorative — `required` is also surfaced
+  to assistive tech via the field's native `required` / `aria-required`.
+- `Input.Container`'s `startContent` and `endContent` slots render with
+  `aria-hidden="true"`; put any meaningful affordance inside `Input.Suffix` /
+  `Input.Prefix` (or as a focusable button child) instead.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Input {#input}
+
+See [Spar Input docs](https://spar.app.turkishtechlab.com/docs/Components/Input)
+for primitive behavior.
+
+#### Props {#input-props}
+
+| Name                            | Type                                                                                | Default | Description                                                                                                                                                    |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | Compound parts (`Input.Label`, `Input.Container`, `Input.Description`, `Input.ErrorMessage`).                                                                  |
+| <ApiBadge label="size" />       | <code>InputSize</code>                                                              | 'base'  | Size scale.                                                                                                                                                    |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                 |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                             |
+| <ApiBadge label="id" />         | <code>string</code>                                                                 | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-field`, `${id}-label`, etc. |
+| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                | false   | Input disabled state                                                                                                                                           |
+| <ApiBadge label="isInvalid" />  | <code>boolean</code>                                                                | false   | Input validation state                                                                                                                                         |
+| <ApiBadge label="required" />   | <code>boolean</code>                                                                | false   | Input required state                                                                                                                                           |
+| <ApiBadge label="readOnly" />   | <code>boolean</code>                                                                | false   | Input read-only state                                                                                                                                          |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                                                                                                          |
+
+#### Data attributes {#input-data-attributes}
+
+| Attribute          | Applied when              | Purpose                                                                     |
+| ------------------ | ------------------------- | --------------------------------------------------------------------------- |
+| `data-slot="root"` | Always                    | Stable selector for wrapper styling on the root slot.                       |
+| `data-size`        | Always                    | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| `data-invalid`     | When `isInvalid` is true. | Theme hook for the invalid state. Emitted by Spar Input on the root.        |
+| `data-disabled`    | When `disabled` is true.  | Theme hook for the disabled state. Emitted by Spar Input.                   |
+| `data-required`    | When `required` is true.  | Theme hook used to auto-render the asterisk inside `Input.Label`.           |
+| `data-readonly`    | When `readOnly` is true.  | Theme hook for the read-only state. Emitted by Spar Input.                  |
+
+### Input.Label {#input-label}
+
+See [Spar Input docs](https://spar.app.turkishtechlab.com/docs/Components/Input)
+for primitive behavior.
+
+#### Data attributes {#input-label-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Input.Container {#input-container}
+
+#### Props {#input-container-props}
+
+| Name                              | Type                                                                                            | Default | Description                                                                                                                                                            |
+| --------------------------------- | ----------------------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                    | -       | `Input.Prefix`, `Input.Field`, `Input.Suffix`. Leading / trailing icons go through the `startContent` / `endContent` props.                                            |
+| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                    | -       | Content rendered before the field — typically an icon, but accepts any node (chip, button, etc.). Rendered inside the `startContent` slot (`.tk-input-start-content`). |
+| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                    | -       | Content rendered after the field. Same shape as `startContent`, rendered inside the `endContent` slot (`.tk-input-end-content`).                                       |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;InputContainerSlot, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                         |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;InputContainerSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                     |
+| <ApiBadge label="className" />    | <code>string</code>                                                                             | -       | Appends custom classes to the root slot of this part.                                                                                                                  |
+
+#### Data attributes {#input-container-data-attributes}
+
+| Attribute          | Applied when                       | Purpose                                                          |
+| ------------------ | ---------------------------------- | ---------------------------------------------------------------- |
+| `data-slot="root"` | Always                             | Stable selector for wrapper styling on the root slot.            |
+| `data-invalid`     | When the root `isInvalid` is true. | Borders/background switch to the danger state on the visual row. |
+| `data-disabled`    | When the root `disabled` is true.  | Theme hook for the disabled visual row.                          |
+| `data-readonly`    | When the root `readOnly` is true.  | Theme hook for the read-only visual row.                         |
+
+### Input.Field {#input-field}
+
+See [Spar Input docs](https://spar.app.turkishtechlab.com/docs/Components/Input)
+for primitive behavior.
+
+#### Props {#input-field-props}
+
+| Name                            | Type                                                                                | Default | Description                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ----------------------------------------------------- |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                        |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                    |
+| <ApiBadge label="autoFocus" />  | <code>boolean</code>                                                                | false   | Whether to focus the input on mount                   |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part. |
+
+#### Data attributes {#input-field-data-attributes}
+
+| Attribute          | Applied when | Purpose                                                                     |
+| ------------------ | ------------ | --------------------------------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.                       |
+| `data-size`        | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+
+### Input.Prefix {#input-prefix}
+
+#### Data attributes {#input-prefix-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Input.Suffix {#input-suffix}
+
+#### Data attributes {#input-suffix-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Input.Description {#input-description}
+
+See [Spar Input docs](https://spar.app.turkishtechlab.com/docs/Components/Input)
+for primitive behavior.
+
+#### Data attributes {#input-description-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Input.ErrorMessage {#input-error-message}
+
+See [Spar Input docs](https://spar.app.turkishtechlab.com/docs/Components/Input)
+for primitive behavior.
+
+#### Data attributes {#input-error-message-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+{/* api-tables:end */}

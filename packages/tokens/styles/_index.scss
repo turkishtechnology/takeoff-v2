@@ -5,12 +5,16 @@
 @use 'recipes/button';
 @use 'recipes/accordion';
 @use 'recipes/dialog';
+@use 'recipes/drawer';
 @use 'recipes/input';
+@use 'recipes/select';
 @use 'recipes/checkbox';
 @use 'recipes/switch';
+@use 'recipes/tooltip';
 
 @include button.button-keyframes;
 @include input.input-keyframes;
+@include tooltip.tooltip-keyframes;
 
 .tk-button {
   @include button.button;
@@ -32,8 +36,76 @@
   @include dialog.dialog;
 }
 
+.tk-drawer-overlay {
+  @include drawer.drawer-overlay;
+}
+
+.tk-drawer-panel {
+  @include drawer.drawer-panel;
+}
+
+.tk-drawer-header {
+  @include drawer.drawer-header;
+}
+
+.tk-drawer-title {
+  @include drawer.drawer-title;
+}
+
+.tk-drawer-description {
+  @include drawer.drawer-description;
+}
+
+.tk-drawer-body {
+  @include drawer.drawer-body;
+}
+
+.tk-drawer-footer {
+  @include drawer.drawer-footer;
+}
+
+.tk-drawer-close-button {
+  @include drawer.drawer-close-button;
+}
+
 .tk-input {
   @include input.input;
+}
+
+.tk-select {
+  @include select.select;
+}
+
+.tk-select-trigger {
+  @include select.select-trigger;
+}
+
+.tk-select-value {
+  @include select.select-value;
+}
+
+.tk-select-content {
+  @include select.select-content;
+}
+
+.tk-select-item {
+  @include select.select-item;
+}
+
+.tk-select-item-text {
+  @include select.select-item-text;
+}
+
+.tk-select-group {
+  @include select.select-group;
+}
+
+.tk-select-label {
+  @include select.select-label;
+}
+
+.tk-select-separator {
+  @include select.select-separator;
 }
 
 .tk-checkbox {
@@ -42,4 +114,20 @@
 
 .tk-toggle {
   @include switch.switch;
+}
+
+.tk-tooltip-content {
+  @include tooltip.tooltip-content;
+}
+
+.tk-tooltip-header {
+  @include tooltip.tooltip-header;
+}
+
+.tk-tooltip-description {
+  @include tooltip.tooltip-description;
+}
+
+.tk-tooltip-arrow {
+  @include tooltip.tooltip-arrow;
 }

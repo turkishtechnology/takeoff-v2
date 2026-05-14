@@ -18,7 +18,7 @@
   color: var(--text-sub-base);
   background: transparent !important;
 
-  .tk-accordion-item-arrow {
+  .tk-accordion-item-indicator {
     color: var(--text-sub-base);
   }
 }
@@ -81,7 +81,7 @@
     flex-grow: 1;
   }
 
-  .tk-accordion-item-arrow {
+  .tk-accordion-item-indicator {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -91,7 +91,7 @@
     transition: color 0.2s ease-in-out;
   }
 
-  &[data-state='open'] .tk-accordion-item-arrow {
+  &[data-state='open'] .tk-accordion-item-indicator {
     color: var(--primary-base);
   }
 
@@ -164,7 +164,7 @@
     }
 
     // Header gap is unconditional — `flex gap` is invisible at one child and
-    // useful at two or more, so we don't gate it on a `:has(.tk-accordion-item-icon)`
+    // useful at two or more, so we don't gate it on a `:has(.tk-accordion-item-start-content)`
     // class probe. Compound consumers (Accordion.Trigger children, header slot)
     // can't be expected to stamp the canonical icon class on every leading
     // element they pass in.

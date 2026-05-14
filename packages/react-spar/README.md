@@ -15,11 +15,15 @@ instead of Web Component slots).
 The package currently exports:
 
 - `Accordion`
-- `SparReactProvider`
+- `Button`
+- `Drawer`
+- `Tooltip`
+- `TakeoffSparProvider`
 - customization and theme types from the package root
 
-Additional Takeoff wrappers should be added only after their component contract
-is source-backed and any upstream Spar behavior gaps are resolved.
+See the [Roadmap](#roadmap) below for components queued next. Additional
+wrappers are added only after their component contract is source-backed and any
+upstream Spar behavior gaps are resolved.
 
 ## Reference
 
@@ -32,23 +36,31 @@ is source-backed and any upstream Spar behavior gaps are resolved.
 `@takeoff-ui/react-spar` currently targets React 19.x only.
 
 ```bash
-pnpm add @takeoff-ui/react-spar @takeoff-design/tokens react react-dom
+pnpm add @takeoff-ui/react-spar
 ```
 
-`@takeoff-ui/react-spar` does not bundle component CSS. Install and import
-`@takeoff-design/tokens` once at the app shell or entrypoint.
-`@turkish-technology/spar` is installed by `@takeoff-ui/react-spar`; add it to
-your app only when importing Spar primitives directly.
+`@takeoff-design/tokens` and `@turkish-technology/spar` are direct dependencies
+of `@takeoff-ui/react-spar` — you don't need to install them separately. Add
+either one to your own `package.json` only if your app imports from it directly
+(for example, when overriding token CSS variables from an entry stylesheet, or
+when using Spar primitives that `react-spar` does not re-export).
+
+`@takeoff-ui/react-spar` does not bundle component CSS. Import the token
+stylesheet once at the app shell or entrypoint:
+
+```ts
+import '@takeoff-design/tokens/css/default/theme.css';
+```
 
 ## Usage
 
 ```tsx
 import '@takeoff-design/tokens/css/default/theme.css';
-import { Accordion, SparReactProvider } from '@takeoff-ui/react-spar';
+import { Accordion, TakeoffSparProvider } from '@takeoff-ui/react-spar';
 
 export function Example() {
   return (
-    <SparReactProvider>
+    <TakeoffSparProvider>
       <Accordion defaultValue="baggage">
         <Accordion.Item value="baggage">
           <Accordion.Header>
@@ -68,23 +80,26 @@ export function Example() {
           </Accordion.Content>
         </Accordion.Item>
       </Accordion>
-    </SparReactProvider>
+    </TakeoffSparProvider>
   );
 }
 ```
 
-`SparReactProvider` accepts `colorMode` (`'light' | 'dark'`, default `'light'`),
-an optional `locale` string, and an optional `components` customization map. The
-provider renders a `display: contents` wrapper that writes `data-theme` from
-`colorMode` and `lang` from `locale`.
+`TakeoffSparProvider` accepts `colorMode` (`'light' | 'dark'`, default
+`'light'`), an optional `locale` string, and an optional `components`
+customization map. The provider renders a `display: contents` wrapper that
+writes `data-theme` from `colorMode` and `lang` from `locale`.
 
 ## Accordion
 
 ```tsx
-<Accordion multiple defaultValue={['one']} arrowPosition="right">
+<Accordion multiple defaultValue={['one']}>
   <Accordion.Item value="one">
     <Accordion.Header>
-      <Accordion.Trigger>FAQ</Accordion.Trigger>
+      <Accordion.Trigger>
+        FAQ
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>Answer content</Accordion.Content>
   </Accordion.Item>
@@ -93,14 +108,15 @@ provider renders a `display: contents` wrapper that writes `data-theme` from
 
 - Root behavior props: `value`, `defaultValue`, `multiple`, `onValueChange`,
   `collapsible`, `disabled`, `orientation`.
-- Root visual props: `type`, `mode`, `size`, `arrowPosition`, `hideArrows`,
-  `expandIcon`, `collapseIcon`.
+- Root visual props: `type`, `mode`, `size`.
+- Trigger leading content: `startContent` prop on `Accordion.Trigger`.
 - Item props: required `value`, optional `disabled`.
 - Public parts: `Accordion.Item`, `Accordion.Header`, `Accordion.Trigger`,
-  `Accordion.Content`.
-- The arrow is rendered automatically inside every `Accordion.Trigger`. Hide it
-  with `hideArrows`, swap glyphs with `expandIcon`/`collapseIcon`, or move it
-  with `arrowPosition`.
+  `Accordion.Indicator`, `Accordion.Content`.
+- The disclosure indicator is opt-in: drop `<Accordion.Indicator />` into the
+  trigger to render the default chevron, override its children to swap glyphs,
+  or omit it to ship a trigger without a visual affordance. Placement (left vs
+  right of the title) follows where you put it inside the trigger.
 - Web Component shortcuts such as item-level `active`, `header`, and custom DOM
   active-index events are intentionally not part of the React surface; use root
   state props and compound children instead.
@@ -122,7 +138,7 @@ Canonical `tk-*` classes and `data-slot` attributes are always preserved.
 ### Theme-level Defaults
 
 ```tsx
-<SparReactProvider
+<TakeoffSparProvider
   components={{
     Accordion: {
       defaultProps: { size: 'large' },
@@ -134,7 +150,7 @@ Canonical `tk-*` classes and `data-slot` attributes are always preserved.
   }}
 >
   {children}
-</SparReactProvider>
+</TakeoffSparProvider>
 ```
 
 Instance props override provider defaults. Instance `classNames` and `slotProps`
@@ -170,29 +186,33 @@ remain in place.
 </Accordion.Item>
 ```
 
-### Custom Arrows
+### Custom Indicator
 
 ```tsx
-<Accordion
-  expandIcon={<span aria-hidden="true">+</span>}
-  collapseIcon={<span aria-hidden="true">-</span>}
->
+<Accordion>
   <Accordion.Item value="faq">
     <Accordion.Header>
-      <Accordion.Trigger>FAQ</Accordion.Trigger>
+      <Accordion.Trigger>
+        FAQ
+        <Accordion.Indicator>
+          {({ isOpen }) => (isOpen ? <span>-</span> : <span>+</span>)}
+        </Accordion.Indicator>
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>Answer text</Accordion.Content>
   </Accordion.Item>
 </Accordion>
 ```
 
-Custom arrow content is rendered inside the canonical `.tk-accordion-item-arrow`
-owner node so recipes keep their stable selector.
+`Accordion.Indicator` is opt-in — omit it to render a trigger without a
+disclosure affordance. Its owner node carries the canonical
+`.tk-accordion-item-indicator` class so recipes keep a stable selector.
 
 ## Roadmap
 
-- **Additional wrappers**: Button, Checkbox, Dialog, and Input are planned but
-  are not exported by this package yet.
+- **Additional wrappers**: Checkbox, Dialog, Input, Select, and the broader
+  parity set with the legacy Stencil `takeoff-ui` library are planned but not
+  yet exported. See the docs-site roadmap page for the live list.
 - **RTL / i18n**: currently out of scope. The wrapper sets `lang` from `locale`
   and `data-theme` from `colorMode`; it does not flip leading/trailing, mirror
   icons, or emit dir-aware tokens. Set `html[dir]` at the framework level until

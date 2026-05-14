@@ -1,0 +1,236 @@
+/**
+ * API table source-of-truth for the Select docs page.
+ *
+ * Picked up by `apps/docs/scripts/generate-api-mdx.mjs`, which rewrites the
+ * api-tables block in `select.mdx` whenever this file or
+ * `packages/react-spar/src/components/select/types.ts` changes.
+ */
+
+const selectTypesFile = 'packages/react-spar/src/components/select/types.ts';
+const sparSelectDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Select';
+
+const childrenOverride = description => ({
+  type: 'React.ReactNode',
+  description,
+});
+
+const classNameOverride = {
+  type: 'string',
+  description: 'Appends custom classes to the root slot of this part.',
+};
+
+const dataSlotRoot = {
+  attribute: 'data-slot="root"',
+  appliedWhen: 'Always',
+  purpose: 'Stable selector for wrapper styling on the root slot.',
+};
+
+const dataSize = {
+  attribute: 'data-size',
+  appliedWhen: 'Always',
+  purpose: 'Reflects the resolved `size` prop so theme recipes can scope size variants.',
+};
+
+const dataInvalid = {
+  attribute: 'data-invalid',
+  appliedWhen: 'When `isInvalid` is true.',
+  purpose: 'Borders/background switch to the danger state. Mirrored from the root.',
+};
+
+const dataOpenClosed = [
+  {
+    attribute: 'data-state="open"',
+    appliedWhen: 'While the dropdown is open.',
+    purpose: 'Spar open-state hook on the trigger and content.',
+  },
+  {
+    attribute: 'data-state="closed"',
+    appliedWhen: 'While the dropdown is closed.',
+    purpose: 'Spar closed-state hook on the trigger.',
+  },
+];
+
+export default {
+  components: [
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectProps',
+      displayName: 'Select',
+      headingBase: 'select',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride('Compound parts (`Select.Trigger`, `Select.Content`).'),
+        className: classNameOverride,
+      },
+      dataAttributes: [
+        dataSlotRoot,
+        dataSize,
+        dataInvalid,
+        {
+          attribute: 'data-disabled',
+          appliedWhen: 'When `disabled` is true.',
+          purpose: 'Theme hook for the disabled state. Emitted by Spar Select.',
+        },
+      ],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectTriggerProps',
+      displayName: 'Select.Trigger',
+      headingBase: 'select-trigger',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride('Trigger content (typically a `Select.Value`).'),
+        className: classNameOverride,
+      },
+      dataAttributes: [
+        dataSlotRoot,
+        dataSize,
+        dataInvalid,
+        ...dataOpenClosed,
+        {
+          attribute: 'data-placeholder',
+          appliedWhen: 'When no value is selected.',
+          purpose: 'Theme hook to style the placeholder color.',
+        },
+      ],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectValueProps',
+      displayName: 'Select.Value',
+      headingBase: 'select-value',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride('Override what Spar renders — typically left empty so the selected item text is shown.'),
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlotRoot],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectContentProps',
+      displayName: 'Select.Content',
+      headingBase: 'select-content',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride('`Select.Item`, `Select.Group`, `Select.Separator`.'),
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlotRoot, dataSize],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectItemProps',
+      displayName: 'Select.Item',
+      headingBase: 'select-item',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride('Item content (typically a `Select.ItemText`).'),
+        className: classNameOverride,
+      },
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-highlighted',
+          appliedWhen: 'When the item is focused via keyboard or pointer.',
+          purpose: 'Theme hook for the highlighted state.',
+        },
+        {
+          attribute: 'data-state="checked"',
+          appliedWhen: 'When the item matches the current value.',
+          purpose: 'Theme hook for the checked state.',
+        },
+        {
+          attribute: 'data-disabled',
+          appliedWhen: 'When the item `disabled` is true.',
+          purpose: 'Theme hook for the disabled item state.',
+        },
+      ],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectItemTextProps',
+      displayName: 'Select.ItemText',
+      headingBase: 'select-item-text',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride('Visible item label and the text used for typeahead.'),
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlotRoot],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectGroupProps',
+      displayName: 'Select.Group',
+      headingBase: 'select-group',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride('`Select.Label` and `Select.Item` siblings.'),
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlotRoot],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectLabelProps',
+      displayName: 'Select.Label',
+      headingBase: 'select-label',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride('Heading text for a `Select.Group`.'),
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlotRoot],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectSeparatorProps',
+      displayName: 'Select.Separator',
+      headingBase: 'select-separator',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride('Optional separator content — typically empty.'),
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlotRoot],
+    },
+  ],
+};

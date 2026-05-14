@@ -1,5 +1,7 @@
 import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItemBase, AccordionTriggerBase, AccordionTriggerTitleBase } from './components/accordion/base';
+import { ButtonBase } from './components/button/base';
 import { SwitchBase } from './components/switch/base';
+import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 
 /**
  * Inventory of every shipped component's slot-class map. The styling recipes
@@ -20,5 +22,11 @@ export const slotClassRegistry = {
   accordionTrigger: { slots: AccordionTriggerBase.classes },
   accordionTriggerTitle: { slots: AccordionTriggerTitleBase.classes },
   accordionContent: { slots: AccordionContentBase.classes },
+  button: { slots: ButtonBase.classes },
   switch: { slots: SwitchBase.classes },
+  tooltipTrigger: { slots: TooltipTriggerBase.classes },
+  tooltipContent: { slots: TooltipContentBase.classes },
+  tooltipHeader: { slots: TooltipHeaderBase.classes },
+  tooltipDescription: { slots: TooltipDescriptionBase.classes },
+  tooltipArrow: { slots: TooltipArrowBase.classes },
 } as const;

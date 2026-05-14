@@ -1,0 +1,456 @@
+---
+title: Select
+description:
+  Accessible custom select with controlled / uncontrolled state, keyboard
+  typeahead, and grouped options.
+sidebar_label: Select
+sidebar_position: 6
+slug: /components/select
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import { Select, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const selectScope = { Select };
+
+{/* prettier-ignore-start */}
+
+export const selectDemoCss = String.raw`
+.select-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(100%, 320px);
+}
+
+.select-demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.select-demo-row > * {
+  flex: 1 1 220px;
+}
+
+.select-demo-note {
+  width: fit-content;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--static-light);
+  color: var(--text-dark);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 8px 12px;
+}
+`;
+
+export const playgroundDemo = String.raw`
+<Select defaultValue="economy">
+  <Select.Trigger>
+    <Select.Value placeholder="Pick a cabin" />
+  </Select.Trigger>
+  <Select.Content>
+    <Select.Item value="economy">
+      <Select.ItemText>Economy</Select.ItemText>
+    </Select.Item>
+    <Select.Item value="business">
+      <Select.ItemText>Business</Select.ItemText>
+    </Select.Item>
+    <Select.Item value="first">
+      <Select.ItemText>First class</Select.ItemText>
+    </Select.Item>
+  </Select.Content>
+</Select>
+`;
+
+export const sizesDemo = String.raw`
+<div className="select-demo">
+  <Select size="small">
+    <Select.Trigger>
+      <Select.Value placeholder="Small" />
+    </Select.Trigger>
+    <Select.Content>
+      <Select.Item value="ist"><Select.ItemText>Istanbul</Select.ItemText></Select.Item>
+      <Select.Item value="ank"><Select.ItemText>Ankara</Select.ItemText></Select.Item>
+    </Select.Content>
+  </Select>
+  <Select size="base">
+    <Select.Trigger>
+      <Select.Value placeholder="Base" />
+    </Select.Trigger>
+    <Select.Content>
+      <Select.Item value="ist"><Select.ItemText>Istanbul</Select.ItemText></Select.Item>
+      <Select.Item value="ank"><Select.ItemText>Ankara</Select.ItemText></Select.Item>
+    </Select.Content>
+  </Select>
+  <Select size="large">
+    <Select.Trigger>
+      <Select.Value placeholder="Large" />
+    </Select.Trigger>
+    <Select.Content>
+      <Select.Item value="ist"><Select.ItemText>Istanbul</Select.ItemText></Select.Item>
+      <Select.Item value="ank"><Select.ItemText>Ankara</Select.ItemText></Select.Item>
+    </Select.Content>
+  </Select>
+</div>
+`;
+
+export const groupsDemo = String.raw`
+<Select defaultValue="ist">
+  <Select.Trigger>
+    <Select.Value placeholder="Choose origin" />
+  </Select.Trigger>
+  <Select.Content>
+    <Select.Group>
+      <Select.Label>Türkiye</Select.Label>
+      <Select.Item value="ist"><Select.ItemText>Istanbul</Select.ItemText></Select.Item>
+      <Select.Item value="ank"><Select.ItemText>Ankara</Select.ItemText></Select.Item>
+      <Select.Item value="izm"><Select.ItemText>Izmir</Select.ItemText></Select.Item>
+    </Select.Group>
+    <Select.Separator />
+    <Select.Group>
+      <Select.Label>Europe</Select.Label>
+      <Select.Item value="lhr"><Select.ItemText>London Heathrow</Select.ItemText></Select.Item>
+      <Select.Item value="cdg"><Select.ItemText>Paris CDG</Select.ItemText></Select.Item>
+      <Select.Item value="fra" disabled><Select.ItemText>Frankfurt (unavailable)</Select.ItemText></Select.Item>
+    </Select.Group>
+  </Select.Content>
+</Select>
+`;
+
+export const controlledDemo = String.raw`
+function ControlledSelectDemo() {
+  const [value, setValue] = useState('eco');
+
+  return (
+    <div className="select-demo">
+      <div className="select-demo-note">Selected: {value}</div>
+      <Select value={value} onValueChange={setValue}>
+        <Select.Trigger>
+          <Select.Value placeholder="Pick a fare" />
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Item value="eco"><Select.ItemText>Eco</Select.ItemText></Select.Item>
+          <Select.Item value="flex"><Select.ItemText>Eco Flex</Select.ItemText></Select.Item>
+          <Select.Item value="biz"><Select.ItemText>Business</Select.ItemText></Select.Item>
+        </Select.Content>
+      </Select>
+    </div>
+  );
+}
+
+render(<ControlledSelectDemo />);
+`;
+
+export const invalidDemo = String.raw`
+<Select isInvalid>
+  <Select.Trigger>
+    <Select.Value placeholder="Required field" />
+  </Select.Trigger>
+  <Select.Content>
+    <Select.Item value="a"><Select.ItemText>Option A</Select.ItemText></Select.Item>
+    <Select.Item value="b"><Select.ItemText>Option B</Select.ItemText></Select.Item>
+  </Select.Content>
+</Select>
+`;
+
+{/* prettier-ignore-end */}
+
+# Select
+
+`Select` is a fully-keyboard, accessible custom select. State (value, open
+state, disabled, required) lives on the root; the trigger renders the collapsed
+button, and the content portals a positioned dropdown.
+
+## Usage
+
+```tsx
+import { Select } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Select>
+  <Select.Trigger>
+    <Select.Value />
+  </Select.Trigger>
+  <Select.Content>
+    <Select.Group>
+      <Select.Label />
+      <Select.Item value="...">
+        <Select.ItemText />
+      </Select.Item>
+    </Select.Group>
+    <Select.Separator />
+  </Select.Content>
+</Select>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  cssCode={selectDemoCss}
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={selectScope}
+/>
+
+## Sizes
+
+<LiveCode
+  code={sizesDemo}
+  cssCode={selectDemoCss}
+  editable={false}
+  previewMinHeight={340}
+  previewWrapper={ReactSparDemoRoot}
+  scope={selectScope}
+/>
+
+## Groups, Separator, Disabled Item
+
+<LiveCode
+  code={groupsDemo}
+  cssCode={selectDemoCss}
+  editable={false}
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={selectScope}
+/>
+
+## Controlled
+
+<LiveCode
+  code={controlledDemo}
+  cssCode={selectDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={selectScope}
+/>
+
+## Invalid State
+
+<LiveCode
+  code={invalidDemo}
+  cssCode={selectDemoCss}
+  editable={false}
+  previewMinHeight={140}
+  previewWrapper={ReactSparDemoRoot}
+  scope={selectScope}
+/>
+
+## Accessibility & Keyboard
+
+- `Select.Trigger` renders a button with `role="combobox"`,
+  `aria-haspopup="listbox"`, and `aria-expanded`.
+- `Select.Content` is a `role="listbox"` portalled to `document.body` by default
+  and positioned with Floating UI.
+- `Select.Value` is associated with the trigger via `aria-labelledby`.
+
+| Key                                 | Behavior                                                     |
+| ----------------------------------- | ------------------------------------------------------------ |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Open the dropdown or select the highlighted item.            |
+| <kbd>↓</kbd> / <kbd>↑</kbd>         | Open the dropdown / move highlight to next or previous item. |
+| <kbd>Home</kbd> / <kbd>End</kbd>    | Move highlight to the first / last item.                     |
+| <kbd>Esc</kbd>                      | Close the dropdown without changing selection.               |
+| typing characters                   | Typeahead — jumps to the first matching item.                |
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Select {#select}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Props {#select-props}
+
+| Name                              | Type                                                                                | Default | Description                                                                                                                                                                  |
+| --------------------------------- | ----------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                        | -       | Compound parts (`Select.Trigger`, `Select.Content`).                                                                                                                         |
+| <ApiBadge label="size" />         | <code>SelectSize</code>                                                             | 'base'  | Size scale.                                                                                                                                                                  |
+| <ApiBadge label="isInvalid" />    | <code>boolean</code>                                                                | false   | Invalid state for form validation styling.                                                                                                                                   |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                               |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                           |
+| <ApiBadge label="defaultValue" /> | <code>string</code>                                                                 | -       | Uncontrolled initial value                                                                                                                                                   |
+| <ApiBadge label="autoFocus" />    | <code>boolean</code>                                                                | false   | Whether to focus the trigger on mount                                                                                                                                        |
+| <ApiBadge label="id" />           | <code>string</code>                                                                 | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger`, `${id}-content`, `${id}-value`. |
+| <ApiBadge label="value" />        | <code>string</code>                                                                 | -       | Controlled selected value                                                                                                                                                    |
+| <ApiBadge label="disabled" />     | <code>boolean</code>                                                                | false   | Disables the entire select                                                                                                                                                   |
+| <ApiBadge label="name" />         | <code>string</code>                                                                 | -       | Form field name                                                                                                                                                              |
+| <ApiBadge label="open" />         | <code>boolean</code>                                                                | -       | Controlled open state                                                                                                                                                        |
+| <ApiBadge label="defaultOpen" />  | <code>boolean</code>                                                                | false   | Uncontrolled initial open state                                                                                                                                              |
+| <ApiBadge label="required" />     | <code>boolean</code>                                                                | false   | Makes the select required for forms                                                                                                                                          |
+| <ApiBadge label="className" />    | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                                                                                                                        |
+
+#### Events {#select-events}
+
+| Name                               | Type                                    | Default | Description                      |
+| ---------------------------------- | --------------------------------------- | ------- | -------------------------------- |
+| <ApiBadge label="onValueChange" /> | <code>(value: string) =&gt; void</code> | -       | Callback when selection changes  |
+| <ApiBadge label="onOpenChange" />  | <code>(open: boolean) =&gt; void</code> | -       | Callback when open state changes |
+
+#### Data attributes {#select-data-attributes}
+
+| Attribute          | Applied when              | Purpose                                                                     |
+| ------------------ | ------------------------- | --------------------------------------------------------------------------- |
+| `data-slot="root"` | Always                    | Stable selector for wrapper styling on the root slot.                       |
+| `data-size`        | Always                    | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| `data-invalid`     | When `isInvalid` is true. | Borders/background switch to the danger state. Mirrored from the root.      |
+| `data-disabled`    | When `disabled` is true.  | Theme hook for the disabled state. Emitted by Spar Select.                  |
+
+### Select.Trigger {#select-trigger}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Data attributes {#select-trigger-data-attributes}
+
+| Attribute             | Applied when                  | Purpose                                                                     |
+| --------------------- | ----------------------------- | --------------------------------------------------------------------------- |
+| `data-slot="root"`    | Always                        | Stable selector for wrapper styling on the root slot.                       |
+| `data-size`           | Always                        | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| `data-invalid`        | When `isInvalid` is true.     | Borders/background switch to the danger state. Mirrored from the root.      |
+| `data-state="open"`   | While the dropdown is open.   | Spar open-state hook on the trigger and content.                            |
+| `data-state="closed"` | While the dropdown is closed. | Spar closed-state hook on the trigger.                                      |
+| `data-placeholder`    | When no value is selected.    | Theme hook to style the placeholder color.                                  |
+
+### Select.Value {#select-value}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Props {#select-value-props}
+
+| Name                             | Type                                                                                | Default | Description                                                                           |
+| -------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                        | -       | Override what Spar renders — typically left empty so the selected item text is shown. |
+| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                        |
+| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                    |
+| <ApiBadge label="placeholder" /> | <code>React.ReactNode</code>                                                        | -       | Text shown when no value selected                                                     |
+| <ApiBadge label="className" />   | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                                 |
+
+#### Data attributes {#select-value-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Select.Content {#select-content}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Props {#select-content-props}
+
+| Name                            | Type                                                                                | Default       | Description                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -             | `Select.Item`, `Select.Group`, `Select.Separator`.                         |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             | Per-slot class name overrides.                                             |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML attribute overrides.                                         |
+| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
+| <ApiBadge label="side" />       | <code>Side</code>                                                                   | 'bottom'      | Preferred side for positioning relative to trigger                         |
+| <ApiBadge label="align" />      | <code>Align</code>                                                                  | 'start'       | Alignment relative to trigger                                              |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -             | Appends custom classes to the root slot of this part.                      |
+
+#### Events {#select-content-events}
+
+| Name                                      | Type                                           | Default | Description            |
+| ----------------------------------------- | ---------------------------------------------- | ------- | ---------------------- |
+| <ApiBadge label="onCloseAutoFocus" />     | <code>(event: FocusEvent) =&gt; void</code>    | -       | Focus handler on close |
+| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code> | -       | Escape key handler     |
+| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>  | -       | Outside click handler  |
+
+#### Data attributes {#select-content-data-attributes}
+
+| Attribute          | Applied when | Purpose                                                                     |
+| ------------------ | ------------ | --------------------------------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.                       |
+| `data-size`        | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+
+### Select.Item {#select-item}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Props {#select-item-props}
+
+| Name                            | Type                                                                                | Default | Description                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ----------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | Item content (typically a `Select.ItemText`).         |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                        |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                    |
+| <ApiBadge label="value" />      | <code>string</code>                                                                 | -       | Option value                                          |
+| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                | false   | Disables the option                                   |
+| <ApiBadge label="textValue" />  | <code>string</code>                                                                 | -       | Text for type-ahead (auto-detected if not provided)   |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part. |
+
+#### Data attributes {#select-item-data-attributes}
+
+| Attribute              | Applied when                                      | Purpose                                               |
+| ---------------------- | ------------------------------------------------- | ----------------------------------------------------- |
+| `data-slot="root"`     | Always                                            | Stable selector for wrapper styling on the root slot. |
+| `data-highlighted`     | When the item is focused via keyboard or pointer. | Theme hook for the highlighted state.                 |
+| `data-state="checked"` | When the item matches the current value.          | Theme hook for the checked state.                     |
+| `data-disabled`        | When the item `disabled` is true.                 | Theme hook for the disabled item state.               |
+
+### Select.ItemText {#select-item-text}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Data attributes {#select-item-text-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Select.Group {#select-group}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Data attributes {#select-group-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Select.Label {#select-label}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Data attributes {#select-label-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Select.Separator {#select-separator}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Data attributes {#select-separator-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+{/* api-tables:end */}

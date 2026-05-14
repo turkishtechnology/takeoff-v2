@@ -1,11 +1,11 @@
 import { useColorMode } from '@docusaurus/theme-common';
 import { type PropsWithChildren } from 'react';
-import { Accordion, SparReactProvider, Switch } from '@takeoff-ui/react-spar';
+import { Accordion, Button, Drawer, Input, Select, Switch, TakeoffSparProvider, Tooltip } from '@takeoff-ui/react-spar';
 
-export { Accordion, Switch };
+export { Accordion, Button, Drawer, Input, Select, Switch, Tooltip };
 
 export function ReactSparDemoRoot({ children }: PropsWithChildren) {
   const { colorMode } = useColorMode();
 
-  return <SparReactProvider colorMode={colorMode === 'dark' ? 'dark' : 'light'}>{children}</SparReactProvider>;
+  return <TakeoffSparProvider colorMode={colorMode === 'dark' ? 'dark' : 'light'}>{children}</TakeoffSparProvider>;
 }

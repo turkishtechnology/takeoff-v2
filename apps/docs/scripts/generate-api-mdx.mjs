@@ -165,17 +165,40 @@ function getMemberName(name) {
   return null;
 }
 
-function collectDeclaredPropNames(declaration) {
+function collectDeclaredPropNames(declaration, checker, seen = new Set()) {
   const names = [];
+  const addName = n => {
+    if (n && !names.includes(n)) names.push(n);
+  };
+
   if (ts.isInterfaceDeclaration(declaration)) {
+    // Collect direct members
     for (const member of declaration.members) {
       if (ts.isPropertySignature(member)) {
-        const n = getMemberName(member.name);
-        if (n) names.push(n);
+        addName(getMemberName(member.name));
+      }
+    }
+    // Collect inherited members from Pick<...> types in extends clauses.
+    // Skip Omit<ComponentPropsWithoutRef<...>, ...> which provides native HTML
+    // attributes — those are always available and don't belong in the table.
+    if (declaration.heritageClauses && checker) {
+      for (const clause of declaration.heritageClauses) {
+        for (const typeExpr of clause.types) {
+          // Only resolve Pick utility types — they carry intentionally chosen
+          // Spar props. Omit/ComponentPropsWithoutRef carry hundreds of native
+          // HTML attributes that would flood the table.
+          const exprText = typeExpr.expression?.getText?.() ?? '';
+          if (exprText !== 'Pick') continue;
+          const heritageType = checker.getTypeAtLocation(typeExpr);
+          for (const prop of heritageType.getProperties()) {
+            addName(prop.name);
+          }
+        }
       }
     }
     return names;
   }
+
   const visit = node => {
     if (ts.isParenthesizedTypeNode(node)) {
       visit(node.type);
@@ -184,8 +207,42 @@ function collectDeclaredPropNames(declaration) {
     } else if (ts.isTypeLiteralNode(node)) {
       for (const m of node.members) {
         if (ts.isPropertySignature(m)) {
-          const n = getMemberName(m.name);
-          if (n) names.push(n);
+          addName(getMemberName(m.name));
+        }
+      }
+    } else if (ts.isTypeReferenceNode(node)) {
+      const refName = node.typeName?.getText?.() ?? '';
+      // PolymorphicProps<TDefault, T, OwnProps> — only walk the third arg.
+      // The wrapper itself adds `as` plus Omit<ComponentPropsWithRef<...>>,
+      // which would flood the table with native HTML attributes.
+      if (refName === 'PolymorphicProps') {
+        const args = node.typeArguments ?? [];
+        if (args.length >= 3) visit(args[2]);
+        return;
+      }
+      // Pick<T, K> — resolve via checker for the listed keys only.
+      if (refName === 'Pick' && checker) {
+        const picked = checker.getTypeAtLocation(node);
+        for (const prop of picked.getProperties()) {
+          addName(prop.name);
+        }
+        return;
+      }
+      // Other type references — typically a user-authored interface like
+      // `AccordionOwnProps`. Resolve the symbol to its declaration and recurse
+      // so nested intersections / Pick<>s inside it get the same treatment.
+      if (checker) {
+        const symbol = checker.getSymbolAtLocation(node.typeName);
+        const decls = symbol?.declarations ?? [];
+        for (const decl of decls) {
+          if (!(ts.isInterfaceDeclaration(decl) || ts.isTypeAliasDeclaration(decl))) continue;
+          // Guard against cycles (mutually-recursive aliases) and avoid
+          // re-walking the same declaration twice in a single pass.
+          if (seen.has(decl)) continue;
+          seen.add(decl);
+          for (const n of collectDeclaredPropNames(decl, checker, seen)) {
+            addName(n);
+          }
         }
       }
     }
@@ -194,8 +251,8 @@ function collectDeclaredPropNames(declaration) {
   return names;
 }
 
-function buildPropNameOrder(declaration, config) {
-  const declared = collectDeclaredPropNames(declaration);
+function buildPropNameOrder(declaration, config, checker) {
+  const declared = collectDeclaredPropNames(declaration, checker);
   const prepend = config.prependPropNames ?? [];
   const append = config.appendPropNames ?? [];
   const skip = new Set([...(config.skipPropNames ?? []), ...(config.sparBehaviorProps ?? [])]);
@@ -206,7 +263,7 @@ function buildPropNameOrder(declaration, config) {
 
 function buildRowsForComponent(checker, declaration, config) {
   const type = checker.getTypeAtLocation(declaration);
-  const propNames = buildPropNameOrder(declaration, config);
+  const propNames = buildPropNameOrder(declaration, config, checker);
   const overrides = config.propOverrides ?? {};
   const propRows = [];
   const eventRows = [];

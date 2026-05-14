@@ -78,53 +78,52 @@ const CODE_THEME: PrismTheme = {
 /* ── Code samples (plain source) ──────────────────────────────────── */
 
 const SPAR_SOURCE = `// Headless core — behavior + a11y, bring your own styles.
-import { Button, Input } from '@turkish-technology/spar';
+import { Accordion } from '@turkish-technology/spar';
 
-export function FlightSearch() {
+export function FareDetails() {
   return (
-    <>
-      <Input defaultValue="IST">
-        <Input.Label>From</Input.Label>
-        <Input.Field />
-      </Input>
-      <Input defaultValue="FRA">
-        <Input.Label>To</Input.Label>
-        <Input.Field />
-      </Input>
-      <Button>Search flights</Button>
-    </>
+    <Accordion defaultValue="baggage">
+      <Accordion.Item value="baggage">
+        <Accordion.Header>
+          <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Cabin and checked bag limits per fare family.
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion>
   );
 }`;
 
 const TAKEOFF_UI_SOURCE = `<!-- Framework-agnostic web components. -->
 <!-- Drop into any React, Vue, or Angular app. -->
 
-<tk-input value="IST">
-  <tk-input-label>From</tk-input-label>
-  <tk-input-field></tk-input-field>
-</tk-input>
-<tk-input value="FRA">
-  <tk-input-label>To</tk-input-label>
-  <tk-input-field></tk-input-field>
-</tk-input>
-<tk-button variant="primary">Search flights</tk-button>`;
+<tk-accordion default-value="baggage">
+  <tk-accordion-item value="baggage">
+    <tk-accordion-header>
+      <tk-accordion-trigger>Baggage allowance</tk-accordion-trigger>
+    </tk-accordion-header>
+    <tk-accordion-content>
+      Cabin and checked bag limits per fare family.
+    </tk-accordion-content>
+  </tk-accordion-item>
+</tk-accordion>`;
 
 const REACT_SPAR_SOURCE = `// React wrapper — typed props, variants, theming defaults.
-import { Button, Input } from '@takeoff-ui/react-spar';
+import { Accordion } from '@takeoff-ui/react-spar';
 
-export function FlightSearch() {
+export function FareDetails() {
   return (
-    <>
-      <Input defaultValue="IST">
-        <Input.Label>From</Input.Label>
-        <Input.Container><Input.Field /></Input.Container>
-      </Input>
-      <Input defaultValue="FRA">
-        <Input.Label>To</Input.Label>
-        <Input.Container><Input.Field /></Input.Container>
-      </Input>
-      <Button variant="primary">Search flights</Button>
-    </>
+    <Accordion defaultValue="baggage">
+      <Accordion.Item value="baggage">
+        <Accordion.Header>
+          <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Cabin and checked bag limits per fare family.
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion>
   );
 }`;
 
@@ -143,21 +142,21 @@ interface SampleMeta {
 const SAMPLE_META: Record<SampleKey, SampleMeta> = {
   'spar': {
     label: 'Spar',
-    filename: 'FlightSearch.tsx',
+    filename: 'FareDetails.tsx',
     badge: 'TSX',
     language: 'tsx',
     source: SPAR_SOURCE,
   },
   'takeoff-ui': {
     label: 'Takeoff UI (WC)',
-    filename: 'flight-search.html',
+    filename: 'fare-details.html',
     badge: 'HTML',
     language: 'markup',
     source: TAKEOFF_UI_SOURCE,
   },
   'react-spar': {
     label: 'React-Spar',
-    filename: 'FlightSearch.tsx',
+    filename: 'FareDetails.tsx',
     badge: 'TSX',
     language: 'tsx',
     source: REACT_SPAR_SOURCE,

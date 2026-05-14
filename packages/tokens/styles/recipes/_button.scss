@@ -30,7 +30,7 @@
   border-color: transparent;
   color: $text-color;
 
-  .tk-button-icon,
+  .tk-button-content,
   .tk-button-spinner {
     color: $icon-color;
   }
@@ -45,7 +45,7 @@
     background-color: $disabled-bg;
     color: $disabled-text-color;
 
-    .tk-button-icon,
+    .tk-button-content,
     .tk-button-spinner {
       color: $disabled-icon-color;
     }
@@ -67,7 +67,7 @@
   color: $color;
   border-color: $border-color;
 
-  .tk-button-icon,
+  .tk-button-content,
   .tk-button-spinner {
     color: $icon-color;
   }
@@ -85,7 +85,7 @@
     color: $disabled-color;
     border-color: $disabled-border;
 
-    .tk-button-icon,
+    .tk-button-content,
     .tk-button-spinner {
       color: $disabled-icon-color;
     }
@@ -97,7 +97,7 @@
   border-color: transparent;
   color: $color;
 
-  .tk-button-icon,
+  .tk-button-content,
   .tk-button-spinner {
     color: $icon-color;
   }
@@ -115,7 +115,7 @@
     background-color: transparent;
     color: $disabled-color;
 
-    .tk-button-icon,
+    .tk-button-content,
     .tk-button-spinner {
       color: $disabled-icon-color;
     }
@@ -125,7 +125,7 @@
 @mixin button-variant-link($color, $hover-color, $disabled-color: var(--text-sub-base), $focus-shadow: none) {
   color: $color;
 
-  .tk-button-icon,
+  .tk-button-content,
   .tk-button-spinner {
     color: $color;
   }
@@ -133,7 +133,7 @@
   &:where(:not([data-disabled])):hover {
     color: $hover-color;
 
-    .tk-button-icon,
+    .tk-button-content,
     .tk-button-spinner {
       color: $hover-color;
     }
@@ -146,7 +146,7 @@
   @include mixins.disabled-state {
     color: $disabled-color;
 
-    .tk-button-icon,
+    .tk-button-content,
     .tk-button-spinner {
       color: $disabled-color;
     }
@@ -164,7 +164,7 @@
   padding: $v-padding $h-padding;
   gap: $gap;
 
-  .tk-button-icon,
+  .tk-button-content,
   .tk-button-spinner {
     width: $icon-size;
     height: $icon-size;
@@ -241,7 +241,7 @@
     min-width: 0;
   }
 
-  .tk-button-icon,
+  .tk-button-content,
   .tk-button-spinner {
     display: inline-flex;
     align-items: center;
@@ -250,14 +250,14 @@
     line-height: 1;
   }
 
-  .tk-button-icon > *:not(.tk-button-icon-symbol),
+  .tk-button-content > *:not(.tk-button-content-symbol),
   .tk-button-spinner > * {
     width: 100%;
     height: 100%;
     flex-shrink: 0;
   }
 
-  .tk-button-icon svg,
+  .tk-button-content svg,
   .tk-button-spinner svg {
     width: 100%;
     height: 100%;
@@ -265,7 +265,7 @@
     stroke: currentColor;
   }
 
-  .tk-button-icon-symbol {
+  .tk-button-content-symbol {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -751,7 +751,7 @@
     &[data-size='small'] {
       min-height: 1.125rem;
 
-      .tk-button-icon,
+      .tk-button-content,
       .tk-button-spinner {
         width: var(--link-button-sizes-small-icon-size);
         height: var(--link-button-sizes-small-icon-size);
@@ -762,7 +762,7 @@
     &[data-size='base'] {
       min-height: 1.25rem;
 
-      .tk-button-icon,
+      .tk-button-content,
       .tk-button-spinner {
         width: var(--link-button-sizes-base-icon-size);
         height: var(--link-button-sizes-base-icon-size);
@@ -773,7 +773,7 @@
     &[data-size='large'] {
       min-height: 1.5rem;
 
-      .tk-button-icon,
+      .tk-button-content,
       .tk-button-spinner {
         width: var(--link-button-sizes-large-icon-size);
         height: var(--link-button-sizes-large-icon-size);

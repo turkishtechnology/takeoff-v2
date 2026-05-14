@@ -1,8 +1,8 @@
 import { render, type RenderOptions } from '@testing-library/react';
 import type { ReactElement } from 'react';
-import { SparReactProvider } from './provider';
+import { TakeoffSparProvider } from './provider';
 
-const AllProviders = ({ children }: { children: React.ReactNode }) => <SparReactProvider>{children}</SparReactProvider>;
+const AllProviders = ({ children }: { children: React.ReactNode }) => <TakeoffSparProvider>{children}</TakeoffSparProvider>;
 
 export const renderWithProvider = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) => render(ui, { wrapper: AllProviders, ...options });
 
