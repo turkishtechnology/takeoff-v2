@@ -4,5 +4,5 @@ export { composeRootAttrs } from './composeRootAttrs';
 export type { ComposeRootOptions, RootAttrsResult } from './composeRootAttrs';
 export { createComponentBase } from './createComponentBase';
 export type { ComponentBase, CreateComponentBaseConfig, DataSlotName } from './createComponentBase';
-export type { ComponentName, ComponentThemeConfig, ComponentThemeRegistry, ComponentsThemeMap } from './theme';
+export type { ComponentName, ComponentThemeConfig, ComponentThemeRegistry, ComponentsThemeMap, StateOnlyComponentThemeConfig } from './theme';
 export type { ClassNamesMap, SlotClassNames, SlotPropsMap, TakeoffHTMLProps, TakeoffSlotOverrides } from './types';

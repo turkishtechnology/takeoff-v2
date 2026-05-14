@@ -12,11 +12,23 @@ import type { AccordionProps } from './types';
 export const Accordion = <T extends ElementType = 'div'>(props: AccordionProps<T>) => {
   const theme = useComponentTheme('Accordion');
 
-  // Resolve `(author defaults → theme defaults → instance props)` in
-  // composeRootAttrs, then destructure from `rest` so theme.defaultProps for
-  // visual props (type, mode, size, arrowPosition, hideArrows) actually
-  // applies. Destructuring from `props` directly bypasses the theme layer.
-  const { rootAttrs: baseRootAttrs, rest } = composeRootAttrs(AccordionBase, props as AccordionProps<'div'>, theme);
+  // `stateAttrs` runs against post-merge values, so theme.defaultProps for
+  // visual props (type, mode, size, arrowPosition, hideArrows) flow through
+  // into the rendered `data-*` hooks.
+  //
+  // Note on `data-type`: takeoff-spar's `data-type="grouped"|"divided"` lives
+  // on `AccordionItem`, not the root, because Spar's Accordion already emits
+  // `data-type="multiple"|"single"` on its own root for behavior mode. Mixing
+  // the two vocabularies on the same element would be ambiguous.
+  const { rootAttrs, rest } = composeRootAttrs(AccordionBase, props as AccordionProps<'div'>, theme, {
+    stateAttrs: ({ mode = DEFAULT_MODE, size = DEFAULT_SIZE, arrowPosition = DEFAULT_ARROW_POSITION, hideArrows, disabled }) => ({
+      'data-mode': mode,
+      'data-size': size,
+      'data-arrow-position': arrowPosition,
+      'data-disabled': disabled ? '' : undefined,
+      'data-hide-arrows': hideArrows ? '' : undefined,
+    }),
+  });
 
   const {
     type = DEFAULT_TYPE,
@@ -33,23 +45,6 @@ export const Accordion = <T extends ElementType = 'div'>(props: AccordionProps<T
     ref,
     ...sparProps
   } = rest;
-
-  // Layer canonical state-driven `data-*` after the theme-merged values are
-  // known. Canonical attrs still win over any `slotProps.root` override
-  // because they spread last on the SparAccordion element.
-  //
-  // Note on `data-type`: takeoff-spar's `data-type="grouped"|"divided"` lives
-  // on `AccordionItem`, not the root, because Spar's Accordion already emits
-  // `data-type="multiple"|"single"` on its own root for behavior mode. Mixing
-  // the two vocabularies on the same element would be ambiguous.
-  const rootAttrs = {
-    ...baseRootAttrs,
-    'data-mode': mode,
-    'data-size': size,
-    'data-arrow-position': arrowPosition,
-    'data-disabled': disabled ? '' : undefined,
-    'data-hide-arrows': hideArrows ? '' : undefined,
-  };
 
   return (
     <AccordionProvider

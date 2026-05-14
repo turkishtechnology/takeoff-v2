@@ -8,7 +8,7 @@ import { DrawerTriggerBase } from './base';
 import type { DrawerTriggerProps } from './types';
 
 export const DrawerTrigger = <T extends ElementType = 'button'>(props: DrawerTriggerProps<T>) => {
-  const theme = useComponentTheme('DrawerTrigger' as never);
+  const theme = useComponentTheme('DrawerTrigger');
 
   const { rootAttrs, rest } = composeRootAttrs(DrawerTriggerBase, props as DrawerTriggerProps<'button'>, theme);
 

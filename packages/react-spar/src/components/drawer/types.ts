@@ -9,7 +9,7 @@ import type {
   PolymorphicProps,
 } from '@turkish-technology/spar';
 
-import type { ClassNamesMap, SlotPropsMap } from '../../core';
+import type { ClassNamesMap, SlotPropsMap, StateOnlyComponentThemeConfig } from '../../core';
 
 /**
  * Side from which the drawer slides in.
@@ -29,7 +29,9 @@ export type DrawerCloseButtonSlot = 'root';
 /**
  * Public props for the Drawer root. Wraps Spar's Dialog in modal mode to
  * create a slide-in side panel. State-only — renders no DOM, so no
- * polymorphic `as` and no native HTML props.
+ * polymorphic `as`, no native HTML props, no `className` / `classNames` /
+ * `slotProps` (state-driven styling lives on the Panel/Overlay/Header
+ * children, which read shared values from context).
  */
 export interface DrawerProps
   // Dialog root identity, controlled state, and trigger disable. Other Spar
@@ -41,12 +43,6 @@ export interface DrawerProps
   /** Whether the drawer can be dismissed by clicking outside or pressing Escape. @defaultValue true */
   dismissable?: boolean;
   children?: ReactNode;
-  /** Root element className shorthand. */
-  className?: string;
-  /** Per-slot class name overrides. */
-  classNames?: ClassNamesMap<'root'>;
-  /** Per-slot HTML attribute overrides. */
-  slotProps?: SlotPropsMap<'root'>;
 }
 
 export interface DrawerTriggerOwnProps {
@@ -176,7 +172,8 @@ export type DrawerCloseButtonProps<T extends ElementType = 'button'> = Polymorph
 
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {
-    Drawer: import('../../core').ComponentThemeConfig<DrawerProps>;
+    Drawer: StateOnlyComponentThemeConfig<DrawerProps>;
+    DrawerTrigger: import('../../core').ComponentThemeConfig<DrawerTriggerProps>;
     DrawerOverlay: import('../../core').ComponentThemeConfig<DrawerOverlayProps>;
     DrawerPanel: import('../../core').ComponentThemeConfig<DrawerPanelProps>;
     DrawerHeader: import('../../core').ComponentThemeConfig<DrawerHeaderProps>;

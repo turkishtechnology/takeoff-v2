@@ -1,5 +1,5 @@
 import type { ElementType } from 'react';
-import type { TooltipProps as SparTooltipProps, TooltipContentProps as SparTooltipContentProps, PolymorphicProps } from '@turkish-technology/spar';
+import type { TooltipProps as SparTooltipProps, TooltipContentProps as SparTooltipContentProps, TooltipTriggerProps as SparTooltipTriggerProps, PolymorphicProps } from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
@@ -31,7 +31,15 @@ export interface TooltipTriggerOwnProps {
   slotProps?: SlotPropsMap<TooltipTriggerSlot>;
 }
 
-export type TooltipTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, TooltipTriggerOwnProps>;
+export type TooltipTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<
+  'button',
+  T,
+  TooltipTriggerOwnProps &
+    // Trigger surface from Spar. `children` is picked so it accepts both
+    // ReactNode and the render-prop function form for accessing
+    // open/disabled/show/hide state without a separate hook.
+    Pick<SparTooltipTriggerProps, 'children'>
+>;
 
 export interface TooltipContentOwnProps {
   /**

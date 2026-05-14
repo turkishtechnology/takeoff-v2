@@ -32,23 +32,13 @@ export default {
       displayName: 'Drawer',
       headingBase: 'drawer',
       prependPropNames: ['children'],
+      // Drawer root is state-only — renders no DOM. No `className`, no slot
+      // attributes, no `data-*`. State-driven styling hooks live on the
+      // Panel/Overlay/Header children below.
       propOverrides: {
         children: childrenOverride('Drawer parts rendered inside the root.'),
-        className: classNameOverride,
       },
-      dataAttributes: [
-        dataSlotRoot,
-        {
-          attribute: 'data-placement',
-          appliedWhen: 'Always',
-          purpose: 'Reflects the resolved `placement` prop for CSS styling.',
-        },
-        {
-          attribute: 'data-dismissable',
-          appliedWhen: 'When `dismissable` is true (default)',
-          purpose: 'Indicates the drawer can be dismissed by outside interaction.',
-        },
-      ],
+      dataAttributes: [],
     },
     {
       sourceFile: drawerTypesFile,

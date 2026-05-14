@@ -365,18 +365,23 @@ import { MyComponentProvider, useMyComponentOwnContext } from './context';
 import type { MyComponentProps, MyComponentPartProps } from './types';
 
 // Root: single slot, may layer canonical state-driven data-* via stateAttrs.
+// `stateAttrs` is a callback that receives the **post-merge** props (author
+// defaults → theme defaults → instance props) so theme.defaultProps for
+// visual props flow through into `data-*` hooks. Apply visual defaults in the
+// destructure (`variant = DEFAULT_VARIANT`) so a single source of truth feeds
+// both the rendered DOM and the data attributes.
 export const MyComponent = (props: MyComponentProps) => {
   const theme = useComponentTheme('MyComponent');
   const { rootAttrs, rest } = composeRootAttrs(MyComponentBase, props, theme, {
-    stateAttrs: {
-      'data-variant': props.variant,
-      'data-disabled': props.disabled ? '' : undefined,
-    },
+    stateAttrs: ({ variant = DEFAULT_VARIANT, disabled }) => ({
+      'data-variant': variant,
+      'data-disabled': disabled ? '' : undefined,
+    }),
   });
-  const { children, ref, ...spar } = rest;
+  const { variant = DEFAULT_VARIANT, children, ref, ...spar } = rest;
 
   return (
-    <MyComponentProvider value={{ variant: props.variant }}>
+    <MyComponentProvider value={{ variant }}>
       <SparPrimitive {...spar} {...rootAttrs} ref={ref}>
         {children}
       </SparPrimitive>
@@ -459,10 +464,15 @@ export { MyComponentCompound as MyComponent };
   `{ rootAttrs, rest }` with `className`/`classNames`/`slotProps` already
   stripped.
 - Layer canonical state-driven `data-*` (variant, size, disabled, …) via
-  `composeRootAttrs(..., { stateAttrs: { ... } })`. These attrs spread on top of
-  `slotProps.root` so the design-system invariants cannot be overridden by
-  consumer slot props. Pass `''` for "present" and `undefined` for "absent" —
-  `undefined` entries are dropped.
+  `composeRootAttrs(..., { stateAttrs: (merged) => ({ ... }) })`. `stateAttrs`
+  is a **callback** that receives the post-merge props so theme `defaultProps`
+  flow through into the rendered `data-*` hooks — a literal object cannot
+  reference merged values and would silently bypass theme defaults. The returned
+  attrs spread on top of `slotProps.root` so the design-system invariants cannot
+  be overridden by consumer slot props. Pass `''` for "present" and `undefined`
+  for "absent" — `undefined` entries are dropped. Authors that derive `data-*`
+  from outer scope (e.g. context, refs) instead of merged props may ignore the
+  argument: `stateAttrs: () => ({ ... })`.
 - For additional slot owner nodes inside a sub-component, call
   `buildSlotAttrs(Base.getSlotProps('slotName'), 'slotName', { themeSlotProps, themeClassNames, instanceSlotProps, instanceClassNames })`
   at the render site. Do not invent ad-hoc slot composition.
@@ -491,14 +501,15 @@ export { MyComponentCompound as MyComponent };
 
 ### Wrapper helpers — quick reference
 
-| Need                                       | Helper                                                   | Where it lives |
-| ------------------------------------------ | -------------------------------------------------------- | -------------- |
-| Compose canonical root attrs (single slot) | `composeRootAttrs(Base, props, theme)`                   | `src/core`     |
-| Layer canonical `data-*` on root           | `composeRootAttrs(..., { stateAttrs })`                  | `src/core`     |
-| Compose canonical attrs for an extra slot  | `buildSlotAttrs(Base.getSlotProps(slot), slot, { ... })` | `src/core`     |
-| Read theme defaults                        | `useComponentTheme('Name')`                              | `src/provider` |
-| Share root state with sub-components       | `createSafeContext('NameProvider')`                      | `src/hooks`    |
-| Detect a specific child sub-component      | `hasChildOfType`                                         | `src/hooks`    |
+| Need                                       | Helper                                                     | Where it lives |
+| ------------------------------------------ | ---------------------------------------------------------- | -------------- |
+| Compose canonical root attrs (single slot) | `composeRootAttrs(Base, props, theme)`                     | `src/core`     |
+| Layer canonical `data-*` on root           | `composeRootAttrs(..., { stateAttrs: (merged) => ({…}) })` | `src/core`     |
+| Provider override for a state-only root    | `StateOnlyComponentThemeConfig<TProps>`                    | `src/core`     |
+| Compose canonical attrs for an extra slot  | `buildSlotAttrs(Base.getSlotProps(slot), slot, { ... })`   | `src/core`     |
+| Read theme defaults                        | `useComponentTheme('Name')`                                | `src/provider` |
+| Share root state with sub-components       | `createSafeContext('NameProvider')`                        | `src/hooks`    |
+| Detect a specific child sub-component      | `hasChildOfType`                                           | `src/hooks`    |
 
 ## Styling Contract
 

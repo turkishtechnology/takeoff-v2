@@ -11,13 +11,13 @@ import type { TooltipContentProps, TooltipContentSlot } from './types';
 export const TooltipContent = <T extends ElementType = 'div'>(props: TooltipContentProps<T>) => {
   const theme = useComponentTheme('TooltipContent');
 
-  const { variant = DEFAULT_VARIANT, className, classNames, slotProps, children, ref, ...sparProps } = props as TooltipContentProps<'div'>;
-
-  const { rootAttrs } = composeRootAttrs<TooltipContentProps, TooltipContentSlot>(TooltipContentBase, { className, classNames, slotProps }, theme, {
-    stateAttrs: {
+  const { rootAttrs, rest } = composeRootAttrs<TooltipContentProps, TooltipContentSlot>(TooltipContentBase, props as TooltipContentProps<'div'>, theme, {
+    stateAttrs: ({ variant = DEFAULT_VARIANT }) => ({
       'data-variant': variant,
-    },
+    }),
   });
+
+  const { variant: _variant, children, ref, ...sparProps } = rest;
 
   return (
     <SparTooltipContent {...sparProps} {...rootAttrs} ref={ref}>
