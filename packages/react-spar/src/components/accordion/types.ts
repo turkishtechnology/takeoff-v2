@@ -136,11 +136,7 @@ export interface AccordionTriggerOwnProps {
   slotProps?: SlotPropsMap<AccordionTriggerSlot>;
 }
 
-export type AccordionTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  AccordionTriggerOwnProps
->;
+export type AccordionTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, AccordionTriggerOwnProps>;
 
 export interface AccordionTriggerTitleOwnProps {
   /** Per-slot class name overrides. */
@@ -149,11 +145,7 @@ export interface AccordionTriggerTitleOwnProps {
   slotProps?: SlotPropsMap<AccordionTriggerTitleSlot>;
 }
 
-export type AccordionTriggerTitleProps<T extends ElementType = 'span'> = PolymorphicProps<
-  'span',
-  T,
-  AccordionTriggerTitleOwnProps
->;
+export type AccordionTriggerTitleProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, AccordionTriggerTitleOwnProps>;
 
 export interface AccordionIndicatorOwnProps {
   /**
@@ -169,11 +161,7 @@ export interface AccordionIndicatorOwnProps {
   slotProps?: SlotPropsMap<AccordionIndicatorSlot>;
 }
 
-export type AccordionIndicatorProps<T extends ElementType = 'span'> = PolymorphicProps<
-  'span',
-  T,
-  AccordionIndicatorOwnProps
->;
+export type AccordionIndicatorProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, AccordionIndicatorOwnProps>;
 
 export interface AccordionContentOwnProps {
   /** Per-slot class name overrides. */

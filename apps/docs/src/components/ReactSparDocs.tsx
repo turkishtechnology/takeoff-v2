@@ -1,8 +1,8 @@
 import { useColorMode } from '@docusaurus/theme-common';
 import { type PropsWithChildren } from 'react';
-import { Accordion, Badge, Button, Drawer, Input, Select, TakeoffSparProvider, Tooltip } from '@takeoff-ui/react-spar';
+import { Accordion, Badge, Button, Drawer, Input, Select, Switch, TakeoffSparProvider, Tooltip } from '@takeoff-ui/react-spar';
 
-export { Accordion, Badge, Button, Drawer, Input, Select, Tooltip };
+export { Accordion, Badge, Button, Drawer, Input, Select, Switch, Tooltip };
 
 export function ReactSparDemoRoot({ children }: PropsWithChildren) {
   const { colorMode } = useColorMode();

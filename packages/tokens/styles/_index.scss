@@ -10,6 +10,7 @@
 @use 'recipes/drawer';
 @use 'recipes/input';
 @use 'recipes/select';
+@use 'recipes/switch';
 @use 'recipes/tooltip';
 
 @include button.button-keyframes;
@@ -110,6 +111,10 @@
 
 .tk-checkbox {
   @include checkbox.checkbox;
+}
+
+.tk-toggle {
+  @include switch.switch;
 }
 
 .tk-tooltip-content {

@@ -34,6 +34,7 @@ import {
   SelectTriggerBase,
   SelectValueBase,
 } from './components/select/base';
+import { SwitchBase } from './components/switch/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 
 /**
@@ -84,6 +85,7 @@ export const slotClassRegistry = {
   selectLabel: { slots: SelectLabelBase.classes },
   selectItemText: { slots: SelectItemTextBase.classes },
   selectSeparator: { slots: SelectSeparatorBase.classes },
+  switch: { slots: SwitchBase.classes },
   tooltipTrigger: { slots: TooltipTriggerBase.classes },
   tooltipContent: { slots: TooltipContentBase.classes },
   tooltipHeader: { slots: TooltipHeaderBase.classes },

@@ -12,7 +12,16 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Components',
       collapsed: false,
-      items: ['components/accordion', 'components/badge', 'components/button', 'components/drawer', 'components/tooltip', 'components/input', 'components/select'],
+      items: [
+        'components/accordion',
+        'components/badge',
+        'components/button',
+        'components/drawer',
+        'components/tooltip',
+        'components/input',
+        'components/select',
+        'components/switch',
+      ],
     },
   ],
 };
