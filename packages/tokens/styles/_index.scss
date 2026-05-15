@@ -10,6 +10,7 @@
 @use 'recipes/drawer';
 @use 'recipes/input';
 @use 'recipes/popover';
+@use 'recipes/radio';
 @use 'recipes/select';
 @use 'recipes/switch';
 @use 'recipes/tooltip';
@@ -117,6 +118,14 @@
 
 .tk-toggle {
   @include switch.switch;
+}
+
+.tk-radio {
+  @include radio.radio;
+}
+
+.tk-radio-item {
+  @include radio.radio-item;
 }
 
 .tk-tooltip-content {

@@ -1,0 +1,256 @@
+// ---------------------------------------------------------------------------
+// Radio recipes.
+//
+// The React wrapper renders the Spar radiogroup as `.tk-radio` and each Spar
+// radio item as `.tk-radio-item`. Spar owns checked, disabled, focus, keyboard,
+// ARIA, and form behavior. These recipes only consume the wrapper classes and
+// data hooks to render Takeoff's visible radio chrome.
+// ---------------------------------------------------------------------------
+
+@mixin radio {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--basic-switcher-container-gap);
+  min-inline-size: 0;
+  max-width: 100%;
+  border: 0;
+  margin: 0;
+  padding: 0;
+
+  &[data-orientation='horizontal'] {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  &[data-spread] {
+    display: flex;
+    width: 100%;
+  }
+
+  &[data-spread] > .tk-radio-item {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+@mixin radio-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--basic-switcher-content-gap);
+  max-width: 100%;
+  padding: var(--basic-switcher-container-v-padding) var(--basic-switcher-container-h-padding);
+  border: 1px solid transparent;
+  border-radius: var(--basic-switcher-container-radius);
+  color: var(--text-darkest);
+  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-size: var(--desktop-body-s-size);
+  font-weight: 400;
+  line-height: var(--desktop-body-s-line-height);
+  box-sizing: border-box;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  > input[data-hidden] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  &[data-position='right'] {
+    flex-direction: row-reverse;
+  }
+
+  .tk-radio-indicator {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    background-color: var(--static-light);
+    border: 2px solid var(--border-sub-base);
+    border-radius: var(--radius-full);
+    transition:
+      border-color 0.15s ease-in-out,
+      background-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
+  }
+
+  .tk-radio-icon {
+    display: block;
+    background-color: var(--states-info-base);
+    border-radius: var(--radius-full);
+    visibility: hidden;
+  }
+
+  .tk-radio-text {
+    display: inline-flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--basic-switcher-text-gap);
+  }
+
+  .tk-radio-label {
+    color: var(--text-darkest);
+    font-size: inherit;
+    line-height: inherit;
+    font-weight: 400;
+  }
+
+  .tk-radio-description {
+    color: var(--text-base);
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+    font-weight: 400;
+  }
+
+  &:hover:not([data-disabled]) .tk-radio-indicator {
+    background-color: var(--background-lightest);
+  }
+
+  &[data-state='checked'] {
+    .tk-radio-indicator {
+      border-color: var(--states-info-light);
+      background-color: var(--static-light);
+    }
+
+    .tk-radio-icon {
+      visibility: visible;
+    }
+  }
+
+  &[data-state='checked']:hover:not([data-disabled]) .tk-radio-indicator {
+    border-color: var(--states-info-sub-base);
+    background-color: var(--states-info-light);
+  }
+
+  &:focus-visible .tk-radio-indicator,
+  &[data-focused] .tk-radio-indicator {
+    border-color: var(--states-info-base);
+    box-shadow: var(--info-focus);
+  }
+
+  &[data-disabled] {
+    color: var(--text-sub-base);
+    cursor: not-allowed;
+    pointer-events: none;
+
+    .tk-radio-label {
+      color: var(--text-sub-base);
+    }
+
+    .tk-radio-description {
+      color: var(--text-sub-base);
+    }
+
+    .tk-radio-indicator {
+      border-color: var(--border-sub-base);
+      background-color: var(--background-light);
+      box-shadow: none;
+    }
+
+    .tk-radio-icon {
+      background-color: var(--background-sub-base);
+    }
+  }
+
+  &[data-invalid] {
+    .tk-radio-indicator {
+      border-color: var(--states-danger-base);
+      background-color: var(--static-light);
+    }
+
+    &[data-state='checked'] .tk-radio-indicator {
+      border-color: var(--states-danger-light);
+    }
+
+    &[data-state='checked'] .tk-radio-icon {
+      background-color: var(--states-danger-base);
+    }
+
+    &[data-state='checked']:hover:not([data-disabled]) .tk-radio-indicator {
+      border-color: var(--states-danger-sub-base);
+      background-color: var(--states-danger-light);
+    }
+  }
+
+  &[data-size='small'] {
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+
+    .tk-radio-indicator {
+      width: 16px;
+      height: 16px;
+      padding: 1px;
+    }
+
+    .tk-radio-icon {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  &[data-size='base'] {
+    .tk-radio-indicator {
+      width: 20px;
+      height: 20px;
+      padding: 2px;
+    }
+
+    .tk-radio-icon {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  &[data-size='large'] {
+    font-size: var(--desktop-body-m-size, var(--desktop-body-s-size));
+    line-height: var(--desktop-body-m-line-height, var(--desktop-body-s-line-height));
+
+    .tk-radio-indicator {
+      width: var(--basic-switcher-button-size);
+      height: var(--basic-switcher-button-size);
+      padding: 3px;
+    }
+
+    .tk-radio-icon {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &[data-type='card'] {
+    width: 100%;
+    min-height: var(--card-switcher-button-size);
+    gap: var(--card-switcher-content-gap);
+    padding: var(--card-switcher-container-v-padding) var(--card-switcher-container-h-padding);
+    border-color: var(--border-light);
+    border-radius: var(--card-switcher-container-radius);
+    background-color: var(--static-light);
+
+    .tk-radio-text {
+      gap: var(--card-switcher-text-gap);
+    }
+
+    &:hover:not([data-disabled]) {
+      background-color: var(--background-lightest);
+    }
+
+    &[data-invalid] {
+      border-color: var(--states-danger-base);
+    }
+  }
+}

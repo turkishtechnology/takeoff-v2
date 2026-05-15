@@ -73,34 +73,37 @@ table needs updating.
 
 ### State
 
-| Attribute             | Value        | Scope                       | Meaning                             |
-| --------------------- | ------------ | --------------------------- | ----------------------------------- |
-| `data-disabled`       | presence     | Root                        | Component is disabled               |
-| `data-loading`        | presence     | Root                        | Component is in loading state       |
-| `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state  |
-| `data-state="open"`   | presence-str | Spar Accordion item/trigger | Disclosure is open (Spar-emitted)   |
-| `data-state="closed"` | presence-str | Spar Accordion item/trigger | Disclosure is closed (Spar-emitted) |
+| Attribute             | Value        | Scope                       | Meaning                               |
+| --------------------- | ------------ | --------------------------- | ------------------------------------- |
+| `data-disabled`       | presence     | Root                        | Component is disabled                 |
+| `data-invalid`        | presence     | Root, Item                  | Component or item is visually invalid |
+| `data-loading`        | presence     | Root                        | Component is in loading state         |
+| `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state    |
+| `data-state="open"`   | presence-str | Spar Accordion item/trigger | Disclosure is open (Spar-emitted)     |
+| `data-state="closed"` | presence-str | Spar Accordion item/trigger | Disclosure is closed (Spar-emitted)   |
 
 ### Variant
 
-| Attribute      | Scope            | Example values                             | Notes                                            |
-| -------------- | ---------------- | ------------------------------------------ | ------------------------------------------------ |
-| `data-variant` | Root             | `primary`, `danger`, `neutral`             | Semantic color treatment                         |
-| `data-size`    | Root, Item       | `base`, `large`, `small`                   | Duplicated to Accordion items by design (rule 7) |
-| `data-mode`    | Root, Item       | `button`, `link`, `default`, `compact`     | Rendering or behavior mode                       |
-| `data-type`    | Root **or** Item | `filled`, `outlined`, `grouped`, `divided` | Owner depends on component — see Accordion below |
+| Attribute      | Scope            | Example values                                     | Notes                                                                 |
+| -------------- | ---------------- | -------------------------------------------------- | --------------------------------------------------------------------- |
+| `data-variant` | Root             | `primary`, `danger`, `neutral`                     | Semantic color treatment                                              |
+| `data-size`    | Root, Item       | `base`, `large`, `small`                           | Duplicated to items by design where recipes need item-local selectors |
+| `data-mode`    | Root, Item       | `button`, `link`, `default`, `compact`             | Rendering or behavior mode                                            |
+| `data-type`    | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card` | Owner depends on component — see component decisions below            |
 
 ### Semantic
 
-| Attribute             | Component             | Meaning                                         |
-| --------------------- | --------------------- | ----------------------------------------------- |
-| `data-full-width`     | Button                | Stretches to container width                    |
-| `data-icon-only`      | Button                | No label content, only icon                     |
-| `data-rounded`        | Button                | Circular icon-only shape                        |
-| `data-underline`      | Button                | Label is underlined                             |
-| `data-icon-kind`      | Button, AccordionItem | Distinguishes string icons from ReactNode icons |
-| `data-hide-arrows`    | Accordion root        | Auto-rendered arrows are hidden                 |
-| `data-arrow-position` | Accordion root        | Layout intent for trigger arrows                |
+| Attribute             | Component             | Meaning                                          |
+| --------------------- | --------------------- | ------------------------------------------------ |
+| `data-full-width`     | Button                | Stretches to container width                     |
+| `data-icon-only`      | Button                | No label content, only icon                      |
+| `data-rounded`        | Button                | Circular icon-only shape                         |
+| `data-underline`      | Button                | Label is underlined                              |
+| `data-icon-kind`      | Button, AccordionItem | Distinguishes string icons from ReactNode icons  |
+| `data-hide-arrows`    | Accordion root        | Auto-rendered arrows are hidden                  |
+| `data-arrow-position` | Accordion root        | Layout intent for trigger arrows                 |
+| `data-position`       | Radio root/item       | Indicator placement (`left` / `right`)           |
+| `data-spread`         | Radio root            | Items share available space along the group axis |
 
 ### Out-of-band attributes
 
@@ -139,3 +142,16 @@ should explain **why** the deviation exists so reviewers do not "fix" it later.
 - **`data-arrow-position` and `data-hide-arrows` live on the root.** They
   describe layout intent for the whole accordion and cascade naturally to every
   trigger via descendant selectors.
+
+### Radio
+
+- **`data-size`, `data-type`, `data-position`, and `data-invalid` are emitted on
+  both the root and each item.** The root copy documents the resolved group
+  defaults; the item copy lets the radio recipe style `.tk-radio-item` without
+  an ancestor selector and allows per-item `position` overrides.
+- **`data-spread` lives on the root only.** It is a group layout hook. Items do
+  not carry it because CSS can stretch direct `.tk-radio-item` children from the
+  root selector.
+- **Checked/unchecked state stays Spar-owned.** `Radio.Item` exposes Spar's
+  `data-state="checked" | "unchecked"`; the wrapper recipe consumes that state
+  for the indicator fill instead of mirroring selection in React.
