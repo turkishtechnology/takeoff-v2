@@ -48,7 +48,7 @@ const dataSwitchState = [
   },
 ];
 
-const dataPassiveState = [
+const _dataPassiveState = [
   {
     attribute: 'data-disabled',
     appliedWhen: '`disabled` is true.',
@@ -139,7 +139,5 @@ export default {
     compoundPartConfig('SwitchControlProps', 'Switch.Control', 'switch-control', 'control', dataSwitchState),
     compoundPartConfig('SwitchTrackProps', 'Switch.Track', 'switch-track', 'track', dataSwitchState),
     compoundPartConfig('SwitchThumbProps', 'Switch.Thumb', 'switch-thumb', 'thumb', dataSwitchState),
-    compoundPartConfig('SwitchLabelProps', 'Switch.Label', 'switch-label', 'label', dataPassiveState),
-    compoundPartConfig('SwitchHintProps', 'Switch.Hint', 'switch-hint', 'hint', dataPassiveState),
   ],
 };

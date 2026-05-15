@@ -17,16 +17,16 @@ export const Switch = (props: SwitchProps) => {
   // Spar's SwitchRoot already emits them on the same element with the same
   // semantics. Wrapper owns the Takeoff visual hooks only.
   const { rootAttrs } = composeRootAttrs(SwitchBase, { className, classNames, slotProps }, theme, {
-    stateAttrs: {
+    stateAttrs: () => ({
       'data-size': size,
       'data-variant': variant,
       'data-invalid': invalid ? '' : undefined,
-    },
+    }),
   });
 
   return (
     <SwitchProvider value={{ classNames, slotProps }}>
-      <SparSwitchRoot {...sparProps} {...rootAttrs} ref={ref}>
+      <SparSwitchRoot {...sparProps} isInvalid={invalid} {...rootAttrs} ref={ref}>
         {children}
       </SparSwitchRoot>
     </SwitchProvider>

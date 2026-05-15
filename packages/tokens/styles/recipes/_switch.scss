@@ -68,53 +68,6 @@
     height: 100%;
   }
 
-  .tk-toggle-label {
-    align-self: center;
-    color: var(--text-darkest);
-    font-family: var(--desktop-body-s-font);
-    font-size: var(--desktop-body-s-size);
-    font-style: normal;
-    font-weight: 400;
-    line-height: var(--desktop-body-s-line-height);
-  }
-
-  .tk-toggle-hint {
-    flex-basis: 100%;
-    color: var(--text-base);
-    font-size: var(--desktop-body-xs-size);
-    line-height: var(--desktop-body-xs-line-height);
-    font-weight: 400;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-  }
-
-  .tk-toggle-hint-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--icon-base);
-    line-height: 1;
-  }
-
-  .tk-toggle-hint-icon svg {
-    display: block;
-    width: 1em;
-    height: 1em;
-  }
-
-  &[data-invalid]:not([data-disabled]) {
-    .tk-toggle-hint,
-    .tk-toggle-hint-icon {
-      color: var(--states-danger-base);
-    }
-  }
-
-  .tk-toggle-asterisk {
-    color: var(--states-danger-base);
-    margin-inline-start: 0.125rem;
-  }
-
   &[data-hover]:not([data-disabled]):not([data-readonly]):not([data-checked]) {
     .tk-toggle-input-container {
       background: var(--background-sub-base);
@@ -219,10 +172,6 @@
 
     .tk-toggle-thumb-icon {
       color: var(--icon-lightest);
-    }
-
-    .tk-toggle-label {
-      color: var(--text-sub-base);
     }
   }
 

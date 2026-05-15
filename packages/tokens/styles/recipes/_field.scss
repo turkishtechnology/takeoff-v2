@@ -57,4 +57,31 @@
   .tk-field-error-message {
     color: var(--states-danger-base);
   }
+
+  // ---- Switch layout variant ----
+  // When a Field contains a Switch (.tk-toggle), the layout switches from
+  // vertical stack to a grid: label left, switch right, description/error below.
+
+  &:has(> .tk-toggle) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--spacing-xxs) var(--basic-switcher-container-gap, 12px);
+
+    > .tk-field-label {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    > .tk-toggle {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    > .tk-field-description,
+    > .tk-field-error-message {
+      grid-column: 1 / -1;
+      margin-block-start: 0;
+    }
+  }
 }

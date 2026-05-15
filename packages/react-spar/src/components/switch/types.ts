@@ -5,7 +5,7 @@ import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type SwitchSize = 'xlarge' | 'large' | 'base' | 'small' | 'xsmall';
 export type SwitchVariant = 'info' | 'success';
-export type SwitchSlot = 'root' | 'control' | 'track' | 'thumb' | 'label' | 'hint';
+export type SwitchSlot = 'root' | 'control' | 'track' | 'thumb';
 export type SwitchRenderProps = SparSwitchRenderProps;
 
 export interface SwitchProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'classNames' | 'onChange'> {
@@ -60,19 +60,6 @@ export interface SwitchTrackProps extends ComponentPropsWithoutRef<'span'> {
 }
 
 export interface SwitchThumbProps extends ComponentPropsWithoutRef<'span'> {
-  ref?: Ref<HTMLSpanElement>;
-}
-
-export interface SwitchLabelProps extends ComponentPropsWithoutRef<'span'> {
-  ref?: Ref<HTMLSpanElement>;
-}
-
-export interface SwitchHintProps extends ComponentPropsWithoutRef<'span'> {
-  /**
-   * Leading icon rendered before the hint text. Pass `null` to hide.
-   * @defaultValue a built-in info glyph
-   */
-  icon?: ReactNode;
   ref?: Ref<HTMLSpanElement>;
 }
 
