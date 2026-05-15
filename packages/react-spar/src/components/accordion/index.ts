@@ -27,7 +27,6 @@ export type {
   AccordionProps,
   AccordionSize,
   AccordionTriggerProps,
-  AccordionTriggerTitleProps,
   AccordionType,
   AccordionValue,
   AccordionValueChangeHandler,
