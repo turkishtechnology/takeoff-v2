@@ -36,6 +36,14 @@ import {
 } from './components/select/base';
 import { SwitchBase } from './components/switch/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
+import {
+  RadioBase,
+  RadioDescriptionBase,
+  RadioIndicatorBase,
+  RadioItemBase,
+  RadioLabelBase,
+  RadioTextBase,
+} from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 
 /**
@@ -91,6 +99,12 @@ export const slotClassRegistry = {
   popoverContent: { slots: PopoverContentBase.classes },
   popoverArrow: { slots: PopoverArrowBase.classes },
   popoverClose: { slots: PopoverCloseBase.classes },
+  radio: { slots: RadioBase.classes },
+  radioItem: { slots: RadioItemBase.classes },
+  radioIndicator: { slots: RadioIndicatorBase.classes },
+  radioText: { slots: RadioTextBase.classes },
+  radioLabel: { slots: RadioLabelBase.classes },
+  radioDescription: { slots: RadioDescriptionBase.classes },
   tooltipTrigger: { slots: TooltipTriggerBase.classes },
   tooltipContent: { slots: TooltipContentBase.classes },
   tooltipHeader: { slots: TooltipHeaderBase.classes },
