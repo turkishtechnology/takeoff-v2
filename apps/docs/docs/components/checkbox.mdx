@@ -1,0 +1,576 @@
+---
+title: Checkbox
+description:
+  Lets users select one or more options or toggle a single setting on or off,
+  with support for an indeterminate mixed state.
+sidebar_label: Checkbox
+sidebar_position: 3
+slug: /components/checkbox
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Checkbox,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const checkboxScope = { Checkbox };
+
+{/* prettier-ignore-start */}
+
+export const checkboxDemoCss = String.raw`
+.checkbox-demo-stack {
+  display: grid;
+  width: min(100%, 520px);
+  gap: 14px;
+}
+
+.checkbox-demo-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+}
+
+.checkbox-demo-status {
+  width: fit-content;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--static-light);
+  color: var(--text-dark);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 8px 12px;
+}
+
+.checkbox-demo-form {
+  display: grid;
+  width: min(100%, 520px);
+  gap: 14px;
+}
+
+.checkbox-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.checkbox-demo-button {
+  border: 0;
+  border-radius: 8px;
+  background: var(--primary-base);
+  color: var(--static-white);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 10px 16px;
+}
+`;
+
+export const playgroundDemo = String.raw`
+<div className="checkbox-demo-stack">
+  <Checkbox defaultChecked>
+    <Checkbox.Indicator>
+      <Checkbox.Icon />
+    </Checkbox.Indicator>
+    <Checkbox.Label>Email me booking updates</Checkbox.Label>
+  </Checkbox>
+  <Checkbox>
+    <Checkbox.Indicator>
+      <Checkbox.Icon />
+    </Checkbox.Indicator>
+    <Checkbox.Label>Subscribe to fare alerts</Checkbox.Label>
+    <Checkbox.Description>
+      We will only email you when a saved route drops in price.
+    </Checkbox.Description>
+  </Checkbox>
+</div>
+`;
+
+export const controlledDemo = String.raw`
+function ControlledCheckboxDemo() {
+  const [accepted, setAccepted] = useState(false);
+
+  return (
+    <div className="checkbox-demo-stack">
+      <div className="checkbox-demo-status">
+        Terms {accepted ? 'accepted' : 'not accepted'}
+      </div>
+      <Checkbox checked={accepted} onChange={setAccepted}>
+        <Checkbox.Indicator>
+          <Checkbox.Icon />
+        </Checkbox.Indicator>
+        <Checkbox.Label>I accept the booking terms</Checkbox.Label>
+      </Checkbox>
+    </div>
+  );
+}
+
+render(<ControlledCheckboxDemo />);
+`;
+
+export const indeterminateDemo = String.raw`
+function IndeterminateCheckboxDemo() {
+  const [items, setItems] = useState({
+    seat: true,
+    meal: false,
+    baggage: false,
+  });
+
+  const values = Object.values(items);
+  const allChecked = values.every(Boolean);
+  const noneChecked = values.every((v) => !v);
+  const indeterminate = !allChecked && !noneChecked;
+
+  const toggleAll = (next) => {
+    setItems({ seat: next, meal: next, baggage: next });
+  };
+
+  return (
+    <div className="checkbox-demo-stack">
+      <Checkbox
+        checked={allChecked}
+        indeterminate={indeterminate}
+        onChange={toggleAll}
+      >
+        <Checkbox.Indicator>
+          <Checkbox.Icon />
+        </Checkbox.Indicator>
+        <Checkbox.Label>All extras</Checkbox.Label>
+      </Checkbox>
+      <div className="checkbox-demo-stack" style={{ paddingLeft: 24 }}>
+        <Checkbox
+          checked={items.seat}
+          onChange={(v) => setItems({ ...items, seat: v })}
+        >
+          <Checkbox.Indicator>
+            <Checkbox.Icon />
+          </Checkbox.Indicator>
+          <Checkbox.Label>Extra legroom seat</Checkbox.Label>
+        </Checkbox>
+        <Checkbox
+          checked={items.meal}
+          onChange={(v) => setItems({ ...items, meal: v })}
+        >
+          <Checkbox.Indicator>
+            <Checkbox.Icon />
+          </Checkbox.Indicator>
+          <Checkbox.Label>Special meal</Checkbox.Label>
+        </Checkbox>
+        <Checkbox
+          checked={items.baggage}
+          onChange={(v) => setItems({ ...items, baggage: v })}
+        >
+          <Checkbox.Indicator>
+            <Checkbox.Icon />
+          </Checkbox.Indicator>
+          <Checkbox.Label>Extra baggage</Checkbox.Label>
+        </Checkbox>
+      </div>
+    </div>
+  );
+}
+
+render(<IndeterminateCheckboxDemo />);
+`;
+
+export const sizeDemo = String.raw`
+<div className="checkbox-demo-inline">
+  <Checkbox size="small" defaultChecked>
+    <Checkbox.Indicator>
+      <Checkbox.Icon />
+    </Checkbox.Indicator>
+    <Checkbox.Label>Small</Checkbox.Label>
+  </Checkbox>
+  <Checkbox size="base" defaultChecked>
+    <Checkbox.Indicator>
+      <Checkbox.Icon />
+    </Checkbox.Indicator>
+    <Checkbox.Label>Base</Checkbox.Label>
+  </Checkbox>
+</div>
+`;
+
+export const cardTypeDemo = String.raw`
+<div className="checkbox-demo-stack">
+  <Checkbox type="card" defaultChecked>
+    <Checkbox.Indicator>
+      <Checkbox.Icon />
+    </Checkbox.Indicator>
+    <Checkbox.Label>Mobile boarding pass</Checkbox.Label>
+    <Checkbox.Description>
+      Skip the printed pass and board with your phone.
+    </Checkbox.Description>
+  </Checkbox>
+  <Checkbox type="card">
+    <Checkbox.Indicator>
+      <Checkbox.Icon />
+    </Checkbox.Indicator>
+    <Checkbox.Label>Priority boarding</Checkbox.Label>
+    <Checkbox.Description>
+      Board before general groups with priority access.
+    </Checkbox.Description>
+  </Checkbox>
+</div>
+`;
+
+export const customIconDemo = String.raw`
+const StarIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+  >
+    <path d="M12 2 15 9l7 .5-5.5 4.5L18 22l-6-4-6 4 1.5-8L2 9.5 9 9z" />
+  </svg>
+);
+
+const DashIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="3"
+    strokeLinecap="round"
+  >
+    <path d="M5 12h14" />
+  </svg>
+);
+
+render(
+  <div className="checkbox-demo-stack">
+    <Checkbox defaultChecked>
+      <Checkbox.Indicator>
+        <Checkbox.Icon>
+          {({ checked, indeterminate }) =>
+            indeterminate ? <DashIcon /> : checked ? <StarIcon /> : null
+          }
+        </Checkbox.Icon>
+      </Checkbox.Indicator>
+      <Checkbox.Label>Favorite this route</Checkbox.Label>
+    </Checkbox>
+  </div>,
+);
+`;
+
+export const stateDemo = String.raw`
+<div className="checkbox-demo-stack">
+  <Checkbox disabled>
+    <Checkbox.Indicator>
+      <Checkbox.Icon />
+    </Checkbox.Indicator>
+    <Checkbox.Label>Disabled option</Checkbox.Label>
+  </Checkbox>
+  <Checkbox disabled defaultChecked>
+    <Checkbox.Indicator>
+      <Checkbox.Icon />
+    </Checkbox.Indicator>
+    <Checkbox.Label>Disabled and selected</Checkbox.Label>
+  </Checkbox>
+  <Checkbox readOnly defaultChecked>
+    <Checkbox.Indicator>
+      <Checkbox.Icon />
+    </Checkbox.Indicator>
+    <Checkbox.Label>Read-only selection</Checkbox.Label>
+  </Checkbox>
+  <Checkbox invalid required>
+    <Checkbox.Indicator>
+      <Checkbox.Icon />
+    </Checkbox.Indicator>
+    <Checkbox.Label>I accept the booking terms</Checkbox.Label>
+    <Checkbox.Description>
+      You must accept the terms to continue.
+    </Checkbox.Description>
+  </Checkbox>
+</div>
+`;
+
+export const formDemo = String.raw`
+function CheckboxFormDemo() {
+  const [saved, setSaved] = useState('Not submitted');
+
+  return (
+    <form
+      className="checkbox-demo-form"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const picked = data.getAll('extras');
+        setSaved(picked.length ? picked.join(', ') : 'No extras');
+      }}
+    >
+      <Checkbox name="extras" value="seat" defaultChecked>
+        <Checkbox.Indicator>
+          <Checkbox.Icon />
+        </Checkbox.Indicator>
+        <Checkbox.Label>Extra legroom seat</Checkbox.Label>
+      </Checkbox>
+      <Checkbox name="extras" value="meal">
+        <Checkbox.Indicator>
+          <Checkbox.Icon />
+        </Checkbox.Indicator>
+        <Checkbox.Label>Special meal</Checkbox.Label>
+      </Checkbox>
+      <Checkbox name="extras" value="baggage">
+        <Checkbox.Indicator>
+          <Checkbox.Icon />
+        </Checkbox.Indicator>
+        <Checkbox.Label>Extra baggage</Checkbox.Label>
+      </Checkbox>
+      <div className="checkbox-demo-actions">
+        <button className="checkbox-demo-button" type="submit">
+          Save
+        </button>
+        <span className="checkbox-demo-status">{saved}</span>
+      </div>
+    </form>
+  );
+}
+
+render(<CheckboxFormDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Checkbox
+
+`Checkbox` lets users select one or more options or toggle a single setting on
+or off, with first-class support for an indeterminate "mixed" state. Takeoff
+visual props stay on the wrapper while Spar owns checked state, forms, focus,
+and keyboard behavior.
+
+## Usage
+
+```tsx
+import { Checkbox } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Checkbox>
+  <Checkbox.Indicator>
+    <Checkbox.Icon />
+  </Checkbox.Indicator>
+  <Checkbox.Label />
+  <Checkbox.Description />
+</Checkbox>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  cssCode={checkboxDemoCss}
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={checkboxScope}
+/>
+
+## Controlled
+
+<LiveCode
+  code={controlledDemo}
+  cssCode={checkboxDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={checkboxScope}
+/>
+
+## Indeterminate
+
+`indeterminate` overrides `checked` and `defaultChecked` while set, and emits
+`aria-checked="mixed"`. The first user toggle transitions out of the mixed state
+— `onChange` is always called with a plain `boolean`. In uncontrolled mode, set
+`indeterminate` only on the initial render and clear it from your own state
+after the first change.
+
+<LiveCode
+  code={indeterminateDemo}
+  cssCode={checkboxDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={checkboxScope}
+/>
+
+## Sizes
+
+<LiveCode
+  code={sizeDemo}
+  cssCode={checkboxDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={checkboxScope}
+/>
+
+## Card Type
+
+Set `type="card"` to switch to the bordered card variant for option-row layouts.
+
+<LiveCode
+  code={cardTypeDemo}
+  cssCode={checkboxDemoCss}
+  editable={false}
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={checkboxScope}
+/>
+
+## Custom Icon
+
+`Checkbox.Icon` accepts function children that receive the current `checked` and
+`indeterminate` state, so you can render different glyphs per state without
+mounting two icons.
+
+<LiveCode
+  code={customIconDemo}
+  cssCode={checkboxDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={checkboxScope}
+/>
+
+## Disabled, Read-Only, and Invalid
+
+<LiveCode
+  code={stateDemo}
+  cssCode={checkboxDemoCss}
+  editable={false}
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={checkboxScope}
+/>
+
+## Form Submission
+
+When `name` is set, Spar renders a synchronized hidden checkbox input for native
+form submission. Multiple checkboxes sharing the same `name` produce an array
+via `FormData.getAll`.
+
+<LiveCode
+  code={formDemo}
+  cssCode={checkboxDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={300}
+  previewWrapper={ReactSparDemoRoot}
+  scope={checkboxScope}
+/>
+
+## Accessibility & Keyboard
+
+- `Checkbox` renders a focusable control with `role="checkbox"` and reflects its
+  value through `aria-checked` (including `"mixed"` for the indeterminate
+  state).
+- `Checkbox.Label` provides the accessible name. Use `aria-label` or
+  `aria-labelledby` on the root when the checkbox has no visible label.
+- `Checkbox.Description` is descriptive supplementary text. Wire it to the
+  control with `aria-describedby` on the root when you need the description
+  announced.
+- Setting `required` on the root renders a visual asterisk inside
+  `Checkbox.Label` and exposes `aria-required`.
+- Disabled checkboxes are removed from the tab order. Read-only checkboxes
+  remain focusable and do not change value.
+
+| Key              | Behavior                            |
+| ---------------- | ----------------------------------- |
+| <kbd>Space</kbd> | Toggle the focused checkbox.        |
+| <kbd>Tab</kbd>   | Move focus to the next tabbable UI. |
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Checkbox {#checkbox}
+
+See
+[Spar Checkbox docs](https://spar.app.turkishtechlab.com/docs/Components/Checkbox)
+for primitive behavior.
+
+#### Props {#checkbox-props}
+
+| Name                               | Type                                                                                      | Default   | Description                                                                                                         |
+| ---------------------------------- | ----------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />      | <code>React.ReactNode &#124; ((state: CheckboxRenderProps) =&gt; React.ReactNode)</code>  | -         | Compound children for checkbox anatomy, or a render function exposing Spar tri-state.                               |
+| <ApiBadge label="indeterminate" /> | <code>boolean</code>                                                                      | false     | Indeterminate (mixed) visual + ARIA state. Overrides `checked` / `defaultChecked` and emits `aria-checked="mixed"`. |
+| <ApiBadge label="invalid" />       | <code>boolean</code>                                                                      | false     | Marks the checkbox as visually invalid.                                                                             |
+| <ApiBadge label="size" />          | <code>CheckboxSize</code>                                                                 | 'base'    | Size scale.                                                                                                         |
+| <ApiBadge label="type" />          | <code>CheckboxType</code>                                                                 | 'default' | Visual appearance. `card` switches to the bordered card variant.                                                    |
+| <ApiBadge label="classNames" />    | <code>Partial&lt;Record&lt;CheckboxSlot, string&gt;&gt;</code>                            | -         | Per-slot class name overrides.                                                                                      |
+| <ApiBadge label="slotProps" />     | <code>Partial&lt;Record&lt;CheckboxSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML attribute overrides.                                                                                  |
+| <ApiBadge label="className" />     | <code>string</code>                                                                       | -         | Appends custom classes to the root slot of this part.                                                               |
+
+#### Data attributes {#checkbox-data-attributes}
+
+| Attribute            | Applied when        | Purpose                                                                     |
+| -------------------- | ------------------- | --------------------------------------------------------------------------- |
+| `data-slot="root"`   | Always              | Stable selector for the root slot.                                          |
+| `data-size`          | Always              | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| `data-type`          | Always              | Reflects the resolved `type` prop so theme recipes can scope type variants. |
+| `data-invalid`       | `invalid` is true.  | Marks invalid visual state for theme recipes.                               |
+| `data-checked`       | When checked.       | Spar checked-state hook.                                                    |
+| `data-indeterminate` | When indeterminate. | Spar indeterminate-state hook.                                              |
+| `data-disabled`      | `disabled` is true. | Spar disabled-state hook.                                                   |
+| `data-readonly`      | `readOnly` is true. | Spar read-only-state hook.                                                  |
+| `data-required`      | `required` is true. | Spar required-state hook.                                                   |
+
+### Checkbox.Indicator {#checkbox-indicator}
+
+See
+[Spar Checkbox docs](https://spar.app.turkishtechlab.com/docs/Components/Checkbox)
+for primitive behavior.
+
+#### Data attributes {#checkbox-indicator-data-attributes}
+
+| Attribute               | Applied when | Purpose                                 |
+| ----------------------- | ------------ | --------------------------------------- |
+| `data-slot="indicator"` | Always       | Stable selector for the indicator slot. |
+
+### Checkbox.Icon {#checkbox-icon}
+
+See
+[Spar Checkbox docs](https://spar.app.turkishtechlab.com/docs/Components/Checkbox)
+for primitive behavior.
+
+#### Data attributes {#checkbox-icon-data-attributes}
+
+| Attribute          | Applied when | Purpose                            |
+| ------------------ | ------------ | ---------------------------------- |
+| `data-slot="icon"` | Always       | Stable selector for the icon slot. |
+
+### Checkbox.Label {#checkbox-label}
+
+See
+[Spar Checkbox docs](https://spar.app.turkishtechlab.com/docs/Components/Checkbox)
+for primitive behavior.
+
+#### Data attributes {#checkbox-label-data-attributes}
+
+| Attribute           | Applied when | Purpose                             |
+| ------------------- | ------------ | ----------------------------------- |
+| `data-slot="label"` | Always       | Stable selector for the label slot. |
+
+### Checkbox.Description {#checkbox-description}
+
+See
+[Spar Checkbox docs](https://spar.app.turkishtechlab.com/docs/Components/Checkbox)
+for primitive behavior.
+
+#### Data attributes {#checkbox-description-data-attributes}
+
+| Attribute                 | Applied when | Purpose                                   |
+| ------------------------- | ------------ | ----------------------------------------- |
+| `data-slot="description"` | Always       | Stable selector for the description slot. |
+
+{/* api-tables:end */}

@@ -1,0 +1,504 @@
+---
+title: Radio
+description:
+  Lets users choose a single option from a small, mutually exclusive set — ideal
+  for fare classes, seat preferences, and other one-of-many decisions.
+sidebar_label: Radio
+sidebar_position: 7
+slug: /components/radio
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import { Radio, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const radioScope = { Radio };
+
+{/* prettier-ignore-start */}
+
+export const radioDemoCss = String.raw`
+.radio-demo {
+  width: min(100%, 480px);
+}
+
+.radio-demo-stack {
+  display: grid;
+  gap: 16px;
+  width: min(100%, 480px);
+}
+
+.radio-demo-note {
+  width: fit-content;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--static-light);
+  color: var(--text-dark);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 8px 12px;
+}
+`;
+
+export const playgroundDemo = String.raw`
+<Radio aria-label="Cabin class" defaultValue="economy" className="radio-demo">
+  <Radio.Item value="economy">
+    <Radio.Indicator />
+    <Radio.Text>
+      <Radio.Label>Economy</Radio.Label>
+      <Radio.Description>Standard fare with carry-on baggage.</Radio.Description>
+    </Radio.Text>
+  </Radio.Item>
+  <Radio.Item value="business">
+    <Radio.Indicator />
+    <Radio.Text>
+      <Radio.Label>Business</Radio.Label>
+      <Radio.Description>Lie-flat seat, lounge access, priority boarding.</Radio.Description>
+    </Radio.Text>
+  </Radio.Item>
+  <Radio.Item value="first">
+    <Radio.Indicator />
+    <Radio.Text>
+      <Radio.Label>First</Radio.Label>
+      <Radio.Description>Private suite and chef-curated dining.</Radio.Description>
+    </Radio.Text>
+  </Radio.Item>
+</Radio>
+`;
+
+export const sizesDemo = String.raw`
+<div className="radio-demo-stack">
+  <Radio aria-label="Small" size="small" defaultValue="aisle">
+    <Radio.Item value="aisle">
+      <Radio.Indicator />
+      <Radio.Label>Aisle</Radio.Label>
+    </Radio.Item>
+    <Radio.Item value="window">
+      <Radio.Indicator />
+      <Radio.Label>Window</Radio.Label>
+    </Radio.Item>
+  </Radio>
+  <Radio aria-label="Base" defaultValue="aisle">
+    <Radio.Item value="aisle">
+      <Radio.Indicator />
+      <Radio.Label>Aisle</Radio.Label>
+    </Radio.Item>
+    <Radio.Item value="window">
+      <Radio.Indicator />
+      <Radio.Label>Window</Radio.Label>
+    </Radio.Item>
+  </Radio>
+  <Radio aria-label="Large" size="large" defaultValue="aisle">
+    <Radio.Item value="aisle">
+      <Radio.Indicator />
+      <Radio.Label>Aisle</Radio.Label>
+    </Radio.Item>
+    <Radio.Item value="window">
+      <Radio.Indicator />
+      <Radio.Label>Window</Radio.Label>
+    </Radio.Item>
+  </Radio>
+</div>
+`;
+
+export const cardDemo = String.raw`
+<Radio aria-label="Meal preference" type="card" defaultValue="standard" className="radio-demo">
+  <Radio.Item value="standard">
+    <Radio.Indicator />
+    <Radio.Text>
+      <Radio.Label>Standard meal</Radio.Label>
+      <Radio.Description>Chef-curated regional menu.</Radio.Description>
+    </Radio.Text>
+  </Radio.Item>
+  <Radio.Item value="vegetarian">
+    <Radio.Indicator />
+    <Radio.Text>
+      <Radio.Label>Vegetarian</Radio.Label>
+      <Radio.Description>Lacto-ovo plant-forward dishes.</Radio.Description>
+    </Radio.Text>
+  </Radio.Item>
+  <Radio.Item value="kosher">
+    <Radio.Indicator />
+    <Radio.Text>
+      <Radio.Label>Kosher</Radio.Label>
+      <Radio.Description>Certified by a recognized rabbinical authority.</Radio.Description>
+    </Radio.Text>
+  </Radio.Item>
+</Radio>
+`;
+
+export const layoutDemo = String.raw`
+<div className="radio-demo-stack">
+  <Radio aria-label="Trip type" orientation="horizontal" spread defaultValue="round">
+    <Radio.Item value="one">
+      <Radio.Indicator />
+      <Radio.Label>One-way</Radio.Label>
+    </Radio.Item>
+    <Radio.Item value="round">
+      <Radio.Indicator />
+      <Radio.Label>Round trip</Radio.Label>
+    </Radio.Item>
+    <Radio.Item value="multi">
+      <Radio.Indicator />
+      <Radio.Label>Multi-city</Radio.Label>
+    </Radio.Item>
+  </Radio>
+
+  <Radio aria-label="Indicator on the trailing edge" position="right" defaultValue="email">
+    <Radio.Item value="email">
+      <Radio.Indicator />
+      <Radio.Text>
+        <Radio.Label>Email</Radio.Label>
+        <Radio.Description>Booking confirmations and itinerary changes.</Radio.Description>
+      </Radio.Text>
+    </Radio.Item>
+    <Radio.Item value="sms">
+      <Radio.Indicator />
+      <Radio.Text>
+        <Radio.Label>SMS</Radio.Label>
+        <Radio.Description>Gate changes and boarding reminders.</Radio.Description>
+      </Radio.Text>
+    </Radio.Item>
+  </Radio>
+</div>
+`;
+
+export const controlledDemo = String.raw`
+function ControlledRadioDemo() {
+  const [value, setValue] = useState('return');
+
+  return (
+    <div className="radio-demo-stack">
+      <div className="radio-demo-note">Selected: {value}</div>
+      <Radio
+        aria-label="Refund preference"
+        value={value}
+        onValueChange={setValue}
+      >
+        <Radio.Item value="return">
+          <Radio.Indicator />
+          <Radio.Text>
+            <Radio.Label>Refund to original payment</Radio.Label>
+            <Radio.Description>Settles in 5–10 business days.</Radio.Description>
+          </Radio.Text>
+        </Radio.Item>
+        <Radio.Item value="voucher">
+          <Radio.Indicator />
+          <Radio.Text>
+            <Radio.Label>Travel voucher</Radio.Label>
+            <Radio.Description>Includes a 10% bonus, valid for 12 months.</Radio.Description>
+          </Radio.Text>
+        </Radio.Item>
+      </Radio>
+    </div>
+  );
+}
+
+render(<ControlledRadioDemo />);
+`;
+
+export const disabledDemo = String.raw`
+<Radio aria-label="Ancillary services" defaultValue="lounge" className="radio-demo">
+  <Radio.Item value="lounge">
+    <Radio.Indicator />
+    <Radio.Text>
+      <Radio.Label>Lounge access</Radio.Label>
+      <Radio.Description>Available at IST and select hubs.</Radio.Description>
+    </Radio.Text>
+  </Radio.Item>
+  <Radio.Item value="upgrade" disabled>
+    <Radio.Indicator />
+    <Radio.Text>
+      <Radio.Label>Upgrade to Business (sold out)</Radio.Label>
+      <Radio.Description>No seats available on this flight.</Radio.Description>
+    </Radio.Text>
+  </Radio.Item>
+</Radio>
+`;
+
+export const invalidDemo = String.raw`
+<Radio aria-label="Passport type" invalid required className="radio-demo">
+  <Radio.Item value="standard">
+    <Radio.Indicator />
+    <Radio.Label>Standard passport</Radio.Label>
+  </Radio.Item>
+  <Radio.Item value="diplomatic">
+    <Radio.Indicator />
+    <Radio.Label>Diplomatic passport</Radio.Label>
+  </Radio.Item>
+</Radio>
+`;
+
+export const renderPropDemo = String.raw`
+<Radio aria-label="Seat row preference" defaultValue="exit" className="radio-demo">
+  <Radio.Item value="front">
+    {({ isChecked }) => (
+      <>
+        <Radio.Indicator />
+        <Radio.Text>
+          <Radio.Label>Front of cabin</Radio.Label>
+          <Radio.Description>
+            {isChecked ? 'Selected — boards first.' : 'Quieter, near the galley.'}
+          </Radio.Description>
+        </Radio.Text>
+      </>
+    )}
+  </Radio.Item>
+  <Radio.Item value="exit">
+    {({ isChecked }) => (
+      <>
+        <Radio.Indicator />
+        <Radio.Text>
+          <Radio.Label>Exit row</Radio.Label>
+          <Radio.Description>
+            {isChecked ? 'Selected — extra legroom, eligibility required.' : 'Extra legroom, eligibility required.'}
+          </Radio.Description>
+        </Radio.Text>
+      </>
+    )}
+  </Radio.Item>
+</Radio>
+`;
+
+{/* prettier-ignore-end */}
+
+# Radio
+
+`Radio` lets users pick a single option from a small, mutually exclusive set.
+The root owns the group state (`value`, `defaultValue`, `onValueChange`) and
+cascades visual props (`size`, `type`, `position`, `invalid`) to every item.
+
+## Usage
+
+```tsx
+import { Radio } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Radio>
+  <Radio.Item value="...">
+    <Radio.Indicator />
+    <Radio.Text>
+      <Radio.Label />
+      <Radio.Description />
+    </Radio.Text>
+  </Radio.Item>
+</Radio>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  cssCode={radioDemoCss}
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={radioScope}
+/>
+
+## Sizes
+
+<LiveCode
+  code={sizesDemo}
+  cssCode={radioDemoCss}
+  editable={false}
+  previewMinHeight={280}
+  previewWrapper={ReactSparDemoRoot}
+  scope={radioScope}
+/>
+
+## Card Variant
+
+<LiveCode
+  code={cardDemo}
+  cssCode={radioDemoCss}
+  editable={false}
+  previewMinHeight={280}
+  previewWrapper={ReactSparDemoRoot}
+  scope={radioScope}
+/>
+
+## Layout
+
+Switch the group to `orientation="horizontal"` for inline choices, opt into
+`spread` to stretch items along the axis, or flip the indicator to the trailing
+edge with `position="right"`. Per-item `position` overrides the group default.
+
+<LiveCode
+  code={layoutDemo}
+  cssCode={radioDemoCss}
+  editable={false}
+  previewMinHeight={280}
+  previewWrapper={ReactSparDemoRoot}
+  scope={radioScope}
+/>
+
+## Controlled
+
+<LiveCode
+  code={controlledDemo}
+  cssCode={radioDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={radioScope}
+/>
+
+## Disabled Item
+
+<LiveCode
+  code={disabledDemo}
+  cssCode={radioDemoCss}
+  editable={false}
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={radioScope}
+/>
+
+## Invalid
+
+<LiveCode
+  code={invalidDemo}
+  cssCode={radioDemoCss}
+  editable={false}
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={radioScope}
+/>
+
+## Item Render-Prop
+
+`Radio.Item` accepts a function child that receives the per-item state from Spar
+(`isChecked`, `disabled`, `isFocused`, `select`), so each item can react to its
+own selection without reading context manually.
+
+<LiveCode
+  code={renderPropDemo}
+  cssCode={radioDemoCss}
+  editable={false}
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={radioScope}
+/>
+
+## Accessibility & Keyboard
+
+- The root renders `role="radiogroup"`; each `Radio.Item` is a
+  `<label role="radio">` wrapping a hidden `<input type="radio">` so the group
+  participates in native form submission.
+- Provide a group label via `aria-label` or `aria-labelledby`. `Radio.Label` /
+  `Radio.Description` label the individual item.
+- `Radio.Indicator` is decorative (`aria-hidden`); the checked state is surfaced
+  to assistive tech via `aria-checked` on the item.
+
+| Key                         | Behavior                                                             |
+| --------------------------- | -------------------------------------------------------------------- |
+| <kbd>Tab</kbd>              | Move focus into the group (lands on the checked item, or the first). |
+| <kbd>↓</kbd> / <kbd>→</kbd> | Move focus to the next item and select it.                           |
+| <kbd>↑</kbd> / <kbd>←</kbd> | Move focus to the previous item and select it.                       |
+| <kbd>Space</kbd>            | Select the focused item.                                             |
+
+Disabled items skip both pointer and keyboard activation. Set `selectOnFocus` to
+`false` if you want focus and selection to decouple, and `autoFocus` to move
+focus into the group on mount.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Radio {#radio}
+
+See [Spar Radio docs](https://spar.app.turkishtechlab.com/docs/Components/Radio)
+for primitive behavior.
+
+#### Props {#radio-props}
+
+| Name                            | Type                                                                                | Default   | Description                                                                                                                                          |
+| ------------------------------- | ----------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -         | `Radio.Item` elements rendered inside the radiogroup container.                                                                                      |
+| <ApiBadge label="size" />       | <code>RadioSize</code>                                                              | 'base'    | Size scale. Cascades to descendant `Radio.Item`s via context.                                                                                        |
+| <ApiBadge label="type" />       | <code>RadioType</code>                                                              | 'default' | Visual variant. Cascades to descendant `Radio.Item`s via context.                                                                                    |
+| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                | false     | Marks the group as visually invalid. Cascades to descendant `Radio.Item`s.                                                                           |
+| <ApiBadge label="spread" />     | <code>boolean</code>                                                                | false     | Stretches each item to share the group axis equally. Layout intent only — styling is recipe-side via `[data-spread] > [data-slot="root"]`.           |
+| <ApiBadge label="position" />   | <code>RadioPosition</code>                                                          | 'left'    | Default placement of an item's indicator relative to its label. Cascades to descendant `Radio.Item`s; per-item `position` overrides the group value. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -         | Per-slot class name overrides.                                                                                                                       |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML attribute overrides.                                                                                                                   |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -         | Appends custom classes to the root slot of this part.                                                                                                |
+
+#### Data attributes {#radio-data-attributes}
+
+| Attribute          | Applied when             | Purpose                                                                            |
+| ------------------ | ------------------------ | ---------------------------------------------------------------------------------- |
+| `data-slot="root"` | Always                   | Stable selector for wrapper styling on the root slot.                              |
+| `data-size`        | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants.        |
+| `data-type`        | Always                   | Reflects the resolved `type` prop. Theme recipes target the card variant per item. |
+| `data-position`    | Always                   | Reflects the resolved indicator `position` (`left` / `right`).                     |
+| `data-invalid`     | When `invalid` is true.  | Theme hook for the invalid state. Cascades from the group to every item.           |
+| `data-spread`      | When `spread` is true.   | Layout hook used by recipes to stretch each item along the group axis.             |
+| `data-orientation` | Always                   | Reflects the resolved `orientation` (`vertical` / `horizontal`). Emitted by Spar.  |
+| `data-disabled`    | When `disabled` is true. | Theme hook for the disabled group. Emitted by Spar.                                |
+| `data-required`    | When `required` is true. | Theme hook surfacing the required state. Emitted by Spar.                          |
+
+### Radio.Item {#radio-item}
+
+See [Spar Radio docs](https://spar.app.turkishtechlab.com/docs/Components/Radio)
+for primitive behavior.
+
+#### Props {#radio-item-props}
+
+| Name                            | Type                                                                                | Default              | Description                                                                                                                             |
+| ------------------------------- | ----------------------------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -                    | `Radio.Indicator`, `Radio.Text` (with optional `Radio.Label` / `Radio.Description`), or a render function exposing per-item Spar state. |
+| <ApiBadge label="position" />   | <code>RadioPosition</code>                                                          | inherited from group | Override the group-level `position` for this item only.                                                                                 |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -                    | Per-slot class name overrides.                                                                                                          |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -                    | Per-slot HTML attribute overrides.                                                                                                      |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -                    | Appends custom classes to the root slot of this part.                                                                                   |
+
+#### Data attributes {#radio-item-data-attributes}
+
+| Attribute                | Applied when                                                | Purpose                                                                            |
+| ------------------------ | ----------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `data-slot="root"`       | Always                                                      | Stable selector for wrapper styling on the root slot.                              |
+| `data-size`              | Always                                                      | Reflects the resolved `size` prop so theme recipes can scope size variants.        |
+| `data-type`              | Always                                                      | Reflects the resolved `type` prop. Theme recipes target the card variant per item. |
+| `data-position`          | Always                                                      | Reflects the resolved indicator `position` (`left` / `right`).                     |
+| `data-invalid`           | When `invalid` is true.                                     | Theme hook for the invalid state. Cascades from the group to every item.           |
+| `data-state="checked"`   | When the item matches the group value.                      | Spar checked-state hook. Drives the indicator fill.                                |
+| `data-state="unchecked"` | When the item does not match the group value.               | Spar unchecked-state hook.                                                         |
+| `data-disabled`          | When the item `disabled` is true, or the group is disabled. | Theme hook for the disabled item state. Emitted by Spar.                           |
+
+### Radio.Indicator {#radio-indicator}
+
+#### Data attributes {#radio-indicator-data-attributes}
+
+| Attribute          | Applied when | Purpose                                                                               |
+| ------------------ | ------------ | ------------------------------------------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.                                 |
+| `data-slot="icon"` | Always       | Internal decorative fill element. Customize via `slotProps.icon` / `classNames.icon`. |
+
+### Radio.Text {#radio-text}
+
+#### Data attributes {#radio-text-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Radio.Label {#radio-label}
+
+#### Data attributes {#radio-label-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Radio.Description {#radio-description}
+
+#### Data attributes {#radio-description-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+{/* api-tables:end */}
