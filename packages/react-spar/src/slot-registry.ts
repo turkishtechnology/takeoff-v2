@@ -1,6 +1,7 @@
 import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItemBase, AccordionTriggerBase, AccordionTriggerTitleBase } from './components/accordion/base';
 import { BadgeBase } from './components/badge/base';
 import { ButtonBase } from './components/button/base';
+import { CheckboxBase } from './components/checkbox/base';
 import {
   DrawerBase,
   DrawerBodyBase,
@@ -67,6 +68,7 @@ export const slotClassRegistry = {
   accordionContent: { slots: AccordionContentBase.classes },
   badge: { slots: BadgeBase.classes },
   button: { slots: ButtonBase.classes },
+  checkbox: { slots: CheckboxBase.classes },
   drawer: { slots: DrawerBase.classes },
   drawerOverlay: { slots: DrawerOverlayBase.classes },
   drawerPanel: { slots: DrawerPanelBase.classes },
