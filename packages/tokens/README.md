@@ -1,6 +1,7 @@
 # @takeoff-design/tokens
 
-Design token outputs for Takeoff Design. The package ships generated CSS, SCSS, JavaScript, Tailwind theme assets, fonts CSS, and component recipe styles.
+Design token outputs for Takeoff Design. The package ships generated CSS, SCSS,
+JavaScript, Tailwind theme assets, fonts CSS, and component recipe styles.
 
 ## Install
 
@@ -33,4 +34,5 @@ import tokens from '@takeoff-design/tokens';
 @import '@takeoff-design/tokens/tailwind/theme.css';
 ```
 
-Raw source token JSON and internal sync/build scripts are repository internals and are not part of the npm package contract.
+Raw source token JSON and internal sync/build scripts are repository internals
+and are not part of the npm package contract.

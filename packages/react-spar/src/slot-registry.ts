@@ -14,16 +14,8 @@ import {
   DrawerTitleBase,
   DrawerTriggerBase,
 } from './components/drawer/base';
-import {
-  InputBase,
-  InputContainerBase,
-  InputDescriptionBase,
-  InputErrorMessageBase,
-  InputFieldBase,
-  InputLabelBase,
-  InputPrefixBase,
-  InputSuffixBase,
-} from './components/input/base';
+import { FieldBase, FieldDescriptionBase, FieldErrorMessageBase, FieldLabelBase } from './components/field/base';
+import { InputBase, InputContainerBase, InputFieldBase, InputPrefixBase, InputSuffixBase } from './components/input/base';
 import {
   SelectBase,
   SelectContentBase,
@@ -37,14 +29,7 @@ import {
 } from './components/select/base';
 import { SwitchBase } from './components/switch/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
-import {
-  RadioBase,
-  RadioDescriptionBase,
-  RadioIndicatorBase,
-  RadioItemBase,
-  RadioLabelBase,
-  RadioTextBase,
-} from './components/radio/base';
+import { RadioBase, RadioDescriptionBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase, RadioTextBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 
 /**
@@ -78,12 +63,13 @@ export const slotClassRegistry = {
   drawerFooter: { slots: DrawerFooterBase.classes },
   drawerCloseButton: { slots: DrawerCloseButtonBase.classes },
   drawerTrigger: { slots: DrawerTriggerBase.classes },
+  field: { slots: FieldBase.classes },
+  fieldLabel: { slots: FieldLabelBase.classes },
+  fieldDescription: { slots: FieldDescriptionBase.classes },
+  fieldErrorMessage: { slots: FieldErrorMessageBase.classes },
   input: { slots: InputBase.classes },
   inputContainer: { slots: InputContainerBase.classes },
   inputField: { slots: InputFieldBase.classes },
-  inputLabel: { slots: InputLabelBase.classes },
-  inputDescription: { slots: InputDescriptionBase.classes },
-  inputErrorMessage: { slots: InputErrorMessageBase.classes },
   inputPrefix: { slots: InputPrefixBase.classes },
   inputSuffix: { slots: InputSuffixBase.classes },
   select: { slots: SelectBase.classes },

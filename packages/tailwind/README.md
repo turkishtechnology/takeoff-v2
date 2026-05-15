@@ -1,6 +1,7 @@
 # @takeoff-design/tailwind
 
-Tailwind CSS theme package for Takeoff Design. It ships the Tailwind v4 theme CSS and an explicit legacy v3 plugin generated from `@takeoff-design/tokens`.
+Tailwind CSS theme package for Takeoff Design. It ships the Tailwind v4 theme
+CSS and an explicit legacy v3 plugin generated from `@takeoff-design/tokens`.
 
 ## Install
 

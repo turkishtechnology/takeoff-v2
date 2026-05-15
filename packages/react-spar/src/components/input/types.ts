@@ -1,12 +1,5 @@
 import type { ElementType, ReactNode } from 'react';
-import type {
-  InputProps as SparInputProps,
-  InputFieldProps as SparInputFieldProps,
-  InputLabelProps as SparInputLabelProps,
-  InputDescriptionProps as SparInputDescriptionProps,
-  InputErrorMessageProps as SparInputErrorMessageProps,
-  PolymorphicProps,
-} from '@turkish-technology/spar';
+import type { InputProps as SparInputProps, InputFieldProps as SparInputFieldProps, PolymorphicProps } from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
@@ -15,9 +8,6 @@ export type InputSize = 'small' | 'base' | 'large';
 export type InputSlot = 'root';
 export type InputContainerSlot = 'root' | 'startContent' | 'endContent';
 export type InputFieldSlot = 'root';
-export type InputLabelSlot = 'root' | 'asterisk';
-export type InputDescriptionSlot = 'root';
-export type InputErrorMessageSlot = 'root';
 export type InputPrefixSlot = 'root';
 export type InputSuffixSlot = 'root';
 
@@ -67,51 +57,6 @@ export type InputFieldProps<T extends ElementType = 'input'> = PolymorphicProps<
     // Auto-focus on mount; the rest of the input surface (value, onChange,
     // placeholder, etc.) is inherited from the polymorphic native element.
     Pick<SparInputFieldProps, 'autoFocus'>
->;
-
-export interface InputLabelOwnProps {
-  /** Per-slot class name overrides. */
-  classNames?: ClassNamesMap<InputLabelSlot>;
-  /** Per-slot HTML attribute overrides. */
-  slotProps?: SlotPropsMap<InputLabelSlot>;
-}
-
-export type InputLabelProps<T extends ElementType = 'label'> = PolymorphicProps<
-  'label',
-  T,
-  InputLabelOwnProps &
-    // Inherit label surface; htmlFor is wired automatically by Spar via context.
-    Pick<SparInputLabelProps, 'children'>
->;
-
-export interface InputDescriptionOwnProps {
-  /** Per-slot class name overrides. */
-  classNames?: ClassNamesMap<InputDescriptionSlot>;
-  /** Per-slot HTML attribute overrides. */
-  slotProps?: SlotPropsMap<InputDescriptionSlot>;
-}
-
-export type InputDescriptionProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  InputDescriptionOwnProps &
-    // Inherit description surface; aria-describedby is wired by Spar.
-    Pick<SparInputDescriptionProps, 'children'>
->;
-
-export interface InputErrorMessageOwnProps {
-  /** Per-slot class name overrides. */
-  classNames?: ClassNamesMap<InputErrorMessageSlot>;
-  /** Per-slot HTML attribute overrides. */
-  slotProps?: SlotPropsMap<InputErrorMessageSlot>;
-}
-
-export type InputErrorMessageProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  InputErrorMessageOwnProps &
-    // Inherit error-message surface; aria-live is wired by Spar.
-    Pick<SparInputErrorMessageProps, 'children'>
 >;
 
 /**
@@ -166,9 +111,6 @@ declare module '../../core/theme' {
     Input: import('../../core').ComponentThemeConfig<InputProps, InputSlot>;
     InputContainer: import('../../core').ComponentThemeConfig<InputContainerProps, InputContainerSlot>;
     InputField: import('../../core').ComponentThemeConfig<InputFieldProps, InputFieldSlot>;
-    InputLabel: import('../../core').ComponentThemeConfig<InputLabelProps, InputLabelSlot>;
-    InputDescription: import('../../core').ComponentThemeConfig<InputDescriptionProps, InputDescriptionSlot>;
-    InputErrorMessage: import('../../core').ComponentThemeConfig<InputErrorMessageProps, InputErrorMessageSlot>;
     InputPrefix: import('../../core').ComponentThemeConfig<InputPrefixProps, InputPrefixSlot>;
     InputSuffix: import('../../core').ComponentThemeConfig<InputSuffixProps, InputSuffixSlot>;
   }

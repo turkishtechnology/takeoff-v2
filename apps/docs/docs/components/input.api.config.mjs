@@ -45,7 +45,7 @@ const formStateAttrs = [
   {
     attribute: 'data-required',
     appliedWhen: 'When `required` is true.',
-    purpose: 'Theme hook used to auto-render the asterisk inside `Input.Label`.',
+    purpose: 'Theme hook used by the parent `Field` to auto-render its required asterisk.',
   },
   {
     attribute: 'data-readonly',
@@ -67,26 +67,12 @@ export default {
       sparDocsUrl: sparInputDocsUrl,
       sparDocsLabel: 'Spar Input docs',
       propOverrides: {
-        children: childrenOverride('Compound parts (`Input.Label`, `Input.Container`, `Input.Description`, `Input.ErrorMessage`).'),
+        children: childrenOverride(
+          'Compound parts (`Input.Container`, plus optional `Input.Prefix` / `Input.Field` / `Input.Suffix`). Wrap in a `Field` to attach labels and helper text.',
+        ),
         className: classNameOverride,
       },
       dataAttributes: [dataSlotRoot, dataSize, ...formStateAttrs],
-    },
-    {
-      sourceFile: inputTypesFile,
-      typeName: 'InputLabelProps',
-      displayName: 'Input.Label',
-      headingBase: 'input-label',
-      prependPropNames: ['children'],
-      appendPropNames: ['className'],
-      skipPropNames: ['ref'],
-      sparDocsUrl: sparInputDocsUrl,
-      sparDocsLabel: 'Spar Input docs',
-      propOverrides: {
-        children: childrenOverride('Label text. An asterisk is auto-appended when the root `required` is true.'),
-        className: classNameOverride,
-      },
-      dataAttributes: [dataSlotRoot],
     },
     {
       sourceFile: inputTypesFile,
@@ -157,38 +143,6 @@ export default {
       skipPropNames: ['ref'],
       propOverrides: {
         children: childrenOverride('Plain text suffix (e.g. unit label).'),
-        className: classNameOverride,
-      },
-      dataAttributes: [dataSlotRoot],
-    },
-    {
-      sourceFile: inputTypesFile,
-      typeName: 'InputDescriptionProps',
-      displayName: 'Input.Description',
-      headingBase: 'input-description',
-      prependPropNames: ['children'],
-      appendPropNames: ['className'],
-      skipPropNames: ['ref'],
-      sparDocsUrl: sparInputDocsUrl,
-      sparDocsLabel: 'Spar Input docs',
-      propOverrides: {
-        children: childrenOverride('Helper text. Wired to the field via `aria-describedby` by Spar.'),
-        className: classNameOverride,
-      },
-      dataAttributes: [dataSlotRoot],
-    },
-    {
-      sourceFile: inputTypesFile,
-      typeName: 'InputErrorMessageProps',
-      displayName: 'Input.ErrorMessage',
-      headingBase: 'input-error-message',
-      prependPropNames: ['children'],
-      appendPropNames: ['className'],
-      skipPropNames: ['ref'],
-      sparDocsUrl: sparInputDocsUrl,
-      sparDocsLabel: 'Spar Input docs',
-      propOverrides: {
-        children: childrenOverride('Error message. Surfaced via `aria-describedby` when the root `isInvalid` is true.'),
         className: classNameOverride,
       },
       dataAttributes: [dataSlotRoot],

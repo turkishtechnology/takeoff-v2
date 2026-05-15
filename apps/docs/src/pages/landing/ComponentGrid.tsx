@@ -1,7 +1,7 @@
 import type { JSX } from 'react';
 import Link from '@docusaurus/Link';
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import { Badge, Button, Input, Switch } from '@takeoff-ui/react-spar';
+import { Badge, Button, Field, Input, Switch } from '@takeoff-ui/react-spar';
 import { ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
 import { PlaceholderProgress, PlaceholderAvatarGroup } from '@site/src/components/PlaceholderCustomComponents';
 import styles from './ComponentGrid.module.css';
@@ -91,12 +91,14 @@ function ButtonsCardDemo(): JSX.Element {
 function InputCardDemo(): JSX.Element {
   return (
     <div className={styles.demo} style={{ padding: '18px 14px', alignItems: 'stretch' }}>
-      <Input>
-        <Input.Label>Departure airport</Input.Label>
-        <Input.Container>
-          <Input.Field defaultValue="Istanbul (IST)" />
-        </Input.Container>
-      </Input>
+      <Field>
+        <Field.Label>Departure airport</Field.Label>
+        <Input>
+          <Input.Container>
+            <Input.Field defaultValue="Istanbul (IST)" />
+          </Input.Container>
+        </Input>
+      </Field>
     </div>
   );
 }

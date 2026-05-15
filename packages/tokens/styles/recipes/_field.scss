@@ -1,0 +1,60 @@
+// ---------------------------------------------------------------------------
+// Field recipe — styles the generic form-field wrapper that pairs a control
+// (Input, Switch, Checkbox, ...) with its label, helper text, and error
+// message. Visual states (`data-disabled`, `data-readonly`, `data-invalid`)
+// are emitted by Spar's Field root on `.tk-field`, so child label / message
+// rules can branch off the root.
+// ---------------------------------------------------------------------------
+
+@mixin field {
+  font-family: var(--family-body, 'Geologica', sans-serif);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--input-external-label-base-div-gap);
+  width: 100%;
+
+  // ---- Label ----
+
+  .tk-field-label {
+    color: var(--text-darkest);
+    font-weight: 400;
+    font-size: var(--desktop-label-m-base-size);
+    line-height: var(--desktop-label-m-base-line-height);
+    cursor: default;
+  }
+
+  .tk-field-asterisk {
+    color: var(--states-danger-base);
+    font-size: var(--desktop-label-s-size);
+    font-weight: 300;
+    line-height: var(--desktop-label-s-line-height);
+    margin-inline-start: 0.125rem;
+  }
+
+  &[data-disabled] .tk-field-label {
+    color: var(--text-sub-base);
+  }
+
+  &[data-readonly] .tk-field-label {
+    color: var(--text-sub-base);
+  }
+
+  // ---- Description / Error message ----
+
+  .tk-field-description,
+  .tk-field-error-message {
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+    font-weight: 400;
+    margin-block-start: var(--spacing-xxs);
+  }
+
+  .tk-field-description {
+    color: var(--text-base);
+  }
+
+  .tk-field-error-message {
+    color: var(--states-danger-base);
+  }
+}
