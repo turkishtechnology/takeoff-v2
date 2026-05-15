@@ -5,7 +5,7 @@ import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type CheckboxSize = 'small' | 'base';
 export type CheckboxType = 'default' | 'card';
-export type CheckboxSlot = 'root' | 'indicator' | 'icon' | 'label' | 'description';
+export type CheckboxSlot = 'root' | 'indicator' | 'icon';
 
 /**
  * Render props passed to the root `Checkbox` render-prop child. Re-exports
@@ -110,14 +110,6 @@ export interface CheckboxIconProps extends Omit<ComponentPropsWithoutRef<'span'>
    * @defaultValue a built-in placeholder check / dash glyph driven by `indeterminate`
    */
   children?: ReactNode | ((state: CheckboxIconRenderProps) => ReactNode);
-  ref?: Ref<HTMLSpanElement>;
-}
-
-export interface CheckboxLabelProps extends ComponentPropsWithoutRef<'span'> {
-  ref?: Ref<HTMLSpanElement>;
-}
-
-export interface CheckboxDescriptionProps extends ComponentPropsWithoutRef<'span'> {
   ref?: Ref<HTMLSpanElement>;
 }
 
