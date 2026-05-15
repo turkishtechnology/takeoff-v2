@@ -1,12 +1,10 @@
 import type { JSX } from 'react';
-import Link from '@docusaurus/Link';
 import styles from './PhilosophyBand.module.css';
 
 interface Pillar {
   label: string;
   verb: string;
   aphorism: string;
-  href: string;
 }
 
 const PILLARS: Pillar[] = [
@@ -14,19 +12,16 @@ const PILLARS: Pillar[] = [
     label: 'Principle 01',
     verb: 'Shape it.',
     aphorism: 'Components expose structure where structure is real, not where a convenience prop would be easier to add.',
-    href: '/docs/philosophy/spar-shaped',
   },
   {
     label: 'Principle 02',
     verb: 'Align it.',
     aphorism: 'React surfaces stay aligned with Takeoff Core on the contracts consumers actually depend on: state, slots, and styling hooks.',
-    href: '/docs/philosophy/parity-first',
   },
   {
     label: 'Principle 03',
     verb: 'Extend it.',
     aphorism: 'React-only enhancements stay additive, so customization never breaks the owner nodes and selectors the system relies on.',
-    href: '/docs/philosophy/additive-customization',
   },
 ];
 
@@ -54,12 +49,11 @@ export default function PhilosophyBand(): JSX.Element {
         </div>
         <div className={styles.pillars}>
           {PILLARS.map(pillar => (
-            <Link key={pillar.label} to={pillar.href} className={styles.pillar}>
+            <div key={pillar.label} className={styles.pillar}>
               <span className={styles.pillarLabel}>{pillar.label}</span>
               <h3 className={styles.pillarVerb}>{pillar.verb}</h3>
               <p className={styles.pillarAphorism}>{pillar.aphorism}</p>
-              <span className={styles.pillarLink}>Read more</span>
-            </Link>
+            </div>
           ))}
         </div>
       </div>

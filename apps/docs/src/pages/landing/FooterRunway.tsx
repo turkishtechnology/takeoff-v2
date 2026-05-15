@@ -29,7 +29,6 @@ const COLUMNS: Column[] = [
     links: [
       { label: 'Docs', href: '/docs/' },
       { label: 'Installation', href: '/docs/installation' },
-      { label: 'Migration', href: '/docs/migration/from-takeoff-ui-react' },
       { label: 'GitHub', href: 'https://github.com/turkishtechnology/takeoff-spar', external: true },
     ],
   },
@@ -37,7 +36,6 @@ const COLUMNS: Column[] = [
     title: 'Community',
     links: [
       { label: 'Discussions', href: 'https://github.com/turkishtechnology/takeoff-spar/discussions', external: true },
-      { label: 'Contribute', href: '/docs/contributing' },
       { label: 'NPM', href: 'https://www.npmjs.com/package/@takeoff-ui/react-spar', external: true },
     ],
   },
