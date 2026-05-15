@@ -18,20 +18,15 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
   const theme = useComponentTheme('Checkbox');
 
   // `data-checked`, `data-indeterminate`, `data-disabled`, `data-readonly`,
-  // `data-focus`, `data-hover`, `data-active`, `data-required` are NOT layered
-  // here — Spar's Checkbox already emits them on this element with the same
-  // semantics, and duplication is exactly what `data-attribute-vocabulary.md`
-  // rule 7 forbids. takeoff-spar owns the Takeoff visual vocabulary only.
-  //
-  // `data-invalid` IS emitted here because Spar's Checkbox currently writes
-  // `data-invalid: undefined` (validation TODO in the primitive). Until Spar
-  // ships real validation, the wrapper owns this hook from its own `invalid`
-  // prop; the contract follow-up tracks dropping it once Spar wires up.
+  // `data-focus`, `data-hover`, `data-active`, `data-required`, `data-invalid`
+  // are NOT layered here — Spar's Checkbox already emits them on this element
+  // with the same semantics, and duplication is exactly what
+  // `data-attribute-vocabulary.md` rule 7 forbids. takeoff-spar owns the
+  // Takeoff visual vocabulary only.
   const { rootAttrs, rest } = composeRootAttrs<CheckboxProps, CheckboxSlot>(CheckboxBase, props as CheckboxProps<'span'>, theme, {
-    stateAttrs: ({ size = DEFAULT_SIZE, type = DEFAULT_TYPE, invalid }) => ({
+    stateAttrs: ({ size = DEFAULT_SIZE, type = DEFAULT_TYPE }) => ({
       'data-size': size,
       'data-type': type,
-      'data-invalid': invalid ? '' : undefined,
     }),
   });
 
@@ -45,7 +40,8 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
     // off the rendered DOM where they would leak as raw HTML attributes.
     size: _size,
     type: _type,
-    invalid: _invalid,
+    // `invalid` is forwarded to Spar as `isInvalid`.
+    invalid = false,
     // takeoff-spar tri-state vocabulary; mapped to Spar's `CheckedState` below.
     checked,
     defaultChecked,
@@ -81,6 +77,7 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
       disabled={disabled}
       readOnly={readOnly}
       required={required}
+      isInvalid={invalid}
       ref={ref}
       {...rootAttrs}
     >
@@ -90,6 +87,7 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
             classNames,
             slotProps,
             required,
+            invalid,
             disabled: state.disabled,
             readOnly: state.readOnly,
             checked: state.checked === true,
