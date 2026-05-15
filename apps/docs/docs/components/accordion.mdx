@@ -61,7 +61,10 @@ export const playgroundDemo = String.raw`
 <Accordion className="accordion-demo" defaultValue="fare">
   <Accordion.Item value="fare">
     <Accordion.Header>
-      <Accordion.Trigger>Fare conditions</Accordion.Trigger>
+      <Accordion.Trigger>
+        Fare conditions
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>
       Review refund windows, change fees, and cabin rules before confirming the
@@ -71,7 +74,10 @@ export const playgroundDemo = String.raw`
 
   <Accordion.Item value="baggage">
     <Accordion.Header>
-      <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
+      <Accordion.Trigger>
+        Baggage allowance
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>
       Carry-on, checked baggage, and sports equipment allowances stay grouped in
@@ -81,7 +87,10 @@ export const playgroundDemo = String.raw`
 
   <Accordion.Item value="check-in">
     <Accordion.Header>
-      <Accordion.Trigger>Online check-in</Accordion.Trigger>
+      <Accordion.Trigger>
+        Online check-in
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>
       Use the trigger text as the accessible heading, then place rich content in
@@ -101,7 +110,10 @@ export const multipleDemo = String.raw`
 >
   <Accordion.Item value="boarding">
     <Accordion.Header>
-      <Accordion.Trigger>Boarding pass</Accordion.Trigger>
+      <Accordion.Trigger>
+        Boarding pass
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>
       Show mobile pass availability, airport counter fallbacks, and printable
@@ -111,7 +123,10 @@ export const multipleDemo = String.raw`
 
   <Accordion.Item value="baggage">
     <Accordion.Header>
-      <Accordion.Trigger>Bag drop</Accordion.Trigger>
+      <Accordion.Trigger>
+        Bag drop
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>
       Multiple panels can remain open when the workflow asks users to compare
@@ -121,7 +136,10 @@ export const multipleDemo = String.raw`
 
   <Accordion.Item value="security">
     <Accordion.Header>
-      <Accordion.Trigger>Security notes</Accordion.Trigger>
+      <Accordion.Trigger>
+        Security notes
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>
       Compact mode keeps dense operational guidance scannable without changing
@@ -146,7 +164,10 @@ function ControlledAccordionDemo() {
       >
         <Accordion.Item value="documents">
           <Accordion.Header>
-            <Accordion.Trigger>Travel documents</Accordion.Trigger>
+            <Accordion.Trigger>
+              Travel documents
+              <Accordion.Indicator />
+            </Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content>
             Controlled state lets app logic decide which passenger task remains
@@ -156,7 +177,10 @@ function ControlledAccordionDemo() {
 
         <Accordion.Item value="seat">
           <Accordion.Header>
-            <Accordion.Trigger>Seat selection</Accordion.Trigger>
+            <Accordion.Trigger>
+              Seat selection
+              <Accordion.Indicator />
+            </Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content>
             Pair value with onValueChange when the open panel should
@@ -247,7 +271,10 @@ export const disabledDemo = String.raw`
 <Accordion className="accordion-demo" defaultValue="open">
   <Accordion.Item value="open">
     <Accordion.Header>
-      <Accordion.Trigger>Refundable fares</Accordion.Trigger>
+      <Accordion.Trigger>
+        Refundable fares
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>
       Active items respond to click and keyboard activation as usual.
@@ -256,7 +283,10 @@ export const disabledDemo = String.raw`
 
   <Accordion.Item value="locked" disabled>
     <Accordion.Header>
-      <Accordion.Trigger>Loyalty upgrades (coming soon)</Accordion.Trigger>
+      <Accordion.Trigger>
+        Loyalty upgrades (coming soon)
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>
       Disabled items render a disabled trigger and ignore both pointer and
@@ -266,28 +296,25 @@ export const disabledDemo = String.raw`
 </Accordion>
 `;
 
-export const indicatorDemo = String.raw`
-<Accordion className="accordion-demo" defaultValue="visible">
-  <Accordion.Item value="visible">
-    <Accordion.Header>
-      <Accordion.Trigger>
-        Travel insurance options
-        <Accordion.Indicator />
-      </Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Drop in Accordion.Indicator to add the default chevron — collapsed
-      points down, expanded points up.
-    </Accordion.Content>
-  </Accordion.Item>
-  <Accordion.Item value="bare">
+export const withoutIndicatorDemo = String.raw`
+<Accordion className="accordion-demo" defaultValue="hours">
+  <Accordion.Item value="hours">
     <Accordion.Header>
       <Accordion.Trigger>Customer support hours</Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>
-      Omit Accordion.Indicator and the trigger ships without a visual
+      Skip Accordion.Indicator entirely and the trigger ships without a visual
       affordance — useful when the surrounding layout already telegraphs
       disclosure.
+    </Accordion.Content>
+  </Accordion.Item>
+  <Accordion.Item value="contact">
+    <Accordion.Header>
+      <Accordion.Trigger>Contact channels</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>
+      Trigger text remains the accessible label and clickable target; the
+      panel still opens via click or Enter/Space.
     </Accordion.Content>
   </Accordion.Item>
 </Accordion>
@@ -297,7 +324,10 @@ export const forceMountDemo = String.raw`
 <Accordion className="accordion-demo">
   <Accordion.Item value="search">
     <Accordion.Header>
-      <Accordion.Trigger>Search-friendly content</Accordion.Trigger>
+      <Accordion.Trigger>
+        Search-friendly content
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content forceMount>
       Use forceMount when in-page search must reach the panel body even when
@@ -306,7 +336,10 @@ export const forceMountDemo = String.raw`
   </Accordion.Item>
   <Accordion.Item value="default">
     <Accordion.Header>
-      <Accordion.Trigger>Default mounting</Accordion.Trigger>
+      <Accordion.Trigger>
+        Default mounting
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content>
       Without forceMount the panel mounts only while open, keeping the DOM
@@ -334,7 +367,9 @@ import { Accordion } from '@takeoff-ui/react-spar';
 <Accordion>
   <Accordion.Item>
     <Accordion.Header>
-      <Accordion.Trigger />
+      <Accordion.Trigger>
+        <Accordion.Indicator />
+      </Accordion.Trigger>
     </Accordion.Header>
     <Accordion.Content />
   </Accordion.Item>
@@ -397,10 +432,10 @@ import { Accordion } from '@takeoff-ui/react-spar';
   scope={accordionScope}
 />
 
-## Indicator opt-in
+## Without Indicator
 
 <LiveCode
-  code={indicatorDemo}
+  code={withoutIndicatorDemo}
   cssCode={accordionDemoCss}
   editable={false}
   previewMinHeight={260}
