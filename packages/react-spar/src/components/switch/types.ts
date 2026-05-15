@@ -4,7 +4,21 @@ import type { SwitchRenderProps as SparSwitchRenderProps } from '@turkish-techno
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type SwitchSize = 'xlarge' | 'large' | 'base' | 'small' | 'xsmall';
-export type SwitchVariant = 'info' | 'success';
+export type SwitchVariant =
+  | 'primary'
+  | 'secondary'
+  | 'neutral'
+  | 'info'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'verified'
+  | 'purple'
+  | 'cyan'
+  | 'business'
+  | 'teal'
+  | 'dark'
+  | 'white';
 export type SwitchSlot = 'root' | 'control' | 'track' | 'thumb';
 export type SwitchRenderProps = SparSwitchRenderProps;
 
