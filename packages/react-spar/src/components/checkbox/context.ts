@@ -7,6 +7,7 @@ export interface CheckboxOwnContextValue {
   classNames?: ClassNamesMap<CheckboxSlot>;
   slotProps?: SlotPropsMap<CheckboxSlot>;
   required: boolean;
+  invalid: boolean;
   disabled: boolean;
   readOnly: boolean;
   checked: boolean;

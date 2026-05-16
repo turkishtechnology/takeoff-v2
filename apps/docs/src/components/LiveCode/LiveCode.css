@@ -412,6 +412,7 @@
 }
 
 .live-code-container .collapsible-code-block .live-code-expandable.expanded {
+  overflow: auto;
   max-height: var(--natural-height, 2000px);
   transition: max-height 280ms cubic-bezier(0.16, 1, 0.3, 1);
 }

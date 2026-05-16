@@ -155,7 +155,5 @@ export default {
       },
       dataAttributes: [dataSlot('icon')],
     },
-    compoundPartConfig('CheckboxLabelProps', 'Checkbox.Label', 'checkbox-label', 'label'),
-    compoundPartConfig('CheckboxDescriptionProps', 'Checkbox.Description', 'checkbox-description', 'description'),
   ],
 };
