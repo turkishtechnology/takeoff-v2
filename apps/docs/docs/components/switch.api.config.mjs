@@ -9,11 +9,6 @@
 const switchTypesFile = 'packages/react-spar/src/components/switch/types.ts';
 const sparSwitchDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Switch';
 
-const childrenOverride = description => ({
-  type: 'React.ReactNode',
-  description,
-});
-
 const classNameOverride = {
   type: 'string',
   description: 'Appends custom classes to the root slot of this part.',
@@ -23,59 +18,6 @@ const dataSlot = slot => ({
   attribute: `data-slot="${slot}"`,
   appliedWhen: 'Always',
   purpose: `Stable selector for the ${slot} slot.`,
-});
-
-const dataSwitchState = [
-  {
-    attribute: 'data-state="checked"',
-    appliedWhen: 'When checked.',
-    purpose: 'Spar checked-state hook.',
-  },
-  {
-    attribute: 'data-state="unchecked"',
-    appliedWhen: 'When unchecked.',
-    purpose: 'Spar unchecked-state hook.',
-  },
-  {
-    attribute: 'data-disabled',
-    appliedWhen: '`disabled` is true.',
-    purpose: 'Marks disabled visual state for theme recipes.',
-  },
-  {
-    attribute: 'data-readonly',
-    appliedWhen: '`readOnly` is true.',
-    purpose: 'Marks read-only visual state for theme recipes.',
-  },
-];
-
-const dataPassiveState = [
-  {
-    attribute: 'data-disabled',
-    appliedWhen: '`disabled` is true.',
-    purpose: 'Marks disabled visual state for theme recipes.',
-  },
-  {
-    attribute: 'data-readonly',
-    appliedWhen: '`readOnly` is true.',
-    purpose: 'Marks read-only visual state for theme recipes.',
-  },
-];
-
-const compoundPartConfig = (typeName, displayName, headingBase, slot, stateAttrs) => ({
-  sourceFile: switchTypesFile,
-  typeName,
-  displayName,
-  headingBase,
-  prependPropNames: ['children'],
-  appendPropNames: ['className'],
-  skipPropNames: ['ref'],
-  sparDocsUrl: sparSwitchDocsUrl,
-  sparDocsLabel: 'Spar Switch docs',
-  propOverrides: {
-    children: childrenOverride(`${displayName} children.`),
-    className: classNameOverride,
-  },
-  dataAttributes: [dataSlot(slot), ...stateAttrs],
 });
 
 export default {
@@ -90,11 +32,11 @@ export default {
       skipPropNames: ['ref'],
       sparDocsUrl: sparSwitchDocsUrl,
       sparDocsLabel: 'Spar Switch docs',
-      sparBehaviorProps: ['checked', 'defaultChecked', 'onChange', 'disabled', 'readOnly', 'required', 'name', 'value', 'form'],
+      sparBehaviorProps: ['checked', 'defaultChecked', 'onChange', 'disabled', 'readOnly', 'required', 'name', 'value', 'form', 'autoFocus'],
       propOverrides: {
         children: {
-          type: 'React.ReactNode',
-          description: 'Compound children for switch anatomy.',
+          type: 'React.ReactNode | ((state: SwitchRenderProps) => React.ReactNode)',
+          description: 'Compound children for switch anatomy, or a render function exposing Spar state.',
         },
         size: {
           default: "'base'",
@@ -106,7 +48,7 @@ export default {
         },
         invalid: {
           default: 'false',
-          description: 'Marks the switch as visually invalid.',
+          description: 'Marks the switch as visually invalid. Inherited from `<Field>` automatically; pass this prop only to override.',
         },
         classNames: {
           description: 'Per-slot class name overrides.',
@@ -129,17 +71,56 @@ export default {
           purpose: 'Reflects the resolved `variant` prop so theme recipes can scope color variants.',
         },
         {
+          attribute: 'data-state="checked"',
+          appliedWhen: 'When checked.',
+          purpose: 'Spar checked-state hook.',
+        },
+        {
+          attribute: 'data-state="unchecked"',
+          appliedWhen: 'When unchecked.',
+          purpose: 'Spar unchecked-state hook.',
+        },
+        {
+          attribute: 'data-disabled',
+          appliedWhen: '`disabled` is true.',
+          purpose: 'Spar disabled-state hook.',
+        },
+        {
+          attribute: 'data-readonly',
+          appliedWhen: '`readOnly` is true.',
+          purpose: 'Spar read-only-state hook.',
+        },
+        {
+          attribute: 'data-required',
+          appliedWhen: '`required` is true.',
+          purpose: 'Spar required-state hook.',
+        },
+        {
           attribute: 'data-invalid',
           appliedWhen: '`invalid` is true.',
           purpose: 'Marks invalid visual state for theme recipes.',
         },
-        ...dataSwitchState,
       ],
     },
-    compoundPartConfig('SwitchControlProps', 'Switch.Control', 'switch-control', 'control', dataSwitchState),
-    compoundPartConfig('SwitchTrackProps', 'Switch.Track', 'switch-track', 'track', dataSwitchState),
-    compoundPartConfig('SwitchThumbProps', 'Switch.Thumb', 'switch-thumb', 'thumb', dataSwitchState),
-    compoundPartConfig('SwitchLabelProps', 'Switch.Label', 'switch-label', 'label', dataPassiveState),
-    compoundPartConfig('SwitchHintProps', 'Switch.Hint', 'switch-hint', 'hint', dataPassiveState),
+    {
+      sourceFile: switchTypesFile,
+      typeName: 'SwitchIndicatorProps',
+      displayName: 'Switch.Indicator',
+      headingBase: 'switch-indicator',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSwitchDocsUrl,
+      sparDocsLabel: 'Spar Switch docs',
+      propOverrides: {
+        children: {
+          type: 'React.ReactNode | ((state: SwitchIndicatorRenderProps) => React.ReactNode)',
+          description: 'Indicator content. When omitted, the built-in track + thumb anatomy is rendered. When a function, receives the current `checked` / `disabled` / `readOnly` state. A `ReactNode` replaces the default `thumb` slot entirely.',
+          default: 'a built-in `thumb` slot inside the indicator track',
+        },
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlot('indicator'), dataSlot('thumb')],
+    },
   ],
 };

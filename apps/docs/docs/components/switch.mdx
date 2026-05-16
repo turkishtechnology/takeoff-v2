@@ -9,19 +9,37 @@ slug: /components/switch
 ---
 
 import LiveCode from '@site/src/components/LiveCode';
-import { Switch, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import {
+  Field,
+  ReactSparDemoRoot,
+  Switch,
+} from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const switchScope = { Switch };
+export const switchScope = { Field, Switch };
 
-<!-- prettier-ignore-start -->
+{/* prettier-ignore-start */}
 
 export const switchDemoCss = String.raw`
 .switch-demo-stack {
   display: grid;
   width: min(100%, 520px);
   gap: 14px;
-} 
+}
+
+/* Lays out Field.Label and Switch side-by-side, with Field.Description /
+   Field.ErrorMessage wrapping to a second row underneath the label. */
+.switch-demo-field-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 16px;
+  row-gap: 4px;
+  align-items: center;
+}
+
+.switch-demo-field-row > :not(:first-child):not(:nth-child(2)) {
+  grid-column: 1 / -1;
+}
 
 .switch-demo-inline {
   display: flex;
@@ -65,114 +83,62 @@ export const switchDemoCss = String.raw`
   font-weight: 600;
   padding: 10px 16px;
 }
-
-/* TODO(react-spar-card): Replace this custom demo shell with Card once react-spar ships it. */
-.switch-template-shell {
-  display: grid;
-  width: min(100%, 520px);
-  gap: 18px;
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  background: var(--static-light);
-  padding: 20px 22px;
-  box-shadow: var(--effect-1-default-base);
-}
-
-.switch-template-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.switch-template-title {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-darkest);
-}
-
-.switch-template-badge {
-  display: inline-flex;
-  align-items: center;
-  align-self: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--states-success-lightest);
-  color: var(--states-success-dark);
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.switch-template-badge[data-state='paused'] {
-  background: var(--background-light);
-  color: var(--text-base);
-}
-
-.switch-template-icon {
-  display: block;
-  width: 14px;
-  height: 14px;
-  opacity: 0.35;
-  transform: scale(0.9);
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
-.switch-template-icon[data-state='checked'] {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.switch-template-label {
-  font-weight: 600;
-}
-
-.switch-template-hint {
-  max-width: 420px;
-}
-
-.switch-template-hint-copy {
-  white-space: nowrap;
-  transition: color 0.2s ease;
-}
-
-.switch-template-hint-copy[data-state='checked'] {
-  color: var(--text-darkest);
-}
 `;
 
 export const playgroundDemo = String.raw`
-<div className="switch-demo-stack">
+<Field className="switch-demo-field-row">
+  <Field.Label>Flight status alerts</Field.Label>
   <Switch defaultChecked>
-    <Switch.Control>
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
-    <Switch.Label>Flight status alerts</Switch.Label>
+    <Switch.Indicator />
   </Switch>
-  <Switch>
-    <Switch.Control>
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
-    <Switch.Label>Flexible dates</Switch.Label>
-  </Switch>
-  <Switch variant="success" defaultChecked>
-    <Switch.Control>
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
-    <Switch.Label>Mobile boarding pass</Switch.Label>
-  </Switch>
+  <Field.Description>
+    We will let you know about delays, gate changes, and cancellations.
+  </Field.Description>
+</Field>
+`;
+
+export const fieldWithSwitchDemo = String.raw`
+<div className="switch-demo-stack">
+  <Field required className="switch-demo-field-row">
+    <Field.Label>Email alerts</Field.Label>
+    <Switch defaultChecked>
+      <Switch.Indicator />
+    </Switch>
+  </Field>
+
+  <Field className="switch-demo-field-row">
+    <Field.Label>SMS alerts</Field.Label>
+    <Switch>
+      <Switch.Indicator />
+    </Switch>
+    <Field.Description>
+      Standard messaging rates may apply.
+    </Field.Description>
+  </Field>
+
+  <Field invalid className="switch-demo-field-row">
+    <Field.Label>Push notifications</Field.Label>
+    <Switch>
+      <Switch.Indicator />
+    </Switch>
+    <Field.ErrorMessage>
+      Enable browser notifications to turn this on.
+    </Field.ErrorMessage>
+  </Field>
+
+  <Field disabled className="switch-demo-field-row">
+    <Field.Label>Disabled setting</Field.Label>
+    <Switch>
+      <Switch.Indicator />
+    </Switch>
+  </Field>
+
+  <Field readOnly className="switch-demo-field-row">
+    <Field.Label>Read-only setting</Field.Label>
+    <Switch defaultChecked>
+      <Switch.Indicator />
+    </Switch>
+  </Field>
 </div>
 `;
 
@@ -185,14 +151,12 @@ function ControlledSwitchDemo() {
       <div className="switch-demo-status">
         Notifications {enabled ? 'enabled' : 'paused'}
       </div>
-      <Switch checked={enabled} onChange={setEnabled}>
-        <Switch.Control>
-          <Switch.Track>
-            <Switch.Thumb />
-          </Switch.Track>
-        </Switch.Control>
-        <Switch.Label>Flight status notifications</Switch.Label>
-      </Switch>
+      <Field className="switch-demo-field-row">
+        <Field.Label>Flight status notifications</Field.Label>
+        <Switch checked={enabled} onChange={setEnabled}>
+          <Switch.Indicator />
+        </Switch>
+      </Field>
     </div>
   );
 }
@@ -200,82 +164,52 @@ function ControlledSwitchDemo() {
 render(<ControlledSwitchDemo />);
 `;
 
-export const hintDemo = String.raw`
-<div className="switch-demo-stack">
-  <Switch defaultChecked>
-    <Switch.Control>
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
-    <Switch.Label>Gate change alerts</Switch.Label>
-    <Switch.Hint>
-      Sends a push notification when your departure gate changes.
-    </Switch.Hint>
-  </Switch>
-  <Switch invalid required>
-    <Switch.Control>
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
-    <Switch.Label>SMS disruption alerts</Switch.Label>
-    <Switch.Hint>
-      Add a verified phone number before enabling SMS disruption alerts.
-    </Switch.Hint>
-  </Switch>
-</div>
-`;
-
 export const sizeDemo = String.raw`
 <div className="switch-demo-inline">
-  <Switch size="xsmall">
-    <Switch.Control aria-label="Extra small switch">
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
+  <Switch aria-label="Extra small switch" size="xsmall">
+    <Switch.Indicator />
   </Switch>
-  <Switch size="small">
-    <Switch.Control aria-label="Small switch">
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
+  <Switch aria-label="Small switch" size="small">
+    <Switch.Indicator />
   </Switch>
-  <Switch size="base" defaultChecked>
-    <Switch.Control aria-label="Base switch">
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
+  <Switch aria-label="Base switch" size="base" defaultChecked>
+    <Switch.Indicator />
   </Switch>
-  <Switch size="large" defaultChecked>
-    <Switch.Control aria-label="Large switch">
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
+  <Switch aria-label="Large switch" size="large" defaultChecked>
+    <Switch.Indicator />
   </Switch>
-  <Switch size="xlarge" defaultChecked>
-    <Switch.Control aria-label="Extra large switch">
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
+  <Switch aria-label="Extra large switch" size="xlarge" defaultChecked>
+    <Switch.Indicator />
   </Switch>
 </div>
 `;
 
-export const visualDemo = String.raw`
+export const variantDemo = String.raw`
+<div className="switch-demo-stack">
+  <Field className="switch-demo-field-row">
+    <Field.Label>Seat alerts</Field.Label>
+    <Switch defaultChecked variant="info">
+      <Switch.Indicator />
+    </Switch>
+  </Field>
+  <Field className="switch-demo-field-row">
+    <Field.Label>Auto check-in</Field.Label>
+    <Switch defaultChecked variant="success">
+      <Switch.Indicator />
+    </Switch>
+  </Field>
+</div>
+`;
+
+export const customIndicatorDemo = String.raw`
 const CheckIcon = () => (
   <svg
-    width="14"
-    height="14"
+    width="10"
+    height="10"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="2"
+    strokeWidth="3"
     strokeLinecap="round"
     strokeLinejoin="round"
   >
@@ -284,118 +218,32 @@ const CheckIcon = () => (
 );
 
 render(
-  <div className="switch-demo-stack">
-    <Switch defaultChecked variant="info">
-      <Switch.Control>
-        <Switch.Track>
-          <Switch.Thumb>
-            <CheckIcon />
-          </Switch.Thumb>
-        </Switch.Track>
-      </Switch.Control>
-      <Switch.Label>Seat alerts</Switch.Label>
-    </Switch>
+  <Field className="switch-demo-field-row">
+    <Field.Label>Auto check-in</Field.Label>
     <Switch defaultChecked variant="success">
-      <Switch.Control>
-        <Switch.Track>
-          <Switch.Thumb>
-            <CheckIcon />
-          </Switch.Thumb>
-        </Switch.Track>
-      </Switch.Control>
-      <Switch.Label>Auto check-in</Switch.Label>
+      <Switch.Indicator>
+        {({ checked }) => (
+          <span data-slot="thumb">{checked ? <CheckIcon /> : null}</span>
+        )}
+      </Switch.Indicator>
     </Switch>
-    <Switch defaultChecked>
-      <Switch.Control>
-        <Switch.Track>
-          <Switch.Thumb />
-        </Switch.Track>
-      </Switch.Control>
-      <Switch.Label>Plain checked state</Switch.Label>
-    </Switch>
-  </div>,
-);
-`;
-
-export const compoundDemo = String.raw`
-const BellIcon = (props) => (
-  <svg
-    {...props}
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7" />
-    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-  </svg>
-);
-
-render(
-  <div className="switch-demo-stack">
-    <Switch defaultChecked required>
-      <Switch.Control>
-        <Switch.Track>
-          <Switch.Thumb>
-            <BellIcon />
-          </Switch.Thumb>
-        </Switch.Track>
-      </Switch.Control>
-      <Switch.Label>Critical travel alerts</Switch.Label>
-      <Switch.Hint>Only operational changes are sent here.</Switch.Hint>
-    </Switch>
-  </div>,
+  </Field>,
 );
 `;
 
 export const renderPropDemo = String.raw`
-<Switch defaultChecked>
-  {({ checked }) => (
-    <>
-      <Switch.Control>
-        <Switch.Track>
-          <Switch.Thumb>{checked ? 'on' : null}</Switch.Thumb>
-        </Switch.Track>
-      </Switch.Control>
-      <Switch.Label>
-        {checked ? 'Operational alerts active' : 'Operational alerts paused'}
-      </Switch.Label>
-    </>
-  )}
-</Switch>
-`;
-
-export const stateDemo = String.raw`
-<div className="switch-demo-stack">
-  <Switch disabled>
-    <Switch.Control>
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
-    <Switch.Label>Disabled setting</Switch.Label>
+<Field className="switch-demo-field-row">
+  <Switch defaultChecked>
+    {({ checked }) => (
+      <>
+        <Field.Label>
+          {checked ? 'Operational alerts active' : 'Operational alerts paused'}
+        </Field.Label>
+        <Switch.Indicator />
+      </>
+    )}
   </Switch>
-  <Switch disabled defaultChecked>
-    <Switch.Control>
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
-    <Switch.Label>Disabled on</Switch.Label>
-  </Switch>
-  <Switch readOnly defaultChecked>
-    <Switch.Control>
-      <Switch.Track>
-        <Switch.Thumb />
-      </Switch.Track>
-    </Switch.Control>
-    <Switch.Label>Read-only setting</Switch.Label>
-  </Switch>
-</div>
+</Field>
 `;
 
 export const formDemo = String.raw`
@@ -418,22 +266,18 @@ function SwitchFormDemo() {
         );
       }}
     >
-      <Switch name="email" value="enabled" defaultChecked>
-        <Switch.Control>
-          <Switch.Track>
-            <Switch.Thumb />
-          </Switch.Track>
-        </Switch.Control>
-        <Switch.Label>Email alerts</Switch.Label>
-      </Switch>
-      <Switch name="sms" value="enabled">
-        <Switch.Control>
-          <Switch.Track>
-            <Switch.Thumb />
-          </Switch.Track>
-        </Switch.Control>
-        <Switch.Label>SMS alerts</Switch.Label>
-      </Switch>
+      <Field className="switch-demo-field-row">
+        <Field.Label>Email alerts</Field.Label>
+        <Switch name="email" value="enabled" defaultChecked>
+          <Switch.Indicator />
+        </Switch>
+      </Field>
+      <Field className="switch-demo-field-row">
+        <Field.Label>SMS alerts</Field.Label>
+        <Switch name="sms" value="enabled">
+          <Switch.Indicator />
+        </Switch>
+      </Field>
       <div className="switch-demo-actions">
         <button className="switch-demo-button" type="submit">
           Save
@@ -447,93 +291,32 @@ function SwitchFormDemo() {
 render(<SwitchFormDemo />);
 `;
 
-export const templateDemo = String.raw`
-const BellIcon = (props) => (
-  <svg
-    {...props}
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7" />
-    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-  </svg>
-);
-
-render(
-  <div className="switch-template-shell">
-    <div className="switch-template-heading">
-      <h3 className="switch-template-title">Travel notifications</h3>
-    </div>
-    <Switch
-      defaultChecked
-      required
-      classNames={{ label: 'switch-template-label', hint: 'switch-template-hint' }}
-    >
-      {({ checked }) => (
-        <>
-          <Switch.Control>
-            <Switch.Track>
-              <Switch.Thumb>
-                <BellIcon
-                  className="switch-template-icon"
-                  data-state={checked ? 'checked' : 'unchecked'}
-                />
-              </Switch.Thumb>
-            </Switch.Track>
-          </Switch.Control>
-          <Switch.Label>Critical travel alerts</Switch.Label>
-          <span
-            className="switch-template-badge"
-            data-state={checked ? 'active' : 'paused'}
-            aria-hidden="true"
-          >
-            {checked ? 'Active' : 'Paused'}
-          </span>
-          <Switch.Hint>
-            <span
-              className="switch-template-hint-copy"
-              data-state={checked ? 'checked' : 'unchecked'}
-            >
-              Only operational changes are sent.
-            </span>
-          </Switch.Hint>
-        </>
-      )}
-    </Switch>
-  </div>,
-);
-`;
-
-<!-- prettier-ignore-end -->
+{/* prettier-ignore-end */}
 
 # Switch
 
 `Switch` lets users turn a single setting on or off, especially for preferences,
-permissions, and form options. Takeoff visual props stay on the wrapper while
-Spar owns checked state, forms, focus, and keyboard behavior.
+permissions, and form options. The root owns visual state (`size`, `variant`,
+plus inherited `invalid` / `disabled` / `required` / `readOnly`),
+`Switch.Indicator` is the track + sliding thumb. Wrap `Switch` in a `Field` to
+attach a label, description, or error message — the field-level state cascades
+into the switch automatically.
 
 ## Usage
 
 ```tsx
-import { Switch } from '@takeoff-ui/react-spar';
+import { Field, Switch } from '@takeoff-ui/react-spar';
 ```
 
 ```tsx
-<Switch>
-  <Switch.Control>
-    <Switch.Track>
-      <Switch.Thumb />
-    </Switch.Track>
-  </Switch.Control>
-  <Switch.Label />
-  <Switch.Hint />
-</Switch>
+<Field>
+  <Field.Label />
+  <Switch>
+    <Switch.Indicator />
+  </Switch>
+  <Field.Description />
+  <Field.ErrorMessage />
+</Field>
 ```
 
 ## Playground
@@ -541,7 +324,23 @@ import { Switch } from '@takeoff-ui/react-spar';
 <LiveCode
   code={playgroundDemo}
   cssCode={switchDemoCss}
-  previewMinHeight={260}
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={switchScope}
+/>
+
+## Using with `Field`
+
+`Field` is the generic ARIA wrapper. Setting `invalid`, `disabled`, `required`,
+or `readOnly` on `Field` cascades into the nested `Switch`, and `Field.Label`,
+`Field.Description`, and `Field.ErrorMessage` are wired to the switch through
+shared IDs.
+
+<LiveCode
+  code={fieldWithSwitchDemo}
+  cssCode={switchDemoCss}
+  editable={false}
+  previewMinHeight={460}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
 />
@@ -558,17 +357,6 @@ import { Switch } from '@takeoff-ui/react-spar';
   scope={switchScope}
 />
 
-## Hint and Validation
-
-<LiveCode
-  code={hintDemo}
-  cssCode={switchDemoCss}
-  editable={false}
-  previewMinHeight={260}
-  previewWrapper={ReactSparDemoRoot}
-  scope={switchScope}
-/>
-
 ## Sizes
 
 <LiveCode
@@ -580,26 +368,31 @@ import { Switch } from '@takeoff-ui/react-spar';
   scope={switchScope}
 />
 
-## Variants and Icons
+## Variants
 
 <LiveCode
-  code={visualDemo}
+  code={variantDemo}
   cssCode={switchDemoCss}
   editable={false}
-  noInline
-  previewMinHeight={280}
+  previewMinHeight={200}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
 />
 
-## Compound Anatomy
+## Custom Indicator
+
+`Switch.Indicator` accepts function children that receive the current `checked`
+/ `disabled` / `readOnly` state, so you can render different content per state.
+Passing a `ReactNode` instead replaces the default `thumb` slot entirely — the
+consumer becomes responsible for any `data-slot="thumb"` wrapper they need for
+theming.
 
 <LiveCode
-  code={compoundDemo}
+  code={customIndicatorDemo}
   cssCode={switchDemoCss}
   editable={false}
   noInline
-  previewMinHeight={220}
+  previewMinHeight={160}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
 />
@@ -615,18 +408,10 @@ import { Switch } from '@takeoff-ui/react-spar';
   scope={switchScope}
 />
 
-## Disabled and Read-Only
-
-<LiveCode
-  code={stateDemo}
-  cssCode={switchDemoCss}
-  editable={false}
-  previewMinHeight={240}
-  previewWrapper={ReactSparDemoRoot}
-  scope={switchScope}
-/>
-
 ## Form Submission
+
+When `name` is set, Spar renders a synchronized hidden checkbox input for native
+form submission.
 
 <LiveCode
   code={formDemo}
@@ -638,31 +423,20 @@ import { Switch } from '@takeoff-ui/react-spar';
   scope={switchScope}
 />
 
-## Template
+## Accessibility
 
-<LiveCode
-  code={templateDemo}
-  cssCode={switchDemoCss}
-  editable={false}
-  noInline
-  previewMinHeight={260}
-  previewWrapper={ReactSparDemoRoot}
-  scope={switchScope}
-/>
-
-## Accessibility & Keyboard
-
+- `Field.Label`, `Field.Description`, and `Field.ErrorMessage` are wired to the
+  control via stable IDs derived from the `Field` root (`aria-labelledby`,
+  `aria-describedby`, `aria-invalid`).
 - `Switch` renders a focusable control with `role="switch"` and reflects its
   value through `aria-checked`.
-- `Switch.Label` provides the accessible name. Use `aria-label` or
-  `aria-labelledby` on `Switch.Control` when the switch has no visible label.
-- `Switch.Hint` renders helper text and associates it with the switch
-  description.
+- When the switch has no visible label (for example a size sampler), pass
+  `aria-label` directly on `<Switch>`.
 - Disabled switches are removed from the tab order. Read-only switches remain
   focusable and do not change value.
 - When `name` is provided, Spar renders a synchronized hidden checkbox input for
   native form submission. `name` is the form field name, not the accessible
-  label — supply `aria-label` when the switch has no visible children.
+  label.
 
 | Key                                 | Behavior                            |
 | ----------------------------------- | ----------------------------------- |
@@ -681,15 +455,15 @@ for primitive behavior.
 
 #### Props {#switch-props}
 
-| Name                            | Type                                                                                    | Default | Description                                           |
-| ------------------------------- | --------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                            | -       | Compound children for switch anatomy.                 |
-| <ApiBadge label="size" />       | <code>SwitchSize</code>                                                                 | 'base'  | Size scale.                                           |
-| <ApiBadge label="variant" />    | <code>SwitchVariant</code>                                                              | 'info'  | Color variant used while checked.                     |
-| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                    | false   | Marks the switch as visually invalid.                 |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;SwitchSlot, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                        |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;SwitchSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                    |
-| <ApiBadge label="className" />  | <code>string</code>                                                                     | -       | Appends custom classes to the root slot of this part. |
+| Name                            | Type                                                                                    | Default | Description                                                                                                    |
+| ------------------------------- | --------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode &#124; ((state: SwitchRenderProps) =&gt; React.ReactNode)</code>  | -       | Compound children for switch anatomy, or a render function exposing Spar state.                                |
+| <ApiBadge label="size" />       | <code>SwitchSize</code>                                                                 | 'base'  | Size scale.                                                                                                    |
+| <ApiBadge label="variant" />    | <code>SwitchVariant</code>                                                              | 'info'  | Color variant used while checked.                                                                              |
+| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                    | false   | Marks the switch as visually invalid. Inherited from `<Field>` automatically; pass this prop only to override. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;SwitchSlot, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                 |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;SwitchSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                             |
+| <ApiBadge label="className" />  | <code>string</code>                                                                     | -       | Appends custom classes to the root slot of this part.                                                          |
 
 #### Data attributes {#switch-data-attributes}
 
@@ -698,94 +472,24 @@ for primitive behavior.
 | `data-slot="root"`       | Always              | Stable selector for the root slot.                                              |
 | `data-size`              | Always              | Reflects the resolved `size` prop so theme recipes can scope size variants.     |
 | `data-variant`           | Always              | Reflects the resolved `variant` prop so theme recipes can scope color variants. |
-| `data-invalid`           | `invalid` is true.  | Marks invalid visual state for theme recipes.                                   |
 | `data-state="checked"`   | When checked.       | Spar checked-state hook.                                                        |
 | `data-state="unchecked"` | When unchecked.     | Spar unchecked-state hook.                                                      |
-| `data-disabled`          | `disabled` is true. | Marks disabled visual state for theme recipes.                                  |
-| `data-readonly`          | `readOnly` is true. | Marks read-only visual state for theme recipes.                                 |
+| `data-disabled`          | `disabled` is true. | Spar disabled-state hook.                                                       |
+| `data-readonly`          | `readOnly` is true. | Spar read-only-state hook.                                                      |
+| `data-required`          | `required` is true. | Spar required-state hook.                                                       |
+| `data-invalid`           | `invalid` is true.  | Marks invalid visual state for theme recipes.                                   |
 
-### Switch.Control {#switch-control}
-
-See
-[Spar Switch docs](https://spar.app.turkishtechlab.com/docs/Components/Switch)
-for primitive behavior.
-
-#### Data attributes {#switch-control-data-attributes}
-
-| Attribute                | Applied when        | Purpose                                         |
-| ------------------------ | ------------------- | ----------------------------------------------- |
-| `data-slot="control"`    | Always              | Stable selector for the control slot.           |
-| `data-state="checked"`   | When checked.       | Spar checked-state hook.                        |
-| `data-state="unchecked"` | When unchecked.     | Spar unchecked-state hook.                      |
-| `data-disabled`          | `disabled` is true. | Marks disabled visual state for theme recipes.  |
-| `data-readonly`          | `readOnly` is true. | Marks read-only visual state for theme recipes. |
-
-### Switch.Track {#switch-track}
+### Switch.Indicator {#switch-indicator}
 
 See
 [Spar Switch docs](https://spar.app.turkishtechlab.com/docs/Components/Switch)
 for primitive behavior.
 
-#### Data attributes {#switch-track-data-attributes}
+#### Data attributes {#switch-indicator-data-attributes}
 
-| Attribute                | Applied when        | Purpose                                         |
-| ------------------------ | ------------------- | ----------------------------------------------- |
-| `data-slot="track"`      | Always              | Stable selector for the track slot.             |
-| `data-state="checked"`   | When checked.       | Spar checked-state hook.                        |
-| `data-state="unchecked"` | When unchecked.     | Spar unchecked-state hook.                      |
-| `data-disabled`          | `disabled` is true. | Marks disabled visual state for theme recipes.  |
-| `data-readonly`          | `readOnly` is true. | Marks read-only visual state for theme recipes. |
-
-### Switch.Thumb {#switch-thumb}
-
-See
-[Spar Switch docs](https://spar.app.turkishtechlab.com/docs/Components/Switch)
-for primitive behavior.
-
-#### Data attributes {#switch-thumb-data-attributes}
-
-| Attribute                | Applied when        | Purpose                                         |
-| ------------------------ | ------------------- | ----------------------------------------------- |
-| `data-slot="thumb"`      | Always              | Stable selector for the thumb slot.             |
-| `data-state="checked"`   | When checked.       | Spar checked-state hook.                        |
-| `data-state="unchecked"` | When unchecked.     | Spar unchecked-state hook.                      |
-| `data-disabled`          | `disabled` is true. | Marks disabled visual state for theme recipes.  |
-| `data-readonly`          | `readOnly` is true. | Marks read-only visual state for theme recipes. |
-
-### Switch.Label {#switch-label}
-
-See
-[Spar Switch docs](https://spar.app.turkishtechlab.com/docs/Components/Switch)
-for primitive behavior.
-
-#### Data attributes {#switch-label-data-attributes}
-
-| Attribute           | Applied when        | Purpose                                         |
-| ------------------- | ------------------- | ----------------------------------------------- |
-| `data-slot="label"` | Always              | Stable selector for the label slot.             |
-| `data-disabled`     | `disabled` is true. | Marks disabled visual state for theme recipes.  |
-| `data-readonly`     | `readOnly` is true. | Marks read-only visual state for theme recipes. |
-
-### Switch.Hint {#switch-hint}
-
-See
-[Spar Switch docs](https://spar.app.turkishtechlab.com/docs/Components/Switch)
-for primitive behavior.
-
-#### Props {#switch-hint-props}
-
-| Name                           | Type                         | Default               | Description                                                      |
-| ------------------------------ | ---------------------------- | --------------------- | ---------------------------------------------------------------- |
-| <ApiBadge label="children" />  | <code>React.ReactNode</code> | -                     | Switch.Hint children.                                            |
-| <ApiBadge label="icon" />      | <code>React.ReactNode</code> | a built-in info glyph | Leading icon rendered before the hint text. Pass `null` to hide. |
-| <ApiBadge label="className" /> | <code>string</code>          | -                     | Appends custom classes to the root slot of this part.            |
-
-#### Data attributes {#switch-hint-data-attributes}
-
-| Attribute          | Applied when        | Purpose                                         |
-| ------------------ | ------------------- | ----------------------------------------------- |
-| `data-slot="hint"` | Always              | Stable selector for the hint slot.              |
-| `data-disabled`    | `disabled` is true. | Marks disabled visual state for theme recipes.  |
-| `data-readonly`    | `readOnly` is true. | Marks read-only visual state for theme recipes. |
+| Attribute               | Applied when | Purpose                                 |
+| ----------------------- | ------------ | --------------------------------------- |
+| `data-slot="indicator"` | Always       | Stable selector for the indicator slot. |
+| `data-slot="thumb"`     | Always       | Stable selector for the thumb slot.     |
 
 {/* api-tables:end */}

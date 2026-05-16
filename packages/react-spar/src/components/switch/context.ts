@@ -6,6 +6,9 @@ import type { SwitchSlot } from './types';
 export interface SwitchOwnContextValue {
   classNames?: ClassNamesMap<SwitchSlot>;
   slotProps?: SlotPropsMap<SwitchSlot>;
+  checked: boolean;
+  disabled: boolean;
+  readOnly: boolean;
 }
 
 export const [SwitchProvider, useSwitchOwnContext] = createSafeContext<SwitchOwnContextValue>('SwitchProvider');

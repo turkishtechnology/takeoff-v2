@@ -126,14 +126,12 @@ function BadgeCardDemo(): JSX.Element {
 
 function SwitchRow({ defaultChecked, label }: { defaultChecked: boolean; label: string }): JSX.Element {
   return (
-    <Switch defaultChecked={defaultChecked} classNames={{ root: styles.switchRow }}>
-      <Switch.Label>{label}</Switch.Label>
-      <Switch.Control>
-        <Switch.Track>
-          <Switch.Thumb />
-        </Switch.Track>
-      </Switch.Control>
-    </Switch>
+    <Field className={styles.switchRow}>
+      <Field.Label>{label}</Field.Label>
+      <Switch defaultChecked={defaultChecked}>
+        <Switch.Indicator />
+      </Switch>
+    </Field>
   );
 }
 
