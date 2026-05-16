@@ -180,7 +180,7 @@ function ControlledRadioDemo() {
       <Radio
         aria-label="Refund preference"
         value={value}
-        onValueChange={setValue}
+        onChange={setValue}
       >
         <Radio.Item value="return">
           <Radio.Indicator />
@@ -272,8 +272,8 @@ export const renderPropDemo = String.raw`
 # Radio
 
 `Radio` lets users pick a single option from a small, mutually exclusive set.
-The root owns the group state (`value`, `defaultValue`, `onValueChange`) and
-cascades visual props (`size`, `type`, `position`, `invalid`) to every item.
+The root owns the group state (`value`, `defaultValue`, `onChange`) and cascades
+visual props (`size`, `type`, `position`, `invalid`) to every item.
 
 ## Usage
 
@@ -423,17 +423,17 @@ for primitive behavior.
 
 #### Props {#radio-props}
 
-| Name                            | Type                                                                                | Default   | Description                                                                                                                                                                                                                                                     |
-| ------------------------------- | ----------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -         | `Radio.Item` elements rendered inside the radiogroup container.                                                                                                                                                                                                 |
-| <ApiBadge label="size" />       | <code>RadioSize</code>                                                              | 'base'    | Size scale. Cascades to descendant `Radio.Item`s via context.                                                                                                                                                                                                   |
-| <ApiBadge label="type" />       | <code>RadioType</code>                                                              | 'default' | Visual variant. Cascades to descendant `Radio.Item`s via context.                                                                                                                                                                                               |
-| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                | false     | Marks the group as visually invalid. Cascades to descendant `Radio.Item`s. When nested inside a `<Field>` with `invalid`, this is inherited automatically; a direct prop on `<Radio>` always wins. Maps to Spar's `isInvalid` for ARIA wiring (`aria-invalid`). |
-| <ApiBadge label="spread" />     | <code>boolean</code>                                                                | false     | Stretches each item to share the group axis equally. Layout intent only — styling is recipe-side via `[data-spread] > [data-slot="root"]`.                                                                                                                      |
-| <ApiBadge label="position" />   | <code>RadioPosition</code>                                                          | 'left'    | Default placement of an item's indicator relative to its label. Cascades to descendant `Radio.Item`s; per-item `position` overrides the group value.                                                                                                            |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -         | Per-slot class name overrides.                                                                                                                                                                                                                                  |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML attribute overrides.                                                                                                                                                                                                                              |
-| <ApiBadge label="className" />  | <code>string</code>                                                                 | -         | Appends custom classes to the root slot of this part.                                                                                                                                                                                                           |
+| Name                            | Type                                                                                | Default   | Description                                                                                                                                                                                                                                                   |
+| ------------------------------- | ----------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -         | `Radio.Item` elements rendered inside the radiogroup container.                                                                                                                                                                                               |
+| <ApiBadge label="size" />       | <code>RadioSize</code>                                                              | 'base'    | Size scale. Cascades to descendant `Radio.Item`s via context.                                                                                                                                                                                                 |
+| <ApiBadge label="type" />       | <code>RadioType</code>                                                              | 'default' | Visual variant. Cascades to descendant `Radio.Item`s via context.                                                                                                                                                                                             |
+| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                | false     | Marks the group as visually invalid. Cascades to descendant `Radio.Item`s. When nested inside a `<Field>` with `invalid`, this is inherited automatically; a direct prop on `<Radio>` always wins. Maps to Spar's `invalid` for ARIA wiring (`aria-invalid`). |
+| <ApiBadge label="spread" />     | <code>boolean</code>                                                                | false     | Stretches each item to share the group axis equally. Layout intent only — styling is recipe-side via `[data-spread] > [data-slot="root"]`.                                                                                                                    |
+| <ApiBadge label="position" />   | <code>RadioPosition</code>                                                          | 'left'    | Default placement of an item's indicator relative to its label. Cascades to descendant `Radio.Item`s; per-item `position` overrides the group value.                                                                                                          |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -         | Per-slot class name overrides.                                                                                                                                                                                                                                |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML attribute overrides.                                                                                                                                                                                                                            |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -         | Appends custom classes to the root slot of this part.                                                                                                                                                                                                         |
 
 #### Data attributes {#radio-data-attributes}
 

@@ -42,7 +42,7 @@ export interface RadioOwnProps {
    * Marks the group as visually invalid. Cascades to descendant `Radio.Item`s.
    * When nested inside a `<Field>` with `invalid`, this is inherited
    * automatically; a direct prop on `<Radio>` always wins. Maps to Spar's
-   * `isInvalid` for ARIA wiring (`aria-invalid`).
+   * `invalid` for ARIA wiring (`aria-invalid`).
    * @defaultValue false
    */
   invalid?: boolean;
@@ -72,7 +72,7 @@ export type RadioProps<T extends ElementType = 'div'> = PolymorphicProps<
     // disabled/required cascade, ARIA orientation (also drives keyboard nav),
     // and the two focus knobs (`selectOnFocus`, `autoFocus`). Other Spar props
     // (`children`, `as`, native HTML attrs) flow through PolymorphicProps.
-    Pick<SparRadioProps, 'id' | 'value' | 'defaultValue' | 'onValueChange' | 'name' | 'disabled' | 'required' | 'orientation' | 'selectOnFocus' | 'autoFocus'>
+    Pick<SparRadioProps, 'id' | 'value' | 'defaultValue' | 'onChange' | 'name' | 'disabled' | 'readOnly' | 'required' | 'orientation' | 'selectOnFocus' | 'autoFocus'>
 >;
 
 export interface RadioItemOwnProps {

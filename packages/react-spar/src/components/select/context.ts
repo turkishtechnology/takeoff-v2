@@ -4,7 +4,7 @@ import type { SelectSize } from './types';
 
 export interface SelectOwnContextValue {
   size: SelectSize;
-  isInvalid: boolean;
+  invalid: boolean;
 }
 
 export const [SelectProvider, useSelectOwnContext] = createSafeContext<SelectOwnContextValue>('SelectProvider');

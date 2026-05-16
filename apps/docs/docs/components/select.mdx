@@ -129,7 +129,7 @@ function ControlledSelectDemo() {
   return (
     <div className="select-demo">
       <div className="select-demo-note">Selected: {value}</div>
-      <Select value={value} onValueChange={setValue}>
+      <Select value={value} onChange={setValue}>
         <Select.Trigger>
           <Select.Value placeholder="Pick a fare" />
         </Select.Trigger>
@@ -147,7 +147,7 @@ render(<ControlledSelectDemo />);
 `;
 
 export const invalidDemo = String.raw`
-<Select isInvalid>
+<Select invalid>
   <Select.Trigger>
     <Select.Value placeholder="Required field" />
   </Select.Trigger>
@@ -276,7 +276,7 @@ for primitive behavior.
 | --------------------------------- | ----------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                        | -       | Compound parts (`Select.Trigger`, `Select.Content`).                                                                                                                         |
 | <ApiBadge label="size" />         | <code>SelectSize</code>                                                             | 'base'  | Size scale.                                                                                                                                                                  |
-| <ApiBadge label="isInvalid" />    | <code>boolean</code>                                                                | false   | Invalid state for form validation styling.                                                                                                                                   |
+| <ApiBadge label="invalid" />      | <code>boolean</code>                                                                | false   | Invalid state for form validation styling.                                                                                                                                   |
 | <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                               |
 | <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                           |
 | <ApiBadge label="defaultValue" /> | <code>string</code>                                                                 | -       | Uncontrolled initial value                                                                                                                                                   |
@@ -286,25 +286,26 @@ for primitive behavior.
 | <ApiBadge label="disabled" />     | <code>boolean</code>                                                                | -       | Disables the entire select. When inside a Field, inherited from Field.                                                                                                       |
 | <ApiBadge label="name" />         | <code>string</code>                                                                 | -       | Form field name                                                                                                                                                              |
 | <ApiBadge label="required" />     | <code>boolean</code>                                                                | -       | Makes the select required for forms. When inside a Field, inherited from Field.                                                                                              |
+| <ApiBadge label="readOnly" />     | <code>boolean</code>                                                                | -       | Select read-only state. When inside a Field, inherited from Field. A read-only select can be opened and inspected but its value cannot change.                               |
 | <ApiBadge label="open" />         | <code>boolean</code>                                                                | -       | Controlled open state                                                                                                                                                        |
 | <ApiBadge label="defaultOpen" />  | <code>boolean</code>                                                                | false   | Uncontrolled initial open state                                                                                                                                              |
 | <ApiBadge label="className" />    | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                                                                                                                        |
 
 #### Events {#select-events}
 
-| Name                               | Type                                    | Default | Description                      |
-| ---------------------------------- | --------------------------------------- | ------- | -------------------------------- |
-| <ApiBadge label="onValueChange" /> | <code>(value: string) =&gt; void</code> | -       | Callback when selection changes  |
-| <ApiBadge label="onOpenChange" />  | <code>(open: boolean) =&gt; void</code> | -       | Callback when open state changes |
+| Name                              | Type                                    | Default | Description                      |
+| --------------------------------- | --------------------------------------- | ------- | -------------------------------- |
+| <ApiBadge label="onChange" />     | <code>(value: string) =&gt; void</code> | -       | Callback when selection changes  |
+| <ApiBadge label="onOpenChange" /> | <code>(open: boolean) =&gt; void</code> | -       | Callback when open state changes |
 
 #### Data attributes {#select-data-attributes}
 
-| Attribute          | Applied when              | Purpose                                                                     |
-| ------------------ | ------------------------- | --------------------------------------------------------------------------- |
-| `data-slot="root"` | Always                    | Stable selector for wrapper styling on the root slot.                       |
-| `data-size`        | Always                    | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| `data-invalid`     | When `isInvalid` is true. | Borders/background switch to the danger state. Mirrored from the root.      |
-| `data-disabled`    | When `disabled` is true.  | Theme hook for the disabled state. Emitted by Spar Select.                  |
+| Attribute          | Applied when             | Purpose                                                                     |
+| ------------------ | ------------------------ | --------------------------------------------------------------------------- |
+| `data-slot="root"` | Always                   | Stable selector for wrapper styling on the root slot.                       |
+| `data-size`        | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| `data-invalid`     | When `invalid` is true.  | Borders/background switch to the danger state. Mirrored from the root.      |
+| `data-disabled`    | When `disabled` is true. | Theme hook for the disabled state. Emitted by Spar Select.                  |
 
 ### Select.Trigger {#select-trigger}
 
@@ -318,7 +319,7 @@ for primitive behavior.
 | --------------------- | ----------------------------- | --------------------------------------------------------------------------- |
 | `data-slot="root"`    | Always                        | Stable selector for wrapper styling on the root slot.                       |
 | `data-size`           | Always                        | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| `data-invalid`        | When `isInvalid` is true.     | Borders/background switch to the danger state. Mirrored from the root.      |
+| `data-invalid`        | When `invalid` is true.       | Borders/background switch to the danger state. Mirrored from the root.      |
 | `data-state="open"`   | While the dropdown is open.   | Spar open-state hook on the trigger and content.                            |
 | `data-state="closed"` | While the dropdown is closed. | Spar closed-state hook on the trigger.                                      |
 | `data-placeholder`    | When no value is selected.    | Theme hook to style the placeholder color.                                  |

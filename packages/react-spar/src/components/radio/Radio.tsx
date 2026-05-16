@@ -43,7 +43,7 @@ export const Radio = <T extends ElementType = 'div'>(props: RadioProps<T>) => {
 
   return (
     <RadioGroupProvider value={{ size, type, position }}>
-      <SparRadio {...sparProps} isInvalid={invalid} {...rootAttrs} ref={ref}>
+      <SparRadio {...sparProps} invalid={invalid} {...rootAttrs} ref={ref}>
         {children}
       </SparRadio>
     </RadioGroupProvider>

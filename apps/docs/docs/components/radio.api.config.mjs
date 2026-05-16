@@ -59,7 +59,7 @@ export default {
       prependPropNames: ['children'],
       appendPropNames: ['className'],
       skipPropNames: ['ref'],
-      sparBehaviorProps: ['id', 'value', 'defaultValue', 'onValueChange', 'name', 'disabled', 'required', 'orientation', 'selectOnFocus', 'autoFocus'],
+      sparBehaviorProps: ['id', 'value', 'defaultValue', 'onChange', 'name', 'disabled', 'readOnly', 'required', 'orientation', 'selectOnFocus', 'autoFocus'],
       sparDocsUrl: sparRadioDocsUrl,
       sparDocsLabel: 'Spar Radio docs',
       propOverrides: {

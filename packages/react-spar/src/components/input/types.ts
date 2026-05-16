@@ -40,7 +40,7 @@ export type InputProps<T extends ElementType = 'div'> = PolymorphicProps<
     // Spar Input root: identity + form/a11y state (invalid, disabled, required,
     // readOnly). These drive the shared ID/context Spar provides to compound
     // children and the canonical `data-*` it emits on the root.
-    Pick<SparInputProps, 'id' | 'isInvalid' | 'disabled' | 'required' | 'readOnly'>
+    Pick<SparInputProps, 'id' | 'invalid' | 'disabled' | 'required' | 'readOnly'>
 >;
 
 export interface InputFieldOwnProps {

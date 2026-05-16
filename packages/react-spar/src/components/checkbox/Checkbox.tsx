@@ -40,7 +40,7 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
     // off the rendered DOM where they would leak as raw HTML attributes.
     size: _size,
     type: _type,
-    // `invalid` is forwarded to Spar as `isInvalid`.
+    // `invalid` is forwarded to Spar as `invalid` (same name).
     invalid = false,
     // takeoff-spar tri-state vocabulary; mapped to Spar's `CheckedState` below.
     checked,
@@ -77,7 +77,7 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
       disabled={disabled}
       readOnly={readOnly}
       required={required}
-      isInvalid={invalid}
+      invalid={invalid}
       ref={ref}
       {...rootAttrs}
     >

@@ -10,7 +10,7 @@ import type { SelectTriggerProps } from './types';
 
 export const SelectTrigger = <T extends ElementType = 'button'>(props: SelectTriggerProps<T>) => {
   const theme = useComponentTheme('SelectTrigger');
-  const { size, isInvalid } = useSelectOwnContext('Select.Trigger');
+  const { size, invalid } = useSelectOwnContext('Select.Trigger');
 
   // The trigger is what consumers visually see — mirror the root's size and
   // invalid state here so styling can hook off the interactive element
@@ -18,7 +18,7 @@ export const SelectTrigger = <T extends ElementType = 'button'>(props: SelectTri
   const { rootAttrs, rest } = composeRootAttrs(SelectTriggerBase, props as SelectTriggerProps<'button'>, theme, {
     stateAttrs: () => ({
       'data-size': size,
-      'data-invalid': isInvalid ? '' : undefined,
+      'data-invalid': invalid ? '' : undefined,
     }),
   });
 

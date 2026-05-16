@@ -33,7 +33,7 @@ const dataSize = {
 
 const dataInvalid = {
   attribute: 'data-invalid',
-  appliedWhen: 'When `isInvalid` is true.',
+  appliedWhen: 'When `invalid` is true.',
   purpose: 'Borders/background switch to the danger state. Mirrored from the root.',
 };
 

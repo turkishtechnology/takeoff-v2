@@ -161,7 +161,7 @@ export const adornmentsDemo = String.raw`
 # Input
 
 `Input` is a compound, accessible text input. The root owns visual state
-(`size`, plus inherited `isInvalid` / `disabled` / `required` / `readOnly`),
+(`size`, plus inherited `invalid` / `disabled` / `required` / `readOnly`),
 `Input.Container` is the bordered row that hosts the field plus optional
 adornments. Wrap `Input` in a `Field` to attach a label, helper text, or error
 message — the field-level state cascades into the input automatically.
@@ -267,19 +267,19 @@ for primitive behavior.
 | <ApiBadge label="disabled" />   | <code>boolean</code>                                                                | -       | Input disabled state. When inside a Field, inherited from Field.                                                                                               |
 | <ApiBadge label="required" />   | <code>boolean</code>                                                                | -       | Input required state. When inside a Field, inherited from Field.                                                                                               |
 | <ApiBadge label="readOnly" />   | <code>boolean</code>                                                                | -       | Input read-only state. When inside a Field, inherited from Field.                                                                                              |
-| <ApiBadge label="isInvalid" />  | <code>boolean</code>                                                                | -       | Input validation state. When inside a Field, inherited from Field.                                                                                             |
+| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                | -       | Input validation state. When inside a Field, inherited from Field.                                                                                             |
 | <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                                                                                                          |
 
 #### Data attributes {#input-data-attributes}
 
-| Attribute          | Applied when              | Purpose                                                                     |
-| ------------------ | ------------------------- | --------------------------------------------------------------------------- |
-| `data-slot="root"` | Always                    | Stable selector for wrapper styling on the root slot.                       |
-| `data-size`        | Always                    | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| `data-invalid`     | When `isInvalid` is true. | Theme hook for the invalid state. Emitted by Spar Input on the root.        |
-| `data-disabled`    | When `disabled` is true.  | Theme hook for the disabled state. Emitted by Spar Input.                   |
-| `data-required`    | When `required` is true.  | Theme hook used by the parent `Field` to auto-render its required asterisk. |
-| `data-readonly`    | When `readOnly` is true.  | Theme hook for the read-only state. Emitted by Spar Input.                  |
+| Attribute          | Applied when             | Purpose                                                                     |
+| ------------------ | ------------------------ | --------------------------------------------------------------------------- |
+| `data-slot="root"` | Always                   | Stable selector for wrapper styling on the root slot.                       |
+| `data-size`        | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| `data-invalid`     | When `invalid` is true.  | Theme hook for the invalid state. Emitted by Spar Input on the root.        |
+| `data-disabled`    | When `disabled` is true. | Theme hook for the disabled state. Emitted by Spar Input.                   |
+| `data-required`    | When `required` is true. | Theme hook used by the parent `Field` to auto-render its required asterisk. |
+| `data-readonly`    | When `readOnly` is true. | Theme hook for the read-only state. Emitted by Spar Input.                  |
 
 ### Input.Container {#input-container}
 
@@ -296,12 +296,12 @@ for primitive behavior.
 
 #### Data attributes {#input-container-data-attributes}
 
-| Attribute          | Applied when                       | Purpose                                                          |
-| ------------------ | ---------------------------------- | ---------------------------------------------------------------- |
-| `data-slot="root"` | Always                             | Stable selector for wrapper styling on the root slot.            |
-| `data-invalid`     | When the root `isInvalid` is true. | Borders/background switch to the danger state on the visual row. |
-| `data-disabled`    | When the root `disabled` is true.  | Theme hook for the disabled visual row.                          |
-| `data-readonly`    | When the root `readOnly` is true.  | Theme hook for the read-only visual row.                         |
+| Attribute          | Applied when                      | Purpose                                                          |
+| ------------------ | --------------------------------- | ---------------------------------------------------------------- |
+| `data-slot="root"` | Always                            | Stable selector for wrapper styling on the root slot.            |
+| `data-invalid`     | When the root `invalid` is true.  | Borders/background switch to the danger state on the visual row. |
+| `data-disabled`    | When the root `disabled` is true. | Theme hook for the disabled visual row.                          |
+| `data-readonly`    | When the root `readOnly` is true. | Theme hook for the read-only visual row.                         |
 
 ### Input.Field {#input-field}
 

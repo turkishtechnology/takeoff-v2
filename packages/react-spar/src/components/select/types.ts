@@ -28,7 +28,7 @@ export type SelectSeparatorSlot = 'root';
 
 /**
  * Visual + slot props owned by takeoff-v2 for the Select root. `size` and
- * `isInvalid` cascade to the Trigger through a visual context so consumers
+ * `invalid` cascade to the Trigger through a visual context so consumers
  * declare them once on the root.
  */
 export interface SelectOwnProps {
@@ -41,7 +41,7 @@ export interface SelectOwnProps {
    * Invalid state for form validation styling.
    * @defaultValue false
    */
-  isInvalid?: boolean;
+  invalid?: boolean;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<SelectSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -59,9 +59,9 @@ export type SelectProps<T extends ElementType = 'div'> = PolymorphicProps<
   SelectOwnProps &
     // Spar Select root: identity, controlled/uncontrolled value & open state,
     // form integration (name, required), and behavior knobs (disabled,
-    // autoFocus). Visual concerns (size, isInvalid) are takeoff-v2's own and
+    // autoFocus). Visual concerns (size, invalid) are takeoff-v2's own and
     // are declared in SelectOwnProps above.
-    Pick<SparSelectProps, 'id' | 'value' | 'defaultValue' | 'onValueChange' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled' | 'required' | 'name' | 'autoFocus'>
+    Pick<SparSelectProps, 'id' | 'value' | 'defaultValue' | 'onChange' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled' | 'readOnly' | 'required' | 'name' | 'autoFocus'>
 >;
 
 export interface SelectTriggerOwnProps {

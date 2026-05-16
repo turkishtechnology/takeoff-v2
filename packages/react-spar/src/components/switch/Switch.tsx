@@ -39,7 +39,7 @@ export const Switch = <T extends ElementType = 'button'>(props: SwitchProps<T>) 
     // off the rendered DOM where they would leak as raw HTML attributes.
     size: _size,
     variant: _variant,
-    // `invalid` is forwarded to Spar as `isInvalid`.
+    // `invalid` is forwarded to Spar as `invalid` (same name).
     invalid = false,
     children,
     ref,
@@ -49,7 +49,7 @@ export const Switch = <T extends ElementType = 'button'>(props: SwitchProps<T>) 
   return (
     <SparSwitch
       {...(sparProps as unknown as SparSwitchProps)}
-      isInvalid={invalid}
+      invalid={invalid}
       ref={ref}
       {...rootAttrs}
     >

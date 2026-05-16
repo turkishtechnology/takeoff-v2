@@ -18,7 +18,7 @@ export const RadioItem = <T extends ElementType = 'label'>(props: RadioItemProps
   // (`.tk-radio-item[data-type='card']`) without an ancestor selector — same
   // pattern recorded for Accordion in `data-attribute-vocabulary.md`.
   // `data-invalid` is intentionally NOT mirrored here: Spar emits it on the
-  // radiogroup root (resolving from `isInvalid` + Field context), and the
+  // radiogroup root (resolving from `invalid` + Field context), and the
   // recipe styles items via an ancestor selector (`.tk-radio[data-invalid]
   // .tk-radio-item`). Per-item invalid does not exist as a concept.
   const { rootAttrs, rest } = composeRootAttrs(RadioItemBase, props as RadioItemProps<'label'>, theme, {

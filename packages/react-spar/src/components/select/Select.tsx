@@ -16,16 +16,16 @@ export const Select = <T extends ElementType = 'div'>(props: SelectProps<T>) => 
   // it. `data-size` and `data-invalid` are takeoff-v2's own visual vocabulary,
   // so they live here and cascade to the Trigger via context.
   const { rootAttrs, rest } = composeRootAttrs(SelectBase, props as SelectProps<'div'>, theme, {
-    stateAttrs: ({ size = DEFAULT_SIZE, isInvalid }) => ({
+    stateAttrs: ({ size = DEFAULT_SIZE, invalid }) => ({
       'data-size': size,
-      'data-invalid': isInvalid ? '' : undefined,
+      'data-invalid': invalid ? '' : undefined,
     }),
   });
 
-  const { size = DEFAULT_SIZE, isInvalid = false, children, ref, ...sparProps } = rest;
+  const { size = DEFAULT_SIZE, invalid = false, children, ref, ...sparProps } = rest;
 
   return (
-    <SelectProvider value={{ size, isInvalid }}>
+    <SelectProvider value={{ size, invalid }}>
       <SparSelect {...(sparProps as unknown as SparSelectProps)} ref={ref} {...rootAttrs}>
         {children}
       </SparSelect>

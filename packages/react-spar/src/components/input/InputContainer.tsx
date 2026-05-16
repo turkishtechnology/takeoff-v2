@@ -13,13 +13,13 @@ export const InputContainer = <T extends ElementType = 'div'>(props: InputContai
   // bordered row can style hover/focus/invalid/disabled/readonly without
   // crawling up the DOM. Spar's own `data-*` lives on the outer `.tk-input`
   // root, but the visual container is one level in.
-  const { isInvalid, disabled, readOnly } = useInputContext();
+  const { invalid, disabled, readOnly } = useInputContext();
 
   const Component = (props.as ?? 'div') as ElementType;
 
   const { rootAttrs, rest } = composeRootAttrs(InputContainerBase, props as InputContainerProps<'div'>, theme, {
     stateAttrs: () => ({
-      'data-invalid': isInvalid ? '' : undefined,
+      'data-invalid': invalid ? '' : undefined,
       'data-disabled': disabled ? '' : undefined,
       'data-readonly': readOnly ? '' : undefined,
     }),
