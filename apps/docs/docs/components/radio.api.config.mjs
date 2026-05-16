@@ -45,8 +45,8 @@ const dataPosition = {
 
 const dataInvalidWhenTrue = {
   attribute: 'data-invalid',
-  appliedWhen: 'When `invalid` is true.',
-  purpose: 'Theme hook for the invalid state. Cascades from the group to every item.',
+  appliedWhen: 'When `invalid` is true, or inherited from a parent `<Field invalid>`.',
+  purpose: 'Theme hook for the invalid state. Emitted by Spar on the radiogroup root only; items style themselves through the ancestor selector `.tk-radio[data-invalid] .tk-radio-item`.',
 };
 
 export default {
@@ -106,7 +106,7 @@ export default {
       sparDocsUrl: sparRadioDocsUrl,
       sparDocsLabel: 'Spar Radio docs',
       propOverrides: {
-        children: childrenOverride('`Radio.Indicator`, `Radio.Text` (with optional `Radio.Label` / `Radio.Description`), or a render function exposing per-item Spar state.'),
+        children: childrenOverride('`Radio.Indicator` and `Radio.Label` (compose helper text or richer markup inside the label), or a render function exposing per-item Spar state.'),
         className: classNameOverride,
       },
       dataAttributes: [
@@ -114,7 +114,6 @@ export default {
         dataSize,
         dataType,
         dataPosition,
-        dataInvalidWhenTrue,
         {
           attribute: 'data-state="checked"',
           appliedWhen: 'When the item matches the group value.',
@@ -153,20 +152,6 @@ export default {
     },
     {
       sourceFile: radioTypesFile,
-      typeName: 'RadioTextProps',
-      displayName: 'Radio.Text',
-      headingBase: 'radio-text',
-      prependPropNames: ['children'],
-      appendPropNames: ['className'],
-      skipPropNames: ['ref'],
-      propOverrides: {
-        children: childrenOverride('Text container. Typically holds a `Radio.Label` and optional `Radio.Description`.'),
-        className: classNameOverride,
-      },
-      dataAttributes: [dataSlotRoot],
-    },
-    {
-      sourceFile: radioTypesFile,
       typeName: 'RadioLabelProps',
       displayName: 'Radio.Label',
       headingBase: 'radio-label',
@@ -174,21 +159,7 @@ export default {
       appendPropNames: ['className'],
       skipPropNames: ['ref'],
       propOverrides: {
-        children: childrenOverride('Primary label text for the item.'),
-        className: classNameOverride,
-      },
-      dataAttributes: [dataSlotRoot],
-    },
-    {
-      sourceFile: radioTypesFile,
-      typeName: 'RadioDescriptionProps',
-      displayName: 'Radio.Description',
-      headingBase: 'radio-description',
-      prependPropNames: ['children'],
-      appendPropNames: ['className'],
-      skipPropNames: ['ref'],
-      propOverrides: {
-        children: childrenOverride('Secondary description text underneath the label.'),
+        children: childrenOverride('Label content for the item. Compose any markup inside — the wrapper styles the container as a column so helper text can live next to the primary label.'),
         className: classNameOverride,
       },
       dataAttributes: [dataSlotRoot],

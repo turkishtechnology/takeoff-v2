@@ -1,7 +1,7 @@
 import type { ElementType, ReactNode } from 'react';
 import type {
   PolymorphicProps,
-  RadioGroupProps as SparRadioGroupProps,
+  RadioProps as SparRadioProps,
   RadioItemProps as SparRadioItemProps,
   RadioItemRenderProps as SparRadioItemRenderProps,
 } from '@turkish-technology/spar';
@@ -15,9 +15,7 @@ export type RadioPosition = 'left' | 'right';
 export type RadioSlot = 'root';
 export type RadioItemSlot = 'root';
 export type RadioIndicatorSlot = 'root' | 'icon';
-export type RadioTextSlot = 'root';
 export type RadioLabelSlot = 'root';
-export type RadioDescriptionSlot = 'root';
 
 /**
  * Render-prop state surface exposed by `Radio.Item` children.
@@ -42,6 +40,9 @@ export interface RadioOwnProps {
   type?: RadioType;
   /**
    * Marks the group as visually invalid. Cascades to descendant `Radio.Item`s.
+   * When nested inside a `<Field>` with `invalid`, this is inherited
+   * automatically; a direct prop on `<Radio>` always wins. Maps to Spar's
+   * `isInvalid` for ARIA wiring (`aria-invalid`).
    * @defaultValue false
    */
   invalid?: boolean;
@@ -71,7 +72,7 @@ export type RadioProps<T extends ElementType = 'div'> = PolymorphicProps<
     // disabled/required cascade, ARIA orientation (also drives keyboard nav),
     // and the two focus knobs (`selectOnFocus`, `autoFocus`). Other Spar props
     // (`children`, `as`, native HTML attrs) flow through PolymorphicProps.
-    Pick<SparRadioGroupProps, 'id' | 'value' | 'defaultValue' | 'onValueChange' | 'name' | 'disabled' | 'required' | 'orientation' | 'selectOnFocus' | 'autoFocus'>
+    Pick<SparRadioProps, 'id' | 'value' | 'defaultValue' | 'onValueChange' | 'name' | 'disabled' | 'required' | 'orientation' | 'selectOnFocus' | 'autoFocus'>
 >;
 
 export interface RadioItemOwnProps {
@@ -103,19 +104,18 @@ export interface RadioIndicatorOwnProps {
   classNames?: ClassNamesMap<RadioIndicatorSlot>;
   /** Per-slot HTML attribute overrides — supports `root` and the internal `icon` slot. */
   slotProps?: SlotPropsMap<RadioIndicatorSlot>;
-}
-
-export type RadioIndicatorProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, RadioIndicatorOwnProps>;
-
-export interface RadioTextOwnProps {
-  /** Per-slot class name overrides. */
-  classNames?: ClassNamesMap<RadioTextSlot>;
-  /** Per-slot HTML attribute overrides. */
-  slotProps?: SlotPropsMap<RadioTextSlot>;
+  /**
+   * Optional custom content for the indicator. When omitted, the wrapper
+   * auto-renders the internal `icon` slot (the default dot). When provided,
+   * the children replace the default slot entirely — useful for swapping in
+   * a check icon or animated marker. The consumer owns checked/unchecked
+   * visibility (typically via the `[data-state="checked"]` ancestor selector
+   * emitted by Spar on `Radio.Item`).
+   */
   children?: ReactNode;
 }
 
-export type RadioTextProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, RadioTextOwnProps>;
+export type RadioIndicatorProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, RadioIndicatorOwnProps>;
 
 export interface RadioLabelOwnProps {
   /** Per-slot class name overrides. */
@@ -127,23 +127,11 @@ export interface RadioLabelOwnProps {
 
 export type RadioLabelProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, RadioLabelOwnProps>;
 
-export interface RadioDescriptionOwnProps {
-  /** Per-slot class name overrides. */
-  classNames?: ClassNamesMap<RadioDescriptionSlot>;
-  /** Per-slot HTML attribute overrides. */
-  slotProps?: SlotPropsMap<RadioDescriptionSlot>;
-  children?: ReactNode;
-}
-
-export type RadioDescriptionProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, RadioDescriptionOwnProps>;
-
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {
     Radio: import('../../core').ComponentThemeConfig<RadioProps, RadioSlot>;
     RadioItem: import('../../core').ComponentThemeConfig<RadioItemProps, RadioItemSlot>;
     RadioIndicator: import('../../core').ComponentThemeConfig<RadioIndicatorProps, RadioIndicatorSlot>;
-    RadioText: import('../../core').ComponentThemeConfig<RadioTextProps, RadioTextSlot>;
     RadioLabel: import('../../core').ComponentThemeConfig<RadioLabelProps, RadioLabelSlot>;
-    RadioDescription: import('../../core').ComponentThemeConfig<RadioDescriptionProps, RadioDescriptionSlot>;
   }
 }

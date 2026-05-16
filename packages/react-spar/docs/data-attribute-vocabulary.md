@@ -73,14 +73,14 @@ table needs updating.
 
 ### State
 
-| Attribute             | Value        | Scope                       | Meaning                               |
-| --------------------- | ------------ | --------------------------- | ------------------------------------- |
-| `data-disabled`       | presence     | Root                        | Component is disabled                 |
-| `data-invalid`        | presence     | Root, Item                  | Component or item is visually invalid |
-| `data-loading`        | presence     | Root                        | Component is in loading state         |
-| `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state    |
-| `data-state="open"`   | presence-str | Spar Accordion item/trigger | Disclosure is open (Spar-emitted)     |
-| `data-state="closed"` | presence-str | Spar Accordion item/trigger | Disclosure is closed (Spar-emitted)   |
+| Attribute             | Value        | Scope                       | Meaning                             |
+| --------------------- | ------------ | --------------------------- | ----------------------------------- |
+| `data-disabled`       | presence     | Root                        | Component is disabled               |
+| `data-invalid`        | presence     | Root                        | Component is visually invalid       |
+| `data-loading`        | presence     | Root                        | Component is in loading state       |
+| `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state  |
+| `data-state="open"`   | presence-str | Spar Accordion item/trigger | Disclosure is open (Spar-emitted)   |
+| `data-state="closed"` | presence-str | Spar Accordion item/trigger | Disclosure is closed (Spar-emitted) |
 
 ### Variant
 
@@ -145,10 +145,18 @@ should explain **why** the deviation exists so reviewers do not "fix" it later.
 
 ### Radio
 
-- **`data-size`, `data-type`, `data-position`, and `data-invalid` are emitted on
-  both the root and each item.** The root copy documents the resolved group
-  defaults; the item copy lets the radio recipe style `.tk-radio-item` without
-  an ancestor selector and allows per-item `position` overrides.
+- **`data-size`, `data-type`, and `data-position` are emitted on both the root
+  and each item.** The root copy documents the resolved group defaults; the item
+  copy lets the radio recipe style `.tk-radio-item` without an ancestor selector
+  and allows per-item `position` overrides.
+- **`data-invalid` is Spar-owned, root-only.** Spar emits it on the radiogroup
+  root, resolving from its own `isInvalid` ↔ Field context chain. The wrapper
+  forwards its `invalid` prop to Spar as `isInvalid` and does not call
+  `useOptionalFieldContext` itself — Field resolution stays a single source of
+  truth inside Spar. Per-item invalid styling is driven by the recipe's ancestor
+  selector (`.tk-radio[data-invalid] .tk-radio-item ...`), so the wrapper does
+  not mirror `data-invalid` onto items either. Per-item invalid is not a real
+  concept (the wrapper's `invalid` is group-scoped).
 - **`data-spread` lives on the root only.** It is a group layout hook. Items do
   not carry it because CSS can stretch direct `.tk-radio-item` children from the
   root selector.
