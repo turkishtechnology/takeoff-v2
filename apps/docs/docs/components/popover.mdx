@@ -40,7 +40,22 @@ export const playgroundDemo = String.raw`
   <Popover>
     <Popover.Trigger>Click me</Popover.Trigger>
     <Popover.Content>
-      <div>Popover content goes here.</div>
+      <Popover.Header>Title</Popover.Header>
+      <Popover.Description>Popover content goes here.</Popover.Description>
+    </Popover.Content>
+  </Popover>
+</div>
+`;
+
+export const headerDescriptionDemo = String.raw`
+<div className="popover-demo">
+  <Popover>
+    <Popover.Trigger>Open</Popover.Trigger>
+    <Popover.Content>
+      <Popover.Header>Account settings</Popover.Header>
+      <Popover.Description>
+        Manage your personal information, password, and notifications.
+      </Popover.Description>
     </Popover.Content>
   </Popover>
 </div>
@@ -51,43 +66,43 @@ export const typesDemo = String.raw`
   <Popover>
     <Popover.Trigger>Dark</Popover.Trigger>
     <Popover.Content variant="dark">
-      <div>Dark variant popover</div>
+      <Popover.Description>Dark variant popover</Popover.Description>
     </Popover.Content>
   </Popover>
   <Popover>
     <Popover.Trigger>White</Popover.Trigger>
     <Popover.Content variant="white">
-      <div>White variant popover</div>
+      <Popover.Description>White variant popover</Popover.Description>
     </Popover.Content>
   </Popover>
   <Popover>
     <Popover.Trigger>Info</Popover.Trigger>
     <Popover.Content variant="info">
-      <div>Info variant popover</div>
+      <Popover.Description>Info variant popover</Popover.Description>
     </Popover.Content>
   </Popover>
   <Popover>
     <Popover.Trigger>Success</Popover.Trigger>
     <Popover.Content variant="success">
-      <div>Success variant popover</div>
+      <Popover.Description>Success variant popover</Popover.Description>
     </Popover.Content>
   </Popover>
   <Popover>
     <Popover.Trigger>Warning</Popover.Trigger>
     <Popover.Content variant="warning">
-      <div>Warning variant popover</div>
+      <Popover.Description>Warning variant popover</Popover.Description>
     </Popover.Content>
   </Popover>
   <Popover>
     <Popover.Trigger>Danger</Popover.Trigger>
     <Popover.Content variant="danger">
-      <div>Danger variant popover</div>
+      <Popover.Description>Danger variant popover</Popover.Description>
     </Popover.Content>
   </Popover>
   <Popover>
     <Popover.Trigger>Neutral</Popover.Trigger>
     <Popover.Content variant="neutral">
-      <div>Neutral variant popover</div>
+      <Popover.Description>Neutral variant popover</Popover.Description>
     </Popover.Content>
   </Popover>
 </div>
@@ -98,25 +113,25 @@ export const placementDemo = String.raw`
   <Popover>
     <Popover.Trigger>Top</Popover.Trigger>
     <Popover.Content side="top">
-      <div>Positioned top</div>
+      <Popover.Description>Positioned top</Popover.Description>
     </Popover.Content>
   </Popover>
   <Popover>
     <Popover.Trigger>Bottom</Popover.Trigger>
     <Popover.Content side="bottom">
-      <div>Positioned bottom</div>
+      <Popover.Description>Positioned bottom</Popover.Description>
     </Popover.Content>
   </Popover>
   <Popover>
     <Popover.Trigger>Left</Popover.Trigger>
     <Popover.Content side="left">
-      <div>Positioned left</div>
+      <Popover.Description>Positioned left</Popover.Description>
     </Popover.Content>
   </Popover>
   <Popover>
     <Popover.Trigger>Right</Popover.Trigger>
     <Popover.Content side="right">
-      <div>Positioned right</div>
+      <Popover.Description>Positioned right</Popover.Description>
     </Popover.Content>
   </Popover>
 </div>
@@ -127,7 +142,7 @@ export const arrowDemo = String.raw`
   <Popover>
     <Popover.Trigger>With arrow</Popover.Trigger>
     <Popover.Content>
-      <div>Popover with arrow</div>
+      <Popover.Description>Popover with arrow</Popover.Description>
       <Popover.Arrow />
     </Popover.Content>
   </Popover>
@@ -139,7 +154,7 @@ export const closeDemo = String.raw`
   <Popover>
     <Popover.Trigger>Open</Popover.Trigger>
     <Popover.Content>
-      <div>Click close to dismiss</div>
+      <Popover.Description>Click close to dismiss</Popover.Description>
       <Popover.Close>Close</Popover.Close>
     </Popover.Content>
   </Popover>
@@ -155,7 +170,7 @@ function ControlledDemo() {
       <Popover open={open} onOpenChange={setOpen}>
         <Popover.Trigger>Controlled</Popover.Trigger>
         <Popover.Content>
-          <div>Controlled popover</div>
+          <Popover.Description>Controlled popover</Popover.Description>
           <Popover.Close>Done</Popover.Close>
         </Popover.Content>
       </Popover>
@@ -187,6 +202,8 @@ import { Popover } from '@takeoff-ui/react-spar';
 <Popover>
   <Popover.Trigger />
   <Popover.Content>
+    <Popover.Header />
+    <Popover.Description />
     <Popover.Arrow />
     <Popover.Close />
   </Popover.Content>
@@ -198,6 +215,20 @@ import { Popover } from '@takeoff-ui/react-spar';
 <LiveCode
   code={playgroundDemo}
   cssCode={popoverDemoCss}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={popoverScope}
+/>
+
+## Header & Description
+
+Use `Popover.Header` and `Popover.Description` to structure the content with a
+title and supporting text. Both are styling slots — no behavior is attached.
+
+<LiveCode
+  code={headerDescriptionDemo}
+  cssCode={popoverDemoCss}
+  editable={false}
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={popoverScope}

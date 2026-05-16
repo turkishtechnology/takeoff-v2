@@ -140,6 +140,31 @@ export const arrowDemo = String.raw`
 </div>
 `;
 
+export const providerDemo = String.raw`
+<Tooltip.Provider delayDuration={300} skipDelayDuration={150}>
+  <div className="tooltip-demo">
+    <Tooltip>
+      <Tooltip.Trigger>First</Tooltip.Trigger>
+      <Tooltip.Content>
+        <Tooltip.Description>Hover, then move to the next one</Tooltip.Description>
+      </Tooltip.Content>
+    </Tooltip>
+    <Tooltip>
+      <Tooltip.Trigger>Second</Tooltip.Trigger>
+      <Tooltip.Content>
+        <Tooltip.Description>Opens instantly within skip window</Tooltip.Description>
+      </Tooltip.Content>
+    </Tooltip>
+    <Tooltip>
+      <Tooltip.Trigger>Third</Tooltip.Trigger>
+      <Tooltip.Content>
+        <Tooltip.Description>Same skip-delay behavior</Tooltip.Description>
+      </Tooltip.Content>
+    </Tooltip>
+  </div>
+</Tooltip.Provider>
+`;
+
 export const controlledDemo = String.raw`
 function ControlledDemo() {
   const [open, setOpen] = React.useState(false);
@@ -180,9 +205,20 @@ import { Tooltip } from '@takeoff-ui/react-spar';
 <Tooltip>
   <Tooltip.Trigger />
   <Tooltip.Content>
+    <Tooltip.Header />
     <Tooltip.Description />
+    <Tooltip.Arrow />
   </Tooltip.Content>
 </Tooltip>
+```
+
+To share delay configuration across a group of tooltips, wrap them in
+`Tooltip.Provider`:
+
+```tsx
+<Tooltip.Provider delayDuration={300} skipDelayDuration={150}>
+  {/* multiple <Tooltip /> instances */}
+</Tooltip.Provider>
 ```
 
 ## Playground
@@ -232,6 +268,22 @@ import { Tooltip } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={arrowDemo}
+  cssCode={tooltipDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tooltipScope}
+/>
+
+## Provider
+
+Wrap a group of tooltips in `Tooltip.Provider` to share `delayDuration` and a
+`skipDelayDuration` window — once one tooltip in the group has opened, moving
+to a sibling within the skip window opens it instantly. Recommended for
+toolbar-style clusters (WCAG 1.4.13).
+
+<LiveCode
+  code={providerDemo}
   cssCode={tooltipDemoCss}
   editable={false}
   previewMinHeight={120}
