@@ -75,9 +75,7 @@ export const playgroundDemo = String.raw`
 <Field>
   <Field.Label>Notifications</Field.Label>
   <Checkbox defaultChecked>
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
+    <Checkbox.Indicator />
   </Checkbox>
   <Field.Description>
     We will only email you when a saved route drops in price.
@@ -90,18 +88,14 @@ export const fieldWithCheckboxDemo = String.raw`
   <Field required>
     <Field.Label>Email me booking updates</Field.Label>
     <Checkbox defaultChecked>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
   </Field>
 
   <Field>
     <Field.Label>Subscribe to fare alerts</Field.Label>
     <Checkbox>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
     <Field.Description>
       We will only email you when a saved route drops in price.
@@ -111,9 +105,7 @@ export const fieldWithCheckboxDemo = String.raw`
   <Field invalid>
     <Field.Label>I accept the booking terms</Field.Label>
     <Checkbox>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
     <Field.ErrorMessage>You must accept the terms to continue.</Field.ErrorMessage>
   </Field>
@@ -121,18 +113,14 @@ export const fieldWithCheckboxDemo = String.raw`
   <Field disabled>
     <Field.Label>Disabled option</Field.Label>
     <Checkbox>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
   </Field>
 
   <Field readOnly>
     <Field.Label>Read-only selection</Field.Label>
     <Checkbox defaultChecked>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
   </Field>
 </div>
@@ -150,9 +138,7 @@ function ControlledCheckboxDemo() {
       <Field>
         <Field.Label>I accept the booking terms</Field.Label>
         <Checkbox checked={accepted} onChange={setAccepted}>
-          <Checkbox.Indicator>
-            <Checkbox.Icon />
-          </Checkbox.Indicator>
+          <Checkbox.Indicator />
         </Checkbox>
       </Field>
     </div>
@@ -188,9 +174,7 @@ function IndeterminateCheckboxDemo() {
           indeterminate={indeterminate}
           onChange={toggleAll}
         >
-          <Checkbox.Indicator>
-            <Checkbox.Icon />
-          </Checkbox.Indicator>
+          <Checkbox.Indicator />
         </Checkbox>
       </Field>
       <div className="checkbox-demo-stack" style={{ paddingLeft: 24 }}>
@@ -200,9 +184,7 @@ function IndeterminateCheckboxDemo() {
             checked={items.seat}
             onChange={(v) => setItems({ ...items, seat: v })}
           >
-            <Checkbox.Indicator>
-              <Checkbox.Icon />
-            </Checkbox.Indicator>
+            <Checkbox.Indicator />
           </Checkbox>
         </Field>
         <Field>
@@ -211,9 +193,7 @@ function IndeterminateCheckboxDemo() {
             checked={items.meal}
             onChange={(v) => setItems({ ...items, meal: v })}
           >
-            <Checkbox.Indicator>
-              <Checkbox.Icon />
-            </Checkbox.Indicator>
+            <Checkbox.Indicator />
           </Checkbox>
         </Field>
         <Field>
@@ -222,9 +202,7 @@ function IndeterminateCheckboxDemo() {
             checked={items.baggage}
             onChange={(v) => setItems({ ...items, baggage: v })}
           >
-            <Checkbox.Indicator>
-              <Checkbox.Icon />
-            </Checkbox.Indicator>
+            <Checkbox.Indicator />
           </Checkbox>
         </Field>
       </div>
@@ -240,17 +218,13 @@ export const sizeDemo = String.raw`
   <Field>
     <Field.Label>Small</Field.Label>
     <Checkbox size="small" defaultChecked>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
   </Field>
   <Field>
     <Field.Label>Base</Field.Label>
     <Checkbox size="base" defaultChecked>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
   </Field>
 </div>
@@ -261,9 +235,7 @@ export const cardTypeDemo = String.raw`
   <Field>
     <Field.Label>Mobile boarding pass</Field.Label>
     <Checkbox type="card" defaultChecked>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
     <Field.Description>
       Skip the printed pass and board with your phone.
@@ -272,9 +244,7 @@ export const cardTypeDemo = String.raw`
   <Field>
     <Field.Label>Priority boarding</Field.Label>
     <Checkbox type="card">
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
     <Field.Description>
       Board before general groups with priority access.
@@ -315,11 +285,9 @@ render(
       <Field.Label>Favorite this route</Field.Label>
       <Checkbox defaultChecked>
         <Checkbox.Indicator>
-          <Checkbox.Icon>
-            {({ checked, indeterminate }) =>
-              indeterminate ? <DashIcon /> : checked ? <StarIcon /> : null
-            }
-          </Checkbox.Icon>
+          {({ checked, indeterminate }) =>
+            indeterminate ? <DashIcon /> : checked ? <StarIcon /> : null
+          }
         </Checkbox.Indicator>
       </Checkbox>
     </Field>
@@ -332,33 +300,25 @@ export const stateDemo = String.raw`
   <Field disabled>
     <Field.Label>Disabled option</Field.Label>
     <Checkbox>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
   </Field>
   <Field disabled>
     <Field.Label>Disabled and selected</Field.Label>
     <Checkbox defaultChecked>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
   </Field>
   <Field readOnly>
     <Field.Label>Read-only selection</Field.Label>
     <Checkbox defaultChecked>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
   </Field>
   <Field invalid required>
     <Field.Label>I accept the booking terms</Field.Label>
     <Checkbox>
-      <Checkbox.Indicator>
-        <Checkbox.Icon />
-      </Checkbox.Indicator>
+      <Checkbox.Indicator />
     </Checkbox>
     <Field.ErrorMessage>
       You must accept the terms to continue.
@@ -384,25 +344,19 @@ function CheckboxFormDemo() {
       <Field>
         <Field.Label>Extra legroom seat</Field.Label>
         <Checkbox name="extras" value="seat" defaultChecked>
-          <Checkbox.Indicator>
-            <Checkbox.Icon />
-          </Checkbox.Indicator>
+          <Checkbox.Indicator />
         </Checkbox>
       </Field>
       <Field>
         <Field.Label>Special meal</Field.Label>
         <Checkbox name="extras" value="meal">
-          <Checkbox.Indicator>
-            <Checkbox.Icon />
-          </Checkbox.Indicator>
+          <Checkbox.Indicator />
         </Checkbox>
       </Field>
       <Field>
         <Field.Label>Extra baggage</Field.Label>
         <Checkbox name="extras" value="baggage">
-          <Checkbox.Indicator>
-            <Checkbox.Icon />
-          </Checkbox.Indicator>
+          <Checkbox.Indicator />
         </Checkbox>
       </Field>
       <div className="checkbox-demo-actions">
@@ -438,9 +392,7 @@ import { Checkbox, Field } from '@takeoff-ui/react-spar';
 <Field>
   <Field.Label />
   <Checkbox>
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
+    <Checkbox.Indicator />
   </Checkbox>
   <Field.Description />
   <Field.ErrorMessage />
@@ -529,9 +481,10 @@ Set `type="card"` to switch to the bordered card variant for option-row layouts.
 
 ## Custom Icon
 
-`Checkbox.Icon` accepts function children that receive the current `checked` and
-`indeterminate` state, so you can render different glyphs per state without
-mounting two icons.
+`Checkbox.Indicator` accepts function children that receive the current
+`checked` and `indeterminate` state, so you can render different glyphs per
+state without mounting two icons. Passing a `ReactNode` instead replaces the
+default `icon` slot entirely.
 
 <LiveCode
   code={customIconDemo}
@@ -636,17 +589,6 @@ for primitive behavior.
 | Attribute               | Applied when | Purpose                                 |
 | ----------------------- | ------------ | --------------------------------------- |
 | `data-slot="indicator"` | Always       | Stable selector for the indicator slot. |
-
-### Checkbox.Icon {#checkbox-icon}
-
-See
-[Spar Checkbox docs](https://spar.app.turkishtechlab.com/docs/Components/Checkbox)
-for primitive behavior.
-
-#### Data attributes {#checkbox-icon-data-attributes}
-
-| Attribute          | Applied when | Purpose                            |
-| ------------------ | ------------ | ---------------------------------- |
-| `data-slot="icon"` | Always       | Stable selector for the icon slot. |
+| `data-slot="icon"`      | Always       | Stable selector for the icon slot.      |
 
 {/* api-tables:end */}

@@ -131,29 +131,14 @@ export default {
     {
       ...compoundPartConfig('CheckboxIndicatorProps', 'Checkbox.Indicator', 'checkbox-indicator', 'indicator'),
       propOverrides: {
-        children: childrenOverride('Indicator content. Typically wraps `Checkbox.Icon`.'),
-        className: classNameOverride,
-      },
-    },
-    {
-      sourceFile: checkboxTypesFile,
-      typeName: 'CheckboxIconProps',
-      displayName: 'Checkbox.Icon',
-      headingBase: 'checkbox-icon',
-      prependPropNames: ['children'],
-      appendPropNames: ['className'],
-      skipPropNames: ['ref'],
-      sparDocsUrl: sparCheckboxDocsUrl,
-      sparDocsLabel: 'Spar Checkbox docs',
-      propOverrides: {
         children: {
-          type: 'React.ReactNode | ((state: CheckboxIconRenderProps) => React.ReactNode)',
-          description: 'Icon content. When a function, receives the current `checked` and `indeterminate` state.',
+          type: 'React.ReactNode | ((state: CheckboxIndicatorRenderProps) => React.ReactNode)',
+          description: 'Indicator content. When omitted, the built-in placeholder check / dash glyph is rendered. When a function, receives the current `checked` and `indeterminate` state. A `ReactNode` replaces the default `icon` slot entirely.',
           default: 'a built-in placeholder check / dash glyph driven by `indeterminate`',
         },
         className: classNameOverride,
       },
-      dataAttributes: [dataSlot('icon')],
+      dataAttributes: [dataSlot('indicator'), dataSlot('icon')],
     },
   ],
 };

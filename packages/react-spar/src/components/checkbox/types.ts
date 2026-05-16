@@ -10,17 +10,17 @@ export type CheckboxSlot = 'root' | 'indicator' | 'icon';
 /**
  * Render props passed to the root `Checkbox` render-prop child. Re-exports
  * Spar's shape verbatim — `checked` is the tri-state `CheckedState` here.
- * Compound consumers should reach for `Checkbox.Indicator` / `Checkbox.Icon`
- * instead so they receive the takeoff-spar `boolean` + `indeterminate` split.
+ * Compound consumers should reach for `Checkbox.Indicator` instead so they
+ * receive the takeoff-spar `boolean` + `indeterminate` split.
  */
 export type CheckboxRenderProps = UpstreamCheckboxRenderProps;
 
 /**
- * Render props passed to `Checkbox.Icon` function-children. Exposes the
+ * Render props passed to `Checkbox.Indicator` function-children. Exposes the
  * takeoff-spar split rather than Spar's tri-state, matching the example in
  * `packages/react-spar/docs/coding-standards.md`.
  */
-export interface CheckboxIconRenderProps {
+export interface CheckboxIndicatorRenderProps {
   checked: boolean;
   indeterminate: boolean;
 }
@@ -99,17 +99,17 @@ export type CheckboxProps<T extends ElementType = 'span'> = PolymorphicProps<
     Pick<SparCheckboxProps, 'disabled' | 'readOnly' | 'required' | 'name' | 'value' | 'form' | 'autoFocus'>
 >;
 
-export interface CheckboxIndicatorProps extends ComponentPropsWithoutRef<'span'> {
-  ref?: Ref<HTMLSpanElement>;
-}
-
-export interface CheckboxIconProps extends Omit<ComponentPropsWithoutRef<'span'>, 'children'> {
+export interface CheckboxIndicatorProps extends Omit<ComponentPropsWithoutRef<'span'>, 'children'> {
   /**
-   * Icon content. When a function, receives the current `checked` and
-   * `indeterminate` state from the root.
-   * @defaultValue a built-in placeholder check / dash glyph driven by `indeterminate`
+   * Indicator content. When omitted, the built-in placeholder check / dash
+   * glyph is rendered inside an `icon` slot (driven by `indeterminate`).
+   * When a function, receives the current `checked` and `indeterminate`
+   * state from the root and its return value replaces the default slot.
+   * Passing a `ReactNode` likewise replaces the inner slot entirely — the
+   * consumer becomes responsible for any `data-slot="icon"` wrapper they
+   * need for theming.
    */
-  children?: ReactNode | ((state: CheckboxIconRenderProps) => ReactNode);
+  children?: ReactNode | ((state: CheckboxIndicatorRenderProps) => ReactNode);
   ref?: Ref<HTMLSpanElement>;
 }
 
