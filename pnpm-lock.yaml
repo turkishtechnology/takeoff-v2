@@ -105,8 +105,8 @@ importers:
   packages/react-spar:
     dependencies:
       "@takeoff-design/tokens":
-        specifier: workspace:^
-        version: link:../tokens
+        specifier: 0.1.0-beta.0
+        version: 0.1.0-beta.0
       "@turkish-technology/spar":
         specifier: 0.2.0-beta.0
         version: 0.2.0-beta.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -2420,6 +2420,9 @@ packages:
   "@szmarczak/http-timer@5.0.1":
     resolution: { integrity: sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw== }
     engines: { node: ">=14.16" }
+
+  "@takeoff-design/tokens@0.1.0-beta.0":
+    resolution: { integrity: sha512-ic/hDBQ6RIJf6Qe2D0Qwo5P4T8/MdL3QCzt8z/oLSfrRqjTNnLjRUSDeJMJLWUL5B2tV+Y2UE1AbTBejFvjcNA== }
 
   "@testing-library/dom@10.4.1":
     resolution: { integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg== }
@@ -10124,6 +10127,8 @@ snapshots:
   "@szmarczak/http-timer@5.0.1":
     dependencies:
       defer-to-connect: 2.0.1
+
+  "@takeoff-design/tokens@0.1.0-beta.0": {}
 
   "@testing-library/dom@10.4.1":
     dependencies:
