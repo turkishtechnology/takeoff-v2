@@ -42,7 +42,7 @@ const config: Config = {
   title: 'Takeoff Spar',
   tagline: 'Product docs for the React-first Spar wrapper layer.',
   favicon: 'img/favicon.ico',
-  url: 'https://takeoff.example.com',
+  url: 'https://takeoff-v2.app.turkishtechlab.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   i18n: {
