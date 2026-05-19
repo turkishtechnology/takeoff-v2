@@ -88,7 +88,9 @@ export default {
       sparDocsUrl: sparSelectDocsUrl,
       sparDocsLabel: 'Spar Select docs',
       propOverrides: {
-        children: childrenOverride('Trigger content (typically a `Select.Value`).'),
+        children: childrenOverride(
+          'Trigger content. Defaults to the selected item label or `placeholder`; supply children to override the rendering, or pass a render function for full layout control.',
+        ),
         className: classNameOverride,
       },
       dataAttributes: [
@@ -102,22 +104,6 @@ export default {
           purpose: 'Theme hook to style the placeholder color.',
         },
       ],
-    },
-    {
-      sourceFile: selectTypesFile,
-      typeName: 'SelectValueProps',
-      displayName: 'Select.Value',
-      headingBase: 'select-value',
-      prependPropNames: ['children'],
-      appendPropNames: ['className'],
-      skipPropNames: ['ref'],
-      sparDocsUrl: sparSelectDocsUrl,
-      sparDocsLabel: 'Spar Select docs',
-      propOverrides: {
-        children: childrenOverride('Override what Spar renders — typically left empty so the selected item text is shown.'),
-        className: classNameOverride,
-      },
-      dataAttributes: [dataSlotRoot],
     },
     {
       sourceFile: selectTypesFile,
@@ -146,7 +132,7 @@ export default {
       sparDocsUrl: sparSelectDocsUrl,
       sparDocsLabel: 'Spar Select docs',
       propOverrides: {
-        children: childrenOverride('Item content (typically a `Select.ItemText`).'),
+        children: childrenOverride('Visible item content. Set `label` alongside it to register the text used for typeahead and trigger display.'),
         className: classNameOverride,
       },
       dataAttributes: [
@@ -167,22 +153,6 @@ export default {
           purpose: 'Theme hook for the disabled item state.',
         },
       ],
-    },
-    {
-      sourceFile: selectTypesFile,
-      typeName: 'SelectItemTextProps',
-      displayName: 'Select.ItemText',
-      headingBase: 'select-item-text',
-      prependPropNames: ['children'],
-      appendPropNames: ['className'],
-      skipPropNames: ['ref'],
-      sparDocsUrl: sparSelectDocsUrl,
-      sparDocsLabel: 'Spar Select docs',
-      propOverrides: {
-        children: childrenOverride('Visible item label and the text used for typeahead.'),
-        className: classNameOverride,
-      },
-      dataAttributes: [dataSlotRoot],
     },
     {
       sourceFile: selectTypesFile,

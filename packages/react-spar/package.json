@@ -54,7 +54,7 @@
     "prepack": "tsup"
   },
   "dependencies": {
-    "@turkish-technology/spar": "0.2.0-beta.0",
+    "@turkish-technology/spar": "0.2.0-beta.1",
     "clsx": "^2.1.1"
   },
   "peerDependencies": {
