@@ -6,7 +6,7 @@ import { useComponentTheme } from '../../provider';
 
 import { SelectBase } from './base';
 import { SelectProvider } from './context';
-import { DEFAULT_SIZE } from './defaults';
+import { DEFAULT_CONTENT_WIDTH, DEFAULT_SIZE } from './defaults';
 import type { SelectProps } from './types';
 
 export const Select = <T extends ElementType = 'div'>(props: SelectProps<T>) => {
@@ -22,10 +22,10 @@ export const Select = <T extends ElementType = 'div'>(props: SelectProps<T>) => 
     }),
   });
 
-  const { size = DEFAULT_SIZE, invalid = false, children, ref, ...sparProps } = rest;
+  const { size = DEFAULT_SIZE, invalid = false, contentWidth = DEFAULT_CONTENT_WIDTH, children, ref, ...sparProps } = rest;
 
   return (
-    <SelectProvider value={{ size, invalid }}>
+    <SelectProvider value={{ size, invalid, contentWidth }}>
       <SparSelect {...(sparProps as unknown as SparSelectProps)} ref={ref} {...rootAttrs}>
         {children}
       </SparSelect>
