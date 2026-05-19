@@ -14,6 +14,16 @@ import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type SelectSize = 'small' | 'base' | 'large';
 
+/**
+ * Controls the panel's render width.
+ *
+ * - `'trigger'`: panel matches the trigger's measured width (form-aligned default)
+ * - `'content'`: panel shrink-wraps the longest item, only enforcing the CSS min-width
+ * - `number`: explicit pixel width
+ * - `string`: any CSS width value (`'20rem'`, `'min(40ch, 100%)'`, etc.)
+ */
+export type SelectContentWidth = 'trigger' | 'content' | number | string;
+
 export type SelectSlot = 'root';
 export type SelectTriggerSlot = 'root';
 export type SelectContentSlot = 'root';
@@ -38,6 +48,12 @@ export interface SelectOwnProps {
    * @defaultValue false
    */
   invalid?: boolean;
+  /**
+   * How the portalled SelectContent panel computes its width. See
+   * {@link SelectContentWidth}.
+   * @defaultValue 'trigger'
+   */
+  contentWidth?: SelectContentWidth;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<SelectSlot>;
   /** Per-slot HTML attribute overrides. */
