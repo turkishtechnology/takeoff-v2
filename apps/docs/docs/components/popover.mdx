@@ -340,13 +340,13 @@ for primitive behavior.
 | Name                            | Type                                                                                | Default       | Description                                                                |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
 | <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -             |                                                                            |
-| <ApiBadge label="variant" />    | <code>PopoverVariant</code>                                                         | 'dark'        | Color variant.                                                             |
+| <ApiBadge label="variant" />    | <code><a href="#popover-td-popovervariant">PopoverVariant</a></code>                | 'dark'        | Color variant.                                                             |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             | Per-slot extra classes.                                                    |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |
 | <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
 | <ApiBadge label="trapFocus" />  | <code>boolean</code>                                                                | false         | Whether to trap focus within content                                       |
-| <ApiBadge label="side" />       | <code>Side</code>                                                                   | 'bottom'      | Side of trigger to position against                                        |
-| <ApiBadge label="align" />      | <code>Align</code>                                                                  | 'center'      | Alignment relative to trigger                                              |
+| <ApiBadge label="side" />       | <code><a href="#popover-td-side">Side</a></code>                                    | 'bottom'      | Side of trigger to position against                                        |
+| <ApiBadge label="align" />      | <code><a href="#popover-td-align">Align</a></code>                                  | 'center'      | Alignment relative to trigger                                              |
 | <ApiBadge label="className" />  | <code>string</code>                                                                 | -             |                                                                            |
 
 #### Events {#popover-content-events}
@@ -362,33 +362,43 @@ for primitive behavior.
 
 #### Data attributes {#popover-content-data-attributes}
 
-| Attribute          | Applied when | Purpose                                                   |
-| ------------------ | ------------ | --------------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.     |
-| `data-variant`     | Always       | Reflects the resolved `variant` for theme recipe scoping. |
+| Attribute                                       | Applied when | Purpose                                                   |
+| ----------------------------------------------- | ------------ | --------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.     |
+| <ApiBadge label="data-variant" />               | Always       | Reflects the resolved `variant` for theme recipe scoping. |
 
 ### Popover.Trigger {#popover-trigger}
 
 #### Data attributes {#popover-trigger-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Popover.Arrow {#popover-arrow}
 
 #### Data attributes {#popover-arrow-data-attributes}
 
-| Attribute          | Applied when | Purpose                        |
-| ------------------ | ------------ | ------------------------------ |
-| `data-slot="root"` | Always       | Stable selector for the arrow. |
+| Attribute                                       | Applied when | Purpose                        |
+| ----------------------------------------------- | ------------ | ------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the arrow. |
 
 ### Popover.Close {#popover-close}
 
 #### Data attributes {#popover-close-data-attributes}
 
-| Attribute          | Applied when | Purpose                               |
-| ------------------ | ------------ | ------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for the close button. |
+| Attribute                                       | Applied when | Purpose                               |
+| ----------------------------------------------- | ------------ | ------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the close button. |
+
+### Type Definitions {#popover-type-definitions}
+
+| Name                                                                                                  | Definition                                                                                                                      |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="popover-td-popovervariant"><ApiBadge label="PopoverVariant" /></span>                       | <code>'dark' &#124; 'white' &#124; 'info' &#124; 'success' &#124; 'warning' &#124; 'danger' &#124; 'neutral'</code>             |
+| <span id="popover-td-side"><ApiBadge label="Side" /></span>                                           | <code>'top' &#124; 'right' &#124; 'bottom' &#124; 'left'</code>                                                                 |
+| <span id="popover-td-align"><ApiBadge label="Align" /></span>                                         | <code>'start' &#124; 'center' &#124; 'end'</code>                                                                               |
+| <span id="popover-td-popovertriggerrenderprops"><ApiBadge label="PopoverTriggerRenderProps" /></span> | <code>&#123; isOpen: boolean; disabled: boolean; open: () =&gt; void; close: () =&gt; void; toggle: () =&gt; void &#125;</code> |
+| <span id="popover-td-popovercloserenderprops"><ApiBadge label="PopoverCloseRenderProps" /></span>     | <code>&#123; isOpen: boolean; close: () =&gt; void &#125;</code>                                                                |
 
 {/* api-tables:end */}

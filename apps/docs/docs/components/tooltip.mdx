@@ -278,8 +278,8 @@ To share delay configuration across a group of tooltips, wrap them in
 ## Provider
 
 Wrap a group of tooltips in `Tooltip.Provider` to share `delayDuration` and a
-`skipDelayDuration` window — once one tooltip in the group has opened, moving
-to a sibling within the skip window opens it instantly. Recommended for
+`skipDelayDuration` window — once one tooltip in the group has opened, moving to
+a sibling within the skip window opens it instantly. Recommended for
 toolbar-style clusters (WCAG 1.4.13).
 
 <LiveCode
@@ -351,12 +351,12 @@ for primitive behavior.
 | Name                            | Type                                                                                | Default       | Description                                                                |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
 | <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -             |                                                                            |
-| <ApiBadge label="variant" />    | <code>TooltipVariant</code>                                                         | 'dark'        | Color variant.                                                             |
+| <ApiBadge label="variant" />    | <code><a href="#tooltip-td-tooltipvariant">TooltipVariant</a></code>                | 'dark'        | Color variant.                                                             |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             | Per-slot extra classes.                                                    |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |
 | <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
-| <ApiBadge label="side" />       | <code>Side</code>                                                                   | 'top'         | Preferred placement relative to trigger                                    |
-| <ApiBadge label="align" />      | <code>Align</code>                                                                  | 'center'      | Alignment relative to trigger                                              |
+| <ApiBadge label="side" />       | <code><a href="#tooltip-td-side">Side</a></code>                                    | 'top'         | Preferred placement relative to trigger                                    |
+| <ApiBadge label="align" />      | <code><a href="#tooltip-td-align">Align</a></code>                                  | 'center'      | Alignment relative to trigger                                              |
 | <ApiBadge label="className" />  | <code>string</code>                                                                 | -             |                                                                            |
 
 #### Events {#tooltip-content-events}
@@ -370,29 +370,38 @@ for primitive behavior.
 
 #### Data attributes {#tooltip-content-data-attributes}
 
-| Attribute          | Applied when | Purpose                                                   |
-| ------------------ | ------------ | --------------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.     |
-| `data-variant`     | Always       | Reflects the resolved `variant` for theme recipe scoping. |
+| Attribute                                       | Applied when | Purpose                                                   |
+| ----------------------------------------------- | ------------ | --------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.     |
+| <ApiBadge label="data-variant" />               | Always       | Reflects the resolved `variant` for theme recipe scoping. |
 
 ### Tooltip.Header {#tooltip-header}
 
 #### Data attributes {#tooltip-header-data-attributes}
 
-| Attribute          | Applied when | Purpose                         |
-| ------------------ | ------------ | ------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for the header. |
+| Attribute                                       | Applied when | Purpose                         |
+| ----------------------------------------------- | ------------ | ------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the header. |
 
 ### Tooltip.Description {#tooltip-description}
 
 #### Data attributes {#tooltip-description-data-attributes}
 
-| Attribute          | Applied when | Purpose                              |
-| ------------------ | ------------ | ------------------------------------ |
-| `data-slot="root"` | Always       | Stable selector for the description. |
+| Attribute                                       | Applied when | Purpose                              |
+| ----------------------------------------------- | ------------ | ------------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the description. |
 
 ### Tooltip.Trigger {#tooltip-trigger}
 
 ### Tooltip.Arrow {#tooltip-arrow}
+
+### Type Definitions {#tooltip-type-definitions}
+
+| Name                                                                                                  | Definition                                                                                                          |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| <span id="tooltip-td-tooltipvariant"><ApiBadge label="TooltipVariant" /></span>                       | <code>'dark' &#124; 'white' &#124; 'info' &#124; 'success' &#124; 'warning' &#124; 'danger' &#124; 'neutral'</code> |
+| <span id="tooltip-td-side"><ApiBadge label="Side" /></span>                                           | <code>'top' &#124; 'right' &#124; 'bottom' &#124; 'left'</code>                                                     |
+| <span id="tooltip-td-align"><ApiBadge label="Align" /></span>                                         | <code>'start' &#124; 'center' &#124; 'end'</code>                                                                   |
+| <span id="tooltip-td-tooltiptriggerrenderprops"><ApiBadge label="TooltipTriggerRenderProps" /></span> | <code>&#123; isOpen: boolean; disabled: boolean; show: () =&gt; void; hide: () =&gt; void &#125;</code>             |
 
 {/* api-tables:end */}

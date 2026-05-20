@@ -455,29 +455,29 @@ for primitive behavior.
 
 #### Props {#switch-props}
 
-| Name                            | Type                                                                                    | Default | Description                                                                                                    |
-| ------------------------------- | --------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode &#124; ((state: SwitchRenderProps) =&gt; React.ReactNode)</code>  | -       | Compound children for switch anatomy, or a render function exposing Spar state.                                |
-| <ApiBadge label="size" />       | <code>SwitchSize</code>                                                                 | 'base'  | Size scale.                                                                                                    |
-| <ApiBadge label="variant" />    | <code>SwitchVariant</code>                                                              | 'info'  | Color variant used while checked.                                                                              |
-| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                    | false   | Marks the switch as visually invalid. Inherited from `<Field>` automatically; pass this prop only to override. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;SwitchSlot, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                 |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;SwitchSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                             |
-| <ApiBadge label="className" />  | <code>string</code>                                                                     | -       | Appends custom classes to the root slot of this part.                                                          |
+| Name                            | Type                                                                                                                              | Default | Description                                                                                                    |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode &#124; ((state: <a href="#switch-td-switchrenderprops">SwitchRenderProps</a>) =&gt; React.ReactNode)</code> | -       | Compound children for switch anatomy, or a render function exposing Spar state.                                |
+| <ApiBadge label="size" />       | <code><a href="#switch-td-switchsize">SwitchSize</a></code>                                                                       | 'base'  | Size scale.                                                                                                    |
+| <ApiBadge label="variant" />    | <code><a href="#switch-td-switchvariant">SwitchVariant</a></code>                                                                 | 'info'  | Color variant used while checked.                                                                              |
+| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                                                              | false   | Marks the switch as visually invalid. Inherited from `<Field>` automatically; pass this prop only to override. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;<a href="#switch-td-switchslot">SwitchSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                 |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;<a href="#switch-td-switchslot">SwitchSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>       | -       | Per-slot HTML attribute overrides.                                                                             |
+| <ApiBadge label="className" />  | <code>string</code>                                                                                                               | -       | Appends custom classes to the root slot of this part.                                                          |
 
 #### Data attributes {#switch-data-attributes}
 
-| Attribute                | Applied when        | Purpose                                                                         |
-| ------------------------ | ------------------- | ------------------------------------------------------------------------------- |
-| `data-slot="root"`       | Always              | Stable selector for the root slot.                                              |
-| `data-size`              | Always              | Reflects the resolved `size` prop so theme recipes can scope size variants.     |
-| `data-variant`           | Always              | Reflects the resolved `variant` prop so theme recipes can scope color variants. |
-| `data-state="checked"`   | When checked.       | Spar checked-state hook.                                                        |
-| `data-state="unchecked"` | When unchecked.     | Spar unchecked-state hook.                                                      |
-| `data-disabled`          | `disabled` is true. | Spar disabled-state hook.                                                       |
-| `data-readonly`          | `readOnly` is true. | Spar read-only-state hook.                                                      |
-| `data-required`          | `required` is true. | Spar required-state hook.                                                       |
-| `data-invalid`           | `invalid` is true.  | Marks invalid visual state for theme recipes.                                   |
+| Attribute                                             | Applied when        | Purpose                                                                         |
+| ----------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />       | Always              | Stable selector for the root slot.                                              |
+| <ApiBadge label="data-size" />                        | Always              | Reflects the resolved `size` prop so theme recipes can scope size variants.     |
+| <ApiBadge label="data-variant" />                     | Always              | Reflects the resolved `variant` prop so theme recipes can scope color variants. |
+| <ApiBadge label="data-state=&quot;checked&quot;" />   | When checked.       | Spar checked-state hook.                                                        |
+| <ApiBadge label="data-state=&quot;unchecked&quot;" /> | When unchecked.     | Spar unchecked-state hook.                                                      |
+| <ApiBadge label="data-disabled" />                    | `disabled` is true. | Spar disabled-state hook.                                                       |
+| <ApiBadge label="data-readonly" />                    | `readOnly` is true. | Spar read-only-state hook.                                                      |
+| <ApiBadge label="data-required" />                    | `required` is true. | Spar required-state hook.                                                       |
+| <ApiBadge label="data-invalid" />                     | `invalid` is true.  | Marks invalid visual state for theme recipes.                                   |
 
 ### Switch.Indicator {#switch-indicator}
 
@@ -487,9 +487,19 @@ for primitive behavior.
 
 #### Data attributes {#switch-indicator-data-attributes}
 
-| Attribute               | Applied when | Purpose                                 |
-| ----------------------- | ------------ | --------------------------------------- |
-| `data-slot="indicator"` | Always       | Stable selector for the indicator slot. |
-| `data-slot="thumb"`     | Always       | Stable selector for the thumb slot.     |
+| Attribute                                            | Applied when | Purpose                                 |
+| ---------------------------------------------------- | ------------ | --------------------------------------- |
+| <ApiBadge label="data-slot=&quot;indicator&quot;" /> | Always       | Stable selector for the indicator slot. |
+| <ApiBadge label="data-slot=&quot;thumb&quot;" />     | Always       | Stable selector for the thumb slot.     |
+
+### Type Definitions {#switch-type-definitions}
+
+| Name                                                                                                   | Definition                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="switch-td-switchrenderprops"><ApiBadge label="SwitchRenderProps" /></span>                   | <code>&#123; checked: boolean; setChecked: (checked: boolean) =&gt; void; disabled: boolean; readOnly: boolean; required: boolean; invalid: boolean; isFocused: boolean; isHovered: boolean; isPressed: boolean &#125;</code> |
+| <span id="switch-td-switchsize"><ApiBadge label="SwitchSize" /></span>                                 | <code>'xlarge' &#124; 'large' &#124; 'base' &#124; 'small' &#124; 'xsmall'</code>                                                                                                                                             |
+| <span id="switch-td-switchvariant"><ApiBadge label="SwitchVariant" /></span>                           | <code>'info' &#124; 'success'</code>                                                                                                                                                                                          |
+| <span id="switch-td-switchslot"><ApiBadge label="SwitchSlot" /></span>                                 | <code>'root' &#124; 'indicator' &#124; 'thumb'</code>                                                                                                                                                                         |
+| <span id="switch-td-switchindicatorrenderprops"><ApiBadge label="SwitchIndicatorRenderProps" /></span> | <code>&#123; checked: boolean; disabled: boolean; readOnly: boolean &#125;</code>                                                                                                                                             |
 
 {/* api-tables:end */}

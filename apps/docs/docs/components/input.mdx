@@ -260,7 +260,7 @@ for primitive behavior.
 | Name                            | Type                                                                                | Default | Description                                                                                                                                                    |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | Compound parts (`Input.Container`, plus optional `Input.Prefix` / `Input.Field` / `Input.Suffix`). Wrap in a `Field` to attach labels and helper text.         |
-| <ApiBadge label="size" />       | <code>InputSize</code>                                                              | 'base'  | Size scale.                                                                                                                                                    |
+| <ApiBadge label="size" />       | <code><a href="#input-td-inputsize">InputSize</a></code>                            | 'base'  | Size scale.                                                                                                                                                    |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                 |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                             |
 | <ApiBadge label="id" />         | <code>string</code>                                                                 | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-field`, `${id}-label`, etc. |
@@ -272,36 +272,36 @@ for primitive behavior.
 
 #### Data attributes {#input-data-attributes}
 
-| Attribute          | Applied when             | Purpose                                                                     |
-| ------------------ | ------------------------ | --------------------------------------------------------------------------- |
-| `data-slot="root"` | Always                   | Stable selector for wrapper styling on the root slot.                       |
-| `data-size`        | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| `data-invalid`     | When `invalid` is true.  | Theme hook for the invalid state. Emitted by Spar Input on the root.        |
-| `data-disabled`    | When `disabled` is true. | Theme hook for the disabled state. Emitted by Spar Input.                   |
-| `data-required`    | When `required` is true. | Theme hook used by the parent `Field` to auto-render its required asterisk. |
-| `data-readonly`    | When `readOnly` is true. | Theme hook for the read-only state. Emitted by Spar Input.                  |
+| Attribute                                       | Applied when             | Purpose                                                                     |
+| ----------------------------------------------- | ------------------------ | --------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                   | Stable selector for wrapper styling on the root slot.                       |
+| <ApiBadge label="data-size" />                  | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| <ApiBadge label="data-invalid" />               | When `invalid` is true.  | Theme hook for the invalid state. Emitted by Spar Input on the root.        |
+| <ApiBadge label="data-disabled" />              | When `disabled` is true. | Theme hook for the disabled state. Emitted by Spar Input.                   |
+| <ApiBadge label="data-required" />              | When `required` is true. | Theme hook used by the parent `Field` to auto-render its required asterisk. |
+| <ApiBadge label="data-readonly" />              | When `readOnly` is true. | Theme hook for the read-only state. Emitted by Spar Input.                  |
 
 ### Input.Container {#input-container}
 
 #### Props {#input-container-props}
 
-| Name                              | Type                                                                                            | Default | Description                                                                                                                                                            |
-| --------------------------------- | ----------------------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                    | -       | `Input.Prefix`, `Input.Field`, `Input.Suffix`. Leading / trailing icons go through the `startContent` / `endContent` props.                                            |
-| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                    | -       | Content rendered before the field — typically an icon, but accepts any node (chip, button, etc.). Rendered inside the `startContent` slot (`.tk-input-start-content`). |
-| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                    | -       | Content rendered after the field. Same shape as `startContent`, rendered inside the `endContent` slot (`.tk-input-end-content`).                                       |
-| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;InputContainerSlot, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                         |
-| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;InputContainerSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                     |
-| <ApiBadge label="className" />    | <code>string</code>                                                                             | -       | Appends custom classes to the root slot of this part.                                                                                                                  |
+| Name                              | Type                                                                                                                                       | Default | Description                                                                                                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                                                               | -       | `Input.Prefix`, `Input.Field`, `Input.Suffix`. Leading / trailing icons go through the `startContent` / `endContent` props.                                            |
+| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                                                               | -       | Content rendered before the field — typically an icon, but accepts any node (chip, button, etc.). Rendered inside the `startContent` slot (`.tk-input-start-content`). |
+| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                                                               | -       | Content rendered after the field. Same shape as `startContent`, rendered inside the `endContent` slot (`.tk-input-end-content`).                                       |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#input-td-inputcontainerslot">InputContainerSlot</a>, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                         |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#input-td-inputcontainerslot">InputContainerSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                     |
+| <ApiBadge label="className" />    | <code>string</code>                                                                                                                        | -       | Appends custom classes to the root slot of this part.                                                                                                                  |
 
 #### Data attributes {#input-container-data-attributes}
 
-| Attribute          | Applied when                      | Purpose                                                          |
-| ------------------ | --------------------------------- | ---------------------------------------------------------------- |
-| `data-slot="root"` | Always                            | Stable selector for wrapper styling on the root slot.            |
-| `data-invalid`     | When the root `invalid` is true.  | Borders/background switch to the danger state on the visual row. |
-| `data-disabled`    | When the root `disabled` is true. | Theme hook for the disabled visual row.                          |
-| `data-readonly`    | When the root `readOnly` is true. | Theme hook for the read-only visual row.                         |
+| Attribute                                       | Applied when                      | Purpose                                                          |
+| ----------------------------------------------- | --------------------------------- | ---------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                            | Stable selector for wrapper styling on the root slot.            |
+| <ApiBadge label="data-invalid" />               | When the root `invalid` is true.  | Borders/background switch to the danger state on the visual row. |
+| <ApiBadge label="data-disabled" />              | When the root `disabled` is true. | Theme hook for the disabled visual row.                          |
+| <ApiBadge label="data-readonly" />              | When the root `readOnly` is true. | Theme hook for the read-only visual row.                         |
 
 ### Input.Field {#input-field}
 
@@ -319,25 +319,32 @@ for primitive behavior.
 
 #### Data attributes {#input-field-data-attributes}
 
-| Attribute          | Applied when | Purpose                                                                     |
-| ------------------ | ------------ | --------------------------------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.                       |
-| `data-size`        | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| Attribute                                       | Applied when | Purpose                                                                     |
+| ----------------------------------------------- | ------------ | --------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.                       |
+| <ApiBadge label="data-size" />                  | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants. |
 
 ### Input.Prefix {#input-prefix}
 
 #### Data attributes {#input-prefix-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Input.Suffix {#input-suffix}
 
 #### Data attributes {#input-suffix-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#input-type-definitions}
+
+| Name                                                                                  | Definition                                                    |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| <span id="input-td-inputsize"><ApiBadge label="InputSize" /></span>                   | <code>'small' &#124; 'base' &#124; 'large'</code>             |
+| <span id="input-td-inputcontainerslot"><ApiBadge label="InputContainerSlot" /></span> | <code>'root' &#124; 'startContent' &#124; 'endContent'</code> |
 
 {/* api-tables:end */}
