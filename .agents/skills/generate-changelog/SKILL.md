@@ -109,6 +109,47 @@ Rewriting rules:
 - Drop reverts and pure refactors with no user-visible effect.
 - Within a section, order by user-facing impact (strongest first).
 
+### Code in items
+
+The renderer parses inline backticks in `text` as `<code>`, and items may
+optionally carry a `code: { before?, after?, language? }` field rendered as
+labeled before/after blocks. Apply these rules:
+
+- **Inline backticks** — wrap identifiers, prop names, JSX tags, CSS variable
+  names, file paths, and quoted literal values in backticks. Examples:
+  `` `Select.Trigger` ``, `` `contentWidth` ``,
+  `` `--dropdown-items-basic-*` ``, `` `'trigger'` ``. Authors do **not** need
+  to escape `<` or `>` — backticks make JSX safe to render as text.
+- **Plain strings** — keep items as a plain string when there is no code block
+  to attach. The renderer treats `string` and `{ text }` identically.
+- **Before/after blocks** — use the structured `{ text, code }` shape only for
+  breaking-change migrations or other items where a consumer literally needs to
+  diff two snippets. Don't use it for decorative code; inline backticks are
+  enough. Both `before` and `after` are optional; pass only the side that's
+  meaningful.
+- **Newlines** — `before` / `after` strings are rendered in `<pre>`. Embed real
+  `\n` characters in the string; don't add leading/trailing blank lines.
+- **Breaking changes section** — if any items have `code` blocks, prefer a
+  dedicated `'Breaking changes'` section. Don't bury breaking migrations under
+  Highlights once they need code samples.
+
+Example item shapes:
+
+```ts
+// Plain — most items
+'`Select` panel styles now flow from the `--dropdown-items-basic-*` token family.'
+
+// With migration diff
+{
+  text: '`Select.Value` removed. Placeholder now lives on `Select.Trigger`.',
+  code: {
+    language: 'tsx',
+    before: '<Select.Trigger>\n  <Select.Value placeholder="X" />\n</Select.Trigger>',
+    after: '<Select.Trigger placeholder="X" />',
+  },
+}
+```
+
 Drop any section that ends up empty.
 
 ## 4 · Mark long sections collapsible

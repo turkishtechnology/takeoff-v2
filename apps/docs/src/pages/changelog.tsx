@@ -2,7 +2,7 @@ import type { JSX } from 'react';
 import Layout from '@theme/Layout';
 import { useRunwaySurface } from '@site/src/hooks/useRunwaySurface';
 import FooterRunway from './landing/FooterRunway';
-import { CHANGELOG_ENTRIES, type ChangelogEntry, type ChangelogMedia, type ChangelogSection } from '@site/src/data/changelog';
+import { CHANGELOG_ENTRIES, type ChangelogEntry, type ChangelogItem, type ChangelogMedia, type ChangelogSection } from '@site/src/data/changelog';
 import styles from './changelog.module.css';
 
 const DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
@@ -24,14 +24,62 @@ function Chevron(): JSX.Element {
   );
 }
 
-function SectionItems({ items }: { items: string[] }): JSX.Element {
+// Render plain text with inline backtick spans (`code`) as <code>. Keeps the
+// data shape simple — authors don't need to escape angle brackets, they just
+// wrap identifiers/JSX in backticks.
+function renderInlineCode(text: string): Array<JSX.Element | string> {
+  const parts = text.split(/(`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('`') && part.endsWith('`') && part.length >= 2) {
+      return (
+        <code key={i} className={styles.inlineCode}>
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return part;
+  });
+}
+
+function normalizeItem(item: string | ChangelogItem): ChangelogItem {
+  return typeof item === 'string' ? { text: item } : item;
+}
+
+function ItemCodeBlock({ code }: { code: NonNullable<ChangelogItem['code']> }): JSX.Element {
+  return (
+    <div className={styles.itemCode}>
+      {code.before !== undefined ? (
+        <div className={styles.itemCodeBlock} data-variant="before">
+          <span className={styles.itemCodeLabel}>Before</span>
+          <pre className={styles.itemCodePre}>
+            <code>{code.before}</code>
+          </pre>
+        </div>
+      ) : null}
+      {code.after !== undefined ? (
+        <div className={styles.itemCodeBlock} data-variant="after">
+          <span className={styles.itemCodeLabel}>After</span>
+          <pre className={styles.itemCodePre}>
+            <code>{code.after}</code>
+          </pre>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function SectionItems({ items }: { items: Array<string | ChangelogItem> }): JSX.Element {
   return (
     <ul className={styles.sectionList}>
-      {items.map((item, i) => (
-        <li key={i} className={styles.sectionItem}>
-          {item}
-        </li>
-      ))}
+      {items.map((raw, i) => {
+        const item = normalizeItem(raw);
+        return (
+          <li key={i} className={styles.sectionItem}>
+            <span className={styles.sectionItemText}>{renderInlineCode(item.text)}</span>
+            {item.code ? <ItemCodeBlock code={item.code} /> : null}
+          </li>
+        );
+      })}
     </ul>
   );
 }
