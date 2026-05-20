@@ -1,5 +1,12 @@
 # @takeoff-ui/react-spar
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [5e186be]
+  - @takeoff-design/tokens@0.1.1
+
 ## 0.1.0
 
 ### Patch Changes
