@@ -23,13 +23,13 @@ versioning and publishing.
    release; the `changeset-check` job fails if no changeset is present (override
    below).
 
-4. Merge to `develop`. Two things happen automatically:
-   - **Auto-snapshot**: a snapshot version is published to npm under the `next`
-     dist-tag (e.g. `0.1.0-next-abc1234`). Beta-testers can pull this
-     immediately with `pnpm add @takeoff-ui/react-spar@next`.
-   - **Version Packages PR**: the Changesets bot opens (or updates) a single PR
-     that aggregates all pending changesets. Merging this PR is what triggers
-     the real `latest` release.
+4. Merge to `develop`. The Changesets bot opens (or updates) a single **Version
+   Packages PR** that aggregates all pending changesets. Merging that PR
+   triggers the real `latest` publish to npm.
+
+   (Auto-snapshot publishing to a `next` dist-tag was removed after a config bug
+   caused snapshot versions to overwrite stable ones. We'll bring it back once
+   the prereleaseTemplate config is verified.)
 
 ## Bump level guide
 
