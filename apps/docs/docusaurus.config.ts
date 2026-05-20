@@ -71,7 +71,7 @@ const config: Config = {
   themeConfig: {
     image: 'img/takeoff-og.jpg',
     colorMode: {
-      respectPrefersColorScheme: true,
+      respectPrefersColorScheme: false,
     },
     navbar: {
       title: 'Takeoff Spar',
