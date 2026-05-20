@@ -16,98 +16,129 @@ export const badgeScope = { Badge };
 
 {/* prettier-ignore-start */}
 
-export const badgeDemoCss = String.raw`
-.badge-demo {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-`;
-
 export const playgroundDemo = String.raw`
-<div className="badge-demo">
-  <Badge>Primary</Badge>
-  <Badge variant="secondary">Secondary</Badge>
-  <Badge variant="success">Success</Badge>
-  <Badge variant="danger">Danger</Badge>
-  <Badge variant="warning">Warning</Badge>
-  <Badge variant="info">Info</Badge>
-  <Badge variant="neutral">Neutral</Badge>
-</div>
+function PlaygroundDemo() {
+  return (
+    <div className="flex gap-3">
+      <Badge>Primary</Badge>
+      <Badge variant="secondary">Secondary</Badge>
+      <Badge variant="success">Success</Badge>
+      <Badge variant="danger">Danger</Badge>
+      <Badge variant="warning">Warning</Badge>
+      <Badge variant="info">Info</Badge>
+      <Badge variant="neutral">Neutral</Badge>
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const appearancesDemo = String.raw`
-<div className="badge-demo">
-  <Badge appearance="filled">Filled</Badge>
-  <Badge appearance="filledLight">Filled Light</Badge>
-  <Badge appearance="outlined">Outlined</Badge>
-  <Badge appearance="text">Text</Badge>
-</div>
+function AppearancesDemo() {
+  return (
+    <div className="flex gap-3">
+      <Badge appearance="filled">Filled</Badge>
+      <Badge appearance="filledLight">Filled Light</Badge>
+      <Badge appearance="outlined">Outlined</Badge>
+      <Badge appearance="text">Text</Badge>
+    </div>
+  );
+}
+
+render(<AppearancesDemo />);
 `;
 
 export const sizesDemo = String.raw`
-<div className="badge-demo">
-  <Badge size="small">Small</Badge>
-  <Badge size="base">Base</Badge>
-  <Badge size="large">Large</Badge>
-</div>
+function SizesDemo() {
+  return (
+    <div className="flex gap-3 items-center">
+      <Badge size="small">Small</Badge>
+      <Badge size="base">Base</Badge>
+      <Badge size="large">Large</Badge>
+    </div>
+  );
+}
+
+render(<SizesDemo />);
 `;
 
 export const roundedDemo = String.raw`
-<div className="badge-demo">
-  <Badge rounded>12</Badge>
-  <Badge variant="danger" rounded>99+</Badge>
-  <Badge variant="success" rounded>New</Badge>
-</div>
+function RoundedDemo() {
+  return (
+    <div className="flex gap-3">
+      <Badge rounded>12</Badge>
+      <Badge variant="danger" rounded>99+</Badge>
+      <Badge variant="success" rounded>New</Badge>
+    </div>
+  );
+}
+
+render(<RoundedDemo />);
 `;
 
 export const iconsDemo = String.raw`
-const CheckIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 13l4 4L19 7" />
-  </svg>
-);
+function IconsDemo() {
+  const CheckIcon = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 13l4 4L19 7" />
+    </svg>
+  );
 
-const DotIcon = () => (
-  <svg width="8" height="8" viewBox="0 0 8 8">
-    <circle cx="4" cy="4" r="4" fill="currentColor" />
-  </svg>
-);
+  const DotIcon = () => (
+    <svg width="8" height="8" viewBox="0 0 8 8">
+      <circle cx="4" cy="4" r="4" fill="currentColor" />
+    </svg>
+  );
 
-render(
-  <div className="badge-demo">
-    <Badge variant="success" startContent={<CheckIcon />}>Verified</Badge>
-    <Badge variant="info" startContent={<DotIcon />}>Online</Badge>
-    <Badge variant="danger" endContent={<DotIcon />}>Offline</Badge>
-  </div>
-);
+  return (
+    <div className="flex gap-3">
+      <Badge variant="success" startContent={<CheckIcon />}>Verified</Badge>
+      <Badge variant="info" startContent={<DotIcon />}>Online</Badge>
+      <Badge variant="danger" endContent={<DotIcon />}>Offline</Badge>
+    </div>
+  );
+}
+
+render(<IconsDemo />);
 `;
 
 export const allVariantsDemo = String.raw`
-<div className="badge-demo">
-  <Badge variant="primary">Primary</Badge>
-  <Badge variant="secondary">Secondary</Badge>
-  <Badge variant="neutral">Neutral</Badge>
-  <Badge variant="info">Info</Badge>
-  <Badge variant="success">Success</Badge>
-  <Badge variant="danger">Danger</Badge>
-  <Badge variant="warning">Warning</Badge>
-  <Badge variant="verified">Verified</Badge>
-  <Badge variant="purple">Purple</Badge>
-  <Badge variant="cyan">Cyan</Badge>
-  <Badge variant="business">Business</Badge>
-</div>
+function AllVariantsDemo() {
+  return (
+    <div className="flex flex-wrap gap-3 justify-center">
+      <Badge variant="primary">Primary</Badge>
+      <Badge variant="secondary">Secondary</Badge>
+      <Badge variant="neutral">Neutral</Badge>
+      <Badge variant="info">Info</Badge>
+      <Badge variant="success">Success</Badge>
+      <Badge variant="danger">Danger</Badge>
+      <Badge variant="warning">Warning</Badge>
+      <Badge variant="verified">Verified</Badge>
+      <Badge variant="purple">Purple</Badge>
+      <Badge variant="cyan">Cyan</Badge>
+      <Badge variant="business">Business</Badge>
+    </div>
+  );
+}
+
+render(<AllVariantsDemo />);
 `;
 
 export const dotDemo = String.raw`
-<div className="badge-demo">
-  <Badge variant="primary" dot />
-  <Badge variant="danger" dot />
-  <Badge variant="success" dot />
-  <Badge variant="warning" dot />
-  <Badge variant="info" dot />
-</div>
+function DotDemo() {
+  return (
+    <div className="flex flex-wrap gap-3">
+      <Badge variant="primary" dot />
+      <Badge variant="danger" dot />
+      <Badge variant="success" dot />
+      <Badge variant="warning" dot />
+      <Badge variant="info" dot />
+    </div>
+  );
+}
+
+render(<DotDemo />);
 `;
 
 {/* prettier-ignore-end */}
@@ -132,7 +163,7 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={badgeDemoCss}
+  noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
   scope={badgeScope}
@@ -142,8 +173,7 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={appearancesDemo}
-  cssCode={badgeDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
   scope={badgeScope}
@@ -153,8 +183,7 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={sizesDemo}
-  cssCode={badgeDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
   scope={badgeScope}
@@ -164,8 +193,7 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={roundedDemo}
-  cssCode={badgeDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
   scope={badgeScope}
@@ -175,8 +203,6 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={iconsDemo}
-  cssCode={badgeDemoCss}
-  editable={false}
   noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
@@ -187,8 +213,7 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={allVariantsDemo}
-  cssCode={badgeDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
   scope={badgeScope}
@@ -198,8 +223,7 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={dotDemo}
-  cssCode={badgeDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
   scope={badgeScope}
@@ -213,29 +237,38 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 #### Props {#badge-props}
 
-| Name                              | Type                                                                                   | Default   | Description                                                                                                           |
-| --------------------------------- | -------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                           | -         | Badge content.                                                                                                        |
-| <ApiBadge label="variant" />      | <code>BadgeVariant</code>                                                              | 'primary' | Color variant.                                                                                                        |
-| <ApiBadge label="appearance" />   | <code>BadgeAppearance</code>                                                           | 'filled'  | Visual appearance.                                                                                                    |
-| <ApiBadge label="size" />         | <code>BadgeSize</code>                                                                 | 'base'    | Size scale.                                                                                                           |
-| <ApiBadge label="rounded" />      | <code>boolean</code>                                                                   | false     | Renders a pill-shaped badge with fully rounded corners.                                                               |
-| <ApiBadge label="dot" />          | <code>boolean</code>                                                                   | false     | Renders a minimal colored dot (6×6px) with no content. When true, children, startContent, and endContent are ignored. |
-| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                           | -         | Content rendered before children — typically an icon.                                                                 |
-| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                           | -         | Content rendered after children.                                                                                      |
-| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;BadgeSlot, string&gt;&gt;</code>                            | -         | Per-slot extra classes.                                                                                               |
-| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;BadgeSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                                                                    |
-| <ApiBadge label="className" />    | <code>string</code>                                                                    | -         | Appends custom classes to the root slot.                                                                              |
+| Name                              | Type                                                                                                                     | Default   | Description                                                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                                             | -         | Badge content.                                                                                                        |
+| <ApiBadge label="variant" />      | <code><a href="#badge-td-badgevariant">BadgeVariant</a></code>                                                           | 'primary' | Color variant.                                                                                                        |
+| <ApiBadge label="appearance" />   | <code><a href="#badge-td-badgeappearance">BadgeAppearance</a></code>                                                     | 'filled'  | Visual appearance.                                                                                                    |
+| <ApiBadge label="size" />         | <code><a href="#badge-td-badgesize">BadgeSize</a></code>                                                                 | 'base'    | Size scale.                                                                                                           |
+| <ApiBadge label="rounded" />      | <code>boolean</code>                                                                                                     | false     | Renders a pill-shaped badge with fully rounded corners.                                                               |
+| <ApiBadge label="dot" />          | <code>boolean</code>                                                                                                     | false     | Renders a minimal colored dot (6×6px) with no content. When true, children, startContent, and endContent are ignored. |
+| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                                             | -         | Content rendered before children — typically an icon.                                                                 |
+| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                                             | -         | Content rendered after children.                                                                                      |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#badge-td-badgeslot">BadgeSlot</a>, string&gt;&gt;</code>                            | -         | Per-slot extra classes.                                                                                               |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#badge-td-badgeslot">BadgeSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                                                                    |
+| <ApiBadge label="className" />    | <code>string</code>                                                                                                      | -         | Appends custom classes to the root slot.                                                                              |
 
 #### Data attributes {#badge-data-attributes}
 
-| Attribute          | Applied when           | Purpose                                                           |
-| ------------------ | ---------------------- | ----------------------------------------------------------------- |
-| `data-slot="root"` | Always                 | Stable selector for wrapper styling on the root slot.             |
-| `data-variant`     | Always                 | Reflects the resolved `variant` prop for theme recipe scoping.    |
-| `data-type`        | Always                 | Reflects the resolved `appearance` prop for theme recipe scoping. |
-| `data-size`        | When `dot` is false    | Reflects the resolved `size` prop for theme recipe scoping.       |
-| `data-rounded`     | When `rounded` is true | Styling hook for the pill-shaped state.                           |
-| `data-dot`         | When `dot` is true     | Styling hook for the minimal dot mode.                            |
+| Attribute                                       | Applied when           | Purpose                                                           |
+| ----------------------------------------------- | ---------------------- | ----------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                 | Stable selector for wrapper styling on the root slot.             |
+| <ApiBadge label="data-variant" />               | Always                 | Reflects the resolved `variant` prop for theme recipe scoping.    |
+| <ApiBadge label="data-type" />                  | Always                 | Reflects the resolved `appearance` prop for theme recipe scoping. |
+| <ApiBadge label="data-size" />                  | When `dot` is false    | Reflects the resolved `size` prop for theme recipe scoping.       |
+| <ApiBadge label="data-rounded" />               | When `rounded` is true | Styling hook for the pill-shaped state.                           |
+| <ApiBadge label="data-dot" />                   | When `dot` is true     | Styling hook for the minimal dot mode.                            |
+
+### Type Definitions {#badge-type-definitions}
+
+| Name                                                                            | Definition                                                                                                                                                                                   |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="badge-td-badgevariant"><ApiBadge label="BadgeVariant" /></span>       | <code>'primary' &#124; 'secondary' &#124; 'neutral' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning' &#124; 'verified' &#124; 'purple' &#124; 'cyan' &#124; 'business'</code> |
+| <span id="badge-td-badgeappearance"><ApiBadge label="BadgeAppearance" /></span> | <code>'filled' &#124; 'filledLight' &#124; 'outlined' &#124; 'text'</code>                                                                                                                   |
+| <span id="badge-td-badgesize"><ApiBadge label="BadgeSize" /></span>             | <code>'small' &#124; 'base' &#124; 'large'</code>                                                                                                                                            |
+| <span id="badge-td-badgeslot"><ApiBadge label="BadgeSlot" /></span>             | <code>'root' &#124; 'label' &#124; 'icon'</code>                                                                                                                                             |
 
 {/* api-tables:end */}

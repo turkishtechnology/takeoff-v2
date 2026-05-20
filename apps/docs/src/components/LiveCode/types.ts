@@ -7,5 +7,3 @@ export interface ErrorState {
   column: number | null;
   timestamp: number;
 }
-
-export type LiveCodeTab = 'js' | 'css';
