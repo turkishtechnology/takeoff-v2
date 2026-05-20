@@ -66,8 +66,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run unit tests
-        run: pnpm turbo test
+      # Unit tests intentionally omitted — react-spar has no test files yet
+      # (vitest config exists but no *.test.* sources). Re-add this step the
+      # first time a real test lands.
 
       # ── Build runs codegen + package + site as preparation steps ──────────
       - name: Build (packages + docs site)
