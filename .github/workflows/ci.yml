@@ -40,7 +40,9 @@ jobs:
       - name: Validate markdown link integrity
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --no-progress --base . --exclude-path node_modules './**/*.md' './**/*.mdx'
+          # lychee 0.23+ rejects relative paths for --base; pass the runner's
+          # absolute workspace dir instead.
+          args: --no-progress --base ${{ github.workspace }} --exclude-path node_modules './**/*.md' './**/*.mdx'
           fail: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
