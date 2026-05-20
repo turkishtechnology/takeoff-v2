@@ -30,27 +30,33 @@ export const drawerDemoCss = String.raw`
 `;
 
 export const playgroundDemo = String.raw`
-<Drawer placement="right">
-  <Drawer.Trigger className="drawer-demo-trigger">
-    Open Drawer
-  </Drawer.Trigger>
-  <Drawer.Overlay />
-  <Drawer.Panel>
-    <Drawer.Header>
-      <Drawer.Title>Flight Details</Drawer.Title>
-      <Drawer.CloseButton>✕</Drawer.CloseButton>
-    </Drawer.Header>
-    <Drawer.Body>
-      <Drawer.Description>
-        Review your selected flight information and passenger details before
-        confirming the booking.
-      </Drawer.Description>
-    </Drawer.Body>
-    <Drawer.Footer>
-      <Drawer.CloseButton>Close</Drawer.CloseButton>
-    </Drawer.Footer>
-  </Drawer.Panel>
-</Drawer>
+function PlaygroundDemo() {
+  return (
+    <Drawer placement="right">
+      <Drawer.Trigger className="drawer-demo-trigger">
+        Open Drawer
+      </Drawer.Trigger>
+      <Drawer.Overlay />
+      <Drawer.Panel>
+        <Drawer.Header>
+          <Drawer.Title>Flight Details</Drawer.Title>
+          <Drawer.CloseButton>✕</Drawer.CloseButton>
+        </Drawer.Header>
+        <Drawer.Body>
+          <Drawer.Description>
+            Review your selected flight information and passenger details before
+            confirming the booking.
+          </Drawer.Description>
+        </Drawer.Body>
+        <Drawer.Footer>
+          <Drawer.CloseButton>Close</Drawer.CloseButton>
+        </Drawer.Footer>
+      </Drawer.Panel>
+    </Drawer>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const placementDemo = String.raw`
@@ -151,6 +157,7 @@ import { Drawer } from '@takeoff-ui/react-spar';
 <LiveCode
   code={playgroundDemo}
   cssCode={drawerDemoCss}
+  noInline
   previewMinHeight={200}
   previewWrapper={ReactSparDemoRoot}
   scope={drawerScope}

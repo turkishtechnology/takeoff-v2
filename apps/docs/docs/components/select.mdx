@@ -49,61 +49,79 @@ export const selectDemoCss = String.raw`
 `;
 
 export const playgroundDemo = String.raw`
-<Select defaultValue="economy">
-  <Select.Trigger placeholder="Pick a cabin" />
-  <Select.Content>
-    <Select.Item value="economy" label="Economy">Economy</Select.Item>
-    <Select.Item value="business" label="Business">Business</Select.Item>
-    <Select.Item value="first" label="First class">First class</Select.Item>
-  </Select.Content>
-</Select>
+function PlaygroundDemo() {
+  return (
+    <Select defaultValue="economy">
+      <Select.Trigger placeholder="Pick a cabin" />
+      <Select.Content>
+        <Select.Item value="economy" label="Economy">Economy</Select.Item>
+        <Select.Item value="business" label="Business">Business</Select.Item>
+        <Select.Item value="first" label="First class">First class</Select.Item>
+      </Select.Content>
+    </Select>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const sizesDemo = String.raw`
-<div className="select-demo">
-  <Select size="small">
-    <Select.Trigger placeholder="Small" />
-    <Select.Content>
-      <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
-      <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
-    </Select.Content>
-  </Select>
-  <Select size="base">
-    <Select.Trigger placeholder="Base" />
-    <Select.Content>
-      <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
-      <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
-    </Select.Content>
-  </Select>
-  <Select size="large">
-    <Select.Trigger placeholder="Large" />
-    <Select.Content>
-      <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
-      <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
-    </Select.Content>
-  </Select>
-</div>
+function SizesDemo() {
+  return (
+    <div className="select-demo">
+      <Select size="small">
+        <Select.Trigger placeholder="Small" />
+        <Select.Content>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+        </Select.Content>
+      </Select>
+      <Select size="base">
+        <Select.Trigger placeholder="Base" />
+        <Select.Content>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+        </Select.Content>
+      </Select>
+      <Select size="large">
+        <Select.Trigger placeholder="Large" />
+        <Select.Content>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+        </Select.Content>
+      </Select>
+    </div>
+  );
+}
+
+render(<SizesDemo />);
 `;
 
 export const groupsDemo = String.raw`
-<Select defaultValue="ist">
-  <Select.Trigger placeholder="Choose origin" />
-  <Select.Content>
-    <Select.Group>
-      <Select.Label>Türkiye</Select.Label>
-      <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
-      <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
-      <Select.Item value="izm" label="Izmir">Izmir</Select.Item>
-    </Select.Group>
-    <Select.Separator />
-    <Select.Group>
-      <Select.Label>Europe</Select.Label>
-      <Select.Item value="lhr" label="London Heathrow">London Heathrow</Select.Item>
-      <Select.Item value="cdg" label="Paris CDG">Paris CDG</Select.Item>
-      <Select.Item value="fra" disabled label="Frankfurt (unavailable)">Frankfurt (unavailable)</Select.Item>
-    </Select.Group>
-  </Select.Content>
-</Select>
+function GroupsDemo() {
+  return (
+    <Select defaultValue="ist">
+      <Select.Trigger placeholder="Choose origin" />
+      <Select.Content>
+        <Select.Group>
+          <Select.Label>Türkiye</Select.Label>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+          <Select.Item value="izm" label="Izmir">Izmir</Select.Item>
+        </Select.Group>
+        <Select.Separator />
+        <Select.Group>
+          <Select.Label>Europe</Select.Label>
+          <Select.Item value="lhr" label="London Heathrow">London Heathrow</Select.Item>
+          <Select.Item value="cdg" label="Paris CDG">Paris CDG</Select.Item>
+          <Select.Item value="fra" disabled label="Frankfurt (unavailable)">Frankfurt (unavailable)</Select.Item>
+        </Select.Group>
+      </Select.Content>
+    </Select>
+  );
+}
+
+render(<GroupsDemo />);
 `;
 
 export const controlledDemo = String.raw`
@@ -129,13 +147,19 @@ render(<ControlledSelectDemo />);
 `;
 
 export const invalidDemo = String.raw`
-<Select invalid>
-  <Select.Trigger placeholder="Required field" />
-  <Select.Content>
-    <Select.Item value="a" label="Option A">Option A</Select.Item>
-    <Select.Item value="b" label="Option B">Option B</Select.Item>
-  </Select.Content>
-</Select>
+function InvalidDemo() {
+  return (
+    <Select invalid>
+      <Select.Trigger placeholder="Required field" />
+      <Select.Content>
+        <Select.Item value="a" label="Option A">Option A</Select.Item>
+        <Select.Item value="b" label="Option B">Option B</Select.Item>
+      </Select.Content>
+    </Select>
+  );
+}
+
+render(<InvalidDemo />);
 `;
 
 {/* prettier-ignore-end */}
@@ -172,6 +196,7 @@ import { Select } from '@takeoff-ui/react-spar';
 <LiveCode
   code={playgroundDemo}
   cssCode={selectDemoCss}
+  noInline
   previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
   scope={selectScope}
@@ -182,6 +207,7 @@ import { Select } from '@takeoff-ui/react-spar';
 <LiveCode
   code={sizesDemo}
   cssCode={selectDemoCss}
+  noInline
   previewMinHeight={340}
   previewWrapper={ReactSparDemoRoot}
   scope={selectScope}
@@ -192,6 +218,7 @@ import { Select } from '@takeoff-ui/react-spar';
 <LiveCode
   code={groupsDemo}
   cssCode={selectDemoCss}
+  noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
   scope={selectScope}
@@ -213,6 +240,7 @@ import { Select } from '@takeoff-ui/react-spar';
 <LiveCode
   code={invalidDemo}
   cssCode={selectDemoCss}
+  noInline
   previewMinHeight={140}
   previewWrapper={ReactSparDemoRoot}
   scope={selectScope}

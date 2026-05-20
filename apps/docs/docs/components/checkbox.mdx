@@ -72,58 +72,70 @@ export const checkboxDemoCss = String.raw`
 `;
 
 export const playgroundDemo = String.raw`
-<Field>
-  <Field.Label>Notifications</Field.Label>
-  <Checkbox defaultChecked>
-    <Checkbox.Indicator />
-  </Checkbox>
-  <Field.Description>
-    We will only email you when a saved route drops in price.
-  </Field.Description>
-</Field>
+function PlaygroundDemo() {
+  return (
+    <Field>
+      <Field.Label>Notifications</Field.Label>
+      <Checkbox defaultChecked>
+        <Checkbox.Indicator />
+      </Checkbox>
+      <Field.Description>
+        We will only email you when a saved route drops in price.
+      </Field.Description>
+    </Field>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const fieldWithCheckboxDemo = String.raw`
-<div className="checkbox-demo-stack">
-  <Field required>
-    <Field.Label>Email me booking updates</Field.Label>
-    <Checkbox defaultChecked>
-      <Checkbox.Indicator />
-    </Checkbox>
-  </Field>
+function FieldWithCheckboxDemo() {
+  return (
+    <div className="checkbox-demo-stack">
+      <Field required>
+        <Field.Label>Email me booking updates</Field.Label>
+        <Checkbox defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
 
-  <Field>
-    <Field.Label>Subscribe to fare alerts</Field.Label>
-    <Checkbox>
-      <Checkbox.Indicator />
-    </Checkbox>
-    <Field.Description>
-      We will only email you when a saved route drops in price.
-    </Field.Description>
-  </Field>
+      <Field>
+        <Field.Label>Subscribe to fare alerts</Field.Label>
+        <Checkbox>
+          <Checkbox.Indicator />
+        </Checkbox>
+        <Field.Description>
+          We will only email you when a saved route drops in price.
+        </Field.Description>
+      </Field>
 
-  <Field invalid>
-    <Field.Label>I accept the booking terms</Field.Label>
-    <Checkbox>
-      <Checkbox.Indicator />
-    </Checkbox>
-    <Field.ErrorMessage>You must accept the terms to continue.</Field.ErrorMessage>
-  </Field>
+      <Field invalid>
+        <Field.Label>I accept the booking terms</Field.Label>
+        <Checkbox>
+          <Checkbox.Indicator />
+        </Checkbox>
+        <Field.ErrorMessage>You must accept the terms to continue.</Field.ErrorMessage>
+      </Field>
 
-  <Field disabled>
-    <Field.Label>Disabled option</Field.Label>
-    <Checkbox>
-      <Checkbox.Indicator />
-    </Checkbox>
-  </Field>
+      <Field disabled>
+        <Field.Label>Disabled option</Field.Label>
+        <Checkbox>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
 
-  <Field readOnly>
-    <Field.Label>Read-only selection</Field.Label>
-    <Checkbox defaultChecked>
-      <Checkbox.Indicator />
-    </Checkbox>
-  </Field>
-</div>
+      <Field readOnly>
+        <Field.Label>Read-only selection</Field.Label>
+        <Checkbox defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+    </div>
+  );
+}
+
+render(<FieldWithCheckboxDemo />);
 `;
 
 export const controlledDemo = String.raw`
@@ -214,117 +226,139 @@ render(<IndeterminateCheckboxDemo />);
 `;
 
 export const sizeDemo = String.raw`
-<div className="checkbox-demo-inline">
-  <Field>
-    <Field.Label>Small</Field.Label>
-    <Checkbox size="small" defaultChecked>
-      <Checkbox.Indicator />
-    </Checkbox>
-  </Field>
-  <Field>
-    <Field.Label>Base</Field.Label>
-    <Checkbox size="base" defaultChecked>
-      <Checkbox.Indicator />
-    </Checkbox>
-  </Field>
-</div>
+function SizeDemo() {
+  return (
+    <div className="checkbox-demo-inline">
+      <Field>
+        <Field.Label>Small</Field.Label>
+        <Checkbox size="small" defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+      <Field>
+        <Field.Label>Base</Field.Label>
+        <Checkbox size="base" defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+    </div>
+  );
+}
+
+render(<SizeDemo />);
 `;
 
 export const cardTypeDemo = String.raw`
-<div className="checkbox-demo-stack">
-  <Field>
-    <Field.Label>Mobile boarding pass</Field.Label>
-    <Checkbox type="card" defaultChecked>
-      <Checkbox.Indicator />
-    </Checkbox>
-    <Field.Description>
-      Skip the printed pass and board with your phone.
-    </Field.Description>
-  </Field>
-  <Field>
-    <Field.Label>Priority boarding</Field.Label>
-    <Checkbox type="card">
-      <Checkbox.Indicator />
-    </Checkbox>
-    <Field.Description>
-      Board before general groups with priority access.
-    </Field.Description>
-  </Field>
-</div>
+function CardTypeDemo() {
+  return (
+    <div className="checkbox-demo-stack">
+      <Field>
+        <Field.Label>Mobile boarding pass</Field.Label>
+        <Checkbox type="card" defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+        <Field.Description>
+          Skip the printed pass and board with your phone.
+        </Field.Description>
+      </Field>
+      <Field>
+        <Field.Label>Priority boarding</Field.Label>
+        <Checkbox type="card">
+          <Checkbox.Indicator />
+        </Checkbox>
+        <Field.Description>
+          Board before general groups with priority access.
+        </Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<CardTypeDemo />);
 `;
 
 export const customIconDemo = String.raw`
-const StarIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-  >
-    <path d="M12 2 15 9l7 .5-5.5 4.5L18 22l-6-4-6 4 1.5-8L2 9.5 9 9z" />
-  </svg>
-);
+function CustomIconDemo() {
+  const StarIcon = () => (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path d="M12 2 15 9l7 .5-5.5 4.5L18 22l-6-4-6 4 1.5-8L2 9.5 9 9z" />
+    </svg>
+  );
 
-const DashIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3"
-    strokeLinecap="round"
-  >
-    <path d="M5 12h14" />
-  </svg>
-);
+  const DashIcon = () => (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    >
+      <path d="M5 12h14" />
+    </svg>
+  );
 
-render(
-  <div className="checkbox-demo-stack">
-    <Field>
-      <Field.Label>Favorite this route</Field.Label>
-      <Checkbox defaultChecked>
-        <Checkbox.Indicator>
-          {({ checked, indeterminate }) =>
-            indeterminate ? <DashIcon /> : checked ? <StarIcon /> : null
-          }
-        </Checkbox.Indicator>
-      </Checkbox>
-    </Field>
-  </div>,
-);
+  return (
+    <div className="checkbox-demo-stack">
+      <Field>
+        <Field.Label>Favorite this route</Field.Label>
+        <Checkbox defaultChecked>
+          <Checkbox.Indicator>
+            {({ checked, indeterminate }) =>
+              indeterminate ? <DashIcon /> : checked ? <StarIcon /> : null
+            }
+          </Checkbox.Indicator>
+        </Checkbox>
+      </Field>
+    </div>
+  );
+}
+
+render(<CustomIconDemo />);
 `;
 
 export const stateDemo = String.raw`
-<div className="checkbox-demo-stack">
-  <Field disabled>
-    <Field.Label>Disabled option</Field.Label>
-    <Checkbox>
-      <Checkbox.Indicator />
-    </Checkbox>
-  </Field>
-  <Field disabled>
-    <Field.Label>Disabled and selected</Field.Label>
-    <Checkbox defaultChecked>
-      <Checkbox.Indicator />
-    </Checkbox>
-  </Field>
-  <Field readOnly>
-    <Field.Label>Read-only selection</Field.Label>
-    <Checkbox defaultChecked>
-      <Checkbox.Indicator />
-    </Checkbox>
-  </Field>
-  <Field invalid required>
-    <Field.Label>I accept the booking terms</Field.Label>
-    <Checkbox>
-      <Checkbox.Indicator />
-    </Checkbox>
-    <Field.ErrorMessage>
-      You must accept the terms to continue.
-    </Field.ErrorMessage>
-  </Field>
-</div>
+function StateDemo() {
+  return (
+    <div className="checkbox-demo-stack">
+      <Field disabled>
+        <Field.Label>Disabled option</Field.Label>
+        <Checkbox>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+      <Field disabled>
+        <Field.Label>Disabled and selected</Field.Label>
+        <Checkbox defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+      <Field readOnly>
+        <Field.Label>Read-only selection</Field.Label>
+        <Checkbox defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+      <Field invalid required>
+        <Field.Label>I accept the booking terms</Field.Label>
+        <Checkbox>
+          <Checkbox.Indicator />
+        </Checkbox>
+        <Field.ErrorMessage>
+          You must accept the terms to continue.
+        </Field.ErrorMessage>
+      </Field>
+    </div>
+  );
+}
+
+render(<StateDemo />);
 `;
 
 export const formDemo = String.raw`
@@ -404,6 +438,7 @@ import { Checkbox, Field } from '@takeoff-ui/react-spar';
 <LiveCode
   code={playgroundDemo}
   cssCode={checkboxDemoCss}
+  noInline
   previewMinHeight={160}
   previewWrapper={ReactSparDemoRoot}
   scope={checkboxScope}
@@ -419,6 +454,7 @@ through shared IDs.
 <LiveCode
   code={fieldWithCheckboxDemo}
   cssCode={checkboxDemoCss}
+  noInline
   previewMinHeight={460}
   previewWrapper={ReactSparDemoRoot}
   scope={checkboxScope}
@@ -457,6 +493,7 @@ after the first change.
 <LiveCode
   code={sizeDemo}
   cssCode={checkboxDemoCss}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={checkboxScope}
@@ -469,6 +506,7 @@ Set `type="card"` to switch to the bordered card variant for option-row layouts.
 <LiveCode
   code={cardTypeDemo}
   cssCode={checkboxDemoCss}
+  noInline
   previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
   scope={checkboxScope}
@@ -495,6 +533,7 @@ default `icon` slot entirely.
 <LiveCode
   code={stateDemo}
   cssCode={checkboxDemoCss}
+  noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
   scope={checkboxScope}

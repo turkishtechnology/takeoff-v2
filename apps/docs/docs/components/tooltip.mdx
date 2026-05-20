@@ -36,133 +36,169 @@ export const tooltipDemoCss = String.raw`
 `;
 
 export const playgroundDemo = String.raw`
-<div className="tooltip-demo">
-  <Tooltip>
-    <Tooltip.Trigger>Hover me</Tooltip.Trigger>
-    <Tooltip.Content>
-      <Tooltip.Description>Simple tooltip</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-</div>
+function PlaygroundDemo() {
+  return (
+    <div className="tooltip-demo">
+      <Tooltip>
+        <Tooltip.Trigger>Hover me</Tooltip.Trigger>
+        <Tooltip.Content>
+          <Tooltip.Description>Simple tooltip</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const variantsDemo = String.raw`
-<div className="tooltip-demo">
-  <Tooltip>
-    <Tooltip.Trigger>Dark</Tooltip.Trigger>
-    <Tooltip.Content variant="dark">
-      <Tooltip.Description>Dark variant</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-  <Tooltip>
-    <Tooltip.Trigger>White</Tooltip.Trigger>
-    <Tooltip.Content variant="white">
-      <Tooltip.Description>White variant</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-  <Tooltip>
-    <Tooltip.Trigger>Info</Tooltip.Trigger>
-    <Tooltip.Content variant="info">
-      <Tooltip.Description>Info variant</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-  <Tooltip>
-    <Tooltip.Trigger>Success</Tooltip.Trigger>
-    <Tooltip.Content variant="success">
-      <Tooltip.Description>Success variant</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-  <Tooltip>
-    <Tooltip.Trigger>Warning</Tooltip.Trigger>
-    <Tooltip.Content variant="warning">
-      <Tooltip.Description>Warning variant</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-  <Tooltip>
-    <Tooltip.Trigger>Danger</Tooltip.Trigger>
-    <Tooltip.Content variant="danger">
-      <Tooltip.Description>Danger variant</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-</div>
+function VariantsDemo() {
+  return (
+    <div className="tooltip-demo">
+      <Tooltip>
+        <Tooltip.Trigger>Dark</Tooltip.Trigger>
+        <Tooltip.Content variant="dark">
+          <Tooltip.Description>Dark variant</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+      <Tooltip>
+        <Tooltip.Trigger>White</Tooltip.Trigger>
+        <Tooltip.Content variant="white">
+          <Tooltip.Description>White variant</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+      <Tooltip>
+        <Tooltip.Trigger>Info</Tooltip.Trigger>
+        <Tooltip.Content variant="info">
+          <Tooltip.Description>Info variant</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+      <Tooltip>
+        <Tooltip.Trigger>Success</Tooltip.Trigger>
+        <Tooltip.Content variant="success">
+          <Tooltip.Description>Success variant</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+      <Tooltip>
+        <Tooltip.Trigger>Warning</Tooltip.Trigger>
+        <Tooltip.Content variant="warning">
+          <Tooltip.Description>Warning variant</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+      <Tooltip>
+        <Tooltip.Trigger>Danger</Tooltip.Trigger>
+        <Tooltip.Content variant="danger">
+          <Tooltip.Description>Danger variant</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+    </div>
+  );
+}
+
+render(<VariantsDemo />);
 `;
 
 export const placementDemo = String.raw`
-<div className="tooltip-demo">
-  <Tooltip>
-    <Tooltip.Trigger>Top</Tooltip.Trigger>
-    <Tooltip.Content side="top">
-      <Tooltip.Description>Positioned top</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-  <Tooltip>
-    <Tooltip.Trigger>Bottom</Tooltip.Trigger>
-    <Tooltip.Content side="bottom">
-      <Tooltip.Description>Positioned bottom</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-  <Tooltip>
-    <Tooltip.Trigger>Left</Tooltip.Trigger>
-    <Tooltip.Content side="left">
-      <Tooltip.Description>Positioned left</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-  <Tooltip>
-    <Tooltip.Trigger>Right</Tooltip.Trigger>
-    <Tooltip.Content side="right">
-      <Tooltip.Description>Positioned right</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-</div>
+function PlacementDemo() {
+  return (
+    <div className="tooltip-demo">
+      <Tooltip>
+        <Tooltip.Trigger>Top</Tooltip.Trigger>
+        <Tooltip.Content side="top">
+          <Tooltip.Description>Positioned top</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+      <Tooltip>
+        <Tooltip.Trigger>Bottom</Tooltip.Trigger>
+        <Tooltip.Content side="bottom">
+          <Tooltip.Description>Positioned bottom</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+      <Tooltip>
+        <Tooltip.Trigger>Left</Tooltip.Trigger>
+        <Tooltip.Content side="left">
+          <Tooltip.Description>Positioned left</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+      <Tooltip>
+        <Tooltip.Trigger>Right</Tooltip.Trigger>
+        <Tooltip.Content side="right">
+          <Tooltip.Description>Positioned right</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+    </div>
+  );
+}
+
+render(<PlacementDemo />);
 `;
 
 export const headerDemo = String.raw`
-<div className="tooltip-demo">
-  <Tooltip>
-    <Tooltip.Trigger>With header</Tooltip.Trigger>
-    <Tooltip.Content variant="info">
-      <Tooltip.Header>Important</Tooltip.Header>
-      <Tooltip.Description>This tooltip has a header and description.</Tooltip.Description>
-    </Tooltip.Content>
-  </Tooltip>
-</div>
+function HeaderDemo() {
+  return (
+    <div className="tooltip-demo">
+      <Tooltip>
+        <Tooltip.Trigger>With header</Tooltip.Trigger>
+        <Tooltip.Content variant="info">
+          <Tooltip.Header>Important</Tooltip.Header>
+          <Tooltip.Description>This tooltip has a header and description.</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+    </div>
+  );
+}
+
+render(<HeaderDemo />);
 `;
 
 export const arrowDemo = String.raw`
-<div className="tooltip-demo">
-  <Tooltip>
-    <Tooltip.Trigger>With arrow</Tooltip.Trigger>
-    <Tooltip.Content>
-      <Tooltip.Description>Tooltip with arrow</Tooltip.Description>
-      <Tooltip.Arrow />
-    </Tooltip.Content>
-  </Tooltip>
-</div>
+function ArrowDemo() {
+  return (
+    <div className="tooltip-demo">
+      <Tooltip>
+        <Tooltip.Trigger>With arrow</Tooltip.Trigger>
+        <Tooltip.Content>
+          <Tooltip.Description>Tooltip with arrow</Tooltip.Description>
+          <Tooltip.Arrow />
+        </Tooltip.Content>
+      </Tooltip>
+    </div>
+  );
+}
+
+render(<ArrowDemo />);
 `;
 
 export const providerDemo = String.raw`
-<Tooltip.Provider delayDuration={300} skipDelayDuration={150}>
-  <div className="tooltip-demo">
-    <Tooltip>
-      <Tooltip.Trigger>First</Tooltip.Trigger>
-      <Tooltip.Content>
-        <Tooltip.Description>Hover, then move to the next one</Tooltip.Description>
-      </Tooltip.Content>
-    </Tooltip>
-    <Tooltip>
-      <Tooltip.Trigger>Second</Tooltip.Trigger>
-      <Tooltip.Content>
-        <Tooltip.Description>Opens instantly within skip window</Tooltip.Description>
-      </Tooltip.Content>
-    </Tooltip>
-    <Tooltip>
-      <Tooltip.Trigger>Third</Tooltip.Trigger>
-      <Tooltip.Content>
-        <Tooltip.Description>Same skip-delay behavior</Tooltip.Description>
-      </Tooltip.Content>
-    </Tooltip>
-  </div>
-</Tooltip.Provider>
+function ProviderDemo() {
+  return (
+    <Tooltip.Provider delayDuration={300} skipDelayDuration={150}>
+      <div className="tooltip-demo">
+        <Tooltip>
+          <Tooltip.Trigger>First</Tooltip.Trigger>
+          <Tooltip.Content>
+            <Tooltip.Description>Hover, then move to the next one</Tooltip.Description>
+          </Tooltip.Content>
+        </Tooltip>
+        <Tooltip>
+          <Tooltip.Trigger>Second</Tooltip.Trigger>
+          <Tooltip.Content>
+            <Tooltip.Description>Opens instantly within skip window</Tooltip.Description>
+          </Tooltip.Content>
+        </Tooltip>
+        <Tooltip>
+          <Tooltip.Trigger>Third</Tooltip.Trigger>
+          <Tooltip.Content>
+            <Tooltip.Description>Same skip-delay behavior</Tooltip.Description>
+          </Tooltip.Content>
+        </Tooltip>
+      </div>
+    </Tooltip.Provider>
+  );
+}
+
+render(<ProviderDemo />);
 `;
 
 export const controlledDemo = String.raw`
@@ -226,6 +262,7 @@ To share delay configuration across a group of tooltips, wrap them in
 <LiveCode
   code={playgroundDemo}
   cssCode={tooltipDemoCss}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={tooltipScope}
@@ -236,6 +273,7 @@ To share delay configuration across a group of tooltips, wrap them in
 <LiveCode
   code={variantsDemo}
   cssCode={tooltipDemoCss}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={tooltipScope}
@@ -246,6 +284,7 @@ To share delay configuration across a group of tooltips, wrap them in
 <LiveCode
   code={placementDemo}
   cssCode={tooltipDemoCss}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={tooltipScope}
@@ -256,6 +295,7 @@ To share delay configuration across a group of tooltips, wrap them in
 <LiveCode
   code={headerDemo}
   cssCode={tooltipDemoCss}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={tooltipScope}
@@ -266,6 +306,7 @@ To share delay configuration across a group of tooltips, wrap them in
 <LiveCode
   code={arrowDemo}
   cssCode={tooltipDemoCss}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={tooltipScope}
@@ -281,6 +322,7 @@ toolbar-style clusters (WCAG 1.4.13).
 <LiveCode
   code={providerDemo}
   cssCode={tooltipDemoCss}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={tooltipScope}

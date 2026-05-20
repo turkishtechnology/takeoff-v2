@@ -26,21 +26,33 @@ export const buttonDemoCss = String.raw`
 `;
 
 export const playgroundDemo = String.raw`
-<div className="button-demo">
-  <Button>Primary</Button>
-  <Button variant="secondary">Secondary</Button>
-  <Button appearance="outlined">Outlined</Button>
-  <Button appearance="text">Text</Button>
-  <Button variant="danger">Danger</Button>
-</div>
+function PlaygroundDemo() {
+  return (
+    <div className="button-demo">
+      <Button>Primary</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button appearance="outlined">Outlined</Button>
+      <Button appearance="text">Text</Button>
+      <Button variant="danger">Danger</Button>
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const sizesDemo = String.raw`
-<div className="button-demo">
-  <Button size="small">Small</Button>
-  <Button size="base">Base</Button>
-  <Button size="large">Large</Button>
-</div>
+function SizesDemo() {
+  return (
+    <div className="button-demo">
+      <Button size="small">Small</Button>
+      <Button size="base">Base</Button>
+      <Button size="large">Large</Button>
+    </div>
+  );
+}
+
+render(<SizesDemo />);
 `;
 
 export const loadingDemo = String.raw`
@@ -69,10 +81,16 @@ render(<LoadingDemo />);
 `;
 
 export const disabledDemo = String.raw`
-<div className="button-demo">
-  <Button disabled>Disabled</Button>
-  <Button variant="secondary" disabled>Disabled</Button>
-</div>
+function DisabledDemo() {
+  return (
+    <div className="button-demo">
+      <Button disabled>Disabled</Button>
+      <Button variant="secondary" disabled>Disabled</Button>
+    </div>
+  );
+}
+
+render(<DisabledDemo />);
 `;
 
 export const toggleDemo = String.raw`
@@ -96,26 +114,30 @@ render(<ToggleButtonDemo />);
 `;
 
 export const iconsDemo = String.raw`
-const StarIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.77 4.29 12.9l.71-4.12-3-2.93 4.15-.6L8 1.5z" />
-  </svg>
-);
+function IconsDemo() {
+  const StarIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.77 4.29 12.9l.71-4.12-3-2.93 4.15-.6L8 1.5z" />
+    </svg>
+  );
 
-const ArrowIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 8h10M9 4l4 4-4 4" />
-  </svg>
-);
+  const ArrowIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 8h10M9 4l4 4-4 4" />
+    </svg>
+  );
 
-render(
-  <div className="button-demo">
-    <Button startContent={<StarIcon />}>Favorite</Button>
-    <Button endContent={<ArrowIcon />}>Continue</Button>
-    <Button startContent={<StarIcon />} endContent={<ArrowIcon />}>Both</Button>
-    <Button startContent={<StarIcon />} rounded />
-  </div>
-);
+  return (
+    <div className="button-demo">
+      <Button startContent={<StarIcon />}>Favorite</Button>
+      <Button endContent={<ArrowIcon />}>Continue</Button>
+      <Button startContent={<StarIcon />} endContent={<ArrowIcon />}>Both</Button>
+      <Button startContent={<StarIcon />} rounded />
+    </div>
+  );
+}
+
+render(<IconsDemo />);
 `;
 
 {/* prettier-ignore-end */}
@@ -143,6 +165,7 @@ import { Button } from '@takeoff-ui/react-spar';
 <LiveCode
   code={playgroundDemo}
   cssCode={buttonDemoCss}
+  noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
   scope={buttonScope}
@@ -153,6 +176,7 @@ import { Button } from '@takeoff-ui/react-spar';
 <LiveCode
   code={sizesDemo}
   cssCode={buttonDemoCss}
+  noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
   scope={buttonScope}
@@ -174,6 +198,7 @@ import { Button } from '@takeoff-ui/react-spar';
 <LiveCode
   code={disabledDemo}
   cssCode={buttonDemoCss}
+  noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
   scope={buttonScope}

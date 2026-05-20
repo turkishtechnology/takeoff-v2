@@ -86,60 +86,72 @@ export const switchDemoCss = String.raw`
 `;
 
 export const playgroundDemo = String.raw`
-<Field className="switch-demo-field-row">
-  <Field.Label>Flight status alerts</Field.Label>
-  <Switch defaultChecked>
-    <Switch.Indicator />
-  </Switch>
-  <Field.Description>
-    We will let you know about delays, gate changes, and cancellations.
-  </Field.Description>
-</Field>
+function PlaygroundDemo() {
+  return (
+    <Field className="switch-demo-field-row">
+      <Field.Label>Flight status alerts</Field.Label>
+      <Switch defaultChecked>
+        <Switch.Indicator />
+      </Switch>
+      <Field.Description>
+        We will let you know about delays, gate changes, and cancellations.
+      </Field.Description>
+    </Field>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const fieldWithSwitchDemo = String.raw`
-<div className="switch-demo-stack">
-  <Field required className="switch-demo-field-row">
-    <Field.Label>Email alerts</Field.Label>
-    <Switch defaultChecked>
-      <Switch.Indicator />
-    </Switch>
-  </Field>
+function FieldWithSwitchDemo() {
+  return (
+    <div className="switch-demo-stack">
+      <Field required className="switch-demo-field-row">
+        <Field.Label>Email alerts</Field.Label>
+        <Switch defaultChecked>
+          <Switch.Indicator />
+        </Switch>
+      </Field>
 
-  <Field className="switch-demo-field-row">
-    <Field.Label>SMS alerts</Field.Label>
-    <Switch>
-      <Switch.Indicator />
-    </Switch>
-    <Field.Description>
-      Standard messaging rates may apply.
-    </Field.Description>
-  </Field>
+      <Field className="switch-demo-field-row">
+        <Field.Label>SMS alerts</Field.Label>
+        <Switch>
+          <Switch.Indicator />
+        </Switch>
+        <Field.Description>
+          Standard messaging rates may apply.
+        </Field.Description>
+      </Field>
 
-  <Field invalid className="switch-demo-field-row">
-    <Field.Label>Push notifications</Field.Label>
-    <Switch>
-      <Switch.Indicator />
-    </Switch>
-    <Field.ErrorMessage>
-      Enable browser notifications to turn this on.
-    </Field.ErrorMessage>
-  </Field>
+      <Field invalid className="switch-demo-field-row">
+        <Field.Label>Push notifications</Field.Label>
+        <Switch>
+          <Switch.Indicator />
+        </Switch>
+        <Field.ErrorMessage>
+          Enable browser notifications to turn this on.
+        </Field.ErrorMessage>
+      </Field>
 
-  <Field disabled className="switch-demo-field-row">
-    <Field.Label>Disabled setting</Field.Label>
-    <Switch>
-      <Switch.Indicator />
-    </Switch>
-  </Field>
+      <Field disabled className="switch-demo-field-row">
+        <Field.Label>Disabled setting</Field.Label>
+        <Switch>
+          <Switch.Indicator />
+        </Switch>
+      </Field>
 
-  <Field readOnly className="switch-demo-field-row">
-    <Field.Label>Read-only setting</Field.Label>
-    <Switch defaultChecked>
-      <Switch.Indicator />
-    </Switch>
-  </Field>
-</div>
+      <Field readOnly className="switch-demo-field-row">
+        <Field.Label>Read-only setting</Field.Label>
+        <Switch defaultChecked>
+          <Switch.Indicator />
+        </Switch>
+      </Field>
+    </div>
+  );
+}
+
+render(<FieldWithSwitchDemo />);
 `;
 
 export const controlledDemo = String.raw`
@@ -165,85 +177,107 @@ render(<ControlledSwitchDemo />);
 `;
 
 export const sizeDemo = String.raw`
-<div className="switch-demo-inline">
-  <Switch aria-label="Extra small switch" size="xsmall">
-    <Switch.Indicator />
-  </Switch>
-  <Switch aria-label="Small switch" size="small">
-    <Switch.Indicator />
-  </Switch>
-  <Switch aria-label="Base switch" size="base" defaultChecked>
-    <Switch.Indicator />
-  </Switch>
-  <Switch aria-label="Large switch" size="large" defaultChecked>
-    <Switch.Indicator />
-  </Switch>
-  <Switch aria-label="Extra large switch" size="xlarge" defaultChecked>
-    <Switch.Indicator />
-  </Switch>
-</div>
+function SizeDemo() {
+  return (
+    <div className="switch-demo-inline">
+      <Switch aria-label="Extra small switch" size="xsmall">
+        <Switch.Indicator />
+      </Switch>
+      <Switch aria-label="Small switch" size="small">
+        <Switch.Indicator />
+      </Switch>
+      <Switch aria-label="Base switch" size="base" defaultChecked>
+        <Switch.Indicator />
+      </Switch>
+      <Switch aria-label="Large switch" size="large" defaultChecked>
+        <Switch.Indicator />
+      </Switch>
+      <Switch aria-label="Extra large switch" size="xlarge" defaultChecked>
+        <Switch.Indicator />
+      </Switch>
+    </div>
+  );
+}
+
+render(<SizeDemo />);
 `;
 
 export const variantDemo = String.raw`
-<div className="switch-demo-stack">
-  <Field className="switch-demo-field-row">
-    <Field.Label>Seat alerts</Field.Label>
-    <Switch defaultChecked variant="info">
-      <Switch.Indicator />
-    </Switch>
-  </Field>
-  <Field className="switch-demo-field-row">
-    <Field.Label>Auto check-in</Field.Label>
-    <Switch defaultChecked variant="success">
-      <Switch.Indicator />
-    </Switch>
-  </Field>
-</div>
+function VariantDemo() {
+  return (
+    <div className="switch-demo-stack">
+      <Field className="switch-demo-field-row">
+        <Field.Label>Seat alerts</Field.Label>
+        <Switch defaultChecked variant="info">
+          <Switch.Indicator />
+        </Switch>
+      </Field>
+      <Field className="switch-demo-field-row">
+        <Field.Label>Auto check-in</Field.Label>
+        <Switch defaultChecked variant="success">
+          <Switch.Indicator />
+        </Switch>
+      </Field>
+    </div>
+  );
+}
+
+render(<VariantDemo />);
 `;
 
 export const customIndicatorDemo = String.raw`
-const CheckIcon = () => (
-  <svg
-    width="10"
-    height="10"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M20 6 9 17l-5-5" />
-  </svg>
-);
+function CustomIndicatorDemo() {
+  const CheckIcon = () => (
+    <svg
+      width="10"
+      height="10"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
 
-render(
-  <Field className="switch-demo-field-row">
-    <Field.Label>Auto check-in</Field.Label>
-    <Switch defaultChecked variant="success">
-      <Switch.Indicator>
-        {({ checked }) => (
-          <span data-slot="thumb">{checked ? <CheckIcon /> : null}</span>
-        )}
-      </Switch.Indicator>
-    </Switch>
-  </Field>,
-);
+  return (
+    <Field className="switch-demo-field-row">
+      <Field.Label>Auto check-in</Field.Label>
+      <Switch defaultChecked variant="success">
+        <Switch.Indicator>
+          {({ checked }) => (
+            <span data-slot="thumb">{checked ? <CheckIcon /> : null}</span>
+          )}
+        </Switch.Indicator>
+      </Switch>
+    </Field>
+  );
+}
+
+render(<CustomIndicatorDemo />);
 `;
 
 export const renderPropDemo = String.raw`
-<Field className="switch-demo-field-row">
-  <Switch defaultChecked>
-    {({ checked }) => (
-      <>
-        <Field.Label>
-          {checked ? 'Operational alerts active' : 'Operational alerts paused'}
-        </Field.Label>
-        <Switch.Indicator />
-      </>
-    )}
-  </Switch>
-</Field>
+function RenderPropDemo() {
+  return (
+    <Field className="switch-demo-field-row">
+      <Switch defaultChecked>
+        {({ checked }) => (
+          <>
+            <Field.Label>
+              {checked ? 'Operational alerts active' : 'Operational alerts paused'}
+            </Field.Label>
+            <Switch.Indicator />
+          </>
+        )}
+      </Switch>
+    </Field>
+  );
+}
+
+render(<RenderPropDemo />);
 `;
 
 export const formDemo = String.raw`
@@ -324,6 +358,7 @@ import { Field, Switch } from '@takeoff-ui/react-spar';
 <LiveCode
   code={playgroundDemo}
   cssCode={switchDemoCss}
+  noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
@@ -339,6 +374,7 @@ shared IDs.
 <LiveCode
   code={fieldWithSwitchDemo}
   cssCode={switchDemoCss}
+  noInline
   previewMinHeight={460}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
@@ -360,6 +396,7 @@ shared IDs.
 <LiveCode
   code={sizeDemo}
   cssCode={switchDemoCss}
+  noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
@@ -370,6 +407,7 @@ shared IDs.
 <LiveCode
   code={variantDemo}
   cssCode={switchDemoCss}
+  noInline
   previewMinHeight={200}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
@@ -397,6 +435,7 @@ theming.
 <LiveCode
   code={renderPropDemo}
   cssCode={switchDemoCss}
+  noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}

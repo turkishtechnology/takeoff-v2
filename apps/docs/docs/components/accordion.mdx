@@ -58,95 +58,107 @@ export const accordionDemoCss = String.raw`
 `;
 
 export const playgroundDemo = String.raw`
-<Accordion className="accordion-demo" defaultValue="fare">
-  <Accordion.Item value="fare">
-    <Accordion.Header>
-      <Accordion.Trigger>
-        Fare conditions
-        <Accordion.Indicator />
-      </Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Review refund windows, change fees, and cabin rules before confirming the
-      itinerary.
-    </Accordion.Content>
-  </Accordion.Item>
+function PlaygroundDemo() {
+  return (
+    <Accordion className="accordion-demo" defaultValue="fare">
+      <Accordion.Item value="fare">
+        <Accordion.Header>
+          <Accordion.Trigger>
+            Fare conditions
+            <Accordion.Indicator />
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Review refund windows, change fees, and cabin rules before confirming the
+          itinerary.
+        </Accordion.Content>
+      </Accordion.Item>
 
-  <Accordion.Item value="baggage">
-    <Accordion.Header>
-      <Accordion.Trigger>
-        Baggage allowance
-        <Accordion.Indicator />
-      </Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Carry-on, checked baggage, and sports equipment allowances stay grouped in
-      one collapsible panel.
-    </Accordion.Content>
-  </Accordion.Item>
+      <Accordion.Item value="baggage">
+        <Accordion.Header>
+          <Accordion.Trigger>
+            Baggage allowance
+            <Accordion.Indicator />
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Carry-on, checked baggage, and sports equipment allowances stay grouped in
+          one collapsible panel.
+        </Accordion.Content>
+      </Accordion.Item>
 
-  <Accordion.Item value="check-in">
-    <Accordion.Header>
-      <Accordion.Trigger>
-        Online check-in
-        <Accordion.Indicator />
-      </Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Use the trigger text as the accessible heading, then place rich content in
-      the content part.
-    </Accordion.Content>
-  </Accordion.Item>
-</Accordion>
+      <Accordion.Item value="check-in">
+        <Accordion.Header>
+          <Accordion.Trigger>
+            Online check-in
+            <Accordion.Indicator />
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Use the trigger text as the accessible heading, then place rich content in
+          the content part.
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const multipleDemo = String.raw`
-<Accordion
-  multiple
-  className="accordion-demo"
-  defaultValue={['boarding', 'baggage']}
-  mode="compact"
-  type="divided"
->
-  <Accordion.Item value="boarding">
-    <Accordion.Header>
-      <Accordion.Trigger>
-        Boarding pass
-        <Accordion.Indicator />
-      </Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Show mobile pass availability, airport counter fallbacks, and printable
-      document rules together.
-    </Accordion.Content>
-  </Accordion.Item>
+function MultipleDemo() {
+  return (
+    <Accordion
+      multiple
+      className="accordion-demo"
+      defaultValue={['boarding', 'baggage']}
+      mode="compact"
+      type="divided"
+    >
+      <Accordion.Item value="boarding">
+        <Accordion.Header>
+          <Accordion.Trigger>
+            Boarding pass
+            <Accordion.Indicator />
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Show mobile pass availability, airport counter fallbacks, and printable
+          document rules together.
+        </Accordion.Content>
+      </Accordion.Item>
 
-  <Accordion.Item value="baggage">
-    <Accordion.Header>
-      <Accordion.Trigger>
-        Bag drop
-        <Accordion.Indicator />
-      </Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Multiple panels can remain open when the workflow asks users to compare
-      related instructions.
-    </Accordion.Content>
-  </Accordion.Item>
+      <Accordion.Item value="baggage">
+        <Accordion.Header>
+          <Accordion.Trigger>
+            Bag drop
+            <Accordion.Indicator />
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Multiple panels can remain open when the workflow asks users to compare
+          related instructions.
+        </Accordion.Content>
+      </Accordion.Item>
 
-  <Accordion.Item value="security">
-    <Accordion.Header>
-      <Accordion.Trigger>
-        Security notes
-        <Accordion.Indicator />
-      </Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Compact mode keeps dense operational guidance scannable without changing
-      the compound anatomy.
-    </Accordion.Content>
-  </Accordion.Item>
-</Accordion>
+      <Accordion.Item value="security">
+        <Accordion.Header>
+          <Accordion.Trigger>
+            Security notes
+            <Accordion.Indicator />
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Compact mode keeps dense operational guidance scannable without changing
+          the compound anatomy.
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion>
+  );
+}
+
+render(<MultipleDemo />);
 `;
 
 export const controlledDemo = String.raw`
@@ -196,157 +208,179 @@ render(<ControlledAccordionDemo />);
 `;
 
 export const customIndicatorDemo = String.raw`
-const PlusIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    aria-hidden="true"
-  >
-    <line x1="12" y1="5" x2="12" y2="19" />
-    <line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-);
+function CustomIndicatorDemo() {
+  const PlusIcon = () => (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
 
-const MinusIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    aria-hidden="true"
-  >
-    <line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-);
+  const MinusIcon = () => (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
 
-render(
-  <Accordion
-    className="accordion-demo accordion-demo-large"
-    defaultValue="service"
-    size="large"
-  >
-    <Accordion.Item value="service">
-      <Accordion.Header level={2}>
-        <Accordion.Trigger>
-          <Accordion.Indicator>
-            {({ isOpen }) => (isOpen ? <MinusIcon /> : <PlusIcon />)}
-          </Accordion.Indicator>
-          Service options
-        </Accordion.Trigger>
-      </Accordion.Header>
-      <Accordion.Content>
-        Accordion.Indicator is opt-in. Place it before or after the title to
-        control where the disclosure affordance appears; swap its content via
-        children or the ({"{"} isOpen {"}"}) render prop.
-      </Accordion.Content>
-    </Accordion.Item>
+  return (
+    <Accordion
+      className="accordion-demo accordion-demo-large"
+      defaultValue="service"
+      size="large"
+    >
+      <Accordion.Item value="service">
+        <Accordion.Header level={2}>
+          <Accordion.Trigger>
+            <Accordion.Indicator>
+              {({ isOpen }) => (isOpen ? <MinusIcon /> : <PlusIcon />)}
+            </Accordion.Indicator>
+            Service options
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Accordion.Indicator is opt-in. Place it before or after the title to
+          control where the disclosure affordance appears; swap its content via
+          children or the ({"{"} isOpen {"}"}) render prop.
+        </Accordion.Content>
+      </Accordion.Item>
 
-    <Accordion.Item value="support">
-      <Accordion.Header level={2}>
-        <Accordion.Trigger>
-          <Accordion.Indicator>
-            {({ isOpen }) => (isOpen ? <MinusIcon /> : <PlusIcon />)}
-          </Accordion.Indicator>
-          Support channels
-        </Accordion.Trigger>
-      </Accordion.Header>
-      <Accordion.Content>
-        Indicators receive the live isOpen state, so each item can flip its own
-        icon without reading the accordion context manually.
-      </Accordion.Content>
-    </Accordion.Item>
-  </Accordion>,
-);
+      <Accordion.Item value="support">
+        <Accordion.Header level={2}>
+          <Accordion.Trigger>
+            <Accordion.Indicator>
+              {({ isOpen }) => (isOpen ? <MinusIcon /> : <PlusIcon />)}
+            </Accordion.Indicator>
+            Support channels
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Indicators receive the live isOpen state, so each item can flip its own
+          icon without reading the accordion context manually.
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion>
+  );
+}
+
+render(<CustomIndicatorDemo />);
 `;
 
 export const disabledDemo = String.raw`
-<Accordion className="accordion-demo" defaultValue="open">
-  <Accordion.Item value="open">
-    <Accordion.Header>
-      <Accordion.Trigger>
-        Refundable fares
-        <Accordion.Indicator />
-      </Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Active items respond to click and keyboard activation as usual.
-    </Accordion.Content>
-  </Accordion.Item>
+function DisabledDemo() {
+  return (
+    <Accordion className="accordion-demo" defaultValue="open">
+      <Accordion.Item value="open">
+        <Accordion.Header>
+          <Accordion.Trigger>
+            Refundable fares
+            <Accordion.Indicator />
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Active items respond to click and keyboard activation as usual.
+        </Accordion.Content>
+      </Accordion.Item>
 
-  <Accordion.Item value="locked" disabled>
-    <Accordion.Header>
-      <Accordion.Trigger>
-        Loyalty upgrades (coming soon)
-        <Accordion.Indicator />
-      </Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Disabled items render a disabled trigger and ignore both pointer and
-      keyboard activation.
-    </Accordion.Content>
-  </Accordion.Item>
-</Accordion>
+      <Accordion.Item value="locked" disabled>
+        <Accordion.Header>
+          <Accordion.Trigger>
+            Loyalty upgrades (coming soon)
+            <Accordion.Indicator />
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Disabled items render a disabled trigger and ignore both pointer and
+          keyboard activation.
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion>
+  );
+}
+
+render(<DisabledDemo />);
 `;
 
 export const withoutIndicatorDemo = String.raw`
-<Accordion className="accordion-demo" defaultValue="hours">
-  <Accordion.Item value="hours">
-    <Accordion.Header>
-      <Accordion.Trigger>Customer support hours</Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Skip Accordion.Indicator entirely and the trigger ships without a visual
-      affordance — useful when the surrounding layout already telegraphs
-      disclosure.
-    </Accordion.Content>
-  </Accordion.Item>
-  <Accordion.Item value="contact">
-    <Accordion.Header>
-      <Accordion.Trigger>Contact channels</Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Trigger text remains the accessible label and clickable target; the
-      panel still opens via click or Enter/Space.
-    </Accordion.Content>
-  </Accordion.Item>
-</Accordion>
+function WithoutIndicatorDemo() {
+  return (
+    <Accordion className="accordion-demo" defaultValue="hours">
+      <Accordion.Item value="hours">
+        <Accordion.Header>
+          <Accordion.Trigger>Customer support hours</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Skip Accordion.Indicator entirely and the trigger ships without a visual
+          affordance — useful when the surrounding layout already telegraphs
+          disclosure.
+        </Accordion.Content>
+      </Accordion.Item>
+      <Accordion.Item value="contact">
+        <Accordion.Header>
+          <Accordion.Trigger>Contact channels</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Trigger text remains the accessible label and clickable target; the
+          panel still opens via click or Enter/Space.
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion>
+  );
+}
+
+render(<WithoutIndicatorDemo />);
 `;
 
 export const forceMountDemo = String.raw`
-<Accordion className="accordion-demo">
-  <Accordion.Item value="search">
-    <Accordion.Header>
-      <Accordion.Trigger>
-        Search-friendly content
-        <Accordion.Indicator />
-      </Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content forceMount>
-      Use forceMount when in-page search must reach the panel body even when
-      the section is collapsed.
-    </Accordion.Content>
-  </Accordion.Item>
-  <Accordion.Item value="default">
-    <Accordion.Header>
-      <Accordion.Trigger>
-        Default mounting
-        <Accordion.Indicator />
-      </Accordion.Trigger>
-    </Accordion.Header>
-    <Accordion.Content>
-      Without forceMount the panel mounts only while open, keeping the DOM
-      lean.
-    </Accordion.Content>
-  </Accordion.Item>
-</Accordion>
+function ForceMountDemo() {
+  return (
+    <Accordion className="accordion-demo">
+      <Accordion.Item value="search">
+        <Accordion.Header>
+          <Accordion.Trigger>
+            Search-friendly content
+            <Accordion.Indicator />
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content forceMount>
+          Use forceMount when in-page search must reach the panel body even when
+          the section is collapsed.
+        </Accordion.Content>
+      </Accordion.Item>
+      <Accordion.Item value="default">
+        <Accordion.Header>
+          <Accordion.Trigger>
+            Default mounting
+            <Accordion.Indicator />
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          Without forceMount the panel mounts only while open, keeping the DOM
+          lean.
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion>
+  );
+}
+
+render(<ForceMountDemo />);
 `;
 
 <!-- prettier-ignore-end -->
@@ -381,6 +415,7 @@ import { Accordion } from '@takeoff-ui/react-spar';
 <LiveCode
   code={playgroundDemo}
   cssCode={accordionDemoCss}
+  noInline
   previewMinHeight={360}
   previewWrapper={ReactSparDemoRoot}
   scope={accordionScope}
@@ -391,6 +426,7 @@ import { Accordion } from '@takeoff-ui/react-spar';
 <LiveCode
   code={multipleDemo}
   cssCode={accordionDemoCss}
+  noInline
   previewMinHeight={360}
   previewWrapper={ReactSparDemoRoot}
   scope={accordionScope}
@@ -423,6 +459,7 @@ import { Accordion } from '@takeoff-ui/react-spar';
 <LiveCode
   code={disabledDemo}
   cssCode={accordionDemoCss}
+  noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
   scope={accordionScope}
@@ -433,6 +470,7 @@ import { Accordion } from '@takeoff-ui/react-spar';
 <LiveCode
   code={withoutIndicatorDemo}
   cssCode={accordionDemoCss}
+  noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
   scope={accordionScope}
@@ -443,6 +481,7 @@ import { Accordion } from '@takeoff-ui/react-spar';
 <LiveCode
   code={forceMountDemo}
   cssCode={accordionDemoCss}
+  noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
   scope={accordionScope}
