@@ -49,15 +49,18 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          # Node 22 ships with npm 10.x; we upgrade to npm 11.5.1+ below for
-          # OIDC trusted publishing support. The cache/registry-url settings
-          # remain the same.
-          node-version: 22
+          # Node 24 ships with npm 11.x which supports OIDC trusted publishing
+          # natively. We still run an explicit upgrade as a safety floor in case
+          # the bundled npm minor doesn't meet 11.5.1.
+          node-version: 24
           cache: pnpm
           registry-url: "https://registry.npmjs.org"
 
-      - name: Upgrade npm to a version with OIDC trusted publishing support
-        run: npm install -g npm@latest
+      - name: Ensure npm CLI floor for OIDC trusted publishing
+        # --force bypasses the "Cannot find module 'promise-retry'" bug that
+        # can surface when the bundled npm tries to update itself from a
+        # half-resolved global tree.
+        run: npm install -g npm@latest --force
 
       - run: pnpm install --frozen-lockfile
 
