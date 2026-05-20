@@ -11,83 +11,80 @@ slug: /components/checkbox
 import LiveCode from '@site/src/components/LiveCode';
 import {
   Checkbox,
+  Field,
   ReactSparDemoRoot,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const checkboxScope = { Checkbox };
+export const checkboxScope = { Checkbox, Field };
 
 {/* prettier-ignore-start */}
 
-export const checkboxDemoCss = String.raw`
-.checkbox-demo-stack {
-  display: grid;
-  width: min(100%, 520px);
-  gap: 14px;
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  return (
+    <Field>
+      <Field.Label>Notifications</Field.Label>
+      <Checkbox defaultChecked>
+        <Checkbox.Indicator />
+      </Checkbox>
+      <Field.Description>
+        We will only email you when a saved route drops in price.
+      </Field.Description>
+    </Field>
+  );
 }
 
-.checkbox-demo-inline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 18px;
-}
-
-.checkbox-demo-status {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-
-.checkbox-demo-form {
-  display: grid;
-  width: min(100%, 520px);
-  gap: 14px;
-}
-
-.checkbox-demo-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-}
-
-.checkbox-demo-button {
-  border: 0;
-  border-radius: 8px;
-  background: var(--primary-base);
-  color: var(--static-white);
-  cursor: pointer;
-  font: inherit;
-  font-weight: 600;
-  padding: 10px 16px;
-}
+render(<PlaygroundDemo />);
 `;
 
-export const playgroundDemo = String.raw`
-<div className="checkbox-demo-stack">
-  <Checkbox defaultChecked>
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
-    <Checkbox.Label>Email me booking updates</Checkbox.Label>
-  </Checkbox>
-  <Checkbox>
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
-    <Checkbox.Label>Subscribe to fare alerts</Checkbox.Label>
-    <Checkbox.Description>
-      We will only email you when a saved route drops in price.
-    </Checkbox.Description>
-  </Checkbox>
-</div>
+export const fieldWithCheckboxDemo = String.raw`
+function FieldWithCheckboxDemo() {
+  return (
+    <div className="grid max-w-130 gap-3.5">
+      <Field required>
+        <Field.Label>Email me booking updates</Field.Label>
+        <Checkbox defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+
+      <Field>
+        <Field.Label>Subscribe to fare alerts</Field.Label>
+        <Checkbox>
+          <Checkbox.Indicator />
+        </Checkbox>
+        <Field.Description>
+          We will only email you when a saved route drops in price.
+        </Field.Description>
+      </Field>
+
+      <Field invalid>
+        <Field.Label>I accept the booking terms</Field.Label>
+        <Checkbox>
+          <Checkbox.Indicator />
+        </Checkbox>
+        <Field.ErrorMessage>You must accept the terms to continue.</Field.ErrorMessage>
+      </Field>
+
+      <Field disabled>
+        <Field.Label>Disabled option</Field.Label>
+        <Checkbox>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+
+      <Field readOnly>
+        <Field.Label>Read-only selection</Field.Label>
+        <Checkbox defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+    </div>
+  );
+}
+
+render(<FieldWithCheckboxDemo />);
 `;
 
 export const controlledDemo = String.raw`
@@ -95,16 +92,16 @@ function ControlledCheckboxDemo() {
   const [accepted, setAccepted] = useState(false);
 
   return (
-    <div className="checkbox-demo-stack">
-      <div className="checkbox-demo-status">
+    <div className="grid max-w-130 gap-3.5">
+      <div className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">
         Terms {accepted ? 'accepted' : 'not accepted'}
       </div>
-      <Checkbox checked={accepted} onChange={setAccepted}>
-        <Checkbox.Indicator>
-          <Checkbox.Icon />
-        </Checkbox.Indicator>
-        <Checkbox.Label>I accept the booking terms</Checkbox.Label>
-      </Checkbox>
+      <Field>
+        <Field.Label>I accept the booking terms</Field.Label>
+        <Checkbox checked={accepted} onChange={setAccepted}>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
     </div>
   );
 }
@@ -130,45 +127,45 @@ function IndeterminateCheckboxDemo() {
   };
 
   return (
-    <div className="checkbox-demo-stack">
-      <Checkbox
-        checked={allChecked}
-        indeterminate={indeterminate}
-        onChange={toggleAll}
-      >
-        <Checkbox.Indicator>
-          <Checkbox.Icon />
-        </Checkbox.Indicator>
-        <Checkbox.Label>All extras</Checkbox.Label>
-      </Checkbox>
-      <div className="checkbox-demo-stack" style={{ paddingLeft: 24 }}>
+    <div className="grid max-w-130 gap-3.5">
+      <Field>
+        <Field.Label>All extras</Field.Label>
         <Checkbox
-          checked={items.seat}
-          onChange={(v) => setItems({ ...items, seat: v })}
+          checked={allChecked}
+          indeterminate={indeterminate}
+          onChange={toggleAll}
         >
-          <Checkbox.Indicator>
-            <Checkbox.Icon />
-          </Checkbox.Indicator>
-          <Checkbox.Label>Extra legroom seat</Checkbox.Label>
+          <Checkbox.Indicator />
         </Checkbox>
-        <Checkbox
-          checked={items.meal}
-          onChange={(v) => setItems({ ...items, meal: v })}
-        >
-          <Checkbox.Indicator>
-            <Checkbox.Icon />
-          </Checkbox.Indicator>
-          <Checkbox.Label>Special meal</Checkbox.Label>
-        </Checkbox>
-        <Checkbox
-          checked={items.baggage}
-          onChange={(v) => setItems({ ...items, baggage: v })}
-        >
-          <Checkbox.Indicator>
-            <Checkbox.Icon />
-          </Checkbox.Indicator>
-          <Checkbox.Label>Extra baggage</Checkbox.Label>
-        </Checkbox>
+      </Field>
+      <div className="grid max-w-130 gap-3.5" style={{ paddingLeft: 24 }}>
+        <Field>
+          <Field.Label>Extra legroom seat</Field.Label>
+          <Checkbox
+            checked={items.seat}
+            onChange={(v) => setItems({ ...items, seat: v })}
+          >
+            <Checkbox.Indicator />
+          </Checkbox>
+        </Field>
+        <Field>
+          <Field.Label>Special meal</Field.Label>
+          <Checkbox
+            checked={items.meal}
+            onChange={(v) => setItems({ ...items, meal: v })}
+          >
+            <Checkbox.Indicator />
+          </Checkbox>
+        </Field>
+        <Field>
+          <Field.Label>Extra baggage</Field.Label>
+          <Checkbox
+            checked={items.baggage}
+            onChange={(v) => setItems({ ...items, baggage: v })}
+          >
+            <Checkbox.Indicator />
+          </Checkbox>
+        </Field>
       </div>
     </div>
   );
@@ -178,117 +175,139 @@ render(<IndeterminateCheckboxDemo />);
 `;
 
 export const sizeDemo = String.raw`
-<div className="checkbox-demo-inline">
-  <Checkbox size="small" defaultChecked>
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
-    <Checkbox.Label>Small</Checkbox.Label>
-  </Checkbox>
-  <Checkbox size="base" defaultChecked>
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
-    <Checkbox.Label>Base</Checkbox.Label>
-  </Checkbox>
-</div>
+function SizeDemo() {
+  return (
+    <div className="flex flex-wrap gap-4.5">
+      <Field>
+        <Field.Label>Small</Field.Label>
+        <Checkbox size="small" defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+      <Field>
+        <Field.Label>Base</Field.Label>
+        <Checkbox size="base" defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+    </div>
+  );
+}
+
+render(<SizeDemo />);
 `;
 
 export const cardTypeDemo = String.raw`
-<div className="checkbox-demo-stack">
-  <Checkbox type="card" defaultChecked>
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
-    <Checkbox.Label>Mobile boarding pass</Checkbox.Label>
-    <Checkbox.Description>
-      Skip the printed pass and board with your phone.
-    </Checkbox.Description>
-  </Checkbox>
-  <Checkbox type="card">
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
-    <Checkbox.Label>Priority boarding</Checkbox.Label>
-    <Checkbox.Description>
-      Board before general groups with priority access.
-    </Checkbox.Description>
-  </Checkbox>
-</div>
+function CardTypeDemo() {
+  return (
+    <div className="grid max-w-130 gap-3.5">
+      <Field>
+        <Field.Label>Mobile boarding pass</Field.Label>
+        <Checkbox type="card" defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+        <Field.Description>
+          Skip the printed pass and board with your phone.
+        </Field.Description>
+      </Field>
+      <Field>
+        <Field.Label>Priority boarding</Field.Label>
+        <Checkbox type="card">
+          <Checkbox.Indicator />
+        </Checkbox>
+        <Field.Description>
+          Board before general groups with priority access.
+        </Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<CardTypeDemo />);
 `;
 
 export const customIconDemo = String.raw`
-const StarIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-  >
-    <path d="M12 2 15 9l7 .5-5.5 4.5L18 22l-6-4-6 4 1.5-8L2 9.5 9 9z" />
-  </svg>
-);
+function CustomIconDemo() {
+  const StarIcon = () => (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path d="M12 2 15 9l7 .5-5.5 4.5L18 22l-6-4-6 4 1.5-8L2 9.5 9 9z" />
+    </svg>
+  );
 
-const DashIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3"
-    strokeLinecap="round"
-  >
-    <path d="M5 12h14" />
-  </svg>
-);
+  const DashIcon = () => (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    >
+      <path d="M5 12h14" />
+    </svg>
+  );
 
-render(
-  <div className="checkbox-demo-stack">
-    <Checkbox defaultChecked>
-      <Checkbox.Indicator>
-        <Checkbox.Icon>
-          {({ checked, indeterminate }) =>
-            indeterminate ? <DashIcon /> : checked ? <StarIcon /> : null
-          }
-        </Checkbox.Icon>
-      </Checkbox.Indicator>
-      <Checkbox.Label>Favorite this route</Checkbox.Label>
-    </Checkbox>
-  </div>,
-);
+  return (
+    <div className="grid max-w-130 gap-3.5">
+      <Field>
+        <Field.Label>Favorite this route</Field.Label>
+        <Checkbox defaultChecked>
+          <Checkbox.Indicator>
+            {({ checked, indeterminate }) =>
+              indeterminate ? <DashIcon /> : checked ? <StarIcon /> : null
+            }
+          </Checkbox.Indicator>
+        </Checkbox>
+      </Field>
+    </div>
+  );
+}
+
+render(<CustomIconDemo />);
 `;
 
 export const stateDemo = String.raw`
-<div className="checkbox-demo-stack">
-  <Checkbox disabled>
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
-    <Checkbox.Label>Disabled option</Checkbox.Label>
-  </Checkbox>
-  <Checkbox disabled defaultChecked>
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
-    <Checkbox.Label>Disabled and selected</Checkbox.Label>
-  </Checkbox>
-  <Checkbox readOnly defaultChecked>
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
-    <Checkbox.Label>Read-only selection</Checkbox.Label>
-  </Checkbox>
-  <Checkbox invalid required>
-    <Checkbox.Indicator>
-      <Checkbox.Icon />
-    </Checkbox.Indicator>
-    <Checkbox.Label>I accept the booking terms</Checkbox.Label>
-    <Checkbox.Description>
-      You must accept the terms to continue.
-    </Checkbox.Description>
-  </Checkbox>
-</div>
+function StateDemo() {
+  return (
+    <div className="grid max-w-130 gap-3.5">
+      <Field disabled>
+        <Field.Label>Disabled option</Field.Label>
+        <Checkbox>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+      <Field disabled>
+        <Field.Label>Disabled and selected</Field.Label>
+        <Checkbox defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+      <Field readOnly>
+        <Field.Label>Read-only selection</Field.Label>
+        <Checkbox defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+      <Field invalid required>
+        <Field.Label>I accept the booking terms</Field.Label>
+        <Checkbox>
+          <Checkbox.Indicator />
+        </Checkbox>
+        <Field.ErrorMessage>
+          You must accept the terms to continue.
+        </Field.ErrorMessage>
+      </Field>
+    </div>
+  );
+}
+
+render(<StateDemo />);
 `;
 
 export const formDemo = String.raw`
@@ -297,7 +316,7 @@ function CheckboxFormDemo() {
 
   return (
     <form
-      className="checkbox-demo-form"
+      className="grid max-w-130 gap-3.5"
       onSubmit={(event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -305,29 +324,29 @@ function CheckboxFormDemo() {
         setSaved(picked.length ? picked.join(', ') : 'No extras');
       }}
     >
-      <Checkbox name="extras" value="seat" defaultChecked>
-        <Checkbox.Indicator>
-          <Checkbox.Icon />
-        </Checkbox.Indicator>
-        <Checkbox.Label>Extra legroom seat</Checkbox.Label>
-      </Checkbox>
-      <Checkbox name="extras" value="meal">
-        <Checkbox.Indicator>
-          <Checkbox.Icon />
-        </Checkbox.Indicator>
-        <Checkbox.Label>Special meal</Checkbox.Label>
-      </Checkbox>
-      <Checkbox name="extras" value="baggage">
-        <Checkbox.Indicator>
-          <Checkbox.Icon />
-        </Checkbox.Indicator>
-        <Checkbox.Label>Extra baggage</Checkbox.Label>
-      </Checkbox>
-      <div className="checkbox-demo-actions">
-        <button className="checkbox-demo-button" type="submit">
+      <Field>
+        <Field.Label>Extra legroom seat</Field.Label>
+        <Checkbox name="extras" value="seat" defaultChecked>
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+      <Field>
+        <Field.Label>Special meal</Field.Label>
+        <Checkbox name="extras" value="meal">
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+      <Field>
+        <Field.Label>Extra baggage</Field.Label>
+        <Checkbox name="extras" value="baggage">
+          <Checkbox.Indicator />
+        </Checkbox>
+      </Field>
+      <div className="flex flex-wrap items-center gap-3">
+     <button className="items-center min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer" type="submit">
           Save
         </button>
-        <span className="checkbox-demo-status">{saved}</span>
+        <span className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">{saved}</span>
       </div>
     </form>
   );
@@ -340,33 +359,50 @@ render(<CheckboxFormDemo />);
 
 # Checkbox
 
-`Checkbox` lets users select one or more options or toggle a single setting on
-or off, with first-class support for an indeterminate "mixed" state. Takeoff
-visual props stay on the wrapper while Spar owns checked state, forms, focus,
-and keyboard behavior.
+`Checkbox` is a compound, accessible toggle control. The root owns visual state
+(`size`, `type`, plus inherited `invalid` / `disabled` / `required` /
+`readOnly`), `Checkbox.Indicator` is the bordered box that hosts the icon. Wrap
+`Checkbox` in a `Field` to attach a label, description, or error message — the
+field-level state cascades into the checkbox automatically.
 
 ## Usage
 
 ```tsx
-import { Checkbox } from '@takeoff-ui/react-spar';
+import { Checkbox, Field } from '@takeoff-ui/react-spar';
 ```
 
 ```tsx
-<Checkbox>
-  <Checkbox.Indicator>
-    <Checkbox.Icon />
-  </Checkbox.Indicator>
-  <Checkbox.Label />
-  <Checkbox.Description />
-</Checkbox>
+<Field>
+  <Field.Label />
+  <Checkbox>
+    <Checkbox.Indicator />
+  </Checkbox>
+  <Field.Description />
+  <Field.ErrorMessage />
+</Field>
 ```
 
 ## Playground
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={checkboxDemoCss}
-  previewMinHeight={220}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={checkboxScope}
+/>
+
+## Using with `Field`
+
+`Field` is the generic ARIA wrapper. Setting `invalid`, `disabled`, `required`,
+or `readOnly` on `Field` cascades into the nested `Checkbox`, and `Field.Label`,
+`Field.Description`, and `Field.ErrorMessage` are wired to the field control
+through shared IDs.
+
+<LiveCode
+  code={fieldWithCheckboxDemo}
+  noInline
+  previewMinHeight={460}
   previewWrapper={ReactSparDemoRoot}
   scope={checkboxScope}
 />
@@ -375,8 +411,6 @@ import { Checkbox } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={controlledDemo}
-  cssCode={checkboxDemoCss}
-  editable={false}
   noInline
   previewMinHeight={200}
   previewWrapper={ReactSparDemoRoot}
@@ -393,8 +427,6 @@ after the first change.
 
 <LiveCode
   code={indeterminateDemo}
-  cssCode={checkboxDemoCss}
-  editable={false}
   noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
@@ -405,8 +437,7 @@ after the first change.
 
 <LiveCode
   code={sizeDemo}
-  cssCode={checkboxDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={checkboxScope}
@@ -418,8 +449,7 @@ Set `type="card"` to switch to the bordered card variant for option-row layouts.
 
 <LiveCode
   code={cardTypeDemo}
-  cssCode={checkboxDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
   scope={checkboxScope}
@@ -427,14 +457,13 @@ Set `type="card"` to switch to the bordered card variant for option-row layouts.
 
 ## Custom Icon
 
-`Checkbox.Icon` accepts function children that receive the current `checked` and
-`indeterminate` state, so you can render different glyphs per state without
-mounting two icons.
+`Checkbox.Indicator` accepts function children that receive the current
+`checked` and `indeterminate` state, so you can render different glyphs per
+state without mounting two icons. Passing a `ReactNode` instead replaces the
+default `icon` slot entirely.
 
 <LiveCode
   code={customIconDemo}
-  cssCode={checkboxDemoCss}
-  editable={false}
   noInline
   previewMinHeight={160}
   previewWrapper={ReactSparDemoRoot}
@@ -445,8 +474,7 @@ mounting two icons.
 
 <LiveCode
   code={stateDemo}
-  cssCode={checkboxDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
   scope={checkboxScope}
@@ -460,26 +488,22 @@ via `FormData.getAll`.
 
 <LiveCode
   code={formDemo}
-  cssCode={checkboxDemoCss}
-  editable={false}
   noInline
   previewMinHeight={300}
   previewWrapper={ReactSparDemoRoot}
   scope={checkboxScope}
 />
 
-## Accessibility & Keyboard
+## Accessibility
 
+- `Field.Label`, `Field.Description`, and `Field.ErrorMessage` are wired to the
+  control via stable IDs derived from the `Field` root (`aria-labelledby`,
+  `aria-describedby`, `aria-invalid`).
 - `Checkbox` renders a focusable control with `role="checkbox"` and reflects its
   value through `aria-checked` (including `"mixed"` for the indeterminate
   state).
-- `Checkbox.Label` provides the accessible name. Use `aria-label` or
-  `aria-labelledby` on the root when the checkbox has no visible label.
-- `Checkbox.Description` is descriptive supplementary text. Wire it to the
-  control with `aria-describedby` on the root when you need the description
-  announced.
-- Setting `required` on the root renders a visual asterisk inside
-  `Checkbox.Label` and exposes `aria-required`.
+- The asterisk inside `Field.Label` is decorative — `required` is also surfaced
+  to assistive tech via the input's native `required` / `aria-required`.
 - Disabled checkboxes are removed from the tab order. Read-only checkboxes
   remain focusable and do not change value.
 
@@ -500,30 +524,30 @@ for primitive behavior.
 
 #### Props {#checkbox-props}
 
-| Name                               | Type                                                                                      | Default   | Description                                                                                                         |
-| ---------------------------------- | ----------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />      | <code>React.ReactNode &#124; ((state: CheckboxRenderProps) =&gt; React.ReactNode)</code>  | -         | Compound children for checkbox anatomy, or a render function exposing Spar tri-state.                               |
-| <ApiBadge label="indeterminate" /> | <code>boolean</code>                                                                      | false     | Indeterminate (mixed) visual + ARIA state. Overrides `checked` / `defaultChecked` and emits `aria-checked="mixed"`. |
-| <ApiBadge label="invalid" />       | <code>boolean</code>                                                                      | false     | Marks the checkbox as visually invalid.                                                                             |
-| <ApiBadge label="size" />          | <code>CheckboxSize</code>                                                                 | 'base'    | Size scale.                                                                                                         |
-| <ApiBadge label="type" />          | <code>CheckboxType</code>                                                                 | 'default' | Visual appearance. `card` switches to the bordered card variant.                                                    |
-| <ApiBadge label="classNames" />    | <code>Partial&lt;Record&lt;CheckboxSlot, string&gt;&gt;</code>                            | -         | Per-slot class name overrides.                                                                                      |
-| <ApiBadge label="slotProps" />     | <code>Partial&lt;Record&lt;CheckboxSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML attribute overrides.                                                                                  |
-| <ApiBadge label="className" />     | <code>string</code>                                                                       | -         | Appends custom classes to the root slot of this part.                                                               |
+| Name                               | Type                                                                                                                                    | Default   | Description                                                                                                         |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />      | <code>React.ReactNode &#124; ((state: <a href="#checkbox-td-checkboxrenderprops">CheckboxRenderProps</a>) =&gt; React.ReactNode)</code> | -         | Compound children for checkbox anatomy, or a render function exposing Spar tri-state.                               |
+| <ApiBadge label="indeterminate" /> | <code>boolean</code>                                                                                                                    | false     | Indeterminate (mixed) visual + ARIA state. Overrides `checked` / `defaultChecked` and emits `aria-checked="mixed"`. |
+| <ApiBadge label="invalid" />       | <code>boolean</code>                                                                                                                    | false     | Marks the checkbox as visually invalid.                                                                             |
+| <ApiBadge label="size" />          | <code><a href="#checkbox-td-checkboxsize">CheckboxSize</a></code>                                                                       | 'base'    | Size scale.                                                                                                         |
+| <ApiBadge label="type" />          | <code><a href="#checkbox-td-checkboxtype">CheckboxType</a></code>                                                                       | 'default' | Visual appearance. `card` switches to the bordered card variant.                                                    |
+| <ApiBadge label="classNames" />    | <code>Partial&lt;Record&lt;<a href="#checkbox-td-checkboxslot">CheckboxSlot</a>, string&gt;&gt;</code>                                  | -         | Per-slot class name overrides.                                                                                      |
+| <ApiBadge label="slotProps" />     | <code>Partial&lt;Record&lt;<a href="#checkbox-td-checkboxslot">CheckboxSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>       | -         | Per-slot HTML attribute overrides.                                                                                  |
+| <ApiBadge label="className" />     | <code>string</code>                                                                                                                     | -         | Appends custom classes to the root slot of this part.                                                               |
 
 #### Data attributes {#checkbox-data-attributes}
 
-| Attribute            | Applied when        | Purpose                                                                     |
-| -------------------- | ------------------- | --------------------------------------------------------------------------- |
-| `data-slot="root"`   | Always              | Stable selector for the root slot.                                          |
-| `data-size`          | Always              | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| `data-type`          | Always              | Reflects the resolved `type` prop so theme recipes can scope type variants. |
-| `data-invalid`       | `invalid` is true.  | Marks invalid visual state for theme recipes.                               |
-| `data-checked`       | When checked.       | Spar checked-state hook.                                                    |
-| `data-indeterminate` | When indeterminate. | Spar indeterminate-state hook.                                              |
-| `data-disabled`      | `disabled` is true. | Spar disabled-state hook.                                                   |
-| `data-readonly`      | `readOnly` is true. | Spar read-only-state hook.                                                  |
-| `data-required`      | `required` is true. | Spar required-state hook.                                                   |
+| Attribute                                       | Applied when        | Purpose                                                                     |
+| ----------------------------------------------- | ------------------- | --------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always              | Stable selector for the root slot.                                          |
+| <ApiBadge label="data-size" />                  | Always              | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| <ApiBadge label="data-type" />                  | Always              | Reflects the resolved `type` prop so theme recipes can scope type variants. |
+| <ApiBadge label="data-invalid" />               | `invalid` is true.  | Marks invalid visual state for theme recipes.                               |
+| <ApiBadge label="data-checked" />               | When checked.       | Spar checked-state hook.                                                    |
+| <ApiBadge label="data-indeterminate" />         | When indeterminate. | Spar indeterminate-state hook.                                              |
+| <ApiBadge label="data-disabled" />              | `disabled` is true. | Spar disabled-state hook.                                                   |
+| <ApiBadge label="data-readonly" />              | `readOnly` is true. | Spar read-only-state hook.                                                  |
+| <ApiBadge label="data-required" />              | `required` is true. | Spar required-state hook.                                                   |
 
 ### Checkbox.Indicator {#checkbox-indicator}
 
@@ -533,44 +557,19 @@ for primitive behavior.
 
 #### Data attributes {#checkbox-indicator-data-attributes}
 
-| Attribute               | Applied when | Purpose                                 |
-| ----------------------- | ------------ | --------------------------------------- |
-| `data-slot="indicator"` | Always       | Stable selector for the indicator slot. |
+| Attribute                                            | Applied when | Purpose                                 |
+| ---------------------------------------------------- | ------------ | --------------------------------------- |
+| <ApiBadge label="data-slot=&quot;indicator&quot;" /> | Always       | Stable selector for the indicator slot. |
+| <ApiBadge label="data-slot=&quot;icon&quot;" />      | Always       | Stable selector for the icon slot.      |
 
-### Checkbox.Icon {#checkbox-icon}
+### Type Definitions {#checkbox-type-definitions}
 
-See
-[Spar Checkbox docs](https://spar.app.turkishtechlab.com/docs/Components/Checkbox)
-for primitive behavior.
-
-#### Data attributes {#checkbox-icon-data-attributes}
-
-| Attribute          | Applied when | Purpose                            |
-| ------------------ | ------------ | ---------------------------------- |
-| `data-slot="icon"` | Always       | Stable selector for the icon slot. |
-
-### Checkbox.Label {#checkbox-label}
-
-See
-[Spar Checkbox docs](https://spar.app.turkishtechlab.com/docs/Components/Checkbox)
-for primitive behavior.
-
-#### Data attributes {#checkbox-label-data-attributes}
-
-| Attribute           | Applied when | Purpose                             |
-| ------------------- | ------------ | ----------------------------------- |
-| `data-slot="label"` | Always       | Stable selector for the label slot. |
-
-### Checkbox.Description {#checkbox-description}
-
-See
-[Spar Checkbox docs](https://spar.app.turkishtechlab.com/docs/Components/Checkbox)
-for primitive behavior.
-
-#### Data attributes {#checkbox-description-data-attributes}
-
-| Attribute                 | Applied when | Purpose                                   |
-| ------------------------- | ------------ | ----------------------------------------- |
-| `data-slot="description"` | Always       | Stable selector for the description slot. |
+| Name                                                                                                         | Definition                                                                                                                                                                                                                              |
+| ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="checkbox-td-checkboxrenderprops"><ApiBadge label="CheckboxRenderProps" /></span>                   | <code>&#123; checked: CheckedState; setChecked: (checked: CheckedState) =&gt; void; disabled: boolean; readOnly: boolean; required: boolean; invalid: boolean; isFocused: boolean; isHovered: boolean; isPressed: boolean &#125;</code> |
+| <span id="checkbox-td-checkboxsize"><ApiBadge label="CheckboxSize" /></span>                                 | <code>'small' &#124; 'base'</code>                                                                                                                                                                                                      |
+| <span id="checkbox-td-checkboxtype"><ApiBadge label="CheckboxType" /></span>                                 | <code>'default' &#124; 'card'</code>                                                                                                                                                                                                    |
+| <span id="checkbox-td-checkboxslot"><ApiBadge label="CheckboxSlot" /></span>                                 | <code>'root' &#124; 'indicator' &#124; 'icon'</code>                                                                                                                                                                                    |
+| <span id="checkbox-td-checkboxindicatorrenderprops"><ApiBadge label="CheckboxIndicatorRenderProps" /></span> | <code>&#123; checked: boolean; indeterminate: boolean &#125;</code>                                                                                                                                                                     |
 
 {/* api-tables:end */}

@@ -6,7 +6,7 @@ import { useComponentTheme } from '../../provider';
 
 import { SelectBase } from './base';
 import { SelectProvider } from './context';
-import { DEFAULT_SIZE } from './defaults';
+import { DEFAULT_CONTENT_WIDTH, DEFAULT_SIZE } from './defaults';
 import type { SelectProps } from './types';
 
 export const Select = <T extends ElementType = 'div'>(props: SelectProps<T>) => {
@@ -16,16 +16,16 @@ export const Select = <T extends ElementType = 'div'>(props: SelectProps<T>) => 
   // it. `data-size` and `data-invalid` are takeoff-v2's own visual vocabulary,
   // so they live here and cascade to the Trigger via context.
   const { rootAttrs, rest } = composeRootAttrs(SelectBase, props as SelectProps<'div'>, theme, {
-    stateAttrs: ({ size = DEFAULT_SIZE, isInvalid }) => ({
+    stateAttrs: ({ size = DEFAULT_SIZE, invalid }) => ({
       'data-size': size,
-      'data-invalid': isInvalid ? '' : undefined,
+      'data-invalid': invalid ? '' : undefined,
     }),
   });
 
-  const { size = DEFAULT_SIZE, isInvalid = false, children, ref, ...sparProps } = rest;
+  const { size = DEFAULT_SIZE, invalid = false, contentWidth = DEFAULT_CONTENT_WIDTH, children, ref, ...sparProps } = rest;
 
   return (
-    <SelectProvider value={{ size, isInvalid }}>
+    <SelectProvider value={{ size, invalid, contentWidth }}>
       <SparSelect {...(sparProps as unknown as SparSelectProps)} ref={ref} {...rootAttrs}>
         {children}
       </SparSelect>

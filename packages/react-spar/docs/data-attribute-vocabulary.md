@@ -12,12 +12,12 @@ Every `data-*` attribute this package emits falls into exactly one category. The
 category determines the value convention (presence vs string), where it belongs
 in the DOM (root vs slot owner), and how CSS should consume it.
 
-| Category     | Value shape               | Examples                          |
-| ------------ | ------------------------- | --------------------------------- |
-| **Anatomy**  | kebab-case string         | `data-slot`                       |
-| **State**    | presence or finite string | `data-disabled`, `data-state`     |
-| **Variant**  | string from a closed set  | `data-variant`, `data-size`       |
-| **Semantic** | presence (layout/content) | `data-full-width`, `data-rounded` |
+| Category     | Value shape               | Examples                         |
+| ------------ | ------------------------- | -------------------------------- |
+| **Anatomy**  | kebab-case string         | `data-slot`                      |
+| **State**    | presence or finite string | `data-disabled`, `data-state`    |
+| **Variant**  | string from a closed set  | `data-variant`, `data-size`      |
+| **Semantic** | presence (layout/content) | `data-rounded`, `data-icon-only` |
 
 A new `data-*` hook that does not fit a category is a design smell — surface it
 in the component contract before shipping.
@@ -73,14 +73,14 @@ table needs updating.
 
 ### State
 
-| Attribute             | Value        | Scope                       | Meaning                               |
-| --------------------- | ------------ | --------------------------- | ------------------------------------- |
-| `data-disabled`       | presence     | Root                        | Component is disabled                 |
-| `data-invalid`        | presence     | Root, Item                  | Component or item is visually invalid |
-| `data-loading`        | presence     | Root                        | Component is in loading state         |
-| `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state    |
-| `data-state="open"`   | presence-str | Spar Accordion item/trigger | Disclosure is open (Spar-emitted)     |
-| `data-state="closed"` | presence-str | Spar Accordion item/trigger | Disclosure is closed (Spar-emitted)   |
+| Attribute             | Value        | Scope                       | Meaning                             |
+| --------------------- | ------------ | --------------------------- | ----------------------------------- |
+| `data-disabled`       | presence     | Root                        | Component is disabled               |
+| `data-invalid`        | presence     | Root                        | Component is visually invalid       |
+| `data-loading`        | presence     | Root                        | Component is in loading state       |
+| `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state  |
+| `data-state="open"`   | presence-str | Spar Accordion item/trigger | Disclosure is open (Spar-emitted)   |
+| `data-state="closed"` | presence-str | Spar Accordion item/trigger | Disclosure is closed (Spar-emitted) |
 
 ### Variant
 
@@ -95,7 +95,6 @@ table needs updating.
 
 | Attribute             | Component             | Meaning                                          |
 | --------------------- | --------------------- | ------------------------------------------------ |
-| `data-full-width`     | Button                | Stretches to container width                     |
 | `data-icon-only`      | Button                | No label content, only icon                      |
 | `data-rounded`        | Button                | Circular icon-only shape                         |
 | `data-underline`      | Button                | Label is underlined                              |
@@ -145,10 +144,18 @@ should explain **why** the deviation exists so reviewers do not "fix" it later.
 
 ### Radio
 
-- **`data-size`, `data-type`, `data-position`, and `data-invalid` are emitted on
-  both the root and each item.** The root copy documents the resolved group
-  defaults; the item copy lets the radio recipe style `.tk-radio-item` without
-  an ancestor selector and allows per-item `position` overrides.
+- **`data-size`, `data-type`, and `data-position` are emitted on both the root
+  and each item.** The root copy documents the resolved group defaults; the item
+  copy lets the radio recipe style `.tk-radio-item` without an ancestor selector
+  and allows per-item `position` overrides.
+- **`data-invalid` is Spar-owned, root-only.** Spar emits it on the radiogroup
+  root, resolving from its own `isInvalid` ↔ Field context chain. The wrapper
+  forwards its `invalid` prop to Spar as `isInvalid` and does not call
+  `useOptionalFieldContext` itself — Field resolution stays a single source of
+  truth inside Spar. Per-item invalid styling is driven by the recipe's ancestor
+  selector (`.tk-radio[data-invalid] .tk-radio-item ...`), so the wrapper does
+  not mirror `data-invalid` onto items either. Per-item invalid is not a real
+  concept (the wrapper's `invalid` is group-scoped).
 - **`data-spread` lives on the root only.** It is a group layout hook. Items do
   not carry it because CSS can stretch direct `.tk-radio-item` children from the
   root selector.

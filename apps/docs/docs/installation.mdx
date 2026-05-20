@@ -11,27 +11,30 @@ slug: /installation
 
 Three steps. No config file. No build tool wiring beyond a CSS import.
 
-## 1. Install the package
+## 1. Install the packages
+
+`@takeoff-design/tokens` is a **peer dependency** of `@takeoff-ui/react-spar`,
+so you install both side by side. This keeps a single tokens copy in your tree
+and lets you upgrade tokens independently of the React wrapper.
 
 ```bash
 # pnpm
-pnpm add @takeoff-ui/react-spar
+pnpm add @takeoff-ui/react-spar @takeoff-design/tokens
 
 # npm
-npm install @takeoff-ui/react-spar
+npm install @takeoff-ui/react-spar @takeoff-design/tokens
 
 # yarn
-yarn add @takeoff-ui/react-spar
+yarn add @takeoff-ui/react-spar @takeoff-design/tokens
 
 # bun
-bun add @takeoff-ui/react-spar
+bun add @takeoff-ui/react-spar @takeoff-design/tokens
 ```
 
-`@takeoff-design/tokens` and `@turkish-technology/spar` come along as direct
-dependencies of `@takeoff-ui/react-spar`. Add either of them to your own
-`package.json` only if your app imports from them directly (for example, when
-overriding token CSS variables from an entry stylesheet or using Spar primitives
-that `react-spar` does not re-export).
+`@turkish-technology/spar` is still a regular dependency of
+`@takeoff-ui/react-spar` and is installed automatically. Add it to your own
+`package.json` only if your app imports from it directly (for example, when
+using Spar primitives that `react-spar` does not re-export).
 
 **React version:** `@takeoff-ui/react-spar` targets React 19 only. If your app
 is on React 18, you'll get a runtime error; pin React 19 before installing.

@@ -14,10 +14,11 @@ React 19 peers.
 ## Install
 
 `@takeoff-ui/react-spar` ships JS and types only. The component CSS lives in
-`@takeoff-design/tokens`, which comes along as a direct dependency.
+`@takeoff-design/tokens`, which is a **peer dependency** — install both packages
+side by side.
 
 ```bash
-pnpm add @takeoff-ui/react-spar
+pnpm add @takeoff-ui/react-spar @takeoff-design/tokens
 ```
 
 ## Start Here

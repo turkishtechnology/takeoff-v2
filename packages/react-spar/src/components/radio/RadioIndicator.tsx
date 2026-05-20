@@ -14,10 +14,14 @@ export const RadioIndicator = <T extends ElementType = 'span'>(props: RadioIndic
   const theme = useComponentTheme('RadioIndicator');
 
   const { rootAttrs, rest } = composeRootAttrs(RadioIndicatorBase, props as RadioIndicatorProps<'span'>, theme);
-  const { ref, as, ...spar } = rest;
+  const { children, ref, as, ...spar } = rest;
 
-  // Auto-render the internal `icon` decorative slot. CSS toggles its
-  // visibility via Spar's `data-state="checked"` on the ancestor item.
+  // When the consumer does not supply custom children, auto-render the
+  // internal `icon` decorative slot. CSS toggles its visibility via Spar's
+  // `data-state="checked"` on the ancestor item. If `children` is provided
+  // (e.g. a custom icon), it replaces the default slot entirely — the
+  // consumer becomes responsible for visibility cycling (typically via the
+  // same `[data-state="checked"]` ancestor selector).
   const iconAttrs = buildSlotAttrs(RadioIndicatorBase.getSlotProps('icon'), 'icon', {
     themeSlotProps: theme?.slotProps,
     themeClassNames: theme?.classNames,
@@ -29,7 +33,7 @@ export const RadioIndicator = <T extends ElementType = 'span'>(props: RadioIndic
 
   return (
     <Component {...spar} {...rootAttrs} ref={ref} aria-hidden="true">
-      <span {...iconAttrs} />
+      {children ?? <span {...iconAttrs} />}
     </Component>
   );
 };

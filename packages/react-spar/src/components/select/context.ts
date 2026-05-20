@@ -1,10 +1,11 @@
 import { createSafeContext } from '../../hooks';
 
-import type { SelectSize } from './types';
+import type { SelectContentWidth, SelectSize } from './types';
 
 export interface SelectOwnContextValue {
   size: SelectSize;
-  isInvalid: boolean;
+  invalid: boolean;
+  contentWidth: SelectContentWidth;
 }
 
 export const [SelectProvider, useSelectOwnContext] = createSafeContext<SelectOwnContextValue>('SelectProvider');

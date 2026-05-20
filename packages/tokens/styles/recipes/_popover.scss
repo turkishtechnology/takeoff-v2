@@ -119,6 +119,22 @@
   }
 }
 
+@mixin popover-header {
+  text-align: left;
+  font-weight: 500;
+  font-size: var(--desktop-body-s-size, 0.75rem);
+  font-style: normal;
+  line-height: 20px;
+  margin: 0;
+}
+
+@mixin popover-description {
+  font-weight: 300;
+  font-size: var(--desktop-body-xs-size, 0.625rem);
+  line-height: 20px;
+  margin: 0;
+}
+
 @mixin popover-arrow {
   display: block;
   pointer-events: none;

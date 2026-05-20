@@ -13,16 +13,19 @@ export const RadioItem = <T extends ElementType = 'label'>(props: RadioItemProps
   const group = useRadioGroupOwnContext('Radio.Item');
 
   // Item-level `position` overrides the group-level cascade; the rest of the
-  // visual cascade (`size`, `type`, `invalid`) is read from context only.
-  // Duplicating these onto the item lets CSS recipes target a single element
+  // visual cascade (`size`, `type`) is read from context only. Duplicating
+  // these onto the item lets CSS recipes target a single element
   // (`.tk-radio-item[data-type='card']`) without an ancestor selector — same
   // pattern recorded for Accordion in `data-attribute-vocabulary.md`.
+  // `data-invalid` is intentionally NOT mirrored here: Spar emits it on the
+  // radiogroup root (resolving from `invalid` + Field context), and the
+  // recipe styles items via an ancestor selector (`.tk-radio[data-invalid]
+  // .tk-radio-item`). Per-item invalid does not exist as a concept.
   const { rootAttrs, rest } = composeRootAttrs(RadioItemBase, props as RadioItemProps<'label'>, theme, {
     stateAttrs: ({ position }) => ({
       'data-size': group.size,
       'data-type': group.type,
       'data-position': position ?? group.position,
-      'data-invalid': group.invalid ? '' : undefined,
     }),
   });
 

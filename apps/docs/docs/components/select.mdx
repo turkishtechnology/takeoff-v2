@@ -16,110 +16,80 @@ export const selectScope = { Select };
 
 {/* prettier-ignore-start */}
 
-export const selectDemoCss = String.raw`
-.select-demo {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: min(100%, 320px);
-}
-
-.select-demo-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-end;
-}
-
-.select-demo-row > * {
-  flex: 1 1 220px;
-}
-
-.select-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-`;
-
 export const playgroundDemo = String.raw`
-<Select defaultValue="economy">
-  <Select.Trigger>
-    <Select.Value placeholder="Pick a cabin" />
-  </Select.Trigger>
-  <Select.Content>
-    <Select.Item value="economy">
-      <Select.ItemText>Economy</Select.ItemText>
-    </Select.Item>
-    <Select.Item value="business">
-      <Select.ItemText>Business</Select.ItemText>
-    </Select.Item>
-    <Select.Item value="first">
-      <Select.ItemText>First class</Select.ItemText>
-    </Select.Item>
-  </Select.Content>
-</Select>
+function PlaygroundDemo() {
+  return (
+    <Select defaultValue="economy">
+      <Select.Trigger placeholder="Pick a cabin" />
+      <Select.Content>
+        <Select.Item value="economy" label="Economy">Economy</Select.Item>
+        <Select.Item value="business" label="Business">Business</Select.Item>
+        <Select.Item value="first" label="First class">First class</Select.Item>
+      </Select.Content>
+    </Select>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const sizesDemo = String.raw`
-<div className="select-demo">
-  <Select size="small">
-    <Select.Trigger>
-      <Select.Value placeholder="Small" />
-    </Select.Trigger>
-    <Select.Content>
-      <Select.Item value="ist"><Select.ItemText>Istanbul</Select.ItemText></Select.Item>
-      <Select.Item value="ank"><Select.ItemText>Ankara</Select.ItemText></Select.Item>
-    </Select.Content>
-  </Select>
-  <Select size="base">
-    <Select.Trigger>
-      <Select.Value placeholder="Base" />
-    </Select.Trigger>
-    <Select.Content>
-      <Select.Item value="ist"><Select.ItemText>Istanbul</Select.ItemText></Select.Item>
-      <Select.Item value="ank"><Select.ItemText>Ankara</Select.ItemText></Select.Item>
-    </Select.Content>
-  </Select>
-  <Select size="large">
-    <Select.Trigger>
-      <Select.Value placeholder="Large" />
-    </Select.Trigger>
-    <Select.Content>
-      <Select.Item value="ist"><Select.ItemText>Istanbul</Select.ItemText></Select.Item>
-      <Select.Item value="ank"><Select.ItemText>Ankara</Select.ItemText></Select.Item>
-    </Select.Content>
-  </Select>
-</div>
+function SizesDemo() {
+  return (
+    <div className="flex flex-col gap-4 w-full max-w-80">
+      <Select size="small">
+        <Select.Trigger placeholder="Small" />
+        <Select.Content>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+        </Select.Content>
+      </Select>
+      <Select size="base">
+        <Select.Trigger placeholder="Base" />
+        <Select.Content>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+        </Select.Content>
+      </Select>
+      <Select size="large">
+        <Select.Trigger placeholder="Large" />
+        <Select.Content>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+        </Select.Content>
+      </Select>
+    </div>
+  );
+}
+
+render(<SizesDemo />);
 `;
 
 export const groupsDemo = String.raw`
-<Select defaultValue="ist">
-  <Select.Trigger>
-    <Select.Value placeholder="Choose origin" />
-  </Select.Trigger>
-  <Select.Content>
-    <Select.Group>
-      <Select.Label>Türkiye</Select.Label>
-      <Select.Item value="ist"><Select.ItemText>Istanbul</Select.ItemText></Select.Item>
-      <Select.Item value="ank"><Select.ItemText>Ankara</Select.ItemText></Select.Item>
-      <Select.Item value="izm"><Select.ItemText>Izmir</Select.ItemText></Select.Item>
-    </Select.Group>
-    <Select.Separator />
-    <Select.Group>
-      <Select.Label>Europe</Select.Label>
-      <Select.Item value="lhr"><Select.ItemText>London Heathrow</Select.ItemText></Select.Item>
-      <Select.Item value="cdg"><Select.ItemText>Paris CDG</Select.ItemText></Select.Item>
-      <Select.Item value="fra" disabled><Select.ItemText>Frankfurt (unavailable)</Select.ItemText></Select.Item>
-    </Select.Group>
-  </Select.Content>
-</Select>
+function GroupsDemo() {
+  return (
+    <Select defaultValue="ist">
+      <Select.Trigger placeholder="Choose origin" />
+      <Select.Content>
+        <Select.Group>
+          <Select.Label>Türkiye</Select.Label>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+          <Select.Item value="izm" label="Izmir">Izmir</Select.Item>
+        </Select.Group>
+        <Select.Separator />
+        <Select.Group>
+          <Select.Label>Europe</Select.Label>
+          <Select.Item value="lhr" label="London Heathrow">London Heathrow</Select.Item>
+          <Select.Item value="cdg" label="Paris CDG">Paris CDG</Select.Item>
+          <Select.Item value="fra" disabled label="Frankfurt (unavailable)">Frankfurt (unavailable)</Select.Item>
+        </Select.Group>
+      </Select.Content>
+    </Select>
+  );
+}
+
+render(<GroupsDemo />);
 `;
 
 export const controlledDemo = String.raw`
@@ -127,16 +97,14 @@ function ControlledSelectDemo() {
   const [value, setValue] = useState('eco');
 
   return (
-    <div className="select-demo">
-      <div className="select-demo-note">Selected: {value}</div>
-      <Select value={value} onValueChange={setValue}>
-        <Select.Trigger>
-          <Select.Value placeholder="Pick a fare" />
-        </Select.Trigger>
+    <div className="flex flex-col gap-4 w-full max-w-80">
+      <div className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">Selected: {value}</div>
+      <Select value={value} onChange={setValue}>
+        <Select.Trigger placeholder="Pick a fare" />
         <Select.Content>
-          <Select.Item value="eco"><Select.ItemText>Eco</Select.ItemText></Select.Item>
-          <Select.Item value="flex"><Select.ItemText>Eco Flex</Select.ItemText></Select.Item>
-          <Select.Item value="biz"><Select.ItemText>Business</Select.ItemText></Select.Item>
+          <Select.Item value="eco" label="Eco">Eco</Select.Item>
+          <Select.Item value="flex" label="Eco Flex">Eco Flex</Select.Item>
+          <Select.Item value="biz" label="Business">Business</Select.Item>
         </Select.Content>
       </Select>
     </div>
@@ -147,15 +115,19 @@ render(<ControlledSelectDemo />);
 `;
 
 export const invalidDemo = String.raw`
-<Select isInvalid>
-  <Select.Trigger>
-    <Select.Value placeholder="Required field" />
-  </Select.Trigger>
-  <Select.Content>
-    <Select.Item value="a"><Select.ItemText>Option A</Select.ItemText></Select.Item>
-    <Select.Item value="b"><Select.ItemText>Option B</Select.ItemText></Select.Item>
-  </Select.Content>
-</Select>
+function InvalidDemo() {
+  return (
+    <Select invalid>
+      <Select.Trigger placeholder="Required field" />
+      <Select.Content>
+        <Select.Item value="a" label="Option A">Option A</Select.Item>
+        <Select.Item value="b" label="Option B">Option B</Select.Item>
+      </Select.Content>
+    </Select>
+  );
+}
+
+render(<InvalidDemo />);
 `;
 
 {/* prettier-ignore-end */}
@@ -174,14 +146,12 @@ import { Select } from '@takeoff-ui/react-spar';
 
 ```tsx
 <Select>
-  <Select.Trigger>
-    <Select.Value />
-  </Select.Trigger>
+  <Select.Trigger placeholder="Choose..." />
   <Select.Content>
     <Select.Group>
       <Select.Label />
-      <Select.Item value="...">
-        <Select.ItemText />
+      <Select.Item value="..." label="...">
+        ...
       </Select.Item>
     </Select.Group>
     <Select.Separator />
@@ -193,7 +163,7 @@ import { Select } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={selectDemoCss}
+  noInline
   previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
   scope={selectScope}
@@ -203,8 +173,7 @@ import { Select } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={sizesDemo}
-  cssCode={selectDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={340}
   previewWrapper={ReactSparDemoRoot}
   scope={selectScope}
@@ -214,8 +183,7 @@ import { Select } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={groupsDemo}
-  cssCode={selectDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
   scope={selectScope}
@@ -225,8 +193,6 @@ import { Select } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={controlledDemo}
-  cssCode={selectDemoCss}
-  editable={false}
   noInline
   previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
@@ -237,8 +203,7 @@ import { Select } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={invalidDemo}
-  cssCode={selectDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={140}
   previewWrapper={ReactSparDemoRoot}
   scope={selectScope}
@@ -250,7 +215,9 @@ import { Select } from '@takeoff-ui/react-spar';
   `aria-haspopup="listbox"`, and `aria-expanded`.
 - `Select.Content` is a `role="listbox"` portalled to `document.body` by default
   and positioned with Floating UI.
-- `Select.Value` is associated with the trigger via `aria-labelledby`.
+- The trigger displays the selected item's `label` (or the configured
+  `placeholder`) and exposes that as its accessible name; when nested in a
+  `Field` it also gets `aria-labelledby` pointing at the Field label.
 
 | Key                                 | Behavior                                                     |
 | ----------------------------------- | ------------------------------------------------------------ |
@@ -272,39 +239,41 @@ for primitive behavior.
 
 #### Props {#select-props}
 
-| Name                              | Type                                                                                | Default | Description                                                                                                                                                                  |
-| --------------------------------- | ----------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                        | -       | Compound parts (`Select.Trigger`, `Select.Content`).                                                                                                                         |
-| <ApiBadge label="size" />         | <code>SelectSize</code>                                                             | 'base'  | Size scale.                                                                                                                                                                  |
-| <ApiBadge label="isInvalid" />    | <code>boolean</code>                                                                | false   | Invalid state for form validation styling.                                                                                                                                   |
-| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                               |
-| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                           |
-| <ApiBadge label="defaultValue" /> | <code>string</code>                                                                 | -       | Uncontrolled initial value                                                                                                                                                   |
-| <ApiBadge label="autoFocus" />    | <code>boolean</code>                                                                | false   | Whether to focus the trigger on mount                                                                                                                                        |
-| <ApiBadge label="id" />           | <code>string</code>                                                                 | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger`, `${id}-content`, `${id}-value`. |
-| <ApiBadge label="value" />        | <code>string</code>                                                                 | -       | Controlled selected value                                                                                                                                                    |
-| <ApiBadge label="disabled" />     | <code>boolean</code>                                                                | -       | Disables the entire select. When inside a Field, inherited from Field.                                                                                                       |
-| <ApiBadge label="name" />         | <code>string</code>                                                                 | -       | Form field name                                                                                                                                                              |
-| <ApiBadge label="required" />     | <code>boolean</code>                                                                | -       | Makes the select required for forms. When inside a Field, inherited from Field.                                                                                              |
-| <ApiBadge label="open" />         | <code>boolean</code>                                                                | -       | Controlled open state                                                                                                                                                        |
-| <ApiBadge label="defaultOpen" />  | <code>boolean</code>                                                                | false   | Uncontrolled initial open state                                                                                                                                              |
-| <ApiBadge label="className" />    | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                                                                                                                        |
+| Name                              | Type                                                                                | Default   | Description                                                                                                                                                      |
+| --------------------------------- | ----------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                        | -         | Compound parts (`Select.Trigger`, `Select.Content`).                                                                                                             |
+| <ApiBadge label="size" />         | <code><a href="#select-td-selectsize">SelectSize</a></code>                         | 'base'    | Size scale.                                                                                                                                                      |
+| <ApiBadge label="invalid" />      | <code>boolean</code>                                                                | false     | Invalid state for form validation styling.                                                                                                                       |
+| <ApiBadge label="contentWidth" /> | <code><a href="#select-td-selectcontentwidth">SelectContentWidth</a></code>         | 'trigger' | How the portalled SelectContent panel computes its width. See `SelectContentWidth`.                                                                              |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -         | Per-slot class name overrides.                                                                                                                                   |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML attribute overrides.                                                                                                                               |
+| <ApiBadge label="defaultValue" /> | <code>string</code>                                                                 | -         | Uncontrolled initial value                                                                                                                                       |
+| <ApiBadge label="autoFocus" />    | <code>boolean</code>                                                                | false     | Whether to focus the trigger on mount                                                                                                                            |
+| <ApiBadge label="id" />           | <code>string</code>                                                                 | -         | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
+| <ApiBadge label="value" />        | <code>string</code>                                                                 | -         | Controlled selected value                                                                                                                                        |
+| <ApiBadge label="disabled" />     | <code>boolean</code>                                                                | -         | Disables the entire select. When inside a Field, inherited from Field.                                                                                           |
+| <ApiBadge label="name" />         | <code>string</code>                                                                 | -         | Form field name                                                                                                                                                  |
+| <ApiBadge label="required" />     | <code>boolean</code>                                                                | -         | Makes the select required for forms. When inside a Field, inherited from Field.                                                                                  |
+| <ApiBadge label="readOnly" />     | <code>boolean</code>                                                                | -         | Select read-only state. When inside a Field, inherited from Field. A read-only select can be opened and inspected but its value cannot change.                   |
+| <ApiBadge label="open" />         | <code>boolean</code>                                                                | -         | Controlled open state                                                                                                                                            |
+| <ApiBadge label="defaultOpen" />  | <code>boolean</code>                                                                | false     | Uncontrolled initial open state                                                                                                                                  |
+| <ApiBadge label="className" />    | <code>string</code>                                                                 | -         | Appends custom classes to the root slot of this part.                                                                                                            |
 
 #### Events {#select-events}
 
-| Name                               | Type                                    | Default | Description                      |
-| ---------------------------------- | --------------------------------------- | ------- | -------------------------------- |
-| <ApiBadge label="onValueChange" /> | <code>(value: string) =&gt; void</code> | -       | Callback when selection changes  |
-| <ApiBadge label="onOpenChange" />  | <code>(open: boolean) =&gt; void</code> | -       | Callback when open state changes |
+| Name                              | Type                                    | Default | Description                      |
+| --------------------------------- | --------------------------------------- | ------- | -------------------------------- |
+| <ApiBadge label="onChange" />     | <code>(value: string) =&gt; void</code> | -       | Callback when selection changes  |
+| <ApiBadge label="onOpenChange" /> | <code>(open: boolean) =&gt; void</code> | -       | Callback when open state changes |
 
 #### Data attributes {#select-data-attributes}
 
-| Attribute          | Applied when              | Purpose                                                                     |
-| ------------------ | ------------------------- | --------------------------------------------------------------------------- |
-| `data-slot="root"` | Always                    | Stable selector for wrapper styling on the root slot.                       |
-| `data-size`        | Always                    | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| `data-invalid`     | When `isInvalid` is true. | Borders/background switch to the danger state. Mirrored from the root.      |
-| `data-disabled`    | When `disabled` is true.  | Theme hook for the disabled state. Emitted by Spar Select.                  |
+| Attribute                                       | Applied when             | Purpose                                                                     |
+| ----------------------------------------------- | ------------------------ | --------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                   | Stable selector for wrapper styling on the root slot.                       |
+| <ApiBadge label="data-size" />                  | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| <ApiBadge label="data-invalid" />               | When `invalid` is true.  | Borders/background switch to the danger state. Mirrored from the root.      |
+| <ApiBadge label="data-disabled" />              | When `disabled` is true. | Theme hook for the disabled state. Emitted by Spar Select.                  |
 
 ### Select.Trigger {#select-trigger}
 
@@ -312,38 +281,26 @@ See
 [Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
 for primitive behavior.
 
+#### Props {#select-trigger-props}
+
+| Name                             | Type                                                                                | Default | Description                                                                                                                                                          |
+| -------------------------------- | ----------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                        | -       | Trigger content. Defaults to the selected item label or `placeholder`; supply children to override the rendering, or pass a render function for full layout control. |
+| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                       |
+| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                   |
+| <ApiBadge label="placeholder" /> | <code>React.ReactNode</code>                                                        | -       | Text shown when no value is selected                                                                                                                                 |
+| <ApiBadge label="className" />   | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                                                                                                                |
+
 #### Data attributes {#select-trigger-data-attributes}
 
-| Attribute             | Applied when                  | Purpose                                                                     |
-| --------------------- | ----------------------------- | --------------------------------------------------------------------------- |
-| `data-slot="root"`    | Always                        | Stable selector for wrapper styling on the root slot.                       |
-| `data-size`           | Always                        | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| `data-invalid`        | When `isInvalid` is true.     | Borders/background switch to the danger state. Mirrored from the root.      |
-| `data-state="open"`   | While the dropdown is open.   | Spar open-state hook on the trigger and content.                            |
-| `data-state="closed"` | While the dropdown is closed. | Spar closed-state hook on the trigger.                                      |
-| `data-placeholder`    | When no value is selected.    | Theme hook to style the placeholder color.                                  |
-
-### Select.Value {#select-value}
-
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
-for primitive behavior.
-
-#### Props {#select-value-props}
-
-| Name                             | Type                                                                                | Default | Description                                                                           |
-| -------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                        | -       | Override what Spar renders — typically left empty so the selected item text is shown. |
-| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                        |
-| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                    |
-| <ApiBadge label="placeholder" /> | <code>React.ReactNode</code>                                                        | -       | Text shown when no value selected                                                     |
-| <ApiBadge label="className" />   | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                                 |
-
-#### Data attributes {#select-value-data-attributes}
-
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                          | Applied when                  | Purpose                                                                     |
+| -------------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />    | Always                        | Stable selector for wrapper styling on the root slot.                       |
+| <ApiBadge label="data-size" />                     | Always                        | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| <ApiBadge label="data-invalid" />                  | When `invalid` is true.       | Borders/background switch to the danger state. Mirrored from the root.      |
+| <ApiBadge label="data-state=&quot;open&quot;" />   | While the dropdown is open.   | Spar open-state hook on the trigger and content.                            |
+| <ApiBadge label="data-state=&quot;closed&quot;" /> | While the dropdown is closed. | Spar closed-state hook on the trigger.                                      |
+| <ApiBadge label="data-placeholder" />              | When no value is selected.    | Theme hook to style the placeholder color.                                  |
 
 ### Select.Content {#select-content}
 
@@ -359,8 +316,8 @@ for primitive behavior.
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             | Per-slot class name overrides.                                             |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML attribute overrides.                                         |
 | <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
-| <ApiBadge label="side" />       | <code>Side</code>                                                                   | 'bottom'      | Preferred side for positioning relative to trigger                         |
-| <ApiBadge label="align" />      | <code>Align</code>                                                                  | 'start'       | Alignment relative to trigger                                              |
+| <ApiBadge label="side" />       | <code><a href="#select-td-side">Side</a></code>                                     | 'bottom'      | Preferred side for positioning relative to trigger                         |
+| <ApiBadge label="align" />      | <code><a href="#select-td-align">Align</a></code>                                   | 'start'       | Alignment relative to trigger                                              |
 | <ApiBadge label="className" />  | <code>string</code>                                                                 | -             | Appends custom classes to the root slot of this part.                      |
 
 #### Events {#select-content-events}
@@ -373,10 +330,10 @@ for primitive behavior.
 
 #### Data attributes {#select-content-data-attributes}
 
-| Attribute          | Applied when | Purpose                                                                     |
-| ------------------ | ------------ | --------------------------------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.                       |
-| `data-size`        | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| Attribute                                       | Applied when | Purpose                                                                     |
+| ----------------------------------------------- | ------------ | --------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.                       |
+| <ApiBadge label="data-size" />                  | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants. |
 
 ### Select.Item {#select-item}
 
@@ -386,36 +343,24 @@ for primitive behavior.
 
 #### Props {#select-item-props}
 
-| Name                            | Type                                                                                | Default | Description                                           |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ----------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | Item content (typically a `Select.ItemText`).         |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                        |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                    |
-| <ApiBadge label="value" />      | <code>string</code>                                                                 | -       | Option value                                          |
-| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                | false   | Disables the option                                   |
-| <ApiBadge label="textValue" />  | <code>string</code>                                                                 | -       | Text for type-ahead (auto-detected if not provided)   |
-| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part. |
+| Name                            | Type                                                                                | Default | Description                                                                                                                                                                                                                                                                         |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | Visible item content. Set `label` alongside it to register the text used for typeahead and trigger display.                                                                                                                                                                         |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                                                                                                                                      |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                                  |
+| <ApiBadge label="label" />      | <code>string</code>                                                                 | -       | Text label for this item. Shown in the trigger when this item is selected, and used as the search key for keyboard typeahead. Should be set whenever `children` is not plain text (e.g. contains icons or other elements) so the trigger can display a clean string representation. |
+| <ApiBadge label="value" />      | <code>string</code>                                                                 | -       | Option value                                                                                                                                                                                                                                                                        |
+| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                | false   | Disables the option                                                                                                                                                                                                                                                                 |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                                                                                                                                                                                                                               |
 
 #### Data attributes {#select-item-data-attributes}
 
-| Attribute              | Applied when                                      | Purpose                                               |
-| ---------------------- | ------------------------------------------------- | ----------------------------------------------------- |
-| `data-slot="root"`     | Always                                            | Stable selector for wrapper styling on the root slot. |
-| `data-highlighted`     | When the item is focused via keyboard or pointer. | Theme hook for the highlighted state.                 |
-| `data-state="checked"` | When the item matches the current value.          | Theme hook for the checked state.                     |
-| `data-disabled`        | When the item `disabled` is true.                 | Theme hook for the disabled item state.               |
-
-### Select.ItemText {#select-item-text}
-
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
-for primitive behavior.
-
-#### Data attributes {#select-item-text-data-attributes}
-
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                           | Applied when                                      | Purpose                                               |
+| --------------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />     | Always                                            | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-highlighted" />               | When the item is focused via keyboard or pointer. | Theme hook for the highlighted state.                 |
+| <ApiBadge label="data-state=&quot;checked&quot;" /> | When the item matches the current value.          | Theme hook for the checked state.                     |
+| <ApiBadge label="data-disabled" />                  | When the item `disabled` is true.                 | Theme hook for the disabled item state.               |
 
 ### Select.Group {#select-group}
 
@@ -425,9 +370,9 @@ for primitive behavior.
 
 #### Data attributes {#select-group-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Select.Label {#select-label}
 
@@ -437,9 +382,9 @@ for primitive behavior.
 
 #### Data attributes {#select-label-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Select.Separator {#select-separator}
 
@@ -449,8 +394,17 @@ for primitive behavior.
 
 #### Data attributes {#select-separator-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#select-type-definitions}
+
+| Name                                                                                   | Definition                                                          |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| <span id="select-td-selectsize"><ApiBadge label="SelectSize" /></span>                 | <code>'small' &#124; 'base' &#124; 'large'</code>                   |
+| <span id="select-td-selectcontentwidth"><ApiBadge label="SelectContentWidth" /></span> | <code>'trigger' &#124; 'content' &#124; number &#124; string</code> |
+| <span id="select-td-side"><ApiBadge label="Side" /></span>                             | <code>'top' &#124; 'right' &#124; 'bottom' &#124; 'left'</code>     |
+| <span id="select-td-align"><ApiBadge label="Align" /></span>                           | <code>'start' &#124; 'center' &#124; 'end'</code>                   |
 
 {/* api-tables:end */}

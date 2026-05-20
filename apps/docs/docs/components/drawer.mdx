@@ -15,42 +15,36 @@ import { ApiBadge } from '@site/src/components/ApiBadge';
 
 export const drawerScope = { Drawer };
 
-<!-- prettier-ignore-start -->
-
-export const drawerDemoCss = String.raw`
-.drawer-demo-trigger {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border-light);
-  background: var(--primary-base);
-  color: var(--static-white);
-  font-weight: 600;
-  cursor: pointer;
-}
-`;
+{/* prettier-ignore-start */}
 
 export const playgroundDemo = String.raw`
-<Drawer placement="right">
-  <Drawer.Trigger className="drawer-demo-trigger">
-    Open Drawer
-  </Drawer.Trigger>
-  <Drawer.Overlay />
-  <Drawer.Panel>
-    <Drawer.Header>
-      <Drawer.Title>Flight Details</Drawer.Title>
-      <Drawer.CloseButton>✕</Drawer.CloseButton>
-    </Drawer.Header>
-    <Drawer.Body>
-      <Drawer.Description>
-        Review your selected flight information and passenger details before
-        confirming the booking.
-      </Drawer.Description>
-    </Drawer.Body>
-    <Drawer.Footer>
-      <Drawer.CloseButton>Close</Drawer.CloseButton>
-    </Drawer.Footer>
-  </Drawer.Panel>
-</Drawer>
+function PlaygroundDemo() {
+  return (
+    <Drawer placement="right">
+      <Drawer.Trigger className="min-h-10 px-2.5 py-2 gap-1.5 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">
+        Open Drawer
+      </Drawer.Trigger>
+      <Drawer.Overlay />
+      <Drawer.Panel>
+        <Drawer.Header>
+          <Drawer.Title>Flight Details</Drawer.Title>
+          <Drawer.CloseButton>✕</Drawer.CloseButton>
+        </Drawer.Header>
+        <Drawer.Body>
+          <Drawer.Description>
+            Review your selected flight information and passenger details before
+            confirming the booking.
+          </Drawer.Description>
+        </Drawer.Body>
+        <Drawer.Footer>
+          <Drawer.CloseButton>Close</Drawer.CloseButton>
+        </Drawer.Footer>
+      </Drawer.Panel>
+    </Drawer>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const placementDemo = String.raw`
@@ -61,7 +55,7 @@ function PlacementDemo() {
     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
       {['left', 'right', 'top', 'bottom', 'full-screen'].map((p) => (
         <Drawer key={p} placement={p}>
-          <Drawer.Trigger className="drawer-demo-trigger">
+          <Drawer.Trigger className="min-h-10 px-2.5 py-2 gap-1.5 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">
             {p}
           </Drawer.Trigger>
           <Drawer.Overlay />
@@ -90,7 +84,7 @@ function ControlledDrawerDemo() {
   return (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       <button
-        className="drawer-demo-trigger"
+        className="min-h-10 px-2.5 py-2 gap-1.5 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer"
         onClick={() => setOpen(true)}
       >
         Open (external)
@@ -117,7 +111,7 @@ function ControlledDrawerDemo() {
 render(<ControlledDrawerDemo />);
 `;
 
-<!-- prettier-ignore-end -->
+{/* prettier-ignore-end */}
 
 # Drawer
 
@@ -150,7 +144,7 @@ import { Drawer } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={drawerDemoCss}
+  noInline
   previewMinHeight={200}
   previewWrapper={ReactSparDemoRoot}
   scope={drawerScope}
@@ -162,8 +156,6 @@ The `placement` prop controls from which side the drawer slides in.
 
 <LiveCode
   code={placementDemo}
-  cssCode={drawerDemoCss}
-  editable={false}
   noInline
   previewMinHeight={100}
   previewWrapper={ReactSparDemoRoot}
@@ -177,8 +169,6 @@ outside.
 
 <LiveCode
   code={controlledDemo}
-  cssCode={drawerDemoCss}
-  editable={false}
   noInline
   previewMinHeight={100}
   previewWrapper={ReactSparDemoRoot}
@@ -218,15 +208,15 @@ animation library is required.
 
 #### Props {#drawer-props}
 
-| Name                             | Type                         | Default | Description                                                                                                                                                                      |
-| -------------------------------- | ---------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />    | <code>React.ReactNode</code> | -       | Drawer parts rendered inside the root.                                                                                                                                           |
-| <ApiBadge label="placement" />   | <code>DrawerPlacement</code> | -       | Side the drawer slides in from.                                                                                                                                                  |
-| <ApiBadge label="dismissable" /> | <code>boolean</code>         | true    | Whether the drawer can be dismissed by clicking outside or pressing Escape.                                                                                                      |
-| <ApiBadge label="id" />          | <code>string</code>          | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-title`, `${id}-description`, `${id}-content`. |
-| <ApiBadge label="disabled" />    | <code>boolean</code>         | false   | Disables all dialog triggers (prevents opening)                                                                                                                                  |
-| <ApiBadge label="open" />        | <code>boolean</code>         | -       | Controlled open state                                                                                                                                                            |
-| <ApiBadge label="defaultOpen" /> | <code>boolean</code>         | false   | Initial open state (uncontrolled)                                                                                                                                                |
+| Name                             | Type                                                                  | Default | Description                                                                                                                                                                      |
+| -------------------------------- | --------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                          | -       | Drawer parts rendered inside the root.                                                                                                                                           |
+| <ApiBadge label="placement" />   | <code><a href="#drawer-td-drawerplacement">DrawerPlacement</a></code> | -       | Side the drawer slides in from.                                                                                                                                                  |
+| <ApiBadge label="dismissable" /> | <code>boolean</code>                                                  | true    | Whether the drawer can be dismissed by clicking outside or pressing Escape.                                                                                                      |
+| <ApiBadge label="id" />          | <code>string</code>                                                   | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-title`, `${id}-description`, `${id}-content`. |
+| <ApiBadge label="disabled" />    | <code>boolean</code>                                                  | false   | Disables all dialog triggers (prevents opening)                                                                                                                                  |
+| <ApiBadge label="open" />        | <code>boolean</code>                                                  | -       | Controlled open state                                                                                                                                                            |
+| <ApiBadge label="defaultOpen" /> | <code>boolean</code>                                                  | false   | Initial open state (uncontrolled)                                                                                                                                                |
 
 #### Events {#drawer-events}
 
@@ -238,9 +228,9 @@ animation library is required.
 
 #### Data attributes {#drawer-trigger-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Drawer.Overlay {#drawer-overlay}
 
@@ -249,19 +239,19 @@ animation library is required.
 | Name                            | Type                                                                                | Default       | Description                                                                |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
 | <ApiBadge label="invisible" />  | <code>boolean</code>                                                                | false         | When true, the overlay is rendered but visually invisible.                 |
-| <ApiBadge label="intensity" />  | <code>DrawerOverlayIntensity</code>                                                 | 'base'        | Overlay backdrop intensity.                                                |
+| <ApiBadge label="intensity" />  | <code><a href="#drawer-td-draweroverlayintensity">DrawerOverlayIntensity</a></code> | 'base'        | Overlay backdrop intensity.                                                |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             |                                                                            |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             |                                                                            |
 | <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
 
 #### Data attributes {#drawer-overlay-data-attributes}
 
-| Attribute          | Applied when             | Purpose                                                     |
-| ------------------ | ------------------------ | ----------------------------------------------------------- |
-| `data-slot="root"` | Always                   | Stable selector for wrapper styling on the root slot.       |
-| `data-state`       | Always                   | `"open"` or `"closed"` — used for entry/exit animations.    |
-| `data-intensity`   | Always                   | Reflects the resolved `intensity` prop.                     |
-| `data-invisible`   | When `invisible` is true | Indicates overlay is visually hidden but still interactive. |
+| Attribute                                       | Applied when             | Purpose                                                     |
+| ----------------------------------------------- | ------------------------ | ----------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                   | Stable selector for wrapper styling on the root slot.       |
+| <ApiBadge label="data-state" />                 | Always                   | `"open"` or `"closed"` — used for entry/exit animations.    |
+| <ApiBadge label="data-intensity" />             | Always                   | Reflects the resolved `intensity` prop.                     |
+| <ApiBadge label="data-invisible" />             | When `invisible` is true | Indicates overlay is visually hidden but still interactive. |
 
 ### Drawer.Panel {#drawer-panel}
 
@@ -289,11 +279,11 @@ animation library is required.
 
 #### Data attributes {#drawer-panel-data-attributes}
 
-| Attribute          | Applied when | Purpose                                                 |
-| ------------------ | ------------ | ------------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.   |
-| `data-state`       | Always       | `"open"` or `"closed"` — drives slide/scale animations. |
-| `data-placement`   | Always       | Reflects placement for directional CSS transitions.     |
+| Attribute                                       | Applied when | Purpose                                                 |
+| ----------------------------------------------- | ------------ | ------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.   |
+| <ApiBadge label="data-state" />                 | Always       | `"open"` or `"closed"` — drives slide/scale animations. |
+| <ApiBadge label="data-placement" />             | Always       | Reflects placement for directional CSS transitions.     |
 
 ### Drawer.Header {#drawer-header}
 
@@ -301,16 +291,16 @@ animation library is required.
 
 | Name                            | Type                                                                                | Default | Description         |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
-| <ApiBadge label="headerType" /> | <code>DrawerHeaderType</code>                                                       | 'basic' | Type of the header. |
+| <ApiBadge label="headerType" /> | <code><a href="#drawer-td-drawerheadertype">DrawerHeaderType</a></code>             | 'basic' | Type of the header. |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
 
 #### Data attributes {#drawer-header-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
-| `data-header-type` | Always       | Reflects the resolved `headerType` prop.              |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-header-type" />           | Always       | Reflects the resolved `headerType` prop.              |
 
 ### Drawer.Title {#drawer-title}
 
@@ -324,25 +314,25 @@ animation library is required.
 
 #### Data attributes {#drawer-title-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Drawer.Description {#drawer-description}
 
 #### Data attributes {#drawer-description-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Drawer.Body {#drawer-body}
 
 #### Data attributes {#drawer-body-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Drawer.Footer {#drawer-footer}
 
@@ -350,23 +340,32 @@ animation library is required.
 
 | Name                            | Type                                                                                | Default | Description         |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
-| <ApiBadge label="footerType" /> | <code>DrawerFooterType</code>                                                       | 'basic' | Type of the footer. |
+| <ApiBadge label="footerType" /> | <code><a href="#drawer-td-drawerfootertype">DrawerFooterType</a></code>             | 'basic' | Type of the footer. |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
 
 #### Data attributes {#drawer-footer-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
-| `data-footer-type` | Always       | Reflects the resolved `footerType` prop.              |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-footer-type" />           | Always       | Reflects the resolved `footerType` prop.              |
 
 ### Drawer.CloseButton {#drawer-close-button}
 
 #### Data attributes {#drawer-close-button-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#drawer-type-definitions}
+
+| Name                                                                                           | Definition                                                                           |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| <span id="drawer-td-drawerplacement"><ApiBadge label="DrawerPlacement" /></span>               | <code>'left' &#124; 'right' &#124; 'top' &#124; 'bottom' &#124; 'full-screen'</code> |
+| <span id="drawer-td-draweroverlayintensity"><ApiBadge label="DrawerOverlayIntensity" /></span> | <code>'lightest' &#124; 'light' &#124; 'base' &#124; 'dark' &#124; 'darkest'</code>  |
+| <span id="drawer-td-drawerheadertype"><ApiBadge label="DrawerHeaderType" /></span>             | <code>'basic' &#124; 'divided' &#124; 'light' &#124; 'dark' &#124; 'primary'</code>  |
+| <span id="drawer-td-drawerfootertype"><ApiBadge label="DrawerFooterType" /></span>             | <code>'basic' &#124; 'divided' &#124; 'light'</code>                                 |
 
 {/* api-tables:end */}

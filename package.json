@@ -12,6 +12,7 @@
     "check-types": "turbo run check-types",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,cjs,css,scss,json,md,mdx,yml,yaml,html}\" --cache",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,cjs,css,scss,json,md,mdx,yml,yaml,html}\"",
+    "release": "pnpm changeset publish",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -22,6 +23,7 @@
     "*.{css,scss,json,md,mdx,yaml,yml,html}": "prettier --write --cache"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@commitlint/cli": "^20.4.2",
     "@commitlint/config-conventional": "^20.4.2",
     "@eslint/js": "^10.0.1",

@@ -35,15 +35,19 @@ gaps are resolved.
 
 `@takeoff-ui/react-spar` currently targets React 19.x only.
 
+`@takeoff-design/tokens` is a **peer dependency** — install it alongside
+`@takeoff-ui/react-spar`. Keeping tokens out of `dependencies` ensures a single
+tokens copy in your tree and lets you upgrade tokens independently of this
+wrapper.
+
 ```bash
-pnpm add @takeoff-ui/react-spar
+pnpm add @takeoff-ui/react-spar @takeoff-design/tokens
 ```
 
-`@takeoff-design/tokens` and `@turkish-technology/spar` are direct dependencies
-of `@takeoff-ui/react-spar` — you don't need to install them separately. Add
-either one to your own `package.json` only if your app imports from it directly
-(for example, when overriding token CSS variables from an entry stylesheet, or
-when using Spar primitives that `react-spar` does not re-export).
+`@turkish-technology/spar` is still a regular dependency of
+`@takeoff-ui/react-spar` and is installed automatically. Add it to your own
+`package.json` only if your app imports from it directly (for example, when
+using Spar primitives that `react-spar` does not re-export).
 
 `@takeoff-ui/react-spar` does not bundle component CSS. Import the token
 stylesheet once at the app shell or entrypoint:

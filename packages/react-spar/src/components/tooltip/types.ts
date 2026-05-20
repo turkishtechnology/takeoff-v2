@@ -1,6 +1,7 @@
 import type { ElementType } from 'react';
 import type {
   TooltipProps as SparTooltipProps,
+  TooltipProviderProps as SparTooltipProviderProps,
   TooltipContentProps as SparTooltipContentProps,
   TooltipTriggerProps as SparTooltipTriggerProps,
   PolymorphicProps,
@@ -28,6 +29,15 @@ export type TooltipArrowSlot = 'root';
 // trigger+content children. Tooltip root is state-only and renders no DOM,
 // so no native HTML props beyond `children` are exposed.
 export type TooltipProps = Pick<SparTooltipProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'delay' | 'hideDelay' | 'disabled' | 'children'>;
+
+/**
+ * Public props for the Tooltip provider. State-only — renders no DOM.
+ * Shares delay configuration across multiple sibling tooltips so that moving
+ * between them within `skipDelayDuration` opens the next one instantly (WCAG 1.4.13).
+ */
+// Spar TooltipProvider is state-only and renders no DOM. The full surface is
+// re-exposed as-is — there are no visual knobs to add at this layer.
+export type TooltipProviderProps = Pick<SparTooltipProviderProps, 'children' | 'delayDuration' | 'skipDelayDuration' | 'disableHoverableContent'>;
 
 export interface TooltipTriggerOwnProps {
   /** Per-slot extra classes. */

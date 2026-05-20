@@ -1,8 +1,30 @@
 {
   "name": "@takeoff-ui/react-spar",
-  "version": "0.0.1",
+  "version": "0.1.2",
   "description": "React-first Takeoff wrappers built on top of @turkish-technology/spar.",
   "type": "module",
+  "author": "Turkish Technology Frontend Infrastructure Team <takeoffui@thy.com>",
+  "homepage": "https://takeoff-v2.app.turkishtechlab.com",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/turkishtechnology/takeoff-v2.git",
+    "directory": "packages/react-spar"
+  },
+  "keywords": [
+    "react",
+    "react-components",
+    "takeoff",
+    "takeoff-ui",
+    "spar",
+    "headless-ui",
+    "design-system",
+    "component-library",
+    "typescript",
+    "accessibility",
+    "a11y",
+    "react-19"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -32,15 +54,16 @@
     "prepack": "tsup"
   },
   "dependencies": {
-    "@takeoff-design/tokens": "workspace:^",
-    "@turkish-technology/spar": "link:../../../spar/packages/spar",
+    "@turkish-technology/spar": "0.2.0-beta.1",
     "clsx": "^2.1.1"
   },
   "peerDependencies": {
+    "@takeoff-design/tokens": "0.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@takeoff-design/tokens": "workspace:*",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

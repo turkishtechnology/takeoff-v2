@@ -34,7 +34,7 @@ const dataSize = {
 const formStateAttrs = [
   {
     attribute: 'data-invalid',
-    appliedWhen: 'When `isInvalid` is true.',
+    appliedWhen: 'When `invalid` is true.',
     purpose: 'Theme hook for the invalid state. Emitted by Spar Input on the root.',
   },
   {
@@ -90,7 +90,7 @@ export default {
         dataSlotRoot,
         {
           attribute: 'data-invalid',
-          appliedWhen: 'When the root `isInvalid` is true.',
+          appliedWhen: 'When the root `invalid` is true.',
           purpose: 'Borders/background switch to the danger state on the visual row.',
         },
         {

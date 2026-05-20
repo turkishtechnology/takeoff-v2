@@ -19,6 +19,10 @@ export type PopoverTriggerSlot = 'root';
 
 export type PopoverContentSlot = 'root';
 
+export type PopoverHeaderSlot = 'root';
+
+export type PopoverDescriptionSlot = 'root';
+
 export type PopoverArrowSlot = 'root';
 
 export type PopoverCloseSlot = 'root';
@@ -74,6 +78,24 @@ export type PopoverContentProps<T extends ElementType = 'div'> = PolymorphicProp
     >
 >;
 
+export interface PopoverHeaderOwnProps {
+  /** Per-slot extra classes. */
+  classNames?: ClassNamesMap<PopoverHeaderSlot>;
+  /** Per-slot HTML-attribute overrides. */
+  slotProps?: SlotPropsMap<PopoverHeaderSlot>;
+}
+
+export type PopoverHeaderProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, PopoverHeaderOwnProps>;
+
+export interface PopoverDescriptionOwnProps {
+  /** Per-slot extra classes. */
+  classNames?: ClassNamesMap<PopoverDescriptionSlot>;
+  /** Per-slot HTML-attribute overrides. */
+  slotProps?: SlotPropsMap<PopoverDescriptionSlot>;
+}
+
+export type PopoverDescriptionProps<T extends ElementType = 'p'> = PolymorphicProps<'p', T, PopoverDescriptionOwnProps>;
+
 export interface PopoverArrowOwnProps {
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<PopoverArrowSlot>;
@@ -104,6 +126,8 @@ declare module '../../core/theme' {
     Popover: StateOnlyComponentThemeConfig<PopoverProps>;
     PopoverTrigger: import('../../core').ComponentThemeConfig<PopoverTriggerProps, PopoverTriggerSlot>;
     PopoverContent: import('../../core').ComponentThemeConfig<PopoverContentProps, PopoverContentSlot>;
+    PopoverHeader: import('../../core').ComponentThemeConfig<PopoverHeaderProps, PopoverHeaderSlot>;
+    PopoverDescription: import('../../core').ComponentThemeConfig<PopoverDescriptionProps, PopoverDescriptionSlot>;
     PopoverArrow: import('../../core').ComponentThemeConfig<PopoverArrowProps, PopoverArrowSlot>;
     PopoverClose: import('../../core').ComponentThemeConfig<PopoverCloseProps, PopoverCloseSlot>;
   }

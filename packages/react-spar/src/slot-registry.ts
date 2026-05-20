@@ -1,13 +1,6 @@
 import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItemBase, AccordionTriggerBase } from './components/accordion/base';
 import { BadgeBase } from './components/badge/base';
-import {
-  BreadcrumbBase,
-  BreadcrumbItemBase,
-  BreadcrumbLinkBase,
-  BreadcrumbListBase,
-  BreadcrumbPageBase,
-  BreadcrumbSeparatorBase,
-} from './components/breadcrumb/base';
+import { BreadcrumbBase, BreadcrumbItemBase, BreadcrumbLinkBase, BreadcrumbListBase, BreadcrumbPageBase, BreadcrumbSeparatorBase } from './components/breadcrumb/base';
 import { ButtonBase } from './components/button/base';
 import { CheckboxBase } from './components/checkbox/base';
 import {
@@ -24,20 +17,10 @@ import {
 } from './components/drawer/base';
 import { FieldBase, FieldDescriptionBase, FieldErrorMessageBase, FieldLabelBase } from './components/field/base';
 import { InputBase, InputContainerBase, InputFieldBase, InputPrefixBase, InputSuffixBase } from './components/input/base';
-import {
-  SelectBase,
-  SelectContentBase,
-  SelectGroupBase,
-  SelectItemBase,
-  SelectItemTextBase,
-  SelectLabelBase,
-  SelectSeparatorBase,
-  SelectTriggerBase,
-  SelectValueBase,
-} from './components/select/base';
+import { SelectBase, SelectContentBase, SelectGroupBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
 import { SwitchBase } from './components/switch/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
-import { RadioBase, RadioDescriptionBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase, RadioTextBase } from './components/radio/base';
+import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 
 /**
@@ -88,12 +71,10 @@ export const slotClassRegistry = {
   inputSuffix: { slots: InputSuffixBase.classes },
   select: { slots: SelectBase.classes },
   selectTrigger: { slots: SelectTriggerBase.classes },
-  selectValue: { slots: SelectValueBase.classes },
   selectContent: { slots: SelectContentBase.classes },
   selectItem: { slots: SelectItemBase.classes },
   selectGroup: { slots: SelectGroupBase.classes },
   selectLabel: { slots: SelectLabelBase.classes },
-  selectItemText: { slots: SelectItemTextBase.classes },
   selectSeparator: { slots: SelectSeparatorBase.classes },
   switch: { slots: SwitchBase.classes },
   popoverTrigger: { slots: PopoverTriggerBase.classes },
@@ -103,9 +84,7 @@ export const slotClassRegistry = {
   radio: { slots: RadioBase.classes },
   radioItem: { slots: RadioItemBase.classes },
   radioIndicator: { slots: RadioIndicatorBase.classes },
-  radioText: { slots: RadioTextBase.classes },
   radioLabel: { slots: RadioLabelBase.classes },
-  radioDescription: { slots: RadioDescriptionBase.classes },
   tooltipTrigger: { slots: TooltipTriggerBase.classes },
   tooltipContent: { slots: TooltipContentBase.classes },
   tooltipHeader: { slots: TooltipHeaderBase.classes },

@@ -55,19 +55,6 @@
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 
-  > input[data-hidden] {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: 0;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    opacity: 0;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-
   &[data-position='right'] {
     flex-direction: row-reverse;
   }
@@ -94,26 +81,16 @@
     visibility: hidden;
   }
 
-  .tk-radio-text {
+  .tk-radio-label {
     display: inline-flex;
     flex: 1 1 auto;
     min-width: 0;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--basic-switcher-text-gap);
-  }
-
-  .tk-radio-label {
     color: var(--text-darkest);
     font-size: inherit;
     line-height: inherit;
-    font-weight: 400;
-  }
-
-  .tk-radio-description {
-    color: var(--text-base);
-    font-size: var(--desktop-body-xs-size);
-    line-height: var(--desktop-body-xs-line-height);
     font-weight: 400;
   }
 
@@ -152,10 +129,6 @@
       color: var(--text-sub-base);
     }
 
-    .tk-radio-description {
-      color: var(--text-sub-base);
-    }
-
     .tk-radio-indicator {
       border-color: var(--border-sub-base);
       background-color: var(--background-light);
@@ -167,7 +140,11 @@
     }
   }
 
-  &[data-invalid] {
+  // Invalid styling is driven by the radiogroup root's `data-invalid` (emitted
+  // by Spar and resolved from `<Field invalid>` upstream). Items style
+  // themselves through this ancestor selector instead of mirroring the attr
+  // locally, which keeps Field/Spar as the single source of truth.
+  .tk-radio[data-invalid] & {
     .tk-radio-indicator {
       border-color: var(--states-danger-base);
       background-color: var(--static-light);
@@ -184,6 +161,10 @@
     &[data-state='checked']:hover:not([data-disabled]) .tk-radio-indicator {
       border-color: var(--states-danger-sub-base);
       background-color: var(--states-danger-light);
+    }
+
+    &[data-type='card'] {
+      border-color: var(--states-danger-base);
     }
   }
 
@@ -241,16 +222,12 @@
     border-radius: var(--card-switcher-container-radius);
     background-color: var(--static-light);
 
-    .tk-radio-text {
+    .tk-radio-label {
       gap: var(--card-switcher-text-gap);
     }
 
     &:hover:not([data-disabled]) {
       background-color: var(--background-lightest);
-    }
-
-    &[data-invalid] {
-      border-color: var(--states-danger-base);
     }
   }
 }

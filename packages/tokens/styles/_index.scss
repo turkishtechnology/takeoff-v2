@@ -166,6 +166,14 @@
   @include popover.popover-content;
 }
 
+.tk-popover-header {
+  @include popover.popover-header;
+}
+
+.tk-popover-description {
+  @include popover.popover-description;
+}
+
 .tk-popover-arrow {
   @include popover.popover-arrow;
 }

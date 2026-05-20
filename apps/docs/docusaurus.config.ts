@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import tailwindPlugin from './plugins/tailwind';
 
 function loadEnvFile(fileName: string): void {
   const filePath = resolve(process.cwd(), fileName);
@@ -42,7 +43,7 @@ const config: Config = {
   title: 'Takeoff Spar',
   tagline: 'Product docs for the React-first Spar wrapper layer.',
   favicon: 'img/favicon.ico',
-  url: 'https://takeoff.example.com',
+  url: 'https://takeoff-v2.app.turkishtechlab.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   i18n: {
@@ -68,10 +69,11 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
+  plugins: [tailwindPlugin],
   themeConfig: {
     image: 'img/takeoff-og.jpg',
     colorMode: {
-      respectPrefersColorScheme: true,
+      respectPrefersColorScheme: false,
     },
     navbar: {
       title: 'Takeoff Spar',

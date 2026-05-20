@@ -1,20 +1,31 @@
-import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
-import type { SwitchRenderProps as SparSwitchRenderProps } from '@turkish-technology/spar';
+import type { ComponentPropsWithoutRef, ElementType, ReactNode, Ref } from 'react';
+import type { PolymorphicProps, SwitchProps as SparSwitchProps, SwitchRenderProps as UpstreamSwitchRenderProps } from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type SwitchSize = 'xlarge' | 'large' | 'base' | 'small' | 'xsmall';
 export type SwitchVariant = 'info' | 'success';
-export type SwitchSlot = 'root' | 'control' | 'track' | 'thumb' | 'label' | 'hint';
-export type SwitchRenderProps = SparSwitchRenderProps;
+export type SwitchSlot = 'root' | 'indicator' | 'thumb';
 
-export interface SwitchProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'classNames' | 'onChange'> {
-  /** Controlled checked state. */
-  checked?: boolean;
-  /** Uncontrolled initial checked state. */
-  defaultChecked?: boolean;
-  /** Fired when the checked state changes. */
-  onChange?: (checked: boolean) => void;
+/**
+ * Render props passed to the root `Switch` render-prop child. Re-exports
+ * Spar's shape verbatim — consumers reading the state inside compound
+ * children should use `Switch.Indicator` render-prop instead, which receives
+ * the takeoff-spar split via context.
+ */
+export type SwitchRenderProps = UpstreamSwitchRenderProps;
+
+/**
+ * Render props passed to `Switch.Indicator` function-children. Mirrors the
+ * shape used by `Checkbox.Indicator`.
+ */
+export interface SwitchIndicatorRenderProps {
+  checked: boolean;
+  disabled: boolean;
+  readOnly: boolean;
+}
+
+interface SwitchOwnProps {
   /**
    * Size scale.
    * @defaultValue 'base'
@@ -26,53 +37,50 @@ export interface SwitchProps extends Omit<ComponentPropsWithoutRef<'div'>, 'chil
    */
   variant?: SwitchVariant;
   /**
-   * Marks the switch as visually invalid.
+   * Marks the switch as visually invalid. When inside a `<Field>`, Spar
+   * inherits the Field's invalid state automatically — pass this prop only
+   * to override.
    * @defaultValue false
    */
   invalid?: boolean;
-  /** Disabled state — prevents interaction and removes the control from tab order. */
-  disabled?: boolean;
-  /** Read-only state — remains focusable but does not change value. */
-  readOnly?: boolean;
-  /** Required state for form validation. */
-  required?: boolean;
-  /** Form submission value. Forwarded to the underlying Spar primitive. */
-  value?: string;
-  /** ID of the external form this switch belongs to. */
-  form?: string;
-  /** Form field name. */
-  name?: string;
-  /** Compound children for switch anatomy, or a render function exposing Spar's state. */
-  children?: ReactNode | ((state: SwitchRenderProps) => ReactNode);
-  /** Per-slot class name overrides. */
+  /** Per-slot extra classes. */
   classNames?: ClassNamesMap<SwitchSlot>;
-  /** Per-slot HTML attribute overrides. */
+  /** Per-slot HTML-attribute overrides. */
   slotProps?: SlotPropsMap<SwitchSlot>;
-  ref?: Ref<HTMLDivElement>;
-}
-
-export interface SwitchControlProps extends ComponentPropsWithoutRef<'button'> {
-  ref?: Ref<HTMLButtonElement>;
-}
-
-export interface SwitchTrackProps extends ComponentPropsWithoutRef<'span'> {
-  ref?: Ref<HTMLSpanElement>;
-}
-
-export interface SwitchThumbProps extends ComponentPropsWithoutRef<'span'> {
-  ref?: Ref<HTMLSpanElement>;
-}
-
-export interface SwitchLabelProps extends ComponentPropsWithoutRef<'span'> {
-  ref?: Ref<HTMLSpanElement>;
-}
-
-export interface SwitchHintProps extends ComponentPropsWithoutRef<'span'> {
   /**
-   * Leading icon rendered before the hint text. Pass `null` to hide.
-   * @defaultValue a built-in info glyph
+   * Compound children for the switch anatomy, or a render function exposing
+   * Spar's state. Compound children are the canonical composition path; the
+   * render-prop is preserved for parity with Spar's leaf primitive.
    */
-  icon?: ReactNode;
+  children?: ReactNode | ((state: UpstreamSwitchRenderProps) => ReactNode);
+}
+
+/**
+ * Public props for `Switch`. Polymorphic via `as` — defaults to Spar's
+ * `<button role="switch">` element.
+ */
+export type SwitchProps<T extends ElementType = 'button'> = PolymorphicProps<
+  'button',
+  T,
+  SwitchOwnProps &
+    // Behavior surface owned by Spar. `invalid` is intentionally NOT picked
+    // here — takeoff-spar exposes a plain `invalid` boolean (same name as
+    // Spar) declared in SwitchOwnProps and forwards it explicitly at the
+    // call site so the JSDoc stays under takeoff-spar's authorial control.
+    Pick<SparSwitchProps, 'checked' | 'defaultChecked' | 'onChange' | 'disabled' | 'readOnly' | 'required' | 'name' | 'value' | 'form' | 'autoFocus'>
+>;
+
+export interface SwitchIndicatorProps extends Omit<ComponentPropsWithoutRef<'span'>, 'children'> {
+  /**
+   * Indicator content. When omitted, the built-in track + thumb anatomy is
+   * rendered automatically (a `thumb` slot is mounted inside the indicator
+   * span). When a function, receives the current `checked` / `disabled` /
+   * `readOnly` state from the root and its return value replaces the inner
+   * slot. Passing a `ReactNode` likewise replaces the inner slot entirely —
+   * the consumer becomes responsible for any `data-slot="thumb"` wrapper
+   * they need for theming.
+   */
+  children?: ReactNode | ((state: SwitchIndicatorRenderProps) => ReactNode);
   ref?: Ref<HTMLSpanElement>;
 }
 

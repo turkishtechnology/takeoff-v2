@@ -216,6 +216,76 @@
   background: var(--runway-ink-ghost);
 }
 
+.sectionItemText {
+  display: inline;
+}
+
+/* Inline `code` spans inside an item's text. */
+.inlineCode {
+  font-family: var(--runway-type-mono-family);
+  font-size: 0.88em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--runway-surface-dark);
+  border: 1px solid var(--runway-surface-dark-border);
+  color: var(--runway-ink);
+  white-space: nowrap;
+}
+
+/* Before/after code blocks attached to a breaking-change item. */
+.itemCode {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.itemCodeBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.itemCodeLabel {
+  font-family: var(--runway-type-mono-family);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--runway-ink-faint);
+}
+
+.itemCodeBlock[data-variant='before'] .itemCodeLabel {
+  color: var(--runway-ink-faint);
+}
+
+.itemCodeBlock[data-variant='after'] .itemCodeLabel {
+  color: var(--runway-cardinal-bright);
+}
+
+.itemCodePre {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--runway-surface-dark);
+  border: 1px solid var(--runway-surface-dark-border);
+  border-radius: 6px;
+  font-family: var(--runway-type-mono-family);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--runway-ink);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.itemCodePre code {
+  font-family: inherit;
+  font-size: inherit;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
 /* ── Collapsible sections (disclosure group) ─────────────────── */
 /* TODO: Replace with <Accordion> from @takeoff-ui/react-spar once ported to docs. */
 

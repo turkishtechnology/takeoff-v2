@@ -98,7 +98,7 @@ authoring model. Concretely:
 
 When a subcomponent needs to expose render-time state to consumers, use
 function-as-children:
-`<Checkbox.Icon>{({ checked, indeterminate }) => …}</Checkbox.Icon>`.
+`<Checkbox.Indicator>{({ checked, indeterminate }) => …}</Checkbox.Indicator>`.
 
 ## Naming Conventions
 

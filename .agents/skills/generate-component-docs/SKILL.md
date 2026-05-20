@@ -89,10 +89,11 @@ pattern:
   `Disabled Item`, `Hide Arrows`, `Force-Mounted Content`,
   `Accessibility & Keyboard`, `API Reference`.
 - Keep prop and data-attribute descriptions factual and short.
-- Pre-format every `LiveCode` source string exactly as it should appear in the
-  docs UI. Display-only demos do not run runtime Prettier. If Prettier would
-  rewrite visible demo source strings, wrap the demo constants block with MDX
-  `<!-- prettier-ignore-start -->` / `<!-- prettier-ignore-end -->`.
+- All `LiveCode` demos are editable by default — do not pass `editable={false}`.
+  Pre-format every `LiveCode` source string exactly as it should appear in the
+  docs UI. If Prettier would rewrite visible demo source strings, wrap the demo
+  constants block with MDX `<!-- prettier-ignore-start -->` /
+  `<!-- prettier-ignore-end -->`.
 - Do not add extra docs architecture files for component docs.
 
 ## API table policy

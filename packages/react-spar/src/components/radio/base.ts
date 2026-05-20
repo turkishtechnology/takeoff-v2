@@ -1,8 +1,8 @@
 import { createComponentBase } from '../../core';
 
-import type { RadioDescriptionProps, RadioIndicatorProps, RadioIndicatorSlot, RadioItemProps, RadioLabelProps, RadioProps, RadioTextProps } from './types';
+import type { RadioIndicatorProps, RadioIndicatorSlot, RadioItemProps, RadioLabelProps, RadioProps } from './types';
 
-// @archetype inherited — wraps SparRadioRoot (the radiogroup div). Wrapper
+// @archetype inherited — wraps Spar's Radio (the radiogroup div). Wrapper
 // emits the canonical class + data-slot anchor. Group layout hooks
 // (`data-position`, `data-spread`) are visual only; state/keyboard/ARIA stays
 // in Spar.
@@ -35,23 +35,11 @@ export const RadioIndicatorBase = createComponentBase<RadioIndicatorProps, Radio
   },
 });
 
-// @archetype react-enhancement — Spar Radio exposes no Text part.
-export const RadioTextBase = createComponentBase<RadioTextProps, 'root'>({
-  name: 'RadioText',
-  slots: ['root'] as const,
-  classes: { root: 'tk-radio-text' },
-});
-
-// @archetype react-enhancement — Spar Radio exposes no Label part.
+// @archetype react-enhancement — Spar Radio exposes no Label part. Acts as the
+// per-item text container; consumers compose their own helper text / multi-line
+// layout inside it (the wrapper does not ship a separate Description part).
 export const RadioLabelBase = createComponentBase<RadioLabelProps, 'root'>({
   name: 'RadioLabel',
   slots: ['root'] as const,
   classes: { root: 'tk-radio-label' },
-});
-
-// @archetype react-enhancement — Spar Radio exposes no Description part.
-export const RadioDescriptionBase = createComponentBase<RadioDescriptionProps, 'root'>({
-  name: 'RadioDescription',
-  slots: ['root'] as const,
-  classes: { root: 'tk-radio-description' },
 });

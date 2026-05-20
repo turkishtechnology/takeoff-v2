@@ -7,6 +7,10 @@ import type {
   PopoverCloseSlot,
   PopoverContentProps,
   PopoverContentSlot,
+  PopoverDescriptionProps,
+  PopoverDescriptionSlot,
+  PopoverHeaderProps,
+  PopoverHeaderSlot,
   PopoverTriggerProps,
   PopoverTriggerSlot,
 } from './types';
@@ -26,6 +30,24 @@ export const PopoverContentBase = createComponentBase<PopoverContentProps, Popov
   slots: ['root'] as const,
   classes: {
     root: 'tk-popover-content',
+  },
+});
+
+// @archetype react-enhancement — no upstream equivalent
+export const PopoverHeaderBase = createComponentBase<PopoverHeaderProps, PopoverHeaderSlot>({
+  name: 'PopoverHeader',
+  slots: ['root'] as const,
+  classes: {
+    root: 'tk-popover-header',
+  },
+});
+
+// @archetype react-enhancement — no upstream equivalent
+export const PopoverDescriptionBase = createComponentBase<PopoverDescriptionProps, PopoverDescriptionSlot>({
+  name: 'PopoverDescription',
+  slots: ['root'] as const,
+  classes: {
+    root: 'tk-popover-description',
   },
 });
 

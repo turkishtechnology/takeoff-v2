@@ -12,10 +12,10 @@ export const SelectItem = <T extends ElementType = 'div'>(props: SelectItemProps
 
   const { rootAttrs, rest } = composeRootAttrs(SelectItemBase, props as SelectItemProps<'div'>, theme);
 
-  const { value, disabled, textValue, children, ref, ...spar } = rest;
+  const { value, disabled, label, children, ref, ...spar } = rest;
 
   return (
-    <SparSelectItem {...spar} value={value} disabled={disabled} textValue={textValue} ref={ref} {...rootAttrs}>
+    <SparSelectItem {...spar} value={value} disabled={disabled} label={label} ref={ref} {...rootAttrs}>
       {children}
     </SparSelectItem>
   );
