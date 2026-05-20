@@ -17,50 +17,12 @@ import { ApiBadge } from '@site/src/components/ApiBadge';
 
 export const accordionScope = { Accordion };
 
-<!-- prettier-ignore-start -->
-
-export const accordionDemoCss = String.raw`
-.accordion-demo {
-  width: min(100%, 720px);
-}
-
-.accordion-demo-stack {
-  display: grid;
-  width: min(100%, 720px);
-  gap: 12px;
-}
-
-.accordion-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-
-.accordion-demo-icon {
-  display: inline-grid;
-  width: 24px;
-  height: 24px;
-  place-items: center;
-  border-radius: 999px;
-  background: var(--primary-base);
-  color: var(--static-white);
-}
-
-.accordion-demo-icon svg {
-  display: block;
-}
-`;
+{/* prettier-ignore-start */}
 
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <Accordion className="accordion-demo" defaultValue="fare">
+    <Accordion className="w-full" defaultValue="fare">
       <Accordion.Item value="fare">
         <Accordion.Header>
           <Accordion.Trigger>
@@ -111,7 +73,7 @@ function MultipleDemo() {
   return (
     <Accordion
       multiple
-      className="accordion-demo"
+      className="w-full"
       defaultValue={['boarding', 'baggage']}
       mode="compact"
       type="divided"
@@ -166,10 +128,10 @@ function ControlledAccordionDemo() {
   const [value, setValue] = useState('documents');
 
   return (
-    <div className="accordion-demo-stack">
-      <div className="accordion-demo-note">Open panel: {value}</div>
+    <div className="grid w-full gap-3">
+      <div className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">Open panel: {value}</div>
       <Accordion
-        className="accordion-demo"
+        className="w-full"
         value={value}
         onValueChange={setValue}
         collapsible
@@ -242,7 +204,7 @@ function CustomIndicatorDemo() {
 
   return (
     <Accordion
-      className="accordion-demo accordion-demo-large"
+      className="w-full"
       defaultValue="service"
       size="large"
     >
@@ -286,7 +248,7 @@ render(<CustomIndicatorDemo />);
 export const disabledDemo = String.raw`
 function DisabledDemo() {
   return (
-    <Accordion className="accordion-demo" defaultValue="open">
+    <Accordion className="w-full" defaultValue="open">
       <Accordion.Item value="open">
         <Accordion.Header>
           <Accordion.Trigger>
@@ -321,7 +283,7 @@ render(<DisabledDemo />);
 export const withoutIndicatorDemo = String.raw`
 function WithoutIndicatorDemo() {
   return (
-    <Accordion className="accordion-demo" defaultValue="hours">
+    <Accordion className="w-full" defaultValue="hours">
       <Accordion.Item value="hours">
         <Accordion.Header>
           <Accordion.Trigger>Customer support hours</Accordion.Trigger>
@@ -351,7 +313,7 @@ render(<WithoutIndicatorDemo />);
 export const forceMountDemo = String.raw`
 function ForceMountDemo() {
   return (
-    <Accordion className="accordion-demo">
+    <Accordion className="w-full">
       <Accordion.Item value="search">
         <Accordion.Header>
           <Accordion.Trigger>
@@ -383,7 +345,7 @@ function ForceMountDemo() {
 render(<ForceMountDemo />);
 `;
 
-<!-- prettier-ignore-end -->
+{/* prettier-ignore-end */}
 
 # Accordion
 
@@ -414,7 +376,6 @@ import { Accordion } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={accordionDemoCss}
   noInline
   previewMinHeight={360}
   previewWrapper={ReactSparDemoRoot}
@@ -425,7 +386,6 @@ import { Accordion } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={multipleDemo}
-  cssCode={accordionDemoCss}
   noInline
   previewMinHeight={360}
   previewWrapper={ReactSparDemoRoot}
@@ -436,7 +396,6 @@ import { Accordion } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={controlledDemo}
-  cssCode={accordionDemoCss}
   noInline
   previewMinHeight={320}
   previewWrapper={ReactSparDemoRoot}
@@ -447,7 +406,6 @@ import { Accordion } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={customIndicatorDemo}
-  cssCode={accordionDemoCss}
   noInline
   previewMinHeight={300}
   previewWrapper={ReactSparDemoRoot}
@@ -458,7 +416,6 @@ import { Accordion } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={disabledDemo}
-  cssCode={accordionDemoCss}
   noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
@@ -469,7 +426,6 @@ import { Accordion } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={withoutIndicatorDemo}
-  cssCode={accordionDemoCss}
   noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
@@ -480,7 +436,6 @@ import { Accordion } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={forceMountDemo}
-  cssCode={accordionDemoCss}
   noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}

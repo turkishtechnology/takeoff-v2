@@ -16,19 +16,10 @@ export const buttonScope = { Button };
 
 {/* prettier-ignore-start */}
 
-export const buttonDemoCss = String.raw`
-.button-demo {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-`;
-
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <div className="button-demo">
+    <div className="flex flex-wrap gap-3">
       <Button>Primary</Button>
       <Button variant="secondary">Secondary</Button>
       <Button appearance="outlined">Outlined</Button>
@@ -44,7 +35,7 @@ render(<PlaygroundDemo />);
 export const sizesDemo = String.raw`
 function SizesDemo() {
   return (
-    <div className="button-demo">
+    <div className="flex flex-wrap gap-3 items-center">
       <Button size="small">Small</Button>
       <Button size="base">Base</Button>
       <Button size="large">Large</Button>
@@ -60,7 +51,7 @@ function LoadingDemo() {
   const [isLoading, setIsLoading] = React.useState(false);
 
   return (
-    <div className="button-demo">
+    <div className="flex flex-wrap gap-3 items-center">
       <Button isLoading>Saving…</Button>
       <Button variant="secondary" isLoading>Loading</Button>
       <Button
@@ -83,7 +74,7 @@ render(<LoadingDemo />);
 export const disabledDemo = String.raw`
 function DisabledDemo() {
   return (
-    <div className="button-demo">
+    <div className="flex flex-wrap gap-3 items-center">
       <Button disabled>Disabled</Button>
       <Button variant="secondary" disabled>Disabled</Button>
     </div>
@@ -98,7 +89,7 @@ function ToggleButtonDemo() {
   const [isPressed, setIsPressed] = useState(false);
 
   return (
-    <div className="button-demo">
+    <div className="flex flex-wrap gap-3 items-center">
       <Button
         variant={isPressed ? 'primary' : 'secondary'}
         isPressed={isPressed}
@@ -128,7 +119,7 @@ function IconsDemo() {
   );
 
   return (
-    <div className="button-demo">
+    <div className="flex flex-wrap gap-3 items-center">
       <Button startContent={<StarIcon />}>Favorite</Button>
       <Button endContent={<ArrowIcon />}>Continue</Button>
       <Button startContent={<StarIcon />} endContent={<ArrowIcon />}>Both</Button>
@@ -164,7 +155,6 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={buttonDemoCss}
   noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
@@ -175,7 +165,6 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={sizesDemo}
-  cssCode={buttonDemoCss}
   noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
@@ -186,7 +175,6 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={loadingDemo}
-  cssCode={buttonDemoCss}
   noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
@@ -197,7 +185,6 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={disabledDemo}
-  cssCode={buttonDemoCss}
   noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
@@ -208,7 +195,6 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={toggleDemo}
-  cssCode={buttonDemoCss}
   noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
@@ -219,7 +205,6 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={iconsDemo}
-  cssCode={buttonDemoCss}
   noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}

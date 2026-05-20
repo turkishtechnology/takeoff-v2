@@ -7,5 +7,5 @@
       "@takeoff-ui/react-spar": ["../../packages/react-spar/src/index.ts"]
     }
   },
-  "exclude": ["build"]
+  "exclude": ["build", "plugins"]
 }

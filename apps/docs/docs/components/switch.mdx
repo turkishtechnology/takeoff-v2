@@ -20,83 +20,18 @@ export const switchScope = { Field, Switch };
 
 {/* prettier-ignore-start */}
 
-export const switchDemoCss = String.raw`
-.switch-demo-stack {
-  display: grid;
-  width: min(100%, 520px);
-  gap: 14px;
-}
-
-/* Lays out Field.Label and Switch side-by-side, with Field.Description /
-   Field.ErrorMessage wrapping to a second row underneath the label. */
-.switch-demo-field-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  column-gap: 16px;
-  row-gap: 4px;
-  align-items: center;
-}
-
-.switch-demo-field-row > :not(:first-child):not(:nth-child(2)) {
-  grid-column: 1 / -1;
-}
-
-.switch-demo-inline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 18px;
-}
-
-.switch-demo-status {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-
-.switch-demo-form {
-  display: grid;
-  width: min(100%, 520px);
-  gap: 14px;
-}
-
-.switch-demo-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-}
-
-.switch-demo-button {
-  border: 0;
-  border-radius: 8px;
-  background: var(--primary-base);
-  color: var(--static-white);
-  cursor: pointer;
-  font: inherit;
-  font-weight: 600;
-  padding: 10px 16px;
-}
-`;
-
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <Field className="switch-demo-field-row">
-      <Field.Label>Flight status alerts</Field.Label>
+    <Field className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-1">
+        <Field.Label>Flight status alerts</Field.Label>
+        <Field.Description>We will let you know about delays, gate changes, and cancellations.</Field.Description>
+      </div>
       <Switch defaultChecked>
         <Switch.Indicator />
       </Switch>
-      <Field.Description>
-        We will let you know about delays, gate changes, and cancellations.
-      </Field.Description>
-    </Field>
+      </Field>
   );
 }
 
@@ -106,42 +41,42 @@ render(<PlaygroundDemo />);
 export const fieldWithSwitchDemo = String.raw`
 function FieldWithSwitchDemo() {
   return (
-    <div className="switch-demo-stack">
-      <Field required className="switch-demo-field-row">
+    <div className="grid w-full max-w-130 gap-3.5">
+      <Field required className="flex items-center justify-between gap-4">
         <Field.Label>Email alerts</Field.Label>
         <Switch defaultChecked>
           <Switch.Indicator />
         </Switch>
       </Field>
 
-      <Field className="switch-demo-field-row">
-        <Field.Label>SMS alerts</Field.Label>
+      <Field className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <Field.Label>SMS alerts</Field.Label>
+          <Field.Description>Standard messaging rates may apply.</Field.Description>
+        </div>
         <Switch>
           <Switch.Indicator />
         </Switch>
-        <Field.Description>
-          Standard messaging rates may apply.
-        </Field.Description>
       </Field>
 
-      <Field invalid className="switch-demo-field-row">
-        <Field.Label>Push notifications</Field.Label>
+      <Field invalid className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <Field.Label>Push notifications</Field.Label>
+          <Field.ErrorMessage>Enable browser notifications to turn this on.</Field.ErrorMessage>
+        </div>
         <Switch>
           <Switch.Indicator />
         </Switch>
-        <Field.ErrorMessage>
-          Enable browser notifications to turn this on.
-        </Field.ErrorMessage>
       </Field>
 
-      <Field disabled className="switch-demo-field-row">
+      <Field disabled className="flex items-center justify-between gap-4">
         <Field.Label>Disabled setting</Field.Label>
         <Switch>
           <Switch.Indicator />
         </Switch>
       </Field>
 
-      <Field readOnly className="switch-demo-field-row">
+      <Field readOnly className="flex items-center justify-between gap-4">
         <Field.Label>Read-only setting</Field.Label>
         <Switch defaultChecked>
           <Switch.Indicator />
@@ -159,11 +94,11 @@ function ControlledSwitchDemo() {
   const [enabled, setEnabled] = useState(true);
 
   return (
-    <div className="switch-demo-stack">
-      <div className="switch-demo-status">
+    <div className="grid w-full max-w-130 gap-3.5">
+      <div className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">
         Notifications {enabled ? 'enabled' : 'paused'}
       </div>
-      <Field className="switch-demo-field-row">
+      <Field className="flex items-center justify-between gap-4">
         <Field.Label>Flight status notifications</Field.Label>
         <Switch checked={enabled} onChange={setEnabled}>
           <Switch.Indicator />
@@ -179,7 +114,7 @@ render(<ControlledSwitchDemo />);
 export const sizeDemo = String.raw`
 function SizeDemo() {
   return (
-    <div className="switch-demo-inline">
+    <div className="flex flex-wrap items-center gap-4.5">
       <Switch aria-label="Extra small switch" size="xsmall">
         <Switch.Indicator />
       </Switch>
@@ -205,14 +140,14 @@ render(<SizeDemo />);
 export const variantDemo = String.raw`
 function VariantDemo() {
   return (
-    <div className="switch-demo-stack">
-      <Field className="switch-demo-field-row">
+    <div className="grid w-full max-w-130 gap-3.5">
+      <Field className="flex items-center justify-between gap-4">
         <Field.Label>Seat alerts</Field.Label>
         <Switch defaultChecked variant="info">
           <Switch.Indicator />
         </Switch>
       </Field>
-      <Field className="switch-demo-field-row">
+      <Field className="flex items-center justify-between gap-4">
         <Field.Label>Auto check-in</Field.Label>
         <Switch defaultChecked variant="success">
           <Switch.Indicator />
@@ -243,7 +178,7 @@ function CustomIndicatorDemo() {
   );
 
   return (
-    <Field className="switch-demo-field-row">
+    <Field className="flex items-center justify-between gap-4">
       <Field.Label>Auto check-in</Field.Label>
       <Switch defaultChecked variant="success">
         <Switch.Indicator>
@@ -262,7 +197,7 @@ render(<CustomIndicatorDemo />);
 export const renderPropDemo = String.raw`
 function RenderPropDemo() {
   return (
-    <Field className="switch-demo-field-row">
+    <Field className="flex items-center justify-between gap-4">
       <Switch defaultChecked>
         {({ checked }) => (
           <>
@@ -286,7 +221,7 @@ function SwitchFormDemo() {
 
   return (
     <form
-      className="switch-demo-form"
+      className="grid w-full max-w-130 gap-3.5"
       onSubmit={(event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -300,23 +235,23 @@ function SwitchFormDemo() {
         );
       }}
     >
-      <Field className="switch-demo-field-row">
+      <Field className="flex items-center justify-between gap-4">
         <Field.Label>Email alerts</Field.Label>
         <Switch name="email" value="enabled" defaultChecked>
           <Switch.Indicator />
         </Switch>
       </Field>
-      <Field className="switch-demo-field-row">
+      <Field className="flex items-center justify-between gap-4">
         <Field.Label>SMS alerts</Field.Label>
         <Switch name="sms" value="enabled">
           <Switch.Indicator />
         </Switch>
       </Field>
-      <div className="switch-demo-actions">
-        <button className="switch-demo-button" type="submit">
+      <div className="flex flex-wrap items-center gap-3">
+        <button className="inline-flex items-center justify-center min-h-10 px-2.5 py-2 gap-1.5 rounded-lg border border-transparent bg-primary-base text-static-white text-sm font-normal leading-none tracking-[0.01em] whitespace-nowrap cursor-pointer transition-all duration-200" type="submit">
           Save
         </button>
-        <span className="switch-demo-status">{saved}</span>
+        <span className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">{saved}</span>
       </div>
     </form>
   );
@@ -357,7 +292,6 @@ import { Field, Switch } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={switchDemoCss}
   noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
@@ -373,7 +307,6 @@ shared IDs.
 
 <LiveCode
   code={fieldWithSwitchDemo}
-  cssCode={switchDemoCss}
   noInline
   previewMinHeight={460}
   previewWrapper={ReactSparDemoRoot}
@@ -384,7 +317,6 @@ shared IDs.
 
 <LiveCode
   code={controlledDemo}
-  cssCode={switchDemoCss}
   noInline
   previewMinHeight={240}
   previewWrapper={ReactSparDemoRoot}
@@ -395,7 +327,6 @@ shared IDs.
 
 <LiveCode
   code={sizeDemo}
-  cssCode={switchDemoCss}
   noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
@@ -406,7 +337,6 @@ shared IDs.
 
 <LiveCode
   code={variantDemo}
-  cssCode={switchDemoCss}
   noInline
   previewMinHeight={200}
   previewWrapper={ReactSparDemoRoot}
@@ -423,7 +353,6 @@ theming.
 
 <LiveCode
   code={customIndicatorDemo}
-  cssCode={switchDemoCss}
   noInline
   previewMinHeight={160}
   previewWrapper={ReactSparDemoRoot}
@@ -434,7 +363,6 @@ theming.
 
 <LiveCode
   code={renderPropDemo}
-  cssCode={switchDemoCss}
   noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
@@ -448,7 +376,6 @@ form submission.
 
 <LiveCode
   code={formDemo}
-  cssCode={switchDemoCss}
   noInline
   previewMinHeight={280}
   previewWrapper={ReactSparDemoRoot}

@@ -16,38 +16,6 @@ export const selectScope = { Select };
 
 {/* prettier-ignore-start */}
 
-export const selectDemoCss = String.raw`
-.select-demo {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: min(100%, 320px);
-}
-
-.select-demo-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-end;
-}
-
-.select-demo-row > * {
-  flex: 1 1 220px;
-}
-
-.select-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-`;
-
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
@@ -68,7 +36,7 @@ render(<PlaygroundDemo />);
 export const sizesDemo = String.raw`
 function SizesDemo() {
   return (
-    <div className="select-demo">
+    <div className="flex flex-col gap-4 w-full max-w-80">
       <Select size="small">
         <Select.Trigger placeholder="Small" />
         <Select.Content>
@@ -129,8 +97,8 @@ function ControlledSelectDemo() {
   const [value, setValue] = useState('eco');
 
   return (
-    <div className="select-demo">
-      <div className="select-demo-note">Selected: {value}</div>
+    <div className="flex flex-col gap-4 w-full max-w-80">
+      <div className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">Selected: {value}</div>
       <Select value={value} onChange={setValue}>
         <Select.Trigger placeholder="Pick a fare" />
         <Select.Content>
@@ -195,7 +163,6 @@ import { Select } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={selectDemoCss}
   noInline
   previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
@@ -206,7 +173,6 @@ import { Select } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={sizesDemo}
-  cssCode={selectDemoCss}
   noInline
   previewMinHeight={340}
   previewWrapper={ReactSparDemoRoot}
@@ -217,7 +183,6 @@ import { Select } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={groupsDemo}
-  cssCode={selectDemoCss}
   noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
@@ -228,7 +193,6 @@ import { Select } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={controlledDemo}
-  cssCode={selectDemoCss}
   noInline
   previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
@@ -239,7 +203,6 @@ import { Select } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={invalidDemo}
-  cssCode={selectDemoCss}
   noInline
   previewMinHeight={140}
   previewWrapper={ReactSparDemoRoot}

@@ -20,26 +20,6 @@ export const inputScope = { Field, Input };
 
 {/* prettier-ignore-start */}
 
-export const inputDemoCss = String.raw`
-.input-demo {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: min(100%, 360px);
-}
-
-.input-demo-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.input-demo-row > * {
-  flex: 1 1 200px;
-}
-`;
-
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
@@ -63,7 +43,7 @@ render(<PlaygroundDemo />);
 export const fieldWithInputDemo = String.raw`
 function FieldWithInputDemo() {
   return (
-    <div className="input-demo">
+    <div className="flex flex-col gap-4 w-full max-w-90">
       <Field required>
         <Field.Label>Email</Field.Label>
         <Input>
@@ -111,7 +91,7 @@ render(<FieldWithInputDemo />);
 export const sizesDemo = String.raw`
 function SizesDemo() {
   return (
-    <div className="input-demo">
+    <div className="flex flex-col gap-4 w-full max-w-90">
       <Field>
         <Field.Label>Small</Field.Label>
         <Input size="small">
@@ -146,7 +126,7 @@ render(<SizesDemo />);
 export const adornmentsDemo = String.raw`
 function AdornmentsDemo() {
   return (
-    <div className="input-demo">
+    <div className="flex flex-col gap-4 w-full max-w-90">
       <Field>
         <Field.Label>Amount</Field.Label>
         <Input>
@@ -215,7 +195,6 @@ import { Field, Input } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={inputDemoCss}
   noInline
   previewMinHeight={160}
   previewWrapper={ReactSparDemoRoot}
@@ -231,7 +210,6 @@ through shared IDs.
 
 <LiveCode
   code={fieldWithInputDemo}
-  cssCode={inputDemoCss}
   noInline
   previewMinHeight={460}
   previewWrapper={ReactSparDemoRoot}
@@ -242,7 +220,6 @@ through shared IDs.
 
 <LiveCode
   code={sizesDemo}
-  cssCode={inputDemoCss}
   noInline
   previewMinHeight={340}
   previewWrapper={ReactSparDemoRoot}
@@ -253,7 +230,6 @@ through shared IDs.
 
 <LiveCode
   code={adornmentsDemo}
-  cssCode={inputDemoCss}
   noInline
   previewMinHeight={240}
   previewWrapper={ReactSparDemoRoot}

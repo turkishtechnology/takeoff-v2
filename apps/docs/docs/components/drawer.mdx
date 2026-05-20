@@ -15,25 +15,13 @@ import { ApiBadge } from '@site/src/components/ApiBadge';
 
 export const drawerScope = { Drawer };
 
-<!-- prettier-ignore-start -->
-
-export const drawerDemoCss = String.raw`
-.drawer-demo-trigger {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border-light);
-  background: var(--primary-base);
-  color: var(--static-white);
-  font-weight: 600;
-  cursor: pointer;
-}
-`;
+{/* prettier-ignore-start */}
 
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
     <Drawer placement="right">
-      <Drawer.Trigger className="drawer-demo-trigger">
+      <Drawer.Trigger className="min-h-10 px-2.5 py-2 gap-1.5 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">
         Open Drawer
       </Drawer.Trigger>
       <Drawer.Overlay />
@@ -67,7 +55,7 @@ function PlacementDemo() {
     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
       {['left', 'right', 'top', 'bottom', 'full-screen'].map((p) => (
         <Drawer key={p} placement={p}>
-          <Drawer.Trigger className="drawer-demo-trigger">
+          <Drawer.Trigger className="min-h-10 px-2.5 py-2 gap-1.5 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">
             {p}
           </Drawer.Trigger>
           <Drawer.Overlay />
@@ -96,7 +84,7 @@ function ControlledDrawerDemo() {
   return (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       <button
-        className="drawer-demo-trigger"
+        className="min-h-10 px-2.5 py-2 gap-1.5 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer"
         onClick={() => setOpen(true)}
       >
         Open (external)
@@ -123,7 +111,7 @@ function ControlledDrawerDemo() {
 render(<ControlledDrawerDemo />);
 `;
 
-<!-- prettier-ignore-end -->
+{/* prettier-ignore-end */}
 
 # Drawer
 
@@ -156,7 +144,6 @@ import { Drawer } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={drawerDemoCss}
   noInline
   previewMinHeight={200}
   previewWrapper={ReactSparDemoRoot}
@@ -169,7 +156,6 @@ The `placement` prop controls from which side the drawer slides in.
 
 <LiveCode
   code={placementDemo}
-  cssCode={drawerDemoCss}
   noInline
   previewMinHeight={100}
   previewWrapper={ReactSparDemoRoot}
@@ -183,7 +169,6 @@ outside.
 
 <LiveCode
   code={controlledDemo}
-  cssCode={drawerDemoCss}
   noInline
   previewMinHeight={100}
   previewWrapper={ReactSparDemoRoot}

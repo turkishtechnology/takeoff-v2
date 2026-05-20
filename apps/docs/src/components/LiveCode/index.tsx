@@ -4,7 +4,6 @@ import { Highlight, themes } from 'prism-react-renderer';
 import { format } from 'prettier/standalone';
 import prettierPluginBabel from 'prettier/plugins/babel';
 import prettierPluginEstree from 'prettier/plugins/estree';
-import prettierPluginPostcss from 'prettier/plugins/postcss';
 import { LiveEditor, LiveProvider } from 'react-live';
 import './LiveCode.css';
 import { CodeErrorBanner } from './CodeErrorBanner';
@@ -13,12 +12,9 @@ import { CheckIcon, CopyIcon } from './icons';
 import { PreviewErrorFooter } from './PreviewErrorFooter';
 import { PreviewErrorOverlay } from './PreviewErrorOverlay';
 import { SnapshotPreview } from './SnapshotPreview';
-import type { LiveCodeTab } from './types';
 
 interface LiveCodeProps {
   code?: string;
-  cssCode?: string;
-  defaultTab?: LiveCodeTab;
   previewMinHeight?: number;
   previewWrapper?: ComponentType<PropsWithChildren>;
   scope?: Record<string, unknown>;
@@ -41,19 +37,16 @@ interface LiveCodeProps {
   editable?: boolean;
 }
 
-export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 220, previewWrapper, scope = {}, noInline = false, editable = true }: LiveCodeProps) => {
+export const LiveCode = ({ code, previewMinHeight = 220, previewWrapper, scope = {}, noInline = false, editable = true }: LiveCodeProps) => {
   const { colorMode } = useColorMode();
   const selectedTheme = colorMode === 'dark' ? themes.vsDark : themes.github;
-  const [activeTab, setActiveTab] = useState<LiveCodeTab>(defaultTab);
   const [isCopied, setIsCopied] = useState(false);
   const [formattedCode, setFormattedCode] = useState(code || '');
-  const [formattedCssCode, setFormattedCssCode] = useState(cssCode || '');
   const [resetKey, setResetKey] = useState(0);
   const [hasRenderedOnce, setHasRenderedOnce] = useState(false);
   const [isCodeCollapsed, setIsCodeCollapsed] = useState(false);
   const [isCodeExpanded, setIsCodeExpanded] = useState(false);
   const [canExpand, setCanExpand] = useState(false);
-  const styleTagRef = useRef<HTMLStyleElement | null>(null);
   const copyFeedbackTimeoutRef = useRef<number | null>(null);
   const codeBlockRef = useRef<HTMLDivElement>(null);
   const expandableRef = useRef<HTMLDivElement>(null);
@@ -120,66 +113,6 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
   }, [code, editable]);
 
   useEffect(() => {
-    if (!cssCode) {
-      setFormattedCssCode('');
-      if (activeTab === 'css') {
-        setActiveTab('js');
-      }
-      return;
-    }
-
-    let isCancelled = false;
-
-    const formatCss = async () => {
-      try {
-        const nextCssCode = await format(cssCode, {
-          endOfLine: 'lf',
-          parser: 'css',
-          plugins: [prettierPluginPostcss],
-          printWidth: 100,
-          singleQuote: true,
-          tabWidth: 2,
-        });
-
-        if (!isCancelled) {
-          setFormattedCssCode(nextCssCode.trim());
-        }
-      } catch {
-        if (!isCancelled) {
-          setFormattedCssCode(cssCode.trim());
-        }
-      }
-    };
-
-    void formatCss();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [activeTab, cssCode]);
-
-  useEffect(() => {
-    if (!cssCode) {
-      return;
-    }
-
-    if (!styleTagRef.current) {
-      styleTagRef.current = document.createElement('style');
-      styleTagRef.current.setAttribute('data-live-code-demo', 'true');
-      document.head.appendChild(styleTagRef.current);
-    }
-
-    styleTagRef.current.textContent = cssCode;
-
-    return () => {
-      if (styleTagRef.current) {
-        document.head.removeChild(styleTagRef.current);
-        styleTagRef.current = null;
-      }
-    };
-  }, [cssCode]);
-
-  useEffect(() => {
     return () => {
       if (copyFeedbackTimeoutRef.current !== null) {
         window.clearTimeout(copyFeedbackTimeoutRef.current);
@@ -193,16 +126,15 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
     const scrollHeight = el.scrollHeight;
     el.style.setProperty('--natural-height', `${scrollHeight}px`);
     setCanExpand(scrollHeight > 144);
-  }, [formattedCode, formattedCssCode, activeTab, isCodeCollapsed]);
+  }, [formattedCode, isCodeCollapsed]);
 
   const handleCopy = useCallback(async () => {
-    const textToCopy = activeTab === 'js' ? formattedCode : formattedCssCode;
-    if (!textToCopy) {
+    if (!formattedCode) {
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(textToCopy);
+      await navigator.clipboard.writeText(formattedCode);
       setIsCopied(true);
 
       if (copyFeedbackTimeoutRef.current !== null) {
@@ -216,7 +148,7 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
     } catch {
       setIsCopied(false);
     }
-  }, [activeTab, formattedCode, formattedCssCode]);
+  }, [formattedCode]);
 
   const handleCopyError = useCallback(async (errorName: string, errorMessage: string, stack: string) => {
     const text = `${errorName}: ${errorMessage}\n${stack || ''}`;
@@ -269,80 +201,25 @@ export const LiveCode = ({ code, cssCode, defaultTab = 'js', previewMinHeight = 
             isCollapsed={isCodeCollapsed}
             onToggle={handleToggleCode}
             headerActions={
-              <>
-                <div className="tabs" role="tablist" aria-label="Demo source tabs">
-                  <div className="tabs-list">
-                    <button
-                      className="tab"
-                      type="button"
-                      role="tab"
-                      aria-selected={activeTab === 'js'}
-                      aria-label="JavaScript"
-                      data-state={activeTab === 'js' ? 'active' : 'inactive'}
-                      onClick={() => setActiveTab('js')}
-                    >
-                      <span className="tab-label">JS</span>
-                    </button>
-                    {cssCode && (
-                      <button
-                        className="tab"
-                        type="button"
-                        role="tab"
-                        aria-selected={activeTab === 'css'}
-                        aria-label="CSS"
-                        data-state={activeTab === 'css' ? 'active' : 'inactive'}
-                        onClick={() => setActiveTab('css')}
-                      >
-                        <span className="tab-label">CSS</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <button
-                  className="live-code-action-button"
-                  type="button"
-                  onClick={handleCopy}
-                  aria-label={isCopied ? 'Copied to clipboard' : 'Copy code'}
-                  data-copied={isCopied ? '' : undefined}
-                >
-                  {isCopied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
-                </button>
-              </>
+              <button
+                className="live-code-action-button"
+                type="button"
+                onClick={handleCopy}
+                aria-label={isCopied ? 'Copied to clipboard' : 'Copy code'}
+                data-copied={isCopied ? '' : undefined}
+              >
+                {isCopied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
+              </button>
             }
           >
             <div className={`live-code-expandable${isCodeExpanded ? ' expanded' : ''}${canExpand ? ' has-overflow' : ''}`} ref={expandableRef}>
               <div className="live-code-wrapper">
                 {editable && <CodeErrorBanner onCopy={handleCopyError} onDismiss={handleDismissError} />}
 
-                {activeTab === 'js' ? (
-                  editable ? (
-                    <LiveEditor theme={selectedTheme} className="live-editor" code={formattedCode} />
-                  ) : (
-                    <Highlight theme={selectedTheme} code={formattedCode} language="tsx">
-                      {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                        <pre
-                          className={`live-editor ${className}`}
-                          style={{
-                            ...style,
-                            overflowX: 'auto',
-                            overflowY: 'auto',
-                            whiteSpace: 'pre',
-                            wordWrap: 'normal',
-                          }}
-                        >
-                          {tokens.map((line, lineIndex) => (
-                            <div key={lineIndex} {...getLineProps({ line })}>
-                              {line.map((token, tokenIndex) => (
-                                <span key={tokenIndex} {...getTokenProps({ token })} />
-                              ))}
-                            </div>
-                          ))}
-                        </pre>
-                      )}
-                    </Highlight>
-                  )
+                {editable ? (
+                  <LiveEditor theme={selectedTheme} className="live-editor" code={formattedCode} />
                 ) : (
-                  <Highlight theme={selectedTheme} code={formattedCssCode} language="css">
+                  <Highlight theme={selectedTheme} code={formattedCode} language="tsx">
                     {({ className, style, tokens, getLineProps, getTokenProps }) => (
                       <pre
                         className={`live-editor ${className}`}

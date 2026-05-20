@@ -16,19 +16,10 @@ export const badgeScope = { Badge };
 
 {/* prettier-ignore-start */}
 
-export const badgeDemoCss = String.raw`
-.badge-demo {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-`;
-
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <div className="badge-demo">
+    <div className="flex gap-3">
       <Badge>Primary</Badge>
       <Badge variant="secondary">Secondary</Badge>
       <Badge variant="success">Success</Badge>
@@ -46,7 +37,7 @@ render(<PlaygroundDemo />);
 export const appearancesDemo = String.raw`
 function AppearancesDemo() {
   return (
-    <div className="badge-demo">
+    <div className="flex gap-3">
       <Badge appearance="filled">Filled</Badge>
       <Badge appearance="filledLight">Filled Light</Badge>
       <Badge appearance="outlined">Outlined</Badge>
@@ -61,7 +52,7 @@ render(<AppearancesDemo />);
 export const sizesDemo = String.raw`
 function SizesDemo() {
   return (
-    <div className="badge-demo">
+    <div className="flex gap-3 items-center">
       <Badge size="small">Small</Badge>
       <Badge size="base">Base</Badge>
       <Badge size="large">Large</Badge>
@@ -75,7 +66,7 @@ render(<SizesDemo />);
 export const roundedDemo = String.raw`
 function RoundedDemo() {
   return (
-    <div className="badge-demo">
+    <div className="flex gap-3">
       <Badge rounded>12</Badge>
       <Badge variant="danger" rounded>99+</Badge>
       <Badge variant="success" rounded>New</Badge>
@@ -101,7 +92,7 @@ function IconsDemo() {
   );
 
   return (
-    <div className="badge-demo">
+    <div className="flex gap-3">
       <Badge variant="success" startContent={<CheckIcon />}>Verified</Badge>
       <Badge variant="info" startContent={<DotIcon />}>Online</Badge>
       <Badge variant="danger" endContent={<DotIcon />}>Offline</Badge>
@@ -115,7 +106,7 @@ render(<IconsDemo />);
 export const allVariantsDemo = String.raw`
 function AllVariantsDemo() {
   return (
-    <div className="badge-demo">
+    <div className="flex flex-wrap gap-3 justify-center">
       <Badge variant="primary">Primary</Badge>
       <Badge variant="secondary">Secondary</Badge>
       <Badge variant="neutral">Neutral</Badge>
@@ -137,7 +128,7 @@ render(<AllVariantsDemo />);
 export const dotDemo = String.raw`
 function DotDemo() {
   return (
-    <div className="badge-demo">
+    <div className="flex flex-wrap gap-3">
       <Badge variant="primary" dot />
       <Badge variant="danger" dot />
       <Badge variant="success" dot />
@@ -172,7 +163,6 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={badgeDemoCss}
   noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
@@ -183,7 +173,6 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={appearancesDemo}
-  cssCode={badgeDemoCss}
   noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
@@ -194,7 +183,6 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={sizesDemo}
-  cssCode={badgeDemoCss}
   noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
@@ -205,7 +193,6 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={roundedDemo}
-  cssCode={badgeDemoCss}
   noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
@@ -216,7 +203,6 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={iconsDemo}
-  cssCode={badgeDemoCss}
   noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
@@ -227,7 +213,6 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={allVariantsDemo}
-  cssCode={badgeDemoCss}
   noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}
@@ -238,7 +223,6 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={dotDemo}
-  cssCode={badgeDemoCss}
   noInline
   previewMinHeight={60}
   previewWrapper={ReactSparDemoRoot}

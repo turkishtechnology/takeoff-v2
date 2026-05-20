@@ -16,60 +16,29 @@ export const radioScope = { Radio };
 
 {/* prettier-ignore-start */}
 
-export const radioDemoCss = String.raw`
-.radio-demo {
-  width: min(100%, 480px);
-}
-
-.radio-demo-stack {
-  display: grid;
-  gap: 16px;
-  width: min(100%, 480px);
-}
-
-.radio-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-
-.radio-helper {
-  color: var(--text-base);
-  font-size: var(--desktop-body-xs-size);
-  line-height: var(--desktop-body-xs-line-height);
-  font-weight: 400;
-}
-`;
-
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <Radio aria-label="Cabin class" defaultValue="economy" className="radio-demo">
+    <Radio aria-label="Cabin class" defaultValue="economy" className="max-w-120">
       <Radio.Item value="economy">
         <Radio.Indicator />
         <Radio.Label>
           Economy
-          <span className="radio-helper">Standard fare with carry-on baggage.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Standard fare with carry-on baggage.</span>
         </Radio.Label>
       </Radio.Item>
       <Radio.Item value="business">
         <Radio.Indicator />
         <Radio.Label>
           Business
-          <span className="radio-helper">Lie-flat seat, lounge access, priority boarding.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Lie-flat seat, lounge access, priority boarding.</span>
         </Radio.Label>
       </Radio.Item>
       <Radio.Item value="first">
         <Radio.Indicator />
         <Radio.Label>
           First
-          <span className="radio-helper">Private suite and chef-curated dining.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Private suite and chef-curated dining.</span>
         </Radio.Label>
       </Radio.Item>
     </Radio>
@@ -82,7 +51,7 @@ render(<PlaygroundDemo />);
 export const sizesDemo = String.raw`
 function SizesDemo() {
   return (
-    <div className="radio-demo-stack">
+    <div className="grid gap-4 max-w-120">
       <Radio aria-label="Small" size="small" defaultValue="aisle">
         <Radio.Item value="aisle">
           <Radio.Indicator />
@@ -123,26 +92,26 @@ render(<SizesDemo />);
 export const cardDemo = String.raw`
 function CardDemo() {
   return (
-    <Radio aria-label="Meal preference" type="card" defaultValue="standard" className="radio-demo">
+    <Radio aria-label="Meal preference" type="card" defaultValue="standard" className="max-w-120">
       <Radio.Item value="standard">
         <Radio.Indicator />
         <Radio.Label>
           Standard meal
-          <span className="radio-helper">Chef-curated regional menu.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Chef-curated regional menu.</span>
         </Radio.Label>
       </Radio.Item>
       <Radio.Item value="vegetarian">
         <Radio.Indicator />
         <Radio.Label>
           Vegetarian
-          <span className="radio-helper">Lacto-ovo plant-forward dishes.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Lacto-ovo plant-forward dishes.</span>
         </Radio.Label>
       </Radio.Item>
       <Radio.Item value="kosher">
         <Radio.Indicator />
         <Radio.Label>
           Kosher
-          <span className="radio-helper">Certified by a recognized rabbinical authority.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Certified by a recognized rabbinical authority.</span>
         </Radio.Label>
       </Radio.Item>
     </Radio>
@@ -155,7 +124,7 @@ render(<CardDemo />);
 export const layoutDemo = String.raw`
 function LayoutDemo() {
   return (
-    <div className="radio-demo-stack">
+    <div className="grid gap-4 max-w-120">
       <Radio aria-label="Trip type" orientation="horizontal" spread defaultValue="round">
         <Radio.Item value="one">
           <Radio.Indicator />
@@ -176,14 +145,14 @@ function LayoutDemo() {
           <Radio.Indicator />
           <Radio.Label>
             Email
-            <span className="radio-helper">Booking confirmations and itinerary changes.</span>
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Booking confirmations and itinerary changes.</span>
           </Radio.Label>
         </Radio.Item>
         <Radio.Item value="sms">
           <Radio.Indicator />
           <Radio.Label>
             SMS
-            <span className="radio-helper">Gate changes and boarding reminders.</span>
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Gate changes and boarding reminders.</span>
           </Radio.Label>
         </Radio.Item>
       </Radio>
@@ -199,8 +168,8 @@ function ControlledRadioDemo() {
   const [value, setValue] = useState('return');
 
   return (
-    <div className="radio-demo-stack">
-      <div className="radio-demo-note">Selected: {value}</div>
+    <div className="grid gap-4 max-w-120">
+      <div className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">Selected: {value}</div>
       <Radio
         aria-label="Refund preference"
         value={value}
@@ -210,14 +179,14 @@ function ControlledRadioDemo() {
           <Radio.Indicator />
           <Radio.Label>
             Refund to original payment
-            <span className="radio-helper">Settles in 5–10 business days.</span>
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Settles in 5–10 business days.</span>
           </Radio.Label>
         </Radio.Item>
         <Radio.Item value="voucher">
           <Radio.Indicator />
           <Radio.Label>
             Travel voucher
-            <span className="radio-helper">Includes a 10% bonus, valid for 12 months.</span>
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Includes a 10% bonus, valid for 12 months.</span>
           </Radio.Label>
         </Radio.Item>
       </Radio>
@@ -231,19 +200,19 @@ render(<ControlledRadioDemo />);
 export const disabledDemo = String.raw`
 function DisabledDemo() {
   return (
-    <Radio aria-label="Ancillary services" defaultValue="lounge" className="radio-demo">
+    <Radio aria-label="Ancillary services" defaultValue="lounge" className="max-w-120">
       <Radio.Item value="lounge">
         <Radio.Indicator />
         <Radio.Label>
           Lounge access
-          <span className="radio-helper">Available at IST and select hubs.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Available at IST and select hubs.</span>
         </Radio.Label>
       </Radio.Item>
       <Radio.Item value="upgrade" disabled>
         <Radio.Indicator />
         <Radio.Label>
           Upgrade to Business (sold out)
-          <span className="radio-helper">No seats available on this flight.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">No seats available on this flight.</span>
         </Radio.Label>
       </Radio.Item>
     </Radio>
@@ -256,7 +225,7 @@ render(<DisabledDemo />);
 export const invalidDemo = String.raw`
 function InvalidDemo() {
   return (
-    <Radio aria-label="Passport type" invalid required className="radio-demo">
+    <Radio aria-label="Passport type" invalid required className="max-w-120">
       <Radio.Item value="standard">
         <Radio.Indicator />
         <Radio.Label>Standard passport</Radio.Label>
@@ -275,14 +244,14 @@ render(<InvalidDemo />);
 export const renderPropDemo = String.raw`
 function RenderPropDemo() {
   return (
-    <Radio aria-label="Seat row preference" defaultValue="exit" className="radio-demo">
+    <Radio aria-label="Seat row preference" defaultValue="exit" className="max-w-120">
       <Radio.Item value="front">
         {({ isChecked }) => (
           <>
             <Radio.Indicator />
             <Radio.Label>
               Front of cabin
-              <span className="radio-helper">
+              <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
                 {isChecked ? 'Selected — boards first.' : 'Quieter, near the galley.'}
               </span>
             </Radio.Label>
@@ -295,7 +264,7 @@ function RenderPropDemo() {
             <Radio.Indicator />
             <Radio.Label>
               Exit row
-              <span className="radio-helper">
+              <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
                 {isChecked ? 'Selected — extra legroom, eligibility required.' : 'Extra legroom, eligibility required.'}
               </span>
             </Radio.Label>
@@ -340,7 +309,6 @@ import { Radio } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={radioDemoCss}
   noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
@@ -351,7 +319,6 @@ import { Radio } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={sizesDemo}
-  cssCode={radioDemoCss}
   noInline
   previewMinHeight={280}
   previewWrapper={ReactSparDemoRoot}
@@ -362,7 +329,6 @@ import { Radio } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={cardDemo}
-  cssCode={radioDemoCss}
   noInline
   previewMinHeight={280}
   previewWrapper={ReactSparDemoRoot}
@@ -377,7 +343,6 @@ edge with `position="right"`. Per-item `position` overrides the group default.
 
 <LiveCode
   code={layoutDemo}
-  cssCode={radioDemoCss}
   noInline
   previewMinHeight={280}
   previewWrapper={ReactSparDemoRoot}
@@ -388,7 +353,6 @@ edge with `position="right"`. Per-item `position` overrides the group default.
 
 <LiveCode
   code={controlledDemo}
-  cssCode={radioDemoCss}
   noInline
   previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
@@ -399,7 +363,6 @@ edge with `position="right"`. Per-item `position` overrides the group default.
 
 <LiveCode
   code={disabledDemo}
-  cssCode={radioDemoCss}
   noInline
   previewMinHeight={200}
   previewWrapper={ReactSparDemoRoot}
@@ -410,7 +373,6 @@ edge with `position="right"`. Per-item `position` overrides the group default.
 
 <LiveCode
   code={invalidDemo}
-  cssCode={radioDemoCss}
   noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
@@ -425,7 +387,6 @@ own selection without reading context manually.
 
 <LiveCode
   code={renderPropDemo}
-  cssCode={radioDemoCss}
   noInline
   previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
