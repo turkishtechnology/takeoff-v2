@@ -59,8 +59,8 @@ Before merging, **read the diff**. You're looking for:
 - The generated `packages/*/CHANGELOG.md` entries are readable. If a contributor
   wrote a thin summary (`"Fix Select"`), this is your last chance to push back
   and ask them to rewrite the changeset before merge.
-- No accidental version bumps on private packages (`@takeoff-design/tailwind`,
-  `docs`).
+- No accidental version bumps on packages excluded from publishing (`docs` is
+  the only one today; see `.changeset/config.json` `ignore`).
 
 If anything looks wrong, **don't merge yet** — fix the source changeset on
 `develop` and let the bot regenerate the PR.
