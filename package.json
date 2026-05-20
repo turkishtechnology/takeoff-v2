@@ -13,7 +13,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,cjs,css,scss,json,md,mdx,yml,yaml,html}\" --cache",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,cjs,css,scss,json,md,mdx,yml,yaml,html}\"",
     "release": "pnpm changeset publish",
-    "release:snapshot": "pnpm changeset version --snapshot next && pnpm changeset publish --tag next --no-git-checks",
+    "release:snapshot": "pnpm changeset version --snapshot next && pnpm -r --filter='./packages/react-spar' --filter='./packages/tokens' publish --tag next --no-git-checks --access public",
     "prepare": "husky"
   },
   "lint-staged": {

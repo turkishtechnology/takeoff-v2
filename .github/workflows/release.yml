@@ -49,9 +49,15 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Node 22 ships with npm 10.x; we upgrade to npm 11.5.1+ below for
+          # OIDC trusted publishing support. The cache/registry-url settings
+          # remain the same.
+          node-version: 22
           cache: pnpm
           registry-url: "https://registry.npmjs.org"
+
+      - name: Upgrade npm to a version with OIDC trusted publishing support
+        run: npm install -g npm@latest
 
       - run: pnpm install --frozen-lockfile
 
