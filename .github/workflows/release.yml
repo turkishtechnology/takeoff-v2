@@ -1,0 +1,77 @@
+name: Release
+
+# Handles the two-phase release loop owned by Changesets:
+#
+# 1. On every push to `develop`, the Changesets action looks at .changeset/.
+#    - If pending changesets exist, it opens (or updates) a single "Version
+#      Packages" PR. Stable publish is gated behind merging that PR.
+#    - If no pending changesets exist (i.e., a Version Packages PR was just
+#      merged), it publishes the bumped packages to npm under the `latest`
+#      dist-tag.
+#
+# 2. Whenever pending changesets remain after step 1, we also publish a
+#    snapshot release under the `next` dist-tag. Beta-testers and consuming
+#    apps can pin against `@takeoff-ui/react-spar@next` to get the latest
+#    integration build without waiting for a tagged release.
+#
+# Authentication uses npm Trusted Publishing (OIDC) — no NPM_TOKEN secret.
+# Configure each package at https://www.npmjs.com/package/<name>/settings as a
+# trusted publisher for this repo + workflow before merging.
+
+on:
+  push:
+    branches: [develop]
+
+# Avoid two concurrent releases (e.g. rapid merges to develop) racing the npm
+# registry or each other on the Version Packages PR.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    # contents:    let the Changesets action commit Version Packages updates
+    # pull-requests: open/update the Version Packages PR
+    # id-token:    npm OIDC for trusted publishing + provenance attestations
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: "https://registry.npmjs.org"
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+
+      # Either opens the Version Packages PR or publishes when that PR merges.
+      - id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: pnpm release
+          version: pnpm changeset version
+          commit: "chore: version packages"
+          title: "chore: version packages"
+          createGithubReleases: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Snapshot publish to the `next` dist-tag — only when the Version
+      # Packages PR is still pending (i.e. there are unreleased changesets).
+      # Skipped automatically on the merge of the Version Packages PR itself.
+      - name: Publish snapshot to 'next'
+        if: steps.changesets.outputs.hasChangesets == 'true'
+        run: pnpm release:snapshot
