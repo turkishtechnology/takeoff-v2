@@ -12,12 +12,12 @@ Every `data-*` attribute this package emits falls into exactly one category. The
 category determines the value convention (presence vs string), where it belongs
 in the DOM (root vs slot owner), and how CSS should consume it.
 
-| Category     | Value shape               | Examples                          |
-| ------------ | ------------------------- | --------------------------------- |
-| **Anatomy**  | kebab-case string         | `data-slot`                       |
-| **State**    | presence or finite string | `data-disabled`, `data-state`     |
-| **Variant**  | string from a closed set  | `data-variant`, `data-size`       |
-| **Semantic** | presence (layout/content) | `data-full-width`, `data-rounded` |
+| Category     | Value shape               | Examples                         |
+| ------------ | ------------------------- | -------------------------------- |
+| **Anatomy**  | kebab-case string         | `data-slot`                      |
+| **State**    | presence or finite string | `data-disabled`, `data-state`    |
+| **Variant**  | string from a closed set  | `data-variant`, `data-size`      |
+| **Semantic** | presence (layout/content) | `data-rounded`, `data-icon-only` |
 
 A new `data-*` hook that does not fit a category is a design smell — surface it
 in the component contract before shipping.
@@ -95,7 +95,6 @@ table needs updating.
 
 | Attribute             | Component             | Meaning                                          |
 | --------------------- | --------------------- | ------------------------------------------------ |
-| `data-full-width`     | Button                | Stretches to container width                     |
 | `data-icon-only`      | Button                | No label content, only icon                      |
 | `data-rounded`        | Button                | Circular icon-only shape                         |
 | `data-underline`      | Button                | Label is underlined                              |
