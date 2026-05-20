@@ -1,6 +1,6 @@
 {
   "name": "@takeoff-ui/react-spar",
-  "version": "0.1.0-beta.2",
+  "version": "0.1.0",
   "description": "React-first Takeoff wrappers built on top of @turkish-technology/spar.",
   "type": "module",
   "author": "Turkish Technology Frontend Infrastructure Team <takeoffui@thy.com>",
@@ -58,7 +58,7 @@
     "clsx": "^2.1.1"
   },
   "peerDependencies": {
-    "@takeoff-design/tokens": "0.1.0-beta.0",
+    "@takeoff-design/tokens": "0.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
