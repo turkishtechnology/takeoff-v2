@@ -197,8 +197,6 @@
   outline: none;
   overflow: hidden;
   position: relative;
-  width: fit-content;
-  max-width: 100%;
   border: 1px solid transparent;
   text-decoration: none;
   white-space: nowrap;
@@ -207,10 +205,6 @@
   -webkit-tap-highlight-color: transparent;
   transition: all 200ms cubic-bezier(0.17, 0.67, 0.83, 0.67);
   cursor: pointer;
-
-  &[data-full-width] {
-    width: 100%;
-  }
 
   &[data-underline] .tk-button-label {
     text-decoration: underline;
