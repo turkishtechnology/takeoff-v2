@@ -40,9 +40,24 @@ jobs:
       - name: Validate markdown link integrity
         uses: lycheeverse/lychee-action@v2
         with:
-          # lychee 0.23+ rejects relative paths for --base; pass the runner's
-          # absolute workspace dir instead.
-          args: --no-progress --base ${{ github.workspace }} --exclude-path node_modules './**/*.md' './**/*.mdx'
+          # No --base: with it, lychee resolves relative links against the base
+          # instead of the file's own location, producing bogus paths like
+          # `<workspace>/../../../docs/foo.md`. Without --base, relative links
+          # like `../foo.md` resolve correctly against the markdown file.
+          #
+          # Excludes:
+          # - `^file:///docs/` — Docusaurus root-relative links (e.g.
+          #   `/docs/installation`) that only resolve in the Docusaurus runtime,
+          #   not in the filesystem
+          # - `spar\.app\.turkishtechlab\.com` — external host that times out
+          #   intermittently from the CI runner
+          args: |
+            --no-progress
+            --exclude-path node_modules
+            --exclude '^file:///docs/'
+            --exclude 'spar\.app\.turkishtechlab\.com'
+            './**/*.md'
+            './**/*.mdx'
           fail: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
