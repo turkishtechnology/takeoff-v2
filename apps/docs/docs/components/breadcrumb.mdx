@@ -1,0 +1,389 @@
+---
+title: Breadcrumb
+description:
+  Shows the user's current location as a trail of links back through the site
+  hierarchy, so they can jump up the path without using the browser back button.
+sidebar_label: Breadcrumb
+sidebar_position: 2
+slug: /components/breadcrumb
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Breadcrumb,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const breadcrumbScope = { Breadcrumb };
+
+<!-- prettier-ignore-start -->
+
+export const breadcrumbDemoCss = String.raw`
+.breadcrumb-demo-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.breadcrumb-demo-note {
+  width: fit-content;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--static-light);
+  color: var(--text-dark);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 8px 12px;
+}
+`;
+
+export const playgroundDemo = String.raw`
+<Breadcrumb>
+  <Breadcrumb.List>
+    <Breadcrumb.Item>
+      <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator />
+    <Breadcrumb.Item>
+      <Breadcrumb.Link href="/flights">Flights</Breadcrumb.Link>
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator />
+    <Breadcrumb.Item>
+      <Breadcrumb.Page>Istanbul → London</Breadcrumb.Page>
+    </Breadcrumb.Item>
+  </Breadcrumb.List>
+</Breadcrumb>
+`;
+
+export const sizeDemo = String.raw`
+<div className="breadcrumb-demo-stack">
+  <Breadcrumb size="base">
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>Account</Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+
+  <Breadcrumb size="large">
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>Account</Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+</div>
+`;
+
+export const customSeparatorDemo = String.raw`
+<Breadcrumb>
+  <Breadcrumb.List>
+    <Breadcrumb.Item>
+      <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator>/</Breadcrumb.Separator>
+    <Breadcrumb.Item>
+      <Breadcrumb.Link href="/loyalty">Loyalty</Breadcrumb.Link>
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator>/</Breadcrumb.Separator>
+    <Breadcrumb.Item>
+      <Breadcrumb.Page>Status & miles</Breadcrumb.Page>
+    </Breadcrumb.Item>
+  </Breadcrumb.List>
+</Breadcrumb>
+`;
+
+export const externalLinkDemo = String.raw`
+<Breadcrumb>
+  <Breadcrumb.List>
+    <Breadcrumb.Item>
+      <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator />
+    <Breadcrumb.Item>
+      <Breadcrumb.Link href="https://help.example.com" isExternal>
+        Help center
+      </Breadcrumb.Link>
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator />
+    <Breadcrumb.Item>
+      <Breadcrumb.Page>Refunds</Breadcrumb.Page>
+    </Breadcrumb.Item>
+  </Breadcrumb.List>
+</Breadcrumb>
+`;
+
+export const navigateDemo = String.raw`
+function NavigateBreadcrumbDemo() {
+  const [last, setLast] = useState(null);
+
+  const handleNavigate = (href, event) => {
+    event.preventDefault();
+    setLast(href);
+  };
+
+  return (
+    <div className="breadcrumb-demo-stack">
+      <div className="breadcrumb-demo-note">
+        {last ? 'Navigate to ' + last : 'Click a link to intercept routing'}
+      </div>
+      <Breadcrumb onNavigate={handleNavigate}>
+        <Breadcrumb.List>
+          <Breadcrumb.Item>
+            <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+          </Breadcrumb.Item>
+          <Breadcrumb.Separator />
+          <Breadcrumb.Item>
+            <Breadcrumb.Link href="/booking">Booking</Breadcrumb.Link>
+          </Breadcrumb.Item>
+          <Breadcrumb.Separator />
+          <Breadcrumb.Item>
+            <Breadcrumb.Page>Passenger details</Breadcrumb.Page>
+          </Breadcrumb.Item>
+        </Breadcrumb.List>
+      </Breadcrumb>
+    </div>
+  );
+}
+
+render(<NavigateBreadcrumbDemo />);
+`;
+
+export const disabledDemo = String.raw`
+<Breadcrumb disabled>
+  <Breadcrumb.List>
+    <Breadcrumb.Item>
+      <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator />
+    <Breadcrumb.Item>
+      <Breadcrumb.Link href="/checkout">Checkout</Breadcrumb.Link>
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator />
+    <Breadcrumb.Item>
+      <Breadcrumb.Page>Payment</Breadcrumb.Page>
+    </Breadcrumb.Item>
+  </Breadcrumb.List>
+</Breadcrumb>
+`;
+
+<!-- prettier-ignore-end -->
+
+# Breadcrumb
+
+`Breadcrumb` shows the user's current location as a trail of links back through
+the site hierarchy, so they can jump up the path without using the browser back
+button.
+
+## Usage
+
+```tsx
+import { Breadcrumb } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Breadcrumb>
+  <Breadcrumb.List>
+    <Breadcrumb.Item>
+      <Breadcrumb.Link />
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator />
+    <Breadcrumb.Item>
+      <Breadcrumb.Page />
+    </Breadcrumb.Item>
+  </Breadcrumb.List>
+</Breadcrumb>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  cssCode={breadcrumbDemoCss}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={breadcrumbScope}
+/>
+
+## Size
+
+<LiveCode
+  code={sizeDemo}
+  cssCode={breadcrumbDemoCss}
+  editable={false}
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={breadcrumbScope}
+/>
+
+## Custom Separator
+
+<LiveCode
+  code={customSeparatorDemo}
+  cssCode={breadcrumbDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={breadcrumbScope}
+/>
+
+## External Link
+
+<LiveCode
+  code={externalLinkDemo}
+  cssCode={breadcrumbDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={breadcrumbScope}
+/>
+
+## Routing Integration
+
+`onNavigate` runs for every `Breadcrumb.Link` activation (click or
+
+<kbd>Enter</kbd>). Call `event.preventDefault()` on the wrapped click before
+handing the destination off to your client-side router. A link-level `onPress`
+takes priority and short-circuits `onNavigate` when both are set.
+
+<LiveCode
+  code={navigateDemo}
+  cssCode={breadcrumbDemoCss}
+  editable={false}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={breadcrumbScope}
+/>
+
+## Disabled
+
+Setting `disabled` on the root cascades to every `Breadcrumb.Link`, swaps the
+anchor's `href` out, and surfaces `data-disabled` on the trail so theme recipes
+can tone the colors down.
+
+<LiveCode
+  code={disabledDemo}
+  cssCode={breadcrumbDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={breadcrumbScope}
+/>
+
+## Accessibility & Keyboard
+
+- `Breadcrumb` renders a `<nav>` landmark labelled `"Breadcrumb"` by default;
+  pass `aria-label` to localize it or scope it to the surrounding page.
+- `Breadcrumb.List` is an `<ol>`, so assistive tech announces the trail as an
+  ordered list.
+- `Breadcrumb.Page` marks the current location with `aria-current="page"`.
+- `Breadcrumb.Separator` renders an `<li aria-hidden>` so screen readers do not
+  announce the chevron between items.
+- Links are native `<a>` elements — focus, tab order, and activation
+  (<kbd>Enter</kbd>) follow standard anchor semantics.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Breadcrumb {#breadcrumb}
+
+See
+[Spar Breadcrumb docs](https://spar.app.turkishtechlab.com/docs/Components/Breadcrumb)
+for primitive behavior.
+
+#### Props {#breadcrumb-props}
+
+| Name                            | Type                                                                                | Default | Description                                             |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | `Breadcrumb.List` rendered inside the `<nav>` landmark. |
+| <ApiBadge label="size" />       | <code>BreadcrumbSize</code>                                                         | 'base'  | Density scale cascaded to every part through context.   |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                          |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                      |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.   |
+
+#### Data attributes {#breadcrumb-data-attributes}
+
+| Attribute          | Applied when             | Purpose                                                                     |
+| ------------------ | ------------------------ | --------------------------------------------------------------------------- |
+| `data-slot="root"` | Always                   | Stable selector for wrapper styling on the root slot.                       |
+| `data-size`        | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| `data-disabled`    | When `disabled` is true. | Theme hook for the disabled trail. Emitted by both the wrapper and Spar.    |
+
+### Breadcrumb.List {#breadcrumb-list}
+
+See
+[Spar Breadcrumb docs](https://spar.app.turkishtechlab.com/docs/Components/Breadcrumb)
+for primitive behavior.
+
+#### Data attributes {#breadcrumb-list-data-attributes}
+
+| Attribute          | Applied when | Purpose                                                                     |
+| ------------------ | ------------ | --------------------------------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.                       |
+| `data-size`        | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+
+### Breadcrumb.Item {#breadcrumb-item}
+
+See
+[Spar Breadcrumb docs](https://spar.app.turkishtechlab.com/docs/Components/Breadcrumb)
+for primitive behavior.
+
+#### Data attributes {#breadcrumb-item-data-attributes}
+
+| Attribute          | Applied when      | Purpose                                                                                                               |
+| ------------------ | ----------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `data-slot="root"` | Always            | Stable selector for wrapper styling on the root slot.                                                                 |
+| `data-size`        | Always            | Reflects the resolved `size` prop so theme recipes can scope size variants.                                           |
+| `data-position`    | Always            | `"first"`, `"middle"`, or `"last"`. Emitted by Spar so theme recipes can target a crumb by its position in the trail. |
+| `data-current`     | On the last item. | Emitted by Spar to mark the current page in the trail.                                                                |
+
+### Breadcrumb.Link {#breadcrumb-link}
+
+See
+[Spar Breadcrumb docs](https://spar.app.turkishtechlab.com/docs/Components/Breadcrumb)
+for primitive behavior.
+
+#### Data attributes {#breadcrumb-link-data-attributes}
+
+| Attribute          | Applied when                                               | Purpose                                                    |
+| ------------------ | ---------------------------------------------------------- | ---------------------------------------------------------- |
+| `data-slot="root"` | Always                                                     | Stable selector for wrapper styling on the root slot.      |
+| `data-external`    | When `isExternal` is true.                                 | Theme hook for the external link variant. Emitted by Spar. |
+| `data-disabled`    | When the link `disabled` is true, or the root is disabled. | Theme hook for the disabled link state. Emitted by Spar.   |
+
+### Breadcrumb.Page {#breadcrumb-page}
+
+See
+[Spar Breadcrumb docs](https://spar.app.turkishtechlab.com/docs/Components/Breadcrumb)
+for primitive behavior.
+
+#### Data attributes {#breadcrumb-page-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Breadcrumb.Separator {#breadcrumb-separator}
+
+See
+[Spar Breadcrumb docs](https://spar.app.turkishtechlab.com/docs/Components/Breadcrumb)
+for primitive behavior.
+
+#### Data attributes {#breadcrumb-separator-data-attributes}
+
+| Attribute          | Applied when | Purpose                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+
+{/* api-tables:end */}

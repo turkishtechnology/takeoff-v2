@@ -1,7 +1,7 @@
 import type { ElementType, ReactNode } from 'react';
 import type {
   PolymorphicProps,
-  RadioGroupProps as SparRadioGroupProps,
+  RadioProps as SparRadioProps,
   RadioItemProps as SparRadioItemProps,
   RadioItemRenderProps as SparRadioItemRenderProps,
 } from '@turkish-technology/spar';
@@ -71,7 +71,7 @@ export type RadioProps<T extends ElementType = 'div'> = PolymorphicProps<
     // disabled/required cascade, ARIA orientation (also drives keyboard nav),
     // and the two focus knobs (`selectOnFocus`, `autoFocus`). Other Spar props
     // (`children`, `as`, native HTML attrs) flow through PolymorphicProps.
-    Pick<SparRadioGroupProps, 'id' | 'value' | 'defaultValue' | 'onValueChange' | 'name' | 'disabled' | 'required' | 'orientation' | 'selectOnFocus' | 'autoFocus'>
+    Pick<SparRadioProps, 'id' | 'value' | 'defaultValue' | 'onValueChange' | 'name' | 'disabled' | 'required' | 'orientation' | 'selectOnFocus' | 'autoFocus'>
 >;
 
 export interface RadioItemOwnProps {

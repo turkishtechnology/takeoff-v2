@@ -1,0 +1,111 @@
+// Breadcrumb recipe — shared style contract for the takeoff-spar Breadcrumb
+// compound. Mirrors the takeoff-ui/core canonical anatomy:
+//
+//   .tk-breadcrumb            — root <nav>
+//   .tk-breadcrumb-list       — <ol>, list-style: none
+//   .tk-breadcrumb-item       — <li>
+//   .tk-breadcrumb-link       — interactive crumb (<a>)
+//   .tk-breadcrumb-page       — current page (non-interactive <span>)
+//   .tk-breadcrumb-separator  — <li aria-hidden> wrapping the chevron svg
+//
+// State/variant attributes:
+//   data-size      — density scale (base | large)
+//   data-disabled  — disabled trail (root) or link
+//   data-current   — last item / current page
+
+@use '../abstracts/mixins' as mixins;
+
+@mixin breadcrumb {
+  font-family: var(--family-body, 'Geologica', sans-serif);
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+
+  .tk-breadcrumb-list {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: var(--breadcrumb-container-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tk-breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  // Selector chain (.tk-breadcrumb .tk-breadcrumb-list .tk-breadcrumb-item .tk-breadcrumb-link)
+  // resolves to (0,4,0) so it beats the docs theme's
+  // `.theme-doc-markdown a:not(.card):not([class*='button'])` rule (0,3,1)
+  // that paints in-content anchors red with a dashed border-bottom.
+  .tk-breadcrumb-list .tk-breadcrumb-item .tk-breadcrumb-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    color: var(--text-sub-base);
+    font-family: var(--family-body);
+    font-size: var(--desktop-body-s-size);
+    line-height: var(--desktop-body-s-line-height);
+    font-weight: 400;
+    text-decoration: none;
+    border-bottom: 0;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+
+    &:where(:not([data-disabled])):hover {
+      color: var(--text-dark);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    @include mixins.disabled-state {
+      color: var(--text-sub-base);
+      cursor: not-allowed;
+      opacity: 0.6;
+      text-decoration: none;
+    }
+
+    @include mixins.focus-ring(var(--primary-focus));
+  }
+
+  .tk-breadcrumb-page {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    color: var(--text-dark);
+    font-family: var(--family-body);
+    font-size: var(--desktop-body-s-size);
+    line-height: var(--desktop-body-s-line-height);
+    font-weight: 500;
+  }
+
+  .tk-breadcrumb-separator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--breadcrumb-symbol-size);
+    height: var(--breadcrumb-symbol-size);
+    color: var(--icon-sub-base);
+    line-height: 1;
+
+    > svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &[data-size='large'] {
+    .tk-breadcrumb-list .tk-breadcrumb-item .tk-breadcrumb-link,
+    .tk-breadcrumb-page {
+      font-size: var(--desktop-body-m-base-size);
+      line-height: var(--desktop-body-m-base-line-height);
+    }
+
+    .tk-breadcrumb-separator > svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
