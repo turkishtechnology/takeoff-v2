@@ -1,0 +1,6 @@
+# Algolia-Crawler-Verif: 7AA9A90B919FC2BB
+
+User-agent: *
+Allow: /
+
+Sitemap: https://takeoff-v2.app.turkishtechlab.com/sitemap.xml
