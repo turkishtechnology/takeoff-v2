@@ -42,6 +42,17 @@ export type ChangelogLink = {
   href: string;
 };
 
+/**
+ * Per-package versions shipped together in this release. Keys must match the
+ * `key` field emitted by the `package-changelogs` Docusaurus plugin
+ * (`react-spar`, `tokens`, `tailwind`). The page resolves each key+version
+ * pair against the parsed CHANGELOG.md and renders the matching body inside a
+ * collapsible "Package details" disclosure. Versions that don't resolve are
+ * silently skipped — useful when a package (e.g. tailwind) ships without a
+ * Changesets-managed CHANGELOG.
+ */
+export type ChangelogPackageVersions = Partial<Record<'react-spar' | 'tokens' | 'tailwind', string>>;
+
 export type ChangelogEntry = {
   id: string;
   date: string;
@@ -51,6 +62,7 @@ export type ChangelogEntry = {
   media?: ChangelogMedia;
   sections: ChangelogSection[];
   links?: ChangelogLink[];
+  packageVersions?: ChangelogPackageVersions;
 };
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
@@ -59,6 +71,10 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     date: '2026-05-20',
     version: '0.1.0-beta.2',
     title: 'Select polish: Spar 0.2.0-beta.1, Figma-aligned styles, contentWidth',
+    packageVersions: {
+      'react-spar': '0.1.2',
+      'tokens': '0.1.2',
+    },
     summary:
       'A focused beta refining the Select compound. The wrapper migrates onto Spar 0.2.0-beta.1, which removes Select.Value and Select.ItemText in favor of native props on Trigger and Item. Panel and item styles are now driven by the Figma dropdown token family, and a new contentWidth prop replaces the shrink-wrapped panel with a trigger-aligned default that tracks responsive resizes.',
     sections: [
