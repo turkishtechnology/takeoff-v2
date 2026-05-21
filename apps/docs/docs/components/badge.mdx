@@ -21,6 +21,22 @@ function PlaygroundDemo() {
   return (
     <div className="flex flex-wrap justify-center gap-3">
       <Badge variant="primary">Primary</Badge>
+      <Badge variant="success" appearance="filledLight">Active</Badge>
+      <Badge variant="danger" rounded>3</Badge>
+      <Badge variant="info" appearance="outlined">Info</Badge>
+      <Badge variant="neutral" appearance="text">Draft</Badge>
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const variantsDemo = String.raw`
+function VariantsDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Badge variant="primary">Primary</Badge>
       <Badge variant="secondary">Secondary</Badge>
       <Badge variant="neutral">Neutral</Badge>
       <Badge variant="info">Info</Badge>
@@ -32,11 +48,13 @@ function PlaygroundDemo() {
       <Badge variant="cyan">Cyan</Badge>
       <Badge variant="business">Business</Badge>
       <Badge variant="teal">Teal</Badge>
+      <Badge variant="white">White</Badge>
+      <Badge variant="dark">Dark</Badge>
     </div>
   );
 }
 
-render(<PlaygroundDemo />);
+render(<VariantsDemo />);
 `;
 
 export const appearancesDemo = String.raw`
@@ -192,6 +210,16 @@ import { Badge } from '@takeoff-ui/react-spar';
   scope={badgeScope}
 />
 
+## Variants
+
+<LiveCode
+  code={variantsDemo}
+  noInline
+  previewMinHeight={60}
+  previewWrapper={ReactSparDemoRoot}
+  scope={badgeScope}
+/>
+
 ## Appearances
 
 <LiveCode
@@ -267,7 +295,7 @@ import { Badge } from '@takeoff-ui/react-spar';
 | <ApiBadge label="appearance" />   | <code><a href="#badge-td-badgeappearance">BadgeAppearance</a></code>                                                     | 'filled'  | Visual appearance.                                                                                                    |
 | <ApiBadge label="size" />         | <code><a href="#badge-td-badgesize">BadgeSize</a></code>                                                                 | 'base'    | Size scale.                                                                                                           |
 | <ApiBadge label="rounded" />      | <code>boolean</code>                                                                                                     | false     | Renders a pill-shaped badge with fully rounded corners.                                                               |
-| <ApiBadge label="dot" />          | <code>boolean</code>                                                                                                     | false     | Renders a minimal colored dot (6×6px) with no content. When true, children, startContent, and endContent are ignored. |
+| <ApiBadge label="dot" />          | <code>boolean</code>                                                                                                     | false     | Renders a minimal colored dot (8×8px) with no content. When true, children, startContent, and endContent are ignored. |
 | <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                                             | -         | Content rendered before children — typically an icon.                                                                 |
 | <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                                             | -         | Content rendered after children.                                                                                      |
 | <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#badge-td-badgeslot">BadgeSlot</a>, string&gt;&gt;</code>                            | -         | Per-slot extra classes.                                                                                               |
@@ -287,11 +315,11 @@ import { Badge } from '@takeoff-ui/react-spar';
 
 ### Type Definitions {#badge-type-definitions}
 
-| Name                                                                            | Definition                                                                                                                                                                                                 |
-| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <span id="badge-td-badgevariant"><ApiBadge label="BadgeVariant" /></span>       | <code>'primary' &#124; 'secondary' &#124; 'neutral' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning' &#124; 'verified' &#124; 'purple' &#124; 'cyan' &#124; 'business' &#124; 'teal'</code> |
-| <span id="badge-td-badgeappearance"><ApiBadge label="BadgeAppearance" /></span> | <code>'filled' &#124; 'filledLight' &#124; 'outlined' &#124; 'text'</code>                                                                                                                                 |
-| <span id="badge-td-badgesize"><ApiBadge label="BadgeSize" /></span>             | <code>'small' &#124; 'base' &#124; 'large'</code>                                                                                                                                                          |
-| <span id="badge-td-badgeslot"><ApiBadge label="BadgeSlot" /></span>             | <code>'root' &#124; 'label' &#124; 'icon'</code>                                                                                                                                                           |
+| Name                                                                            | Definition                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="badge-td-badgevariant"><ApiBadge label="BadgeVariant" /></span>       | <code>&#124; 'primary' &#124; 'secondary' &#124; 'neutral' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning' &#124; 'verified' &#124; 'purple' &#124; 'cyan' &#124; 'business' &#124; 'teal' &#124; 'white' &#124; 'dark'</code> |
+| <span id="badge-td-badgeappearance"><ApiBadge label="BadgeAppearance" /></span> | <code>'filled' &#124; 'filledLight' &#124; 'outlined' &#124; 'text'</code>                                                                                                                                                                     |
+| <span id="badge-td-badgesize"><ApiBadge label="BadgeSize" /></span>             | <code>'small' &#124; 'base' &#124; 'large'</code>                                                                                                                                                                                              |
+| <span id="badge-td-badgeslot"><ApiBadge label="BadgeSlot" /></span>             | <code>'root' &#124; 'label' &#124; 'icon'</code>                                                                                                                                                                                               |
 
 {/* api-tables:end */}
