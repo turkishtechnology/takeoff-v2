@@ -654,7 +654,15 @@
 
 a.breadcrumbs__link {
   position: relative;
-  top: 6px;
+  top: 12px;
+  height: 32px;
+  align-content: center;
+
+  svg {
+    top: 0px;
+    height: 16px;
+    width: 16px;
+  }
 }
 
 .breadcrumbs__link:hover {
