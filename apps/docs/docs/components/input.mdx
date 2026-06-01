@@ -358,6 +358,7 @@ import { Field, Input } from '@takeoff-ui/react-spar';
   <Input>
     <Input.LeadingIcon />
     <Input.Prefix />
+    <Input.Chips />
     <Input.Field />
     <Input.Suffix />
     <Input.TrailingIcon />
@@ -375,8 +376,11 @@ import { Field, Input } from '@takeoff-ui/react-spar';
 </Field>
 ```
 
-`Input.Strength` is authored inside `Input` (it reads the field value from
-context) but renders as the password strength meter just below the bordered row.
+Compose the parts à la carte — an input only needs the ones its variant calls
+for (password → `Input.RevealButton` / `Input.Strength`, number → the stepper,
+tags → `Input.Chips`). `Input.Strength` is authored inside `Input` (it reads the
+field value from context) but renders just below the bordered row, and
+`Input.Chips` renders each committed tag as a removable `Input.Chip`.
 
 ## Playground
 
