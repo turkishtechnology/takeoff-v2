@@ -668,6 +668,11 @@
     background 150ms ease;
 }
 
+a.breadcrumbs__link {
+  position: relative;
+  top: 6px;
+}
+
 .breadcrumbs__link:hover {
   color: var(--docs-ink-strong);
   background: var(--docs-surface-2);
