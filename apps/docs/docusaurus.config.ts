@@ -74,6 +74,7 @@ const config: Config = {
   themeConfig: {
     image: 'img/takeoff-og.jpg',
     colorMode: {
+      defaultMode: 'dark',
       respectPrefersColorScheme: false,
     },
     navbar: {
@@ -126,7 +127,7 @@ const config: Config = {
       ],
     },
     footer: {
-      style: 'light',
+      style: 'dark',
       links: [
         {
           title: 'Documentation',
