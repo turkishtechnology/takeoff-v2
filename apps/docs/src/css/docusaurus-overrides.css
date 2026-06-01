@@ -208,10 +208,6 @@
   color: #f6f6f8 !important;
 }
 
-[data-theme='dark'] code {
-  color: #ff4a5f !important;
-}
-
 [data-theme='dark'] ::marker {
   color: #b8b8c2 !important;
 }
