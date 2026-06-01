@@ -81,6 +81,18 @@
   @include input.input;
 }
 
+.tk-input-strength {
+  @include input.input-strength;
+}
+
+.tk-input-chips {
+  @include input.input-chips;
+}
+
+.tk-input-chip {
+  @include input.input-chip;
+}
+
 .tk-select {
   @include select.select;
 }

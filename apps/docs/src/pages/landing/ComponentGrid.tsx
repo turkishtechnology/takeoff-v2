@@ -94,9 +94,7 @@ function InputCardDemo(): JSX.Element {
       <Field>
         <Field.Label>Departure airport</Field.Label>
         <Input>
-          <Input.Container>
-            <Input.Field defaultValue="Istanbul (IST)" />
-          </Input.Container>
+          <Input.Field defaultValue="Istanbul (IST)" />
         </Input>
       </Field>
     </div>

@@ -13,7 +13,7 @@
 }
 
 // ---------------------------------------------------------------------------
-// Size mixin — applies size-scoped tokens to label, container, field, prefix
+// Size mixin — applies size-scoped tokens to the bordered input row
 // ---------------------------------------------------------------------------
 
 @mixin input-size(
@@ -31,19 +31,15 @@
   $field-line-height,
   $icon-size
 ) {
-  gap: $container-gap;
+  height: $height;
+  gap: $input-gap;
+  padding: $input-v-padding $input-h-padding;
+  border-radius: $radius;
 
-  .tk-input-label {
-    font-size: $label-size;
-    line-height: $label-line-height;
-    padding: $label-v-padding $label-h-padding;
-  }
-
-  .tk-input-container {
-    height: $height;
-    gap: $input-gap;
-    padding: $input-v-padding $input-h-padding;
-    border-radius: $radius;
+  &:has(textarea.tk-input-field),
+  &:has(.tk-input-chips) {
+    min-height: $height;
+    height: auto;
   }
 
   .tk-input-field {
@@ -57,13 +53,126 @@
     line-height: $field-line-height;
   }
 
-  .tk-input-start-content,
-  .tk-input-end-content,
+  .tk-input-leading-icon,
+  .tk-input-trailing-icon,
   .tk-input-clear-button,
-  .tk-input-spinner {
+  .tk-input-spinner,
+  .tk-input-reveal-button,
+  .tk-input-decrement,
+  .tk-input-increment {
     width: $icon-size;
     height: $icon-size;
     font-size: $icon-size;
+  }
+
+  .tk-input-stepper {
+    height: $icon-size;
+    font-size: $icon-size;
+  }
+
+  .tk-input-clear-button,
+  .tk-input-reveal-button,
+  .tk-input-decrement,
+  .tk-input-increment {
+    min-width: $icon-size;
+    min-height: $icon-size;
+
+    .tk-button-content {
+      width: $icon-size;
+      height: $icon-size;
+      font-size: $icon-size;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Strength meter mixin — apply to .tk-input-strength (a sibling of .tk-input,
+// rendered just below the bordered row). Four equal segments fill left-to-right
+// and recolour by strength level.
+// ---------------------------------------------------------------------------
+
+@mixin input-strength {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  padding-block: 0.125rem 0.25rem;
+
+  .tk-input-strength-segment {
+    flex: 1 0 0;
+    min-width: 0;
+    height: 0.25rem;
+    border-radius: var(--radius-m-base, 0.5rem);
+    background-color: var(--background-light);
+    transition: background-color 0.2s ease-in-out;
+
+    &[data-level='weak'] {
+      background-color: var(--states-danger-base);
+    }
+
+    &[data-level='medium'] {
+      background-color: var(--states-warning-base);
+    }
+
+    &[data-level='strong'] {
+      background-color: var(--states-success-base);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Chips mixins — apply to .tk-input-chips (region) and .tk-input-chip (token).
+// The region is display:contents so committed tags become flex children of the
+// bordered row and wrap inline with the field. The token matches takeoff-ui's
+// default chip (neutral / outlined / small) with a focusable remove button.
+// ---------------------------------------------------------------------------
+
+@mixin input-chips {
+  display: contents;
+}
+
+@mixin input-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  flex-shrink: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-m-base);
+  padding-block: var(--spacing-xxs);
+  padding-inline: var(--spacing-xs);
+  color: var(--text-darkest);
+  background-color: transparent;
+  font-size: var(--desktop-body-xs-size);
+  line-height: 1;
+  user-select: none;
+
+  .tk-input-chip-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tk-input-chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--icon-base);
+    font-size: 1.25em;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.15s ease-in-out;
+
+    &:hover {
+      color: var(--icon-darkest);
+    }
+
+    @include mixins.focus-ring(var(--neutral-focus));
   }
 }
 
@@ -74,70 +183,54 @@
 @mixin input {
   font-family: var(--family-body, 'Geologica', sans-serif);
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  box-sizing: border-box;
   width: 100%;
+  border: 1px solid var(--border-light);
+  background-color: var(--static-light);
+  transition:
+    border-color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out;
 
-  // ---- Label ----
-
-  .tk-input-label {
-    color: var(--text-darkest);
-    font-weight: 400;
-    cursor: default;
-  }
-
-  .tk-input-asterisk {
-    color: var(--states-danger-base);
-    font-size: var(--desktop-label-s-size);
-    font-weight: 300;
-    line-height: var(--desktop-label-s-line-height);
-    margin-inline-start: 0.125rem;
-  }
-
-  // ---- Container (bordered input row) ----
-
-  .tk-input-container {
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    width: 100%;
-    border: 1px solid var(--border-light);
-    background-color: var(--static-light);
-    transition:
-      border-color 0.2s ease-in-out,
-      background-color 0.2s ease-in-out;
-  }
-
-  .tk-input-container:hover {
+  &:hover {
     background-color: var(--background-lightest);
   }
 
-  .tk-input-container:focus-within {
+  &:focus-within {
     border-color: var(--states-info-base);
   }
 
-  .tk-input-container[data-invalid] {
+  &[data-invalid] {
     border-color: var(--states-danger-base);
   }
 
-  .tk-input-container[data-disabled] {
+  &[data-disabled] {
     pointer-events: none;
     background-color: var(--background-lightest);
-  }
 
-  .tk-input-container[data-readonly] {
-    background-color: var(--background-lightest);
-  }
-
-  &[data-disabled] {
-    .tk-input-label,
     .tk-input-field {
       color: var(--text-sub-base);
     }
   }
 
-  &[data-readonly] .tk-input-label {
-    color: var(--text-sub-base);
+  &[data-readonly] {
+    background-color: var(--background-lightest);
+  }
+
+  &:has(textarea.tk-input-field) {
+    align-items: flex-start;
+  }
+
+  // Chips mode: the bordered row wraps so committed tags flow onto multiple
+  // lines and the field keeps a usable typing width on the trailing row.
+  &:has(.tk-input-chips) {
+    flex-wrap: wrap;
+
+    .tk-input-field {
+      flex: 1 1 auto;
+      width: auto;
+      min-width: 1.875rem;
+    }
   }
 
   // ---- Field (native input) ----
@@ -178,6 +271,10 @@
     }
   }
 
+  textarea.tk-input-field {
+    resize: vertical;
+  }
+
   // ---- Prefix / Suffix ----
 
   .tk-input-prefix,
@@ -200,7 +297,7 @@
       position: absolute;
       inset-block: 0;
       inset-inline-end: 0;
-      width: 1px;
+      width: var(--spacing-px);
       background-color: var(--background-light);
     }
   }
@@ -215,15 +312,15 @@
       position: absolute;
       inset-block: 0;
       inset-inline-start: 0;
-      width: 1px;
+      width: var(--spacing-px);
       background-color: var(--background-light);
     }
   }
 
   // ---- Icons (leading / trailing) ----
 
-  .tk-input-start-content,
-  .tk-input-end-content {
+  .tk-input-leading-icon,
+  .tk-input-trailing-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -232,34 +329,16 @@
     line-height: 1;
   }
 
-  .tk-input-end-content {
+  .tk-input-trailing-icon {
     margin-inline-start: auto;
   }
 
-  .tk-input-icon-symbol {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', sans-serif;
-    font-style: normal;
-    font-weight: 400;
-    letter-spacing: normal;
-    line-height: 1;
-    text-transform: none;
-    white-space: nowrap;
-    direction: ltr;
-    font-variation-settings:
-      'FILL' 0,
-      'wght' 400,
-      'GRAD' 0,
-      'opsz' 24;
-  }
+  // ---- Actions / Spinner ----
 
-  // ---- Clear button ----
-
-  .tk-input-clear-button {
+  .tk-input-clear-button,
+  .tk-input-spinner,
+  .tk-input-reveal-button,
+  .tk-input-stepper {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -268,9 +347,24 @@
     padding: 0;
     border: 0;
     background: transparent;
-    color: var(--icon-sub-base);
-    cursor: pointer;
+    color: var(--icon-base);
     line-height: 1;
+  }
+
+  .tk-input-clear-button,
+  .tk-input-reveal-button,
+  .tk-input-decrement,
+  .tk-input-increment {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--icon-base);
+    line-height: 1;
+    cursor: pointer;
     transition: color 0.15s ease-in-out;
 
     &:hover {
@@ -281,51 +375,53 @@
 
     @include mixins.disabled-state {
       cursor: not-allowed;
-      color: var(--icon-sub-base);
+      color: var(--icon-base);
       pointer-events: none;
     }
   }
 
-  .tk-input-clear-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    line-height: 1;
+  .tk-input-clear-button.tk-button[data-type='text'],
+  .tk-input-reveal-button.tk-button[data-type='text'],
+  .tk-input-decrement.tk-button[data-type='text'],
+  .tk-input-increment.tk-button[data-type='text'] {
+    gap: 0;
+    min-width: 0;
+    padding: 0;
+    background-color: transparent;
+    color: var(--icon-base);
+
+    // The Button text-variant paints its content span with the brand colour
+    // (--primary-base). Force the icon to track the button's --icon-base in
+    // every state so the action icons stay neutral, matching takeoff-ui.
+    .tk-button-content {
+      color: inherit;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background-color: transparent;
+    }
   }
 
-  .tk-input-clear-icon-symbol {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', sans-serif;
-    font-style: normal;
-    font-weight: 400;
-    letter-spacing: normal;
-    line-height: 1;
-    text-transform: none;
-    white-space: nowrap;
-    direction: ltr;
-    font-variation-settings:
-      'FILL' 0,
-      'wght' 400,
-      'GRAD' 0,
-      'opsz' 24;
+  // Counter look (Core mode='counter'): Decrement/Increment placed as direct
+  // children flanking the field — outside Input.Stepper — keep the Button text
+  // variant's brand colour instead of the neutral action-icon colour, matching
+  // takeoff-ui. The value is centred between them. No mode/data-* flag needed.
+  & > .tk-input-decrement.tk-button[data-type='text'],
+  & > .tk-input-increment.tk-button[data-type='text'] {
+    color: var(--primary-base);
+
+    .tk-button-content {
+      color: var(--primary-base);
+    }
   }
 
-  // ---- Spinner ----
+  &:has(> .tk-input-decrement):has(> .tk-input-increment) .tk-input-field {
+    text-align: center;
+  }
 
-  .tk-input-spinner {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-inline-start: auto;
-    color: var(--icon-sub-base);
-    line-height: 1;
+  .tk-input-stepper {
+    gap: 0.125rem;
   }
 
   .tk-input-default-spinner {
@@ -339,31 +435,25 @@
     animation: tk-input-spin 0.8s linear infinite;
   }
 
-  // When clear button or spinner is present, prevent trailing-icon from
-  // also claiming margin-inline-start: auto (first one wins).
-  .tk-input-container:has(.tk-input-clear-button),
-  .tk-input-container:has(.tk-input-spinner) {
-    .tk-input-end-content {
+  .tk-input-clear-button ~ .tk-input-spinner,
+  .tk-input-clear-button ~ .tk-input-reveal-button,
+  .tk-input-clear-button ~ .tk-input-stepper,
+  .tk-input-spinner ~ .tk-input-reveal-button,
+  .tk-input-spinner ~ .tk-input-stepper,
+  .tk-input-reveal-button ~ .tk-input-stepper,
+  .tk-input-stepper ~ .tk-input-clear-button,
+  .tk-input-stepper ~ .tk-input-spinner,
+  .tk-input-stepper ~ .tk-input-reveal-button {
+    margin-inline-start: 0;
+  }
+
+  &:has(.tk-input-clear-button),
+  &:has(.tk-input-spinner),
+  &:has(.tk-input-reveal-button),
+  &:has(.tk-input-stepper) {
+    .tk-input-trailing-icon {
       margin-inline-start: 0;
     }
-  }
-
-  // ---- Description / Error message ----
-
-  .tk-input-description,
-  .tk-input-error-message {
-    font-size: var(--desktop-body-xs-size);
-    line-height: var(--desktop-body-xs-line-height);
-    font-weight: 400;
-    margin-block-start: var(--spacing-xxs);
-  }
-
-  .tk-input-description {
-    color: var(--text-base);
-  }
-
-  .tk-input-error-message {
-    color: var(--states-danger-base);
   }
 
   // ---- Sizes ----

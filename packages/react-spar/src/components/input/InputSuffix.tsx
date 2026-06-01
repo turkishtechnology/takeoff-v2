@@ -4,10 +4,12 @@ import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { InputSuffixBase } from './base';
+import { useInputOwnContext } from './context';
 import type { InputSuffixProps } from './types';
 
 export const InputSuffix = <T extends ElementType = 'span'>(props: InputSuffixProps<T>) => {
   const theme = useComponentTheme('InputSuffix');
+  useInputOwnContext('Input.Suffix');
   const Component = (props.as ?? 'span') as ElementType;
 
   const { rootAttrs, rest } = composeRootAttrs(InputSuffixBase, props as InputSuffixProps<'span'>, theme);

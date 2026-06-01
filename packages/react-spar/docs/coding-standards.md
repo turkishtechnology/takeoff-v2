@@ -283,7 +283,7 @@ falls into exactly one of three archetypes:
 | Archetype             | When it applies                                                                             | Canonical example                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | **Inherited**         | The upstream Spar primitive already exports a part for this slot                            | `Input.Label` → `SparInputLabel`                                                  |
-| **React-enhancement** | No upstream part exists for this slot; the wrapper owns the DOM tag and styling hooks alone | `Button.Spinner`, `Input.Container`, `Dialog.SignIcon`                            |
+| **React-enhancement** | No upstream part exists for this slot; the wrapper owns the DOM tag and styling hooks alone | `Button.Spinner`, `Input.LeadingIcon`, `Dialog.SignIcon`                          |
 | **Bypass**            | An upstream part exists but the wrapper renders a plain tag for a specific, recorded reason | `Dialog.Mask` is the class to avoid; justified bypasses carry an inline rationale |
 
 Classification happens at contract time, before implementation begins. A missing
@@ -324,7 +324,7 @@ Canonical examples:
 - **Inherited root, mix of inherited + react-enhancement parts** — `Input` and
   `Dialog`. Upstream compound parts exist for semantic anchors (`Label`,
   `Title`, `Description`, `Field`, …) and are inherited; visual chrome parts
-  (`Container`, `LeadingIcon`, `SignIcon`, `Header`, …) are react-enhancement.
+  (`LeadingIcon`, `ClearButton`, `SignIcon`, `Header`, …) are react-enhancement.
 - **Compound-in-react over a leaf upstream** — `Button` and `Checkbox`.
   `SparButton` and `SparCheckbox` are leaves; every `.Label` / `.Icon` /
   `.Indicator` / `.Spinner` part is react-enhancement.

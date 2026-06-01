@@ -15,7 +15,23 @@ import {
   DrawerTriggerBase,
 } from './components/drawer/base';
 import { FieldBase, FieldDescriptionBase, FieldErrorMessageBase, FieldLabelBase } from './components/field/base';
-import { InputBase, InputContainerBase, InputFieldBase, InputPrefixBase, InputSuffixBase } from './components/input/base';
+import {
+  InputBase,
+  InputChipBase,
+  InputChipsBase,
+  InputClearButtonBase,
+  InputDecrementBase,
+  InputFieldBase,
+  InputIncrementBase,
+  InputLeadingIconBase,
+  InputPrefixBase,
+  InputRevealButtonBase,
+  InputSpinnerBase,
+  InputStepperBase,
+  InputStrengthBase,
+  InputSuffixBase,
+  InputTrailingIconBase,
+} from './components/input/base';
 import { SelectBase, SelectContentBase, SelectGroupBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
 import { SwitchBase } from './components/switch/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
@@ -58,10 +74,20 @@ export const slotClassRegistry = {
   fieldDescription: { slots: FieldDescriptionBase.classes },
   fieldErrorMessage: { slots: FieldErrorMessageBase.classes },
   input: { slots: InputBase.classes },
-  inputContainer: { slots: InputContainerBase.classes },
   inputField: { slots: InputFieldBase.classes },
   inputPrefix: { slots: InputPrefixBase.classes },
   inputSuffix: { slots: InputSuffixBase.classes },
+  inputLeadingIcon: { slots: InputLeadingIconBase.classes },
+  inputTrailingIcon: { slots: InputTrailingIconBase.classes },
+  inputClearButton: { slots: InputClearButtonBase.classes },
+  inputSpinner: { slots: InputSpinnerBase.classes },
+  inputRevealButton: { slots: InputRevealButtonBase.classes },
+  inputStrength: { slots: InputStrengthBase.classes },
+  inputStepper: { slots: InputStepperBase.classes },
+  inputDecrement: { slots: InputDecrementBase.classes },
+  inputIncrement: { slots: InputIncrementBase.classes },
+  inputChips: { slots: InputChipsBase.classes },
+  inputChip: { slots: InputChipBase.classes },
   select: { slots: SelectBase.classes },
   selectTrigger: { slots: SelectTriggerBase.classes },
   selectContent: { slots: SelectContentBase.classes },

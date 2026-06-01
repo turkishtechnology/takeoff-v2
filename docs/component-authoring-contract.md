@@ -48,9 +48,22 @@ invalid   loading   clearable
   `collapseIcon` / `hideArrows` are dropped in favor of the opt-in
   `<Accordion.Indicator>` compound, which carries its own children (incl. a
   `({ isOpen }) => ReactNode` render-prop) and is positioned by placement.
-- **Icon slots**: Core's `startIcon` / `endIcon` (Button) and `InputLeadingIcon`
-  / `InputTrailingIcon` (Input) collapse into the generic `startContent` /
-  `endContent` slot vocabulary (also used by `Accordion.Trigger.startContent`).
+- **Icon slots**: Core's `startIcon` / `endIcon` (Button) collapse into the
+  generic `startContent` / `endContent` slot vocabulary (also used by
+  `Accordion.Trigger.startContent`). Input keeps explicit `Input.LeadingIcon` /
+  `Input.TrailingIcon` compound parts because its anatomy also includes text
+  affixes and action buttons.
+- **Input modes as composition**: Core's Input `mode` (`text` / `password` /
+  `counter` / `number` / `chips`) and the `clearable` / `loading` / `visible`
+  flags are **not** props on the React Spar compound. The compound is
+  **mode-less**: each capability is expressed by composing parts —
+  `Input.ClearButton` (clearable), `Input.Spinner` (loading),
+  `Input.RevealButton` (password visible), `Input.Stepper` / `Input.Decrement` /
+  `Input.Increment` (number), the same buttons placed flanking the field
+  (counter), and `Input.Chips` / `Input.Chip` (chips). Rationale: Spar's Input
+  is a scalar headless primitive with no `mode`; composition keeps the wrapper
+  thin and the anatomy explicit. The number stepper and chips have their own
+  contracts below.
 
 New exceptions require an explicit decision in the component contract.
 
@@ -88,8 +101,8 @@ re-implementation.
 Preserve Takeoff Core product vocabulary, **not** Web Component mechanics.
 
 Map these props directly when Spar supports them: `multiple`, `type`, `mode`,
-`size`. See the icon-slot exception above for `startContent` / `endContent` and
-`<Accordion.Indicator>`.
+`size`. See the icon-slot exception above for `startContent` / `endContent`,
+`Input.LeadingIcon` / `Input.TrailingIcon`, and `<Accordion.Indicator>`.
 
 Translate framework mechanics into React conventions:
 
@@ -179,7 +192,12 @@ Accordion.Item   Accordion.Header   Accordion.Trigger   Accordion.Content
 Dialog.Trigger   Dialog.Panel    Dialog.Header   Dialog.Title
 Dialog.Description   Dialog.Body   Dialog.Footer   Dialog.CloseButton
 
-Input.Label   Input.Field   Input.Description   Input.ErrorMessage
+Field.Label   Field.Description   Field.ErrorMessage
+
+Input.Field   Input.Prefix   Input.Suffix
+Input.LeadingIcon   Input.TrailingIcon
+Input.ClearButton   Input.RevealButton   Input.Spinner   Input.Strength
+Input.Stepper   Input.Decrement   Input.Increment
 ```
 
 ### Internal by default
@@ -189,8 +207,26 @@ below:
 
 ```txt
 Accordion.Arrow   Button.Spinner   Button.Label wrapper span
-Input.Spinner   Input.ClearIcon   Dialog.SignIcon
+Input.ClearIcon glyph   Input.Spinner glyph   Dialog.SignIcon
 ```
+
+`Input.ClearButton` and `Input.RevealButton` are public because they are
+focusable controls with their own accessibility semantics. `Input.Spinner` and
+`Input.Strength` are public because the design requires consumers to place these
+optional input anatomy parts explicitly.
+
+`Input.Stepper`, `Input.Decrement`, and `Input.Increment` are public for number
+inputs because the stepper is meaningful anatomy and the increment/decrement
+buttons are focusable controls with their own accessibility labels. The
+**counter** look (Core `mode='counter'`) is not a separate part set: it is the
+same `Input.Decrement` / `Input.Increment` placed as **direct children flanking
+`Input.Field`** (outside `Input.Stepper`). The recipe keys on that placement to
+center the value and keep the buttons' brand colour, so no `mode`/`data-counter`
+flag is introduced.
+
+`Input.Chips` and `Input.Chip` are public for chips inputs: `Input.Chips` owns
+the tag array (a focusable region with its own state) and `Input.Chip` is a
+removable token whose remove control is a focusable, labelled button.
 
 ### Justification for promoting a decorative part to public
 
@@ -206,6 +242,36 @@ A decorative part may become public **only** if at least one of these is true:
 what `slotProps`, `classNames`, and theme overrides are for. Promoting a
 decorative part is a contract change and must be approved in the component
 contract before implementation.
+
+### Input number stepper contract
+
+This contract covers the Phase 2 Input number stepper parts.
+
+| Decision area             | Contract                                                                                                                                                                                                                                                                                                |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Behavior owner            | Native `HTMLInputElement` number behavior owns min/max/step parsing, clamping, decimal math, formatting, keyboard, wheel, and `spinbutton` semantics. Spar owns `disabled` / `readOnly` field state through `useInputContext()`. takeoff-spar only provides visual anatomy and invokes native stepping. |
+| Public API                | Consumers compose `<Input.Stepper><Input.Decrement /><Input.Increment /></Input.Stepper>` next to `<Input.Field type="number" min={1} max={9} step={1} />`.                                                                                                                                             |
+| Public parts              | `Input.Stepper` is the structural owner for the two controls. `Input.Decrement` calls `fieldRef.current.stepDown()`. `Input.Increment` calls `fieldRef.current.stepUp()`. Both dispatch `new Event('input', { bubbles: true })` after stepping and then focus the field.                                |
+| Internal decorative slots | Default decrement/increment glyphs are internal. Consumers customize button contents through children or DOM hooks through `classNames` / `slotProps`; no glyph subcomponents are exposed.                                                                                                              |
+| Upstream Spar changes     | None required. Spar `InputField` already passes native props such as `type`, `min`, `max`, `step`, and `inputMode` to the rendered input; native `stepUp()` / `stepDown()` covers the behavior.                                                                                                         |
+| Explicit non-goals        | No clamp/parse/decimal math/formatter, no hold-to-repeat, no wheel handling, no keyboard override, no custom `role="spinbutton"` / ARIA model, no adapter hook, and no speculative state `data-*` attributes.                                                                                           |
+| Implementation order      | 1. Add the contract. 2. Add public types/base entries/compound exports/slot registry. 3. Implement thin stepper parts. 4. Add styles. 5. Add behavior and slot tests. 6. Update docs/API tables and changeset.                                                                                          |
+| Blockers                  | If native stepping cannot dispatch the same React-visible input/change path used by controlled fields, stop and fix the event bridge instead of adding wrapper-owned number math.                                                                                                                       |
+
+### Input chips contract
+
+This contract covers the Input chips parts (Core `mode='chips'`).
+
+| Decision area             | Contract                                                                                                                                                                                                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Behavior owner            | `Input.Chips` is a **react-enhancement** that owns the tag array as internal state (Spar has no array/chips primitive, so this is a permitted React reason — see No adapter hook rule). Spar owns `disabled` / `readOnly` via `useInputContext()`. The committed value is `string[]`. |
+| Public API                | `<Input.Chips value={tags} onValueChange={setTags} separator="," max={5}>` placed next to `<Input.Field />`. Enter commits the trimmed field text as a tag and clears the field; Backspace on an empty field removes the last tag; an optional `separator` char also commits.         |
+| Public parts              | `Input.Chips` (state owner + chip-list region; attaches its key handling to the shared `fieldRef` so `Input.Field` stays generic). `Input.Chip` (removable token; the remove control is a real `<button>` with an `aria-label`).                                                      |
+| Internal decorative slots | The default chip remove glyph is internal; consumers customize via `Input.Chip` children / `classNames` / `slotProps`. No glyph subcomponents are exposed.                                                                                                                            |
+| Upstream Spar changes     | None required for v1. `useControlledState` is mirrored locally as `useControllableState` because Spar does not re-export it; a follow-up may add the export upstream.                                                                                                                 |
+| Explicit non-goals (v1)   | No object-array values, no `chipLabelKey` / `chipOptions` / `chipDisabled` (tk-select-coupled), no paste-splitting, no `aria-live` announcements, no masking, no adapter hook, and no speculative state `data-*`.                                                                     |
+| Implementation order      | 1. Add the contract. 2. Add `useControllableState`. 3. Add public types/base/context/compound exports/slot registry. 4. Implement `Input.Chips` + `Input.Chip`. 5. Add styles (chip token + wrap layout). 6. Add behavior + slot tests. 7. Update docs/API tables and changeset.      |
+| Blockers                  | If committing/removing a tag cannot dispatch the same React-visible input path used elsewhere, stop and fix the event bridge instead of forking the value model.                                                                                                                      |
 
 ## Public type boundary
 
