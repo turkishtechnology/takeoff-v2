@@ -12,7 +12,7 @@
 //   data-type      — appearance (filled | filledLight | outlined | text)
 //   data-size      — size scale (small | base | large)
 //   data-rounded   — pill-shaped corners
-//   data-dot       — minimal 6×6 colored dot mode
+//   data-dot       — minimal 8×8 colored dot mode
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
@@ -155,16 +155,16 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Dot mode — 6×6 colored circle, no content
+  // Dot mode — 8×8 colored circle, no content
   // ---------------------------------------------------------------------------
 
   &[data-dot] {
-    width: 6px;
-    height: 6px;
-    min-width: 6px;
-    min-height: 6px;
-    max-width: 6px;
-    max-height: 6px;
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+    min-height: 8px;
+    max-width: 8px;
+    max-height: 8px;
     padding: 0;
     gap: 0;
     border: none;
@@ -204,7 +204,7 @@
     }
 
     &[data-type='outlined'] {
-      @include badge-variant-outlined(var(--secondary-darkest), var(--secondary-base));
+      @include badge-variant-outlined(var(--secondary-darkest), var(--secondary-sub-base));
     }
 
     &[data-type='text'] {
@@ -222,7 +222,7 @@
     }
 
     &[data-type='outlined'] {
-      @include badge-variant-outlined(var(--text-darkest), var(--background-darkest));
+      @include badge-variant-outlined(var(--text-darkest), var(--background-sub-base));
     }
 
     &[data-type='text'] {
@@ -236,11 +236,11 @@
     }
 
     &[data-type='filledLight'] {
-      @include badge-variant-filledLight(var(--states-info-light), var(--states-info-base));
+      @include badge-variant-filledLight(var(--states-info-light), var(--states-info-dark));
     }
 
     &[data-type='outlined'] {
-      @include badge-variant-outlined(var(--states-info-base), var(--states-info-base));
+      @include badge-variant-outlined(var(--states-info-dark), var(--states-info-sub-base));
     }
 
     &[data-type='text'] {
@@ -254,11 +254,11 @@
     }
 
     &[data-type='filledLight'] {
-      @include badge-variant-filledLight(var(--states-success-light), var(--states-success-dark));
+      @include badge-variant-filledLight(var(--states-success-light), var(--states-success-darkest));
     }
 
     &[data-type='outlined'] {
-      @include badge-variant-outlined(var(--states-success-dark), var(--states-success-dark));
+      @include badge-variant-outlined(var(--states-success-darkest), var(--states-success-sub-base));
     }
 
     &[data-type='text'] {
@@ -276,7 +276,7 @@
     }
 
     &[data-type='outlined'] {
-      @include badge-variant-outlined(var(--states-danger-dark), var(--states-danger-dark));
+      @include badge-variant-outlined(var(--states-danger-dark), var(--states-danger-sub-base));
     }
 
     &[data-type='text'] {
@@ -290,11 +290,11 @@
     }
 
     &[data-type='filledLight'] {
-      @include badge-variant-filledLight(var(--states-warning-light), var(--states-warning-dark));
+      @include badge-variant-filledLight(var(--states-warning-light), var(--states-warning-darkest));
     }
 
     &[data-type='outlined'] {
-      @include badge-variant-outlined(var(--states-warning-dark), var(--states-warning-dark));
+      @include badge-variant-outlined(var(--states-warning-darkest), var(--states-warning-sub-base));
     }
 
     &[data-type='text'] {
@@ -312,7 +312,7 @@
     }
 
     &[data-type='outlined'] {
-      @include badge-variant-outlined(var(--states-verified-dark), var(--states-verified-dark));
+      @include badge-variant-outlined(var(--states-verified-dark), var(--states-verified-sub-base));
     }
 
     &[data-type='text'] {
@@ -326,11 +326,11 @@
     }
 
     &[data-type='filledLight'] {
-      @include badge-variant-filledLight(var(--purple-100), var(--purple-600));
+      @include badge-variant-filledLight(var(--purple-100), var(--purple-800));
     }
 
     &[data-type='outlined'] {
-      @include badge-variant-outlined(var(--purple-600), var(--purple-600));
+      @include badge-variant-outlined(var(--purple-700), var(--purple-200));
     }
 
     &[data-type='text'] {
@@ -344,11 +344,11 @@
     }
 
     &[data-type='filledLight'] {
-      @include badge-variant-filledLight(var(--cyan-100), var(--cyan-600));
+      @include badge-variant-filledLight(var(--cyan-100), var(--cyan-800));
     }
 
     &[data-type='outlined'] {
-      @include badge-variant-outlined(var(--cyan-600), var(--cyan-600));
+      @include badge-variant-outlined(var(--cyan-700), var(--cyan-200));
     }
 
     &[data-type='text'] {
@@ -362,15 +362,68 @@
     }
 
     &[data-type='filledLight'] {
-      @include badge-variant-filledLight(var(--business-100), var(--business-600));
+      @include badge-variant-filledLight(var(--business-100), var(--business-800));
     }
 
     &[data-type='outlined'] {
-      @include badge-variant-outlined(var(--business-600), var(--business-600));
+      @include badge-variant-outlined(var(--business-700), var(--business-200));
     }
 
     &[data-type='text'] {
       @include badge-variant-text(var(--business-600));
+    }
+  }
+  &[data-variant='teal'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--teal-600), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--teal-100), var(--teal-800));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--teal-700), var(--teal-200));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--teal-600));
+    }
+  }
+
+  &[data-variant='white'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--static-light), var(--text-darkest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--overlay-white-lightest), var(--text-lightest));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--text-lightest), var(--border-lightest));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--text-lightest));
+    }
+  }
+
+  &[data-variant='dark'] {
+    &[data-type='filled'] {
+      @include badge-variant-filled(var(--static-dark), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include badge-variant-filledLight(var(--overlay-black-xlightest), var(--text-darkest));
+    }
+
+    &[data-type='outlined'] {
+      @include badge-variant-outlined(var(--text-darkest), var(--border-darkest));
+    }
+
+    &[data-type='text'] {
+      @include badge-variant-text(var(--text-darkest));
     }
   }
 }
