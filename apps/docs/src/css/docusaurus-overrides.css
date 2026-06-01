@@ -495,26 +495,6 @@
   background: #17171d;
 }
 
-/* Dark-mode search button */
-[data-theme='dark'] .DocSearch-Button {
-  background: #17171d !important;
-  border: 1px solid #2d2d38 !important;
-  height: 36px !important;
-  border-radius: 8px !important;
-  padding: 0 12px !important;
-  color: #b8b8c2 !important;
-}
-
-[data-theme='dark'] .DocSearch-Button:hover {
-  border-color: #7a7a86 !important;
-  background: #1e1e26 !important;
-  box-shadow: none !important;
-}
-
-[data-theme='dark'] .DocSearch-Button-Placeholder {
-  color: #7a7a86 !important;
-}
-
 @media (max-width: 996px) {
   .navbar {
     padding: 0 32px;
