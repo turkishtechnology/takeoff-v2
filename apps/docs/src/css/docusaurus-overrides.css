@@ -85,6 +85,14 @@
   --docs-cardinal-border: color-mix(in srgb, var(--primary-base, #c90019) 28%, transparent);
   --docs-shadow-card: 0 1px 2px rgba(17, 17, 22, 0.04), 0 8px 24px -12px rgba(17, 17, 22, 0.08);
 
+  /* Shared scrollbar tokens */
+  --docs-scrollbar-size: 10px;
+  --docs-scrollbar-radius: 5px;
+  --docs-scrollbar-track: var(--docs-surface-2);
+  --docs-scrollbar-thumb: var(--docs-border-subtle);
+  --docs-scrollbar-thumb-hover: var(--docs-border-strong);
+  --docs-scrollbar-thumb-border: 2px solid var(--docs-surface-2);
+
   /* Runway type tokens — enables landing-style eyebrow / mono throughout docs */
   --docs-mono-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 }
@@ -950,30 +958,35 @@ footer.footer .footer__copyright {
   color: #b8b8c2;
 }
 
-/* --- Dark mode selection + scrollbar ------------------------------------ */
+/* --- Theme-agnostic selection + scrollbar ------------------------------- */
 
-[data-theme='dark'] ::selection {
-  background: rgba(255, 23, 54, 0.35);
-  color: #f6f6f8;
+::selection {
+  background: color-mix(in srgb, var(--docs-cardinal) 18%, transparent);
+  color: var(--docs-ink-strong);
 }
 
-[data-theme='dark'] ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+* {
+  scrollbar-color: var(--docs-scrollbar-thumb) var(--docs-scrollbar-track);
+  scrollbar-width: thin;
 }
 
-[data-theme='dark'] ::-webkit-scrollbar-track {
-  background: #0a0a0d;
+::-webkit-scrollbar {
+  width: var(--docs-scrollbar-size);
+  height: var(--docs-scrollbar-size);
 }
 
-[data-theme='dark'] ::-webkit-scrollbar-thumb {
-  background: #24242e;
-  border-radius: 5px;
-  border: 2px solid #0a0a0d;
+::-webkit-scrollbar-track {
+  background: var(--docs-scrollbar-track);
 }
 
-[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
-  background: #2d2d38;
+::-webkit-scrollbar-thumb {
+  background: var(--docs-scrollbar-thumb);
+  border-radius: var(--docs-scrollbar-radius);
+  border: var(--docs-scrollbar-thumb-border);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--docs-scrollbar-thumb-hover);
 }
 
 /* ==========================================================================
