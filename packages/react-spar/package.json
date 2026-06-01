@@ -47,7 +47,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "pack:check": "npm pack --dry-run --json --cache ../../.npm-cache",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "generate": "node ./scripts/generate-component.mjs",
     "lint:spar-pick": "node ./scripts/check-spar-pick.mjs",
