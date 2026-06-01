@@ -45,24 +45,34 @@ rules — `0.1.0` → `0.2.0` is treated as breaking by Changesets.
 ## Cross-package bumps
 
 You don't need to write a changeset for downstream packages. When you bump
-`@takeoff-design/tokens`, Changesets automatically propagates a `patch` bump
-to every workspace package that depends on it — currently
-`@takeoff-ui/react-spar` (peer dependency) and `@takeoff-design/tailwind`
-(direct dependency). The `updateInternalDependencies` config controls this.
+`@takeoff-design/tokens`, Changesets automatically propagates a `patch` bump to
+every workspace package that depends on it — currently `@takeoff-ui/react-spar`
+(peer dependency) and `@takeoff-design/tailwind` (direct dependency). The
+`updateInternalDependencies` config controls this.
 
 This means a single changeset on `tokens` typically produces three CHANGELOG
 entries in the Version Packages PR. That's expected, not a bug.
 
 ## When to skip a changeset
 
-For changes that don't ship to npm (docs site copy, internal scripts, repo
-config, the `apps/docs` package), open an **empty changeset**:
+For changes that don't ship to npm — docs site copy, internal scripts, repo
+config, CI workflows, the `apps/docs` package — **add the `release:none` label**
+to the PR.
+
+The `changeset-check` workflow looks for that label and skips the missing-
+changeset error, so the PR can merge without dropping a placeholder file into
+`.changeset/`.
+
+If you can't apply the label for some reason (automation, restricted
+permissions), the fallback is an empty changeset:
 
 ```bash
 pnpm changeset --empty
 ```
 
-Or add the `release:none` label to the PR.
+This commits a `.changeset/<random>.md` with no body. Changesets consumes it the
+next time a Version Packages PR is opened. Prefer the label when you can — it
+leaves no trace in the repo.
 
 ## What NOT to do
 
@@ -85,9 +95,9 @@ We publish release information in two places, with **different audiences**:
    technical, lists every patch including transitive bumps. Read by engineers
    debugging a specific version or auditing what shipped.
 2. **Docs changelog** (`apps/docs/src/data/changelog.ts`, rendered at
-   `/changelog`) — hand-written narrative entries grouped per release across
-   the whole platform. Read by consumers deciding whether to upgrade and
-   migrating breaking changes. One entry per stable release.
+   `/changelog`) — hand-written narrative entries grouped per release across the
+   whole platform. Read by consumers deciding whether to upgrade and migrating
+   breaking changes. One entry per stable release.
 
 The docs page **embeds** the parsed package CHANGELOG bodies under a "Package
 details" disclosure on each entry — so the docs changelog stays focused on the
@@ -96,8 +106,8 @@ narrative while still surfacing per-package detail. This is wired by the
 by setting `packageVersions` (see [Release Runbook](docs/release-runbook.md)).
 
 As a contributor you only write **one** thing: a good changeset summary. The
-docs changelog is written by the release manager at release time, pulling
-your summary in.
+docs changelog is written by the release manager at release time, pulling your
+summary in.
 
 ## Writing a changeset summary that lands well in both places
 
@@ -105,17 +115,16 @@ Your `.changeset/*.md` summary serves two readers:
 
 - Engineers scanning `packages/react-spar/CHANGELOG.md` for "what shipped in
   0.1.4?" — they want the technical specifics.
-- The release manager assembling the docs entry — they paraphrase your
-  summary into the user-facing narrative. The clearer your summary, the less
-  they have to guess.
+- The release manager assembling the docs entry — they paraphrase your summary
+  into the user-facing narrative. The clearer your summary, the less they have
+  to guess.
 
 Good summaries:
 
 - Name the public API surface that changed (component, prop, token, exported
   type).
-- For breaking changes, include a one-line before/after if it fits — the
-  release manager will lift this verbatim into the docs entry's
-  before/after code block.
+- For breaking changes, include a one-line before/after if it fits — the release
+  manager will lift this verbatim into the docs entry's before/after code block.
 - Explain the **why** when it's non-obvious (compliance, migration off a
   deprecated upstream, parity with Spar).
 
@@ -123,13 +132,13 @@ Bad summaries: `"Fix Select"`, `"Refactor"`, `"Updates per review"`.
 
 ## Release ownership
 
-| Step                                | Who              | When                                 |
-| ----------------------------------- | ---------------- | ------------------------------------ |
-| Add a changeset to your PR          | PR author        | Before opening the PR                |
-| Review & merge the PR to `develop`  | Reviewer         | Normal PR flow                       |
-| Merge the Version Packages PR       | Release manager  | When ready to cut a release          |
-| `latest` publish to npm             | CI               | Automatic on Version PR merge        |
-| Write the docs changelog entry      | Release manager  | After the stable publish lands       |
+| Step                               | Who             | When                           |
+| ---------------------------------- | --------------- | ------------------------------ |
+| Add a changeset to your PR         | PR author       | Before opening the PR          |
+| Review & merge the PR to `develop` | Reviewer        | Normal PR flow                 |
+| Merge the Version Packages PR      | Release manager | When ready to cut a release    |
+| `latest` publish to npm            | CI              | Automatic on Version PR merge  |
+| Write the docs changelog entry     | Release manager | After the stable publish lands |
 
-Release-manager-specific steps live in [Release Runbook](docs/release-runbook.md).
-
+Release-manager-specific steps live in
+[Release Runbook](docs/release-runbook.md).

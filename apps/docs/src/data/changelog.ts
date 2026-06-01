@@ -67,6 +67,51 @@ export type ChangelogEntry = {
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: 'v0-1-0-tailwind-initial-release',
+    date: '2026-05-21',
+    version: 'tailwind 0.1.0',
+    title: '@takeoff-design/tailwind ships its first public version',
+    packageVersions: {
+      tailwind: '0.1.0',
+    },
+    summary:
+      '`@takeoff-design/tailwind` is now on npm. It ships the Tailwind theme that mirrors the @takeoff-design/tokens design system — a Tailwind v4 stylesheet at the package root and a Tailwind v3 plugin module under `./v3` — so teams on either Tailwind major can adopt Takeoff styling without re-deriving tokens by hand. From this release on, tailwind follows the same Changesets and trusted-publishing flow as tokens and react-spar.',
+    sections: [
+      {
+        title: 'Highlights',
+        items: [
+          {
+            text: '**Tailwind v4 theme.** Import the package directly to load the generated `@theme` block driven by `@takeoff-design/tokens`. Works with `@import` in any v4 setup.',
+            code: {
+              language: 'css',
+              after: "@import 'tailwindcss';\n@import '@takeoff-design/tailwind';",
+            },
+          },
+          {
+            text: '**Tailwind v3 plugin.** A drop-in plugin under `./v3` exposes the same token surface as a v3-compatible theme extension. Use it via `tailwind.config.js`.',
+            code: {
+              language: 'js',
+              after: "// tailwind.config.js\nmodule.exports = {\n  presets: [require('@takeoff-design/tailwind/v3')],\n};",
+            },
+          },
+          'Single source of truth — both entry points are generated from `@takeoff-design/tokens`, so consumers stay in sync with the design system without copying values into a local config.',
+        ],
+      },
+      {
+        title: 'How to install',
+        items: [
+          {
+            text: 'Install alongside Tailwind. The package only declares a peer on `tailwindcss >= 3`, so it composes with whatever Tailwind version your app already uses.',
+            code: {
+              language: 'bash',
+              after: 'pnpm add @takeoff-design/tailwind\n# or\nnpm install @takeoff-design/tailwind',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: 'v0-1-beta-2-select-polish',
     date: '2026-05-20',
     version: '0.1.0-beta.2',
