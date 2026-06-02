@@ -9,22 +9,32 @@ slug: /components/select
 ---
 
 import LiveCode from '@site/src/components/LiveCode';
-import { Select, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import {
+  Badge,
+  Select,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const selectScope = { Select };
+export const selectScope = { Badge, Select };
 
 {/* prettier-ignore-start */}
 
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <Select defaultValue="economy">
+    <Select className="max-w-90" defaultValue="economy">
       <Select.Trigger placeholder="Pick a cabin" />
       <Select.Content>
-        <Select.Item value="economy" label="Economy">Economy</Select.Item>
-        <Select.Item value="business" label="Business">Business</Select.Item>
-        <Select.Item value="first" label="First class">First class</Select.Item>
+        <Select.Item value="economy" label="Economy">
+          Economy
+        </Select.Item>
+        <Select.Item value="business" label="Business">
+          Business
+        </Select.Item>
+        <Select.Item value="first" label="First class">
+          First class
+        </Select.Item>
       </Select.Content>
     </Select>
   );
@@ -36,26 +46,38 @@ render(<PlaygroundDemo />);
 export const sizesDemo = String.raw`
 function SizesDemo() {
   return (
-    <div className="flex flex-col gap-4 w-full max-w-80">
+    <div className="grid w-full max-w-90 gap-3">
       <Select size="small">
         <Select.Trigger placeholder="Small" />
         <Select.Content>
-          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
-          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+          <Select.Item value="ist" label="Istanbul">
+            Istanbul
+          </Select.Item>
+          <Select.Item value="ank" label="Ankara">
+            Ankara
+          </Select.Item>
         </Select.Content>
       </Select>
       <Select size="base">
         <Select.Trigger placeholder="Base" />
         <Select.Content>
-          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
-          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+          <Select.Item value="ist" label="Istanbul">
+            Istanbul
+          </Select.Item>
+          <Select.Item value="ank" label="Ankara">
+            Ankara
+          </Select.Item>
         </Select.Content>
       </Select>
       <Select size="large">
         <Select.Trigger placeholder="Large" />
         <Select.Content>
-          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
-          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+          <Select.Item value="ist" label="Istanbul">
+            Istanbul
+          </Select.Item>
+          <Select.Item value="ank" label="Ankara">
+            Ankara
+          </Select.Item>
         </Select.Content>
       </Select>
     </div>
@@ -68,21 +90,33 @@ render(<SizesDemo />);
 export const groupsDemo = String.raw`
 function GroupsDemo() {
   return (
-    <Select defaultValue="ist">
+    <Select className="max-w-90" defaultValue="ist">
       <Select.Trigger placeholder="Choose origin" />
       <Select.Content>
         <Select.Group>
           <Select.Label>Türkiye</Select.Label>
-          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
-          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
-          <Select.Item value="izm" label="Izmir">Izmir</Select.Item>
+          <Select.Item value="ist" label="Istanbul">
+            Istanbul
+          </Select.Item>
+          <Select.Item value="ank" label="Ankara">
+            Ankara
+          </Select.Item>
+          <Select.Item value="izm" label="Izmir">
+            Izmir
+          </Select.Item>
         </Select.Group>
         <Select.Separator />
         <Select.Group>
           <Select.Label>Europe</Select.Label>
-          <Select.Item value="lhr" label="London Heathrow">London Heathrow</Select.Item>
-          <Select.Item value="cdg" label="Paris CDG">Paris CDG</Select.Item>
-          <Select.Item value="fra" disabled label="Frankfurt (unavailable)">Frankfurt (unavailable)</Select.Item>
+          <Select.Item value="lhr" label="London Heathrow">
+            London Heathrow
+          </Select.Item>
+          <Select.Item value="cdg" label="Paris CDG">
+            Paris CDG
+          </Select.Item>
+          <Select.Item value="fra" disabled label="Frankfurt (unavailable)">
+            Frankfurt (unavailable)
+          </Select.Item>
         </Select.Group>
       </Select.Content>
     </Select>
@@ -97,14 +131,22 @@ function ControlledSelectDemo() {
   const [value, setValue] = useState('eco');
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-80">
-      <div className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">Selected: {value}</div>
+    <div className="grid w-full max-w-90 gap-3">
+      <Badge className="w-fit" variant="neutral" appearance="outlined">
+        Selected: {value}
+      </Badge>
       <Select value={value} onChange={setValue}>
         <Select.Trigger placeholder="Pick a fare" />
         <Select.Content>
-          <Select.Item value="eco" label="Eco">Eco</Select.Item>
-          <Select.Item value="flex" label="Eco Flex">Eco Flex</Select.Item>
-          <Select.Item value="biz" label="Business">Business</Select.Item>
+          <Select.Item value="eco" label="Eco">
+            Eco
+          </Select.Item>
+          <Select.Item value="flex" label="Eco Flex">
+            Eco Flex
+          </Select.Item>
+          <Select.Item value="biz" label="Business">
+            Business
+          </Select.Item>
         </Select.Content>
       </Select>
     </div>
@@ -117,11 +159,15 @@ render(<ControlledSelectDemo />);
 export const invalidDemo = String.raw`
 function InvalidDemo() {
   return (
-    <Select invalid>
+    <Select className="max-w-90" invalid>
       <Select.Trigger placeholder="Required field" />
       <Select.Content>
-        <Select.Item value="a" label="Option A">Option A</Select.Item>
-        <Select.Item value="b" label="Option B">Option B</Select.Item>
+        <Select.Item value="a" label="Option A">
+          Option A
+        </Select.Item>
+        <Select.Item value="b" label="Option B">
+          Option B
+        </Select.Item>
       </Select.Content>
     </Select>
   );

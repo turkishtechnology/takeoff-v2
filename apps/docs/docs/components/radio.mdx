@@ -9,36 +9,46 @@ slug: /components/radio
 ---
 
 import LiveCode from '@site/src/components/LiveCode';
-import { Radio, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import {
+  Badge,
+  Radio,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const radioScope = { Radio };
+export const radioScope = { Badge, Radio };
 
 {/* prettier-ignore-start */}
 
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <Radio aria-label="Cabin class" defaultValue="economy" className="max-w-120">
+    <Radio aria-label="Cabin class" defaultValue="economy">
       <Radio.Item value="economy">
         <Radio.Indicator />
         <Radio.Label>
           Economy
-          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Standard fare with carry-on baggage.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            Standard fare with carry-on baggage.
+          </span>
         </Radio.Label>
       </Radio.Item>
       <Radio.Item value="business">
         <Radio.Indicator />
         <Radio.Label>
           Business
-          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Lie-flat seat, lounge access, priority boarding.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            Lie-flat seat, lounge access, priority boarding.
+          </span>
         </Radio.Label>
       </Radio.Item>
       <Radio.Item value="first">
         <Radio.Indicator />
         <Radio.Label>
           First
-          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Private suite and chef-curated dining.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            Private suite and chef-curated dining.
+          </span>
         </Radio.Label>
       </Radio.Item>
     </Radio>
@@ -51,7 +61,7 @@ render(<PlaygroundDemo />);
 export const sizesDemo = String.raw`
 function SizesDemo() {
   return (
-    <div className="grid gap-4 max-w-120">
+    <div className="grid gap-6">
       <Radio aria-label="Small" size="small" defaultValue="aisle">
         <Radio.Item value="aisle">
           <Radio.Indicator />
@@ -92,26 +102,32 @@ render(<SizesDemo />);
 export const cardDemo = String.raw`
 function CardDemo() {
   return (
-    <Radio aria-label="Meal preference" type="card" defaultValue="standard" className="max-w-120">
+    <Radio aria-label="Meal preference" type="card" defaultValue="standard">
       <Radio.Item value="standard">
         <Radio.Indicator />
         <Radio.Label>
           Standard meal
-          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Chef-curated regional menu.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            Chef-curated regional menu.
+          </span>
         </Radio.Label>
       </Radio.Item>
       <Radio.Item value="vegetarian">
         <Radio.Indicator />
         <Radio.Label>
           Vegetarian
-          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Lacto-ovo plant-forward dishes.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            Lacto-ovo plant-forward dishes.
+          </span>
         </Radio.Label>
       </Radio.Item>
       <Radio.Item value="kosher">
         <Radio.Indicator />
         <Radio.Label>
           Kosher
-          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Certified by a recognized rabbinical authority.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            Certified by a recognized rabbinical authority.
+          </span>
         </Radio.Label>
       </Radio.Item>
     </Radio>
@@ -124,7 +140,7 @@ render(<CardDemo />);
 export const layoutDemo = String.raw`
 function LayoutDemo() {
   return (
-    <div className="grid gap-4 max-w-120">
+    <div className="grid gap-6">
       <Radio aria-label="Trip type" orientation="horizontal" spread defaultValue="round">
         <Radio.Item value="one">
           <Radio.Indicator />
@@ -145,14 +161,18 @@ function LayoutDemo() {
           <Radio.Indicator />
           <Radio.Label>
             Email
-            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Booking confirmations and itinerary changes.</span>
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+              Booking confirmations and itinerary changes.
+            </span>
           </Radio.Label>
         </Radio.Item>
         <Radio.Item value="sms">
           <Radio.Indicator />
           <Radio.Label>
             SMS
-            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Gate changes and boarding reminders.</span>
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+              Gate changes and boarding reminders.
+            </span>
           </Radio.Label>
         </Radio.Item>
       </Radio>
@@ -168,25 +188,27 @@ function ControlledRadioDemo() {
   const [value, setValue] = useState('return');
 
   return (
-    <div className="grid gap-4 max-w-120">
-      <div className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">Selected: {value}</div>
-      <Radio
-        aria-label="Refund preference"
-        value={value}
-        onChange={setValue}
-      >
+    <div className="grid gap-3">
+      <Badge className="w-fit" variant="neutral" appearance="outlined">
+        Selected: {value}
+      </Badge>
+      <Radio aria-label="Refund preference" value={value} onChange={setValue}>
         <Radio.Item value="return">
           <Radio.Indicator />
           <Radio.Label>
             Refund to original payment
-            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Settles in 5–10 business days.</span>
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+              Settles in 5–10 business days.
+            </span>
           </Radio.Label>
         </Radio.Item>
         <Radio.Item value="voucher">
           <Radio.Indicator />
           <Radio.Label>
             Travel voucher
-            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Includes a 10% bonus, valid for 12 months.</span>
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+              Includes a 10% bonus, valid for 12 months.
+            </span>
           </Radio.Label>
         </Radio.Item>
       </Radio>
@@ -200,19 +222,23 @@ render(<ControlledRadioDemo />);
 export const disabledDemo = String.raw`
 function DisabledDemo() {
   return (
-    <Radio aria-label="Ancillary services" defaultValue="lounge" className="max-w-120">
+    <Radio aria-label="Ancillary services" defaultValue="lounge">
       <Radio.Item value="lounge">
         <Radio.Indicator />
         <Radio.Label>
           Lounge access
-          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">Available at IST and select hubs.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            Available at IST and select hubs.
+          </span>
         </Radio.Label>
       </Radio.Item>
       <Radio.Item value="upgrade" disabled>
         <Radio.Indicator />
         <Radio.Label>
           Upgrade to Business (sold out)
-          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">No seats available on this flight.</span>
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            No seats available on this flight.
+          </span>
         </Radio.Label>
       </Radio.Item>
     </Radio>
@@ -225,7 +251,7 @@ render(<DisabledDemo />);
 export const invalidDemo = String.raw`
 function InvalidDemo() {
   return (
-    <Radio aria-label="Passport type" invalid required className="max-w-120">
+    <Radio aria-label="Passport type" invalid required>
       <Radio.Item value="standard">
         <Radio.Indicator />
         <Radio.Label>Standard passport</Radio.Label>
@@ -244,7 +270,7 @@ render(<InvalidDemo />);
 export const renderPropDemo = String.raw`
 function RenderPropDemo() {
   return (
-    <Radio aria-label="Seat row preference" defaultValue="exit" className="max-w-120">
+    <Radio aria-label="Seat row preference" defaultValue="exit">
       <Radio.Item value="front">
         {({ isChecked }) => (
           <>
@@ -500,9 +526,9 @@ for primitive behavior.
 
 | Name                                                                                  | Definition                                        |
 | ------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| <span id="radio-td-radiosize"><ApiBadge label="RadioSize" /></span>                   | <code>'small' &#124; 'base' &#124; 'large'</code> |
-| <span id="radio-td-radiotype"><ApiBadge label="RadioType" /></span>                   | <code>'default' &#124; 'card'</code>              |
-| <span id="radio-td-radioposition"><ApiBadge label="RadioPosition" /></span>           | <code>'left' &#124; 'right'</code>                |
-| <span id="radio-td-radioindicatorslot"><ApiBadge label="RadioIndicatorSlot" /></span> | <code>'root' &#124; 'icon'</code>                 |
+| <span id="radio-td-radiosize"><ApiBadge label="RadioSize" /></span>                   | <code>'small' &#123; 'base' &#123; 'large'</code> |
+| <span id="radio-td-radiotype"><ApiBadge label="RadioType" /></span>                   | <code>'default' &#123; 'card'</code>              |
+| <span id="radio-td-radioposition"><ApiBadge label="RadioPosition" /></span>           | <code>'left' &#123; 'right'</code>                |
+| <span id="radio-td-radioindicatorslot"><ApiBadge label="RadioIndicatorSlot" /></span> | <code>'root' &#123; 'icon'</code>                 |
 
 {/* api-tables:end */}

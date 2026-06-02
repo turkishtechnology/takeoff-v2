@@ -10,28 +10,32 @@ slug: /components/switch
 
 import LiveCode from '@site/src/components/LiveCode';
 import {
+  Badge,
+  Button,
   Field,
   ReactSparDemoRoot,
   Switch,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const switchScope = { Field, Switch };
+export const switchScope = { Badge, Button, Field, Switch };
 
 {/* prettier-ignore-start */}
 
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <Field className="flex items-center justify-between gap-4">
-      <div className="flex flex-col gap-1">
-        <Field.Label>Flight status alerts</Field.Label>
-        <Field.Description>We will let you know about delays, gate changes, and cancellations.</Field.Description>
+    <Field className="max-w-90">
+      <div className="flex w-full items-center justify-between">
+        <div>
+          <Field.Label>Flight status alerts</Field.Label>
+          <Field.Description>We will let you know about delays, gate changes, and cancellations.</Field.Description>
+        </div>
+        <Switch defaultChecked>
+          <Switch.Indicator />
+        </Switch>
       </div>
-      <Switch defaultChecked>
-        <Switch.Indicator />
-      </Switch>
-      </Field>
+    </Field>
   );
 }
 
@@ -41,46 +45,56 @@ render(<PlaygroundDemo />);
 export const fieldWithSwitchDemo = String.raw`
 function FieldWithSwitchDemo() {
   return (
-    <div className="grid w-full max-w-130 gap-3.5">
-      <Field required className="flex items-center justify-between gap-4">
-        <Field.Label>Email alerts</Field.Label>
-        <Switch defaultChecked>
-          <Switch.Indicator />
-        </Switch>
-      </Field>
-
-      <Field className="flex items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <Field.Label>SMS alerts</Field.Label>
-          <Field.Description>Standard messaging rates may apply.</Field.Description>
+    <div className="grid w-full max-w-90 gap-6">
+      <Field required>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Email alerts</Field.Label>
+          <Switch defaultChecked>
+            <Switch.Indicator />
+          </Switch>
         </div>
-        <Switch>
-          <Switch.Indicator />
-        </Switch>
       </Field>
 
-      <Field invalid className="flex items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <Field.Label>Push notifications</Field.Label>
-          <Field.ErrorMessage>Enable browser notifications to turn this on.</Field.ErrorMessage>
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <div>
+            <Field.Label>SMS alerts</Field.Label>
+            <Field.Description>Standard messaging rates may apply.</Field.Description>
+          </div>
+          <Switch>
+            <Switch.Indicator />
+          </Switch>
         </div>
-        <Switch>
-          <Switch.Indicator />
-        </Switch>
       </Field>
 
-      <Field disabled className="flex items-center justify-between gap-4">
-        <Field.Label>Disabled setting</Field.Label>
-        <Switch>
-          <Switch.Indicator />
-        </Switch>
+      <Field invalid>
+        <div className="flex w-full items-center justify-between">
+          <div>
+            <Field.Label>Push notifications</Field.Label>
+            <Field.ErrorMessage>Enable browser notifications to turn this on.</Field.ErrorMessage>
+          </div>
+          <Switch>
+            <Switch.Indicator />
+          </Switch>
+        </div>
       </Field>
 
-      <Field readOnly className="flex items-center justify-between gap-4">
-        <Field.Label>Read-only setting</Field.Label>
-        <Switch defaultChecked>
-          <Switch.Indicator />
-        </Switch>
+      <Field disabled>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Disabled setting</Field.Label>
+          <Switch>
+            <Switch.Indicator />
+          </Switch>
+        </div>
+      </Field>
+
+      <Field readOnly>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Read-only setting</Field.Label>
+          <Switch defaultChecked>
+            <Switch.Indicator />
+          </Switch>
+        </div>
       </Field>
     </div>
   );
@@ -94,15 +108,17 @@ function ControlledSwitchDemo() {
   const [enabled, setEnabled] = useState(true);
 
   return (
-    <div className="grid w-full max-w-130 gap-3.5">
-      <div className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">
+    <div className="grid w-full max-w-90 gap-3">
+      <Badge className="w-fit" variant="neutral" appearance="outlined">
         Notifications {enabled ? 'enabled' : 'paused'}
-      </div>
-      <Field className="flex items-center justify-between gap-4">
-        <Field.Label>Flight status notifications</Field.Label>
-        <Switch checked={enabled} onChange={setEnabled}>
-          <Switch.Indicator />
-        </Switch>
+      </Badge>
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Flight status notifications</Field.Label>
+          <Switch checked={enabled} onChange={setEnabled}>
+            <Switch.Indicator />
+          </Switch>
+        </div>
       </Field>
     </div>
   );
@@ -114,7 +130,7 @@ render(<ControlledSwitchDemo />);
 export const sizeDemo = String.raw`
 function SizeDemo() {
   return (
-    <div className="flex flex-wrap items-center gap-4.5">
+    <div className="flex flex-wrap items-center gap-3">
       <Switch aria-label="Extra small switch" size="xsmall">
         <Switch.Indicator />
       </Switch>
@@ -140,18 +156,22 @@ render(<SizeDemo />);
 export const variantDemo = String.raw`
 function VariantDemo() {
   return (
-    <div className="grid w-full max-w-130 gap-3.5">
-      <Field className="flex items-center justify-between gap-4">
-        <Field.Label>Seat alerts</Field.Label>
-        <Switch defaultChecked variant="info">
-          <Switch.Indicator />
-        </Switch>
+    <div className="grid w-full max-w-90 gap-3">
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Seat alerts</Field.Label>
+          <Switch defaultChecked variant="info">
+            <Switch.Indicator />
+          </Switch>
+        </div>
       </Field>
-      <Field className="flex items-center justify-between gap-4">
-        <Field.Label>Auto check-in</Field.Label>
-        <Switch defaultChecked variant="success">
-          <Switch.Indicator />
-        </Switch>
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Auto check-in</Field.Label>
+          <Switch defaultChecked variant="success">
+            <Switch.Indicator />
+          </Switch>
+        </div>
       </Field>
     </div>
   );
@@ -162,31 +182,26 @@ render(<VariantDemo />);
 
 export const customIndicatorDemo = String.raw`
 function CustomIndicatorDemo() {
-  const CheckIcon = () => (
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
+  const ToggleLabel = ({ active }) => (
+    <span aria-hidden="true" className="inline-flex h-full w-full items-center justify-center whitespace-nowrap">
+      <span className="text-[7px] font-semibold leading-none tracking-[0.08em] text-static-white">{active ? 'ON' : 'OFF'}</span>
+    </span>
   );
 
   return (
-    <Field className="flex items-center justify-between gap-4">
-      <Field.Label>Auto check-in</Field.Label>
-      <Switch defaultChecked variant="success">
-        <Switch.Indicator>
-          {({ checked }) => (
-            <span data-slot="thumb">{checked ? <CheckIcon /> : null}</span>
-          )}
-        </Switch.Indicator>
-      </Switch>
+    <Field className="max-w-90">
+      <div className="flex w-full items-center justify-between">
+        <Field.Label>Auto check-in</Field.Label>
+        <Switch defaultChecked variant="success">
+          <Switch.Indicator>
+            {({ checked }) => (
+              <span data-slot="thumb" className="inline-flex h-full w-full items-center justify-center">
+                <ToggleLabel active={checked} />
+              </span>
+            )}
+          </Switch.Indicator>
+        </Switch>
+      </div>
     </Field>
   );
 }
@@ -197,18 +212,18 @@ render(<CustomIndicatorDemo />);
 export const renderPropDemo = String.raw`
 function RenderPropDemo() {
   return (
-    <Field className="flex items-center justify-between gap-4">
-      <Switch defaultChecked>
-        {({ checked }) => (
-          <>
-            <Field.Label>
-              {checked ? 'Operational alerts active' : 'Operational alerts paused'}
-            </Field.Label>
-            <Switch.Indicator />
-          </>
-        )}
-      </Switch>
-    </Field>
+    <div>
+      <Field>
+        <Switch defaultChecked>
+          {({ checked }) => (
+            <>
+              <Field.Label>{checked ? 'Operational alerts active' : 'Operational alerts paused'}</Field.Label>
+              <Switch.Indicator />
+            </>
+          )}
+        </Switch>
+      </Field>
+    </div>
   );
 }
 
@@ -221,37 +236,36 @@ function SwitchFormDemo() {
 
   return (
     <form
-      className="grid w-full max-w-130 gap-3.5"
+      className="grid w-full max-w-90 gap-3"
       onSubmit={(event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         setSaved(
-          [
-            data.get('email') ? 'Email alerts' : null,
-            data.get('sms') ? 'SMS alerts' : null,
-          ]
-            .filter(Boolean)
-            .join(', ') || 'No alerts',
+          [data.get('email') ? 'Email alerts' : null, data.get('sms') ? 'SMS alerts' : null].filter(Boolean).join(', ') || 'No alerts',
         );
       }}
     >
-      <Field className="flex items-center justify-between gap-4">
-        <Field.Label>Email alerts</Field.Label>
-        <Switch name="email" value="enabled" defaultChecked>
-          <Switch.Indicator />
-        </Switch>
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Email alerts</Field.Label>
+          <Switch name="email" value="enabled" defaultChecked>
+            <Switch.Indicator />
+          </Switch>
+        </div>
       </Field>
-      <Field className="flex items-center justify-between gap-4">
-        <Field.Label>SMS alerts</Field.Label>
-        <Switch name="sms" value="enabled">
-          <Switch.Indicator />
-        </Switch>
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>SMS alerts</Field.Label>
+          <Switch name="sms" value="enabled">
+            <Switch.Indicator />
+          </Switch>
+        </div>
       </Field>
-      <div className="flex flex-wrap items-center gap-3">
-        <button className="inline-flex items-center justify-center min-h-10 px-2.5 py-2 gap-1.5 rounded-lg border border-transparent bg-primary-base text-static-white text-sm font-normal leading-none tracking-[0.01em] whitespace-nowrap cursor-pointer transition-all duration-200" type="submit">
-          Save
-        </button>
-        <span className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">{saved}</span>
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        <Button type="submit">Save</Button>
+        <Badge className="w-fit" variant="neutral" appearance="outlined">
+          {saved}
+        </Badge>
       </div>
     </form>
   );
