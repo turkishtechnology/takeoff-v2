@@ -29,13 +29,13 @@ const COLUMNS: Column[] = [
     links: [
       { label: 'Docs', href: '/docs/' },
       { label: 'Installation', href: '/docs/installation' },
-      { label: 'GitHub', href: 'https://github.com/turkishtechnology/takeoff-spar', external: true },
+      { label: 'GitHub', href: 'https://github.com/turkishtechnology/takeoff-v2', external: true },
     ],
   },
   {
     title: 'Community',
     links: [
-      { label: 'Discussions', href: 'https://github.com/turkishtechnology/takeoff-spar/discussions', external: true },
+      { label: 'Discussions', href: 'https://github.com/turkishtechnology/takeoff-v2/discussions', external: true },
       { label: 'NPM', href: 'https://www.npmjs.com/package/@takeoff-ui/react-spar', external: true },
     ],
   },
@@ -43,7 +43,6 @@ const COLUMNS: Column[] = [
     title: 'Company',
     links: [
       { label: 'Turkish Technology', href: 'https://turkishtechnology.com', external: true },
-      { label: 'Takeoff Design', href: 'https://design.takeoff.turkishtechnology.com', external: true },
       { label: 'Spar', href: 'https://github.com/turkishtechnology/spar', external: true },
     ],
   },
