@@ -18,6 +18,7 @@ const sidebars: SidebarsConfig = {
         'components/button',
         'components/checkbox',
         'components/drawer',
+        'components/dialog',
         'components/input',
         'components/popover',
         'components/select',

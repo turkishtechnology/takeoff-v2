@@ -37,7 +37,15 @@
   @include dialog.dialog-mask;
 }
 
+.tk-dialog-overlay {
+  @include dialog.dialog-mask;
+}
+
 .tk-dialog {
+  @include dialog.dialog;
+}
+
+.tk-dialog-content {
   @include dialog.dialog;
 }
 
