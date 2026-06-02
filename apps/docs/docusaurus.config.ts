@@ -110,7 +110,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          'href': 'https://github.com/turkishtechnology/takeoff-spar',
+          'href': 'https://github.com/turkishtechnology/takeoff-v2',
           'position': 'right',
           'label': 'GitHub',
           'className': 'navbar__github-link',
@@ -147,7 +147,7 @@ const config: Config = {
           items: [
             {
               label: 'Releases',
-              href: 'https://github.com/turkishtechnology/takeoff-spar/releases',
+              href: 'https://github.com/turkishtechnology/takeoff-v2/releases',
             },
           ],
         },
@@ -156,7 +156,7 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/turkishtechnology/takeoff-spar',
+              href: 'https://github.com/turkishtechnology/takeoff-v2',
             },
           ],
         },

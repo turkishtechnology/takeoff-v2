@@ -1,0 +1,26 @@
+name: PR Labeler
+
+# Auto-applies area:* labels based on which files a PR touches (see
+# .github/labeler.yml). Triage only — nothing is blocked on these labels.
+#
+# Runs on pull_request_target so it has write access to label PRs from forks.
+# SECURITY: pull_request_target runs with a write-scoped token against the BASE
+# ref's workflow. actions/labeler does NOT check out or execute PR head code, so
+# this is safe. Never add a step here that checks out / runs PR head code.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/labeler@v5
+        with:
+          configuration-path: .github/labeler.yml
+          sync-labels: true

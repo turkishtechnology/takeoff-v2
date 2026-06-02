@@ -70,7 +70,10 @@ If anything looks wrong, **don't merge yet** — fix the source changeset on
 Merge to `develop`. CI takes over:
 
 - Publishes each bumped package to npm with the `latest` dist-tag.
-- Tags the commit (`v0.1.4` or per-package tags depending on config).
+- Tags the commit **per package** (`@takeoff-ui/react-spar@0.1.4`,
+  `@takeoff-design/tokens@0.1.4`, …). There is **no single repo-version tag**
+  like `v0.1.4` — `.changeset/config.json` has empty `fixed`/`linked`, so each
+  package versions and tags independently.
 - Pushes git tags to the remote.
 
 Verify on npm that the new versions are reachable before moving on:
@@ -94,6 +97,11 @@ The skill (defined in `.agents/skills/generate-changelog/SKILL.md`):
 - Categorizes commits into sections (Highlights, Fixes, Docs, Infrastructure).
 - Flips long sections (>5 items) to `collapsible: true`.
 - Writes a new entry into `apps/docs/src/data/changelog.ts`.
+
+> Note: because tags are **per package** (there is no `v0.1.4` tag), the skill's
+> `git rev-parse v0.1.4` lookup won't resolve. It falls back to the
+> last-changelog-entry date and collects commits since then up to `HEAD`. That's
+> the expected path here — not an error.
 
 The skill produces a **draft**, not a finished entry. The next step is to
 rewrite it.
