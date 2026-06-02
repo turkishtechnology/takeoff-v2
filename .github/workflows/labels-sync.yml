@@ -1,0 +1,37 @@
+name: Labels Sync
+
+# Keep GitHub's label set in sync with the checked-in source of truth
+# (.github/labels.yml). Renovate and changeset-check depend on these labels
+# existing — see the comment header in labels.yml.
+#
+# prune: false on purpose — we add/update labels but never delete labels that
+# aren't in the file (humans or other automation may have created them). Flip to
+# true once the label set has stabilised and you want strict reconciliation.
+
+on:
+  push:
+    branches: [develop]
+    paths: [".github/labels.yml"]
+  workflow_dispatch:
+
+# Concurrency guard so two rapid pushes don't race the labels API.
+concurrency:
+  group: labels-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync labels from .github/labels.yml
+        uses: crazy-max/ghaction-github-labeler@v5
+        with:
+          yaml-file: .github/labels.yml
+          dry-run: false
+          skip-delete: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

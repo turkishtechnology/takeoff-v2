@@ -1,0 +1,50 @@
+# Source of truth for repository labels.
+#
+# Synced to GitHub by .github/workflows/labels-sync.yml on push to `develop`.
+# Renovate and the changeset-check workflow REFERENCE these labels but do NOT
+# create them — if a label is missing, those automations silently no-op, so the
+# label must exist here first.
+#
+# Schema: crazy-max/ghaction-github-labeler (name / color / description).
+
+# ── Release automation ────────────────────────────────────────────────────────
+- name: "release:none"
+  color: "ededed"
+  description: "Skip the changeset-check gate — docs/tooling-only PR, not shipped to npm"
+- name: "release:major"
+  color: "b60205"
+  description: "Carries a breaking change (used by renovate major-update rule)"
+
+# ── Dependencies / renovate ───────────────────────────────────────────────────
+- name: "dependencies"
+  color: "0366d6"
+  description: "Dependency update (renovate)"
+- name: "spar"
+  color: "5319e7"
+  description: "Touches the @turkish-technology/spar primitives or their wrappers"
+- name: "needs-review"
+  color: "fbca04"
+  description: "Requires manual human review before merge (e.g. minor/major spar bump)"
+- name: "security"
+  color: "b60205"
+  description: "Security fix or vulnerability alert (renovate)"
+
+# ── Area (auto-applied by .github/labeler.yml) ────────────────────────────────
+- name: "area:react-spar"
+  color: "0e8a16"
+  description: "packages/react-spar"
+- name: "area:tokens"
+  color: "0e8a16"
+  description: "packages/tokens"
+- name: "area:tailwind"
+  color: "0e8a16"
+  description: "packages/tailwind"
+- name: "area:docs"
+  color: "0e8a16"
+  description: "apps/docs"
+- name: "area:ci"
+  color: "0e8a16"
+  description: "CI, workflows, repo tooling/config"
+- name: "area:changesets"
+  color: "0e8a16"
+  description: "Changeset files"
