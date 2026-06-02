@@ -14,8 +14,8 @@ This repo versions and publishes with [Changesets]. The `changeset-check` job
 fails a PR that touches publishable code without one. Pick one:
 
 - [ ] I ran `pnpm changeset` and **committed** the generated `.changeset/*.md`
-      file. (Bump level: see the
-      [bump-level guide](../blob/develop/CONTRIBUTING.md#bump-level-guide).)
+      file. (Bump level: see the "Bump level guide" in
+      [CONTRIBUTING.md](../CONTRIBUTING.md).)
 - [ ] This PR is **docs / tooling-only** (no npm-shipped change) — I applied the
       `release:none` label.
 
@@ -42,7 +42,7 @@ fails a PR that touches publishable code without one. Pick one:
 
 ## Links
 
-- [CONTRIBUTING.md](../blob/develop/CONTRIBUTING.md)
-- [Release runbook](../blob/develop/docs/release-runbook.md)
+- [CONTRIBUTING.md](../CONTRIBUTING.md)
+- [Release runbook](../docs/release-runbook.md)
 
 [Changesets]: https://github.com/changesets/changesets
