@@ -1,0 +1,84 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: >
+        ### Thanks for taking the time to file a bug. Before opening a new issue,
+        please search existing issues to avoid duplicates. If you aren't sure
+        this is a bug, open a
+        [discussion](https://github.com/turkishtechnology/takeoff-v2/discussions/new?category=general)
+        instead.
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the bug
+      description: A brief description of what the bug is.
+      placeholder: Bug description
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How to reproduce
+      description: A step-by-step description, ideally with a minimal repro (StackBlitz/CodeSandbox link).
+      placeholder: |
+        1. Render '...'
+        2. Pass prop '....'
+        3. See error
+    validations:
+      required: true
+  - type: input
+    id: component
+    attributes:
+      label: Affected component / export
+      description: Which exported component or token family is affected?
+      placeholder: e.g. Select.Trigger, --dropdown-items-basic-*, @takeoff-design/tailwind theme
+    validations:
+      required: true
+  - type: input
+    id: version-react-spar
+    attributes:
+      label: "@takeoff-ui/react-spar version"
+      placeholder: e.g. 0.1.2
+    validations:
+      required: true
+  - type: input
+    id: version-tokens
+    attributes:
+      label: "@takeoff-design/tokens version"
+      placeholder: e.g. 0.1.2
+    validations:
+      required: false
+  - type: input
+    id: version-spar
+    attributes:
+      label: "@turkish-technology/spar version"
+      description: The underlying Spar primitives version (from your lockfile).
+      placeholder: e.g. 0.2.0-beta.1
+    validations:
+      required: false
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Add a screenshot of the error or the situation, if visual.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Browser console or build logs, if any.
+      render: bash
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Before submitting
+      description: By submitting this issue, you agree to follow our [Contributing Guidelines](https://github.com/turkishtechnology/takeoff-v2/blob/develop/CONTRIBUTING.md).
+      options:
+        - label: I've searched the documentation
+          required: true
+        - label: I've searched for existing issues
+          required: true

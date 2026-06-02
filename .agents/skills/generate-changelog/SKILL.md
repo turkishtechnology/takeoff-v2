@@ -5,17 +5,20 @@ description:
   date from the user, walks the git history for the matching tag range (or a
   fallback range when no tag exists yet), categorizes commits into sections
   (Highlights, Fixes, Docs, Infrastructure), flips long sections to collapsible,
-  and writes the entry to apps/docs/src/pages/changelog.data.ts. Use when the
-  user asks to generate release notes, add a changelog entry, or invokes
+  and writes the entry to apps/docs/src/data/changelog.ts. Use when the user
+  asks to generate release notes, add a changelog entry, or invokes
   /generate-changelog.
 argument-hint: '[version] [date]'
 ---
 
 # Generate changelog entry
 
-Add exactly one entry to `apps/docs/src/pages/changelog.data.ts`. Do **not**
-modify `changelog.tsx`, `changelog.module.css`, or the type exports in
-`changelog.data.ts` — only the `CHANGELOG_ENTRIES` array.
+Add exactly one entry to `apps/docs/src/data/changelog.ts`. Do **not** modify
+the renderer (`apps/docs/src/pages/changelog.tsx`), its CSS module
+(`changelog.module.css`), or the type exports at the top of
+`apps/docs/src/data/changelog.ts` (and
+`apps/docs/src/data/package-changelogs-types.ts`) — only the `CHANGELOG_ENTRIES`
+array.
 
 ## 1 · Collect inputs
 
@@ -222,9 +225,9 @@ existing formatting: single-quote strings, trailing commas, two-space indent.
 pnpm --filter docs check-types
 ```
 
-Must stay green. If it fails, the fix is in `changelog.data.ts` (usually a stray
-quote or unescaped backtick in a string). Do not touch any other file to make it
-pass.
+Must stay green. If it fails, the fix is in `apps/docs/src/data/changelog.ts`
+(usually a stray quote or unescaped backtick in a string). Do not touch any
+other file to make it pass.
 
 ## 9 · Report
 
@@ -238,8 +241,9 @@ One concise message:
 ## Guardrails
 
 - **Never commit or push.** The user reviews and commits.
-- **Never modify** `changelog.tsx`, `changelog.module.css`, or the type exports
-  in `changelog.data.ts`. Only the `CHANGELOG_ENTRIES` array.
+- **Never modify** the renderer (`apps/docs/src/pages/changelog.tsx`),
+  `changelog.module.css`, or the type exports at the top of
+  `apps/docs/src/data/changelog.ts`. Only the `CHANGELOG_ENTRIES` array.
 - **Never invent** features that aren't in the commit range. If the range is
   empty or trivial, tell the user and abort.
 - **Never skip the draft-confirmation step.** The user must see and approve the

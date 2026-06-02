@@ -1,0 +1,35 @@
+# Code owners — auto-requests review when matching files change.
+#
+# ⚠️ REPLACE the @turkishtechnology/* placeholder teams below with real GitHub
+#    teams or users before relying on this. Unknown handles are silently ignored
+#    by GitHub (no review is requested), so verify each team exists.
+#
+# CODEOWNERS only *requests* review. To make it *block* merge, enable
+# "Require review from Code Owners" in branch protection for `develop` (and
+# `main`) — at minimum for /.changeset/ and the release workflow.
+#
+# Ownership mirrors the release-ownership table in CONTRIBUTING.md. Last match
+# wins, so order from general to specific.
+
+# Default owners for everything in the repo.
+*                                           @turkishtechnology/takeoff-v2-maintainers
+
+# ── Release engineering: version strategy, publish pipeline, the docs that
+#    describe them, and the changelog skill. Keep these in lockstep — drift here
+#    is exactly what broke the release flow once (skill pointed at a dead path).
+/.changeset/                                @turkishtechnology/release-managers
+/.github/workflows/release.yml             @turkishtechnology/release-managers
+/CONTRIBUTING.md                           @turkishtechnology/release-managers
+/docs/release-runbook.md                   @turkishtechnology/release-managers
+/.agents/skills/generate-changelog/        @turkishtechnology/release-managers
+
+# ── CI / DX / repo tooling.
+/.github/                                   @turkishtechnology/dx
+
+# ── Packages.
+/packages/react-spar/                       @turkishtechnology/react-spar-owners
+/packages/tokens/                           @turkishtechnology/design-system-owners
+/packages/tailwind/                         @turkishtechnology/design-system-owners
+
+# ── Docs site.
+/apps/docs/                                 @turkishtechnology/docs-owners

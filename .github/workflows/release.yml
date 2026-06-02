@@ -51,10 +51,15 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          # Node 24 ships with npm 11.x which supports OIDC trusted publishing
-          # natively. We still run an explicit upgrade as a safety floor in case
-          # the bundled npm minor doesn't meet 11.5.1.
-          node-version: 24
+          # Pinned via .nvmrc (currently 24). Node 24 ships with npm 11.x which
+          # supports OIDC trusted publishing natively; CI uses the same .nvmrc so
+          # a green CI can't hide a publish-time Node mismatch. We still run an
+          # explicit npm upgrade below as a safety floor in case the bundled npm
+          # minor doesn't meet 11.5.1.
+          #
+          # NOTE: if you lower .nvmrc below 24, restore an explicit node-version
+          # here — OIDC trusted publishing needs npm >= 11.5.1.
+          node-version-file: ".nvmrc"
           cache: pnpm
           registry-url: "https://registry.npmjs.org"
 
