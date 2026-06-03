@@ -29,9 +29,9 @@
   width: max-content;
   padding: var(--popover-body-v-padding, 12px) var(--popover-body-h-padding, 12px);
   border-radius: var(--popover-radius, 8px);
-  background: var(--static-light);
-  color: var(--text-base);
-  border: 1px solid var(--border-light);
+  background: var(--background-darkest);
+  color: var(--text-light);
+  border: 1px solid var(--border-dark);
   box-shadow:
     0 2px 2px -1px var(--shadow-black-alpha-light),
     0 6px 12px -2px var(--shadow-black-alpha-light),
@@ -42,7 +42,20 @@
   animation: tk-popover-fade-in 150ms ease-out;
 
   .tk-popover-header {
-    color: var(--text-darkest);
+    color: var(--text-lightest);
+  }
+
+  &[data-variant='white'],
+  &[data-variant='info'],
+  &[data-variant='success'],
+  &[data-variant='warning'],
+  &[data-variant='danger'],
+  &[data-variant='neutral'] {
+    color: var(--text-dark);
+
+    .tk-popover-header {
+      color: var(--text-darkest);
+    }
   }
 
   &[data-state='closed'] {
@@ -55,11 +68,8 @@
 
   &[data-variant='dark'] {
     background: var(--background-darkest);
-    border: 1px solid var(--border-light);
-
-    .tk-popover-header {
-      color: var(--text-lightest);
-    }
+    color: var(--text-light);
+    border: 1px solid var(--border-dark);
 
     .tk-popover-arrow {
       color: var(--background-darkest);
@@ -69,49 +79,54 @@
   &[data-variant='white'] {
     background: var(--static-light);
     border: 1px solid var(--border-light);
+
     .tk-popover-arrow {
       color: var(--static-light);
     }
   }
 
   &[data-variant='info'] {
-    background-color: var(--states-info-lightest);
-    border: 1px solid var(--states-info-light);
+    background-color: var(--states-info-light);
+    border: 1px solid var(--states-info-sub-base);
+
     .tk-popover-arrow {
-      color: var(--states-info-lightest);
+      color: var(--states-info-light);
     }
   }
 
   &[data-variant='success'] {
-    background-color: var(--states-success-lightest);
-    border: 1px solid var(--states-success-light);
+    background-color: var(--states-success-light);
+    border: 1px solid var(--states-success-sub-base);
+
     .tk-popover-arrow {
-      color: var(--states-success-lightest);
+      color: var(--states-success-light);
     }
   }
 
   &[data-variant='warning'] {
-    background-color: var(--states-warning-lightest);
-    border: 1px solid var(--states-warning-light);
+    background-color: var(--states-warning-light);
+    border: 1px solid var(--states-warning-sub-base);
 
     .tk-popover-arrow {
-      color: var(--states-warning-lightest);
+      color: var(--states-warning-light);
     }
   }
 
   &[data-variant='danger'] {
-    background-color: var(--states-danger-lightest);
-    border: 1px solid var(--states-danger-light);
+    background-color: var(--states-danger-light);
+    border: 1px solid var(--states-danger-sub-base);
+
     .tk-popover-arrow {
-      color: var(--states-danger-lightest);
+      color: var(--states-danger-light);
     }
   }
 
   &[data-variant='neutral'] {
-    background: var(--background-lightest);
-    border: 1px solid var(--border-light);
+    background: var(--background-light);
+    border: 1px solid var(--border-sub-base);
+
     .tk-popover-arrow {
-      color: var(--background-lightest);
+      color: var(--background-light);
     }
   }
 }
