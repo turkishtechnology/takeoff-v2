@@ -29,9 +29,6 @@
   width: max-content;
   padding: var(--popover-body-v-padding, 12px) var(--popover-body-h-padding, 12px);
   border-radius: var(--popover-radius, 8px);
-  background: var(--background-darkest);
-  color: var(--text-light);
-  border: 1px solid var(--border-dark);
   box-shadow:
     0 2px 2px -1px var(--shadow-black-alpha-light),
     0 6px 12px -2px var(--shadow-black-alpha-light),
@@ -40,10 +37,6 @@
   white-space: normal;
   pointer-events: auto;
   animation: tk-popover-fade-in 150ms ease-out;
-
-  .tk-popover-header {
-    color: var(--text-lightest);
-  }
 
   &[data-variant='white'],
   &[data-variant='info'],
@@ -71,6 +64,9 @@
     color: var(--text-light);
     border: 1px solid var(--border-dark);
 
+    .tk-popover-header {
+      color: var(--text-lightest);
+    }
     .tk-popover-arrow {
       color: var(--background-darkest);
     }
@@ -150,7 +146,6 @@
 @mixin popover-arrow {
   display: block;
   pointer-events: none;
-  color: var(--static-light);
 }
 
 @mixin popover-close {
