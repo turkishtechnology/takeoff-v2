@@ -16,9 +16,6 @@
   width: max-content;
   padding: var(--tooltips-base-v-padding, 8px) var(--tooltips-base-h-padding, 12px);
   border-radius: var(--tooltips-base-radius, 8px);
-  background: var(--background-darkest);
-  color: var(--text-light);
-  border: 1px solid var(--border-dark);
   box-shadow:
     0 2px 2px -1px var(--shadow-black-alpha-light),
     0 6px 12px -2px var(--shadow-black-alpha-light),
@@ -27,10 +24,6 @@
   white-space: normal;
   pointer-events: auto;
   animation: tk-tooltip-fade-in 150ms ease-out;
-
-  .tk-tooltip-header {
-    color: var(--text-lightest);
-  }
 
   &[data-variant='white'],
   &[data-variant='info'],
@@ -50,6 +43,14 @@
   // ---------------------------------------------------------------------------
 
   &[data-variant='dark'] {
+    background: var(--background-darkest);
+    color: var(--text-light);
+    border: 1px solid var(--border-dark);
+
+    .tk-tooltip-header {
+      color: var(--text-lightest);
+    }
+
     .tk-tooltip-arrow {
       color: var(--background-darkest);
     }
