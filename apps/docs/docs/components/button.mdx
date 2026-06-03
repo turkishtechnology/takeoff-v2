@@ -19,7 +19,7 @@ export const buttonScope = { Button };
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap justify-center gap-3">
       <Button>Primary</Button>
       <Button variant="secondary">Secondary</Button>
       <Button appearance="outlined">Outlined</Button>
@@ -35,7 +35,7 @@ render(<PlaygroundDemo />);
 export const sizesDemo = String.raw`
 function SizesDemo() {
   return (
-    <div className="flex flex-wrap gap-3 items-center">
+    <div className="flex flex-wrap justify-center items-center gap-3">
       <Button size="small">Small</Button>
       <Button size="base">Base</Button>
       <Button size="large">Large</Button>
@@ -51,9 +51,11 @@ function LoadingDemo() {
   const [isLoading, setIsLoading] = React.useState(false);
 
   return (
-    <div className="flex flex-wrap gap-3 items-center">
+    <div className="flex flex-wrap justify-center gap-3">
       <Button isLoading>Saving…</Button>
-      <Button variant="secondary" isLoading>Loading</Button>
+      <Button variant="secondary" isLoading>
+        Loading
+      </Button>
       <Button
         variant="primary"
         isLoading={isLoading}
@@ -74,9 +76,11 @@ render(<LoadingDemo />);
 export const disabledDemo = String.raw`
 function DisabledDemo() {
   return (
-    <div className="flex flex-wrap gap-3 items-center">
+    <div className="flex flex-wrap justify-center gap-3">
       <Button disabled>Disabled</Button>
-      <Button variant="secondary" disabled>Disabled</Button>
+      <Button variant="secondary" disabled>
+        Disabled
+      </Button>
     </div>
   );
 }
@@ -89,15 +93,9 @@ function ToggleButtonDemo() {
   const [isPressed, setIsPressed] = useState(false);
 
   return (
-    <div className="flex flex-wrap gap-3 items-center">
-      <Button
-        variant={isPressed ? 'primary' : 'secondary'}
-        isPressed={isPressed}
-        onPressedChange={setIsPressed}
-      >
-        {isPressed ? 'On' : 'Off'}
-      </Button>
-    </div>
+    <Button variant={isPressed ? 'primary' : 'secondary'} isPressed={isPressed} onPressedChange={setIsPressed}>
+      {isPressed ? 'On' : 'Off'}
+    </Button>
   );
 }
 
@@ -107,22 +105,42 @@ render(<ToggleButtonDemo />);
 export const iconsDemo = String.raw`
 function IconsDemo() {
   const StarIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.77 4.29 12.9l.71-4.12-3-2.93 4.15-.6L8 1.5z" />
     </svg>
   );
 
   const ArrowIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M3 8h10M9 4l4 4-4 4" />
     </svg>
   );
 
   return (
-    <div className="flex flex-wrap gap-3 items-center">
+    <div className="flex flex-wrap justify-center gap-3">
       <Button startContent={<StarIcon />}>Favorite</Button>
       <Button endContent={<ArrowIcon />}>Continue</Button>
-      <Button startContent={<StarIcon />} endContent={<ArrowIcon />}>Both</Button>
+      <Button startContent={<StarIcon />} endContent={<ArrowIcon />}>
+        Both
+      </Button>
       <Button startContent={<StarIcon />} rounded />
     </div>
   );
