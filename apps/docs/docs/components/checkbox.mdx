@@ -10,13 +10,15 @@ slug: /components/checkbox
 
 import LiveCode from '@site/src/components/LiveCode';
 import {
+  Badge,
+  Button,
   Checkbox,
   Field,
   ReactSparDemoRoot,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const checkboxScope = { Checkbox, Field };
+export const checkboxScope = { Badge, Button, Checkbox, Field };
 
 {/* prettier-ignore-start */}
 
@@ -28,9 +30,7 @@ function PlaygroundDemo() {
       <Checkbox defaultChecked>
         <Checkbox.Indicator />
       </Checkbox>
-      <Field.Description>
-        We will only email you when a saved route drops in price.
-      </Field.Description>
+      <Field.Description>We will only email you when a saved route drops in price.</Field.Description>
     </Field>
   );
 }
@@ -41,7 +41,7 @@ render(<PlaygroundDemo />);
 export const fieldWithCheckboxDemo = String.raw`
 function FieldWithCheckboxDemo() {
   return (
-    <div className="grid max-w-130 gap-3.5">
+    <div className="grid gap-3">
       <Field required>
         <Field.Label>Email me booking updates</Field.Label>
         <Checkbox defaultChecked>
@@ -54,9 +54,7 @@ function FieldWithCheckboxDemo() {
         <Checkbox>
           <Checkbox.Indicator />
         </Checkbox>
-        <Field.Description>
-          We will only email you when a saved route drops in price.
-        </Field.Description>
+        <Field.Description>We will only email you when a saved route drops in price.</Field.Description>
       </Field>
 
       <Field invalid>
@@ -92,10 +90,10 @@ function ControlledCheckboxDemo() {
   const [accepted, setAccepted] = useState(false);
 
   return (
-    <div className="grid max-w-130 gap-3.5">
-      <div className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">
+    <div className="grid gap-3">
+      <Badge className="w-fit" variant="neutral" appearance="outlined">
         Terms {accepted ? 'accepted' : 'not accepted'}
-      </div>
+      </Badge>
       <Field>
         <Field.Label>I accept the booking terms</Field.Label>
         <Checkbox checked={accepted} onChange={setAccepted}>
@@ -127,42 +125,29 @@ function IndeterminateCheckboxDemo() {
   };
 
   return (
-    <div className="grid max-w-130 gap-3.5">
+    <div className="grid gap-3">
       <Field>
         <Field.Label>All extras</Field.Label>
-        <Checkbox
-          checked={allChecked}
-          indeterminate={indeterminate}
-          onChange={toggleAll}
-        >
+        <Checkbox checked={allChecked} indeterminate={indeterminate} onChange={toggleAll}>
           <Checkbox.Indicator />
         </Checkbox>
       </Field>
-      <div className="grid max-w-130 gap-3.5" style={{ paddingLeft: 24 }}>
+      <div className="grid gap-3" style={{ paddingLeft: 24 }}>
         <Field>
           <Field.Label>Extra legroom seat</Field.Label>
-          <Checkbox
-            checked={items.seat}
-            onChange={(v) => setItems({ ...items, seat: v })}
-          >
+          <Checkbox checked={items.seat} onChange={(v) => setItems({ ...items, seat: v })}>
             <Checkbox.Indicator />
           </Checkbox>
         </Field>
         <Field>
           <Field.Label>Special meal</Field.Label>
-          <Checkbox
-            checked={items.meal}
-            onChange={(v) => setItems({ ...items, meal: v })}
-          >
+          <Checkbox checked={items.meal} onChange={(v) => setItems({ ...items, meal: v })}>
             <Checkbox.Indicator />
           </Checkbox>
         </Field>
         <Field>
           <Field.Label>Extra baggage</Field.Label>
-          <Checkbox
-            checked={items.baggage}
-            onChange={(v) => setItems({ ...items, baggage: v })}
-          >
+          <Checkbox checked={items.baggage} onChange={(v) => setItems({ ...items, baggage: v })}>
             <Checkbox.Indicator />
           </Checkbox>
         </Field>
@@ -177,7 +162,7 @@ render(<IndeterminateCheckboxDemo />);
 export const sizeDemo = String.raw`
 function SizeDemo() {
   return (
-    <div className="flex flex-wrap gap-4.5">
+    <div className="flex flex-wrap justify-center gap-6">
       <Field>
         <Field.Label>Small</Field.Label>
         <Checkbox size="small" defaultChecked>
@@ -200,24 +185,20 @@ render(<SizeDemo />);
 export const cardTypeDemo = String.raw`
 function CardTypeDemo() {
   return (
-    <div className="grid max-w-130 gap-3.5">
+    <div className="grid gap-3">
       <Field>
         <Field.Label>Mobile boarding pass</Field.Label>
         <Checkbox type="card" defaultChecked>
           <Checkbox.Indicator />
         </Checkbox>
-        <Field.Description>
-          Skip the printed pass and board with your phone.
-        </Field.Description>
+        <Field.Description>Skip the printed pass and board with your phone.</Field.Description>
       </Field>
       <Field>
         <Field.Label>Priority boarding</Field.Label>
         <Checkbox type="card">
           <Checkbox.Indicator />
         </Checkbox>
-        <Field.Description>
-          Board before general groups with priority access.
-        </Field.Description>
+        <Field.Description>Board before general groups with priority access.</Field.Description>
       </Field>
     </div>
   );
@@ -229,39 +210,24 @@ render(<CardTypeDemo />);
 export const customIconDemo = String.raw`
 function CustomIconDemo() {
   const StarIcon = () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-    >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
       <path d="M12 2 15 9l7 .5-5.5 4.5L18 22l-6-4-6 4 1.5-8L2 9.5 9 9z" />
     </svg>
   );
 
   const DashIcon = () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="round"
-    >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
       <path d="M5 12h14" />
     </svg>
   );
 
   return (
-    <div className="grid max-w-130 gap-3.5">
+    <div className="grid gap-3">
       <Field>
         <Field.Label>Favorite this route</Field.Label>
         <Checkbox defaultChecked>
           <Checkbox.Indicator>
-            {({ checked, indeterminate }) =>
-              indeterminate ? <DashIcon /> : checked ? <StarIcon /> : null
-            }
+            {({ checked, indeterminate }) => (indeterminate ? <DashIcon /> : checked ? <StarIcon /> : null)}
           </Checkbox.Indicator>
         </Checkbox>
       </Field>
@@ -275,7 +241,7 @@ render(<CustomIconDemo />);
 export const stateDemo = String.raw`
 function StateDemo() {
   return (
-    <div className="grid max-w-130 gap-3.5">
+    <div className="grid gap-3">
       <Field disabled>
         <Field.Label>Disabled option</Field.Label>
         <Checkbox>
@@ -299,9 +265,7 @@ function StateDemo() {
         <Checkbox>
           <Checkbox.Indicator />
         </Checkbox>
-        <Field.ErrorMessage>
-          You must accept the terms to continue.
-        </Field.ErrorMessage>
+        <Field.ErrorMessage>You must accept the terms to continue.</Field.ErrorMessage>
       </Field>
     </div>
   );
@@ -316,7 +280,7 @@ function CheckboxFormDemo() {
 
   return (
     <form
-      className="grid max-w-130 gap-3.5"
+      className="grid gap-3"
       onSubmit={(event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -343,10 +307,10 @@ function CheckboxFormDemo() {
         </Checkbox>
       </Field>
       <div className="flex flex-wrap items-center gap-3">
-     <button className="items-center min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer" type="submit">
-          Save
-        </button>
-        <span className="w-fit border border-border-light rounded-full bg-static-light text-text-dark text-[13px] font-semibold leading-none py-2 px-3">{saved}</span>
+        <Button type="submit">Save</Button>
+        <Badge variant="neutral" appearance="outlined">
+          {saved}
+        </Badge>
       </div>
     </form>
   );
