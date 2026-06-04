@@ -150,23 +150,24 @@
 
 @mixin popover-close {
   display: inline-flex;
+  width: 20px;
+  height: 20px;
+  padding: var(--spacing-xs);
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  border: none;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: var(--radius-m-base);
   background: transparent;
-  color: var(--text-base);
-  border-radius: var(--popover-close-radius, 4px);
-  padding: 4px;
+  color: var(--icon-sub-base);
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
 
   &:hover {
-    color: var(--text-darkest);
+    color: var(--icon-base);
   }
 
-  &:focus-visible {
-    outline: 1px solid var(--text-lightest);
-    outline-offset: 1px;
-  }
+  @include mixins.focus-ring(var(--neutral-focus));
 }
 
 // ---------------------------------------------------------------------------
