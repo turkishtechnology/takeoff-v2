@@ -107,7 +107,6 @@
   }
 
   &:focus-visible {
-    background-color: $focus-bg;
     box-shadow: $focus-shadow;
   }
 
@@ -306,7 +305,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--primary-lightest), var(--primary-light), var(--primary-focus), var(--background-sub-base), var(--primary-500));
+        @include button-variant-filled(
+          var(--primary-lightest),
+          var(--primary-light),
+          var(--primary-focus),
+          var(--background-sub-base),
+          var(--primary-500),
+          var(--static-white),
+          var(--primary-500),
+          var(--static-white)
+        );
       }
 
       &[data-type='elevated'] {
@@ -341,7 +349,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--secondary-lightest), var(--secondary-light), var(--secondary-focus), var(--background-sub-base), var(--secondary-darkest));
+        @include button-variant-filled(
+          var(--secondary-lightest),
+          var(--secondary-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--secondary-darkest),
+          var(--static-white),
+          var(--secondary-darkest),
+          var(--static-white)
+        );
       }
 
       &[data-type='elevated'] {
@@ -376,7 +393,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--background-lightest), var(--background-light), var(--secondary-focus), var(--background-sub-base), var(--text-darkest));
+        @include button-variant-filled(
+          var(--background-lightest),
+          var(--background-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--text-darkest),
+          var(--static-white),
+          var(--text-darkest),
+          var(--static-white)
+        );
       }
 
       &[data-type='elevated'] {
@@ -411,7 +437,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--states-info-lightest), var(--states-info-light), var(--secondary-focus), var(--background-sub-base), var(--states-info-dark));
+        @include button-variant-filled(
+          var(--states-info-lightest),
+          var(--states-info-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--states-info-dark),
+          var(--static-white),
+          var(--states-info-dark),
+          var(--static-white)
+        );
       }
 
       &[data-type='elevated'] {
@@ -446,7 +481,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--states-success-lightest), var(--states-success-light), var(--secondary-focus), var(--background-sub-base), var(--states-success-dark));
+        @include button-variant-filled(
+          var(--states-success-lightest),
+          var(--states-success-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--states-success-dark),
+          var(--static-white),
+          var(--states-success-dark),
+          var(--static-white)
+        );
       }
 
       &[data-type='elevated'] {
@@ -489,7 +533,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--states-danger-lightest), var(--states-danger-light), var(--secondary-focus), var(--background-sub-base), var(--states-danger-dark));
+        @include button-variant-filled(
+          var(--states-danger-lightest),
+          var(--states-danger-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--states-danger-dark),
+          var(--static-white),
+          var(--states-danger-dark),
+          var(--static-white)
+        );
       }
 
       &[data-type='elevated'] {
@@ -532,7 +585,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--states-warning-lightest), var(--states-warning-light), var(--secondary-focus), var(--background-sub-base), var(--states-warning-dark));
+        @include button-variant-filled(
+          var(--states-warning-lightest),
+          var(--states-warning-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--states-warning-dark),
+          var(--static-white),
+          var(--states-warning-dark),
+          var(--static-white)
+        );
       }
 
       &[data-type='elevated'] {
