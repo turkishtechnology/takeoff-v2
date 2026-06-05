@@ -317,10 +317,6 @@
         );
       }
 
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--primary-lightest), var(--primary-light), var(--primary-focus), var(--background-sub-base), var(--primary-500));
-      }
-
       &[data-type='outlined'] {
         @include button-variant-outlined(var(--primary-base), var(--primary-sub-base), var(--primary-lightest), var(--primary-lightest), var(--primary-focus));
       }
@@ -359,10 +355,6 @@
           var(--secondary-darkest),
           var(--static-white)
         );
-      }
-
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--secondary-lightest), var(--secondary-light), var(--secondary-focus), var(--background-sub-base), var(--secondary-darkest));
       }
 
       &[data-type='outlined'] {
@@ -405,10 +397,6 @@
         );
       }
 
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--background-lightest), var(--background-light), var(--secondary-focus), var(--background-sub-base), var(--text-darkest));
-      }
-
       &[data-type='outlined'] {
         @include button-variant-outlined(var(--text-darkest), var(--background-sub-base), var(--background-lightest), var(--background-lightest), var(--secondary-focus));
       }
@@ -449,10 +437,6 @@
         );
       }
 
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--states-info-lightest), var(--states-info-light), var(--secondary-focus), var(--background-sub-base), var(--states-info-dark));
-      }
-
       &[data-type='outlined'] {
         @include button-variant-outlined(var(--states-info-dark), var(--states-info-sub-base), var(--states-info-lightest), var(--states-info-lightest), var(--secondary-focus));
       }
@@ -491,10 +475,6 @@
           var(--states-success-dark),
           var(--static-white)
         );
-      }
-
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--states-success-lightest), var(--states-success-light), var(--secondary-focus), var(--background-sub-base), var(--states-success-dark));
       }
 
       &[data-type='outlined'] {
@@ -545,10 +525,6 @@
         );
       }
 
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--states-danger-lightest), var(--states-danger-light), var(--secondary-focus), var(--background-sub-base), var(--states-danger-dark));
-      }
-
       &[data-type='outlined'] {
         @include button-variant-outlined(
           var(--states-danger-dark),
@@ -597,10 +573,6 @@
         );
       }
 
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--states-warning-lightest), var(--states-warning-light), var(--secondary-focus), var(--background-sub-base), var(--states-warning-dark));
-      }
-
       &[data-type='outlined'] {
         @include button-variant-outlined(
           var(--states-warning-dark),
@@ -639,19 +611,6 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(
-          var(--overlay-white-lightest),
-          var(--overlay-white-light),
-          var(--secondary-focus),
-          var(--overlay-white-lightest),
-          var(--text-lightest),
-          var(--overlay-white-light),
-          var(--text-lightest),
-          var(--overlay-white-light)
-        );
-      }
-
-      &[data-type='elevated'] {
         @include button-variant-filled(
           var(--overlay-white-lightest),
           var(--overlay-white-light),
@@ -714,19 +673,6 @@
         );
       }
 
-      &[data-type='elevated'] {
-        @include button-variant-filled(
-          var(--overlay-black-xlightest),
-          var(--overlay-black-lightest),
-          var(--secondary-focus),
-          var(--overlay-black-xlightest),
-          var(--text-darkest),
-          var(--overlay-black-lightest),
-          var(--text-darkest),
-          var(--overlay-black-lightest)
-        );
-      }
-
       &[data-type='outlined'] {
         @include button-variant-outlined(
           var(--text-darkest),
@@ -742,14 +688,6 @@
       &[data-type='text'] {
         @include button-variant-text(var(--text-darkest), var(--overlay-black-lightest), var(--overlay-black-lightest), var(--secondary-focus), var(--overlay-black-lightest));
       }
-    }
-  }
-
-  &[data-type='elevated']:not([data-mode='link']) {
-    box-shadow: var(--effect-1-default-xl);
-
-    &:where(:not([data-disabled])):hover {
-      box-shadow: var(--effect-1-hover-xl);
     }
   }
 
