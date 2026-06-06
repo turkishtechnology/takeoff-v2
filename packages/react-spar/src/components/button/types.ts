@@ -44,6 +44,10 @@ export interface ButtonOwnProps {
    * Content rendered after children. Same shape as `startContent`.
    */
   endContent?: ReactNode;
+  /** Whether the button shows a loading spinner. */
+  loading?: boolean;
+  /** Whether the button is pressed. When defined, creates a toggle button. */
+  pressed?: boolean;
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<ButtonSlot>;
   /** Per-slot HTML-attribute overrides. */
@@ -59,9 +63,9 @@ export type ButtonProps<T extends ElementType = 'button'> = PolymorphicProps<
   'button',
   T,
   ButtonOwnProps &
-    // Toggle-button + loading surface from Spar. `disabled` is inherited from
-    // the polymorphic element's native attributes (not picked).
-    Pick<SparButtonProps, 'isPressed' | 'onPressedChange' | 'isLoading'>
+    // Toggle-button wiring from Spar. `disabled` is inherited from the
+    // polymorphic element's native attributes (not picked).
+    Pick<SparButtonProps, 'onPressedChange'>
 >;
 
 declare module '../../core/theme' {
