@@ -114,10 +114,14 @@
     background-color: var(--states-info-light);
   }
 
-  &:focus-visible .tk-radio-indicator,
-  &[data-focused] .tk-radio-indicator {
-    border-color: var(--states-info-base);
-    box-shadow: var(--info-focus);
+  &:focus-visible .tk-radio-indicator {
+    box-shadow:
+      0px 0px 0px 2px var(--static-light),
+      0px 0px 0px 4px var(--states-info-base);
+  }
+
+  &[data-state='checked']:focus-visible .tk-radio-indicator {
+    border-color: var(--states-info-light);
   }
 
   &[data-disabled] {
@@ -130,7 +134,7 @@
     }
 
     .tk-radio-indicator {
-      border-color: var(--border-sub-base);
+      border-color: var(--background-light);
       background-color: var(--background-light);
       box-shadow: none;
     }
@@ -144,7 +148,7 @@
   // by Spar and resolved from `<Field invalid>` upstream). Items style
   // themselves through this ancestor selector instead of mirroring the attr
   // locally, which keeps Field/Spar as the single source of truth.
-  .tk-radio[data-invalid] & {
+  .tk-radio[data-invalid] &:not([data-disabled]) {
     .tk-radio-indicator {
       border-color: var(--states-danger-base);
       background-color: var(--static-light);
@@ -221,6 +225,10 @@
     border-color: var(--border-light);
     border-radius: var(--card-switcher-container-radius);
     background-color: var(--static-light);
+    transition:
+      border-color 0.15s ease-in-out,
+      background-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
 
     .tk-radio-label {
       gap: var(--card-switcher-text-gap);
@@ -228,6 +236,10 @@
 
     &:hover:not([data-disabled]) {
       background-color: var(--background-lightest);
+    }
+
+    &:focus-visible:not([data-disabled]) {
+      box-shadow: var(--info-focus);
     }
   }
 }
