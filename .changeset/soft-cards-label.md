@@ -3,8 +3,7 @@
 '@takeoff-design/tokens': patch
 ---
 
-Added `Checkbox.Label` as an optional visual label slot for rich and card-style
-checkbox content, including docs and slot-level theme support.
+Removed the `type` prop from `Checkbox`.
 
-Updated Checkbox token styles for label spacing, disabled visuals, and
-focused/invalid focused states across default and card variants.
+Updated Checkbox styles and docs to match the simplified API, including
+disabled, focus, and invalid focus visuals for the remaining default variant.

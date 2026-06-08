@@ -182,25 +182,6 @@ function SizeDemo() {
 render(<SizeDemo />);
 `;
 
-export const cardTypeDemo = String.raw`
-function CardTypeDemo() {
-  return (
-    <div className="grid gap-3">
-      <Checkbox type="card" defaultChecked aria-label="Mobile boarding pass">
-        <Checkbox.Indicator />
-        <Checkbox.Label>Mobile boarding pass</Checkbox.Label>
-      </Checkbox>
-      <Checkbox type="card" aria-label="Priority boarding">
-        <Checkbox.Indicator />
-        <Checkbox.Label>Priority boarding</Checkbox.Label>
-      </Checkbox>
-    </div>
-  );
-}
-
-render(<CardTypeDemo />);
-`;
-
 export const customIconDemo = String.raw`
 function CustomIconDemo() {
   const StarIcon = () => (
@@ -318,11 +299,10 @@ render(<CheckboxFormDemo />);
 # Checkbox
 
 `Checkbox` is a compound, accessible toggle control. The root owns visual state
-(`size`, `type`, plus inherited `invalid` / `disabled` / `required` /
-`readOnly`), `Checkbox.Indicator` is the bordered box that hosts the icon, and
-`Checkbox.Label` is an optional visual content slot for rich/card layouts. Wrap
-`Checkbox` in a `Field` to attach a form-level label, description, or error
-message — the field-level state cascades into the checkbox automatically.
+(`size`, plus inherited `invalid` / `disabled` / `required` / `readOnly`), and
+`Checkbox.Indicator` is the bordered box that hosts the icon. Wrap `Checkbox` in
+a `Field` to attach a form-level label, description, or error message — the
+field-level state cascades into the checkbox automatically.
 
 ## Usage
 
@@ -402,18 +382,6 @@ after the first change.
   scope={checkboxScope}
 />
 
-## Card Type
-
-Set `type="card"` to switch to the bordered card variant for option-row layouts.
-
-<LiveCode
-  code={cardTypeDemo}
-  noInline
-  previewMinHeight={220}
-  previewWrapper={ReactSparDemoRoot}
-  scope={checkboxScope}
-/>
-
 ## Custom Icon
 
 `Checkbox.Indicator` accepts function children that receive the current
@@ -483,16 +451,15 @@ for primitive behavior.
 
 #### Props {#checkbox-props}
 
-| Name                               | Type                                                                                                                                    | Default   | Description                                                                                                         |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />      | <code>React.ReactNode &#124; ((state: <a href="#checkbox-td-checkboxrenderprops">CheckboxRenderProps</a>) =&gt; React.ReactNode)</code> | -         | Compound children for checkbox anatomy, or a render function exposing Spar tri-state.                               |
-| <ApiBadge label="indeterminate" /> | <code>boolean</code>                                                                                                                    | false     | Indeterminate (mixed) visual + ARIA state. Overrides `checked` / `defaultChecked` and emits `aria-checked="mixed"`. |
-| <ApiBadge label="invalid" />       | <code>boolean</code>                                                                                                                    | false     | Marks the checkbox as visually invalid.                                                                             |
-| <ApiBadge label="size" />          | <code><a href="#checkbox-td-checkboxsize">CheckboxSize</a></code>                                                                       | 'base'    | Size scale.                                                                                                         |
-| <ApiBadge label="type" />          | <code><a href="#checkbox-td-checkboxtype">CheckboxType</a></code>                                                                       | 'default' | Visual appearance. `card` switches to the bordered card variant.                                                    |
-| <ApiBadge label="classNames" />    | <code>Partial&lt;Record&lt;<a href="#checkbox-td-checkboxslot">CheckboxSlot</a>, string&gt;&gt;</code>                                  | -         | Per-slot class name overrides.                                                                                      |
-| <ApiBadge label="slotProps" />     | <code>Partial&lt;Record&lt;<a href="#checkbox-td-checkboxslot">CheckboxSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>       | -         | Per-slot HTML attribute overrides.                                                                                  |
-| <ApiBadge label="className" />     | <code>string</code>                                                                                                                     | -         | Appends custom classes to the root slot of this part.                                                               |
+| Name                               | Type                                                                                                                                    | Default | Description                                                                                                         |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />      | <code>React.ReactNode &#124; ((state: <a href="#checkbox-td-checkboxrenderprops">CheckboxRenderProps</a>) =&gt; React.ReactNode)</code> | -       | Compound children for checkbox anatomy, or a render function exposing Spar tri-state.                               |
+| <ApiBadge label="indeterminate" /> | <code>boolean</code>                                                                                                                    | false   | Indeterminate (mixed) visual + ARIA state. Overrides `checked` / `defaultChecked` and emits `aria-checked="mixed"`. |
+| <ApiBadge label="invalid" />       | <code>boolean</code>                                                                                                                    | false   | Marks the checkbox as visually invalid.                                                                             |
+| <ApiBadge label="size" />          | <code><a href="#checkbox-td-checkboxsize">CheckboxSize</a></code>                                                                       | 'base'  | Size scale.                                                                                                         |
+| <ApiBadge label="classNames" />    | <code>Partial&lt;Record&lt;<a href="#checkbox-td-checkboxslot">CheckboxSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                      |
+| <ApiBadge label="slotProps" />     | <code>Partial&lt;Record&lt;<a href="#checkbox-td-checkboxslot">CheckboxSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>       | -       | Per-slot HTML attribute overrides.                                                                                  |
+| <ApiBadge label="className" />     | <code>string</code>                                                                                                                     | -       | Appends custom classes to the root slot of this part.                                                               |
 
 #### Data attributes {#checkbox-data-attributes}
 
@@ -500,7 +467,6 @@ for primitive behavior.
 | ----------------------------------------------- | ------------------- | --------------------------------------------------------------------------- |
 | <ApiBadge label="data-slot=&quot;root&quot;" /> | Always              | Stable selector for the root slot.                                          |
 | <ApiBadge label="data-size" />                  | Always              | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| <ApiBadge label="data-type" />                  | Always              | Reflects the resolved `type` prop so theme recipes can scope type variants. |
 | <ApiBadge label="data-invalid" />               | `invalid` is true.  | Marks invalid visual state for theme recipes.                               |
 | <ApiBadge label="data-checked" />               | When checked.       | Spar checked-state hook.                                                    |
 | <ApiBadge label="data-indeterminate" />         | When indeterminate. | Spar indeterminate-state hook.                                              |
@@ -517,22 +483,13 @@ for primitive behavior.
 | <ApiBadge label="data-slot=&quot;indicator&quot;" /> | Always       | Stable selector for the indicator slot. |
 | <ApiBadge label="data-slot=&quot;icon&quot;" />      | Always       | Stable selector for the icon slot.      |
 
-### Checkbox.Label {#checkbox-label}
-
-#### Data attributes {#checkbox-label-data-attributes}
-
-| Attribute                                        | Applied when | Purpose                             |
-| ------------------------------------------------ | ------------ | ----------------------------------- |
-| <ApiBadge label="data-slot=&quot;label&quot;" /> | Always       | Stable selector for the label slot. |
-
 ### Type Definitions {#checkbox-type-definitions}
 
 | Name                                                                                                         | Definition                                                                                                                                                                                                                              |
 | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <span id="checkbox-td-checkboxrenderprops"><ApiBadge label="CheckboxRenderProps" /></span>                   | <code>&#123; checked: CheckedState; setChecked: (checked: CheckedState) =&gt; void; disabled: boolean; readOnly: boolean; required: boolean; invalid: boolean; isFocused: boolean; isHovered: boolean; isPressed: boolean &#125;</code> |
 | <span id="checkbox-td-checkboxsize"><ApiBadge label="CheckboxSize" /></span>                                 | <code>'small' &#124; 'base'</code>                                                                                                                                                                                                      |
-| <span id="checkbox-td-checkboxtype"><ApiBadge label="CheckboxType" /></span>                                 | <code>'default' &#124; 'card'</code>                                                                                                                                                                                                    |
-| <span id="checkbox-td-checkboxslot"><ApiBadge label="CheckboxSlot" /></span>                                 | <code>'root' &#124; 'indicator' &#124; 'icon' &#124; 'label'</code>                                                                                                                                                                     |
+| <span id="checkbox-td-checkboxslot"><ApiBadge label="CheckboxSlot" /></span>                                 | <code>'root' &#124; 'indicator' &#124; 'icon'</code>                                                                                                                                                                                    |
 | <span id="checkbox-td-checkboxindicatorrenderprops"><ApiBadge label="CheckboxIndicatorRenderProps" /></span> | <code>&#123; checked: boolean; indeterminate: boolean &#125;</code>                                                                                                                                                                     |
 
 {/* api-tables:end */}

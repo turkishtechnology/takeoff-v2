@@ -10,14 +10,12 @@ import type { CheckboxProps, CheckboxSlot } from './types';
  */
 export const CheckboxBase = createComponentBase<CheckboxProps, CheckboxSlot>({
   name: 'Checkbox',
-  slots: ['root', 'indicator', 'icon', 'label'] as const,
+  slots: ['root', 'indicator', 'icon'] as const,
   classes: {
     root: 'tk-checkbox',
     // @archetype react-enhancement — visible box (Core's `.mask`).
     indicator: 'tk-checkbox-indicator',
     // @archetype react-enhancement — check / dash glyph inside the indicator.
     icon: 'tk-checkbox-icon',
-    // @archetype react-enhancement — visual text/content slot inside the root.
-    label: 'tk-checkbox-label',
   },
 });

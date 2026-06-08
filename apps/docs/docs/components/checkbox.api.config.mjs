@@ -66,10 +66,6 @@ export default {
           default: "'base'",
           description: 'Size scale.',
         },
-        type: {
-          default: "'default'",
-          description: 'Visual appearance. `card` switches to the bordered card variant.',
-        },
         invalid: {
           default: 'false',
           description: 'Marks the checkbox as visually invalid.',
@@ -88,11 +84,6 @@ export default {
           attribute: 'data-size',
           appliedWhen: 'Always',
           purpose: 'Reflects the resolved `size` prop so theme recipes can scope size variants.',
-        },
-        {
-          attribute: 'data-type',
-          appliedWhen: 'Always',
-          purpose: 'Reflects the resolved `type` prop so theme recipes can scope type variants.',
         },
         {
           attribute: 'data-invalid',
@@ -138,16 +129,6 @@ export default {
         className: classNameOverride,
       },
       dataAttributes: [dataSlot('indicator'), dataSlot('icon')],
-    },
-    {
-      ...compoundPartConfig('CheckboxLabelProps', 'Checkbox.Label', 'checkbox-label', 'label'),
-      propOverrides: {
-        children: {
-          type: 'React.ReactNode',
-          description: 'Visual text or rich content rendered inside the checkbox root. Use `Field.Label` for form-level labelling.',
-        },
-        className: classNameOverride,
-      },
     },
   ],
 };

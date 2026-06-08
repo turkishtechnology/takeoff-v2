@@ -4,8 +4,7 @@ import type { CheckboxProps as SparCheckboxProps, CheckboxRenderProps as Upstrea
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type CheckboxSize = 'small' | 'base';
-export type CheckboxType = 'default' | 'card';
-export type CheckboxSlot = 'root' | 'indicator' | 'icon' | 'label';
+export type CheckboxSlot = 'root' | 'indicator' | 'icon';
 
 /**
  * Render props passed to the root `Checkbox` render-prop child. Re-exports
@@ -63,12 +62,6 @@ interface CheckboxOwnProps {
    * @defaultValue 'base'
    */
   size?: CheckboxSize;
-  /**
-   * Visual appearance. `'card'` mirrors Takeoff Core's bordered card variant
-   * for opt-in card-style selection rows.
-   * @defaultValue 'default'
-   */
-  type?: CheckboxType;
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<CheckboxSlot>;
   /** Per-slot HTML-attribute overrides. */
@@ -112,18 +105,6 @@ export interface CheckboxIndicatorProps extends Omit<ComponentPropsWithoutRef<'s
   children?: ReactNode | ((state: CheckboxIndicatorRenderProps) => ReactNode);
   ref?: Ref<HTMLSpanElement>;
 }
-
-export type CheckboxLabelProps<T extends ElementType = 'span'> = PolymorphicProps<
-  'span',
-  T,
-  {
-    /**
-     * Visual label content rendered inside the checkbox root. Use `Field.Label`
-     * for form-level labelling; this slot is for card/rich checkbox content.
-     */
-    children?: ReactNode;
-  }
->;
 
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {
