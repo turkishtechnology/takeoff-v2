@@ -23,6 +23,10 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     permissions:
+      # contents:read is required for actions/checkout to clone a private repo.
+      # Naming any permission drops all unnamed ones to `none`, so checkout would
+      # otherwise fail with "Repository not found" on a private repo.
+      contents: read
       issues: write
     steps:
       - uses: actions/checkout@v4
