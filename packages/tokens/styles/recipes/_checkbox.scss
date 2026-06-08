@@ -25,6 +25,7 @@
   font-family: var(--family-body, 'Geologica', sans-serif);
   display: inline-flex;
   align-items: center;
+  gap: var(--basic-switcher-content-gap);
   padding: 2px;
   color: var(--text-darkest);
   cursor: pointer;
@@ -60,6 +61,19 @@
     line-height: 1;
   }
 
+  .tk-checkbox-label {
+    display: inline-flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--basic-switcher-text-gap);
+    color: var(--text-darkest);
+    font-size: inherit;
+    line-height: inherit;
+    font-weight: 400;
+  }
+
   // ---- Hover (unchecked) ----
 
   &[data-hover]:not([data-disabled]):not([data-readonly]) {
@@ -92,12 +106,19 @@
 
   // ---- Focus ----
 
-  &[data-focus] {
+  &[data-focus]:not([data-disabled]) {
+    outline: none;
+
     .tk-checkbox-indicator {
-      border-color: var(--states-info-base);
-      box-shadow: var(--info-focus);
-      outline: none;
+      box-shadow:
+        0px 0px 0px 2px var(--static-light),
+        0px 0px 0px 4px var(--states-info-base);
     }
+  }
+
+  &[data-focus][data-checked]:not([data-disabled]) .tk-checkbox-indicator,
+  &[data-focus][data-indeterminate]:not([data-disabled]) .tk-checkbox-indicator {
+    border-color: var(--states-info-light);
   }
 
   // ---- Disabled ----
@@ -106,8 +127,12 @@
     pointer-events: none;
     color: var(--text-sub-base);
 
+    .tk-checkbox-label {
+      color: var(--text-sub-base);
+    }
+
     .tk-checkbox-indicator {
-      border-color: var(--border-sub-base);
+      border-color: var(--background-light);
       background-color: var(--background-light);
     }
 
@@ -148,6 +173,18 @@
     &[data-hover][data-indeterminate]:not([data-disabled]):not([data-readonly]) .tk-checkbox-indicator {
       border-color: var(--states-danger-sub-base);
       background-color: var(--states-danger-light);
+    }
+
+    &[data-focus]:not([data-disabled]) .tk-checkbox-indicator {
+      border-color: var(--states-danger-base);
+      box-shadow:
+        0px 0px 0px 2px var(--static-light),
+        0px 0px 0px 4px var(--states-danger-base);
+    }
+
+    &[data-focus][data-checked]:not([data-disabled]) .tk-checkbox-indicator,
+    &[data-focus][data-indeterminate]:not([data-disabled]) .tk-checkbox-indicator {
+      border-color: var(--states-danger-light);
     }
   }
 
@@ -191,18 +228,31 @@
     background-color: var(--static-light);
     gap: var(--card-switcher-container-gap);
     padding: var(--card-switcher-container-v-padding) var(--card-switcher-container-h-padding);
+    transition:
+      border-color 0.15s ease-in-out,
+      background-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
+
+    .tk-checkbox-label {
+      gap: var(--card-switcher-text-gap);
+    }
 
     &[data-hover]:not([data-disabled]):not([data-readonly]) {
       background-color: var(--background-lightest);
     }
 
-    &[data-checked],
-    &[data-indeterminate] {
-      border-color: var(--states-info-light);
-    }
-
     &[data-invalid] {
       border-color: var(--states-danger-base);
+    }
+
+    &[data-focus]:not([data-disabled]) {
+      box-shadow: var(--info-focus);
+    }
+
+    &[data-invalid][data-focus]:not([data-disabled]) {
+      box-shadow:
+        0px 0px 0px 2px var(--static-light),
+        0px 0px 0px 4px var(--states-danger-base);
     }
   }
 }

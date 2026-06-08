@@ -5,7 +5,7 @@ import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type CheckboxSize = 'small' | 'base';
 export type CheckboxType = 'default' | 'card';
-export type CheckboxSlot = 'root' | 'indicator' | 'icon';
+export type CheckboxSlot = 'root' | 'indicator' | 'icon' | 'label';
 
 /**
  * Render props passed to the root `Checkbox` render-prop child. Re-exports
@@ -112,6 +112,18 @@ export interface CheckboxIndicatorProps extends Omit<ComponentPropsWithoutRef<'s
   children?: ReactNode | ((state: CheckboxIndicatorRenderProps) => ReactNode);
   ref?: Ref<HTMLSpanElement>;
 }
+
+export type CheckboxLabelProps<T extends ElementType = 'span'> = PolymorphicProps<
+  'span',
+  T,
+  {
+    /**
+     * Visual label content rendered inside the checkbox root. Use `Field.Label`
+     * for form-level labelling; this slot is for card/rich checkbox content.
+     */
+    children?: ReactNode;
+  }
+>;
 
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {

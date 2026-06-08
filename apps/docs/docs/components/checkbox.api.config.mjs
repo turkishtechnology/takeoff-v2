@@ -33,8 +33,6 @@ const compoundPartConfig = (typeName, displayName, headingBase, slot) => ({
   prependPropNames: ['children'],
   appendPropNames: ['className'],
   skipPropNames: ['ref'],
-  sparDocsUrl: sparCheckboxDocsUrl,
-  sparDocsLabel: 'Spar Checkbox docs',
   propOverrides: {
     children: childrenOverride(`${displayName} children.`),
     className: classNameOverride,
@@ -133,12 +131,23 @@ export default {
       propOverrides: {
         children: {
           type: 'React.ReactNode | ((state: CheckboxIndicatorRenderProps) => React.ReactNode)',
-          description: 'Indicator content. When omitted, the built-in placeholder check / dash glyph is rendered. When a function, receives the current `checked` and `indeterminate` state. A `ReactNode` replaces the default `icon` slot entirely.',
+          description:
+            'Indicator content. When omitted, the built-in placeholder check / dash glyph is rendered. When a function, receives the current `checked` and `indeterminate` state. A `ReactNode` replaces the default `icon` slot entirely.',
           default: 'a built-in placeholder check / dash glyph driven by `indeterminate`',
         },
         className: classNameOverride,
       },
       dataAttributes: [dataSlot('indicator'), dataSlot('icon')],
+    },
+    {
+      ...compoundPartConfig('CheckboxLabelProps', 'Checkbox.Label', 'checkbox-label', 'label'),
+      propOverrides: {
+        children: {
+          type: 'React.ReactNode',
+          description: 'Visual text or rich content rendered inside the checkbox root. Use `Field.Label` for form-level labelling.',
+        },
+        className: classNameOverride,
+      },
     },
   ],
 };
