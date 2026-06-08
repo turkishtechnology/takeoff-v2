@@ -167,8 +167,25 @@
       background-color: var(--states-danger-light);
     }
 
+    &:focus-visible .tk-radio-indicator {
+      border-color: var(--states-danger-base);
+      box-shadow:
+        0px 0px 0px 2px var(--static-light),
+        0px 0px 0px 4px var(--states-danger-base);
+    }
+
+    &[data-state='checked']:focus-visible .tk-radio-indicator {
+      border-color: var(--states-danger-light);
+    }
+
     &[data-type='card'] {
       border-color: var(--states-danger-base);
+    }
+
+    &[data-type='card']:focus-visible {
+      box-shadow:
+        0px 0px 0px 2px var(--static-light),
+        0px 0px 0px 4px var(--states-danger-base);
     }
   }
 
