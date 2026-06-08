@@ -99,44 +99,6 @@ function SizesDemo() {
 render(<SizesDemo />);
 `;
 
-export const cardDemo = String.raw`
-function CardDemo() {
-  return (
-    <Radio aria-label="Meal preference" type="card" defaultValue="standard">
-      <Radio.Item value="standard">
-        <Radio.Indicator />
-        <Radio.Label>
-          Standard meal
-          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
-            Chef-curated regional menu.
-          </span>
-        </Radio.Label>
-      </Radio.Item>
-      <Radio.Item value="vegetarian">
-        <Radio.Indicator />
-        <Radio.Label>
-          Vegetarian
-          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
-            Lacto-ovo plant-forward dishes.
-          </span>
-        </Radio.Label>
-      </Radio.Item>
-      <Radio.Item value="kosher">
-        <Radio.Indicator />
-        <Radio.Label>
-          Kosher
-          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
-            Certified by a recognized rabbinical authority.
-          </span>
-        </Radio.Label>
-      </Radio.Item>
-    </Radio>
-  );
-}
-
-render(<CardDemo />);
-`;
-
 export const layoutDemo = String.raw`
 function LayoutDemo() {
   return (
@@ -310,7 +272,7 @@ render(<RenderPropDemo />);
 
 `Radio` lets users pick a single option from a small, mutually exclusive set.
 The root owns the group state (`value`, `defaultValue`, `onChange`) and cascades
-visual props (`size`, `type`, `position`, `invalid`) to every item.
+visual props (`size`, `position`, `invalid`) to every item.
 
 ## Usage
 
@@ -345,16 +307,6 @@ import { Radio } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={sizesDemo}
-  noInline
-  previewMinHeight={280}
-  previewWrapper={ReactSparDemoRoot}
-  scope={radioScope}
-/>
-
-## Card Variant
-
-<LiveCode
-  code={cardDemo}
   noInline
   previewMinHeight={280}
   previewWrapper={ReactSparDemoRoot}
@@ -452,17 +404,16 @@ for primitive behavior.
 
 #### Props {#radio-props}
 
-| Name                            | Type                                                                                | Default   | Description                                                                                                                                                                                                                                                   |
-| ------------------------------- | ----------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -         | `Radio.Item` elements rendered inside the radiogroup container.                                                                                                                                                                                               |
-| <ApiBadge label="size" />       | <code><a href="#radio-td-radiosize">RadioSize</a></code>                            | 'base'    | Size scale. Cascades to descendant `Radio.Item`s via context.                                                                                                                                                                                                 |
-| <ApiBadge label="type" />       | <code><a href="#radio-td-radiotype">RadioType</a></code>                            | 'default' | Visual variant. Cascades to descendant `Radio.Item`s via context.                                                                                                                                                                                             |
-| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                | false     | Marks the group as visually invalid. Cascades to descendant `Radio.Item`s. When nested inside a `<Field>` with `invalid`, this is inherited automatically; a direct prop on `<Radio>` always wins. Maps to Spar's `invalid` for ARIA wiring (`aria-invalid`). |
-| <ApiBadge label="spread" />     | <code>boolean</code>                                                                | false     | Stretches each item to share the group axis equally. Layout intent only — styling is recipe-side via `[data-spread] > [data-slot="root"]`.                                                                                                                    |
-| <ApiBadge label="position" />   | <code><a href="#radio-td-radioposition">RadioPosition</a></code>                    | 'left'    | Default placement of an item's indicator relative to its label. Cascades to descendant `Radio.Item`s; per-item `position` overrides the group value.                                                                                                          |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -         | Per-slot class name overrides.                                                                                                                                                                                                                                |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML attribute overrides.                                                                                                                                                                                                                            |
-| <ApiBadge label="className" />  | <code>string</code>                                                                 | -         | Appends custom classes to the root slot of this part.                                                                                                                                                                                                         |
+| Name                            | Type                                                                                | Default | Description                                                                                                                                                                                                                                                   |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | `Radio.Item` elements rendered inside the radiogroup container.                                                                                                                                                                                               |
+| <ApiBadge label="size" />       | <code><a href="#radio-td-radiosize">RadioSize</a></code>                            | 'base'  | Size scale. Cascades to descendant `Radio.Item`s via context.                                                                                                                                                                                                 |
+| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                | false   | Marks the group as visually invalid. Cascades to descendant `Radio.Item`s. When nested inside a `<Field>` with `invalid`, this is inherited automatically; a direct prop on `<Radio>` always wins. Maps to Spar's `invalid` for ARIA wiring (`aria-invalid`). |
+| <ApiBadge label="spread" />     | <code>boolean</code>                                                                | false   | Stretches each item to share the group axis equally. Layout intent only — styling is recipe-side via `[data-spread] > [data-slot="root"]`.                                                                                                                    |
+| <ApiBadge label="position" />   | <code><a href="#radio-td-radioposition">RadioPosition</a></code>                    | 'left'  | Default placement of an item's indicator relative to its label. Cascades to descendant `Radio.Item`s; per-item `position` overrides the group value.                                                                                                          |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                                                                                                                |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                                                            |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                                                                                                                                                                                                         |
 
 #### Data attributes {#radio-data-attributes}
 
@@ -470,7 +421,6 @@ for primitive behavior.
 | ----------------------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                                | Stable selector for wrapper styling on the root slot.                                                                                                                         |
 | <ApiBadge label="data-size" />                  | Always                                                                | Reflects the resolved `size` prop so theme recipes can scope size variants.                                                                                                   |
-| <ApiBadge label="data-type" />                  | Always                                                                | Reflects the resolved `type` prop. Theme recipes target the card variant per item.                                                                                            |
 | <ApiBadge label="data-position" />              | Always                                                                | Reflects the resolved indicator `position` (`left` / `right`).                                                                                                                |
 | <ApiBadge label="data-invalid" />               | When `invalid` is true, or inherited from a parent `<Field invalid>`. | Theme hook for the invalid state. Emitted by Spar on the radiogroup root only; items style themselves through the ancestor selector `.tk-radio[data-invalid] .tk-radio-item`. |
 | <ApiBadge label="data-spread" />                | When `spread` is true.                                                | Layout hook used by recipes to stretch each item along the group axis.                                                                                                        |
@@ -495,15 +445,14 @@ for primitive behavior.
 
 #### Data attributes {#radio-item-data-attributes}
 
-| Attribute                                             | Applied when                                                | Purpose                                                                            |
-| ----------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" />       | Always                                                      | Stable selector for wrapper styling on the root slot.                              |
-| <ApiBadge label="data-size" />                        | Always                                                      | Reflects the resolved `size` prop so theme recipes can scope size variants.        |
-| <ApiBadge label="data-type" />                        | Always                                                      | Reflects the resolved `type` prop. Theme recipes target the card variant per item. |
-| <ApiBadge label="data-position" />                    | Always                                                      | Reflects the resolved indicator `position` (`left` / `right`).                     |
-| <ApiBadge label="data-state=&quot;checked&quot;" />   | When the item matches the group value.                      | Spar checked-state hook. Drives the indicator fill.                                |
-| <ApiBadge label="data-state=&quot;unchecked&quot;" /> | When the item does not match the group value.               | Spar unchecked-state hook.                                                         |
-| <ApiBadge label="data-disabled" />                    | When the item `disabled` is true, or the group is disabled. | Theme hook for the disabled item state. Emitted by Spar.                           |
+| Attribute                                             | Applied when                                                | Purpose                                                                     |
+| ----------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />       | Always                                                      | Stable selector for wrapper styling on the root slot.                       |
+| <ApiBadge label="data-size" />                        | Always                                                      | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| <ApiBadge label="data-position" />                    | Always                                                      | Reflects the resolved indicator `position` (`left` / `right`).              |
+| <ApiBadge label="data-state=&quot;checked&quot;" />   | When the item matches the group value.                      | Spar checked-state hook. Drives the indicator fill.                         |
+| <ApiBadge label="data-state=&quot;unchecked&quot;" /> | When the item does not match the group value.               | Spar unchecked-state hook.                                                  |
+| <ApiBadge label="data-disabled" />                    | When the item `disabled` is true, or the group is disabled. | Theme hook for the disabled item state. Emitted by Spar.                    |
 
 ### Radio.Indicator {#radio-indicator}
 
@@ -527,7 +476,6 @@ for primitive behavior.
 | Name                                                                                  | Definition                                        |
 | ------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | <span id="radio-td-radiosize"><ApiBadge label="RadioSize" /></span>                   | <code>'small' &#124; 'base' &#124; 'large'</code> |
-| <span id="radio-td-radiotype"><ApiBadge label="RadioType" /></span>                   | <code>'default' &#124; 'card'</code>              |
 | <span id="radio-td-radioposition"><ApiBadge label="RadioPosition" /></span>           | <code>'left' &#124; 'right'</code>                |
 | <span id="radio-td-radioindicatorslot"><ApiBadge label="RadioIndicatorSlot" /></span> | <code>'root' &#124; 'icon'</code>                 |
 

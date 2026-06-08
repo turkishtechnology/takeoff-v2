@@ -177,16 +177,6 @@
     &[data-state='checked']:focus-visible .tk-radio-indicator {
       border-color: var(--states-danger-light);
     }
-
-    &[data-type='card'] {
-      border-color: var(--states-danger-base);
-    }
-
-    &[data-type='card']:focus-visible {
-      box-shadow:
-        0px 0px 0px 2px var(--static-light),
-        0px 0px 0px 4px var(--states-danger-base);
-    }
   }
 
   &[data-size='small'] {
@@ -231,32 +221,6 @@
     .tk-radio-icon {
       width: 14px;
       height: 14px;
-    }
-  }
-
-  &[data-type='card'] {
-    width: 100%;
-    min-height: var(--card-switcher-button-size);
-    gap: var(--card-switcher-content-gap);
-    padding: var(--card-switcher-container-v-padding) var(--card-switcher-container-h-padding);
-    border-color: var(--border-light);
-    border-radius: var(--card-switcher-container-radius);
-    background-color: var(--static-light);
-    transition:
-      border-color 0.15s ease-in-out,
-      background-color 0.15s ease-in-out,
-      box-shadow 0.15s ease-in-out;
-
-    .tk-radio-label {
-      gap: var(--card-switcher-text-gap);
-    }
-
-    &:hover:not([data-disabled]) {
-      background-color: var(--background-lightest);
-    }
-
-    &:focus-visible:not([data-disabled]) {
-      box-shadow: var(--info-focus);
     }
   }
 }

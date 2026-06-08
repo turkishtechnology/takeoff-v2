@@ -6,7 +6,7 @@ import { useComponentTheme } from '../../provider';
 
 import { RadioBase } from './base';
 import { RadioGroupProvider } from './context';
-import { DEFAULT_POSITION, DEFAULT_SIZE, DEFAULT_TYPE } from './defaults';
+import { DEFAULT_POSITION, DEFAULT_SIZE } from './defaults';
 import type { RadioProps } from './types';
 
 export const Radio = <T extends ElementType = 'div'>(props: RadioProps<T>) => {
@@ -19,9 +19,8 @@ export const Radio = <T extends ElementType = 'div'>(props: RadioProps<T>) => {
   // hooks here. `stateAttrs` reads post-merge props so theme.defaultProps for
   // visual props flow through.
   const { rootAttrs, rest } = composeRootAttrs(RadioBase, props as RadioProps<'div'>, theme, {
-    stateAttrs: ({ size = DEFAULT_SIZE, type = DEFAULT_TYPE, position = DEFAULT_POSITION, spread }) => ({
+    stateAttrs: ({ size = DEFAULT_SIZE, position = DEFAULT_POSITION, spread }) => ({
       'data-size': size,
-      'data-type': type,
       'data-position': position,
       'data-spread': spread ? '' : undefined,
     }),
@@ -29,7 +28,6 @@ export const Radio = <T extends ElementType = 'div'>(props: RadioProps<T>) => {
 
   const {
     size = DEFAULT_SIZE,
-    type = DEFAULT_TYPE,
     position = DEFAULT_POSITION,
     invalid,
     // `spread` is consumed only as a data-attr above; destructure to keep it
@@ -42,7 +40,7 @@ export const Radio = <T extends ElementType = 'div'>(props: RadioProps<T>) => {
   } = rest;
 
   return (
-    <RadioGroupProvider value={{ size, type, position }}>
+    <RadioGroupProvider value={{ size, position }}>
       <SparRadio {...sparProps} invalid={invalid} {...rootAttrs} ref={ref}>
         {children}
       </SparRadio>

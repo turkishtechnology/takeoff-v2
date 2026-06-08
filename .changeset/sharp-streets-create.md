@@ -1,6 +1,9 @@
 ---
+'@takeoff-ui/react-spar': patch
 '@takeoff-design/tokens': patch
 ---
 
-Refined Radio focus and disabled visual states, including card focus rings and
-disabled precedence over invalid styling.
+Removed the `type` prop from `Radio`.
+
+Updated Radio styles and docs after the API removal, including focus, disabled,
+and invalid focus visuals for the remaining variants.
