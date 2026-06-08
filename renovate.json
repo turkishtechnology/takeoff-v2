@@ -1,0 +1,57 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":semanticCommits", ":semanticCommitTypeAll(chore)", ":dependencyDashboard"],
+  "schedule": ["before 6am on monday"],
+  "timezone": "Europe/Istanbul",
+  "prHourlyLimit": 4,
+  "prConcurrentLimit": 8,
+  "labels": ["dependencies"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Group all @turkish-technology/* updates into a single PR so spar primitives bump together.",
+      "matchPackagePatterns": ["^@turkish-technology/"],
+      "groupName": "spar primitives",
+      "labels": ["dependencies", "spar"],
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps"
+    },
+    {
+      "description": "Auto-merge patch updates to spar primitives — they should be drop-in safe and CI catches regressions.",
+      "matchPackagePatterns": ["^@turkish-technology/"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "branch",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Require manual review on minor/major spar bumps — these usually carry API changes that need a paired react-spar change.",
+      "matchPackagePatterns": ["^@turkish-technology/"],
+      "matchUpdateTypes": ["minor", "major"],
+      "automerge": false,
+      "labels": ["dependencies", "spar", "needs-review"]
+    },
+    {
+      "description": "Auto-merge patch updates for tooling deps (eslint, prettier, husky, etc).",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "branch",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Major updates always need human review.",
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["dependencies", "needs-review", "release:major"]
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  },
+  "ignoreDeps": []
+}
