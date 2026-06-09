@@ -17,6 +17,12 @@ import type { ClassNamesMap, SlotPropsMap } from '../../core';
  */
 export type BreadcrumbSize = 'base' | 'large';
 
+/**
+ * Visual style. `'basic'` is the bare text trail; `'outlined'` renders each
+ * crumb as a bordered, backgrounded chip.
+ */
+export type BreadcrumbType = 'basic' | 'outlined';
+
 export type { BreadcrumbPosition, BreadcrumbItemRenderProps };
 export type BreadcrumbNavigationHandler = NavigationHandler;
 export type BreadcrumbPressEvent = PressEvent;
@@ -34,6 +40,11 @@ export interface BreadcrumbOwnProps {
    * @defaultValue 'base'
    */
   size?: BreadcrumbSize;
+  /**
+   * Visual style cascaded to every part through context.
+   * @defaultValue 'basic'
+   */
+  type?: BreadcrumbType;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<BreadcrumbSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -72,10 +83,11 @@ export interface BreadcrumbItemOwnProps {
   slotProps?: SlotPropsMap<BreadcrumbItemSlot>;
 }
 
-// `position` / `isCurrent` are deliberately not exposed: Spar marks them
-// `@internal` (auto-injected by BreadcrumbList via cloneElement) and strips
-// them from its public type. They still flow through the wrapper at runtime
-// because cloneElement assigns them onto the element's `props`.
+// `position` / `isCurrent` are not author-set item props: the Spar primitive's
+// list derives each crumb's order and surfaces it through the render-prop
+// children (typed via `BreadcrumbItemRenderProps`) plus the `data-position` /
+// `data-current` attributes — so the public item type neither declares nor
+// requires them.
 export type BreadcrumbItemProps<T extends ElementType = 'li'> = PolymorphicProps<'li', T, BreadcrumbItemOwnProps>;
 
 export interface BreadcrumbLinkOwnProps {

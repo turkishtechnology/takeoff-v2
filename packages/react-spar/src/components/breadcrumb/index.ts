@@ -27,4 +27,5 @@ export type {
   BreadcrumbProps,
   BreadcrumbSeparatorProps,
   BreadcrumbSize,
+  BreadcrumbType,
 } from './types';

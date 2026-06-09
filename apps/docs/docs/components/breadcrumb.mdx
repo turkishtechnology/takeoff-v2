@@ -84,6 +84,42 @@ export const sizeDemo = String.raw`
 </div>
 `;
 
+export const typeDemo = String.raw`
+<div className="breadcrumb-demo-stack">
+  <Breadcrumb type="basic">
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/flights">Flights</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>Istanbul → London</Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+
+  <Breadcrumb type="outlined">
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/flights">Flights</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>Istanbul → London</Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+</div>
+`;
+
 export const customSeparatorDemo = String.raw`
 <Breadcrumb>
   <Breadcrumb.List>
@@ -225,6 +261,20 @@ import { Breadcrumb } from '@takeoff-ui/react-spar';
   scope={breadcrumbScope}
 />
 
+## Variant
+
+`type="outlined"` wraps each crumb in a bordered, backgrounded chip;
+`type="basic"` (the default) is the bare text trail.
+
+<LiveCode
+  code={typeDemo}
+  cssCode={breadcrumbDemoCss}
+  editable={false}
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={breadcrumbScope}
+/>
+
 ## Custom Separator
 
 <LiveCode
@@ -249,11 +299,11 @@ import { Breadcrumb } from '@takeoff-ui/react-spar';
 
 ## Routing Integration
 
-`onNavigate` runs for every `Breadcrumb.Link` activation (click or
-
-<kbd>Enter</kbd>). Call `event.preventDefault()` on the wrapped click before
-handing the destination off to your client-side router. A link-level `onPress`
-takes priority and short-circuits `onNavigate` when both are set.
+`onNavigate` runs for every `Breadcrumb.Link` activation (click,
+<kbd>Enter</kbd>, or <kbd>Space</kbd>). Call `event.preventDefault()` on the
+wrapped click before handing the destination off to your client-side router. A
+link-level `onPress` takes priority and short-circuits `onNavigate` when both
+are set.
 
 <LiveCode
   code={navigateDemo}
@@ -267,9 +317,10 @@ takes priority and short-circuits `onNavigate` when both are set.
 
 ## Disabled
 
-Setting `disabled` on the root cascades to every `Breadcrumb.Link`, swaps the
-anchor's `href` out, and surfaces `data-disabled` on the trail so theme recipes
-can tone the colors down.
+Setting `disabled` on the root cascades to every `Breadcrumb.Link`: it removes
+the anchor's `href`, sets `aria-disabled` on both the `<nav>` and each link,
+drops the disabled links from the tab order (`tabindex="-1"`), and surfaces
+`data-disabled` on the trail so theme recipes can tone the colors down.
 
 <LiveCode
   code={disabledDemo}
@@ -289,8 +340,12 @@ can tone the colors down.
 - `Breadcrumb.Page` marks the current location with `aria-current="page"`.
 - `Breadcrumb.Separator` renders an `<li aria-hidden>` so screen readers do not
   announce the chevron between items.
-- Links are native `<a>` elements — focus, tab order, and activation
-  (<kbd>Enter</kbd>) follow standard anchor semantics.
+- Links are native `<a>` elements, so focus and tab order follow standard anchor
+  semantics. When a routing handler (`onNavigate` or `onPress`) is attached,
+  both
+  <kbd>Enter</kbd> and <kbd>Space</kbd> activate it via
+  `event.preventDefault()`; without one, only native <kbd>Enter</kbd> activation
+  applies.
 
 ## API Reference
 
@@ -307,18 +362,20 @@ for primitive behavior.
 | Name                            | Type                                                                                | Default | Description                                             |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------------------------------------------- |
 | <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | `Breadcrumb.List` rendered inside the `<nav>` landmark. |
-| <ApiBadge label="size" />       | <code>BreadcrumbSize</code>                                                         | 'base'  | Density scale cascaded to every part through context.   |
+| <ApiBadge label="size" />       | <code><a href="#breadcrumb-td-breadcrumbsize">BreadcrumbSize</a></code>             | 'base'  | Density scale cascaded to every part through context.   |
+| <ApiBadge label="type" />       | <code><a href="#breadcrumb-td-breadcrumbtype">BreadcrumbType</a></code>             | 'basic' | Visual style cascaded to every part through context.    |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                          |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                      |
 | <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.   |
 
 #### Data attributes {#breadcrumb-data-attributes}
 
-| Attribute          | Applied when             | Purpose                                                                     |
-| ------------------ | ------------------------ | --------------------------------------------------------------------------- |
-| `data-slot="root"` | Always                   | Stable selector for wrapper styling on the root slot.                       |
-| `data-size`        | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| `data-disabled`    | When `disabled` is true. | Theme hook for the disabled trail. Emitted by both the wrapper and Spar.    |
+| Attribute                                       | Applied when             | Purpose                                                                                                                          |
+| ----------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                   | Stable selector for wrapper styling on the root slot.                                                                            |
+| <ApiBadge label="data-size" />                  | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants. Emitted by the wrapper.                              |
+| <ApiBadge label="data-type" />                  | Always                   | Reflects the resolved `type` prop (`basic` \| `outlined`) so theme recipes can scope the visual variant. Emitted by the wrapper. |
+| <ApiBadge label="data-disabled" />              | When `disabled` is true. | Theme hook for the disabled trail. Emitted by Spar, alongside `aria-disabled`.                                                   |
 
 ### Breadcrumb.List {#breadcrumb-list}
 
@@ -328,10 +385,9 @@ for primitive behavior.
 
 #### Data attributes {#breadcrumb-list-data-attributes}
 
-| Attribute          | Applied when | Purpose                                                                     |
-| ------------------ | ------------ | --------------------------------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.                       |
-| `data-size`        | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Breadcrumb.Item {#breadcrumb-item}
 
@@ -341,12 +397,11 @@ for primitive behavior.
 
 #### Data attributes {#breadcrumb-item-data-attributes}
 
-| Attribute          | Applied when      | Purpose                                                                                                               |
-| ------------------ | ----------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `data-slot="root"` | Always            | Stable selector for wrapper styling on the root slot.                                                                 |
-| `data-size`        | Always            | Reflects the resolved `size` prop so theme recipes can scope size variants.                                           |
-| `data-position`    | Always            | `"first"`, `"middle"`, or `"last"`. Emitted by Spar so theme recipes can target a crumb by its position in the trail. |
-| `data-current`     | On the last item. | Emitted by Spar to mark the current page in the trail.                                                                |
+| Attribute                                       | Applied when      | Purpose                                                                                                               |
+| ----------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always            | Stable selector for wrapper styling on the root slot.                                                                 |
+| <ApiBadge label="data-position" />              | Always            | `"first"`, `"middle"`, or `"last"`. Emitted by Spar so theme recipes can target a crumb by its position in the trail. |
+| <ApiBadge label="data-current" />               | On the last item. | Emitted by Spar to mark the current page in the trail.                                                                |
 
 ### Breadcrumb.Link {#breadcrumb-link}
 
@@ -356,11 +411,11 @@ for primitive behavior.
 
 #### Data attributes {#breadcrumb-link-data-attributes}
 
-| Attribute          | Applied when                                               | Purpose                                                    |
-| ------------------ | ---------------------------------------------------------- | ---------------------------------------------------------- |
-| `data-slot="root"` | Always                                                     | Stable selector for wrapper styling on the root slot.      |
-| `data-external`    | When `isExternal` is true.                                 | Theme hook for the external link variant. Emitted by Spar. |
-| `data-disabled`    | When the link `disabled` is true, or the root is disabled. | Theme hook for the disabled link state. Emitted by Spar.   |
+| Attribute                                       | Applied when                                               | Purpose                                                    |
+| ----------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                     | Stable selector for wrapper styling on the root slot.      |
+| <ApiBadge label="data-external" />              | When `isExternal` is true.                                 | Theme hook for the external link variant. Emitted by Spar. |
+| <ApiBadge label="data-disabled" />              | When the link `disabled` is true, or the root is disabled. | Theme hook for the disabled link state. Emitted by Spar.   |
 
 ### Breadcrumb.Page {#breadcrumb-page}
 
@@ -370,9 +425,10 @@ for primitive behavior.
 
 #### Data attributes {#breadcrumb-page-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                                                                              |
+| ----------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.                                                |
+| <ApiBadge label="data-current" />               | Always       | Marks the current page; emitted by Spar on every `Breadcrumb.Page`, alongside `aria-current="page"`. |
 
 ### Breadcrumb.Separator {#breadcrumb-separator}
 
@@ -382,8 +438,15 @@ for primitive behavior.
 
 #### Data attributes {#breadcrumb-separator-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#breadcrumb-type-definitions}
+
+| Name                                                                               | Definition                             |
+| ---------------------------------------------------------------------------------- | -------------------------------------- |
+| <span id="breadcrumb-td-breadcrumbsize"><ApiBadge label="BreadcrumbSize" /></span> | <code>'base' &#124; 'large'</code>     |
+| <span id="breadcrumb-td-breadcrumbtype"><ApiBadge label="BreadcrumbType" /></span> | <code>'basic' &#124; 'outlined'</code> |
 
 {/* api-tables:end */}

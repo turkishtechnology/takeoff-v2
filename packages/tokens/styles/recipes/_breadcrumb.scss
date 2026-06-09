@@ -10,8 +10,9 @@
 //
 // State/variant attributes:
 //   data-size      — density scale (base | large)
+//   data-type      — visual style (basic | outlined)
 //   data-disabled  — disabled trail (root) or link
-//   data-current   — last item / current page
+//   data-current   — current crumb (last item / current page)
 
 @use '../abstracts/mixins' as mixins;
 
@@ -20,6 +21,10 @@
   display: flex;
   align-items: center;
   overflow-x: auto;
+  // `overflow-x: auto` makes the nav a scroll/clip container on BOTH axes (per
+  // the CSS overflow spec), which would otherwise clip the link's `box-shadow`
+  // focus ring. Reserve a 4px gutter — the ring width — so it renders in full.
+  padding: 4px;
 
   .tk-breadcrumb-list {
     display: flex;
@@ -51,6 +56,7 @@
     font-weight: 400;
     text-decoration: none;
     border-bottom: 0;
+    border-radius: var(--radius-xs);
     cursor: pointer;
     transition: color 0.2s ease-in-out;
 
@@ -68,6 +74,14 @@
     }
 
     @include mixins.focus-ring(var(--primary-focus));
+  }
+
+  // A current crumb authored as a `Breadcrumb.Link` (rather than `Breadcrumb.Page`)
+  // still gets the current emphasis from Spar's `data-current` on the item. Keep
+  // the (0,4,1) chain so it beats the link rule and the docs-theme anchor rule.
+  .tk-breadcrumb-list .tk-breadcrumb-item[data-current] .tk-breadcrumb-link {
+    color: var(--text-dark);
+    font-weight: 500;
   }
 
   .tk-breadcrumb-page {
@@ -90,7 +104,8 @@
     color: var(--icon-sub-base);
     line-height: 1;
 
-    > svg {
+    > svg,
+    > img {
       width: 16px;
       height: 16px;
     }
@@ -103,9 +118,41 @@
       line-height: var(--desktop-body-m-base-line-height);
     }
 
-    .tk-breadcrumb-separator > svg {
+    .tk-breadcrumb-separator > svg,
+    .tk-breadcrumb-separator > img {
       width: 18px;
       height: 18px;
+    }
+  }
+
+  // Outlined variant — each crumb becomes a bordered, backgrounded chip.
+  // Consumes the `backgrounded-item-*` tokens; mirrors takeoff-ui/core
+  // `.tk-breadcrumb-outlined`.
+  &[data-type='outlined'] {
+    .tk-breadcrumb-item {
+      padding: var(--breadcrumb-backgrounded-item-v-padding) var(--breadcrumb-backgrounded-item-right-padding) var(--breadcrumb-backgrounded-item-v-padding)
+        var(--breadcrumb-backgrounded-item-left-padding);
+      gap: var(--breadcrumb-backgrounded-item-gap);
+      border: var(--spacing-px) solid var(--border-light);
+      border-radius: 8px;
+      background: var(--static-light);
+      transition:
+        border-color 0.2s ease-in-out,
+        background 0.2s ease-in-out;
+
+      &[data-current] {
+        border-color: var(--border-sub-base);
+        background: var(--background-lightest);
+      }
+
+      &:where(:not([data-current])):hover {
+        border-color: var(--border-sub-base);
+      }
+    }
+
+    // The chip itself is the affordance, so drop the link underline inside it.
+    .tk-breadcrumb-list .tk-breadcrumb-item .tk-breadcrumb-link:where(:not([data-disabled])):hover {
+      text-decoration: none;
     }
   }
 }

@@ -28,7 +28,13 @@ const dataSlotRoot = {
 const dataSize = {
   attribute: 'data-size',
   appliedWhen: 'Always',
-  purpose: 'Reflects the resolved `size` prop so theme recipes can scope size variants.',
+  purpose: 'Reflects the resolved `size` prop so theme recipes can scope size variants. Emitted by the wrapper.',
+};
+
+const dataType = {
+  attribute: 'data-type',
+  appliedWhen: 'Always',
+  purpose: 'Reflects the resolved `type` prop (`basic` | `outlined`) so theme recipes can scope the visual variant. Emitted by the wrapper.',
 };
 
 export default {
@@ -51,10 +57,11 @@ export default {
       dataAttributes: [
         dataSlotRoot,
         dataSize,
+        dataType,
         {
           attribute: 'data-disabled',
           appliedWhen: 'When `disabled` is true.',
-          purpose: 'Theme hook for the disabled trail. Emitted by both the wrapper and Spar.',
+          purpose: 'Theme hook for the disabled trail. Emitted by Spar, alongside `aria-disabled`.',
         },
       ],
     },
@@ -72,7 +79,7 @@ export default {
         children: childrenOverride('`Breadcrumb.Item` and `Breadcrumb.Separator` elements that compose the trail.'),
         className: classNameOverride,
       },
-      dataAttributes: [dataSlotRoot, dataSize],
+      dataAttributes: [dataSlotRoot],
     },
     {
       sourceFile: breadcrumbTypesFile,
@@ -90,7 +97,6 @@ export default {
       },
       dataAttributes: [
         dataSlotRoot,
-        dataSize,
         {
           attribute: 'data-position',
           appliedWhen: 'Always',
@@ -146,7 +152,14 @@ export default {
         children: childrenOverride('Current page label. Rendered non-interactively with `aria-current="page"`.'),
         className: classNameOverride,
       },
-      dataAttributes: [dataSlotRoot],
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-current',
+          appliedWhen: 'Always',
+          purpose: 'Marks the current page; emitted by Spar on every `Breadcrumb.Page`, alongside `aria-current="page"`.',
+        },
+      ],
     },
     {
       sourceFile: breadcrumbTypesFile,

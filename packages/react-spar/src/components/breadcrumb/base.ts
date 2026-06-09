@@ -17,9 +17,8 @@ export const BreadcrumbListBase = createComponentBase<BreadcrumbListProps, 'root
   classes: { root: 'tk-breadcrumb-list' },
 });
 
-// @archetype inherited — wraps SparBreadcrumbItem; carries the spar marker so
-// SparBreadcrumbList's cloneElement-based position/isCurrent injection still
-// resolves through this wrapper.
+// @archetype inherited — wraps SparBreadcrumbItem, which self-registers with the
+// nearest SparBreadcrumbList via context and derives its position from DOM order.
 export const BreadcrumbItemBase = createComponentBase<BreadcrumbItemProps, 'root'>({
   name: 'BreadcrumbItem',
   slots: ['root'] as const,

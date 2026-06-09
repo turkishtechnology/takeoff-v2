@@ -6,23 +6,26 @@ import { useComponentTheme } from '../../provider';
 
 import { BreadcrumbBase } from './base';
 import { BreadcrumbProvider } from './context';
-import { DEFAULT_SIZE } from './defaults';
+import { DEFAULT_SIZE, DEFAULT_TYPE } from './defaults';
 import type { BreadcrumbProps } from './types';
 
 export const Breadcrumb = <T extends ElementType = 'nav'>(props: BreadcrumbProps<T>) => {
   const theme = useComponentTheme('Breadcrumb');
 
+  // `disabled` stays in sparProps so Spar's <nav> owns both `data-disabled` and
+  // `aria-disabled` (and cascades disable to the links). The wrapper owns only
+  // the visual `data-size` / `data-type` variants.
   const { rootAttrs, rest } = composeRootAttrs(BreadcrumbBase, props as BreadcrumbProps<'nav'>, theme, {
-    stateAttrs: ({ size = DEFAULT_SIZE, disabled }) => ({
+    stateAttrs: ({ size = DEFAULT_SIZE, type = DEFAULT_TYPE }) => ({
       'data-size': size,
-      'data-disabled': disabled ? '' : undefined,
+      'data-type': type,
     }),
   });
 
-  const { size = DEFAULT_SIZE, children, ref, ...sparProps } = rest;
+  const { size = DEFAULT_SIZE, type = DEFAULT_TYPE, children, ref, ...sparProps } = rest;
 
   return (
-    <BreadcrumbProvider value={{ size }}>
+    <BreadcrumbProvider value={{ size, type }}>
       <SparBreadcrumb {...sparProps} ref={ref} {...rootAttrs}>
         {children}
       </SparBreadcrumb>
