@@ -61,6 +61,9 @@ importers:
       "@docusaurus/theme-common":
         specifier: ^3.7.0
         version: 3.9.2(@docusaurus/plugin-content-docs@3.9.2(@mdx-js/react@3.1.1(@types/react@19.2.14)(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      "@hookform/resolvers":
+        specifier: ^5.4.0
+        version: 5.4.0(react-hook-form@7.78.0(react@19.2.4))
       "@takeoff-design/tailwind":
         specifier: workspace:^
         version: link:../../packages/tailwind
@@ -70,6 +73,9 @@ importers:
       "@takeoff-ui/react-spar":
         specifier: workspace:*
         version: link:../../packages/react-spar
+      "@tanstack/react-form":
+        specifier: ^1.33.0
+        version: 1.33.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -82,12 +88,18 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.2.4(react@19.2.4)
+      react-hook-form:
+        specifier: ^7.78.0
+        version: 7.78.0(react@19.2.4)
       react-live:
         specifier: ^4.1.8
         version: 4.1.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       three:
         specifier: ^0.170.0
         version: 0.170.0
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       "@docusaurus/module-type-aliases":
         specifier: ^3.7.0
@@ -1928,6 +1940,11 @@ packages:
   "@hapi/topo@5.1.0":
     resolution: { integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg== }
 
+  "@hookform/resolvers@5.4.0":
+    resolution: { integrity: sha512-EIsqr/t/qbinPIhGjMdtvutIN1Kk4uwbROE9/UQ93CAVGR7GkA7Y92+fX80OzXi/OB67jVFYwKGO1WzkxmkFZw== }
+    peerDependencies:
+      react-hook-form: ^7.55.0
+
   "@humanfs/core@0.19.1":
     resolution: { integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA== }
     engines: { node: ">=18.18.0" }
@@ -2434,6 +2451,9 @@ packages:
   "@standard-schema/spec@1.1.0":
     resolution: { integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w== }
 
+  "@standard-schema/utils@0.3.0":
+    resolution: { integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g== }
+
   "@svgr/babel-plugin-add-jsx-attribute@8.0.0":
     resolution: { integrity: sha512-b9MIk7yhdS1pMCZM8VeNfUlSKVRhsHZNMl5O9SfaX0l0t5wjdgu4IDzGB8bpnGBBOjGST3rRFVsaaEtI4W6f7g== }
     engines: { node: ">=14" }
@@ -2603,6 +2623,36 @@ packages:
 
   "@tailwindcss/postcss@4.3.0":
     resolution: { integrity: sha512-Jm05Tjx+9yCLGv5qw1c+84Psds8MnyrEQYCB+FFk2lgGiUjlRqdxke4mVTuYrj2xnVZqKim2Apr5ySuQRYAw/w== }
+
+  "@tanstack/devtools-event-client@0.4.3":
+    resolution: { integrity: sha512-OZI6QyULw0FI0wjgmeYzCIfbgPsOEzwJtCpa69XrfLMtNXLGnz3d/dIabk7frg0TmHo+Ah49w5I4KC7Tufwsvw== }
+    engines: { node: ">=18" }
+    hasBin: true
+
+  "@tanstack/form-core@1.33.0":
+    resolution: { integrity: sha512-AV4Pw9Dk4orFsuPBcDssfWMJFs+yMYBae7zZ4oTqrCf4ftNGQKxvrQRZeqKHG6A4TkiLeSvf2kzIjcVkrW7E6w== }
+
+  "@tanstack/pacer-lite@0.1.1":
+    resolution: { integrity: sha512-y/xtNPNt/YeyoVxE/JCx+T7yjEzpezmbb+toK8DDD1P4m7Kzs5YR956+7OKexG3f8aXgC3rLZl7b1V+yNUSy5w== }
+    engines: { node: ">=18" }
+
+  "@tanstack/react-form@1.33.0":
+    resolution: { integrity: sha512-unaee+VS4MvKo+s1dmgGUXI4902VeAhuaUbKsQbhFe3MceOpB3JpAUGCDpyzjQPXVFkFY0COKfLrUNX2XZYW4g== }
+    peerDependencies:
+      "@tanstack/react-start": "*"
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      "@tanstack/react-start":
+        optional: true
+
+  "@tanstack/react-store@0.11.0":
+    resolution: { integrity: sha512-tX4YXh3PDkmpvGQWkWqKpzs/MSqbtuwY9dWdWhtV9Q50PmO+jOkUKIWIX4G85dwt7lxdHLXsiaEKPdKmC8F41w== }
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  "@tanstack/store@0.11.0":
+    resolution: { integrity: sha512-WlzzCt3xi0G6pCAJu1U+2jiECwabETDpQDi3hfkFZvJii9AuZqEKbOiVarX1/bWhTNjU486yQtJCCasi/0q+Cw== }
 
   "@testing-library/dom@10.4.1":
     resolution: { integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg== }
@@ -6334,6 +6384,12 @@ packages:
   react-fast-compare@3.2.2:
     resolution: { integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ== }
 
+  react-hook-form@7.78.0:
+    resolution: { integrity: sha512-EEZqc+N23moyzTlz61Pj+JvcXo76ICkpfOZo8JZw+sM4+wLQGh6nI2Ms+PdMOYNluFu0ghlM7B8mCzhRYtJCnA== }
+    engines: { node: ">=18.0.0" }
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+
   react-is@16.13.1:
     resolution: { integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ== }
 
@@ -7251,6 +7307,11 @@ packages:
     peerDependencies:
       react: ">= 16.8.0"
 
+  use-sync-external-store@1.6.0:
+    resolution: { integrity: sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w== }
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
   util-deprecate@1.0.2:
     resolution: { integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw== }
 
@@ -7583,6 +7644,9 @@ packages:
   yocto-queue@1.2.2:
     resolution: { integrity: sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ== }
     engines: { node: ">=12.20" }
+
+  zod@4.4.3:
+    resolution: { integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ== }
 
   zwitch@2.0.4:
     resolution: { integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A== }
@@ -10093,6 +10157,11 @@ snapshots:
     dependencies:
       "@hapi/hoek": 9.3.0
 
+  "@hookform/resolvers@5.4.0(react-hook-form@7.78.0(react@19.2.4))":
+    dependencies:
+      "@standard-schema/utils": 0.3.0
+      react-hook-form: 7.78.0(react@19.2.4)
+
   "@humanfs/core@0.19.1": {}
 
   "@humanfs/node@0.16.7":
@@ -10629,6 +10698,8 @@ snapshots:
 
   "@standard-schema/spec@1.1.0": {}
 
+  "@standard-schema/utils@0.3.0": {}
+
   "@svgr/babel-plugin-add-jsx-attribute@8.0.0(@babel/core@7.29.0)":
     dependencies:
       "@babel/core": 7.29.0
@@ -10794,6 +10865,33 @@ snapshots:
       "@tailwindcss/oxide": 4.3.0
       postcss: 8.5.15
       tailwindcss: 4.3.0
+
+  "@tanstack/devtools-event-client@0.4.3": {}
+
+  "@tanstack/form-core@1.33.0":
+    dependencies:
+      "@tanstack/devtools-event-client": 0.4.3
+      "@tanstack/pacer-lite": 0.1.1
+      "@tanstack/store": 0.11.0
+
+  "@tanstack/pacer-lite@0.1.1": {}
+
+  "@tanstack/react-form@1.33.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)":
+    dependencies:
+      "@tanstack/form-core": 1.33.0
+      "@tanstack/react-store": 0.11.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+    transitivePeerDependencies:
+      - react-dom
+
+  "@tanstack/react-store@0.11.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)":
+    dependencies:
+      "@tanstack/store": 0.11.0
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      use-sync-external-store: 1.6.0(react@19.2.4)
+
+  "@tanstack/store@0.11.0": {}
 
   "@testing-library/dom@10.4.1":
     dependencies:
@@ -15052,6 +15150,10 @@ snapshots:
 
   react-fast-compare@3.2.2: {}
 
+  react-hook-form@7.78.0(react@19.2.4):
+    dependencies:
+      react: 19.2.4
+
   react-is@16.13.1: {}
 
   react-is@17.0.2: {}
@@ -16098,6 +16200,10 @@ snapshots:
     dependencies:
       react: 19.2.4
 
+  use-sync-external-store@1.6.0(react@19.2.4):
+    dependencies:
+      react: 19.2.4
+
   util-deprecate@1.0.2: {}
 
   util@0.10.4:
@@ -16455,5 +16561,7 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   yocto-queue@1.2.2: {}
+
+  zod@4.4.3: {}
 
   zwitch@2.0.4: {}

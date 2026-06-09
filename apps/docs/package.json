@@ -19,15 +19,19 @@
     "@docusaurus/core": "^3.7.0",
     "@docusaurus/preset-classic": "^3.7.0",
     "@docusaurus/theme-common": "^3.7.0",
+    "@hookform/resolvers": "^5.4.0",
     "@takeoff-design/tailwind": "workspace:^",
     "@takeoff-design/tokens": "workspace:*",
     "@takeoff-ui/react-spar": "workspace:*",
+    "@tanstack/react-form": "^1.33.0",
     "clsx": "^2.1.1",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.78.0",
     "react-live": "^4.1.8",
-    "three": "^0.170.0"
+    "three": "^0.170.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.7.0",
