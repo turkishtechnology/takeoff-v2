@@ -63,7 +63,7 @@
 }
 
 @mixin drawer-panel {
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
   position: fixed;
   z-index: 1501;
   display: flex;

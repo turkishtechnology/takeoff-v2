@@ -56,7 +56,7 @@
 }
 
 .column h4 {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   color: var(--runway-ink);
   font-size: 13px;
   font-weight: 500;

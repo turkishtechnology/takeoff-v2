@@ -50,7 +50,7 @@ describe('build-tokens.mjs integration', () => {
 
     expect(content).toContain('--primary-base: var(--primary-500);');
     expect(content).toContain('--mobile-body-xl-font: var(--family-body);');
-    expect(content).toContain("--family-body: 'Geologica';");
+    expect(content).toContain("--family-body: 'tk-text';");
   });
 
   it('generates Tailwind v3 files from the shared output inventory', () => {
@@ -101,6 +101,23 @@ describe('build-tokens.mjs integration', () => {
     const tokens = readDist('js/default/tokens.mjs');
     expect(tokens).toContain('export const');
     expect(tokens).toContain('export default');
+  });
+
+  it('copies font assets to package dist outputs', () => {
+    const fontPaths = [
+      ['css/fonts.css'],
+      ['assets/fonts/tk-font/tk-text/tk-text.woff2'],
+      ['assets/fonts/tk-font/tk-text/tk-text.ttf'],
+      ['assets/fonts/tk-font/tk-display/tk-display.woff2'],
+      ['assets/fonts/tk-font/tk-display/tk-display.ttf'],
+      ['css/assets/fonts/tk-font/tk-text/tk-text.woff2'],
+      ['css/assets/fonts/tk-font/tk-display/tk-display.woff2'],
+    ];
+
+    for (const pathSegments of fontPaths) {
+      const filePath = resolve(DIST_DIR, ...pathSegments);
+      expect(existsSync(filePath), `${pathSegments.join('/')} should exist`).toBe(true);
+    }
   });
 
   it('keeps dark token names within the light token set', () => {

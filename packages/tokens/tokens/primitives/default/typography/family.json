@@ -1,16 +1,16 @@
 {
   "family": {
     "title": {
-      "$value": "Geologica"
+      "$value": "tk-display"
     },
     "subheading": {
-      "$value": "Geologica"
+      "$value": "tk-text"
     },
     "label": {
-      "$value": "Geologica"
+      "$value": "tk-text"
     },
     "body": {
-      "$value": "Geologica"
+      "$value": "tk-text"
     }
   }
 }

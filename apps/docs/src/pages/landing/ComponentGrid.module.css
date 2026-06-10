@@ -39,7 +39,7 @@
 }
 
 .title {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: clamp(32px, 4.5vw, 54px);
   line-height: 1.05;
   font-weight: 500;
@@ -99,7 +99,7 @@
 }
 
 .cardTitle h4 {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: 14px;
   font-weight: 500;
   letter-spacing: -0.2px;
@@ -189,7 +189,7 @@
   padding: 10px 18px;
   border: 1px solid var(--runway-surface-dark-border-2);
   border-radius: 8px;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 14px;
   color: var(--runway-ink);
   text-decoration: none;

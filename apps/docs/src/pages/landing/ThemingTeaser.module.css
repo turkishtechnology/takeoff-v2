@@ -30,7 +30,7 @@
 }
 
 .title {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: clamp(1.75rem, 2.5vw + 1rem, 2.5rem);
   line-height: 1.1;
   font-weight: 700;
@@ -40,7 +40,7 @@
 }
 
 .lede {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 1rem;
   line-height: 1.6;
   color: var(--runway-ink-dim, #b6b6be);
@@ -173,7 +173,7 @@
   padding: calc(var(--tt-preview-padding, 0.5rem) * 1) calc(var(--tt-preview-padding, 0.5rem) * 2);
   border-radius: var(--tt-preview-radius, 8px);
   border: none;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-weight: 600;
   background: var(--tt-primary, #c90019);
   color: #fff;
@@ -190,7 +190,7 @@
   border-radius: var(--tt-preview-radius, 8px);
   border: 1px solid #dcdce4;
   background: #fff;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 0.9375rem;
   color: #1a1a1f;
   transition:
@@ -208,7 +208,7 @@
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 0.875rem;
   color: #3a3a45;
 }

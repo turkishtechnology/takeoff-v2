@@ -114,7 +114,7 @@
   border: 1px solid var(--docs-border-subtle) !important;
   background: var(--docs-surface-2) !important;
   color: var(--docs-ink-faint) !important;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   transition:
     border-color 150ms ease,
     background 150ms ease;
@@ -245,7 +245,7 @@
 }
 
 .DocSearch-Input {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 15px !important;
   font-weight: 400 !important;
   color: var(--docs-ink-strong) !important;
@@ -268,7 +268,7 @@
 }
 
 .DocSearch-Cancel {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 13px !important;
   font-weight: 500 !important;
   color: var(--docs-ink-base) !important;
@@ -313,7 +313,7 @@
 }
 
 .DocSearch-Hit-title {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 14px !important;
   font-weight: 500 !important;
   color: var(--docs-ink-strong) !important;
@@ -462,13 +462,13 @@
 /* --- Empty / start / no-results screens --------------------------------- */
 .DocSearch-StartScreen,
 .DocSearch-NoResults {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   padding: 24px 18px;
 }
 
 .DocSearch-StartTitle,
 .DocSearch-Title {
-  font-family: 'Geologica', sans-serif !important;
+  font-family: var(--family-body, 'tk-text', sans-serif) !important;
   font-size: 14px !important;
   font-weight: 500 !important;
   color: var(--docs-ink-strong) !important;
@@ -495,7 +495,7 @@
 }
 
 .DocSearch-NoResults-Prefill-List .DocSearch-Prefill {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 13px !important;
   padding: 4px 10px !important;
   border-radius: 6px !important;
