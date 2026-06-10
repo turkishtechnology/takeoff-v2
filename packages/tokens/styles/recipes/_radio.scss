@@ -114,13 +114,13 @@
     background-color: var(--states-info-light);
   }
 
-  &:focus-visible .tk-radio-indicator {
+  &[data-focus] .tk-radio-indicator {
     box-shadow:
       0px 0px 0px 2px var(--static-light),
       0px 0px 0px 4px var(--states-info-base);
   }
 
-  &[data-state='checked']:focus-visible .tk-radio-indicator {
+  &[data-state='checked'][data-focus] .tk-radio-indicator {
     border-color: var(--states-info-light);
   }
 
@@ -167,14 +167,14 @@
       background-color: var(--states-danger-light);
     }
 
-    &:focus-visible .tk-radio-indicator {
+    &[data-focus] .tk-radio-indicator {
       border-color: var(--states-danger-base);
       box-shadow:
         0px 0px 0px 2px var(--static-light),
         0px 0px 0px 4px var(--states-danger-base);
     }
 
-    &[data-state='checked']:focus-visible .tk-radio-indicator {
+    &[data-state='checked'][data-focus] .tk-radio-indicator {
       border-color: var(--states-danger-light);
     }
   }
