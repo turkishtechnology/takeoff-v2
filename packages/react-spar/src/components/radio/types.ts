@@ -9,7 +9,6 @@ import type {
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type RadioSize = 'small' | 'base' | 'large';
-export type RadioType = 'default' | 'card';
 export type RadioPosition = 'left' | 'right';
 
 export type RadioSlot = 'root';
@@ -33,11 +32,6 @@ export interface RadioOwnProps {
    * @defaultValue 'base'
    */
   size?: RadioSize;
-  /**
-   * Visual variant. Cascades to descendant `Radio.Item`s via context.
-   * @defaultValue 'default'
-   */
-  type?: RadioType;
   /**
    * Marks the group as visually invalid. Cascades to descendant `Radio.Item`s.
    * When nested inside a `<Field>` with `invalid`, this is inherited

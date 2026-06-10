@@ -1,10 +1,9 @@
 import { createSafeContext } from '../../hooks';
 
-import type { RadioPosition, RadioSize, RadioType } from './types';
+import type { RadioPosition, RadioSize } from './types';
 
 export interface RadioGroupContextValue {
   size: RadioSize;
-  type: RadioType;
   position: RadioPosition;
 }
 
