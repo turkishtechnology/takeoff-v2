@@ -11,32 +11,37 @@ slug: /components/select
 import LiveCode from '@site/src/components/LiveCode';
 import {
   Badge,
+  Field,
   Select,
   ReactSparDemoRoot,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const selectScope = { Badge, Select };
+export const selectScope = { Badge, Field, Select };
 
 {/* prettier-ignore-start */}
 
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <Select className="max-w-90" defaultValue="economy">
-      <Select.Trigger placeholder="Pick a cabin" />
-      <Select.Content>
-        <Select.Item value="economy" label="Economy">
-          Economy
-        </Select.Item>
-        <Select.Item value="business" label="Business">
-          Business
-        </Select.Item>
-        <Select.Item value="first" label="First class">
-          First class
-        </Select.Item>
-      </Select.Content>
-    </Select>
+    <Field className="max-w-90" required>
+      <Field.Label>Cabin</Field.Label>
+      <Select defaultValue="economy">
+        <Select.Trigger placeholder="Pick a cabin" />
+        <Select.Content>
+          <Select.Item value="economy" label="Economy">
+            Economy
+          </Select.Item>
+          <Select.Item value="business" label="Business">
+            Business
+          </Select.Item>
+          <Select.Item value="first" label="First class">
+            First class
+          </Select.Item>
+        </Select.Content>
+      </Select>
+      <Field.Description>Select the cabin for this itinerary.</Field.Description>
+    </Field>
   );
 }
 
@@ -176,39 +181,89 @@ function InvalidDemo() {
 render(<InvalidDemo />);
 `;
 
+export const fieldDemo = String.raw`
+function FieldSelectDemo() {
+  return (
+    <Field className="max-w-90" required>
+      <Field.Label>Cabin</Field.Label>
+      <Select invalid>
+        <Select.Trigger placeholder="Choose cabin" aria-invalid="true" />
+        <Select.Content>
+          <Select.Item value="economy" label="Economy">
+            Economy
+          </Select.Item>
+          <Select.Item value="business" label="Business">
+            Business
+          </Select.Item>
+          <Select.Item value="first" label="First class">
+            First class
+          </Select.Item>
+        </Select.Content>
+      </Select>
+      <Field.Description>Select the cabin for this itinerary.</Field.Description>
+      <Field.ErrorMessage>Please choose a cabin to continue.</Field.ErrorMessage>
+    </Field>
+  );
+}
+
+render(<FieldSelectDemo />);
+`;
+
 {/* prettier-ignore-end */}
 
 # Select
 
 `Select` is a fully-keyboard, accessible custom select. State (value, open
 state, disabled, required) lives on the root; the trigger renders the collapsed
-button, and the content portals a positioned dropdown.
+button, and the content portals a positioned dropdown. Wrap `Select` in a
+`Field` to attach a label, helper text, or error message — the field-level state
+cascades into the trigger automatically.
 
 ## Usage
 
 ```tsx
-import { Select } from '@takeoff-ui/react-spar';
+import { Field, Select } from '@takeoff-ui/react-spar';
 ```
 
 ```tsx
-<Select>
-  <Select.Trigger placeholder="Choose..." />
-  <Select.Content>
-    <Select.Group>
-      <Select.Label />
-      <Select.Item value="..." label="...">
-        ...
-      </Select.Item>
-    </Select.Group>
-    <Select.Separator />
-  </Select.Content>
-</Select>
+<Field>
+  <Field.Label />
+  <Select>
+    <Select.Trigger placeholder="Choose..." />
+    <Select.Content>
+      <Select.Group>
+        <Select.Label />
+        <Select.Item value="..." label="...">
+          ...
+        </Select.Item>
+      </Select.Group>
+      <Select.Separator />
+    </Select.Content>
+  </Select>
+  <Field.Description />
+  <Field.ErrorMessage />
+</Field>
 ```
 
 ## Playground
 
 <LiveCode
   code={playgroundDemo}
+  noInline
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={selectScope}
+/>
+
+## Using with `Field`
+
+`Field` is the generic ARIA wrapper. Setting `invalid`, `disabled`, `required`,
+or `readOnly` on `Field` cascades into the nested `Select`, and `Field.Label`,
+`Field.Description`, and `Field.ErrorMessage` are wired to the trigger through
+shared IDs.
+
+<LiveCode
+  code={fieldDemo}
   noInline
   previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
