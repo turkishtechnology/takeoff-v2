@@ -11,7 +11,7 @@ import { useComponentTheme } from '../../provider';
 
 import { CheckboxBase } from './base';
 import { CheckboxProvider } from './context';
-import { DEFAULT_SIZE, DEFAULT_TYPE } from './defaults';
+import { DEFAULT_SIZE } from './defaults';
 import type { CheckboxProps, CheckboxSlot } from './types';
 
 export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>) => {
@@ -24,9 +24,8 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
   // `data-attribute-vocabulary.md` rule 7 forbids. takeoff-spar owns the
   // Takeoff visual vocabulary only.
   const { rootAttrs, rest } = composeRootAttrs<CheckboxProps, CheckboxSlot>(CheckboxBase, props as CheckboxProps<'span'>, theme, {
-    stateAttrs: ({ size = DEFAULT_SIZE, type = DEFAULT_TYPE }) => ({
+    stateAttrs: ({ size = DEFAULT_SIZE }) => ({
       'data-size': size,
-      'data-type': type,
     }),
   });
 
@@ -39,7 +38,6 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
     // Visual props are consumed via `stateAttrs`; destructured to keep them
     // off the rendered DOM where they would leak as raw HTML attributes.
     size: _size,
-    type: _type,
     // `invalid` is forwarded to Spar as `invalid` (same name).
     invalid = false,
     // takeoff-spar tri-state vocabulary; mapped to Spar's `CheckedState` below.

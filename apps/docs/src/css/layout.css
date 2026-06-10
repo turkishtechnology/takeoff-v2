@@ -108,7 +108,7 @@
   align-items: center;
   gap: 10px !important;
   padding: 0 10px 0 12px !important;
-  height: 36px !important;
+  height: 34px !important;
   min-width: 200px;
   border-radius: 8px !important;
   border: 1px solid var(--docs-border-subtle) !important;
@@ -180,15 +180,20 @@
   }
 
   .DocSearch-Button {
-    min-width: 36px;
-    width: 36px;
+    all: unset;
+    inline-size: 34px !important;
+    block-size: 34px !important;
     padding: 0 !important;
-    justify-content: center;
   }
 
   .DocSearch-Button-Placeholder,
   .DocSearch-Button-Keys {
     display: none !important;
+  }
+
+  .DocSearch-Button-Container {
+    justify-content: center;
+    width: 100%;
   }
 }
 

@@ -107,7 +107,6 @@
   }
 
   &:focus-visible {
-    background-color: $focus-bg;
     box-shadow: $focus-shadow;
   }
 
@@ -197,8 +196,6 @@
   outline: none;
   overflow: hidden;
   position: relative;
-  width: fit-content;
-  max-width: 100%;
   border: 1px solid transparent;
   text-decoration: none;
   white-space: nowrap;
@@ -207,10 +204,6 @@
   -webkit-tap-highlight-color: transparent;
   transition: all 200ms cubic-bezier(0.17, 0.67, 0.83, 0.67);
   cursor: pointer;
-
-  &[data-full-width] {
-    width: 100%;
-  }
 
   &[data-underline] .tk-button-label {
     text-decoration: underline;
@@ -312,11 +305,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--primary-lightest), var(--primary-light), var(--primary-focus), var(--background-sub-base), var(--primary-500));
-      }
-
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--primary-lightest), var(--primary-light), var(--primary-focus), var(--background-sub-base), var(--primary-500));
+        @include button-variant-filled(
+          var(--primary-lightest),
+          var(--primary-light),
+          var(--primary-focus),
+          var(--background-sub-base),
+          var(--primary-500),
+          var(--static-white),
+          var(--primary-500),
+          var(--static-white)
+        );
       }
 
       &[data-type='outlined'] {
@@ -347,11 +345,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--secondary-lightest), var(--secondary-light), var(--secondary-focus), var(--background-sub-base), var(--secondary-darkest));
-      }
-
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--secondary-lightest), var(--secondary-light), var(--secondary-focus), var(--background-sub-base), var(--secondary-darkest));
+        @include button-variant-filled(
+          var(--secondary-lightest),
+          var(--secondary-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--secondary-darkest),
+          var(--static-white),
+          var(--secondary-darkest),
+          var(--static-white)
+        );
       }
 
       &[data-type='outlined'] {
@@ -382,11 +385,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--background-lightest), var(--background-light), var(--secondary-focus), var(--background-sub-base), var(--text-darkest));
-      }
-
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--background-lightest), var(--background-light), var(--secondary-focus), var(--background-sub-base), var(--text-darkest));
+        @include button-variant-filled(
+          var(--background-lightest),
+          var(--background-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--text-darkest),
+          var(--static-white),
+          var(--text-darkest),
+          var(--static-white)
+        );
       }
 
       &[data-type='outlined'] {
@@ -417,11 +425,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--states-info-lightest), var(--states-info-light), var(--secondary-focus), var(--background-sub-base), var(--states-info-dark));
-      }
-
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--states-info-lightest), var(--states-info-light), var(--secondary-focus), var(--background-sub-base), var(--states-info-dark));
+        @include button-variant-filled(
+          var(--states-info-lightest),
+          var(--states-info-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--states-info-dark),
+          var(--static-white),
+          var(--states-info-dark),
+          var(--static-white)
+        );
       }
 
       &[data-type='outlined'] {
@@ -452,11 +465,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--states-success-lightest), var(--states-success-light), var(--secondary-focus), var(--background-sub-base), var(--states-success-dark));
-      }
-
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--states-success-lightest), var(--states-success-light), var(--secondary-focus), var(--background-sub-base), var(--states-success-dark));
+        @include button-variant-filled(
+          var(--states-success-lightest),
+          var(--states-success-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--states-success-dark),
+          var(--static-white),
+          var(--states-success-dark),
+          var(--static-white)
+        );
       }
 
       &[data-type='outlined'] {
@@ -495,11 +513,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--states-danger-lightest), var(--states-danger-light), var(--secondary-focus), var(--background-sub-base), var(--states-danger-dark));
-      }
-
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--states-danger-lightest), var(--states-danger-light), var(--secondary-focus), var(--background-sub-base), var(--states-danger-dark));
+        @include button-variant-filled(
+          var(--states-danger-lightest),
+          var(--states-danger-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--states-danger-dark),
+          var(--static-white),
+          var(--states-danger-dark),
+          var(--static-white)
+        );
       }
 
       &[data-type='outlined'] {
@@ -538,11 +561,16 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(var(--states-warning-lightest), var(--states-warning-light), var(--secondary-focus), var(--background-sub-base), var(--states-warning-dark));
-      }
-
-      &[data-type='elevated'] {
-        @include button-variant-filled(var(--states-warning-lightest), var(--states-warning-light), var(--secondary-focus), var(--background-sub-base), var(--states-warning-dark));
+        @include button-variant-filled(
+          var(--states-warning-lightest),
+          var(--states-warning-light),
+          var(--secondary-focus),
+          var(--background-sub-base),
+          var(--states-warning-dark),
+          var(--static-white),
+          var(--states-warning-dark),
+          var(--static-white)
+        );
       }
 
       &[data-type='outlined'] {
@@ -583,19 +611,6 @@
       }
 
       &[data-type='filledLight'] {
-        @include button-variant-filled(
-          var(--overlay-white-lightest),
-          var(--overlay-white-light),
-          var(--secondary-focus),
-          var(--overlay-white-lightest),
-          var(--text-lightest),
-          var(--overlay-white-light),
-          var(--text-lightest),
-          var(--overlay-white-light)
-        );
-      }
-
-      &[data-type='elevated'] {
         @include button-variant-filled(
           var(--overlay-white-lightest),
           var(--overlay-white-light),
@@ -658,19 +673,6 @@
         );
       }
 
-      &[data-type='elevated'] {
-        @include button-variant-filled(
-          var(--overlay-black-xlightest),
-          var(--overlay-black-lightest),
-          var(--secondary-focus),
-          var(--overlay-black-xlightest),
-          var(--text-darkest),
-          var(--overlay-black-lightest),
-          var(--text-darkest),
-          var(--overlay-black-lightest)
-        );
-      }
-
       &[data-type='outlined'] {
         @include button-variant-outlined(
           var(--text-darkest),
@@ -686,14 +688,6 @@
       &[data-type='text'] {
         @include button-variant-text(var(--text-darkest), var(--overlay-black-lightest), var(--overlay-black-lightest), var(--secondary-focus), var(--overlay-black-lightest));
       }
-    }
-  }
-
-  &[data-type='elevated']:not([data-mode='link']) {
-    box-shadow: var(--effect-1-default-xl);
-
-    &:where(:not([data-disabled])):hover {
-      box-shadow: var(--effect-1-hover-xl);
     }
   }
 

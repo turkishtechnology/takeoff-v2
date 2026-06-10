@@ -16,17 +16,7 @@ import {
 } from './components/drawer/base';
 import { FieldBase, FieldDescriptionBase, FieldErrorMessageBase, FieldLabelBase } from './components/field/base';
 import { InputBase, InputContainerBase, InputFieldBase, InputPrefixBase, InputSuffixBase } from './components/input/base';
-import {
-  SelectBase,
-  SelectContentBase,
-  SelectGroupBase,
-  SelectItemBase,
-  SelectItemTextBase,
-  SelectLabelBase,
-  SelectSeparatorBase,
-  SelectTriggerBase,
-  SelectValueBase,
-} from './components/select/base';
+import { SelectBase, SelectContentBase, SelectGroupBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
 import { SwitchBase } from './components/switch/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
@@ -74,12 +64,10 @@ export const slotClassRegistry = {
   inputSuffix: { slots: InputSuffixBase.classes },
   select: { slots: SelectBase.classes },
   selectTrigger: { slots: SelectTriggerBase.classes },
-  selectValue: { slots: SelectValueBase.classes },
   selectContent: { slots: SelectContentBase.classes },
   selectItem: { slots: SelectItemBase.classes },
   selectGroup: { slots: SelectGroupBase.classes },
   selectLabel: { slots: SelectLabelBase.classes },
-  selectItemText: { slots: SelectItemTextBase.classes },
   selectSeparator: { slots: SelectSeparatorBase.classes },
   switch: { slots: SwitchBase.classes },
   popoverTrigger: { slots: PopoverTriggerBase.classes },

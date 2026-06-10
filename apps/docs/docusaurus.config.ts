@@ -2,6 +2,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import tailwindPlugin from './plugins/tailwind';
+import packageChangelogsPlugin from './plugins/package-changelogs';
 
 function loadEnvFile(fileName: string): void {
   const filePath = resolve(process.cwd(), fileName);
@@ -68,10 +70,12 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
+  plugins: [tailwindPlugin, packageChangelogsPlugin],
   themeConfig: {
     image: 'img/takeoff-og.jpg',
     colorMode: {
-      respectPrefersColorScheme: true,
+      defaultMode: 'dark',
+      respectPrefersColorScheme: false,
     },
     navbar: {
       title: 'Takeoff Spar',
@@ -106,7 +110,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          'href': 'https://github.com/turkishtechnology/takeoff-spar',
+          'href': 'https://github.com/turkishtechnology/takeoff-v2',
           'position': 'right',
           'label': 'GitHub',
           'className': 'navbar__github-link',
@@ -123,7 +127,7 @@ const config: Config = {
       ],
     },
     footer: {
-      style: 'light',
+      style: 'dark',
       links: [
         {
           title: 'Documentation',
@@ -143,7 +147,7 @@ const config: Config = {
           items: [
             {
               label: 'Releases',
-              href: 'https://github.com/turkishtechnology/takeoff-spar/releases',
+              href: 'https://github.com/turkishtechnology/takeoff-v2/releases',
             },
           ],
         },
@@ -152,7 +156,7 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/turkishtechnology/takeoff-spar',
+              href: 'https://github.com/turkishtechnology/takeoff-v2',
             },
           ],
         },

@@ -10,136 +10,97 @@ slug: /components/switch
 
 import LiveCode from '@site/src/components/LiveCode';
 import {
+  Badge,
+  Button,
   Field,
   ReactSparDemoRoot,
   Switch,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const switchScope = { Field, Switch };
+export const switchScope = { Badge, Button, Field, Switch };
 
 {/* prettier-ignore-start */}
 
-export const switchDemoCss = String.raw`
-.switch-demo-stack {
-  display: grid;
-  width: min(100%, 520px);
-  gap: 14px;
-}
-
-/* Lays out Field.Label and Switch side-by-side, with Field.Description /
-   Field.ErrorMessage wrapping to a second row underneath the label. */
-.switch-demo-field-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  column-gap: 16px;
-  row-gap: 4px;
-  align-items: center;
-}
-
-.switch-demo-field-row > :not(:first-child):not(:nth-child(2)) {
-  grid-column: 1 / -1;
-}
-
-.switch-demo-inline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 18px;
-}
-
-.switch-demo-status {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-
-.switch-demo-form {
-  display: grid;
-  width: min(100%, 520px);
-  gap: 14px;
-}
-
-.switch-demo-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-}
-
-.switch-demo-button {
-  border: 0;
-  border-radius: 8px;
-  background: var(--primary-base);
-  color: var(--static-white);
-  cursor: pointer;
-  font: inherit;
-  font-weight: 600;
-  padding: 10px 16px;
-}
-`;
-
 export const playgroundDemo = String.raw`
-<Field className="switch-demo-field-row">
-  <Field.Label>Flight status alerts</Field.Label>
-  <Switch defaultChecked>
-    <Switch.Indicator />
-  </Switch>
-  <Field.Description>
-    We will let you know about delays, gate changes, and cancellations.
-  </Field.Description>
-</Field>
+function PlaygroundDemo() {
+  return (
+    <Field className="max-w-90">
+      <div className="flex w-full items-center justify-between">
+        <div>
+          <Field.Label>Flight status alerts</Field.Label>
+          <Field.Description>We will let you know about delays, gate changes, and cancellations.</Field.Description>
+        </div>
+        <Switch defaultChecked>
+          <Switch.Indicator />
+        </Switch>
+      </div>
+    </Field>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const fieldWithSwitchDemo = String.raw`
-<div className="switch-demo-stack">
-  <Field required className="switch-demo-field-row">
-    <Field.Label>Email alerts</Field.Label>
-    <Switch defaultChecked>
-      <Switch.Indicator />
-    </Switch>
-  </Field>
+function FieldWithSwitchDemo() {
+  return (
+    <div className="grid w-full max-w-90 gap-6">
+      <Field required>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Email alerts</Field.Label>
+          <Switch defaultChecked>
+            <Switch.Indicator />
+          </Switch>
+        </div>
+      </Field>
 
-  <Field className="switch-demo-field-row">
-    <Field.Label>SMS alerts</Field.Label>
-    <Switch>
-      <Switch.Indicator />
-    </Switch>
-    <Field.Description>
-      Standard messaging rates may apply.
-    </Field.Description>
-  </Field>
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <div>
+            <Field.Label>SMS alerts</Field.Label>
+            <Field.Description>Standard messaging rates may apply.</Field.Description>
+          </div>
+          <Switch>
+            <Switch.Indicator />
+          </Switch>
+        </div>
+      </Field>
 
-  <Field invalid className="switch-demo-field-row">
-    <Field.Label>Push notifications</Field.Label>
-    <Switch>
-      <Switch.Indicator />
-    </Switch>
-    <Field.ErrorMessage>
-      Enable browser notifications to turn this on.
-    </Field.ErrorMessage>
-  </Field>
+      <Field invalid>
+        <div className="flex w-full items-center justify-between">
+          <div>
+            <Field.Label>Push notifications</Field.Label>
+            <Field.ErrorMessage>Enable browser notifications to turn this on.</Field.ErrorMessage>
+          </div>
+          <Switch>
+            <Switch.Indicator />
+          </Switch>
+        </div>
+      </Field>
 
-  <Field disabled className="switch-demo-field-row">
-    <Field.Label>Disabled setting</Field.Label>
-    <Switch>
-      <Switch.Indicator />
-    </Switch>
-  </Field>
+      <Field disabled>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Disabled setting</Field.Label>
+          <Switch>
+            <Switch.Indicator />
+          </Switch>
+        </div>
+      </Field>
 
-  <Field readOnly className="switch-demo-field-row">
-    <Field.Label>Read-only setting</Field.Label>
-    <Switch defaultChecked>
-      <Switch.Indicator />
-    </Switch>
-  </Field>
-</div>
+      <Field readOnly>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Read-only setting</Field.Label>
+          <Switch defaultChecked>
+            <Switch.Indicator />
+          </Switch>
+        </div>
+      </Field>
+    </div>
+  );
+}
+
+render(<FieldWithSwitchDemo />);
 `;
 
 export const controlledDemo = String.raw`
@@ -147,15 +108,17 @@ function ControlledSwitchDemo() {
   const [enabled, setEnabled] = useState(true);
 
   return (
-    <div className="switch-demo-stack">
-      <div className="switch-demo-status">
+    <div className="grid w-full max-w-90 gap-3">
+      <Badge className="w-fit" variant="neutral" appearance="outlined">
         Notifications {enabled ? 'enabled' : 'paused'}
-      </div>
-      <Field className="switch-demo-field-row">
-        <Field.Label>Flight status notifications</Field.Label>
-        <Switch checked={enabled} onChange={setEnabled}>
-          <Switch.Indicator />
-        </Switch>
+      </Badge>
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Flight status notifications</Field.Label>
+          <Switch checked={enabled} onChange={setEnabled}>
+            <Switch.Indicator />
+          </Switch>
+        </div>
       </Field>
     </div>
   );
@@ -165,85 +128,106 @@ render(<ControlledSwitchDemo />);
 `;
 
 export const sizeDemo = String.raw`
-<div className="switch-demo-inline">
-  <Switch aria-label="Extra small switch" size="xsmall">
-    <Switch.Indicator />
-  </Switch>
-  <Switch aria-label="Small switch" size="small">
-    <Switch.Indicator />
-  </Switch>
-  <Switch aria-label="Base switch" size="base" defaultChecked>
-    <Switch.Indicator />
-  </Switch>
-  <Switch aria-label="Large switch" size="large" defaultChecked>
-    <Switch.Indicator />
-  </Switch>
-  <Switch aria-label="Extra large switch" size="xlarge" defaultChecked>
-    <Switch.Indicator />
-  </Switch>
-</div>
+function SizeDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Switch aria-label="Extra small switch" size="xsmall">
+        <Switch.Indicator />
+      </Switch>
+      <Switch aria-label="Small switch" size="small">
+        <Switch.Indicator />
+      </Switch>
+      <Switch aria-label="Base switch" size="base" defaultChecked>
+        <Switch.Indicator />
+      </Switch>
+      <Switch aria-label="Large switch" size="large" defaultChecked>
+        <Switch.Indicator />
+      </Switch>
+      <Switch aria-label="Extra large switch" size="xlarge" defaultChecked>
+        <Switch.Indicator />
+      </Switch>
+    </div>
+  );
+}
+
+render(<SizeDemo />);
 `;
 
 export const variantDemo = String.raw`
-<div className="switch-demo-stack">
-  <Field className="switch-demo-field-row">
-    <Field.Label>Seat alerts</Field.Label>
-    <Switch defaultChecked variant="info">
-      <Switch.Indicator />
-    </Switch>
-  </Field>
-  <Field className="switch-demo-field-row">
-    <Field.Label>Auto check-in</Field.Label>
-    <Switch defaultChecked variant="success">
-      <Switch.Indicator />
-    </Switch>
-  </Field>
-</div>
+function VariantDemo() {
+  return (
+    <div className="grid w-full max-w-90 gap-3">
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Seat alerts</Field.Label>
+          <Switch defaultChecked variant="info">
+            <Switch.Indicator />
+          </Switch>
+        </div>
+      </Field>
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Auto check-in</Field.Label>
+          <Switch defaultChecked variant="success">
+            <Switch.Indicator />
+          </Switch>
+        </div>
+      </Field>
+    </div>
+  );
+}
+
+render(<VariantDemo />);
 `;
 
 export const customIndicatorDemo = String.raw`
-const CheckIcon = () => (
-  <svg
-    width="10"
-    height="10"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M20 6 9 17l-5-5" />
-  </svg>
-);
+function CustomIndicatorDemo() {
+  const ToggleLabel = ({ active }) => (
+    <span aria-hidden="true" className="inline-flex h-full w-full items-center justify-center whitespace-nowrap">
+      <span className="text-[7px] font-semibold leading-none tracking-[0.08em] text-static-white">{active ? 'ON' : 'OFF'}</span>
+    </span>
+  );
 
-render(
-  <Field className="switch-demo-field-row">
-    <Field.Label>Auto check-in</Field.Label>
-    <Switch defaultChecked variant="success">
-      <Switch.Indicator>
-        {({ checked }) => (
-          <span data-slot="thumb">{checked ? <CheckIcon /> : null}</span>
-        )}
-      </Switch.Indicator>
-    </Switch>
-  </Field>,
-);
+  return (
+    <Field className="max-w-90">
+      <div className="flex w-full items-center justify-between">
+        <Field.Label>Auto check-in</Field.Label>
+        <Switch defaultChecked variant="success">
+          <Switch.Indicator>
+            {({ checked }) => (
+              <span data-slot="thumb" className="inline-flex h-full w-full items-center justify-center">
+                <ToggleLabel active={checked} />
+              </span>
+            )}
+          </Switch.Indicator>
+        </Switch>
+      </div>
+    </Field>
+  );
+}
+
+render(<CustomIndicatorDemo />);
 `;
 
 export const renderPropDemo = String.raw`
-<Field className="switch-demo-field-row">
-  <Switch defaultChecked>
-    {({ checked }) => (
-      <>
-        <Field.Label>
-          {checked ? 'Operational alerts active' : 'Operational alerts paused'}
-        </Field.Label>
-        <Switch.Indicator />
-      </>
-    )}
-  </Switch>
-</Field>
+function RenderPropDemo() {
+  return (
+    <div>
+      <Field>
+        <Switch defaultChecked>
+          {({ checked }) => (
+            <>
+              <Field.Label>{checked ? 'Operational alerts active' : 'Operational alerts paused'}</Field.Label>
+              <Switch.Indicator />
+            </>
+          )}
+        </Switch>
+      </Field>
+    </div>
+  );
+}
+
+render(<RenderPropDemo />);
 `;
 
 export const formDemo = String.raw`
@@ -252,37 +236,36 @@ function SwitchFormDemo() {
 
   return (
     <form
-      className="switch-demo-form"
+      className="grid w-full max-w-90 gap-3"
       onSubmit={(event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         setSaved(
-          [
-            data.get('email') ? 'Email alerts' : null,
-            data.get('sms') ? 'SMS alerts' : null,
-          ]
-            .filter(Boolean)
-            .join(', ') || 'No alerts',
+          [data.get('email') ? 'Email alerts' : null, data.get('sms') ? 'SMS alerts' : null].filter(Boolean).join(', ') || 'No alerts',
         );
       }}
     >
-      <Field className="switch-demo-field-row">
-        <Field.Label>Email alerts</Field.Label>
-        <Switch name="email" value="enabled" defaultChecked>
-          <Switch.Indicator />
-        </Switch>
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>Email alerts</Field.Label>
+          <Switch name="email" value="enabled" defaultChecked>
+            <Switch.Indicator />
+          </Switch>
+        </div>
       </Field>
-      <Field className="switch-demo-field-row">
-        <Field.Label>SMS alerts</Field.Label>
-        <Switch name="sms" value="enabled">
-          <Switch.Indicator />
-        </Switch>
+      <Field>
+        <div className="flex w-full items-center justify-between">
+          <Field.Label>SMS alerts</Field.Label>
+          <Switch name="sms" value="enabled">
+            <Switch.Indicator />
+          </Switch>
+        </div>
       </Field>
-      <div className="switch-demo-actions">
-        <button className="switch-demo-button" type="submit">
-          Save
-        </button>
-        <span className="switch-demo-status">{saved}</span>
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        <Button type="submit">Save</Button>
+        <Badge className="w-fit" variant="neutral" appearance="outlined">
+          {saved}
+        </Badge>
       </div>
     </form>
   );
@@ -323,7 +306,7 @@ import { Field, Switch } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={switchDemoCss}
+  noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
@@ -338,8 +321,7 @@ shared IDs.
 
 <LiveCode
   code={fieldWithSwitchDemo}
-  cssCode={switchDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={460}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
@@ -349,8 +331,6 @@ shared IDs.
 
 <LiveCode
   code={controlledDemo}
-  cssCode={switchDemoCss}
-  editable={false}
   noInline
   previewMinHeight={240}
   previewWrapper={ReactSparDemoRoot}
@@ -361,8 +341,7 @@ shared IDs.
 
 <LiveCode
   code={sizeDemo}
-  cssCode={switchDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
@@ -372,8 +351,7 @@ shared IDs.
 
 <LiveCode
   code={variantDemo}
-  cssCode={switchDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={200}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
@@ -389,8 +367,6 @@ theming.
 
 <LiveCode
   code={customIndicatorDemo}
-  cssCode={switchDemoCss}
-  editable={false}
   noInline
   previewMinHeight={160}
   previewWrapper={ReactSparDemoRoot}
@@ -401,8 +377,7 @@ theming.
 
 <LiveCode
   code={renderPropDemo}
-  cssCode={switchDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
   scope={switchScope}
@@ -415,8 +390,6 @@ form submission.
 
 <LiveCode
   code={formDemo}
-  cssCode={switchDemoCss}
-  editable={false}
   noInline
   previewMinHeight={280}
   previewWrapper={ReactSparDemoRoot}
@@ -455,29 +428,29 @@ for primitive behavior.
 
 #### Props {#switch-props}
 
-| Name                            | Type                                                                                    | Default | Description                                                                                                    |
-| ------------------------------- | --------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode &#124; ((state: SwitchRenderProps) =&gt; React.ReactNode)</code>  | -       | Compound children for switch anatomy, or a render function exposing Spar state.                                |
-| <ApiBadge label="size" />       | <code>SwitchSize</code>                                                                 | 'base'  | Size scale.                                                                                                    |
-| <ApiBadge label="variant" />    | <code>SwitchVariant</code>                                                              | 'info'  | Color variant used while checked.                                                                              |
-| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                    | false   | Marks the switch as visually invalid. Inherited from `<Field>` automatically; pass this prop only to override. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;SwitchSlot, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                 |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;SwitchSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                             |
-| <ApiBadge label="className" />  | <code>string</code>                                                                     | -       | Appends custom classes to the root slot of this part.                                                          |
+| Name                            | Type                                                                                                                              | Default | Description                                                                                                    |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode &#124; ((state: <a href="#switch-td-switchrenderprops">SwitchRenderProps</a>) =&gt; React.ReactNode)</code> | -       | Compound children for switch anatomy, or a render function exposing Spar state.                                |
+| <ApiBadge label="size" />       | <code><a href="#switch-td-switchsize">SwitchSize</a></code>                                                                       | 'base'  | Size scale.                                                                                                    |
+| <ApiBadge label="variant" />    | <code><a href="#switch-td-switchvariant">SwitchVariant</a></code>                                                                 | 'info'  | Color variant used while checked.                                                                              |
+| <ApiBadge label="invalid" />    | <code>boolean</code>                                                                                                              | false   | Marks the switch as visually invalid. Inherited from `<Field>` automatically; pass this prop only to override. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;<a href="#switch-td-switchslot">SwitchSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                 |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;<a href="#switch-td-switchslot">SwitchSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>       | -       | Per-slot HTML attribute overrides.                                                                             |
+| <ApiBadge label="className" />  | <code>string</code>                                                                                                               | -       | Appends custom classes to the root slot of this part.                                                          |
 
 #### Data attributes {#switch-data-attributes}
 
-| Attribute                | Applied when        | Purpose                                                                         |
-| ------------------------ | ------------------- | ------------------------------------------------------------------------------- |
-| `data-slot="root"`       | Always              | Stable selector for the root slot.                                              |
-| `data-size`              | Always              | Reflects the resolved `size` prop so theme recipes can scope size variants.     |
-| `data-variant`           | Always              | Reflects the resolved `variant` prop so theme recipes can scope color variants. |
-| `data-state="checked"`   | When checked.       | Spar checked-state hook.                                                        |
-| `data-state="unchecked"` | When unchecked.     | Spar unchecked-state hook.                                                      |
-| `data-disabled`          | `disabled` is true. | Spar disabled-state hook.                                                       |
-| `data-readonly`          | `readOnly` is true. | Spar read-only-state hook.                                                      |
-| `data-required`          | `required` is true. | Spar required-state hook.                                                       |
-| `data-invalid`           | `invalid` is true.  | Marks invalid visual state for theme recipes.                                   |
+| Attribute                                             | Applied when        | Purpose                                                                         |
+| ----------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />       | Always              | Stable selector for the root slot.                                              |
+| <ApiBadge label="data-size" />                        | Always              | Reflects the resolved `size` prop so theme recipes can scope size variants.     |
+| <ApiBadge label="data-variant" />                     | Always              | Reflects the resolved `variant` prop so theme recipes can scope color variants. |
+| <ApiBadge label="data-state=&quot;checked&quot;" />   | When checked.       | Spar checked-state hook.                                                        |
+| <ApiBadge label="data-state=&quot;unchecked&quot;" /> | When unchecked.     | Spar unchecked-state hook.                                                      |
+| <ApiBadge label="data-disabled" />                    | `disabled` is true. | Spar disabled-state hook.                                                       |
+| <ApiBadge label="data-readonly" />                    | `readOnly` is true. | Spar read-only-state hook.                                                      |
+| <ApiBadge label="data-required" />                    | `required` is true. | Spar required-state hook.                                                       |
+| <ApiBadge label="data-invalid" />                     | `invalid` is true.  | Marks invalid visual state for theme recipes.                                   |
 
 ### Switch.Indicator {#switch-indicator}
 
@@ -487,9 +460,19 @@ for primitive behavior.
 
 #### Data attributes {#switch-indicator-data-attributes}
 
-| Attribute               | Applied when | Purpose                                 |
-| ----------------------- | ------------ | --------------------------------------- |
-| `data-slot="indicator"` | Always       | Stable selector for the indicator slot. |
-| `data-slot="thumb"`     | Always       | Stable selector for the thumb slot.     |
+| Attribute                                            | Applied when | Purpose                                 |
+| ---------------------------------------------------- | ------------ | --------------------------------------- |
+| <ApiBadge label="data-slot=&quot;indicator&quot;" /> | Always       | Stable selector for the indicator slot. |
+| <ApiBadge label="data-slot=&quot;thumb&quot;" />     | Always       | Stable selector for the thumb slot.     |
+
+### Type Definitions {#switch-type-definitions}
+
+| Name                                                                                                   | Definition                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="switch-td-switchrenderprops"><ApiBadge label="SwitchRenderProps" /></span>                   | <code>&#123; checked: boolean; setChecked: (checked: boolean) =&gt; void; disabled: boolean; readOnly: boolean; required: boolean; invalid: boolean; isFocused: boolean; isHovered: boolean; isPressed: boolean &#125;</code> |
+| <span id="switch-td-switchsize"><ApiBadge label="SwitchSize" /></span>                                 | <code>'xlarge' &#124; 'large' &#124; 'base' &#124; 'small' &#124; 'xsmall'</code>                                                                                                                                             |
+| <span id="switch-td-switchvariant"><ApiBadge label="SwitchVariant" /></span>                           | <code>'info' &#124; 'success'</code>                                                                                                                                                                                          |
+| <span id="switch-td-switchslot"><ApiBadge label="SwitchSlot" /></span>                                 | <code>'root' &#124; 'indicator' &#124; 'thumb'</code>                                                                                                                                                                         |
+| <span id="switch-td-switchindicatorrenderprops"><ApiBadge label="SwitchIndicatorRenderProps" /></span> | <code>&#123; checked: boolean; disabled: boolean; readOnly: boolean &#125;</code>                                                                                                                                             |
 
 {/* api-tables:end */}

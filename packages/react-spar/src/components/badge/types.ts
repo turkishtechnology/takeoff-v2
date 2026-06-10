@@ -2,7 +2,21 @@ import type { ReactNode, Ref } from 'react';
 
 import type { ClassNamesMap, SlotPropsMap, TakeoffHTMLProps } from '../../core';
 
-export type BadgeVariant = 'primary' | 'secondary' | 'neutral' | 'info' | 'success' | 'danger' | 'warning' | 'verified' | 'purple' | 'cyan' | 'business';
+export type BadgeVariant =
+  | 'primary'
+  | 'secondary'
+  | 'neutral'
+  | 'info'
+  | 'success'
+  | 'danger'
+  | 'warning'
+  | 'verified'
+  | 'purple'
+  | 'cyan'
+  | 'business'
+  | 'teal'
+  | 'white'
+  | 'dark';
 
 export type BadgeAppearance = 'filled' | 'filledLight' | 'outlined' | 'text';
 
@@ -32,7 +46,7 @@ export interface BadgeProps extends Omit<TakeoffHTMLProps<'span'>, 'children'> {
    */
   rounded?: boolean;
   /**
-   * Renders a minimal colored dot (6×6px) with no content.
+   * Renders a minimal colored dot (8×8px) with no content.
    * When true, children, startContent, and endContent are ignored.
    * @defaultValue false
    */

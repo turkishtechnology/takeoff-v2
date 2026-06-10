@@ -1,0 +1,38 @@
+name: Changeset Check
+
+# Fail PRs that touch publishable code without a corresponding changeset, so
+# nothing accidentally ships without a CHANGELOG entry. Overridable with the
+# `release:none` label when a PR is intentionally docs/tooling-only.
+#
+# Version Packages PRs (opened by the Changesets bot) are skipped — their
+# whole purpose is to *consume* changesets, so they will never carry one of
+# their own. The bot's PRs always come from a branch named
+# "changeset-release/<base>".
+
+on:
+  pull_request:
+    branches: [develop, main]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    if: |
+      !contains(github.event.pull_request.labels.*.name, 'release:none') &&
+      !startsWith(github.head_ref, 'changeset-release/')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Verify changeset is present
+        run: pnpm changeset status --since=origin/${{ github.base_ref }}

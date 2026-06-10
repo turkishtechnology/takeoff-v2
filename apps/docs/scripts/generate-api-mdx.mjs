@@ -66,6 +66,43 @@ const endMarker = `{/* ${endMarkerToken} */}`;
  */
 const CANONICAL_PLUMBING_PROPS = new Set(['children', 'className', 'classNames', 'slotProps']);
 
+/**
+ * Primitive / well-known type names that should NOT appear in the "Type
+ * Definitions" section. These are either TS builtins or common React types
+ * that every consumer already knows.
+ */
+const PRIMITIVE_TYPE_NAMES = new Set([
+  'string',
+  'number',
+  'boolean',
+  'void',
+  'null',
+  'undefined',
+  'object',
+  'any',
+  'never',
+  'unknown',
+  'bigint',
+  'symbol',
+  'ReactNode',
+  'React.ReactNode',
+  'HTMLAttributes',
+  'Partial',
+  'Record',
+  'Omit',
+  'Pick',
+  'HTMLElement',
+  'Element',
+  'ComponentPropsWithoutRef',
+  'ComponentPropsWithRef',
+  'Event',
+  'EventTarget',
+  'MouseEvent',
+  'KeyboardEvent',
+  'FocusEvent',
+  'PointerEvent',
+]);
+
 async function collectConfigPaths(dir, found = []) {
   let entries;
   try {
@@ -89,7 +126,7 @@ function escapeMarkdownCell(value) {
 }
 
 function escapeHtml(value) {
-  return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('|', '&#124;');
+  return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('|', '&#124;').replaceAll('{', '&#123;').replaceAll('}', '&#125;');
 }
 
 function normalizeType(value) {
@@ -130,6 +167,144 @@ function readDefaultTag(symbol) {
     ?.map(part => part.text)
     .join('')
     .trim();
+}
+
+/**
+ * Extract custom type names from a type string. Matches PascalCase identifiers
+ * that are not well-known primitives/React types.
+ */
+function extractTypeNames(typeStr) {
+  const matches = typeStr.match(/\b[A-Z][A-Za-z0-9]*\b/gu) ?? [];
+  return matches.filter(name => !PRIMITIVE_TYPE_NAMES.has(name));
+}
+
+/**
+ * Collect all custom type names referenced across all prop/event rows of all
+ * components in a page.
+ */
+function collectReferencedTypeNames(allRows) {
+  const names = new Set();
+  for (const { propRows, eventRows } of allRows) {
+    for (const row of [...propRows, ...eventRows]) {
+      for (const name of extractTypeNames(row.type)) {
+        names.add(name);
+      }
+    }
+  }
+  return names;
+}
+
+/**
+ * Resolve a type alias or interface name to its fully-expanded definition
+ * string. For type aliases reads source text; for interfaces lists members.
+ * Returns null if the type cannot be found.
+ */
+function resolveTypeDefinition(checker, program, sourceFilePath, typeName) {
+  const file = program.getSourceFile(sourceFilePath);
+  if (!file) return null;
+
+  let declaration;
+  ts.forEachChild(file, node => {
+    if ((ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node)) && node.name.text === typeName) {
+      declaration = node;
+    }
+  });
+
+  if (!declaration) return null;
+
+  // Skip generic types with type parameters (e.g. AccordionProps<T>)
+  if (declaration.typeParameters?.length) return null;
+
+  // Interfaces have no `.type` node — list members instead.
+  if (ts.isInterfaceDeclaration(declaration)) {
+    const members = declaration.members.filter(ts.isPropertySignature).map(m => {
+      const name = m.name?.getText(file) ?? '';
+      const opt = m.questionToken ? '?' : '';
+      const type = m.type ? m.type.getText(file) : 'unknown';
+      return `${name}${opt}: ${type}`;
+    });
+    if (!members.length) return null;
+    return `{ ${members.join('; ')} }`;
+  }
+
+  // Read the right-hand side of the type alias directly from source text.
+  // This preserves literal unions like `'grouped' | 'divided'` faithfully.
+  const typeNode = declaration.type;
+  if (!typeNode) return null;
+
+  // If the type alias is a single type reference (e.g. `type Foo = ImportedBar`),
+  // resolve through the checker to expand the referenced interface/type.
+  if (ts.isTypeReferenceNode(typeNode)) {
+    const refType = checker.getTypeAtLocation(typeNode);
+    const refSymbol = refType.getSymbol?.() ?? refType.aliasSymbol;
+    if (refSymbol) {
+      const refDecls = refSymbol.getDeclarations?.() ?? [];
+      for (const refDecl of refDecls) {
+        if (ts.isInterfaceDeclaration(refDecl)) {
+          const refFile = refDecl.getSourceFile();
+          const members = refDecl.members.filter(ts.isPropertySignature).map(m => {
+            const mName = m.name?.getText(refFile) ?? '';
+            const opt = m.questionToken ? '?' : '';
+            const mType = m.type ? m.type.getText(refFile) : 'unknown';
+            return `${mName}${opt}: ${mType}`;
+          });
+          if (members.length) return `{ ${members.join('; ')} }`;
+        }
+        if (ts.isTypeAliasDeclaration(refDecl) && refDecl.type) {
+          const refFile = refDecl.getSourceFile();
+          return refDecl.type.getText(refFile).replace(/\s+/gu, ' ').trim();
+        }
+      }
+    }
+  }
+
+  const sourceText = typeNode.getText(file);
+  return sourceText.replace(/\s+/gu, ' ').trim();
+}
+
+/**
+ * Render the "Type Definitions" section listing referenced custom types and
+ * their resolved definitions. Each entry gets a stable anchor ID so table
+ * cells can link directly to the definition.
+ * Type names referenced within a definition that are also in the typeMap are
+ * rendered as clickable links to their own row.
+ */
+function renderTypeDefinitions(typeMap, pageHeadingBase) {
+  if (typeMap.size === 0) return '';
+  const lines = [];
+  lines.push(`### Type Definitions {#${pageHeadingBase}-type-definitions}`);
+  lines.push('');
+  lines.push('| Name | Definition |');
+  lines.push('| --- | --- |');
+  for (const [name, definition] of typeMap) {
+    const anchor = `${pageHeadingBase}-td-${name.toLowerCase()}`;
+    // Linkify references to other types within the definition.
+    const defHtml = linkifyTypeDefinition(definition, name, typeMap, pageHeadingBase);
+    lines.push(`| <span id="${anchor}"><ApiBadge label="${name}" /></span> | ${defHtml} |`);
+  }
+  return lines.join('\n').trimEnd();
+}
+
+/**
+ * Linkify type names inside a type definition string. Similar to `linkifyType`
+ * but skips the type's own name to avoid self-links.
+ */
+function linkifyTypeDefinition(definition, selfName, typeMap, pageHeadingBase) {
+  const names = [...typeMap.keys()].filter(n => n !== selfName).sort((a, b) => b.length - a.length);
+  if (!names.length) return `<code>${escapeHtml(definition)}</code>`;
+  const escaped = names.map(n => n.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'));
+  const pattern = new RegExp(`\\b(${escaped.join('|')})\\b`, 'gu');
+  const parts = definition.split(pattern);
+  const html = parts
+    .map(part => {
+      if (typeMap.has(part) && part !== selfName) {
+        const anchor = `${pageHeadingBase}-td-${part.toLowerCase()}`;
+        return `<a href="#${anchor}">${escapeHtml(part)}</a>`;
+      }
+      return escapeHtml(part);
+    })
+    .join('');
+  return `<code>${html}</code>`;
 }
 
 function loadProgram() {
@@ -306,12 +481,36 @@ function renderTable(headers, rows) {
   return [head, sep, ...data].join('\n');
 }
 
-function renderPropRow(row) {
-  return [`<ApiBadge label="${row.name}" />`, `<code>${escapeHtml(row.type)}</code>`, escapeMarkdownCell(row.default), escapeMarkdownCell(row.description)];
+/**
+ * Replace known custom type names inside a type string with anchor links
+ * pointing to the Type Definitions section.
+ */
+function linkifyType(typeStr, typeMap, pageHeadingBase) {
+  if (!typeMap || typeMap.size === 0) return `<code>${escapeHtml(typeStr)}</code>`;
+  // Build a regex that matches any of the known type names as whole words.
+  const names = [...typeMap.keys()].sort((a, b) => b.length - a.length);
+  const escaped = names.map(n => n.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'));
+  const pattern = new RegExp(`\\b(${escaped.join('|')})\\b`, 'gu');
+  const parts = typeStr.split(pattern);
+  const html = parts
+    .map(part => {
+      if (typeMap.has(part)) {
+        const anchor = `${pageHeadingBase}-td-${part.toLowerCase()}`;
+        return `<a href="#${anchor}">${escapeHtml(part)}</a>`;
+      }
+      return escapeHtml(part);
+    })
+    .join('');
+  return `<code>${html}</code>`;
+}
+
+function renderPropRow(row, typeMap, pageHeadingBase) {
+  return [`<ApiBadge label="${row.name}" />`, linkifyType(row.type, typeMap, pageHeadingBase), escapeMarkdownCell(row.default), escapeMarkdownCell(row.description)];
 }
 
 function renderDataAttrRow(attr) {
-  return [`\`${attr.attribute}\``, escapeMarkdownCell(attr.appliedWhen), escapeMarkdownCell(attr.purpose)];
+  const safeLabel = attr.attribute.replaceAll('"', '&quot;');
+  return [`<ApiBadge label="${safeLabel}" />`, escapeMarkdownCell(attr.appliedWhen), escapeMarkdownCell(attr.purpose)];
 }
 
 function renderSparBehaviorNote(component) {
@@ -326,7 +525,7 @@ function hasNonPlumbingProp(rows) {
   return rows.some(r => !CANONICAL_PLUMBING_PROPS.has(r.name));
 }
 
-function renderComponentSection(component, rows) {
+function renderComponentSection(component, rows, typeMap, pageHeadingBase) {
   const lines = [];
   const heading = component.displayName ?? component.typeName;
   const base = component.headingBase;
@@ -344,14 +543,24 @@ function renderComponentSection(component, rows) {
   if (hasNonPlumbingProp(propRows)) {
     lines.push(`#### Props {#${base}-props}`);
     lines.push('');
-    lines.push(renderTable(['Name', 'Type', 'Default', 'Description'], propRows.map(renderPropRow)));
+    lines.push(
+      renderTable(
+        ['Name', 'Type', 'Default', 'Description'],
+        propRows.map(r => renderPropRow(r, typeMap, pageHeadingBase)),
+      ),
+    );
     lines.push('');
   }
 
   if (eventRows.length) {
     lines.push(`#### Events {#${base}-events}`);
     lines.push('');
-    lines.push(renderTable(['Name', 'Type', 'Default', 'Description'], eventRows.map(renderPropRow)));
+    lines.push(
+      renderTable(
+        ['Name', 'Type', 'Default', 'Description'],
+        eventRows.map(r => renderPropRow(r, typeMap, pageHeadingBase)),
+      ),
+    );
     lines.push('');
   }
 
@@ -396,12 +605,57 @@ async function generateForConfig(program, checker, configPath) {
   const config = mod.default ?? mod;
   const components = Array.isArray(config.components) ? config.components : [config];
 
-  const sections = [];
+  // First pass: build rows for all components so we can collect type refs.
+  const compData = [];
+  const allRows = [];
   for (const comp of components) {
     const sourceFilePath = resolve(repoRoot, comp.sourceFile);
     const declaration = findDeclaration(program, sourceFilePath, comp.typeName);
     const rows = buildRowsForComponent(checker, declaration, comp);
-    sections.push(renderComponentSection(comp, rows));
+    allRows.push(rows);
+    compData.push({ comp, rows });
+  }
+
+  // Collect all custom type names referenced in any prop/event table and
+  // resolve their definitions from the source files.
+  const referencedTypes = collectReferencedTypeNames(allRows);
+  const typeMap = new Map();
+  for (const typeName of referencedTypes) {
+    let resolved = false;
+    // First try the component's own source files.
+    for (const comp of components) {
+      const sourceFilePath = resolve(repoRoot, comp.sourceFile);
+      const definition = resolveTypeDefinition(checker, program, sourceFilePath, typeName);
+      if (definition) {
+        typeMap.set(typeName, definition);
+        resolved = true;
+        break;
+      }
+    }
+    // Fallback: search all source files in the program (covers Spar types).
+    if (!resolved) {
+      for (const sf of program.getSourceFiles()) {
+        const definition = resolveTypeDefinition(checker, program, sf.fileName, typeName);
+        if (definition) {
+          typeMap.set(typeName, definition);
+          break;
+        }
+      }
+    }
+  }
+
+  // Derive a page-level heading base from the first component.
+  const pageHeadingBase = components[0]?.headingBase?.split('-')[0] ?? 'api';
+
+  // Second pass: render component sections with linkified types.
+  const sections = [];
+  for (const { comp, rows } of compData) {
+    sections.push(renderComponentSection(comp, rows, typeMap, pageHeadingBase));
+  }
+
+  const typeDefsSection = renderTypeDefinitions(typeMap, pageHeadingBase);
+  if (typeDefsSection) {
+    sections.push(typeDefsSection);
   }
 
   const dir = dirname(configPath);

@@ -7,4 +7,11 @@ const Checkbox = Object.assign(CheckboxRoot, {
 
 export { Checkbox };
 
-export type { CheckboxIndicatorProps, CheckboxIndicatorRenderProps, CheckboxProps, CheckboxRenderProps, CheckboxSize, CheckboxSlot, CheckboxType } from './types';
+export type {
+  CheckboxIndicatorProps,
+  CheckboxIndicatorRenderProps,
+  CheckboxProps,
+  CheckboxRenderProps,
+  CheckboxSize,
+  CheckboxSlot,
+} from './types';

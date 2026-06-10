@@ -20,140 +20,152 @@ export const inputScope = { Field, Input };
 
 {/* prettier-ignore-start */}
 
-export const inputDemoCss = String.raw`
-.input-demo {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: min(100%, 360px);
-}
-
-.input-demo-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.input-demo-row > * {
-  flex: 1 1 200px;
-}
-`;
-
 export const playgroundDemo = String.raw`
-<Field>
-  <Field.Label>Passenger name</Field.Label>
-  <Input>
-    <Input.Container>
-      <Input.Field placeholder="Ada Lovelace" />
-    </Input.Container>
-  </Input>
-  <Field.Description>
-    Match the name on your travel document.
-  </Field.Description>
-</Field>
+function PlaygroundDemo() {
+  return (
+    <Field className="w-full max-w-90">
+      <Field.Label>Passenger name</Field.Label>
+      <Input>
+        <Input.Container>
+          <Input.Field placeholder="Ada Lovelace" />
+        </Input.Container>
+      </Input>
+      <Field.Description>Match the name on your travel document.</Field.Description>
+    </Field>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const fieldWithInputDemo = String.raw`
-<div className="input-demo">
-  <Field required>
-    <Field.Label>Email</Field.Label>
-    <Input>
-      <Input.Container>
-        <Input.Field type="email" placeholder="you@example.com" />
-      </Input.Container>
-    </Input>
-    <Field.Description>We will send a booking confirmation.</Field.Description>
-  </Field>
+function FieldWithInputDemo() {
+  return (
+    <div className="grid w-full max-w-90 gap-3">
+      <Field required>
+        <Field.Label>Email</Field.Label>
+        <Input>
+          <Input.Container>
+            <Input.Field type="email" placeholder="you@example.com" />
+          </Input.Container>
+        </Input>
+        <Field.Description>We will send a booking confirmation.</Field.Description>
+      </Field>
 
-  <Field invalid>
-    <Field.Label>Phone number</Field.Label>
-    <Input>
-      <Input.Container>
-        <Input.Field defaultValue="not-a-phone" />
-      </Input.Container>
-    </Input>
-    <Field.ErrorMessage>Enter a valid phone number.</Field.ErrorMessage>
-  </Field>
+      <Field invalid>
+        <Field.Label>Phone number</Field.Label>
+        <Input>
+          <Input.Container>
+            <Input.Field defaultValue="not-a-phone" />
+          </Input.Container>
+        </Input>
+        <Field.ErrorMessage>Enter a valid phone number.</Field.ErrorMessage>
+      </Field>
 
-  <Field disabled>
-    <Field.Label>Disabled</Field.Label>
-    <Input>
-      <Input.Container>
-        <Input.Field defaultValue="Booking locked" />
-      </Input.Container>
-    </Input>
-  </Field>
+      <Field disabled>
+        <Field.Label>Disabled</Field.Label>
+        <Input>
+          <Input.Container>
+            <Input.Field defaultValue="Booking locked" />
+          </Input.Container>
+        </Input>
+      </Field>
 
-  <Field readOnly>
-    <Field.Label>Read-only</Field.Label>
-    <Input>
-      <Input.Container>
-        <Input.Field defaultValue="TK-1928" />
-      </Input.Container>
-    </Input>
-  </Field>
-</div>
+      <Field readOnly>
+        <Field.Label>Read-only</Field.Label>
+        <Input>
+          <Input.Container>
+            <Input.Field defaultValue="TK-1928" />
+          </Input.Container>
+        </Input>
+      </Field>
+    </div>
+  );
+}
+
+render(<FieldWithInputDemo />);
 `;
 
 export const sizesDemo = String.raw`
-<div className="input-demo">
-  <Field>
-    <Field.Label>Small</Field.Label>
-    <Input size="small">
-      <Input.Container>
-        <Input.Field placeholder="Compact" />
-      </Input.Container>
-    </Input>
-  </Field>
-  <Field>
-    <Field.Label>Base</Field.Label>
-    <Input size="base">
-      <Input.Container>
-        <Input.Field placeholder="Default" />
-      </Input.Container>
-    </Input>
-  </Field>
-  <Field>
-    <Field.Label>Large</Field.Label>
-    <Input size="large">
-      <Input.Container>
-        <Input.Field placeholder="Roomy" />
-      </Input.Container>
-    </Input>
-  </Field>
-</div>
+function SizesDemo() {
+  return (
+    <div className="grid w-full max-w-90 gap-3">
+      <Field>
+        <Field.Label>Small</Field.Label>
+        <Input size="small">
+          <Input.Container>
+            <Input.Field placeholder="Compact" />
+          </Input.Container>
+        </Input>
+      </Field>
+      <Field>
+        <Field.Label>Base</Field.Label>
+        <Input size="base">
+          <Input.Container>
+            <Input.Field placeholder="Default" />
+          </Input.Container>
+        </Input>
+      </Field>
+      <Field>
+        <Field.Label>Large</Field.Label>
+        <Input size="large">
+          <Input.Container>
+            <Input.Field placeholder="Roomy" />
+          </Input.Container>
+        </Input>
+      </Field>
+    </div>
+  );
+}
+
+render(<SizesDemo />);
 `;
 
 export const adornmentsDemo = String.raw`
-<div className="input-demo">
-  <Field>
-    <Field.Label>Amount</Field.Label>
-    <Input>
-      <Input.Container>
-        <Input.Prefix>USD</Input.Prefix>
-        <Input.Field placeholder="0.00" inputMode="decimal" />
-        <Input.Suffix>.00</Input.Suffix>
-      </Input.Container>
-    </Input>
-  </Field>
+function AdornmentsDemo() {
+  return (
+    <div className="grid w-full max-w-90 gap-3">
+      <Field>
+        <Field.Label>Amount</Field.Label>
+        <Input>
+          <Input.Container>
+            <Input.Prefix>USD</Input.Prefix>
+            <Input.Field placeholder="0.00" inputMode="decimal" />
+            <Input.Suffix>.00</Input.Suffix>
+          </Input.Container>
+        </Input>
+      </Field>
 
-  <Field>
-    <Field.Label>Search flights</Field.Label>
-    <Input>
-      <Input.Container
-        startContent={
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="7" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-        }
-      >
-        <Input.Field placeholder="IST → LHR" />
-      </Input.Container>
-    </Input>
-  </Field>
-</div>
+      <Field>
+        <Field.Label>Search flights</Field.Label>
+        <Input>
+          <Input.Container
+            startContent={
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            }
+          >
+            <Input.Field placeholder="IST → LHR" />
+          </Input.Container>
+        </Input>
+      </Field>
+    </div>
+  );
+}
+
+render(<AdornmentsDemo />);
 `;
 
 {/* prettier-ignore-end */}
@@ -191,7 +203,7 @@ import { Field, Input } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={inputDemoCss}
+  noInline
   previewMinHeight={160}
   previewWrapper={ReactSparDemoRoot}
   scope={inputScope}
@@ -206,8 +218,7 @@ through shared IDs.
 
 <LiveCode
   code={fieldWithInputDemo}
-  cssCode={inputDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={460}
   previewWrapper={ReactSparDemoRoot}
   scope={inputScope}
@@ -217,8 +228,7 @@ through shared IDs.
 
 <LiveCode
   code={sizesDemo}
-  cssCode={inputDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={340}
   previewWrapper={ReactSparDemoRoot}
   scope={inputScope}
@@ -228,8 +238,7 @@ through shared IDs.
 
 <LiveCode
   code={adornmentsDemo}
-  cssCode={inputDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={240}
   previewWrapper={ReactSparDemoRoot}
   scope={inputScope}
@@ -260,7 +269,7 @@ for primitive behavior.
 | Name                            | Type                                                                                | Default | Description                                                                                                                                                    |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | Compound parts (`Input.Container`, plus optional `Input.Prefix` / `Input.Field` / `Input.Suffix`). Wrap in a `Field` to attach labels and helper text.         |
-| <ApiBadge label="size" />       | <code>InputSize</code>                                                              | 'base'  | Size scale.                                                                                                                                                    |
+| <ApiBadge label="size" />       | <code><a href="#input-td-inputsize">InputSize</a></code>                            | 'base'  | Size scale.                                                                                                                                                    |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                 |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                             |
 | <ApiBadge label="id" />         | <code>string</code>                                                                 | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-field`, `${id}-label`, etc. |
@@ -272,36 +281,36 @@ for primitive behavior.
 
 #### Data attributes {#input-data-attributes}
 
-| Attribute          | Applied when             | Purpose                                                                     |
-| ------------------ | ------------------------ | --------------------------------------------------------------------------- |
-| `data-slot="root"` | Always                   | Stable selector for wrapper styling on the root slot.                       |
-| `data-size`        | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| `data-invalid`     | When `invalid` is true.  | Theme hook for the invalid state. Emitted by Spar Input on the root.        |
-| `data-disabled`    | When `disabled` is true. | Theme hook for the disabled state. Emitted by Spar Input.                   |
-| `data-required`    | When `required` is true. | Theme hook used by the parent `Field` to auto-render its required asterisk. |
-| `data-readonly`    | When `readOnly` is true. | Theme hook for the read-only state. Emitted by Spar Input.                  |
+| Attribute                                       | Applied when             | Purpose                                                                     |
+| ----------------------------------------------- | ------------------------ | --------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                   | Stable selector for wrapper styling on the root slot.                       |
+| <ApiBadge label="data-size" />                  | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| <ApiBadge label="data-invalid" />               | When `invalid` is true.  | Theme hook for the invalid state. Emitted by Spar Input on the root.        |
+| <ApiBadge label="data-disabled" />              | When `disabled` is true. | Theme hook for the disabled state. Emitted by Spar Input.                   |
+| <ApiBadge label="data-required" />              | When `required` is true. | Theme hook used by the parent `Field` to auto-render its required asterisk. |
+| <ApiBadge label="data-readonly" />              | When `readOnly` is true. | Theme hook for the read-only state. Emitted by Spar Input.                  |
 
 ### Input.Container {#input-container}
 
 #### Props {#input-container-props}
 
-| Name                              | Type                                                                                            | Default | Description                                                                                                                                                            |
-| --------------------------------- | ----------------------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                    | -       | `Input.Prefix`, `Input.Field`, `Input.Suffix`. Leading / trailing icons go through the `startContent` / `endContent` props.                                            |
-| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                    | -       | Content rendered before the field — typically an icon, but accepts any node (chip, button, etc.). Rendered inside the `startContent` slot (`.tk-input-start-content`). |
-| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                    | -       | Content rendered after the field. Same shape as `startContent`, rendered inside the `endContent` slot (`.tk-input-end-content`).                                       |
-| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;InputContainerSlot, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                         |
-| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;InputContainerSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                     |
-| <ApiBadge label="className" />    | <code>string</code>                                                                             | -       | Appends custom classes to the root slot of this part.                                                                                                                  |
+| Name                              | Type                                                                                                                                       | Default | Description                                                                                                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                                                               | -       | `Input.Prefix`, `Input.Field`, `Input.Suffix`. Leading / trailing icons go through the `startContent` / `endContent` props.                                            |
+| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                                                               | -       | Content rendered before the field — typically an icon, but accepts any node (chip, button, etc.). Rendered inside the `startContent` slot (`.tk-input-start-content`). |
+| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                                                               | -       | Content rendered after the field. Same shape as `startContent`, rendered inside the `endContent` slot (`.tk-input-end-content`).                                       |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#input-td-inputcontainerslot">InputContainerSlot</a>, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                         |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#input-td-inputcontainerslot">InputContainerSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                     |
+| <ApiBadge label="className" />    | <code>string</code>                                                                                                                        | -       | Appends custom classes to the root slot of this part.                                                                                                                  |
 
 #### Data attributes {#input-container-data-attributes}
 
-| Attribute          | Applied when                      | Purpose                                                          |
-| ------------------ | --------------------------------- | ---------------------------------------------------------------- |
-| `data-slot="root"` | Always                            | Stable selector for wrapper styling on the root slot.            |
-| `data-invalid`     | When the root `invalid` is true.  | Borders/background switch to the danger state on the visual row. |
-| `data-disabled`    | When the root `disabled` is true. | Theme hook for the disabled visual row.                          |
-| `data-readonly`    | When the root `readOnly` is true. | Theme hook for the read-only visual row.                         |
+| Attribute                                       | Applied when                      | Purpose                                                          |
+| ----------------------------------------------- | --------------------------------- | ---------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                            | Stable selector for wrapper styling on the root slot.            |
+| <ApiBadge label="data-invalid" />               | When the root `invalid` is true.  | Borders/background switch to the danger state on the visual row. |
+| <ApiBadge label="data-disabled" />              | When the root `disabled` is true. | Theme hook for the disabled visual row.                          |
+| <ApiBadge label="data-readonly" />              | When the root `readOnly` is true. | Theme hook for the read-only visual row.                         |
 
 ### Input.Field {#input-field}
 
@@ -319,25 +328,32 @@ for primitive behavior.
 
 #### Data attributes {#input-field-data-attributes}
 
-| Attribute          | Applied when | Purpose                                                                     |
-| ------------------ | ------------ | --------------------------------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.                       |
-| `data-size`        | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| Attribute                                       | Applied when | Purpose                                                                     |
+| ----------------------------------------------- | ------------ | --------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.                       |
+| <ApiBadge label="data-size" />                  | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants. |
 
 ### Input.Prefix {#input-prefix}
 
 #### Data attributes {#input-prefix-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Input.Suffix {#input-suffix}
 
 #### Data attributes {#input-suffix-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#input-type-definitions}
+
+| Name                                                                                  | Definition                                                    |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| <span id="input-td-inputsize"><ApiBadge label="InputSize" /></span>                   | <code>'small' &#124; 'base' &#124; 'large'</code>             |
+| <span id="input-td-inputcontainerslot"><ApiBadge label="InputContainerSlot" /></span> | <code>'root' &#124; 'startContent' &#124; 'endContent'</code> |
 
 {/* api-tables:end */}

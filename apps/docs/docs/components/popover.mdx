@@ -9,156 +9,170 @@ slug: /components/popover
 ---
 
 import LiveCode from '@site/src/components/LiveCode';
-import { Popover, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import {
+  Button,
+  Popover,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const popoverScope = { Popover };
+export const popoverScope = { Button, Popover };
 
 {/* prettier-ignore-start */}
 
-export const popoverDemoCss = String.raw`
-.popover-demo {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: center;
-  padding: 40px 20px;
-}
-.popover-demo button {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border-light);
-  background: var(--primary-base);
-  color: var(--static-white);
-  font-weight: 600;
-  cursor: pointer;
-}
-`;
-
 export const playgroundDemo = String.raw`
-<div className="popover-demo">
-  <Popover>
-    <Popover.Trigger>Click me</Popover.Trigger>
-    <Popover.Content>
-      <Popover.Header>Title</Popover.Header>
-      <Popover.Description>Popover content goes here.</Popover.Description>
-    </Popover.Content>
-  </Popover>
-</div>
+function PlaygroundDemo() {
+  return (
+    <Popover>
+      <Popover.Trigger as={Button}>Click me</Popover.Trigger>
+      <Popover.Content>
+        <Popover.Header>Title</Popover.Header>
+        <Popover.Description>Popover content goes here.</Popover.Description>
+      </Popover.Content>
+    </Popover>
+  );
+}
+
+render(<PlaygroundDemo />);
 `;
 
 export const headerDescriptionDemo = String.raw`
-<div className="popover-demo">
-  <Popover>
-    <Popover.Trigger>Open</Popover.Trigger>
-    <Popover.Content>
-      <Popover.Header>Account settings</Popover.Header>
-      <Popover.Description>
-        Manage your personal information, password, and notifications.
-      </Popover.Description>
-    </Popover.Content>
-  </Popover>
-</div>
+function HeaderDescriptionDemo() {
+  return (
+    <Popover>
+      <Popover.Trigger as={Button}>Open</Popover.Trigger>
+      <Popover.Content>
+        <Popover.Header>Account settings</Popover.Header>
+        <Popover.Description>Manage your personal information, password, and notifications.</Popover.Description>
+      </Popover.Content>
+    </Popover>
+  );
+}
+
+render(<HeaderDescriptionDemo />);
 `;
 
 export const typesDemo = String.raw`
-<div className="popover-demo">
-  <Popover>
-    <Popover.Trigger>Dark</Popover.Trigger>
-    <Popover.Content variant="dark">
-      <Popover.Description>Dark variant popover</Popover.Description>
-    </Popover.Content>
-  </Popover>
-  <Popover>
-    <Popover.Trigger>White</Popover.Trigger>
-    <Popover.Content variant="white">
-      <Popover.Description>White variant popover</Popover.Description>
-    </Popover.Content>
-  </Popover>
-  <Popover>
-    <Popover.Trigger>Info</Popover.Trigger>
-    <Popover.Content variant="info">
-      <Popover.Description>Info variant popover</Popover.Description>
-    </Popover.Content>
-  </Popover>
-  <Popover>
-    <Popover.Trigger>Success</Popover.Trigger>
-    <Popover.Content variant="success">
-      <Popover.Description>Success variant popover</Popover.Description>
-    </Popover.Content>
-  </Popover>
-  <Popover>
-    <Popover.Trigger>Warning</Popover.Trigger>
-    <Popover.Content variant="warning">
-      <Popover.Description>Warning variant popover</Popover.Description>
-    </Popover.Content>
-  </Popover>
-  <Popover>
-    <Popover.Trigger>Danger</Popover.Trigger>
-    <Popover.Content variant="danger">
-      <Popover.Description>Danger variant popover</Popover.Description>
-    </Popover.Content>
-  </Popover>
-  <Popover>
-    <Popover.Trigger>Neutral</Popover.Trigger>
-    <Popover.Content variant="neutral">
-      <Popover.Description>Neutral variant popover</Popover.Description>
-    </Popover.Content>
-  </Popover>
-</div>
+function TypesDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Popover>
+        <Popover.Trigger as={Button}>Dark</Popover.Trigger>
+        <Popover.Content variant="dark">
+          <Popover.Description>Dark variant popover</Popover.Description>
+        </Popover.Content>
+      </Popover>
+      <Popover>
+        <Popover.Trigger as={Button}>White</Popover.Trigger>
+        <Popover.Content variant="white">
+          <Popover.Description>White variant popover</Popover.Description>
+        </Popover.Content>
+      </Popover>
+      <Popover>
+        <Popover.Trigger as={Button}>Info</Popover.Trigger>
+        <Popover.Content variant="info">
+          <Popover.Description>Info variant popover</Popover.Description>
+        </Popover.Content>
+      </Popover>
+      <Popover>
+        <Popover.Trigger as={Button}>Success</Popover.Trigger>
+        <Popover.Content variant="success">
+          <Popover.Description>Success variant popover</Popover.Description>
+        </Popover.Content>
+      </Popover>
+      <Popover>
+        <Popover.Trigger as={Button}>Warning</Popover.Trigger>
+        <Popover.Content variant="warning">
+          <Popover.Description>Warning variant popover</Popover.Description>
+        </Popover.Content>
+      </Popover>
+      <Popover>
+        <Popover.Trigger as={Button}>Danger</Popover.Trigger>
+        <Popover.Content variant="danger">
+          <Popover.Description>Danger variant popover</Popover.Description>
+        </Popover.Content>
+      </Popover>
+      <Popover>
+        <Popover.Trigger as={Button}>Neutral</Popover.Trigger>
+        <Popover.Content variant="neutral">
+          <Popover.Description>Neutral variant popover</Popover.Description>
+        </Popover.Content>
+      </Popover>
+    </div>
+  );
+}
+
+render(<TypesDemo />);
 `;
 
 export const placementDemo = String.raw`
-<div className="popover-demo">
-  <Popover>
-    <Popover.Trigger>Top</Popover.Trigger>
-    <Popover.Content side="top">
-      <Popover.Description>Positioned top</Popover.Description>
-    </Popover.Content>
-  </Popover>
-  <Popover>
-    <Popover.Trigger>Bottom</Popover.Trigger>
-    <Popover.Content side="bottom">
-      <Popover.Description>Positioned bottom</Popover.Description>
-    </Popover.Content>
-  </Popover>
-  <Popover>
-    <Popover.Trigger>Left</Popover.Trigger>
-    <Popover.Content side="left">
-      <Popover.Description>Positioned left</Popover.Description>
-    </Popover.Content>
-  </Popover>
-  <Popover>
-    <Popover.Trigger>Right</Popover.Trigger>
-    <Popover.Content side="right">
-      <Popover.Description>Positioned right</Popover.Description>
-    </Popover.Content>
-  </Popover>
-</div>
+function PlacementDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Popover>
+        <Popover.Trigger as={Button}>Top</Popover.Trigger>
+        <Popover.Content side="top">
+          <Popover.Description>Positioned top</Popover.Description>
+        </Popover.Content>
+      </Popover>
+      <Popover>
+        <Popover.Trigger as={Button}>Bottom</Popover.Trigger>
+        <Popover.Content side="bottom">
+          <Popover.Description>Positioned bottom</Popover.Description>
+        </Popover.Content>
+      </Popover>
+      <Popover>
+        <Popover.Trigger as={Button}>Left</Popover.Trigger>
+        <Popover.Content side="left">
+          <Popover.Description>Positioned left</Popover.Description>
+        </Popover.Content>
+      </Popover>
+      <Popover>
+        <Popover.Trigger as={Button}>Right</Popover.Trigger>
+        <Popover.Content side="right">
+          <Popover.Description>Positioned right</Popover.Description>
+        </Popover.Content>
+      </Popover>
+    </div>
+  );
+}
+
+render(<PlacementDemo />);
 `;
 
 export const arrowDemo = String.raw`
-<div className="popover-demo">
-  <Popover>
-    <Popover.Trigger>With arrow</Popover.Trigger>
-    <Popover.Content>
-      <Popover.Description>Popover with arrow</Popover.Description>
-      <Popover.Arrow />
-    </Popover.Content>
-  </Popover>
-</div>
+function ArrowDemo() {
+  return (
+    <Popover>
+      <Popover.Trigger as={Button}>With arrow</Popover.Trigger>
+      <Popover.Content>
+        <Popover.Description>Popover with arrow</Popover.Description>
+        <Popover.Arrow />
+      </Popover.Content>
+    </Popover>
+  );
+}
+
+render(<ArrowDemo />);
 `;
 
 export const closeDemo = String.raw`
-<div className="popover-demo">
-  <Popover>
-    <Popover.Trigger>Open</Popover.Trigger>
-    <Popover.Content>
-      <Popover.Description>Click close to dismiss</Popover.Description>
-      <Popover.Close>Close</Popover.Close>
-    </Popover.Content>
-  </Popover>
-</div>
+function CloseDemo() {
+  return (
+    <Popover>
+      <Popover.Trigger as={Button}>Open</Popover.Trigger>
+      <Popover.Content>
+          <Popover.Header className="flex items-center justify-between">
+          <span>Title</span>
+          <Popover.Close>x</Popover.Close>
+        </Popover.Header>
+        <Popover.Description>Click x to dismiss</Popover.Description>
+      </Popover.Content>
+    </Popover>
+  );
+}
+
+render(<CloseDemo />);
 `;
 
 export const controlledDemo = String.raw`
@@ -166,17 +180,14 @@ function ControlledDemo() {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <div className="popover-demo">
+    <div className="flex flex-wrap gap-3">
       <Popover open={open} onOpenChange={setOpen}>
-        <Popover.Trigger>Controlled</Popover.Trigger>
+        <Popover.Trigger as={Button}>Controlled</Popover.Trigger>
         <Popover.Content>
           <Popover.Description>Controlled popover</Popover.Description>
-          <Popover.Close>Done</Popover.Close>
         </Popover.Content>
       </Popover>
-      <button onClick={() => setOpen(!open)}>
-        {open ? 'Hide' : 'Show'}
-      </button>
+      <Button onClick={() => setOpen(!open)}>{open ? 'Hide' : 'Show'}</Button>
     </div>
   );
 }
@@ -214,7 +225,7 @@ import { Popover } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={popoverDemoCss}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={popoverScope}
@@ -227,8 +238,7 @@ title and supporting text. Both are styling slots — no behavior is attached.
 
 <LiveCode
   code={headerDescriptionDemo}
-  cssCode={popoverDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={popoverScope}
@@ -240,8 +250,7 @@ The `variant` prop controls the visual appearance of the popover content.
 
 <LiveCode
   code={typesDemo}
-  cssCode={popoverDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={popoverScope}
@@ -251,8 +260,7 @@ The `variant` prop controls the visual appearance of the popover content.
 
 <LiveCode
   code={placementDemo}
-  cssCode={popoverDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={popoverScope}
@@ -262,8 +270,7 @@ The `variant` prop controls the visual appearance of the popover content.
 
 <LiveCode
   code={arrowDemo}
-  cssCode={popoverDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={popoverScope}
@@ -273,8 +280,7 @@ The `variant` prop controls the visual appearance of the popover content.
 
 <LiveCode
   code={closeDemo}
-  cssCode={popoverDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={popoverScope}
@@ -284,8 +290,6 @@ The `variant` prop controls the visual appearance of the popover content.
 
 <LiveCode
   code={controlledDemo}
-  cssCode={popoverDemoCss}
-  editable={false}
   noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
@@ -340,13 +344,13 @@ for primitive behavior.
 | Name                            | Type                                                                                | Default       | Description                                                                |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
 | <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -             |                                                                            |
-| <ApiBadge label="variant" />    | <code>PopoverVariant</code>                                                         | 'dark'        | Color variant.                                                             |
+| <ApiBadge label="variant" />    | <code><a href="#popover-td-popovervariant">PopoverVariant</a></code>                | 'dark'        | Color variant.                                                             |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             | Per-slot extra classes.                                                    |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |
 | <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
 | <ApiBadge label="trapFocus" />  | <code>boolean</code>                                                                | false         | Whether to trap focus within content                                       |
-| <ApiBadge label="side" />       | <code>Side</code>                                                                   | 'bottom'      | Side of trigger to position against                                        |
-| <ApiBadge label="align" />      | <code>Align</code>                                                                  | 'center'      | Alignment relative to trigger                                              |
+| <ApiBadge label="side" />       | <code><a href="#popover-td-side">Side</a></code>                                    | 'bottom'      | Side of trigger to position against                                        |
+| <ApiBadge label="align" />      | <code><a href="#popover-td-align">Align</a></code>                                  | 'center'      | Alignment relative to trigger                                              |
 | <ApiBadge label="className" />  | <code>string</code>                                                                 | -             |                                                                            |
 
 #### Events {#popover-content-events}
@@ -362,33 +366,43 @@ for primitive behavior.
 
 #### Data attributes {#popover-content-data-attributes}
 
-| Attribute          | Applied when | Purpose                                                   |
-| ------------------ | ------------ | --------------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot.     |
-| `data-variant`     | Always       | Reflects the resolved `variant` for theme recipe scoping. |
+| Attribute                                       | Applied when | Purpose                                                   |
+| ----------------------------------------------- | ------------ | --------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.     |
+| <ApiBadge label="data-variant" />               | Always       | Reflects the resolved `variant` for theme recipe scoping. |
 
 ### Popover.Trigger {#popover-trigger}
 
 #### Data attributes {#popover-trigger-data-attributes}
 
-| Attribute          | Applied when | Purpose                                               |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Popover.Arrow {#popover-arrow}
 
 #### Data attributes {#popover-arrow-data-attributes}
 
-| Attribute          | Applied when | Purpose                        |
-| ------------------ | ------------ | ------------------------------ |
-| `data-slot="root"` | Always       | Stable selector for the arrow. |
+| Attribute                                       | Applied when | Purpose                        |
+| ----------------------------------------------- | ------------ | ------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the arrow. |
 
 ### Popover.Close {#popover-close}
 
 #### Data attributes {#popover-close-data-attributes}
 
-| Attribute          | Applied when | Purpose                               |
-| ------------------ | ------------ | ------------------------------------- |
-| `data-slot="root"` | Always       | Stable selector for the close button. |
+| Attribute                                       | Applied when | Purpose                               |
+| ----------------------------------------------- | ------------ | ------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the close button. |
+
+### Type Definitions {#popover-type-definitions}
+
+| Name                                                                                                  | Definition                                                                                                                      |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="popover-td-popovervariant"><ApiBadge label="PopoverVariant" /></span>                       | <code>'dark' &#124; 'white' &#124; 'info' &#124; 'success' &#124; 'warning' &#124; 'danger' &#124; 'neutral'</code>             |
+| <span id="popover-td-side"><ApiBadge label="Side" /></span>                                           | <code>'top' &#124; 'right' &#124; 'bottom' &#124; 'left'</code>                                                                 |
+| <span id="popover-td-align"><ApiBadge label="Align" /></span>                                         | <code>'start' &#124; 'center' &#124; 'end'</code>                                                                               |
+| <span id="popover-td-popovertriggerrenderprops"><ApiBadge label="PopoverTriggerRenderProps" /></span> | <code>&#123; isOpen: boolean; disabled: boolean; open: () =&gt; void; close: () =&gt; void; toggle: () =&gt; void &#125;</code> |
+| <span id="popover-td-popovercloserenderprops"><ApiBadge label="PopoverCloseRenderProps" /></span>     | <code>&#123; isOpen: boolean; close: () =&gt; void &#125;</code>                                                                |
 
 {/* api-tables:end */}

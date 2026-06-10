@@ -18,9 +18,9 @@ export interface ApiBadgeProps {
   variant?: BadgeVariant;
 }
 
-export function ApiBadge({ className, label, rounded = false, size = 'large', type = 'filledlight', variant = 'primary' }: ApiBadgeProps) {
+export function ApiBadge({ className, label, rounded = false, type = 'filledlight' }: ApiBadgeProps) {
   return (
-    <Badge className={className} rounded={rounded} size={size} appearance={TYPE_TO_APPEARANCE[type]} variant={variant}>
+    <Badge className={className} rounded={rounded} appearance={TYPE_TO_APPEARANCE[type]}>
       {label}
     </Badge>
   );

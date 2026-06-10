@@ -216,6 +216,76 @@
   background: var(--runway-ink-ghost);
 }
 
+.sectionItemText {
+  display: inline;
+}
+
+/* Inline `code` spans inside an item's text. */
+.inlineCode {
+  font-family: var(--runway-type-mono-family);
+  font-size: 0.88em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--runway-surface-dark);
+  border: 1px solid var(--runway-surface-dark-border);
+  color: var(--runway-ink);
+  white-space: nowrap;
+}
+
+/* Before/after code blocks attached to a breaking-change item. */
+.itemCode {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.itemCodeBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.itemCodeLabel {
+  font-family: var(--runway-type-mono-family);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--runway-ink-faint);
+}
+
+.itemCodeBlock[data-variant='before'] .itemCodeLabel {
+  color: var(--runway-ink-faint);
+}
+
+.itemCodeBlock[data-variant='after'] .itemCodeLabel {
+  color: var(--runway-cardinal-bright);
+}
+
+.itemCodePre {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--runway-surface-dark);
+  border: 1px solid var(--runway-surface-dark-border);
+  border-radius: 6px;
+  font-family: var(--runway-type-mono-family);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--runway-ink);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.itemCodePre code {
+  font-family: inherit;
+  font-size: inherit;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
 /* ── Collapsible sections (disclosure group) ─────────────────── */
 /* TODO: Replace with <Accordion> from @takeoff-ui/react-spar once ported to docs. */
 
@@ -281,6 +351,146 @@
 
 .collapsibleContent {
   padding: 6px 2px 22px;
+}
+
+/* ── Package details disclosure ──────────────────────────────── */
+/* Renders parsed CHANGELOG.md bodies from packages/* via the
+   package-changelogs plugin. Same disclosure pattern as collapsible sections;
+   styled distinctly so technical per-package detail reads as secondary. */
+
+.packageDisclosure {
+  margin-top: 36px;
+  border-top: 1px solid var(--runway-surface-dark-border);
+  border-bottom: 1px solid var(--runway-surface-dark-border);
+}
+
+.packageSummary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 2px;
+  font-family: 'Geologica', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--runway-ink);
+  user-select: none;
+}
+
+.packageSummary::-webkit-details-marker,
+.packageSummary::marker {
+  display: none;
+  content: '';
+}
+
+.packageSummary > span:first-child {
+  flex: 1;
+}
+
+.packageCount {
+  font-family: var(--runway-type-mono-family);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--runway-ink-faint);
+  flex: none;
+}
+
+.packageDisclosure[open] .packageSummary .collapsibleChevron {
+  transform: rotate(180deg);
+}
+
+.packageContent {
+  padding: 4px 2px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.packageBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.packageHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.packageName {
+  font-family: var(--runway-type-mono-family);
+  font-size: 12.5px;
+  color: var(--runway-ink);
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.packageVersion {
+  font-family: var(--runway-type-mono-family);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border: 1px solid var(--runway-surface-dark-border-2);
+  border-radius: 4px;
+  color: var(--runway-ink-dim);
+  line-height: 1.4;
+}
+
+.packageBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.packageBodyHeading {
+  font-family: 'Geologica', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--runway-ink-faint);
+  margin: 6px 0 0;
+}
+
+.packageBodyParagraph {
+  font-family: 'Geologica', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--runway-ink-dim);
+  margin: 0;
+}
+
+.packageBodyList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.packageBodyItem {
+  font-family: 'Geologica', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--runway-ink-dim);
+  padding-left: 20px;
+  position: relative;
+}
+
+.packageBodyItem::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.7em;
+  width: 6px;
+  height: 1px;
+  background: var(--runway-ink-ghost);
 }
 
 /* ── Links row (optional) ────────────────────────────────────── */

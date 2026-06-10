@@ -1,3 +1,5 @@
+@import 'tailwindcss' layer(utilities);
+@import '@takeoff-design/tailwind';
 @import url('https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap');
 @import '@takeoff-design/tokens/css/default/theme.css';
 @import './docusaurus-overrides.css';

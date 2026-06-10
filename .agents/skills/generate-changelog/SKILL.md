@@ -5,17 +5,20 @@ description:
   date from the user, walks the git history for the matching tag range (or a
   fallback range when no tag exists yet), categorizes commits into sections
   (Highlights, Fixes, Docs, Infrastructure), flips long sections to collapsible,
-  and writes the entry to apps/docs/src/pages/changelog.data.ts. Use when the
-  user asks to generate release notes, add a changelog entry, or invokes
+  and writes the entry to apps/docs/src/data/changelog.ts. Use when the user
+  asks to generate release notes, add a changelog entry, or invokes
   /generate-changelog.
 argument-hint: '[version] [date]'
 ---
 
 # Generate changelog entry
 
-Add exactly one entry to `apps/docs/src/pages/changelog.data.ts`. Do **not**
-modify `changelog.tsx`, `changelog.module.css`, or the type exports in
-`changelog.data.ts` — only the `CHANGELOG_ENTRIES` array.
+Add exactly one entry to `apps/docs/src/data/changelog.ts`. Do **not** modify
+the renderer (`apps/docs/src/pages/changelog.tsx`), its CSS module
+(`changelog.module.css`), or the type exports at the top of
+`apps/docs/src/data/changelog.ts` (and
+`apps/docs/src/data/package-changelogs-types.ts`) — only the `CHANGELOG_ENTRIES`
+array.
 
 ## 1 · Collect inputs
 
@@ -109,6 +112,47 @@ Rewriting rules:
 - Drop reverts and pure refactors with no user-visible effect.
 - Within a section, order by user-facing impact (strongest first).
 
+### Code in items
+
+The renderer parses inline backticks in `text` as `<code>`, and items may
+optionally carry a `code: { before?, after?, language? }` field rendered as
+labeled before/after blocks. Apply these rules:
+
+- **Inline backticks** — wrap identifiers, prop names, JSX tags, CSS variable
+  names, file paths, and quoted literal values in backticks. Examples:
+  `` `Select.Trigger` ``, `` `contentWidth` ``,
+  `` `--dropdown-items-basic-*` ``, `` `'trigger'` ``. Authors do **not** need
+  to escape `<` or `>` — backticks make JSX safe to render as text.
+- **Plain strings** — keep items as a plain string when there is no code block
+  to attach. The renderer treats `string` and `{ text }` identically.
+- **Before/after blocks** — use the structured `{ text, code }` shape only for
+  breaking-change migrations or other items where a consumer literally needs to
+  diff two snippets. Don't use it for decorative code; inline backticks are
+  enough. Both `before` and `after` are optional; pass only the side that's
+  meaningful.
+- **Newlines** — `before` / `after` strings are rendered in `<pre>`. Embed real
+  `\n` characters in the string; don't add leading/trailing blank lines.
+- **Breaking changes section** — if any items have `code` blocks, prefer a
+  dedicated `'Breaking changes'` section. Don't bury breaking migrations under
+  Highlights once they need code samples.
+
+Example item shapes:
+
+```ts
+// Plain — most items
+'`Select` panel styles now flow from the `--dropdown-items-basic-*` token family.'
+
+// With migration diff
+{
+  text: '`Select.Value` removed. Placeholder now lives on `Select.Trigger`.',
+  code: {
+    language: 'tsx',
+    before: '<Select.Trigger>\n  <Select.Value placeholder="X" />\n</Select.Trigger>',
+    after: '<Select.Trigger placeholder="X" />',
+  },
+}
+```
+
 Drop any section that ends up empty.
 
 ## 4 · Mark long sections collapsible
@@ -181,9 +225,9 @@ existing formatting: single-quote strings, trailing commas, two-space indent.
 pnpm --filter docs check-types
 ```
 
-Must stay green. If it fails, the fix is in `changelog.data.ts` (usually a stray
-quote or unescaped backtick in a string). Do not touch any other file to make it
-pass.
+Must stay green. If it fails, the fix is in `apps/docs/src/data/changelog.ts`
+(usually a stray quote or unescaped backtick in a string). Do not touch any
+other file to make it pass.
 
 ## 9 · Report
 
@@ -197,8 +241,9 @@ One concise message:
 ## Guardrails
 
 - **Never commit or push.** The user reviews and commits.
-- **Never modify** `changelog.tsx`, `changelog.module.css`, or the type exports
-  in `changelog.data.ts`. Only the `CHANGELOG_ENTRIES` array.
+- **Never modify** the renderer (`apps/docs/src/pages/changelog.tsx`),
+  `changelog.module.css`, or the type exports at the top of
+  `apps/docs/src/data/changelog.ts`. Only the `CHANGELOG_ENTRIES` array.
 - **Never invent** features that aren't in the commit range. If the range is
   empty or trivial, tell the user and abort.
 - **Never skip the draft-confirmation step.** The user must see and approve the

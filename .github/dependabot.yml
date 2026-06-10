@@ -1,0 +1,70 @@
+# Dependabot — GitHub's built-in dependency updater. No third-party service;
+# GitHub itself opens the update PRs, so nothing leaves the GitHub boundary.
+#
+# Replaces the Renovate/Mend setup (rejected to avoid granting a third party
+# access to a private company repo). Auto-merge is intentionally NOT configured
+# here — Dependabot config can't auto-merge, and this repo has no branch
+# protection to gate it on anyway. Updates land as reviewable PRs.
+#
+# Labels (dependencies, spar) already exist in the repo via the labels-sync
+# workflow, so they apply rather than silently no-op'ing.
+
+version: 2
+
+updates:
+  # ── npm (pnpm) across the workspace root + every package/app ───────────────
+  # `directories` (glob) covers the root manifest and each workspace member so
+  # transitive workspace deps are surfaced too.
+  - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "/packages/*"
+      - "/apps/*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Istanbul"
+    open-pull-requests-limit: 8
+    labels:
+      - "dependencies"
+    commit-message:
+      # Match the repo's conventional-commit convention (chore + deps scope).
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    reviewers:
+      - "harun-demir"
+    groups:
+      # Group all @turkish-technology/* (spar primitives) into one PR so the
+      # wrapper and its underlying primitives bump together — mirrors the
+      # Renovate "spar primitives" group. Tag with the `spar` label via the PR.
+      spar-primitives:
+        patterns:
+          - "@turkish-technology/*"
+      # Group routine tooling devDeps (eslint, prettier, husky, tsup, vitest…)
+      # so they don't each open a separate PR.
+      dev-tooling:
+        dependency-type: "development"
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@turkish-technology/*"
+
+  # ── GitHub Actions used in .github/workflows ──────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Istanbul"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "area:ci"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    reviewers:
+      - "harun-demir"

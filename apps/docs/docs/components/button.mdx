@@ -16,47 +16,81 @@ export const buttonScope = { Button };
 
 {/* prettier-ignore-start */}
 
-export const buttonDemoCss = String.raw`
-.button-demo {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  return (
+    <Button>Primary</Button>
+  );
 }
+
+render(<PlaygroundDemo />);
 `;
 
-export const playgroundDemo = String.raw`
-<div className="button-demo">
-  <Button>Primary</Button>
-  <Button variant="secondary">Secondary</Button>
-  <Button appearance="outlined">Outlined</Button>
-  <Button appearance="text">Text</Button>
-  <Button variant="danger">Danger</Button>
-</div>
+export const variantsDemo = String.raw`
+function VariantsDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Button variant="primary">Primary</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="neutral">Neutral</Button>
+      <Button variant="info">Info</Button>
+      <Button variant="success">Success</Button>
+      <Button variant="danger">Danger</Button>
+      <Button variant="warning">Warning</Button>
+      <Button variant="white">White</Button>
+      <Button variant="black">Black</Button>
+    </div>
+  );
+}
+
+render(<VariantsDemo />);
+`;
+
+export const appearanceDemo = String.raw`
+function AppearanceDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3 items-center">
+      <Button appearance="filled">Filled</Button>
+      <Button appearance="filledLight">FilledLight</Button>
+      <Button appearance="outlined">Outlined</Button>
+      <Button appearance="text">Text</Button>
+    </div>
+  );
+}
+
+render(<AppearanceDemo />);
 `;
 
 export const sizesDemo = String.raw`
-<div className="button-demo">
-  <Button size="small">Small</Button>
-  <Button size="base">Base</Button>
-  <Button size="large">Large</Button>
-</div>
+function SizesDemo() {
+  return (
+    <div className="flex flex-wrap justify-center items-center gap-3">
+      <Button size="small">Small</Button>
+      <Button size="base">Base</Button>
+      <Button size="large">Large</Button>
+    </div>
+  );
+}
+
+render(<SizesDemo />);
 `;
 
 export const loadingDemo = String.raw`
 function LoadingDemo() {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   return (
-    <div className="button-demo">
-      <Button isLoading>Saving…</Button>
-      <Button variant="secondary" isLoading>Loading</Button>
+    <div className="flex flex-wrap justify-center gap-3">
+      <Button loading>Saving…</Button>
+      <Button variant="secondary" loading>
+        Loading
+      </Button>
       <Button
         variant="primary"
-        isLoading={isLoading}
+        loading={loading}
         onClick={() => {
-          setIsLoading(true);
-          setTimeout(() => setIsLoading(false), 2000);
+          setLoading(true);
+          setTimeout(() => setLoading(false), 2000);
         }}
       >
         Click to load
@@ -69,26 +103,28 @@ render(<LoadingDemo />);
 `;
 
 export const disabledDemo = String.raw`
-<div className="button-demo">
-  <Button disabled>Disabled</Button>
-  <Button variant="secondary" disabled>Disabled</Button>
-</div>
+function DisabledDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Button disabled>Disabled</Button>
+      <Button variant="secondary" disabled>
+        Disabled
+      </Button>
+    </div>
+  );
+}
+
+render(<DisabledDemo />);
 `;
 
 export const toggleDemo = String.raw`
 function ToggleButtonDemo() {
-  const [isPressed, setIsPressed] = useState(false);
+  const [pressed, setPressed] = useState(false);
 
   return (
-    <div className="button-demo">
-      <Button
-        variant={isPressed ? 'primary' : 'secondary'}
-        isPressed={isPressed}
-        onPressedChange={setIsPressed}
-      >
-        {isPressed ? 'On' : 'Off'}
-      </Button>
-    </div>
+    <Button variant={pressed ? 'primary' : 'secondary'} pressed={pressed} onPressedChange={setPressed}>
+      {pressed ? 'On' : 'Off'}
+    </Button>
   );
 }
 
@@ -96,26 +132,50 @@ render(<ToggleButtonDemo />);
 `;
 
 export const iconsDemo = String.raw`
-const StarIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.77 4.29 12.9l.71-4.12-3-2.93 4.15-.6L8 1.5z" />
-  </svg>
-);
+function IconsDemo() {
+  const StarIcon = () => (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.77 4.29 12.9l.71-4.12-3-2.93 4.15-.6L8 1.5z" />
+    </svg>
+  );
 
-const ArrowIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 8h10M9 4l4 4-4 4" />
-  </svg>
-);
+  const ArrowIcon = () => (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3 8h10M9 4l4 4-4 4" />
+    </svg>
+  );
 
-render(
-  <div className="button-demo">
-    <Button startContent={<StarIcon />}>Favorite</Button>
-    <Button endContent={<ArrowIcon />}>Continue</Button>
-    <Button startContent={<StarIcon />} endContent={<ArrowIcon />}>Both</Button>
-    <Button startContent={<StarIcon />} rounded />
-  </div>
-);
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Button startContent={<StarIcon />}>Favorite</Button>
+      <Button endContent={<ArrowIcon />}>Continue</Button>
+      <Button startContent={<StarIcon />} endContent={<ArrowIcon />}>
+        Both
+      </Button>
+      <Button startContent={<StarIcon />} rounded />
+    </div>
+  );
+}
+
+render(<IconsDemo />);
 `;
 
 {/* prettier-ignore-end */}
@@ -142,7 +202,27 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
-  cssCode={buttonDemoCss}
+  noInline
+  previewMinHeight={80}
+  previewWrapper={ReactSparDemoRoot}
+  scope={buttonScope}
+/>
+
+## Variants
+
+<LiveCode
+  code={variantsDemo}
+  noInline
+  previewMinHeight={80}
+  previewWrapper={ReactSparDemoRoot}
+  scope={buttonScope}
+/>
+
+## Appearance
+
+<LiveCode
+  code={appearanceDemo}
+  noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
   scope={buttonScope}
@@ -152,8 +232,7 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={sizesDemo}
-  cssCode={buttonDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
   scope={buttonScope}
@@ -163,8 +242,6 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={loadingDemo}
-  cssCode={buttonDemoCss}
-  editable={false}
   noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
@@ -175,8 +252,7 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={disabledDemo}
-  cssCode={buttonDemoCss}
-  editable={false}
+  noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
   scope={buttonScope}
@@ -186,8 +262,6 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={toggleDemo}
-  cssCode={buttonDemoCss}
-  editable={false}
   noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
@@ -198,8 +272,6 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={iconsDemo}
-  cssCode={buttonDemoCss}
-  editable={false}
   noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
@@ -231,20 +303,20 @@ for primitive behavior.
 
 #### Props {#button-props}
 
-| Name                              | Type                                                                                    | Default   | Description                                                                                                                         |
-| --------------------------------- | --------------------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                            | -         | Button label content.                                                                                                               |
-| <ApiBadge label="variant" />      | <code>ButtonVariant</code>                                                              | 'primary' | Color variant.                                                                                                                      |
-| <ApiBadge label="appearance" />   | <code>ButtonAppearance</code>                                                           | 'filled'  | Visual appearance.                                                                                                                  |
-| <ApiBadge label="size" />         | <code>ButtonSize</code>                                                                 | 'base'    | Size scale.                                                                                                                         |
-| <ApiBadge label="rounded" />      | <code>boolean</code>                                                                    | false     | Renders a pill-shaped (circular) button. Ideal for icon-only actions.                                                               |
-| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                            | -         | Content rendered before children — typically an icon, but accepts any node (spinner, badge, kbd, etc.). Wrapped in the `icon` slot. |
-| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                            | -         | Content rendered after children. Same shape as `startContent`.                                                                      |
-| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;ButtonSlot, string&gt;&gt;</code>                            | -         | Per-slot extra classes.                                                                                                             |
-| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;ButtonSlot, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                                                                                  |
-| <ApiBadge label="isLoading" />    | <code>boolean</code>                                                                    | false     | Loading state with screen reader support                                                                                            |
-| <ApiBadge label="isPressed" />    | <code>boolean</code>                                                                    | undefined | Toggle state - when defined, creates a toggle button                                                                                |
-| <ApiBadge label="className" />    | <code>string</code>                                                                     | -         | Appends custom classes to the root slot of this part.                                                                               |
+| Name                              | Type                                                                                                                        | Default   | Description                                                                                                                         |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                                                | -         | Button label content.                                                                                                               |
+| <ApiBadge label="variant" />      | <code><a href="#button-td-buttonvariant">ButtonVariant</a></code>                                                           | 'primary' | Color variant.                                                                                                                      |
+| <ApiBadge label="appearance" />   | <code><a href="#button-td-buttonappearance">ButtonAppearance</a></code>                                                     | 'filled'  | Visual appearance.                                                                                                                  |
+| <ApiBadge label="size" />         | <code><a href="#button-td-buttonsize">ButtonSize</a></code>                                                                 | 'base'    | Size scale.                                                                                                                         |
+| <ApiBadge label="rounded" />      | <code>boolean</code>                                                                                                        | false     | Renders a pill-shaped (circular) button. Ideal for icon-only actions.                                                               |
+| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                                                | -         | Content rendered before children — typically an icon, but accepts any node (spinner, badge, kbd, etc.). Wrapped in the `icon` slot. |
+| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                                                | -         | Content rendered after children. Same shape as `startContent`.                                                                      |
+| <ApiBadge label="loading" />      | <code>boolean</code>                                                                                                        | -         | Whether the button shows a loading spinner.                                                                                         |
+| <ApiBadge label="pressed" />      | <code>boolean</code>                                                                                                        | -         | Whether the button is pressed. When defined, creates a toggle button.                                                               |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#button-td-buttonslot">ButtonSlot</a>, string&gt;&gt;</code>                            | -         | Per-slot extra classes.                                                                                                             |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#button-td-buttonslot">ButtonSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                                                                                  |
+| <ApiBadge label="className" />    | <code>string</code>                                                                                                         | -         | Appends custom classes to the root slot of this part.                                                                               |
 
 #### Events {#button-events}
 
@@ -254,15 +326,24 @@ for primitive behavior.
 
 #### Data attributes {#button-data-attributes}
 
-| Attribute          | Applied when            | Purpose                                                           |
-| ------------------ | ----------------------- | ----------------------------------------------------------------- |
-| `data-slot="root"` | Always                  | Stable selector for wrapper styling on the root slot.             |
-| `data-variant`     | Always                  | Reflects the resolved `variant` prop for theme recipe scoping.    |
-| `data-type`        | Always                  | Reflects the resolved `appearance` prop for theme recipe scoping. |
-| `data-size`        | Always                  | Reflects the resolved `size` prop for theme recipe scoping.       |
-| `data-rounded`     | When `rounded` is true  | Styling hook for the pill-shaped state.                           |
-| `data-icon-only`   | When icon-only          | Auto-detected when icons exist but no children.                   |
-| `data-loading`     | When `loading` is true  | Styling hook for the loading state.                               |
-| `data-disabled`    | When `disabled` is true | Styling hook for the disabled state.                              |
+| Attribute                                       | Applied when            | Purpose                                                           |
+| ----------------------------------------------- | ----------------------- | ----------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                  | Stable selector for wrapper styling on the root slot.             |
+| <ApiBadge label="data-variant" />               | Always                  | Reflects the resolved `variant` prop for theme recipe scoping.    |
+| <ApiBadge label="data-type" />                  | Always                  | Reflects the resolved `appearance` prop for theme recipe scoping. |
+| <ApiBadge label="data-size" />                  | Always                  | Reflects the resolved `size` prop for theme recipe scoping.       |
+| <ApiBadge label="data-rounded" />               | When `rounded` is true  | Styling hook for the pill-shaped state.                           |
+| <ApiBadge label="data-icon-only" />             | When icon-only          | Auto-detected when icons exist but no children.                   |
+| <ApiBadge label="data-loading" />               | When `loading` is true  | Styling hook for the loading state.                               |
+| <ApiBadge label="data-disabled" />              | When `disabled` is true | Styling hook for the disabled state.                              |
+
+### Type Definitions {#button-type-definitions}
+
+| Name                                                                               | Definition                                                                                                                                               |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="button-td-buttonvariant"><ApiBadge label="ButtonVariant" /></span>       | <code>'primary' &#124; 'secondary' &#124; 'neutral' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning' &#124; 'white' &#124; 'black'</code> |
+| <span id="button-td-buttonappearance"><ApiBadge label="ButtonAppearance" /></span> | <code>'filled' &#124; 'filledLight' &#124; 'outlined' &#124; 'text'</code>                                                                               |
+| <span id="button-td-buttonsize"><ApiBadge label="ButtonSize" /></span>             | <code>'small' &#124; 'base' &#124; 'large'</code>                                                                                                        |
+| <span id="button-td-buttonslot"><ApiBadge label="ButtonSlot" /></span>             | <code>'root' &#124; 'content' &#124; 'label' &#124; 'spinner'</code>                                                                                     |
 
 {/* api-tables:end */}
