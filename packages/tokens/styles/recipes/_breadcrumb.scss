@@ -6,13 +6,19 @@
 //   .tk-breadcrumb-item       — <li>
 //   .tk-breadcrumb-link       — interactive crumb (<a>)
 //   .tk-breadcrumb-page       — current page (non-interactive <span>)
-//   .tk-breadcrumb-separator  — <li aria-hidden> wrapping the chevron svg
+//   .tk-breadcrumb-separator  — <li aria-hidden> wrapping the separator glyph
 //
 // State/variant attributes:
-//   data-size      — density scale (base | large)
-//   data-type      — visual style (basic | outlined)
-//   data-disabled  — disabled trail (root) or link
-//   data-current   — current crumb (last item / current page)
+//   data-size      — density scale (base | large), on the root
+//   data-type      — visual style (basic | outlined), on the root
+//   data-variant   — separator glyph preset (chevron | dot | slash | vertical)
+//   data-disabled  — disabled trail (root, dims the whole trail) or link
+//   data-current   — current crumb (always on Breadcrumb.Page; at item level
+//                    only once the Spar context-registration release lands)
+//
+// Modifier classes:
+//   .tk-breadcrumb-item-icon-only — opt-in tighter chip padding for label-less
+//                                   crumbs in the outlined variant
 
 @use '../abstracts/mixins' as mixins;
 
@@ -21,9 +27,13 @@
   display: flex;
   align-items: center;
   overflow-x: auto;
+  overflow-y: hidden;
+  @include mixins.takeoff-scrollbar;
   // `overflow-x: auto` makes the nav a scroll/clip container on BOTH axes (per
   // the CSS overflow spec), which would otherwise clip the link's `box-shadow`
   // focus ring. Reserve a 4px gutter — the ring width — so it renders in full.
+  // Kept literal (not --spacing-xs): it mirrors the 4px ring spread baked into
+  // --primary-focus, not the spacing scale.
   padding: 4px;
 
   .tk-breadcrumb-list {
@@ -39,6 +49,10 @@
   .tk-breadcrumb-item {
     display: inline-flex;
     align-items: center;
+    // Defends against content themes that space list items (e.g. Infima's
+    // `.markdown li + li { margin-top: 0.25rem }`), which would push every
+    // crumb after the first ~2px down inside the centered flex list.
+    margin: 0;
   }
 
   // Selector chain (.tk-breadcrumb .tk-breadcrumb-list .tk-breadcrumb-item .tk-breadcrumb-link)
@@ -48,22 +62,47 @@
   .tk-breadcrumb-list .tk-breadcrumb-item .tk-breadcrumb-link {
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-xxs);
+    gap: var(--breadcrumb-basic-item-gap);
     color: var(--text-sub-base);
     font-family: var(--family-body);
     font-size: var(--desktop-body-s-size);
     line-height: var(--desktop-body-s-line-height);
     font-weight: 400;
+    // Labels keep their min-content width so long trails overflow into the
+    // root's horizontal scroll gutter instead of wrapping inside a crumb.
+    white-space: nowrap;
     text-decoration: none;
     border-bottom: 0;
     border-radius: var(--radius-xs);
     cursor: pointer;
     transition: color 0.2s ease-in-out;
 
+    svg,
+    img {
+      width: var(--breadcrumb-basic-item-icon-size);
+      height: var(--breadcrumb-basic-item-icon-size);
+      flex-shrink: 0;
+      color: var(--icon-sub-base);
+    }
+
     &:where(:not([data-disabled])):hover {
       color: var(--text-dark);
-      text-decoration: underline;
-      text-underline-offset: 2px;
+
+      svg,
+      img {
+        color: var(--text-dark);
+      }
+    }
+
+    // Pressed crumbs keep the hover color but drop the underline (canonical).
+    &:where(:not([data-disabled])):active {
+      color: var(--text-dark);
+      text-decoration: none;
+
+      svg,
+      img {
+        color: var(--text-dark);
+      }
     }
 
     @include mixins.disabled-state {
@@ -76,38 +115,95 @@
     @include mixins.focus-ring(var(--primary-focus));
   }
 
-  // A current crumb authored as a `Breadcrumb.Link` (rather than `Breadcrumb.Page`)
-  // still gets the current emphasis from Spar's `data-current` on the item. Keep
-  // the (0,4,1) chain so it beats the link rule and the docs-theme anchor rule.
+  // Hover underline only on non-current, non-pressed crumbs — the current
+  // crumb's emphasis is color-only (canonical).
+  .tk-breadcrumb-list .tk-breadcrumb-item:where(:not([data-current])) .tk-breadcrumb-link:where(:not([data-disabled]):not(:active)):hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  // A current crumb authored as `Breadcrumb.Link` gets the same color-only
+  // emphasis as `Breadcrumb.Page`. Dormant with the pinned Spar 0.2.0-beta.1
+  // (its list type-matches its own item element, so item-level data-current
+  // does not cross this wrapper); lights up when the Spar
+  // context-registration release lands. Keep the (0,4,1) chain so it beats
+  // the link rule and the docs-theme anchor rule.
   .tk-breadcrumb-list .tk-breadcrumb-item[data-current] .tk-breadcrumb-link {
     color: var(--text-dark);
-    font-weight: 500;
+
+    svg,
+    img {
+      color: var(--icon-dark);
+    }
   }
 
   .tk-breadcrumb-page {
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-xxs);
+    gap: var(--breadcrumb-basic-item-gap);
     color: var(--text-dark);
     font-family: var(--family-body);
     font-size: var(--desktop-body-s-size);
     line-height: var(--desktop-body-s-line-height);
-    font-weight: 500;
+    font-weight: 400;
+    white-space: nowrap;
+
+    svg,
+    img {
+      width: var(--breadcrumb-basic-item-icon-size);
+      height: var(--breadcrumb-basic-item-icon-size);
+      flex-shrink: 0;
+      color: var(--icon-dark);
+    }
   }
 
   .tk-breadcrumb-separator {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    // Same content-theme `li + li` margin defense as .tk-breadcrumb-item.
+    margin: 0;
     width: var(--breadcrumb-symbol-size);
     height: var(--breadcrumb-symbol-size);
     color: var(--icon-sub-base);
+    // Text glyphs (preset variants below, or text children) follow crumb
+    // typography; svg/img children are sized explicitly.
+    font-size: var(--desktop-body-s-size);
     line-height: 1;
 
     > svg,
     > img {
       width: 16px;
       height: 16px;
+    }
+
+    // Glyph presets — the wrapper emits `data-variant` and suppresses its
+    // default chevron for non-chevron values, so only the ::before paints
+    // (canonical tk-breadcrumb dot/slash/vertical separators).
+    &[data-variant='dot']::before {
+      content: '\2022';
+    }
+
+    &[data-variant='slash']::before {
+      content: '/';
+    }
+
+    &[data-variant='vertical']::before {
+      content: '|';
+    }
+  }
+
+  // The default chevron points along the reading direction.
+  &:dir(rtl) .tk-breadcrumb-separator > svg {
+    transform: scaleX(-1);
+  }
+
+  // Disabled trail: Spar disables and dims the links; dim the non-interactive
+  // parts to match so the whole trail reads as disabled.
+  &[data-disabled] {
+    .tk-breadcrumb-page,
+    .tk-breadcrumb-separator {
+      opacity: 0.6;
     }
   }
 
@@ -118,35 +214,82 @@
       line-height: var(--desktop-body-m-base-line-height);
     }
 
-    .tk-breadcrumb-separator > svg,
-    .tk-breadcrumb-separator > img {
-      width: 18px;
-      height: 18px;
+    .tk-breadcrumb-separator {
+      font-size: var(--desktop-body-m-base-size);
+
+      > svg,
+      > img {
+        width: 18px;
+        height: 18px;
+      }
     }
   }
 
   // Outlined variant — each crumb becomes a bordered, backgrounded chip.
   // Consumes the `backgrounded-item-*` tokens; mirrors takeoff-ui/core
-  // `.tk-breadcrumb-outlined`.
+  // `.tk-breadcrumb-outlined`. Logical padding so the wide (trailing) side
+  // follows the reading direction under RTL.
   &[data-type='outlined'] {
     .tk-breadcrumb-item {
-      padding: var(--breadcrumb-backgrounded-item-v-padding) var(--breadcrumb-backgrounded-item-right-padding) var(--breadcrumb-backgrounded-item-v-padding)
-        var(--breadcrumb-backgrounded-item-left-padding);
+      padding-block: var(--breadcrumb-backgrounded-item-v-padding);
+      padding-inline-start: var(--breadcrumb-backgrounded-item-left-padding);
+      padding-inline-end: var(--breadcrumb-backgrounded-item-right-padding);
       gap: var(--breadcrumb-backgrounded-item-gap);
       border: var(--spacing-px) solid var(--border-light);
-      border-radius: 8px;
+      border-radius: var(--radius-m-base);
       background: var(--static-light);
       transition:
         border-color 0.2s ease-in-out,
         background 0.2s ease-in-out;
 
-      &[data-current] {
+      // Opt-in tighter padding for label-less crumbs; the compound API has no
+      // label prop to auto-detect them (canonical .tk-breadcrumb-item-icon-only).
+      &.tk-breadcrumb-item-icon-only {
+        padding-inline: var(--spacing-xs);
+      }
+
+      // `:has([data-current])` keys off Breadcrumb.Page (always emitted by the
+      // pinned Spar); the item-level attribute joins in once the Spar
+      // context-registration release lands.
+      &[data-current],
+      &:has([data-current]) {
         border-color: var(--border-sub-base);
         background: var(--background-lightest);
       }
+    }
 
-      &:where(:not([data-current])):hover {
+    .tk-breadcrumb-list .tk-breadcrumb-item .tk-breadcrumb-link svg,
+    .tk-breadcrumb-list .tk-breadcrumb-item .tk-breadcrumb-link img,
+    .tk-breadcrumb-page svg,
+    .tk-breadcrumb-page img {
+      width: var(--breadcrumb-backgrounded-item-icon-size);
+      height: var(--breadcrumb-backgrounded-item-icon-size);
+    }
+
+    // Hover/active affordance only on chips that are actually interactive:
+    // not the current chip, not in a disabled trail, not a disabled link.
+    &:where(:not([data-disabled])) .tk-breadcrumb-item:where(:not([data-current], :has([data-current]), :has(.tk-breadcrumb-link[data-disabled]))) {
+      cursor: pointer;
+
+      &:hover,
+      &:active {
         border-color: var(--border-sub-base);
+        background: var(--background-lightest);
+      }
+    }
+
+    // Pressed label color matches canonical outlined `:active`.
+    .tk-breadcrumb-list .tk-breadcrumb-item:active .tk-breadcrumb-link:where(:not([data-disabled])) {
+      color: var(--text-darkest);
+    }
+
+    // The focus ring follows the chip's radius instead of straddling its
+    // border; browsers without :has() keep the link-level ring as fallback.
+    .tk-breadcrumb-item:has(.tk-breadcrumb-link:focus-visible) {
+      box-shadow: var(--primary-focus);
+
+      .tk-breadcrumb-link:focus-visible {
+        box-shadow: none;
       }
     }
 

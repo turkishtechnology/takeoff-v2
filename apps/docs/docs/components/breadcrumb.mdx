@@ -120,22 +120,120 @@ export const typeDemo = String.raw`
 </div>
 `;
 
+export const separatorVariantsDemo = String.raw`
+<div className="breadcrumb-demo-stack">
+  <Breadcrumb>
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator variant="dot" />
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>Account</Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+
+  <Breadcrumb>
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator variant="slash" />
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>Account</Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+
+  <Breadcrumb>
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator variant="vertical" />
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>Account</Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+</div>
+`;
+
 export const customSeparatorDemo = String.raw`
 <Breadcrumb>
   <Breadcrumb.List>
     <Breadcrumb.Item>
       <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
     </Breadcrumb.Item>
-    <Breadcrumb.Separator>/</Breadcrumb.Separator>
+    <Breadcrumb.Separator>→</Breadcrumb.Separator>
     <Breadcrumb.Item>
       <Breadcrumb.Link href="/loyalty">Loyalty</Breadcrumb.Link>
     </Breadcrumb.Item>
-    <Breadcrumb.Separator>/</Breadcrumb.Separator>
+    <Breadcrumb.Separator>→</Breadcrumb.Separator>
     <Breadcrumb.Item>
       <Breadcrumb.Page>Status & miles</Breadcrumb.Page>
     </Breadcrumb.Item>
   </Breadcrumb.List>
 </Breadcrumb>
+`;
+
+export const iconsDemo = String.raw`
+<Breadcrumb>
+  <Breadcrumb.List>
+    <Breadcrumb.Item>
+      <Breadcrumb.Link href="/">
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M2.5 6.5L8 2l5.5 4.5V13a1 1 0 0 1-1 1h-3v-4h-3v4h-3a1 1 0 0 1-1-1V6.5Z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+        </svg>
+        Home
+      </Breadcrumb.Link>
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator />
+    <Breadcrumb.Item>
+      <Breadcrumb.Link href="/flights">Flights</Breadcrumb.Link>
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator />
+    <Breadcrumb.Item>
+      <Breadcrumb.Page>Istanbul → London</Breadcrumb.Page>
+    </Breadcrumb.Item>
+  </Breadcrumb.List>
+</Breadcrumb>
+`;
+
+export const longTrailDemo = String.raw`
+<div style={{ maxWidth: 360 }}>
+  <Breadcrumb>
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/booking">Booking</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/booking/flights">Flights</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="/booking/flights/seats">
+          Seat selection
+        </Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>Passenger details and baggage</Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+</div>
 `;
 
 export const externalLinkDemo = String.raw`
@@ -162,8 +260,7 @@ export const navigateDemo = String.raw`
 function NavigateBreadcrumbDemo() {
   const [last, setLast] = useState(null);
 
-  const handleNavigate = (href, event) => {
-    event.preventDefault();
+  const handleNavigate = (href) => {
     setLast(href);
   };
 
@@ -264,7 +361,10 @@ import { Breadcrumb } from '@takeoff-ui/react-spar';
 ## Variant
 
 `type="outlined"` wraps each crumb in a bordered, backgrounded chip;
-`type="basic"` (the default) is the bare text trail.
+`type="basic"` (the default) is the bare text trail. A label-less (icon-only)
+chip opts into tighter padding with the `tk-breadcrumb-item-icon-only` class —
+`<Breadcrumb.Item className="tk-breadcrumb-item-icon-only">` — since the
+compound API has no label prop to auto-detect it.
 
 <LiveCode
   code={typeDemo}
@@ -275,10 +375,39 @@ import { Breadcrumb } from '@takeoff-ui/react-spar';
   scope={breadcrumbScope}
 />
 
-## Custom Separator
+## Separators
+
+`Breadcrumb.Separator` defaults to a chevron. The `variant` prop switches to the
+dot, slash, or vertical glyph presets:
+
+<LiveCode
+  code={separatorVariantsDemo}
+  cssCode={breadcrumbDemoCss}
+  editable={false}
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={breadcrumbScope}
+/>
+
+Arbitrary content goes through `children`, which overrides the preset:
 
 <LiveCode
   code={customSeparatorDemo}
+  cssCode={breadcrumbDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={breadcrumbScope}
+/>
+
+## Icons
+
+Compose an icon before the label inside `Breadcrumb.Link` or `Breadcrumb.Page` —
+the recipe sizes direct `svg`/`img` children and tones them with the crumb's
+text color:
+
+<LiveCode
+  code={iconsDemo}
   cssCode={breadcrumbDemoCss}
   editable={false}
   previewMinHeight={120}
@@ -300,10 +429,11 @@ import { Breadcrumb } from '@takeoff-ui/react-spar';
 ## Routing Integration
 
 `onNavigate` runs for every `Breadcrumb.Link` activation (click,
-<kbd>Enter</kbd>, or <kbd>Space</kbd>). Call `event.preventDefault()` on the
-wrapped click before handing the destination off to your client-side router. A
-link-level `onPress` takes priority and short-circuits `onNavigate` when both
-are set.
+
+<kbd>Enter</kbd>, or <kbd>Space</kbd>). Spar prevents the native navigation
+before invoking it, so hand the destination straight to your client-side router
+— no `event.preventDefault()` needed. A link-level `onPress` takes priority and
+short-circuits `onNavigate` when both are set.
 
 <LiveCode
   code={navigateDemo}
@@ -315,6 +445,26 @@ are set.
   scope={breadcrumbScope}
 />
 
+### Custom link components
+
+Every part is polymorphic via `as`, so a router's link component can replace the
+anchor directly — no `onNavigate` interception needed:
+
+```tsx
+<Breadcrumb.Link as={Link} to="/flights">
+  Flights
+</Breadcrumb.Link>
+```
+
+`Breadcrumb.Item` also accepts a render function receiving
+`{ position, isCurrent, isDisabled }` for state-driven content:
+
+```tsx
+<Breadcrumb.Item>
+  {({ isDisabled }) => <Crumb muted={isDisabled} />}
+</Breadcrumb.Item>
+```
+
 ## Disabled
 
 Setting `disabled` on the root cascades to every `Breadcrumb.Link`: it removes
@@ -324,6 +474,22 @@ drops the disabled links from the tab order (`tabindex="-1"`), and surfaces
 
 <LiveCode
   code={disabledDemo}
+  cssCode={breadcrumbDemoCss}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={breadcrumbScope}
+/>
+
+## Long Trails
+
+Crumbs never wrap: labels stay on a single line and the trail scrolls
+horizontally (with a slim themed scrollbar) when it outgrows its container. The
+scroll container reserves a small gutter so the focus ring stays fully visible
+while tabbing through an overflowing trail.
+
+<LiveCode
+  code={longTrailDemo}
   cssCode={breadcrumbDemoCss}
   editable={false}
   previewMinHeight={120}
@@ -397,11 +563,11 @@ for primitive behavior.
 
 #### Data attributes {#breadcrumb-item-data-attributes}
 
-| Attribute                                       | Applied when      | Purpose                                                                                                               |
-| ----------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always            | Stable selector for wrapper styling on the root slot.                                                                 |
-| <ApiBadge label="data-position" />              | Always            | `"first"`, `"middle"`, or `"last"`. Emitted by Spar so theme recipes can target a crumb by its position in the trail. |
-| <ApiBadge label="data-current" />               | On the last item. | Emitted by Spar to mark the current page in the trail.                                                                |
+| Attribute                                       | Applied when                                               | Purpose                                                                                                                                                                                                                                                               |
+| ----------------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                     | Stable selector for wrapper styling on the root slot.                                                                                                                                                                                                                 |
+| <ApiBadge label="data-position" />              | Always                                                     | `"first"`, `"middle"`, or `"last"`. Emitted by Spar — with the pinned 0.2.0-beta.1 it always resolves to `"middle"` through this wrapper (position derivation is type-matched on Spar’s own item); the real values arrive with the Spar context-registration release. |
+| <ApiBadge label="data-current" />               | Reserved — not emitted at item level with the pinned Spar. | Will mark the current crumb once the Spar context-registration release lands. Until then, style the current crumb via `Breadcrumb.Page`’s always-emitted `data-current`.                                                                                              |
 
 ### Breadcrumb.Link {#breadcrumb-link}
 
@@ -436,17 +602,29 @@ See
 [Spar Breadcrumb docs](https://spar.app.turkishtechlab.com/docs/Components/Breadcrumb)
 for primitive behavior.
 
+#### Props {#breadcrumb-separator-props}
+
+| Name                            | Type                                                                                            | Default   | Description                                                                                                                 |
+| ------------------------------- | ----------------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                                    | -         | Override the separator glyph entirely; takes priority over `variant`. The owner `<li aria-hidden>` element stays invariant. |
+| <ApiBadge label="variant" />    | <code><a href="#breadcrumb-td-breadcrumbseparatorvariant">BreadcrumbSeparatorVariant</a></code> | 'chevron' | Glyph preset rendered when no `children` are given.                                                                         |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                        | -         | Per-slot class name overrides.                                                                                              |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>             | -         | Per-slot HTML attribute overrides.                                                                                          |
+| <ApiBadge label="className" />  | <code>string</code>                                                                             | -         | Appends custom classes to the root slot of this part.                                                                       |
+
 #### Data attributes {#breadcrumb-separator-data-attributes}
 
-| Attribute                                       | Applied when | Purpose                                               |
-| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                                                                                                                                |
+| ----------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.                                                                                                  |
+| <ApiBadge label="data-variant" />               | Always       | Reflects the resolved `variant` preset (`chevron` \| `dot` \| `slash` \| `vertical`) so the recipe can paint glyph separators. Emitted by the wrapper. |
 
 ### Type Definitions {#breadcrumb-type-definitions}
 
-| Name                                                                               | Definition                             |
-| ---------------------------------------------------------------------------------- | -------------------------------------- |
-| <span id="breadcrumb-td-breadcrumbsize"><ApiBadge label="BreadcrumbSize" /></span> | <code>'base' &#124; 'large'</code>     |
-| <span id="breadcrumb-td-breadcrumbtype"><ApiBadge label="BreadcrumbType" /></span> | <code>'basic' &#124; 'outlined'</code> |
+| Name                                                                                                       | Definition                                                           |
+| ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| <span id="breadcrumb-td-breadcrumbsize"><ApiBadge label="BreadcrumbSize" /></span>                         | <code>'base' &#124; 'large'</code>                                   |
+| <span id="breadcrumb-td-breadcrumbtype"><ApiBadge label="BreadcrumbType" /></span>                         | <code>'basic' &#124; 'outlined'</code>                               |
+| <span id="breadcrumb-td-breadcrumbseparatorvariant"><ApiBadge label="BreadcrumbSeparatorVariant" /></span> | <code>'chevron' &#124; 'dot' &#124; 'slash' &#124; 'vertical'</code> |
 
 {/* api-tables:end */}

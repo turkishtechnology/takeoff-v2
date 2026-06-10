@@ -1,4 +1,4 @@
-import type { ElementType } from 'react';
+import { useMemo, type ElementType } from 'react';
 import { Breadcrumb as SparBreadcrumb } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
@@ -24,8 +24,10 @@ export const Breadcrumb = <T extends ElementType = 'nav'>(props: BreadcrumbProps
 
   const { size = DEFAULT_SIZE, type = DEFAULT_TYPE, children, ref, ...sparProps } = rest;
 
+  const contextValue = useMemo(() => ({ size, type }), [size, type]);
+
   return (
-    <BreadcrumbProvider value={{ size, type }}>
+    <BreadcrumbProvider value={contextValue}>
       <SparBreadcrumb {...sparProps} ref={ref} {...rootAttrs}>
         {children}
       </SparBreadcrumb>

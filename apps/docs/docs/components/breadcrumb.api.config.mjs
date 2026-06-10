@@ -92,7 +92,9 @@ export default {
       sparDocsUrl: sparBreadcrumbDocsUrl,
       sparDocsLabel: 'Spar Breadcrumb docs',
       propOverrides: {
-        children: childrenOverride('`Breadcrumb.Link` or `Breadcrumb.Page`, or a render function receiving `{ position, isCurrent, isDisabled }`.'),
+        children: childrenOverride(
+          '`Breadcrumb.Link` or `Breadcrumb.Page`, or a render function receiving `{ position, isCurrent, isDisabled }`. With the pinned Spar 0.2.0-beta.1, `position`/`isCurrent` stay at `"middle"`/`false` through this wrapper until the Spar context-registration release lands; `isDisabled` works today.',
+        ),
         className: classNameOverride,
       },
       dataAttributes: [
@@ -100,12 +102,14 @@ export default {
         {
           attribute: 'data-position',
           appliedWhen: 'Always',
-          purpose: '`"first"`, `"middle"`, or `"last"`. Emitted by Spar so theme recipes can target a crumb by its position in the trail.',
+          purpose:
+            '`"first"`, `"middle"`, or `"last"`. Emitted by Spar — with the pinned 0.2.0-beta.1 it always resolves to `"middle"` through this wrapper (position derivation is type-matched on Spar’s own item); the real values arrive with the Spar context-registration release.',
         },
         {
           attribute: 'data-current',
-          appliedWhen: 'On the last item.',
-          purpose: 'Emitted by Spar to mark the current page in the trail.',
+          appliedWhen: 'Reserved — not emitted at item level with the pinned Spar.',
+          purpose:
+            'Will mark the current crumb once the Spar context-registration release lands. Until then, style the current crumb via `Breadcrumb.Page`’s always-emitted `data-current`.',
         },
       ],
     },
@@ -172,10 +176,17 @@ export default {
       sparDocsUrl: sparBreadcrumbDocsUrl,
       sparDocsLabel: 'Spar Breadcrumb docs',
       propOverrides: {
-        children: childrenOverride('Override the default chevron. The owner `<li aria-hidden>` element stays invariant.'),
+        children: childrenOverride('Override the separator glyph entirely; takes priority over `variant`. The owner `<li aria-hidden>` element stays invariant.'),
         className: classNameOverride,
       },
-      dataAttributes: [dataSlotRoot],
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-variant',
+          appliedWhen: 'Always',
+          purpose: 'Reflects the resolved `variant` preset (`chevron` | `dot` | `slash` | `vertical`) so the recipe can paint glyph separators. Emitted by the wrapper.',
+        },
+      ],
     },
   ],
 };
