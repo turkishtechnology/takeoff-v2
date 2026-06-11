@@ -10,6 +10,7 @@
 @use 'recipes/drawer';
 @use 'recipes/field';
 @use 'recipes/input';
+@use 'recipes/label';
 @use 'recipes/popover';
 @use 'recipes/radio';
 @use 'recipes/select';
@@ -79,6 +80,10 @@
 
 .tk-input {
   @include input.input;
+}
+
+.tk-label {
+  @include label.label;
 }
 
 .tk-select {
