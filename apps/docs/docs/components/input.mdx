@@ -62,6 +62,15 @@ function FieldWithInputDemo() {
         <Field.ErrorMessage>Enter a valid phone number.</Field.ErrorMessage>
       </Field>
 
+      <Field optional>
+        <Field.Label>Frequent flyer number</Field.Label>
+        <Input>
+          <Input.Container>
+            <Input.Field placeholder="Optional" />
+          </Input.Container>
+        </Input>
+      </Field>
+
       <Field disabled>
         <Field.Label>Disabled</Field.Label>
         <Input>
@@ -173,10 +182,10 @@ render(<AdornmentsDemo />);
 # Input
 
 `Input` is a compound, accessible text input. The root owns visual state
-(`size`, plus inherited `invalid` / `disabled` / `required` / `readOnly`),
-`Input.Container` is the bordered row that hosts the field plus optional
-adornments. Wrap `Input` in a `Field` to attach a label, helper text, or error
-message — the field-level state cascades into the input automatically.
+(`size`, plus inherited `invalid` / `disabled` / `required` / `optional` /
+`readOnly`), `Input.Container` is the bordered row that hosts the field plus
+optional adornments. Wrap `Input` in a `Field` to attach a label, helper text,
+or error message — the field-level state cascades into the input automatically.
 
 ## Usage
 
@@ -212,14 +221,14 @@ import { Field, Input } from '@takeoff-ui/react-spar';
 ## Using with `Field`
 
 `Field` is the generic ARIA wrapper. Setting `invalid`, `disabled`, `required`,
-or `readOnly` on `Field` cascades into the nested `Input`, and `Field.Label`,
-`Field.Description`, and `Field.ErrorMessage` are wired to the field control
-through shared IDs.
+`optional`, or `readOnly` on `Field` cascades into the nested `Input`, and
+`Field.Label`, `Field.Description`, and `Field.ErrorMessage` are wired to the
+field control through shared IDs.
 
 <LiveCode
   code={fieldWithInputDemo}
   noInline
-  previewMinHeight={460}
+  previewMinHeight={560}
   previewWrapper={ReactSparDemoRoot}
   scope={inputScope}
 />
