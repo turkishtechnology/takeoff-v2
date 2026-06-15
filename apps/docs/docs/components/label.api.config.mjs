@@ -49,7 +49,7 @@ export default {
         },
         {
           attribute: 'data-optional',
-          appliedWhen: '`isOptional` is true.',
+          appliedWhen: '`optional` is true.',
           purpose: 'Styling hook for optional labels.',
         },
         {

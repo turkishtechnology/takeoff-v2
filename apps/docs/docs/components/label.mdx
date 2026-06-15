@@ -96,7 +96,7 @@ function StatesDemo() {
       </div>
 
       <div className="grid gap-1">
-        <Label htmlFor="optional-native" isOptional>Optional label</Label>
+        <Label htmlFor="optional-native" optional>Optional label</Label>
         <input id="optional-native" className="rounded-lg border border-neutral-300 px-3 py-2 text-sm" placeholder="Optional field" />
       </div>
 
@@ -176,7 +176,7 @@ better choice. If you do wire it manually, set the base id on `Input` and point
 
 ## States
 
-`required`, `isOptional`, `disabled`, `readOnly`, and `invalid` are emitted as
+`required`, `optional`, `disabled`, `readOnly`, and `invalid` are emitted as
 `data-*` attributes on the label for styling. They do not set `required`,
 `disabled`, `readOnly`, or `aria-invalid` on the related control. Set the same
 state on the control or use `Field` when the label and control should stay
@@ -221,18 +221,18 @@ styling, or shared disabled/read-only/required state, use `Field.Label` inside
 | <ApiBadge label="required" />   | <code>boolean</code>                                                                | false   | Marks label for a required field (exposed via data attribute for styling)  |
 | <ApiBadge label="readOnly" />   | <code>boolean</code>                                                                | false   | Marks label for a read-only field (exposed via data attribute for styling) |
 | <ApiBadge label="invalid" />    | <code>boolean</code>                                                                | false   | Marks label for an invalid field (exposed via data attribute for styling)  |
-| <ApiBadge label="isOptional" /> | <code>boolean</code>                                                                | false   | Marks label for an optional field (exposed via data attribute for styling) |
+| <ApiBadge label="optional" />   | <code>boolean</code>                                                                | false   | Marks label for an optional field (exposed via data attribute for styling) |
 | <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot.                                   |
 
 #### Data attributes {#label-data-attributes}
 
-| Attribute                                       | Applied when          | Purpose                                               |
-| ----------------------------------------------- | --------------------- | ----------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                | Stable selector for wrapper styling on the root slot. |
-| <ApiBadge label="data-required" />              | `required` is true.   | Styling hook for required labels.                     |
-| <ApiBadge label="data-optional" />              | `isOptional` is true. | Styling hook for optional labels.                     |
-| <ApiBadge label="data-disabled" />              | `disabled` is true.   | Styling hook for disabled labels.                     |
-| <ApiBadge label="data-readonly" />              | `readOnly` is true.   | Styling hook for read-only labels.                    |
-| <ApiBadge label="data-invalid" />               | `invalid` is true.    | Styling hook for invalid labels.                      |
+| Attribute                                       | Applied when        | Purpose                                               |
+| ----------------------------------------------- | ------------------- | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always              | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-required" />              | `required` is true. | Styling hook for required labels.                     |
+| <ApiBadge label="data-optional" />              | `optional` is true. | Styling hook for optional labels.                     |
+| <ApiBadge label="data-disabled" />              | `disabled` is true. | Styling hook for disabled labels.                     |
+| <ApiBadge label="data-readonly" />              | `readOnly` is true. | Styling hook for read-only labels.                    |
+| <ApiBadge label="data-invalid" />               | `invalid` is true.  | Styling hook for invalid labels.                      |
 
 {/* api-tables:end */}

@@ -17,7 +17,7 @@ export type LabelProps<T extends ElementType = 'label'> = PolymorphicProps<
   T,
   LabelOwnProps &
     // Inherit Spar Label's accessible association and state styling hooks.
-    Pick<SparLabelProps, 'children' | 'required' | 'isOptional' | 'disabled' | 'readOnly' | 'invalid'>
+    Pick<SparLabelProps, 'children' | 'required' | 'optional' | 'disabled' | 'readOnly' | 'invalid'>
 >;
 
 declare module '../../core/theme' {

@@ -42,7 +42,7 @@ describe('Label', () => {
 
   it('applies state data attributes only when state props are truthy', () => {
     const { rerender } = render(
-      <Label required isOptional disabled readOnly invalid>
+      <Label required optional disabled readOnly invalid>
         Field
       </Label>,
     );
