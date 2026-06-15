@@ -14,6 +14,7 @@
 @use 'recipes/radio';
 @use 'recipes/select';
 @use 'recipes/switch';
+@use 'recipes/tabs';
 @use 'recipes/tooltip';
 
 @include button.button-keyframes;
@@ -131,6 +132,22 @@
 
 .tk-radio-item {
   @include radio.radio-item;
+}
+
+.tk-tabs {
+  @include tabs.tabs;
+}
+
+.tk-tabs-list {
+  @include tabs.tabs-list;
+}
+
+.tk-tabs-trigger {
+  @include tabs.tabs-trigger;
+}
+
+.tk-tabs-content {
+  @include tabs.tabs-content;
 }
 
 .tk-tooltip-content {
