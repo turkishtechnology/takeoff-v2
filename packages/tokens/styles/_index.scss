@@ -49,8 +49,8 @@
   @include dialog.dialog-title;
 }
 
-.tk-dialog-close-button {
-  @include dialog.dialog-close-button;
+.tk-dialog-close {
+  @include dialog.dialog-close;
 }
 
 .tk-dialog-body {

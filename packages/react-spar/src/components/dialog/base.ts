@@ -98,6 +98,6 @@ export const DialogCloseBase = createComponentBase<DialogCloseProps, DialogClose
   name: 'DialogClose',
   slots: ['root'] as const,
   classes: {
-    root: 'tk-dialog-close-button',
+    root: 'tk-dialog-close',
   },
 });

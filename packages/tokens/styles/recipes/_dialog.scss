@@ -50,7 +50,7 @@
   }
 }
 
-@mixin dialog-close-button {
+@mixin dialog-close {
   display: inline-flex;
   min-width: 32px;
   padding: var(--spacing-xs);
@@ -123,7 +123,7 @@
       color: var(--text-lightest);
     }
 
-    .tk-dialog-close-button {
+    .tk-dialog-close {
       color: var(--icon-base);
     }
   }
@@ -139,7 +139,7 @@
       color: var(--text-lightest);
     }
 
-    .tk-dialog-close-button {
+    .tk-dialog-close {
       color: var(--primary-lightest);
     }
   }
