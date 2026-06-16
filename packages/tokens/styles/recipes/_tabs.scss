@@ -223,7 +223,9 @@
     &:hover:not([data-disabled], :disabled, [aria-disabled='true']),
     &[data-state='active'] {
       background: var(--static-light);
-      box-shadow: var(--effect-1-default-base);
+      &:not([data-orientation='vertical']) {
+        box-shadow: var(--effect-1-default-base);
+      }
     }
 
     &::after {
