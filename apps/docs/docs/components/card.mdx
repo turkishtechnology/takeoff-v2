@@ -27,9 +27,9 @@ function PlaygroundDemo() {
     <Card className="w-full max-w-120">
       <Card.Header>
         <Card.Title>Flight Summary</Card.Title>
-        <Card.Description>IST to LHR · 18 Jun 2026</Card.Description>
       </Card.Header>
       <Card.Body>
+        <Card.Description>IST to LHR · 18 Jun 2026</Card.Description>
         <div className="flex items-center justify-between gap-4">
           <div>
             <div className="text-sm text-neutral-500">Departure</div>
@@ -54,15 +54,14 @@ function HeaderTypeDemo() {
   const headerTypes = ['basic', 'divided', 'light', 'dark', 'primary'];
 
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="flex justify-center gap-3">
       {headerTypes.map((type) => (
         <Card key={type}>
           <Card.Header headerType={type}>
             <Card.Title>{type}</Card.Title>
-            <Card.Description>Header type preview</Card.Description>
           </Card.Header>
           <Card.Body>
-            Header styling changes with the <code>headerType</code> prop.
+            <Card.Description>Header type preview</Card.Description>
           </Card.Body>
         </Card>
       ))}
@@ -78,15 +77,14 @@ function FooterTypeDemo() {
   const footerTypes = ['basic', 'divided', 'light'];
 
   return (
-    <div className="flex w-full gap-6">
+    <div className="flex justify-center gap-3">
       {footerTypes.map((type) => (
         <Card key={type}>
           <Card.Header>
             <Card.Title>{type}</Card.Title>
-            <Card.Description>Footer type preview</Card.Description>
           </Card.Header>
           <Card.Body>
-            Footer styling changes with the <code>footerType</code> prop.
+            <Card.Description>Footer type preview</Card.Description>
           </Card.Body>
           <Card.Footer footerType={type}>
             <Button variant="neutral" appearance="text">Cancel</Button>
@@ -118,11 +116,12 @@ import { Card } from '@takeoff-ui/react-spar';
 ```tsx
 <Card>
   <Card.Header>
-    <Card.Title>Flight Summary</Card.Title>
-    <Card.Description>IST to LHR</Card.Description>
+    <Card.Title />
   </Card.Header>
-  <Card.Body>Content</Card.Body>
-  <Card.Footer>Actions</Card.Footer>
+  <Card.Body>
+    <Card.Description />
+  </Card.Body>
+  <Card.Footer />
 </Card>
 ```
 
@@ -141,7 +140,7 @@ import { Card } from '@takeoff-ui/react-spar';
 <LiveCode
   code={headerTypeDemo}
   noInline
-  previewMinHeight={520}
+  previewMinHeight={320}
   previewWrapper={ReactSparDemoRoot}
   scope={cardScope}
 />
@@ -151,7 +150,7 @@ import { Card } from '@takeoff-ui/react-spar';
 <LiveCode
   code={footerTypeDemo}
   noInline
-  previewMinHeight={520}
+  previewMinHeight={320}
   previewWrapper={ReactSparDemoRoot}
   scope={cardScope}
 />
