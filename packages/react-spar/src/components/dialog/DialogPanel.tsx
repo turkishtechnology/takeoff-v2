@@ -12,12 +12,12 @@ const preventDefault = (e: Event) => e.preventDefault();
 
 export const DialogPanel = <T extends ElementType = 'div'>(props: DialogPanelProps<T>) => {
   const theme = useComponentTheme('DialogPanel');
-  const { dismissable } = useDialogOwnContext();
+  const { dismissible } = useDialogOwnContext();
 
   const { rootAttrs, rest } = composeRootAttrs<DialogPanelProps, DialogPanelSlot>(DialogPanelBase, props as DialogPanelProps<'div'>, theme);
   const { children, ref, ...sparProps } = rest;
 
-  const dismissHandlers = !dismissable && {
+  const dismissHandlers = !dismissible && {
     onEscapeKeyDown: preventDefault,
     onPointerDownOutside: preventDefault,
     onInteractOutside: preventDefault,

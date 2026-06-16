@@ -4,7 +4,7 @@ import { ButtonBase } from './components/button/base';
 import { CheckboxBase } from './components/checkbox/base';
 import {
   DialogBodyBase,
-  DialogCloseButtonBase,
+  DialogCloseBase,
   DialogPanelBase,
   DialogDescriptionBase,
   DialogFooterBase,
@@ -62,7 +62,7 @@ export const slotClassRegistry = {
   dialogDescription: { slots: DialogDescriptionBase.classes },
   dialogBody: { slots: DialogBodyBase.classes },
   dialogFooter: { slots: DialogFooterBase.classes },
-  dialogCloseButton: { slots: DialogCloseButtonBase.classes },
+  dialogClose: { slots: DialogCloseBase.classes },
   drawer: { slots: DrawerBase.classes },
   drawerOverlay: { slots: DrawerOverlayBase.classes },
   drawerPanel: { slots: DrawerPanelBase.classes },

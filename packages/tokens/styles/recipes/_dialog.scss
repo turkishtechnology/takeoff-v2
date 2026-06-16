@@ -171,4 +171,13 @@
   gap: var(--dialog-footer-base-gap);
   justify-content: flex-end;
   align-self: stretch;
+
+  &[data-footer-type='divided'] {
+    border-top: 1px solid var(--border-light);
+  }
+
+  &[data-footer-type='light'] {
+    border-top: 1px solid var(--border-light);
+    background: var(--background-lightest);
+  }
 }

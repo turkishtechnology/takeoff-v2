@@ -30,7 +30,7 @@ function PlaygroundDemo() {
       <Dialog.Panel>
         <Dialog.Header>
           <Dialog.Title>Flight Details</Dialog.Title>
-          <Dialog.CloseButton>✕</Dialog.CloseButton>
+          <Dialog.Close>✕</Dialog.Close>
         </Dialog.Header>
         <Dialog.Body>
           <Dialog.Description>
@@ -58,7 +58,7 @@ function OverlayIntensityDemo() {
           <Dialog.Panel>
             <Dialog.Header>
               <Dialog.Title>{intensity} overlay</Dialog.Title>
-              <Dialog.CloseButton>✕</Dialog.CloseButton>
+              <Dialog.Close>✕</Dialog.Close>
             </Dialog.Header>
             <Dialog.Body>
               Overlay intensity is set to <code>{intensity}</code>.
@@ -83,7 +83,7 @@ function OverlayBehaviorDemo() {
         <Dialog.Panel>
           <Dialog.Header>
             <Dialog.Title>Blurred overlay</Dialog.Title>
-            <Dialog.CloseButton>✕</Dialog.CloseButton>
+            <Dialog.Close>✕</Dialog.Close>
           </Dialog.Header>
           <Dialog.Body>
             The backdrop stays visible and adds a soft blur effect behind the panel.
@@ -97,7 +97,7 @@ function OverlayBehaviorDemo() {
         <Dialog.Panel>
           <Dialog.Header>
             <Dialog.Title>Invisible overlay</Dialog.Title>
-            <Dialog.CloseButton>✕</Dialog.CloseButton>
+            <Dialog.Close>✕</Dialog.Close>
           </Dialog.Header>
           <Dialog.Body>
             The overlay remains mounted for interaction but is visually hidden.
@@ -123,17 +123,17 @@ function HeaderTypeDemo() {
           <Dialog.Overlay />
           <Dialog.Panel>
             <Dialog.Header headerType={headerType}>
-              <div>
-                <Dialog.Title>{headerType} header</Dialog.Title>
-                <Dialog.Description>
-                  Header styling changes with <code>headerType</code>.
-                </Dialog.Description>
-              </div>
-              <Dialog.CloseButton>✕</Dialog.CloseButton>
+              <Dialog.Title>{headerType} header</Dialog.Title>
+              <Dialog.Close>✕</Dialog.Close>
             </Dialog.Header>
             <Dialog.Body>
+              <Dialog.Description>
+                Header styling changes with <code>headerType</code>.
+              </Dialog.Description>
+              <div className="mt-3">
               This panel keeps the same body and footer while only the header
               appearance changes.
+              </div>
             </Dialog.Body>
           </Dialog.Panel>
         </Dialog>
@@ -145,16 +145,16 @@ function HeaderTypeDemo() {
 render(<HeaderTypeDemo />);
 `;
 
-export const dismissableDemo = String.raw`
-function DismissableDemo() {
+export const dismissibleDemo = String.raw`
+function DismissibleDemo() {
   return (
-    <Dialog dismissable={false}>
+    <Dialog dismissible={false}>
       <Dialog.Trigger as={Button}>Open sticky dialog</Dialog.Trigger>
       <Dialog.Overlay />
       <Dialog.Panel>
         <Dialog.Header headerType="light">
           <Dialog.Title>Dismiss disabled</Dialog.Title>
-          <Dialog.CloseButton>✕</Dialog.CloseButton>
+          <Dialog.Close>✕</Dialog.Close>
         </Dialog.Header>
         <Dialog.Body>
           Escape and outside clicks will not close this dialog. Use the close
@@ -165,36 +165,40 @@ function DismissableDemo() {
   );
 }
 
-render(<DismissableDemo />);
+render(<DismissibleDemo />);
 `;
 
-export const footerDemo = String.raw`
-function FooterDemo() {
+
+export const footerTypeDemo = String.raw`
+function FooterTypeDemo() {
+  const footerTypes = ['basic', 'divided', 'light'];
+
   return (
-    <Dialog>
-      <Dialog.Trigger as={Button}>Open action footer</Dialog.Trigger>
-      <Dialog.Overlay />
-      <Dialog.Panel>
-        <Dialog.Header headerType="divided">
-          <Dialog.Title>Unsaved changes</Dialog.Title>
-          <Dialog.CloseButton>✕</Dialog.CloseButton>
-        </Dialog.Header>
-        <Dialog.Body>
-          Your seat and passenger details will be discarded if you leave this
-          step now.
-        </Dialog.Body>
-        <Dialog.Footer>
-          <Dialog.CloseButton as={Button} variant="secondary">
-            Stay here
-          </Dialog.CloseButton>
-          <Button>Leave page</Button>
-        </Dialog.Footer>
-      </Dialog.Panel>
-    </Dialog>
+    <div className="flex flex-wrap justify-center gap-3">
+      {footerTypes.map((footerType) => (
+        <Dialog key={footerType}>
+          <Dialog.Trigger as={Button}>{footerType}</Dialog.Trigger>
+          <Dialog.Overlay />
+          <Dialog.Panel>
+            <Dialog.Header headerType="divided">
+              <Dialog.Title>{footerType} footer</Dialog.Title>
+              <Dialog.Close>✕</Dialog.Close>
+            </Dialog.Header>
+            <Dialog.Body>
+              Footer styling changes with <code>footerType</code>.
+            </Dialog.Body>
+            <Dialog.Footer footerType={footerType}>
+              <Button variant="secondary">Cancel</Button>
+              <Button>Confirm</Button>
+            </Dialog.Footer>
+          </Dialog.Panel>
+        </Dialog>
+      ))}
+    </div>
   );
 }
 
-render(<FooterDemo />);
+render(<FooterTypeDemo />);
 `;
 
 export const controlledDemo = String.raw`
@@ -207,19 +211,19 @@ function ControlledDemo() {
       <span className="text-xs opacity-70">
         State: {open ? 'open' : 'closed'}
       </span>
-      <Dialog open={open} onOpenChange={setOpen} dismissable={false}>
+      <Dialog open={open} onOpenChange={setOpen} dismissible={false}>
         <Dialog.Overlay />
         <Dialog.Panel>
           <Dialog.Header headerType="light">
             <Dialog.Title>Controlled dialog</Dialog.Title>
-            <Dialog.CloseButton>✕</Dialog.CloseButton>
+            <Dialog.Close>✕</Dialog.Close>
           </Dialog.Header>
           <Dialog.Body>
             This dialog is controlled outside the component. Escape and outside
-            clicks are disabled with <code>dismissable=false</code>.
+            clicks are disabled with <code>dismissible=false</code>.
           </Dialog.Body>
           <Dialog.Footer className="flex justify-end">
-            <Dialog.CloseButton as={Button}>Done</Dialog.CloseButton>
+            <Dialog.Close as={Button}>Done</Dialog.Close>
           </Dialog.Footer>
         </Dialog.Panel>
       </Dialog>
@@ -250,10 +254,11 @@ import { Dialog } from '@takeoff-ui/react-spar';
   <Dialog.Panel>
     <Dialog.Header>
       <Dialog.Title />
-      <Dialog.Description />
-      <Dialog.CloseButton />
+      <Dialog.Close />
     </Dialog.Header>
-    <Dialog.Body />
+    <Dialog.Body>
+      <Dialog.Description />
+    </Dialog.Body>
     <Dialog.Footer />
   </Dialog.Panel>
 </Dialog>
@@ -307,25 +312,26 @@ changing the rest of the panel structure.
   scope={dialogScope}
 />
 
-## Dismissable
+## Dismissible
 
-Set `dismissable={false}` when the dialog should stay open until the user
+Set `dismissible={false}` when the dialog should stay open until the user
 explicitly closes it.
 
 <LiveCode
-  code={dismissableDemo}
+  code={dismissibleDemo}
   noInline
   previewMinHeight={140}
   previewWrapper={ReactSparDemoRoot}
   scope={dialogScope}
 />
 
-## Footer
+## Footer Type
 
-Use `Dialog.Footer` for trailing actions such as confirm and cancel buttons.
+Use `footerType` to switch the footer treatment without changing the action
+layout.
 
 <LiveCode
-  code={footerDemo}
+  code={footerTypeDemo}
   noInline
   previewMinHeight={160}
   previewWrapper={ReactSparDemoRoot}
@@ -354,12 +360,12 @@ outside the component.
   the accessible description.
 - `Dialog.Body` provides the default content spacing area between header and
   footer.
-- When `dismissable={false}`, Escape and outside interaction do not close the
+- When `dismissible={false}`, Escape and outside interaction do not close the
   dialog.
 
 | Key                                   | Behavior                                        |
 | ------------------------------------- | ----------------------------------------------- |
-| <kbd>Escape</kbd>                     | Closes the dialog unless `dismissable={false}`. |
+| <kbd>Escape</kbd>                     | Closes the dialog unless `dismissible={false}`. |
 | <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> | Cycles focus within the dialog content.         |
 
 ## API Reference
@@ -373,7 +379,7 @@ outside the component.
 | Name                             | Type                         | Default | Description                                                                                                                                                                      |
 | -------------------------------- | ---------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <ApiBadge label="children" />    | <code>React.ReactNode</code> | -       | Dialog parts rendered inside the root.                                                                                                                                           |
-| <ApiBadge label="dismissable" /> | <code>boolean</code>         | true    | Whether the dialog can be dismissed by clicking outside or pressing Escape.                                                                                                      |
+| <ApiBadge label="dismissible" /> | <code>boolean</code>         | true    | Whether the dialog can be dismissed by clicking outside or pressing Escape.                                                                                                      |
 | <ApiBadge label="id" />          | <code>string</code>          | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-title`, `${id}-description`, `${id}-content`. |
 | <ApiBadge label="disabled" />    | <code>boolean</code>         | false   | Disables all dialog triggers (prevents opening)                                                                                                                                  |
 | <ApiBadge label="forceMount" />  | <code>boolean</code>         | false   | Always render portal/overlay/content (for animation libraries)                                                                                                                   |
@@ -503,15 +509,24 @@ outside the component.
 
 ### Dialog.Footer {#dialog-footer}
 
+#### Props {#dialog-footer-props}
+
+| Name                            | Type                                                                                | Default | Description         |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
+| <ApiBadge label="footerType" /> | <code><a href="#dialog-td-dialogfootertype">DialogFooterType</a></code>             | 'basic' | Type of the footer. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
+
 #### Data attributes {#dialog-footer-data-attributes}
 
 | Attribute                                       | Applied when | Purpose                                               |
 | ----------------------------------------------- | ------------ | ----------------------------------------------------- |
 | <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-footer-type" />           | Always       | Reflects the resolved `footerType` prop.              |
 
-### Dialog.CloseButton {#dialog-close-button}
+### Dialog.Close {#dialog-close}
 
-#### Data attributes {#dialog-close-button-data-attributes}
+#### Data attributes {#dialog-close-data-attributes}
 
 | Attribute                                       | Applied when | Purpose                                               |
 | ----------------------------------------------- | ------------ | ----------------------------------------------------- |
@@ -523,5 +538,6 @@ outside the component.
 | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | <span id="dialog-td-dialogoverlayintensity"><ApiBadge label="DialogOverlayIntensity" /></span> | <code>'lightest' &#124; 'light' &#124; 'base' &#124; 'dark' &#124; 'darkest'</code> |
 | <span id="dialog-td-dialogheadertype"><ApiBadge label="DialogHeaderType" /></span>             | <code>'basic' &#124; 'divided' &#124; 'light' &#124; 'dark' &#124; 'primary'</code> |
+| <span id="dialog-td-dialogfootertype"><ApiBadge label="DialogFooterType" /></span>             | <code>'basic' &#124; 'divided' &#124; 'light'</code>                                |
 
 {/* api-tables:end */}

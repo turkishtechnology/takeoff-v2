@@ -7,7 +7,7 @@ import { DialogTitle } from './DialogTitle';
 import { DialogDescription } from './DialogDescription';
 import { DialogBody } from './DialogBody';
 import { DialogFooter } from './DialogFooter';
-import { DialogCloseButton } from './DialogCloseButton';
+import { DialogClose } from './DialogClose';
 
 const Dialog = Object.assign(DialogRoot, {
   Trigger: DialogTrigger,
@@ -18,7 +18,7 @@ const Dialog = Object.assign(DialogRoot, {
   Description: DialogDescription,
   Body: DialogBody,
   Footer: DialogFooter,
-  CloseButton: DialogCloseButton,
+  Close: DialogClose,
 });
 
 export { Dialog };
@@ -26,14 +26,15 @@ export { Dialog };
 export type {
   DialogBodyProps,
   DialogBodySlot,
-  DialogCloseButtonProps,
-  DialogCloseButtonSlot,
+  DialogCloseProps,
+  DialogCloseSlot,
   DialogPanelProps,
   DialogPanelSlot,
   DialogDescriptionProps,
   DialogDescriptionSlot,
   DialogFooterProps,
   DialogFooterSlot,
+  DialogFooterType,
   DialogHeaderProps,
   DialogHeaderSlot,
   DialogHeaderType,

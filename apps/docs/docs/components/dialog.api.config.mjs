@@ -168,13 +168,20 @@ export default {
         children: childrenOverride('Footer actions or secondary controls.'),
         className: classNameOverride,
       },
-      dataAttributes: [dataSlotRoot],
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-footer-type',
+          appliedWhen: 'Always',
+          purpose: 'Reflects the resolved `footerType` prop.',
+        },
+      ],
     },
     {
       sourceFile: dialogTypesFile,
-      typeName: 'DialogCloseButtonProps',
-      displayName: 'Dialog.CloseButton',
-      headingBase: 'dialog-close-button',
+      typeName: 'DialogCloseProps',
+      displayName: 'Dialog.Close',
+      headingBase: 'dialog-close',
       propOverrides: {
         children: childrenOverride('Close label, icon, or render function.'),
         className: classNameOverride,

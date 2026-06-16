@@ -4,14 +4,19 @@ import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { DialogFooterBase } from './base';
+import { DEFAULT_FOOTER_TYPE } from './defaults';
 import type { DialogFooterProps, DialogFooterSlot } from './types';
 
 export const DialogFooter = <T extends ElementType = 'div'>(props: DialogFooterProps<T>) => {
   const theme = useComponentTheme('DialogFooter');
 
-  const { rootAttrs, rest } = composeRootAttrs<DialogFooterProps, DialogFooterSlot>(DialogFooterBase, props as DialogFooterProps<'div'>, theme);
+  const { rootAttrs, rest } = composeRootAttrs<DialogFooterProps, DialogFooterSlot>(DialogFooterBase, props as DialogFooterProps<'div'>, theme, {
+    stateAttrs: ({ footerType = DEFAULT_FOOTER_TYPE }) => ({
+      'data-footer-type': footerType,
+    }),
+  });
 
-  const { as, children, ref, ...footerProps } = rest;
+  const { as, footerType: _footerType = DEFAULT_FOOTER_TYPE, children, ref, ...footerProps } = rest;
   const Component = (as ?? 'div') as ElementType;
 
   return (

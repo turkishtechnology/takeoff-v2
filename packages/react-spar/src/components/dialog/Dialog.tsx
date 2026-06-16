@@ -12,10 +12,10 @@ export const Dialog = (props: DialogProps) => {
   const theme = useComponentTheme('Dialog');
   const merged = { ...theme?.defaultProps, ...props };
 
-  const { dismissable = true, children, ...sparProps } = merged;
+  const { dismissible = true, children, ...sparProps } = merged;
 
   return (
-    <DialogProvider value={{ dismissable }}>
+    <DialogProvider value={{ dismissible }}>
       <SparDialog {...sparProps}>{children}</SparDialog>
     </DialogProvider>
   );

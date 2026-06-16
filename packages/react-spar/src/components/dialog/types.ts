@@ -27,11 +27,13 @@ export type DialogBodySlot = 'root';
 
 export type DialogFooterSlot = 'root';
 
-export type DialogCloseButtonSlot = 'root';
+export type DialogCloseSlot = 'root';
 
 export type DialogOverlayIntensity = 'lightest' | 'light' | 'base' | 'dark' | 'darkest';
 
 export type DialogHeaderType = 'basic' | 'divided' | 'light' | 'dark' | 'primary';
+
+export type DialogFooterType = 'basic' | 'divided' | 'light';
 
 /**
  * Public props for the Dialog root. State-only — renders no DOM, so no
@@ -39,7 +41,7 @@ export type DialogHeaderType = 'basic' | 'divided' | 'light' | 'dark' | 'primary
  */
 export interface DialogProps extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'modal' | 'disabled' | 'forceMount' | 'children'> {
   /** Whether the dialog can be dismissed by clicking outside or pressing Escape. @defaultValue true */
-  dismissable?: boolean;
+  dismissible?: boolean;
 }
 
 export interface DialogTriggerOwnProps {
@@ -116,8 +118,8 @@ export interface DialogHeaderOwnProps {
 
 export type DialogHeaderProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DialogHeaderOwnProps>;
 
-export type DialogTitleProps<T extends ElementType = 'h2'> = PolymorphicProps<
-  'h2',
+export type DialogTitleProps<T extends ElementType = 'h5'> = PolymorphicProps<
+  'h5',
   T,
   DialogTitleOwnProps &
     // Semantic heading level (1–6).
@@ -139,21 +141,23 @@ export interface DialogBodyOwnProps {
 export type DialogBodyProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DialogBodyOwnProps>;
 
 export interface DialogFooterOwnProps {
+  /** Type of the footer. @defaultValue 'basic' */
+  footerType?: DialogFooterType;
   classNames?: ClassNamesMap<DialogFooterSlot>;
   slotProps?: SlotPropsMap<DialogFooterSlot>;
 }
 
 export type DialogFooterProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DialogFooterOwnProps>;
 
-export interface DialogCloseButtonOwnProps {
-  classNames?: ClassNamesMap<DialogCloseButtonSlot>;
-  slotProps?: SlotPropsMap<DialogCloseButtonSlot>;
+export interface DialogCloseOwnProps {
+  classNames?: ClassNamesMap<DialogCloseSlot>;
+  slotProps?: SlotPropsMap<DialogCloseSlot>;
 }
 
-export type DialogCloseButtonProps<T extends ElementType = 'button'> = PolymorphicProps<
+export type DialogCloseProps<T extends ElementType = 'button'> = PolymorphicProps<
   'button',
   T,
-  DialogCloseButtonOwnProps &
+  DialogCloseOwnProps &
     // Close surface from Spar. `children` is picked so it accepts both
     // ReactNode and the render-prop function form for accessing close state.
     Pick<SparDialogCloseProps, 'children'>
@@ -170,6 +174,6 @@ declare module '../../core/theme' {
     DialogDescription: import('../../core').ComponentThemeConfig<DialogDescriptionProps, DialogDescriptionSlot>;
     DialogBody: import('../../core').ComponentThemeConfig<DialogBodyProps, DialogBodySlot>;
     DialogFooter: import('../../core').ComponentThemeConfig<DialogFooterProps, DialogFooterSlot>;
-    DialogCloseButton: import('../../core').ComponentThemeConfig<DialogCloseButtonProps, DialogCloseButtonSlot>;
+    DialogClose: import('../../core').ComponentThemeConfig<DialogCloseProps, DialogCloseSlot>;
   }
 }

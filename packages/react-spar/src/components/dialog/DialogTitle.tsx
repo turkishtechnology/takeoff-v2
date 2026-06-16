@@ -7,10 +7,10 @@ import { useComponentTheme } from '../../provider';
 import { DialogTitleBase } from './base';
 import type { DialogTitleProps, DialogTitleSlot } from './types';
 
-export const DialogTitle = <T extends ElementType = 'h2'>(props: DialogTitleProps<T>) => {
+export const DialogTitle = <T extends ElementType = 'h5'>(props: DialogTitleProps<T>) => {
   const theme = useComponentTheme('DialogTitle');
 
-  const { rootAttrs, rest } = composeRootAttrs<DialogTitleProps, DialogTitleSlot>(DialogTitleBase, props as DialogTitleProps<'h2'>, theme);
+  const { rootAttrs, rest } = composeRootAttrs<DialogTitleProps, DialogTitleSlot>(DialogTitleBase, props as DialogTitleProps<'h5'>, theme);
   const { children, ref, ...sparProps } = rest;
 
   return (

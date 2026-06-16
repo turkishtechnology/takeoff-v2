@@ -21,4 +21,4 @@ export const DialogBody = <T extends ElementType = 'div'>(props: DialogBodyProps
   );
 };
 
-DialogBody.displayName = 'DialogBody';
+DialogBody.displayName = 'Dialog.Body';

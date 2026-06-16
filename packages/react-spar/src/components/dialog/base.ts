@@ -3,8 +3,8 @@ import { createComponentBase } from '../../core';
 import type {
   DialogBodyProps,
   DialogBodySlot,
-  DialogCloseButtonProps,
-  DialogCloseButtonSlot,
+  DialogCloseProps,
+  DialogCloseSlot,
   DialogPanelProps,
   DialogPanelSlot,
   DialogDescriptionProps,
@@ -94,8 +94,8 @@ export const DialogFooterBase = createComponentBase<DialogFooterProps, DialogFoo
 });
 
 // @archetype inherited — wraps SparDialog.Close
-export const DialogCloseButtonBase = createComponentBase<DialogCloseButtonProps, DialogCloseButtonSlot>({
-  name: 'DialogCloseButton',
+export const DialogCloseBase = createComponentBase<DialogCloseProps, DialogCloseSlot>({
+  name: 'DialogClose',
   slots: ['root'] as const,
   classes: {
     root: 'tk-dialog-close-button',
