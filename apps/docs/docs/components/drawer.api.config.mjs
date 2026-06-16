@@ -18,6 +18,10 @@ const classNameOverride = {
   description: 'Appends custom classes to the root slot of this part.',
 };
 
+const levelOverride = {
+  default: '5',
+};
+
 const dataSlotRoot = {
   attribute: 'data-slot="root"',
   appliedWhen: 'Always',
@@ -76,6 +80,11 @@ export default {
           appliedWhen: 'When `invisible` is true',
           purpose: 'Indicates overlay is visually hidden but still interactive.',
         },
+        {
+          attribute: 'data-blur',
+          appliedWhen: 'When `blur` is true',
+          purpose: 'Enables backdrop blur styling on the overlay.',
+        },
       ],
     },
     {
@@ -107,7 +116,7 @@ export default {
       displayName: 'Drawer.Header',
       headingBase: 'drawer-header',
       propOverrides: {
-        children: childrenOverride('Title and close button.'),
+        children: childrenOverride('Title and close control.'),
         className: classNameOverride,
       },
       dataAttributes: [
@@ -127,6 +136,7 @@ export default {
       propOverrides: {
         children: childrenOverride('Heading text content.'),
         className: classNameOverride,
+        level: levelOverride,
       },
       dataAttributes: [dataSlotRoot],
     },
@@ -172,11 +182,11 @@ export default {
     },
     {
       sourceFile: drawerTypesFile,
-      typeName: 'DrawerCloseButtonProps',
-      displayName: 'Drawer.CloseButton',
-      headingBase: 'drawer-close-button',
+      typeName: 'DrawerCloseProps',
+      displayName: 'Drawer.Close',
+      headingBase: 'drawer-close',
       propOverrides: {
-        children: childrenOverride('Custom close button label.'),
+        children: childrenOverride('Custom close label or icon.'),
         className: classNameOverride,
       },
       dataAttributes: [dataSlotRoot],

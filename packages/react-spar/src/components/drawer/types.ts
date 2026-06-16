@@ -24,7 +24,7 @@ export type DrawerTitleSlot = 'root';
 export type DrawerDescriptionSlot = 'root';
 export type DrawerBodySlot = 'root';
 export type DrawerFooterSlot = 'root';
-export type DrawerCloseButtonSlot = 'root';
+export type DrawerCloseSlot = 'root';
 
 /**
  * Public props for the Drawer root. Wraps Spar's Dialog in modal mode to
@@ -41,7 +41,7 @@ export interface DrawerProps
   /** Side the drawer slides in from. */
   placement?: DrawerPlacement;
   /** Whether the drawer can be dismissed by clicking outside or pressing Escape. @defaultValue true */
-  dismissable?: boolean;
+  dismissible?: boolean;
   children?: ReactNode;
 }
 
@@ -67,6 +67,8 @@ export interface DrawerOverlayOwnProps {
   invisible?: boolean;
   /** Overlay backdrop intensity. @defaultValue 'base' */
   intensity?: DrawerOverlayIntensity;
+  /** Applies backdrop blur on the overlay. @defaultValue false */
+  blur?: boolean;
   classNames?: ClassNamesMap<DrawerOverlaySlot>;
   slotProps?: SlotPropsMap<DrawerOverlaySlot>;
 }
@@ -91,7 +93,7 @@ export type DrawerPanelProps<T extends ElementType = 'div'> = PolymorphicProps<
     // Focus management (trap/restore/initial/final + auto-focus hooks) and
     // dismiss event hooks. Consumers need these to integrate with their own
     // focus orchestration and to veto dismissal. Spar's visual content props
-    // (e.g. forceMount) are not exposed — takeoff-v2 sets them internally.
+    // (e.g. forceMount) are not exposed — takeoff-v5 sets them internally.
     Pick<
       SparDialogContentProps,
       | 'container'
@@ -123,8 +125,8 @@ export interface DrawerTitleOwnProps {
   slotProps?: SlotPropsMap<DrawerTitleSlot>;
 }
 
-export type DrawerTitleProps<T extends ElementType = 'h2'> = PolymorphicProps<
-  'h2',
+export type DrawerTitleProps<T extends ElementType = 'h5'> = PolymorphicProps<
+  'h5',
   T,
   DrawerTitleOwnProps &
     // Semantic heading level (1–6).
@@ -156,16 +158,16 @@ export interface DrawerFooterOwnProps {
 
 export type DrawerFooterProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DrawerFooterOwnProps>;
 
-export interface DrawerCloseButtonOwnProps {
-  classNames?: ClassNamesMap<DrawerCloseButtonSlot>;
-  slotProps?: SlotPropsMap<DrawerCloseButtonSlot>;
+export interface DrawerCloseOwnProps {
+  classNames?: ClassNamesMap<DrawerCloseSlot>;
+  slotProps?: SlotPropsMap<DrawerCloseSlot>;
 }
 
-export type DrawerCloseButtonProps<T extends ElementType = 'button'> = PolymorphicProps<
+export type DrawerCloseProps<T extends ElementType = 'button'> = PolymorphicProps<
   'button',
   T,
-  DrawerCloseButtonOwnProps &
-    // Close-button surface from Spar. `children` is picked so it accepts both
+  DrawerCloseOwnProps &
+    // Close surface from Spar. `children` is picked so it accepts both
     // ReactNode and the render-prop function form for accessing close state.
     Pick<SparDialogCloseProps, 'children'>
 >;
@@ -181,6 +183,6 @@ declare module '../../core/theme' {
     DrawerDescription: import('../../core').ComponentThemeConfig<DrawerDescriptionProps>;
     DrawerBody: import('../../core').ComponentThemeConfig<DrawerBodyProps>;
     DrawerFooter: import('../../core').ComponentThemeConfig<DrawerFooterProps>;
-    DrawerCloseButton: import('../../core').ComponentThemeConfig<DrawerCloseButtonProps>;
+    DrawerClose: import('../../core').ComponentThemeConfig<DrawerCloseProps>;
   }
 }

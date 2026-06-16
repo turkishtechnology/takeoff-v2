@@ -26,6 +26,10 @@
       visibility 0s linear 0.3s;
   }
 
+  &[data-blur] {
+    backdrop-filter: blur(2px);
+  }
+
   // ─── Invisible overlay (rendered but visually hidden) ─────────────
   &[data-invisible] {
     background-color: transparent;
@@ -222,53 +226,11 @@
 
 @mixin drawer-title {
   color: var(--text-darkest);
-  font-weight: 400;
-  margin: 0;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  // Default (h2–h6 or no data-level)
   font-family: var(--desktop-title-h5-font);
   font-size: var(--desktop-title-h5-size);
+  font-style: normal;
+  font-weight: 400;
   line-height: var(--desktop-title-h5-line-height);
-
-  &[data-level='1'] {
-    font-family: var(--desktop-title-h1-font);
-    font-size: var(--desktop-title-h1-size);
-    line-height: var(--desktop-title-h1-line-height);
-  }
-
-  &[data-level='2'] {
-    font-family: var(--desktop-title-h2-font);
-    font-size: var(--desktop-title-h2-size);
-    line-height: var(--desktop-title-h2-line-height);
-  }
-
-  &[data-level='3'] {
-    font-family: var(--desktop-title-h3-font);
-    font-size: var(--desktop-title-h3-size);
-    line-height: var(--desktop-title-h3-line-height);
-  }
-
-  &[data-level='4'] {
-    font-family: var(--desktop-title-h4-font);
-    font-size: var(--desktop-title-h4-size);
-    line-height: var(--desktop-title-h4-line-height);
-  }
-
-  &[data-level='5'] {
-    font-family: var(--desktop-title-h5-font);
-    font-size: var(--desktop-title-h5-size);
-    line-height: var(--desktop-title-h5-line-height);
-  }
-
-  &[data-level='6'] {
-    font-family: var(--desktop-title-h6-font);
-    font-size: var(--desktop-title-h6-size);
-    line-height: var(--desktop-title-h6-line-height);
-  }
 }
 
 @mixin drawer-description {
@@ -277,7 +239,6 @@
   font-size: var(--desktop-body-m-base-size);
   font-weight: 400;
   line-height: var(--desktop-body-m-base-line-height);
-  margin: 0;
 }
 
 @mixin drawer-body {
@@ -314,10 +275,9 @@
   }
 }
 
-@mixin drawer-close-button {
+@mixin drawer-close {
   display: inline-flex;
-  width: 32px;
-  height: 32px;
+  min-width: 32px;
   padding: var(--spacing-xs);
   align-items: center;
   justify-content: center;
@@ -332,6 +292,6 @@
   @include mixins.focus-ring(var(--neutral-focus));
 
   &:hover {
-    color: var(--icon-base);
+    background-color: var(--overlay-black-lightest);
   }
 }

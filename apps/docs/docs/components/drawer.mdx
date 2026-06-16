@@ -31,7 +31,7 @@ function PlaygroundDemo() {
       <Drawer.Panel>
         <Drawer.Header>
           <Drawer.Title>Flight Details</Drawer.Title>
-          <Drawer.CloseButton>✕</Drawer.CloseButton>
+          <Drawer.Close>✕</Drawer.Close>
         </Drawer.Header>
         <Drawer.Body>
           <Drawer.Description>
@@ -59,7 +59,7 @@ function PlacementDemo() {
           <Drawer.Panel>
             <Drawer.Header>
               <Drawer.Title>Drawer from {p}</Drawer.Title>
-              <Drawer.CloseButton>✕</Drawer.CloseButton>
+              <Drawer.Close>✕</Drawer.Close>
             </Drawer.Header>
             <Drawer.Body>
               This drawer slides in from the <strong>{p}</strong> side.
@@ -88,7 +88,7 @@ function FooterTypeDrawerDemo() {
           <Drawer.Panel>
             <Drawer.Header>
               <Drawer.Title>{type} footer</Drawer.Title>
-              <Drawer.CloseButton>✕</Drawer.CloseButton>
+              <Drawer.Close>✕</Drawer.Close>
             </Drawer.Header>
             <Drawer.Body>
               This footer uses <code>{type}</code> styling.
@@ -120,7 +120,7 @@ function HeaderTypeDrawerDemo() {
           <Drawer.Panel>
             <Drawer.Header headerType={type}>
               <Drawer.Title>{type} header</Drawer.Title>
-              <Drawer.CloseButton>✕</Drawer.CloseButton>
+              <Drawer.Close>✕</Drawer.Close>
             </Drawer.Header>
             <Drawer.Body>
               Header type: {type}
@@ -135,52 +135,67 @@ function HeaderTypeDrawerDemo() {
 render(<HeaderTypeDrawerDemo />);
 `;
 
-export const dismissableDemo = String.raw`
-function DismissableDrawerDemo() {
+export const dismissibleDemo = String.raw`
+function DismissibleDrawerDemo() {
   const [open, setOpen] = useState(false);
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} dismissable={false} placement="right">
-      <Drawer.Trigger as={Button}>Open non-dismissable</Drawer.Trigger>
+    <Drawer open={open} onOpenChange={setOpen} dismissible={false} placement="right">
+      <Drawer.Trigger as={Button}>Open non-dismissible</Drawer.Trigger>
       <Drawer.Overlay />
       <Drawer.Panel>
         <Drawer.Header>
           <Drawer.Title>Sticky Drawer</Drawer.Title>
-          <Drawer.CloseButton>✕</Drawer.CloseButton>
+          <Drawer.Close>✕</Drawer.Close>
         </Drawer.Header>
         <Drawer.Body>
-          This drawer can only be closed using the close button.
+          This drawer can only be closed using the close control.
         </Drawer.Body>
       </Drawer.Panel>
     </Drawer>
   );
 }
 
-render(<DismissableDrawerDemo />);
+render(<DismissibleDrawerDemo />);
 `;
 
-export const invisibleDemo = String.raw`
-function InvisibleOverlayDrawerDemo() {
-  const [open, setOpen] = useState(false);
 
+export const overlayBehaviorDemo = String.raw`
+function OverlayBehaviorDemo() {
   return (
-    <Drawer open={open} onOpenChange={setOpen} placement="bottom">
-      <Drawer.Trigger as={Button}>Open invisible overlay</Drawer.Trigger>
-      <Drawer.Overlay invisible />
-      <Drawer.Panel>
-        <Drawer.Header>
-          <Drawer.Title>Invisible Overlay</Drawer.Title>
-          <Drawer.CloseButton>✕</Drawer.CloseButton>
-        </Drawer.Header>
-        <Drawer.Body>
-          The backdrop is rendered but visually hidden.
-        </Drawer.Body>
-      </Drawer.Panel>
-    </Drawer>
+    <div className="flex flex-wrap justify-center gap-3">
+      <Drawer placement="right">
+        <Drawer.Trigger as={Button}>Blur</Drawer.Trigger>
+        <Drawer.Overlay blur />
+        <Drawer.Panel>
+          <Drawer.Header>
+            <Drawer.Title>Blurred overlay</Drawer.Title>
+            <Drawer.Close>✕</Drawer.Close>
+          </Drawer.Header>
+          <Drawer.Body>
+            The backdrop stays visible and adds a soft blur effect behind the panel.
+          </Drawer.Body>
+        </Drawer.Panel>
+      </Drawer>
+
+      <Drawer placement="right">
+        <Drawer.Trigger as={Button}>Invisible</Drawer.Trigger>
+        <Drawer.Overlay invisible />
+        <Drawer.Panel>
+          <Drawer.Header>
+            <Drawer.Title>Invisible overlay</Drawer.Title>
+            <Drawer.Close>✕</Drawer.Close>
+          </Drawer.Header>
+          <Drawer.Body>
+            The overlay remains mounted for interaction but is visually hidden.
+          </Drawer.Body>
+        </Drawer.Panel>
+      </Drawer>
+    </div>
   );
 }
 
-render(<InvisibleOverlayDrawerDemo />);
+render(<OverlayBehaviorDemo />);
 `;
 
 export const intensityDemo = String.raw`
@@ -196,7 +211,7 @@ function OverlayIntensityDemo() {
           <Drawer.Panel>
             <Drawer.Header>
               <Drawer.Title>{intensity}</Drawer.Title>
-              <Drawer.CloseButton>✕</Drawer.CloseButton>
+              <Drawer.Close>✕</Drawer.Close>
             </Drawer.Header>
             <Drawer.Body>Overlay intensity: {intensity}</Drawer.Body>
           </Drawer.Panel>
@@ -230,9 +245,11 @@ import { Drawer } from '@takeoff-ui/react-spar';
   <Drawer.Panel>
     <Drawer.Header>
       <Drawer.Title />
-      <Drawer.CloseButton>✕</Drawer.CloseButton>
+      <Drawer.Close>✕</Drawer.Close>
     </Drawer.Header>
-    <Drawer.Body />
+    <Drawer.Body>
+      <Drawer.Description />
+    </Drawer.Body>
     <Drawer.Footer />
   </Drawer.Panel>
 </Drawer>
@@ -255,7 +272,7 @@ The `placement` prop controls from which side the drawer slides in.
 <LiveCode
   code={placementDemo}
   noInline
-  previewMinHeight={100}
+  previewMinHeight={260}
   previewWrapper={ReactSparDemoRoot}
   scope={drawerScope}
 />
@@ -288,33 +305,33 @@ header when the drawer content requires extra emphasis.
   scope={drawerScope}
 />
 
-## Dismissable
+## Dismissible
 
-Set `dismissable={false}` to prevent the drawer from closing when the user
+Set `dismissible={false}` to prevent the drawer from closing when the user
 clicks outside or presses Escape.
 
 <LiveCode
-  code={dismissableDemo}
+  code={dismissibleDemo}
   noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
   scope={drawerScope}
 />
 
-## Invisible Overlay
+## Overlay Behavior
 
-Use `Drawer.Overlay invisible` when you want the drawer to remain modal but hide
-the visible backdrop.
+Use `blur` for a softened backdrop and `invisible` when the overlay should stay
+interactive but visually disappear.
 
 <LiveCode
-  code={invisibleDemo}
+  code={overlayBehaviorDemo}
   noInline
   previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
   scope={drawerScope}
 />
 
-## Overlay Intensity
+## Intensity
 
 The `intensity` prop controls how dark the overlay appears.
 
@@ -333,12 +350,12 @@ The `intensity` prop controls how dark the overlay appears.
 - Focus is trapped inside the panel while open and restored on close.
 - `Drawer.Title` provides the accessible label; `Drawer.Description` provides
   the accessible description.
-- When `dismissable={false}`, pressing Escape and clicking outside will not
+- When `dismissible={false}`, pressing Escape and clicking outside will not
   close the drawer.
 
 | Key                                   | Behavior                                          |
 | ------------------------------------- | ------------------------------------------------- |
-| <kbd>Escape</kbd>                     | Closes the drawer (unless `dismissable={false}`). |
+| <kbd>Escape</kbd>                     | Closes the drawer (unless `dismissible={false}`). |
 | <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> | Cycles focus within the panel.                    |
 
 ## Animation
@@ -363,7 +380,7 @@ animation library is required.
 | -------------------------------- | --------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <ApiBadge label="children" />    | <code>React.ReactNode</code>                                          | -       | Drawer parts rendered inside the root.                                                                                                                                           |
 | <ApiBadge label="placement" />   | <code><a href="#drawer-td-drawerplacement">DrawerPlacement</a></code> | -       | Side the drawer slides in from.                                                                                                                                                  |
-| <ApiBadge label="dismissable" /> | <code>boolean</code>                                                  | true    | Whether the drawer can be dismissed by clicking outside or pressing Escape.                                                                                                      |
+| <ApiBadge label="dismissible" /> | <code>boolean</code>                                                  | true    | Whether the drawer can be dismissed by clicking outside or pressing Escape.                                                                                                      |
 | <ApiBadge label="id" />          | <code>string</code>                                                   | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-title`, `${id}-description`, `${id}-content`. |
 | <ApiBadge label="disabled" />    | <code>boolean</code>                                                  | false   | Disables all dialog triggers (prevents opening)                                                                                                                                  |
 | <ApiBadge label="open" />        | <code>boolean</code>                                                  | -       | Controlled open state                                                                                                                                                            |
@@ -391,6 +408,7 @@ animation library is required.
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
 | <ApiBadge label="invisible" />  | <code>boolean</code>                                                                | false         | When true, the overlay is rendered but visually invisible.                 |
 | <ApiBadge label="intensity" />  | <code><a href="#drawer-td-draweroverlayintensity">DrawerOverlayIntensity</a></code> | 'base'        | Overlay backdrop intensity.                                                |
+| <ApiBadge label="blur" />       | <code>boolean</code>                                                                | false         | Applies backdrop blur on the overlay.                                      |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             |                                                                            |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             |                                                                            |
 | <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
@@ -403,6 +421,7 @@ animation library is required.
 | <ApiBadge label="data-state" />                 | Always                   | `"open"` or `"closed"` — used for entry/exit animations.    |
 | <ApiBadge label="data-intensity" />             | Always                   | Reflects the resolved `intensity` prop.                     |
 | <ApiBadge label="data-invisible" />             | When `invisible` is true | Indicates overlay is visually hidden but still interactive. |
+| <ApiBadge label="data-blur" />                  | When `blur` is true      | Enables backdrop blur styling on the overlay.               |
 
 ### Drawer.Panel {#drawer-panel}
 
@@ -461,7 +480,7 @@ animation library is required.
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
-| <ApiBadge label="level" />      | <code>number</code>                                                                 | 2       | Heading level (1-6) |
+| <ApiBadge label="level" />      | <code>number</code>                                                                 | 5       | Heading level (1-6) |
 
 #### Data attributes {#drawer-title-data-attributes}
 
@@ -502,9 +521,9 @@ animation library is required.
 | <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 | <ApiBadge label="data-footer-type" />           | Always       | Reflects the resolved `footerType` prop.              |
 
-### Drawer.CloseButton {#drawer-close-button}
+### Drawer.Close {#drawer-close}
 
-#### Data attributes {#drawer-close-button-data-attributes}
+#### Data attributes {#drawer-close-data-attributes}
 
 | Attribute                                       | Applied when | Purpose                                               |
 | ----------------------------------------------- | ------------ | ----------------------------------------------------- |
