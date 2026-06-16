@@ -5,6 +5,7 @@
 @use 'recipes/accordion';
 @use 'recipes/badge';
 @use 'recipes/button';
+@use 'recipes/card';
 @use 'recipes/checkbox';
 @use 'recipes/dialog';
 @use 'recipes/drawer';
@@ -23,6 +24,30 @@
 
 .tk-button {
   @include button.button;
+}
+
+.tk-card {
+  @include card.card;
+}
+
+.tk-card-header {
+  @include card.card-header;
+}
+
+.tk-card-title {
+  @include card.card-title;
+}
+
+.tk-card-description {
+  @include card.card-description;
+}
+
+.tk-card-body {
+  @include card.card-body;
+}
+
+.tk-card-footer {
+  @include card.card-footer;
 }
 
 .tk-accordion {

@@ -16,6 +16,7 @@ const sidebars: SidebarsConfig = {
         'components/accordion',
         'components/badge',
         'components/button',
+        'components/card',
         'components/checkbox',
         'components/drawer',
         'components/input',
