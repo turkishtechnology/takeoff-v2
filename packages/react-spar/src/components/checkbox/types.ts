@@ -4,7 +4,6 @@ import type { CheckboxProps as SparCheckboxProps, CheckboxRenderProps as Upstrea
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type CheckboxSize = 'small' | 'base';
-export type CheckboxType = 'default' | 'card';
 export type CheckboxSlot = 'root' | 'indicator' | 'icon';
 
 /**
@@ -63,12 +62,6 @@ interface CheckboxOwnProps {
    * @defaultValue 'base'
    */
   size?: CheckboxSize;
-  /**
-   * Visual appearance. `'card'` mirrors Takeoff Core's bordered card variant
-   * for opt-in card-style selection rows.
-   * @defaultValue 'default'
-   */
-  type?: CheckboxType;
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<CheckboxSlot>;
   /** Per-slot HTML-attribute overrides. */

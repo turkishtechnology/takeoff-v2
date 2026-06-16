@@ -208,10 +208,6 @@
     .tk-drawer-title {
       color: var(--text-lightest);
     }
-
-    .tk-drawer-close-button {
-      color: var(--icon-base);
-    }
   }
 
   // ─── Header type: primary ────────────────────────────────────────
@@ -220,10 +216,6 @@
 
     .tk-drawer-title {
       color: var(--text-lightest);
-    }
-
-    .tk-drawer-close-button {
-      color: var(--primary-lightest);
     }
   }
 }
@@ -291,7 +283,7 @@
 @mixin drawer-body {
   width: 100%;
   min-width: 0;
-  padding: 0 var(--notification-body-h-padding);
+  padding: var(--notification-body-v-padding) var(--notification-body-h-padding);
   flex: 1 1 auto;
   overflow-y: auto;
   color: var(--text-dark);
@@ -335,13 +327,11 @@
   background: transparent;
   color: var(--icon-sub-base);
   cursor: pointer;
-  transition:
-    background-color 0.2s ease-in-out,
-    color 0.2s ease-in-out;
+  transition: color 0.2s ease-in-out;
 
   @include mixins.focus-ring(var(--neutral-focus));
 
   &:hover {
-    background-color: var(--overlay-black-lightest);
+    color: var(--icon-base);
   }
 }

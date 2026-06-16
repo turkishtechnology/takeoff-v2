@@ -12,7 +12,7 @@ export const FieldLabel = <T extends ElementType = 'label'>(props: FieldLabelPro
   // The required asterisk is a wrapper-owned convention (not a Spar concern),
   // so we read `required` off Spar's FieldContext and emit `.tk-field-asterisk`
   // inline. Keeping it auto-rendered keeps Field's required UX in line with
-  // the existing Input.Label / Checkbox.Label conventions.
+  // the rest of the form-control label conventions.
   const { required } = useFieldContext();
 
   const { rootAttrs, rest } = composeRootAttrs(FieldLabelBase, props as FieldLabelProps<'label'>, theme);

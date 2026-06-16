@@ -9,23 +9,27 @@ slug: /components/popover
 ---
 
 import LiveCode from '@site/src/components/LiveCode';
-import { Popover, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import {
+  Button,
+  Popover,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const popoverScope = { Popover };
+export const popoverScope = { Button, Popover };
 
 {/* prettier-ignore-start */}
 
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-      <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Click me</Popover.Trigger>
-        <Popover.Content>
-          <Popover.Header>Title</Popover.Header>
-          <Popover.Description>Popover content goes here.</Popover.Description>
-        </Popover.Content>
-      </Popover>
+    <Popover>
+      <Popover.Trigger as={Button}>Click me</Popover.Trigger>
+      <Popover.Content>
+        <Popover.Header>Title</Popover.Header>
+        <Popover.Description>Popover content goes here.</Popover.Description>
+      </Popover.Content>
+    </Popover>
   );
 }
 
@@ -35,15 +39,13 @@ render(<PlaygroundDemo />);
 export const headerDescriptionDemo = String.raw`
 function HeaderDescriptionDemo() {
   return (
-      <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Open</Popover.Trigger>
-        <Popover.Content>
-          <Popover.Header>Account settings</Popover.Header>
-          <Popover.Description>
-            Manage your personal information, password, and notifications.
-          </Popover.Description>
-        </Popover.Content>
-      </Popover>
+    <Popover>
+      <Popover.Trigger as={Button}>Open</Popover.Trigger>
+      <Popover.Content>
+        <Popover.Header>Account settings</Popover.Header>
+        <Popover.Description>Manage your personal information, password, and notifications.</Popover.Description>
+      </Popover.Content>
+    </Popover>
   );
 }
 
@@ -53,45 +55,45 @@ render(<HeaderDescriptionDemo />);
 export const typesDemo = String.raw`
 function TypesDemo() {
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap justify-center gap-3">
       <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Dark</Popover.Trigger>
+        <Popover.Trigger as={Button}>Dark</Popover.Trigger>
         <Popover.Content variant="dark">
           <Popover.Description>Dark variant popover</Popover.Description>
         </Popover.Content>
       </Popover>
       <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">White</Popover.Trigger>
+        <Popover.Trigger as={Button}>White</Popover.Trigger>
         <Popover.Content variant="white">
           <Popover.Description>White variant popover</Popover.Description>
         </Popover.Content>
       </Popover>
       <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Info</Popover.Trigger>
+        <Popover.Trigger as={Button}>Info</Popover.Trigger>
         <Popover.Content variant="info">
           <Popover.Description>Info variant popover</Popover.Description>
         </Popover.Content>
       </Popover>
       <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Success</Popover.Trigger>
+        <Popover.Trigger as={Button}>Success</Popover.Trigger>
         <Popover.Content variant="success">
           <Popover.Description>Success variant popover</Popover.Description>
         </Popover.Content>
       </Popover>
       <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Warning</Popover.Trigger>
+        <Popover.Trigger as={Button}>Warning</Popover.Trigger>
         <Popover.Content variant="warning">
           <Popover.Description>Warning variant popover</Popover.Description>
         </Popover.Content>
       </Popover>
       <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Danger</Popover.Trigger>
+        <Popover.Trigger as={Button}>Danger</Popover.Trigger>
         <Popover.Content variant="danger">
           <Popover.Description>Danger variant popover</Popover.Description>
         </Popover.Content>
       </Popover>
       <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Neutral</Popover.Trigger>
+        <Popover.Trigger as={Button}>Neutral</Popover.Trigger>
         <Popover.Content variant="neutral">
           <Popover.Description>Neutral variant popover</Popover.Description>
         </Popover.Content>
@@ -106,27 +108,27 @@ render(<TypesDemo />);
 export const placementDemo = String.raw`
 function PlacementDemo() {
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap justify-center gap-3">
       <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Top</Popover.Trigger>
+        <Popover.Trigger as={Button}>Top</Popover.Trigger>
         <Popover.Content side="top">
           <Popover.Description>Positioned top</Popover.Description>
         </Popover.Content>
       </Popover>
       <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Bottom</Popover.Trigger>
+        <Popover.Trigger as={Button}>Bottom</Popover.Trigger>
         <Popover.Content side="bottom">
           <Popover.Description>Positioned bottom</Popover.Description>
         </Popover.Content>
       </Popover>
       <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Left</Popover.Trigger>
+        <Popover.Trigger as={Button}>Left</Popover.Trigger>
         <Popover.Content side="left">
           <Popover.Description>Positioned left</Popover.Description>
         </Popover.Content>
       </Popover>
       <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Right</Popover.Trigger>
+        <Popover.Trigger as={Button}>Right</Popover.Trigger>
         <Popover.Content side="right">
           <Popover.Description>Positioned right</Popover.Description>
         </Popover.Content>
@@ -141,13 +143,13 @@ render(<PlacementDemo />);
 export const arrowDemo = String.raw`
 function ArrowDemo() {
   return (
-      <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">With arrow</Popover.Trigger>
-        <Popover.Content>
-          <Popover.Description>Popover with arrow</Popover.Description>
-          <Popover.Arrow />
-        </Popover.Content>
-      </Popover>
+    <Popover>
+      <Popover.Trigger as={Button}>With arrow</Popover.Trigger>
+      <Popover.Content>
+        <Popover.Description>Popover with arrow</Popover.Description>
+        <Popover.Arrow />
+      </Popover.Content>
+    </Popover>
   );
 }
 
@@ -157,13 +159,16 @@ render(<ArrowDemo />);
 export const closeDemo = String.raw`
 function CloseDemo() {
   return (
-      <Popover>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Open</Popover.Trigger>
-        <Popover.Content>
-          <Popover.Description>Click close to dismiss</Popover.Description>
-          <Popover.Close>Close</Popover.Close>
-        </Popover.Content>
-      </Popover>
+    <Popover>
+      <Popover.Trigger as={Button}>Open</Popover.Trigger>
+      <Popover.Content>
+          <Popover.Header className="flex items-center justify-between">
+          <span>Title</span>
+          <Popover.Close>x</Popover.Close>
+        </Popover.Header>
+        <Popover.Description>Click x to dismiss</Popover.Description>
+      </Popover.Content>
+    </Popover>
   );
 }
 
@@ -175,17 +180,14 @@ function ControlledDemo() {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap gap-3">
       <Popover open={open} onOpenChange={setOpen}>
-        <Popover.Trigger className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer">Controlled</Popover.Trigger>
+        <Popover.Trigger as={Button}>Controlled</Popover.Trigger>
         <Popover.Content>
           <Popover.Description>Controlled popover</Popover.Description>
-          <Popover.Close>Done</Popover.Close>
         </Popover.Content>
       </Popover>
-      <button className="min-h-10 px-2.5 py-2 rounded-lg bg-primary-base text-static-white text-sm cursor-pointer" onClick={() => setOpen(!open)}>
-        {open ? 'Hide' : 'Show'}
-      </button>
+      <Button onClick={() => setOpen(!open)}>{open ? 'Hide' : 'Show'}</Button>
     </div>
   );
 }
