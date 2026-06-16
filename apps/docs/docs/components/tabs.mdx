@@ -319,9 +319,28 @@ render(<ClosableDemo />);
 
 {/* prettier-ignore-end */}
 
+# Tabs
+
 Tabs are built on top of Spar primitives. Use `Tabs.List` for the tablist,
 `Tabs.Trigger` for each selectable tab, and `Tabs.Content` for each matching
 panel.
+
+## Usage
+
+```tsx
+import { Tabs } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Tabs>
+  <Tabs.List>
+    <Tabs.Trigger />
+  </Tabs.List>
+  <Tabs.Content />
+</Tabs>
+```
+
+## Playground
 
 <LiveCode
   code={playgroundDemo}
