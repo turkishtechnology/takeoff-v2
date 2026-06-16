@@ -11,10 +11,10 @@ export const DialogTitle = <T extends ElementType = 'h5'>(props: DialogTitleProp
   const theme = useComponentTheme('DialogTitle');
 
   const { rootAttrs, rest } = composeRootAttrs<DialogTitleProps, DialogTitleSlot>(DialogTitleBase, props as DialogTitleProps<'h5'>, theme);
-  const { children, ref, ...sparProps } = rest;
+  const { level = 5, children, ref, ...titleProps } = rest;
 
   return (
-    <SparDialogTitle {...sparProps} {...rootAttrs} ref={ref}>
+    <SparDialogTitle {...titleProps} level={level} ref={ref} {...rootAttrs}>
       {children}
     </SparDialogTitle>
   );
