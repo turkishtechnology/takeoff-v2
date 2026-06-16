@@ -33,20 +33,32 @@
   @include accordion.accordion-item;
 }
 
-.tk-dialog-mask {
-  @include dialog.dialog-mask;
-}
-
 .tk-dialog-overlay {
-  @include dialog.dialog-mask;
+  @include dialog.dialog-overlay;
 }
 
-.tk-dialog {
-  @include dialog.dialog;
+.tk-dialog-panel {
+  @include dialog.dialog-panel;
 }
 
-.tk-dialog-content {
-  @include dialog.dialog;
+.tk-dialog-header {
+  @include dialog.dialog-header;
+}
+
+.tk-dialog-title {
+  @include dialog.dialog-title;
+}
+
+.tk-dialog-close-button {
+  @include dialog.dialog-close-button;
+}
+
+.tk-dialog-body {
+  @include dialog.dialog-body;
+}
+
+.tk-dialog-footer {
+  @include dialog.dialog-footer;
 }
 
 .tk-drawer-overlay {

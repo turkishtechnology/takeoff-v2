@@ -3,8 +3,9 @@ import { BadgeBase } from './components/badge/base';
 import { ButtonBase } from './components/button/base';
 import { CheckboxBase } from './components/checkbox/base';
 import {
-  DialogCloseBase,
-  DialogContentBase,
+  DialogBodyBase,
+  DialogCloseButtonBase,
+  DialogPanelBase,
   DialogDescriptionBase,
   DialogFooterBase,
   DialogHeaderBase,
@@ -55,12 +56,13 @@ export const slotClassRegistry = {
   checkbox: { slots: CheckboxBase.classes },
   dialogTrigger: { slots: DialogTriggerBase.classes },
   dialogOverlay: { slots: DialogOverlayBase.classes },
-  dialogContent: { slots: DialogContentBase.classes },
+  dialogPanel: { slots: DialogPanelBase.classes },
   dialogHeader: { slots: DialogHeaderBase.classes },
   dialogTitle: { slots: DialogTitleBase.classes },
   dialogDescription: { slots: DialogDescriptionBase.classes },
+  dialogBody: { slots: DialogBodyBase.classes },
   dialogFooter: { slots: DialogFooterBase.classes },
-  dialogClose: { slots: DialogCloseBase.classes },
+  dialogCloseButton: { slots: DialogCloseButtonBase.classes },
   drawer: { slots: DrawerBase.classes },
   drawerOverlay: { slots: DrawerOverlayBase.classes },
   drawerPanel: { slots: DrawerPanelBase.classes },

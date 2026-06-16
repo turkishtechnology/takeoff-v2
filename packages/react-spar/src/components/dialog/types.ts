@@ -15,7 +15,7 @@ export type DialogTriggerSlot = 'root';
 
 export type DialogOverlaySlot = 'root';
 
-export type DialogContentSlot = 'root';
+export type DialogPanelSlot = 'root';
 
 export type DialogHeaderSlot = 'root';
 
@@ -23,12 +23,13 @@ export type DialogTitleSlot = 'root';
 
 export type DialogDescriptionSlot = 'root';
 
+export type DialogBodySlot = 'root';
+
 export type DialogFooterSlot = 'root';
 
-export type DialogCloseSlot = 'root';
+export type DialogCloseButtonSlot = 'root';
 
 export type DialogOverlayIntensity = 'lightest' | 'light' | 'base' | 'dark' | 'darkest';
-export type DialogVariant = 'success' | 'info' | 'warning' | 'danger';
 
 export type DialogHeaderType = 'basic' | 'divided' | 'light' | 'dark' | 'primary';
 
@@ -39,8 +40,6 @@ export type DialogHeaderType = 'basic' | 'divided' | 'light' | 'dark' | 'primary
 export interface DialogProps extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'modal' | 'disabled' | 'forceMount' | 'children'> {
   /** Whether the dialog can be dismissed by clicking outside or pressing Escape. @defaultValue true */
   dismissable?: boolean;
-  /** Visual semantic variant for dialog styling. @defaultValue 'info' */
-  variant?: DialogVariant;
 }
 
 export interface DialogTriggerOwnProps {
@@ -77,15 +76,15 @@ export type DialogOverlayProps<T extends ElementType = 'div'> = PolymorphicProps
     Pick<SparDialogOverlayProps, 'container'>
 >;
 
-export interface DialogContentOwnProps {
-  classNames?: ClassNamesMap<DialogContentSlot>;
-  slotProps?: SlotPropsMap<DialogContentSlot>;
+export interface DialogPanelOwnProps {
+  classNames?: ClassNamesMap<DialogPanelSlot>;
+  slotProps?: SlotPropsMap<DialogPanelSlot>;
 }
 
-export type DialogContentProps<T extends ElementType = 'div'> = PolymorphicProps<
+export type DialogPanelProps<T extends ElementType = 'div'> = PolymorphicProps<
   'div',
   T,
-  DialogContentOwnProps &
+  DialogPanelOwnProps &
     // Dialog role, portal container, focus management, and dismiss event hooks.
     Pick<
       SparDialogContentProps,
@@ -132,6 +131,13 @@ export interface DialogDescriptionOwnProps {
 
 export type DialogDescriptionProps<T extends ElementType = 'p'> = PolymorphicProps<'p', T, DialogDescriptionOwnProps>;
 
+export interface DialogBodyOwnProps {
+  classNames?: ClassNamesMap<DialogBodySlot>;
+  slotProps?: SlotPropsMap<DialogBodySlot>;
+}
+
+export type DialogBodyProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DialogBodyOwnProps>;
+
 export interface DialogFooterOwnProps {
   classNames?: ClassNamesMap<DialogFooterSlot>;
   slotProps?: SlotPropsMap<DialogFooterSlot>;
@@ -139,15 +145,15 @@ export interface DialogFooterOwnProps {
 
 export type DialogFooterProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DialogFooterOwnProps>;
 
-export interface DialogCloseOwnProps {
-  classNames?: ClassNamesMap<DialogCloseSlot>;
-  slotProps?: SlotPropsMap<DialogCloseSlot>;
+export interface DialogCloseButtonOwnProps {
+  classNames?: ClassNamesMap<DialogCloseButtonSlot>;
+  slotProps?: SlotPropsMap<DialogCloseButtonSlot>;
 }
 
-export type DialogCloseProps<T extends ElementType = 'button'> = PolymorphicProps<
+export type DialogCloseButtonProps<T extends ElementType = 'button'> = PolymorphicProps<
   'button',
   T,
-  DialogCloseOwnProps &
+  DialogCloseButtonOwnProps &
     // Close surface from Spar. `children` is picked so it accepts both
     // ReactNode and the render-prop function form for accessing close state.
     Pick<SparDialogCloseProps, 'children'>
@@ -158,11 +164,12 @@ declare module '../../core/theme' {
     Dialog: StateOnlyComponentThemeConfig<DialogProps>;
     DialogTrigger: import('../../core').ComponentThemeConfig<DialogTriggerProps, DialogTriggerSlot>;
     DialogOverlay: import('../../core').ComponentThemeConfig<DialogOverlayProps, DialogOverlaySlot>;
-    DialogContent: import('../../core').ComponentThemeConfig<DialogContentProps, DialogContentSlot>;
+    DialogPanel: import('../../core').ComponentThemeConfig<DialogPanelProps, DialogPanelSlot>;
     DialogHeader: import('../../core').ComponentThemeConfig<DialogHeaderProps, DialogHeaderSlot>;
     DialogTitle: import('../../core').ComponentThemeConfig<DialogTitleProps, DialogTitleSlot>;
     DialogDescription: import('../../core').ComponentThemeConfig<DialogDescriptionProps, DialogDescriptionSlot>;
+    DialogBody: import('../../core').ComponentThemeConfig<DialogBodyProps, DialogBodySlot>;
     DialogFooter: import('../../core').ComponentThemeConfig<DialogFooterProps, DialogFooterSlot>;
-    DialogClose: import('../../core').ComponentThemeConfig<DialogCloseProps, DialogCloseSlot>;
+    DialogCloseButton: import('../../core').ComponentThemeConfig<DialogCloseButtonProps, DialogCloseButtonSlot>;
   }
 }

@@ -16,13 +16,11 @@ export const DialogHeader = <T extends ElementType = 'div'>(props: DialogHeaderP
     }),
   });
 
-  const { as, headerType = DEFAULT_HEADER_TYPE, children, ref, ...headerProps } = rest;
+  const { as, headerType: _headerType = DEFAULT_HEADER_TYPE, children, ref, ...headerProps } = rest;
   const Component = (as ?? 'div') as ElementType;
 
-  const headerClassName = [rootAttrs.className, `tk-dialog-header-${headerType}`].filter(Boolean).join(' ');
-
   return (
-    <Component {...headerProps} ref={ref} {...rootAttrs} className={headerClassName}>
+    <Component {...headerProps} ref={ref} {...rootAttrs}>
       {children}
     </Component>
   );

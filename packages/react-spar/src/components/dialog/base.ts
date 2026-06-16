@@ -1,10 +1,12 @@
 import { createComponentBase } from '../../core';
 
 import type {
-  DialogCloseProps,
-  DialogCloseSlot,
-  DialogContentProps,
-  DialogContentSlot,
+  DialogBodyProps,
+  DialogBodySlot,
+  DialogCloseButtonProps,
+  DialogCloseButtonSlot,
+  DialogPanelProps,
+  DialogPanelSlot,
   DialogDescriptionProps,
   DialogDescriptionSlot,
   DialogFooterProps,
@@ -38,11 +40,11 @@ export const DialogOverlayBase = createComponentBase<DialogOverlayProps, DialogO
 });
 
 // @archetype inherited — wraps SparDialog.Content
-export const DialogContentBase = createComponentBase<DialogContentProps, DialogContentSlot>({
-  name: 'DialogContent',
+export const DialogPanelBase = createComponentBase<DialogPanelProps, DialogPanelSlot>({
+  name: 'DialogPanel',
   slots: ['root'] as const,
   classes: {
-    root: 'tk-dialog-content',
+    root: 'tk-dialog-panel',
   },
 });
 
@@ -74,6 +76,15 @@ export const DialogDescriptionBase = createComponentBase<DialogDescriptionProps,
 });
 
 // @archetype react-enhancement — no upstream equivalent
+export const DialogBodyBase = createComponentBase<DialogBodyProps, DialogBodySlot>({
+  name: 'DialogBody',
+  slots: ['root'] as const,
+  classes: {
+    root: 'tk-dialog-body',
+  },
+});
+
+// @archetype react-enhancement — no upstream equivalent
 export const DialogFooterBase = createComponentBase<DialogFooterProps, DialogFooterSlot>({
   name: 'DialogFooter',
   slots: ['root'] as const,
@@ -83,10 +94,10 @@ export const DialogFooterBase = createComponentBase<DialogFooterProps, DialogFoo
 });
 
 // @archetype inherited — wraps SparDialog.Close
-export const DialogCloseBase = createComponentBase<DialogCloseProps, DialogCloseSlot>({
-  name: 'DialogClose',
+export const DialogCloseButtonBase = createComponentBase<DialogCloseButtonProps, DialogCloseButtonSlot>({
+  name: 'DialogCloseButton',
   slots: ['root'] as const,
   classes: {
-    root: 'tk-dialog-close',
+    root: 'tk-dialog-close-button',
   },
 });

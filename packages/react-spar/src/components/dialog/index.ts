@@ -1,31 +1,35 @@
 import { Dialog as DialogRoot } from './Dialog';
 import { DialogTrigger } from './DialogTrigger';
 import { DialogOverlay } from './DialogOverlay';
-import { DialogContent } from './DialogContent';
+import { DialogPanel } from './DialogPanel';
 import { DialogHeader } from './DialogHeader';
 import { DialogTitle } from './DialogTitle';
 import { DialogDescription } from './DialogDescription';
+import { DialogBody } from './DialogBody';
 import { DialogFooter } from './DialogFooter';
-import { DialogClose } from './DialogClose';
+import { DialogCloseButton } from './DialogCloseButton';
 
 const Dialog = Object.assign(DialogRoot, {
   Trigger: DialogTrigger,
   Overlay: DialogOverlay,
-  Content: DialogContent,
+  Panel: DialogPanel,
   Header: DialogHeader,
   Title: DialogTitle,
   Description: DialogDescription,
+  Body: DialogBody,
   Footer: DialogFooter,
-  Close: DialogClose,
+  CloseButton: DialogCloseButton,
 });
 
 export { Dialog };
 
 export type {
-  DialogCloseProps,
-  DialogCloseSlot,
-  DialogContentProps,
-  DialogContentSlot,
+  DialogBodyProps,
+  DialogBodySlot,
+  DialogCloseButtonProps,
+  DialogCloseButtonSlot,
+  DialogPanelProps,
+  DialogPanelSlot,
   DialogDescriptionProps,
   DialogDescriptionSlot,
   DialogFooterProps,
@@ -33,7 +37,6 @@ export type {
   DialogHeaderProps,
   DialogHeaderSlot,
   DialogHeaderType,
-  DialogVariant,
   DialogOverlayIntensity,
   DialogOverlayProps,
   DialogOverlaySlot,

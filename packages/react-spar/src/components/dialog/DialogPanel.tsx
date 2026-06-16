@@ -4,21 +4,17 @@ import { DialogContent as SparDialogContent } from '@turkish-technology/spar';
 import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
-import { DialogContentBase } from './base';
+import { DialogPanelBase } from './base';
 import { useDialogOwnContext } from './context';
-import type { DialogContentProps, DialogContentSlot } from './types';
+import type { DialogPanelProps, DialogPanelSlot } from './types';
 
 const preventDefault = (e: Event) => e.preventDefault();
 
-export const DialogContent = <T extends ElementType = 'div'>(props: DialogContentProps<T>) => {
-  const theme = useComponentTheme('DialogContent');
-  const { dismissable, variant } = useDialogOwnContext();
+export const DialogPanel = <T extends ElementType = 'div'>(props: DialogPanelProps<T>) => {
+  const theme = useComponentTheme('DialogPanel');
+  const { dismissable } = useDialogOwnContext();
 
-  const { rootAttrs, rest } = composeRootAttrs<DialogContentProps, DialogContentSlot>(DialogContentBase, props as DialogContentProps<'div'>, theme, {
-    stateAttrs: () => ({
-      'data-variant': variant,
-    }),
-  });
+  const { rootAttrs, rest } = composeRootAttrs<DialogPanelProps, DialogPanelSlot>(DialogPanelBase, props as DialogPanelProps<'div'>, theme);
   const { children, ref, ...sparProps } = rest;
 
   const dismissHandlers = !dismissable && {
@@ -34,4 +30,4 @@ export const DialogContent = <T extends ElementType = 'div'>(props: DialogConten
   );
 };
 
-DialogContent.displayName = 'Dialog.Content';
+DialogPanel.displayName = 'Dialog.Panel';

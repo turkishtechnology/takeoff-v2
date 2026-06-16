@@ -722,7 +722,15 @@ a.breadcrumbs__link {
 .theme-doc-markdown p {
   line-height: 1.65;
 }
-
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
 /* Inline code */
 .theme-doc-markdown code:not(pre code) {
   background: none;

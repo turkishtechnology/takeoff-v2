@@ -1,6 +1,6 @@
 @use '../abstracts/mixins' as mixins;
 
-@mixin dialog-mask {
+@mixin dialog-overlay {
   position: fixed;
   inset: 0;
   z-index: 1500;
@@ -19,54 +19,29 @@
       visibility 0s linear 0.3s;
   }
 
-  &.tk-dialog-mask-blur {
-    backdrop-filter: blur(2px);
-  }
-
   &[data-blur] {
     backdrop-filter: blur(2px);
   }
 
-  &.tk-dialog-mask-hidden,
   &[data-invisible] {
     background-color: transparent;
   }
 
-  &:not(.tk-dialog-mask-hidden):not([data-invisible]) {
-    &.tk-dialog-mask-lightest {
-      background-color: var(--overlay-black-lightest);
-    }
-
+  &:not([data-invisible]) {
     &[data-intensity='lightest'] {
       background-color: var(--overlay-black-lightest);
-    }
-
-    &.tk-dialog-mask-light {
-      background-color: var(--overlay-black-light);
     }
 
     &[data-intensity='light'] {
       background-color: var(--overlay-black-light);
     }
 
-    &.tk-dialog-mask-base {
-      background-color: var(--overlay-black-base);
-    }
-
     &[data-intensity='base'] {
       background-color: var(--overlay-black-base);
     }
 
-    &.tk-dialog-mask-dark {
-      background-color: var(--overlay-black-dark);
-    }
-
     &[data-intensity='dark'] {
       background-color: var(--overlay-black-dark);
-    }
-
-    &.tk-dialog-mask-darkest {
-      background-color: var(--overlay-black-darkest);
     }
 
     &[data-intensity='darkest'] {
@@ -75,16 +50,39 @@
   }
 }
 
-@mixin dialog {
-  font-family: var(--family-body, 'Geologica', sans-serif);
+@mixin dialog-close-button {
+  display: inline-flex;
+  min-width: 32px;
+  padding: var(--spacing-xs);
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: var(--radius-m-base);
+  background: transparent;
+  color: var(--icon-sub-base);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease-in-out,
+    color 0.2s ease-in-out;
+
+  @include mixins.focus-ring(var(--neutral-focus));
+
+  &:hover {
+    background-color: var(--overlay-black-lightest);
+  }
+}
+
+@mixin dialog-panel {
+  font-family: var(--family-body, 'tk-text', sans-serif);
   position: fixed;
   inset-block-start: 50%;
   inset-inline-start: 50%;
   transform: translate(-50%, -50%);
   z-index: 1501;
   display: flex;
-  width: min(calc(100vw - 2rem), 100%);
-  max-width: calc(100vw - 2rem);
+  width: 480px;
+  max-width: 90%;
   max-height: 90%;
   flex-direction: column;
   align-items: flex-start;
@@ -94,214 +92,83 @@
   box-shadow: var(--effect-1-default-base);
   color: var(--text-dark);
   overflow: hidden;
+}
 
-  .tk-dialog-header {
-    display: flex;
-    width: 100%;
-    padding: var(--dialog-header-base-v-padding) var(--dialog-header-base-h-padding);
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--dialog-header-base-gap);
-    align-self: stretch;
-    border-top-left-radius: var(--radius-xl);
-    border-top-right-radius: var(--radius-xl);
-  }
+@mixin dialog-header {
+  display: flex;
+  width: 100%;
+  padding: var(--dialog-header-base-v-padding) var(--dialog-header-base-h-padding);
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--dialog-header-base-gap);
+  align-self: stretch;
 
-  .tk-dialog-header-content {
-    display: flex;
-    align-items: center;
-    gap: var(--dialog-header-base-gap);
-    min-width: 0;
-    flex: 1 1 auto;
-  }
-
-  .tk-dialog-title-container {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .tk-dialog-title {
-    color: var(--text-darkest);
-    font-family: var(--desktop-title-h5-font);
-    font-size: var(--desktop-title-h5-size);
-    font-style: normal;
-    font-weight: 400;
-    line-height: var(--desktop-title-h5-line-height);
-  }
-
-  .tk-dialog-subtitle {
-    color: var(--text-base);
-    font-family: var(--desktop-subheading-xs-font);
-    font-size: var(--desktop-subheading-xs-size);
-    font-style: normal;
-    font-weight: 400;
-    line-height: var(--desktop-subheading-xs-line-height);
-  }
-
-  .tk-dialog-sign-icon {
-    display: inline-flex;
-    width: var(--dialog-header-base-sign-size);
-    height: var(--dialog-header-base-sign-size);
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    border: 1px solid var(--border-sub-base);
-    border-radius: 50%;
-    background-color: var(--background-lightest);
-    color: var(--states-info-dark);
-  }
-
-  .tk-dialog-sign-icon-symbol {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', sans-serif;
-    font-style: normal;
-    font-weight: 400;
-    letter-spacing: normal;
-    line-height: 1;
-    text-transform: none;
-    white-space: nowrap;
-    direction: ltr;
-    font-variation-settings:
-      'FILL' 0,
-      'wght' 400,
-      'GRAD' 0,
-      'opsz' 24;
-    font-size: calc(var(--dialog-header-base-sign-size) * 0.5);
-  }
-
-  &[data-variant='info'] .tk-dialog-sign-icon {
-    border-color: var(--states-info-sub-base);
-    color: var(--states-info-dark);
-  }
-
-  &[data-variant='success'] .tk-dialog-sign-icon {
-    border-color: var(--states-success-sub-base);
-    color: var(--states-success-dark);
-  }
-
-  &[data-variant='warning'] .tk-dialog-sign-icon {
-    border-color: var(--states-warning-sub-base);
-    color: var(--states-warning-dark);
-  }
-
-  &[data-variant='danger'] .tk-dialog-sign-icon {
-    border-color: var(--states-danger-sub-base);
-    color: var(--states-danger-dark);
-  }
-
-  .tk-dialog-header-close-button {
-    display: inline-flex;
-    width: var(--dialog-header-base-close-icon-size);
-    height: var(--dialog-header-base-close-icon-size);
-    padding: var(--button-sizes-small-full-padding);
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    border: 0;
-    border-radius: var(--button-sizes-small-radius);
-    background: transparent;
-    cursor: pointer;
-    transition:
-      background-color 0.2s ease-in-out,
-      color 0.2s ease-in-out;
-
-    @include mixins.focus-ring(var(--neutral-focus));
-  }
-
-  .tk-dialog-header-close-button:hover {
-    background-color: var(--overlay-black-lightest);
-  }
-
-  .tk-dialog-header-close-button,
-  .tk-dialog-close-icon {
-    color: var(--icon-sub-base);
-  }
-
-  .tk-dialog-close-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .tk-dialog-close-icon-symbol {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', sans-serif;
-    font-style: normal;
-    font-weight: 400;
-    letter-spacing: normal;
-    line-height: 1;
-    text-transform: none;
-    white-space: nowrap;
-    direction: ltr;
-    font-variation-settings:
-      'FILL' 0,
-      'wght' 400,
-      'GRAD' 0,
-      'opsz' 24;
-    font-size: var(--dialog-header-base-close-icon-size);
-  }
-
-  .tk-dialog-header.tk-dialog-header-divided {
+  &[data-header-type='divided'] {
     border-bottom: 1px solid var(--border-light);
   }
 
-  .tk-dialog-header.tk-dialog-header-light {
+  &[data-header-type='light'] {
     border-bottom: 1px solid var(--border-light);
     background: var(--background-lightest);
   }
 
-  .tk-dialog-header.tk-dialog-header-dark {
+  &[data-header-type='dark'] {
     background: var(--background-darkest);
+
+    .tk-dialog-description {
+      color: var(--text-sub-base);
+    }
+
+    .tk-dialog-title {
+      color: var(--text-lightest);
+    }
+
+    .tk-dialog-close-button {
+      color: var(--icon-base);
+    }
   }
 
-  .tk-dialog-header.tk-dialog-header-dark .tk-dialog-subtitle {
-    color: var(--text-sub-base);
-  }
-
-  .tk-dialog-header.tk-dialog-header-dark .tk-dialog-title {
-    color: var(--text-lightest);
-  }
-
-  .tk-dialog-header.tk-dialog-header-dark .tk-dialog-header-close-button,
-  .tk-dialog-header.tk-dialog-header-dark .tk-dialog-close-icon {
-    color: var(--icon-base);
-  }
-
-  .tk-dialog-header.tk-dialog-header-primary {
+  &[data-header-type='primary'] {
     background: var(--primary-base);
-  }
 
-  .tk-dialog-header.tk-dialog-header-primary .tk-dialog-subtitle {
-    color: var(--primary-lightest);
-  }
+    .tk-dialog-description {
+      color: var(--primary-lightest);
+    }
 
-  .tk-dialog-header.tk-dialog-header-primary .tk-dialog-title {
-    color: var(--text-lightest);
-  }
+    .tk-dialog-title {
+      color: var(--text-lightest);
+    }
 
-  .tk-dialog-header.tk-dialog-header-primary .tk-dialog-header-close-button,
-  .tk-dialog-header.tk-dialog-header-primary .tk-dialog-close-icon {
-    color: var(--primary-lightest);
+    .tk-dialog-close-button {
+      color: var(--primary-lightest);
+    }
   }
+}
 
-  .tk-dialog-footer {
-    display: flex;
-    width: 100%;
-    padding: var(--dialog-footer-base-v-padding) var(--dialog-footer-base-h-padding);
-    justify-content: flex-end;
-    align-self: stretch;
-  }
+@mixin dialog-title {
+  color: var(--text-darkest);
+  font-family: var(--desktop-title-h5-font);
+  font-size: var(--desktop-title-h5-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--desktop-title-h5-line-height);
+}
 
-  .tk-dialog-footer-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--dialog-footer-base-gap);
-  }
+@mixin dialog-body {
+  width: 100%;
+  min-width: 0;
+  padding: var(--dialog-body-base-v-padding) var(--dialog-body-base-h-padding);
+  align-self: stretch;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  color: var(--text-dark);
+}
+
+@mixin dialog-footer {
+  display: flex;
+  width: 100%;
+  padding: var(--dialog-footer-base-v-padding) var(--dialog-footer-base-h-padding);
+  gap: var(--dialog-footer-base-gap);
+  justify-content: flex-end;
+  align-self: stretch;
 }
