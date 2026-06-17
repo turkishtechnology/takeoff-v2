@@ -5,6 +5,17 @@ import { ButtonBase } from './components/button/base';
 import { CardBase, CardBodyBase, CardDescriptionBase, CardFooterBase, CardHeaderBase, CardTitleBase } from './components/card/base';
 import { CheckboxBase } from './components/checkbox/base';
 import {
+  DialogBodyBase,
+  DialogCloseBase,
+  DialogPanelBase,
+  DialogDescriptionBase,
+  DialogFooterBase,
+  DialogHeaderBase,
+  DialogOverlayBase,
+  DialogTitleBase,
+  DialogTriggerBase,
+} from './components/dialog/base';
+import {
   DrawerBase,
   DrawerBodyBase,
   DrawerCloseButtonBase,
@@ -58,6 +69,15 @@ export const slotClassRegistry = {
   cardBody: { slots: CardBodyBase.classes },
   cardFooter: { slots: CardFooterBase.classes },
   checkbox: { slots: CheckboxBase.classes },
+  dialogTrigger: { slots: DialogTriggerBase.classes },
+  dialogOverlay: { slots: DialogOverlayBase.classes },
+  dialogPanel: { slots: DialogPanelBase.classes },
+  dialogHeader: { slots: DialogHeaderBase.classes },
+  dialogTitle: { slots: DialogTitleBase.classes },
+  dialogDescription: { slots: DialogDescriptionBase.classes },
+  dialogBody: { slots: DialogBodyBase.classes },
+  dialogFooter: { slots: DialogFooterBase.classes },
+  dialogClose: { slots: DialogCloseBase.classes },
   drawer: { slots: DrawerBase.classes },
   drawerOverlay: { slots: DrawerOverlayBase.classes },
   drawerPanel: { slots: DrawerPanelBase.classes },
