@@ -10,7 +10,7 @@ export type ChipSize = 'small' | 'base' | 'large';
 
 export type ChipSlot = 'root' | 'label' | 'remove';
 
-export interface ChipProps extends Omit<TakeoffHTMLProps<'span'>, 'children' | 'onSelect'> {
+export interface ChipProps extends Omit<TakeoffHTMLProps<'span'>, 'children'> {
   /**
    * Color variant.
    * @defaultValue 'primary'
@@ -42,12 +42,18 @@ export interface ChipProps extends Omit<TakeoffHTMLProps<'span'>, 'children' | '
    */
   clickable?: boolean;
   /**
-   * Whether the chip removes itself after a non-prevented remove action.
+   * Whether the chip removes itself from the DOM after a remove action.
+   *
+   * Removal is tracked in internal state, so set `autoDismiss={false}` when the
+   * parent owns the chip list (e.g. renders chips from an array) and let
+   * `onRemove` drive the parent's state — otherwise the chip and the parent's
+   * list become two sources of truth.
    * @defaultValue true
    */
   autoDismiss?: boolean;
   /**
-   * Called when the remove button is pressed or the focused chip receives Backspace/Delete.
+   * Called when the remove button is pressed or a focused clickable chip
+   * receives Backspace/Delete.
    */
   onRemove?: () => void;
   /**

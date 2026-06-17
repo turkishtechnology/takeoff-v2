@@ -32,18 +32,10 @@
   }
 }
 
+// `filledLight` shares the filled anatomy; only the token colors passed at the
+// call site differ. Delegate so the two never drift.
 @mixin chip-variant-filledLight($bg-color, $text-color, $hover-bg: $bg-color) {
-  background-color: $bg-color;
-  border-color: transparent;
-  color: $text-color;
-
-  .tk-chip-remove {
-    color: $text-color;
-  }
-
-  &:where(:not([data-disabled])):is([data-clickable], [data-removable]):hover {
-    background-color: $hover-bg;
-  }
+  @include chip-variant-filled($bg-color, $text-color, $hover-bg);
 }
 
 @mixin chip-variant-outlined($text-color, $border-color, $hover-bg) {

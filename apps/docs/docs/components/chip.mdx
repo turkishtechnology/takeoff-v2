@@ -129,8 +129,9 @@ render(<ClickableDemo />);
 metadata. It can optionally expose a built-in remove action that dismisses the
 chip from the DOM.
 
-Static chips are not keyboard-focusable. Chips become focusable when they are
-clickable or removable. Disabled chips are removed from the tab order.
+Static chips are not keyboard-focusable. A clickable chip makes its root
+focusable and button-like. A removable chip exposes its remove button as the tab
+stop. Disabled chips are removed from the tab order.
 
 ## Usage
 
@@ -184,13 +185,15 @@ import { Chip } from '@takeoff-ui/react-spar';
 
 ## Remove
 
-Removable chips keep a single tab stop on the chip root. The inner remove button
-is not part of the tab sequence. Press `Backspace` or `Delete` while the chip is
-focused to request removal.
+The remove button is a real, labeled `<button>` in the tab sequence, so keyboard
+and assistive-tech users can reach it directly and activate it with `Enter` or
+`Space`. A chip that is also `clickable` additionally accepts `Backspace` or
+`Delete` while its root is focused to request removal.
 
 Use `onRemove` to sync removal with application state. By default, a removable
 chip dismisses itself after a remove action. Set `autoDismiss={false}` when the
-parent owns the chip list.
+parent owns the chip list — otherwise the chip's internal dismissed state and
+the parent's list become two sources of truth.
 
 <LiveCode
   code={removeDemo}
@@ -218,10 +221,11 @@ Clickable chips are keyboard-focusable and trigger their `onClick` handler with
 
 - Static chip roots are not focusable.
 - Clickable chips use a button-like root and support `Enter` and `Space`.
-- Removable chips support `Delete` and `Backspace`.
+- The remove button is a labeled control in the tab sequence and is activated
+  with `Enter` or `Space`.
+- Clickable removable chips also support `Delete` and `Backspace` while the root
+  is focused.
 - Disabled chips do not receive focus and do not respond to remove actions.
-- The remove button stays out of the tab sequence so dense chip groups keep one
-  tab stop per chip.
 
 ## API Reference
 
@@ -248,9 +252,9 @@ Clickable chips are keyboard-focusable and trigger their `onClick` handler with
 
 #### Events {#chip-events}
 
-| Name                          | Type                       | Default | Description                                                                             |
-| ----------------------------- | -------------------------- | ------- | --------------------------------------------------------------------------------------- |
-| <ApiBadge label="onRemove" /> | <code>() =&gt; void</code> | -       | Called when the remove button is pressed or the focused chip receives Backspace/Delete. |
+| Name                          | Type                       | Default | Description                                                                                     |
+| ----------------------------- | -------------------------- | ------- | ----------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onRemove" /> | <code>() =&gt; void</code> | -       | Called when the remove button is pressed or a focused clickable chip receives Backspace/Delete. |
 
 #### Data attributes {#chip-data-attributes}
 
