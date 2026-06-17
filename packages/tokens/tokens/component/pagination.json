@@ -20,22 +20,22 @@
       "pagination-base-container-v-padding": {
         "$value": "{base.spacing.xxs}"
       },
-      "pagination-cell-large-cell-size": {
+      "pagination-cell-large-size": {
         "$value": "{base.spacing.10xl}"
       },
-      "pagination-cell-large-cell-radius": {
+      "pagination-cell-large-radius": {
         "$value": "{base.radius.m-base}"
       },
-      "pagination-cell-base-cell-size": {
+      "pagination-cell-base-size": {
         "$value": "{base.spacing.8xl}"
       },
-      "pagination-cell-base-cell-radius": {
+      "pagination-cell-base-radius": {
         "$value": "{base.radius.m-base}"
       },
-      "pagination-cell-small-cell-size": {
+      "pagination-cell-small-size": {
         "$value": "{base.spacing.6xl}"
       },
-      "pagination-cell-small-cell-radius": {
+      "pagination-cell-small-radius": {
         "$value": "{base.radius.m-base}"
       }
     }

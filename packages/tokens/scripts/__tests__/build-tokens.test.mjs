@@ -50,7 +50,7 @@ describe('build-tokens.mjs integration', () => {
 
     expect(content).toContain('--primary-base: var(--primary-500);');
     expect(content).toContain('--mobile-body-xl-font: var(--family-body);');
-    expect(content).toContain("--family-body: 'tk-text';");
+    expect(content).toContain("--family-body: 'TK Text';");
   });
 
   it('generates Tailwind v3 files from the shared output inventory', () => {

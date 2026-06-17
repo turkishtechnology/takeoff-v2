@@ -1,16 +1,16 @@
 {
   "family": {
     "title": {
-      "$value": "tk-display"
+      "$value": "TK DISPLAY"
     },
     "subheading": {
-      "$value": "tk-text"
+      "$value": "TK Text"
     },
     "label": {
-      "$value": "tk-text"
+      "$value": "TK Text"
     },
     "body": {
-      "$value": "tk-text"
+      "$value": "TK Text"
     }
   }
 }
