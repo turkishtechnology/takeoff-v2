@@ -299,10 +299,10 @@ render(<CheckboxFormDemo />);
 # Checkbox
 
 `Checkbox` is a compound, accessible toggle control. The root owns visual state
-(`size`, plus inherited `invalid` / `disabled` / `required` / `readOnly`), and
-`Checkbox.Indicator` is the bordered box that hosts the icon. Wrap `Checkbox` in
-a `Field` to attach a form-level label, description, or error message — the
-field-level state cascades into the checkbox automatically.
+(`size`, plus inherited `invalid` / `disabled` / `required` / `optional` /
+`readOnly`), and `Checkbox.Indicator` is the bordered box that hosts the icon.
+Wrap `Checkbox` in a `Field` to attach a form-level label, description, or error
+message — the field-level state cascades into the checkbox automatically.
 
 ## Usage
 
@@ -334,9 +334,9 @@ import { Checkbox, Field } from '@takeoff-ui/react-spar';
 ## Using with `Field`
 
 `Field` is the generic ARIA wrapper. Setting `invalid`, `disabled`, `required`,
-or `readOnly` on `Field` cascades into the nested `Checkbox`, and `Field.Label`,
-`Field.Description`, and `Field.ErrorMessage` are wired to the field control
-through shared IDs.
+`optional`, or `readOnly` on `Field` cascades into the nested `Checkbox`, and
+`Field.Label`, `Field.Description`, and `Field.ErrorMessage` are wired to the
+field control through shared IDs.
 
 <LiveCode
   code={fieldWithCheckboxDemo}
