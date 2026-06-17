@@ -78,7 +78,7 @@
   position: fixed;
   inset-block-start: 50%;
   inset-inline-start: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(1);
   z-index: 1501;
   display: flex;
   width: 480px;
@@ -92,6 +92,25 @@
   box-shadow: var(--effect-1-default-base);
   color: var(--text-dark);
   overflow: hidden;
+  opacity: 1;
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.3s ease-in-out,
+    visibility 0s linear 0s;
+
+  // The root mounts the panel with `forceMount`, so it stays in the DOM while
+  // closed. Hide it and run the exit transition off `data-state='closed'`;
+  // without this the panel would remain centered and visible when closed.
+  &[data-state='closed'] {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transform: translate(-50%, -50%) scale(0.95);
+    transition:
+      opacity 0.3s ease-in-out,
+      transform 0.3s ease-in-out,
+      visibility 0s linear 0.3s;
+  }
 }
 
 @mixin dialog-header {
@@ -115,10 +134,6 @@
   &[data-header-type='dark'] {
     background: var(--background-darkest);
 
-    .tk-dialog-description {
-      color: var(--text-sub-base);
-    }
-
     .tk-dialog-title {
       color: var(--text-lightest);
     }
@@ -130,10 +145,6 @@
 
   &[data-header-type='primary'] {
     background: var(--primary-base);
-
-    .tk-dialog-description {
-      color: var(--primary-lightest);
-    }
 
     .tk-dialog-title {
       color: var(--text-lightest);
@@ -154,6 +165,15 @@
   line-height: var(--desktop-title-h5-line-height);
 }
 
+@mixin dialog-description {
+  color: var(--text-base);
+  font-family: var(--desktop-body-m-base-font);
+  font-size: var(--desktop-body-m-base-size);
+  font-weight: 400;
+  line-height: var(--desktop-body-m-base-line-height);
+  margin: 0;
+}
+
 @mixin dialog-body {
   width: 100%;
   min-width: 0;
@@ -169,6 +189,8 @@
   width: 100%;
   padding: var(--dialog-footer-base-v-padding) var(--dialog-footer-base-h-padding);
   gap: var(--dialog-footer-base-gap);
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-end;
   align-self: stretch;
 

@@ -39,7 +39,13 @@ export type DialogFooterType = 'basic' | 'divided' | 'light';
  * Public props for the Dialog root. State-only — renders no DOM, so no
  * polymorphic `as` and no native HTML props.
  */
-export interface DialogProps extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'modal' | 'disabled' | 'forceMount' | 'children'> {
+export interface DialogProps
+  // Dialog identity, controlled/uncontrolled open state, modality, and trigger
+  // disable are exposed as consumer knobs. `forceMount` is exposed so consumers
+  // can opt out of the persistent mount that the root enables by default for
+  // exit animations (see `Dialog.tsx`). Spar's content-level props (focus,
+  // dismiss, portal) are exposed on `Dialog.Panel`, not here.
+  extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'modal' | 'disabled' | 'forceMount' | 'children'> {
   /** Whether the dialog can be dismissed by clicking outside or pressing Escape. @defaultValue true */
   dismissible?: boolean;
 }

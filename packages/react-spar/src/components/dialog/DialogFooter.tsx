@@ -16,7 +16,7 @@ export const DialogFooter = <T extends ElementType = 'div'>(props: DialogFooterP
     }),
   });
 
-  const { as, footerType: _footerType = DEFAULT_FOOTER_TYPE, children, ref, ...footerProps } = rest;
+  const { as, footerType: _footerType, children, ref, ...footerProps } = rest;
   const Component = (as ?? 'div') as ElementType;
 
   return (

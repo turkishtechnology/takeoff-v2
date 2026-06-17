@@ -12,11 +12,18 @@ export const Dialog = (props: DialogProps) => {
   const theme = useComponentTheme('Dialog');
   const merged = { ...theme?.defaultProps, ...props };
 
-  const { dismissible = true, children, ...sparProps } = merged;
+  // `forceMount` defaults to `true` so the overlay/panel stay in the DOM
+  // across the open → closed boundary, letting the CSS exit transitions in
+  // `_dialog.scss` (`&[data-state='closed']`) run before unmount. Without it
+  // Spar unmounts on close and the close animation never plays. Consumers can
+  // still opt out by passing `forceMount={false}`.
+  const { dismissible = true, forceMount = true, children, ...sparProps } = merged;
 
   return (
     <DialogProvider value={{ dismissible }}>
-      <SparDialog {...sparProps}>{children}</SparDialog>
+      <SparDialog {...sparProps} forceMount={forceMount}>
+        {children}
+      </SparDialog>
     </DialogProvider>
   );
 };

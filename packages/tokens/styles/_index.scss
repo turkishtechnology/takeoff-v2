@@ -49,6 +49,10 @@
   @include dialog.dialog-title;
 }
 
+.tk-dialog-description {
+  @include dialog.dialog-description;
+}
+
 .tk-dialog-close {
   @include dialog.dialog-close;
 }

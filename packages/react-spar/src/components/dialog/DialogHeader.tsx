@@ -16,7 +16,7 @@ export const DialogHeader = <T extends ElementType = 'div'>(props: DialogHeaderP
     }),
   });
 
-  const { as, headerType: _headerType = DEFAULT_HEADER_TYPE, children, ref, ...headerProps } = rest;
+  const { as, headerType: _headerType, children, ref, ...headerProps } = rest;
   const Component = (as ?? 'div') as ElementType;
 
   return (

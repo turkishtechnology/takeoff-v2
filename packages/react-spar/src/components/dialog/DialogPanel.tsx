@@ -8,7 +8,17 @@ import { DialogPanelBase } from './base';
 import { useDialogOwnContext } from './context';
 import type { DialogPanelProps, DialogPanelSlot } from './types';
 
-const preventDefault = (e: Event) => e.preventDefault();
+// When the dialog is non-dismissible, block the close while still invoking the
+// consumer's own handler (if any), so a passed `onEscapeKeyDown` /
+// `onPointerDownOutside` / `onInteractOutside` is preserved rather than silently
+// overwritten. `preventDefault` is called first so the consumer cannot
+// accidentally re-enable the close.
+const blockDismiss =
+  <E extends { preventDefault: () => void }>(handler?: (event: E) => void) =>
+  (event: E) => {
+    event.preventDefault();
+    handler?.(event);
+  };
 
 export const DialogPanel = <T extends ElementType = 'div'>(props: DialogPanelProps<T>) => {
   const theme = useComponentTheme('DialogPanel');
@@ -18,9 +28,9 @@ export const DialogPanel = <T extends ElementType = 'div'>(props: DialogPanelPro
   const { children, ref, ...sparProps } = rest;
 
   const dismissHandlers = !dismissible && {
-    onEscapeKeyDown: preventDefault,
-    onPointerDownOutside: preventDefault,
-    onInteractOutside: preventDefault,
+    onEscapeKeyDown: blockDismiss(sparProps.onEscapeKeyDown),
+    onPointerDownOutside: blockDismiss(sparProps.onPointerDownOutside),
+    onInteractOutside: blockDismiss(sparProps.onInteractOutside),
   };
 
   return (

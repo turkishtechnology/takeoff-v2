@@ -134,6 +134,10 @@ export default {
       propOverrides: {
         children: childrenOverride('Heading text content.'),
         className: classNameOverride,
+        // The wrapper defaults `level` to 5 (an h5 visual heading), not Spar's
+        // primitive default of 2. The generated default comes from Spar's
+        // `@defaultValue` JSDoc, so override it to match the wrapper.
+        level: { default: '5' },
       },
       dataAttributes: [dataSlotRoot],
     },
