@@ -18,7 +18,7 @@
   "dependencies": {
     "@docusaurus/core": "^3.7.0",
     "@docusaurus/preset-classic": "^3.10.1",
-    "@docusaurus/theme-common": "^3.7.0",
+    "@docusaurus/theme-common": "^3.10.1",
     "@hookform/resolvers": "^5.4.0",
     "@takeoff-design/tailwind": "workspace:^",
     "@takeoff-design/tokens": "workspace:*",
