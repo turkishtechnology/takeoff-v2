@@ -474,8 +474,10 @@ describe('sync-figma.mjs integration', () => {
     },
     'typography/TK': {
       family: {
-        body: { $value: 'TK Fonts', $type: 'fontFamily' },
-        heading: { $value: 'TK Display', $type: 'fontFamily' },
+        title: { $value: 'TK DISPLAY', $type: 'fontFamily' },
+        subheading: { $value: 'TK Text', $type: 'fontFamily' },
+        label: { $value: 'TK Text', $type: 'fontFamily' },
+        body: { $value: 'TK Text', $type: 'fontFamily' },
       },
       size: {
         xs: { $value: 12, $type: 'dimension' },
@@ -583,7 +585,10 @@ describe('sync-figma.mjs integration', () => {
     if (existsSync(TOKENS_DIR)) {
       mkdirSync(BACKUP_DIR, { recursive: true });
       cpSync(TOKENS_DIR, BACKUP_DIR, { recursive: true });
+      rmSync(TOKENS_DIR, { recursive: true, force: true });
     }
+
+    mkdirSync(TOKENS_DIR, { recursive: true });
 
     // Write the mock Figma export
     writeFileSync(MOCK_EXPORT_PATH, JSON.stringify(mockFigmaExport, null, 2));
@@ -653,8 +658,8 @@ describe('sync-figma.mjs integration', () => {
     expect(existsSync(familyPath)).toBe(true);
 
     const data = JSON.parse(readFileSync(familyPath, 'utf-8'));
-    expect(data.family.body.$value).toBe('Geologica');
-    expect(data.family.heading.$value).toBe('Geologica');
+    expect(data.family.body.$value).toBe('TK Text');
+    expect(data.family.title.$value).toBe('TK DISPLAY');
 
     const sizePath = resolve(TOKENS_DIR, 'primitives/default/typography/size.json');
     const sizeData = JSON.parse(readFileSync(sizePath, 'utf-8'));
@@ -670,11 +675,7 @@ describe('sync-figma.mjs integration', () => {
 
   it('should generate brand typography overrides (only family diffs)', () => {
     const ajetFamilyPath = resolve(TOKENS_DIR, 'primitives/brands/ajet/typography/family.json');
-    expect(existsSync(ajetFamilyPath)).toBe(true);
-
-    const data = JSON.parse(readFileSync(ajetFamilyPath, 'utf-8'));
-    expect(data.family.body.$value).toBe('TK Fonts');
-    expect(data.family.heading.$value).toBe('TK Display');
+    expect(existsSync(ajetFamilyPath)).toBe(false);
   });
 
   it('should generate line-height tokens with dimensional and unitless variants', () => {

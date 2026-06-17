@@ -26,7 +26,7 @@
 .sectionTitle {
   display: flex;
   flex-direction: column;
-  font-family: var(--desktop-body-s-font, Geologica), sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: 36px;
   line-height: 45px;
   font-weight: 400;
@@ -36,7 +36,7 @@
 .sectionDesc {
   max-width: 540px;
   width: 100%;
-  font-family: var(--desktop-body-s-font, Geologica), sans-serif;
+  font-family: var(--desktop-body-s-font, 'tk-text'), sans-serif;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
@@ -86,7 +86,7 @@
 }
 
 .cardTitle {
-  font-family: var(--desktop-body-s-font, Geologica), sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: 20px;
   line-height: 25px;
   font-weight: 400;

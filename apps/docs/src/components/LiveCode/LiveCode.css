@@ -313,7 +313,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 8px 8px 14px;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   background: var(--docs-surface-1);
   transition: background 150ms ease;
 }
@@ -428,7 +428,7 @@
   justify-content: center;
   gap: 6px;
   padding: 4px 14px;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;

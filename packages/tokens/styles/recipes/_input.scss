@@ -72,7 +72,7 @@
 // ---------------------------------------------------------------------------
 
 @mixin input {
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -150,7 +150,7 @@
     outline: none;
     background-color: transparent;
     color: var(--text-darkest);
-    font-family: var(--desktop-body-m-base-font, 'Geologica', sans-serif);
+    font-family: var(--desktop-body-m-base-font, 'tk-text', sans-serif);
 
     &::placeholder {
       color: var(--text-sub-base);

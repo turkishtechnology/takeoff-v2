@@ -22,7 +22,7 @@
 // ---------------------------------------------------------------------------
 
 @mixin checkbox {
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
   display: inline-flex;
   align-items: center;
   gap: var(--basic-switcher-content-gap);

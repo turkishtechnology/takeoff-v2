@@ -2,16 +2,16 @@
   "component": {
     "timestamp": {
       "$type": "dimension",
-      "timestamp-base-gap": {
+      "timestampt-base-gap": {
         "$value": "{base.spacing.xxs}"
       },
-      "timestamp-base-content-gap": {
+      "timestampt-base-content-gap": {
         "$value": "{base.spacing.xs}"
       },
-      "timestamp-small-gap": {
+      "timestampt-small-gap": {
         "$value": "{base.spacing.none}"
       },
-      "timestamp-small-content-gap": {
+      "timestampt-small-content-gap": {
         "$value": "{base.spacing.xxs}"
       }
     }
