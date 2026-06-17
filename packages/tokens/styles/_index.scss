@@ -4,16 +4,20 @@
 
 @use 'recipes/accordion';
 @use 'recipes/badge';
+@use 'recipes/breadcrumb';
 @use 'recipes/button';
+@use 'recipes/card';
 @use 'recipes/checkbox';
 @use 'recipes/dialog';
 @use 'recipes/drawer';
 @use 'recipes/field';
 @use 'recipes/input';
+@use 'recipes/label';
 @use 'recipes/popover';
 @use 'recipes/radio';
 @use 'recipes/select';
 @use 'recipes/switch';
+@use 'recipes/tabs';
 @use 'recipes/tooltip';
 
 @include button.button-keyframes;
@@ -25,6 +29,30 @@
   @include button.button;
 }
 
+.tk-card {
+  @include card.card;
+}
+
+.tk-card-header {
+  @include card.card-header;
+}
+
+.tk-card-title {
+  @include card.card-title;
+}
+
+.tk-card-description {
+  @include card.card-description;
+}
+
+.tk-card-body {
+  @include card.card-body;
+}
+
+.tk-card-footer {
+  @include card.card-footer;
+}
+
 .tk-accordion {
   @include accordion.accordion;
 }
@@ -33,12 +61,36 @@
   @include accordion.accordion-item;
 }
 
-.tk-dialog-mask {
-  @include dialog.dialog-mask;
+.tk-dialog-overlay {
+  @include dialog.dialog-overlay;
 }
 
-.tk-dialog {
-  @include dialog.dialog;
+.tk-dialog-panel {
+  @include dialog.dialog-panel;
+}
+
+.tk-dialog-header {
+  @include dialog.dialog-header;
+}
+
+.tk-dialog-title {
+  @include dialog.dialog-title;
+}
+
+.tk-dialog-description {
+  @include dialog.dialog-description;
+}
+
+.tk-dialog-close {
+  @include dialog.dialog-close;
+}
+
+.tk-dialog-body {
+  @include dialog.dialog-body;
+}
+
+.tk-dialog-footer {
+  @include dialog.dialog-footer;
 }
 
 .tk-drawer-overlay {
@@ -69,8 +121,8 @@
   @include drawer.drawer-footer;
 }
 
-.tk-drawer-close-button {
-  @include drawer.drawer-close-button;
+.tk-drawer-close {
+  @include drawer.drawer-close;
 }
 
 .tk-field {
@@ -91,6 +143,10 @@
 
 .tk-input-chip {
   @include input.input-chip;
+}
+
+.tk-label {
+  @include label.label;
 }
 
 .tk-select {
@@ -145,6 +201,22 @@
   @include radio.radio-item;
 }
 
+.tk-tabs {
+  @include tabs.tabs;
+}
+
+.tk-tabs-list {
+  @include tabs.tabs-list;
+}
+
+.tk-tabs-trigger {
+  @include tabs.tabs-trigger;
+}
+
+.tk-tabs-content {
+  @include tabs.tabs-content;
+}
+
 .tk-tooltip-content {
   @include tooltip.tooltip-content;
 }
@@ -163,6 +235,10 @@
 
 .tk-badge {
   @include badge.badge;
+}
+
+.tk-breadcrumb {
+  @include breadcrumb.breadcrumb;
 }
 
 .tk-popover-trigger {

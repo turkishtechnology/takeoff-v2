@@ -16,7 +16,7 @@
 }
 
 .headline {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
   line-height: 1.35;
   font-weight: 600;
@@ -48,7 +48,7 @@
 }
 
 .wordmark {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: 1.125rem;
   font-weight: 700;
   letter-spacing: -0.015em;

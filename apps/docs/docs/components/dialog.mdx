@@ -1,0 +1,543 @@
+---
+title: Dialog
+description:
+  A modal surface built on top of Spar's headless Dialog primitive. Use it for
+  confirmations, focused forms, and blocking decisions that need full user
+  attention.
+sidebar_label: Dialog
+sidebar_position: 4
+slug: /components/dialog
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Button,
+  Dialog,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const dialogScope = { Button, Dialog };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  return (
+    <Dialog>
+      <Dialog.Trigger as={Button}>Open Dialog</Dialog.Trigger>
+      <Dialog.Overlay />
+      <Dialog.Panel>
+        <Dialog.Header>
+          <Dialog.Title>Flight Details</Dialog.Title>
+          <Dialog.Close>✕</Dialog.Close>
+        </Dialog.Header>
+        <Dialog.Body>
+          <Dialog.Description>
+            Review your selected flight information before continuing.
+          </Dialog.Description>
+        </Dialog.Body>
+      </Dialog.Panel>
+    </Dialog>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const overlayIntensityDemo = String.raw`
+function OverlayIntensityDemo() {
+  const intensities = ['lightest', 'light', 'base', 'dark', 'darkest'];
+
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      {intensities.map((intensity) => (
+        <Dialog key={intensity}>
+          <Dialog.Trigger as={Button}>{intensity}</Dialog.Trigger>
+          <Dialog.Overlay intensity={intensity} />
+          <Dialog.Panel>
+            <Dialog.Header>
+              <Dialog.Title>{intensity} overlay</Dialog.Title>
+              <Dialog.Close>✕</Dialog.Close>
+            </Dialog.Header>
+            <Dialog.Body>
+              Overlay intensity is set to <code>{intensity}</code>.
+            </Dialog.Body>
+          </Dialog.Panel>
+        </Dialog>
+      ))}
+    </div>
+  );
+}
+
+render(<OverlayIntensityDemo />);
+`;
+
+export const overlayBehaviorDemo = String.raw`
+function OverlayBehaviorDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Dialog>
+        <Dialog.Trigger as={Button}>Blur</Dialog.Trigger>
+        <Dialog.Overlay blur />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.Title>Blurred overlay</Dialog.Title>
+            <Dialog.Close>✕</Dialog.Close>
+          </Dialog.Header>
+          <Dialog.Body>
+            The backdrop stays visible and adds a soft blur effect behind the panel.
+          </Dialog.Body>
+        </Dialog.Panel>
+      </Dialog>
+
+      <Dialog>
+        <Dialog.Trigger as={Button}>Invisible</Dialog.Trigger>
+        <Dialog.Overlay invisible />
+        <Dialog.Panel>
+          <Dialog.Header>
+            <Dialog.Title>Invisible overlay</Dialog.Title>
+            <Dialog.Close>✕</Dialog.Close>
+          </Dialog.Header>
+          <Dialog.Body>
+            The overlay remains mounted for interaction but is visually hidden.
+          </Dialog.Body>
+        </Dialog.Panel>
+      </Dialog>
+    </div>
+  );
+}
+
+render(<OverlayBehaviorDemo />);
+`;
+
+export const headerTypeDemo = String.raw`
+function HeaderTypeDemo() {
+  const headerTypes = ['basic', 'divided', 'light', 'dark', 'primary'];
+
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      {headerTypes.map((headerType) => (
+        <Dialog key={headerType}>
+          <Dialog.Trigger as={Button}>{headerType}</Dialog.Trigger>
+          <Dialog.Overlay />
+          <Dialog.Panel>
+            <Dialog.Header headerType={headerType}>
+              <Dialog.Title>{headerType} header</Dialog.Title>
+              <Dialog.Close>✕</Dialog.Close>
+            </Dialog.Header>
+            <Dialog.Body>
+              <Dialog.Description>
+                Header styling changes with <code>headerType</code>.
+              </Dialog.Description>
+              <div className="mt-3">
+              This panel keeps the same body and footer while only the header
+              appearance changes.
+              </div>
+            </Dialog.Body>
+          </Dialog.Panel>
+        </Dialog>
+      ))}
+    </div>
+  );
+}
+
+render(<HeaderTypeDemo />);
+`;
+
+export const dismissibleDemo = String.raw`
+function DismissibleDemo() {
+  return (
+    <Dialog dismissible={false}>
+      <Dialog.Trigger as={Button}>Open sticky dialog</Dialog.Trigger>
+      <Dialog.Overlay />
+      <Dialog.Panel>
+        <Dialog.Header headerType="light">
+          <Dialog.Title>Dismiss disabled</Dialog.Title>
+          <Dialog.Close>✕</Dialog.Close>
+        </Dialog.Header>
+        <Dialog.Body>
+          Escape and outside clicks will not close this dialog. Use the close
+          button to dismiss it.
+        </Dialog.Body>
+      </Dialog.Panel>
+    </Dialog>
+  );
+}
+
+render(<DismissibleDemo />);
+`;
+
+
+export const footerTypeDemo = String.raw`
+function FooterTypeDemo() {
+  const footerTypes = ['basic', 'divided', 'light'];
+
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      {footerTypes.map((footerType) => (
+        <Dialog key={footerType}>
+          <Dialog.Trigger as={Button}>{footerType}</Dialog.Trigger>
+          <Dialog.Overlay />
+          <Dialog.Panel>
+            <Dialog.Header headerType="divided">
+              <Dialog.Title>{footerType} footer</Dialog.Title>
+              <Dialog.Close>✕</Dialog.Close>
+            </Dialog.Header>
+            <Dialog.Body>
+              Footer styling changes with <code>footerType</code>.
+            </Dialog.Body>
+            <Dialog.Footer footerType={footerType}>
+              <Button variant="secondary">Cancel</Button>
+              <Button>Confirm</Button>
+            </Dialog.Footer>
+          </Dialog.Panel>
+        </Dialog>
+      ))}
+    </div>
+  );
+}
+
+render(<FooterTypeDemo />);
+`;
+
+export const controlledDemo = String.raw`
+function ControlledDemo() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="flex items-center gap-3">
+      <Button onClick={() => setOpen(true)}>Open externally</Button>
+      <span className="text-xs opacity-70">
+        State: {open ? 'open' : 'closed'}
+      </span>
+      <Dialog open={open} onOpenChange={setOpen} dismissible={false}>
+        <Dialog.Overlay />
+        <Dialog.Panel>
+          <Dialog.Header headerType="light">
+            <Dialog.Title>Controlled dialog</Dialog.Title>
+            <Dialog.Close>✕</Dialog.Close>
+          </Dialog.Header>
+          <Dialog.Body>
+            This dialog is controlled outside the component. Escape and outside
+            clicks are disabled with <code>dismissible=false</code>.
+          </Dialog.Body>
+          <Dialog.Footer className="flex justify-end">
+            <Dialog.Close as={Button}>Done</Dialog.Close>
+          </Dialog.Footer>
+        </Dialog.Panel>
+      </Dialog>
+    </div>
+  );
+}
+
+render(<ControlledDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Dialog
+
+`Dialog` wraps Spar's headless dialog primitive and adds Takeoff styling hooks
+for overlay intensity, header types, and compound anatomy.
+
+## Usage
+
+```tsx
+import { Dialog } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Dialog>
+  <Dialog.Trigger />
+  <Dialog.Overlay />
+  <Dialog.Panel>
+    <Dialog.Header>
+      <Dialog.Title />
+      <Dialog.Close />
+    </Dialog.Header>
+    <Dialog.Body>
+      <Dialog.Description />
+    </Dialog.Body>
+    <Dialog.Footer />
+  </Dialog.Panel>
+</Dialog>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={240}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dialogScope}
+/>
+
+## Intensity
+
+Use `intensity` to control how strong the backdrop appears behind the dialog.
+
+<LiveCode
+  code={overlayIntensityDemo}
+  noInline
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dialogScope}
+/>
+
+## Overlay Behavior
+
+Use `blur` for a softened backdrop and `invisible` when the overlay should stay
+interactive but visually disappear.
+
+<LiveCode
+  code={overlayBehaviorDemo}
+  noInline
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dialogScope}
+/>
+
+## Header Type
+
+Use `headerType` to switch the visual treatment of the dialog header without
+changing the rest of the panel structure.
+
+<LiveCode
+  code={headerTypeDemo}
+  noInline
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dialogScope}
+/>
+
+## Dismissible
+
+Set `dismissible={false}` when the dialog should stay open until the user
+explicitly closes it.
+
+<LiveCode
+  code={dismissibleDemo}
+  noInline
+  previewMinHeight={140}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dialogScope}
+/>
+
+## Footer Type
+
+Use `footerType` to switch the footer treatment without changing the action
+layout.
+
+<LiveCode
+  code={footerTypeDemo}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dialogScope}
+/>
+
+## Controlled
+
+Use `open` and `onOpenChange` when the dialog state needs to be managed from
+outside the component.
+
+<LiveCode
+  code={controlledDemo}
+  noInline
+  previewMinHeight={140}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dialogScope}
+/>
+
+## Accessibility & Keyboard
+
+- The dialog renders with the proper `role`, `aria-labelledby`, and
+  `aria-describedby` wiring through Spar.
+- Focus is trapped inside the content while open and restored on close.
+- `Dialog.Title` provides the accessible label and `Dialog.Description` provides
+  the accessible description.
+- `Dialog.Body` provides the default content spacing area between header and
+  footer.
+- When `dismissible={false}`, Escape and outside interaction do not close the
+  dialog.
+
+| Key                                   | Behavior                                        |
+| ------------------------------------- | ----------------------------------------------- |
+| <kbd>Escape</kbd>                     | Closes the dialog unless `dismissible={false}`. |
+| <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> | Cycles focus within the dialog content.         |
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Dialog {#dialog}
+
+#### Props {#dialog-props}
+
+| Name                             | Type                         | Default | Description                                                                                                                                                                      |
+| -------------------------------- | ---------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code> | -       | Dialog parts rendered inside the root.                                                                                                                                           |
+| <ApiBadge label="dismissible" /> | <code>boolean</code>         | true    | Whether the dialog can be dismissed by clicking outside or pressing Escape.                                                                                                      |
+| <ApiBadge label="id" />          | <code>string</code>          | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-title`, `${id}-description`, `${id}-content`. |
+| <ApiBadge label="disabled" />    | <code>boolean</code>         | false   | Disables all dialog triggers (prevents opening)                                                                                                                                  |
+| <ApiBadge label="forceMount" />  | <code>boolean</code>         | false   | Always render portal/overlay/content (for animation libraries)                                                                                                                   |
+| <ApiBadge label="open" />        | <code>boolean</code>         | -       | Controlled open state                                                                                                                                                            |
+| <ApiBadge label="defaultOpen" /> | <code>boolean</code>         | false   | Initial open state (uncontrolled)                                                                                                                                                |
+| <ApiBadge label="modal" />       | <code>boolean</code>         | true    | Whether dialog is modal (blocks interaction outside)                                                                                                                             |
+
+#### Events {#dialog-events}
+
+| Name                              | Type                                    | Default | Description                      |
+| --------------------------------- | --------------------------------------- | ------- | -------------------------------- |
+| <ApiBadge label="onOpenChange" /> | <code>(open: boolean) =&gt; void</code> | -       | Callback when open state changes |
+
+### Dialog.Trigger {#dialog-trigger}
+
+#### Data attributes {#dialog-trigger-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Dialog.Overlay {#dialog-overlay}
+
+#### Props {#dialog-overlay-props}
+
+| Name                            | Type                                                                                | Default       | Description                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="invisible" />  | <code>boolean</code>                                                                | false         | When true, the overlay is rendered but visually invisible.                 |
+| <ApiBadge label="intensity" />  | <code><a href="#dialog-td-dialogoverlayintensity">DialogOverlayIntensity</a></code> | 'base'        | Overlay backdrop intensity.                                                |
+| <ApiBadge label="blur" />       | <code>boolean</code>                                                                | false         | Applies backdrop blur on the overlay.                                      |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             |                                                                            |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             |                                                                            |
+| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
+
+#### Data attributes {#dialog-overlay-data-attributes}
+
+| Attribute                                       | Applied when             | Purpose                                                     |
+| ----------------------------------------------- | ------------------------ | ----------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                   | Stable selector for wrapper styling on the root slot.       |
+| <ApiBadge label="data-state" />                 | Always                   | `"open"` or `"closed"` — used for overlay fade transitions. |
+| <ApiBadge label="data-intensity" />             | Always                   | Reflects the resolved `intensity` prop.                     |
+| <ApiBadge label="data-invisible" />             | When `invisible` is true | Indicates the overlay is visually hidden but still mounted. |
+| <ApiBadge label="data-blur" />                  | When `blur` is true      | Enables backdrop blur styling on the overlay.               |
+
+### Dialog.Panel {#dialog-panel}
+
+#### Props {#dialog-panel-props}
+
+| Name                              | Type                                                                                | Default       | Description                                                                |
+| --------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             |                                                                            |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             |                                                                            |
+| <ApiBadge label="role" />         | <code>AriaRole</code>                                                               | 'dialog'      | ARIA role for dialog type                                                  |
+| <ApiBadge label="container" />    | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
+| <ApiBadge label="trapFocus" />    | <code>boolean</code>                                                                | true          | Enable focus trapping                                                      |
+| <ApiBadge label="restoreFocus" /> | <code>boolean</code>                                                                | true          | Restore focus on close                                                     |
+| <ApiBadge label="initialFocus" /> | <code>HTMLElement &#124; (() =&gt; HTMLElement)</code>                              | -             | Element to focus on open                                                   |
+| <ApiBadge label="finalFocus" />   | <code>HTMLElement &#124; (() =&gt; HTMLElement)</code>                              | -             | Element to focus on close                                                  |
+
+#### Events {#dialog-panel-events}
+
+| Name                                      | Type                                           | Default | Description                                                |
+| ----------------------------------------- | ---------------------------------------------- | ------- | ---------------------------------------------------------- |
+| <ApiBadge label="onOpenAutoFocus" />      | <code>(event: Event) =&gt; void</code>         | -       | Callback before auto-focus                                 |
+| <ApiBadge label="onCloseAutoFocus" />     | <code>(event: Event) =&gt; void</code>         | -       | Callback before focus restore                              |
+| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code> | -       | Escape key handler                                         |
+| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>  | -       | Outside click handler                                      |
+| <ApiBadge label="onInteractOutside" />    | <code>(event: PointerEvent) =&gt; void</code>  | -       | Outside interaction handler with preventDefault capability |
+
+#### Data attributes {#dialog-panel-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                                    |
+| ----------------------------------------------- | ------------ | ---------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.      |
+| <ApiBadge label="data-state" />                 | Always       | `"open"` or `"closed"` — forwarded from Spar dialog state. |
+| <ApiBadge label="data-modal" />                 | Always       | Reflects whether the dialog is modal.                      |
+| <ApiBadge label="data-role" />                  | Always       | Reflects the resolved ARIA role.                           |
+
+### Dialog.Header {#dialog-header}
+
+#### Props {#dialog-header-props}
+
+| Name                            | Type                                                                                | Default | Description         |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
+| <ApiBadge label="headerType" /> | <code><a href="#dialog-td-dialogheadertype">DialogHeaderType</a></code>             | 'basic' | Type of the header. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
+
+#### Data attributes {#dialog-header-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-header-type" />           | Always       | Reflects the resolved `headerType` prop.              |
+
+### Dialog.Title {#dialog-title}
+
+#### Props {#dialog-title-props}
+
+| Name                            | Type                                                                                | Default | Description         |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
+| <ApiBadge label="level" />      | <code>number</code>                                                                 | 5       | Heading level (1-6) |
+
+#### Data attributes {#dialog-title-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Dialog.Description {#dialog-description}
+
+#### Data attributes {#dialog-description-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Dialog.Body {#dialog-body}
+
+#### Data attributes {#dialog-body-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Dialog.Footer {#dialog-footer}
+
+#### Props {#dialog-footer-props}
+
+| Name                            | Type                                                                                | Default | Description         |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
+| <ApiBadge label="footerType" /> | <code><a href="#dialog-td-dialogfootertype">DialogFooterType</a></code>             | 'basic' | Type of the footer. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
+
+#### Data attributes {#dialog-footer-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-footer-type" />           | Always       | Reflects the resolved `footerType` prop.              |
+
+### Dialog.Close {#dialog-close}
+
+#### Data attributes {#dialog-close-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#dialog-type-definitions}
+
+| Name                                                                                           | Definition                                                                          |
+| ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| <span id="dialog-td-dialogoverlayintensity"><ApiBadge label="DialogOverlayIntensity" /></span> | <code>'lightest' &#124; 'light' &#124; 'base' &#124; 'dark' &#124; 'darkest'</code> |
+| <span id="dialog-td-dialogheadertype"><ApiBadge label="DialogHeaderType" /></span>             | <code>'basic' &#124; 'divided' &#124; 'light' &#124; 'dark' &#124; 'primary'</code> |
+| <span id="dialog-td-dialogfootertype"><ApiBadge label="DialogFooterType" /></span>             | <code>'basic' &#124; 'divided' &#124; 'light'</code>                                |
+
+{/* api-tables:end */}

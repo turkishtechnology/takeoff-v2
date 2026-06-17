@@ -1,0 +1,31 @@
+# Auto-applied area labels for PRs (triage only — no PR is blocked on these).
+# Consumed by actions/labeler@v5 via .github/workflows/labeler.yml.
+# Label names must exist in .github/labels.yml (the labels-sync seeds them).
+
+"area:react-spar":
+  - changed-files:
+      - any-glob-to-any-file: "packages/react-spar/**"
+
+"area:tokens":
+  - changed-files:
+      - any-glob-to-any-file: "packages/tokens/**"
+
+"area:tailwind":
+  - changed-files:
+      - any-glob-to-any-file: "packages/tailwind/**"
+
+"area:docs":
+  - changed-files:
+      - any-glob-to-any-file: "apps/docs/**"
+
+"area:ci":
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - "turbo.json"
+          - "**/*.yml"
+          - "**/*.yaml"
+
+"area:changesets":
+  - changed-files:
+      - any-glob-to-any-file: ".changeset/**"

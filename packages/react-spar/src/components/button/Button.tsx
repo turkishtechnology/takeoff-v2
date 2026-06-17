@@ -37,7 +37,8 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
     appearance: _appearance,
     size: _size,
     rounded: _rounded,
-    isLoading = false,
+    loading = false,
+    pressed,
     startContent,
     endContent,
     disabled = false,
@@ -68,11 +69,11 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
   });
 
   return (
-    <SparButton {...(sparProps as unknown as SparButtonProps)} disabled={disabled} isLoading={isLoading} ref={ref} {...rootAttrs}>
-      {isLoading && <span {...spinnerSlotAttrs} />}
-      {startContent && !isLoading && <span {...contentSlotAttrs}>{startContent}</span>}
+    <SparButton {...(sparProps as unknown as SparButtonProps)} disabled={disabled} isLoading={loading} isPressed={pressed} ref={ref} {...rootAttrs}>
+      {loading && <span {...spinnerSlotAttrs} />}
+      {startContent && !loading && <span {...contentSlotAttrs}>{startContent}</span>}
       {children && <span {...labelSlotAttrs}>{children}</span>}
-      {endContent && !isLoading && <span {...contentSlotAttrs}>{endContent}</span>}
+      {endContent && !loading && <span {...contentSlotAttrs}>{endContent}</span>}
     </SparButton>
   );
 };

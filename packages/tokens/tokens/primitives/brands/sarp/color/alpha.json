@@ -1,28 +1,23 @@
 {
   "alpha": {
+    "$type": "color",
     "alpha-brand-primary-500-24": {
-      "$value": "#4E1B553D",
-      "$type": "color"
+      "$value": "#4E1B553D"
     },
     "alpha-brand-primary-500-16": {
-      "$value": "#4E1B5529",
-      "$type": "color"
+      "$value": "#4E1B5529"
     },
     "alpha-brand-primary-500-8": {
-      "$value": "#4E1B5514",
-      "$type": "color"
+      "$value": "#4E1B5514"
     },
     "alpha-brand-primary-500-4": {
-      "$value": "#4E1B550A",
-      "$type": "color"
+      "$value": "#4E1B550A"
     },
     "alpha-brand-primary-500-2": {
-      "$value": "#4E1B5505",
-      "$type": "color"
+      "$value": "#4E1B5505"
     },
     "alpha-brand-primary-500-48": {
-      "$value": "#4E1B557A",
-      "$type": "color"
+      "$value": "#4E1B557A"
     }
   }
 }

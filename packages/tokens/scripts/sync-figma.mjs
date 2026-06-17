@@ -268,8 +268,9 @@ function syncPrimitiveColors(figmaData) {
 // ---------------------------------------------------------------------------
 
 function syncTypography(figmaData) {
-  // Default typography (Geologica mode)
-  const defaultTypo = getLeafTokens(figmaData[`typography/${Object.keys(TYPO_MODE_TO_BRAND).find(k => TYPO_MODE_TO_BRAND[k] === DEFAULT_BRAND)}`] || {});
+  const defaultTypoMode = Object.keys(TYPO_MODE_TO_BRAND).find(k => TYPO_MODE_TO_BRAND[k] === DEFAULT_BRAND);
+  const resolvedDefaultTypoMode = defaultTypoMode === 'Geologica' ? 'TK' : defaultTypoMode;
+  const defaultTypo = getLeafTokens(figmaData[`typography/${resolvedDefaultTypoMode}`] || {});
 
   // Family
   const familyData = { family: {} };

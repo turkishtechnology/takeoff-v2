@@ -45,7 +45,7 @@
   border: 1px solid transparent;
   border-radius: var(--basic-switcher-container-radius);
   color: var(--text-darkest);
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: var(--desktop-body-s-size);
   font-weight: 400;
   line-height: var(--desktop-body-s-line-height);
@@ -114,10 +114,14 @@
     background-color: var(--states-info-light);
   }
 
-  &:focus-visible .tk-radio-indicator,
-  &[data-focused] .tk-radio-indicator {
-    border-color: var(--states-info-base);
-    box-shadow: var(--info-focus);
+  &[data-focus] .tk-radio-indicator {
+    box-shadow:
+      0px 0px 0px 2px var(--static-light),
+      0px 0px 0px 4px var(--states-info-base);
+  }
+
+  &[data-state='checked'][data-focus] .tk-radio-indicator {
+    border-color: var(--states-info-light);
   }
 
   &[data-disabled] {
@@ -130,7 +134,7 @@
     }
 
     .tk-radio-indicator {
-      border-color: var(--border-sub-base);
+      border-color: var(--background-light);
       background-color: var(--background-light);
       box-shadow: none;
     }
@@ -144,7 +148,7 @@
   // by Spar and resolved from `<Field invalid>` upstream). Items style
   // themselves through this ancestor selector instead of mirroring the attr
   // locally, which keeps Field/Spar as the single source of truth.
-  .tk-radio[data-invalid] & {
+  .tk-radio[data-invalid] &:not([data-disabled]) {
     .tk-radio-indicator {
       border-color: var(--states-danger-base);
       background-color: var(--static-light);
@@ -163,8 +167,15 @@
       background-color: var(--states-danger-light);
     }
 
-    &[data-type='card'] {
+    &[data-focus] .tk-radio-indicator {
       border-color: var(--states-danger-base);
+      box-shadow:
+        0px 0px 0px 2px var(--static-light),
+        0px 0px 0px 4px var(--states-danger-base);
+    }
+
+    &[data-state='checked'][data-focus] .tk-radio-indicator {
+      border-color: var(--states-danger-light);
     }
   }
 
@@ -210,24 +221,6 @@
     .tk-radio-icon {
       width: 14px;
       height: 14px;
-    }
-  }
-
-  &[data-type='card'] {
-    width: 100%;
-    min-height: var(--card-switcher-button-size);
-    gap: var(--card-switcher-content-gap);
-    padding: var(--card-switcher-container-v-padding) var(--card-switcher-container-h-padding);
-    border-color: var(--border-light);
-    border-radius: var(--card-switcher-container-radius);
-    background-color: var(--static-light);
-
-    .tk-radio-label {
-      gap: var(--card-switcher-text-gap);
-    }
-
-    &:hover:not([data-disabled]) {
-      background-color: var(--background-lightest);
     }
   }
 }

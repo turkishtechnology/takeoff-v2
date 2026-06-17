@@ -26,6 +26,13 @@
       visibility 0s linear 0.3s;
   }
 
+  // Blur is meaningless on an invisible (transparent) overlay and would still
+  // distort the backdrop the consumer asked to hide, so gate it the same way
+  // the intensity variants are gated.
+  &[data-blur]:not([data-invisible]) {
+    @include mixins.overlay-blur;
+  }
+
   // ─── Invisible overlay (rendered but visually hidden) ─────────────
   &[data-invisible] {
     background-color: transparent;
@@ -56,7 +63,7 @@
 }
 
 @mixin drawer-panel {
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
   position: fixed;
   z-index: 1501;
   display: flex;
@@ -208,10 +215,6 @@
     .tk-drawer-title {
       color: var(--text-lightest);
     }
-
-    .tk-drawer-close-button {
-      color: var(--icon-base);
-    }
   }
 
   // ─── Header type: primary ────────────────────────────────────────
@@ -221,62 +224,27 @@
     .tk-drawer-title {
       color: var(--text-lightest);
     }
-
-    .tk-drawer-close-button {
-      color: var(--primary-lightest);
-    }
   }
 }
 
 @mixin drawer-title {
   color: var(--text-darkest);
+  font-family: var(--desktop-title-h5-font);
+  font-size: var(--desktop-title-h5-size);
+  font-style: normal;
   font-weight: 400;
+  line-height: var(--desktop-title-h5-line-height);
+
+  // Title typography is fixed at h5 regardless of the semantic heading
+  // `level` (which still drives the rendered tag + `data-level` for the a11y
+  // outline). Keep the layout guards: the title is a flex child of the header
+  // next to the (flex-shrink:0) close control, so it must reset the UA heading
+  // margin and shrink/ellipsize instead of pushing the close button off-panel.
   margin: 0;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-
-  // Default (h2–h6 or no data-level)
-  font-family: var(--desktop-title-h5-font);
-  font-size: var(--desktop-title-h5-size);
-  line-height: var(--desktop-title-h5-line-height);
-
-  &[data-level='1'] {
-    font-family: var(--desktop-title-h1-font);
-    font-size: var(--desktop-title-h1-size);
-    line-height: var(--desktop-title-h1-line-height);
-  }
-
-  &[data-level='2'] {
-    font-family: var(--desktop-title-h2-font);
-    font-size: var(--desktop-title-h2-size);
-    line-height: var(--desktop-title-h2-line-height);
-  }
-
-  &[data-level='3'] {
-    font-family: var(--desktop-title-h3-font);
-    font-size: var(--desktop-title-h3-size);
-    line-height: var(--desktop-title-h3-line-height);
-  }
-
-  &[data-level='4'] {
-    font-family: var(--desktop-title-h4-font);
-    font-size: var(--desktop-title-h4-size);
-    line-height: var(--desktop-title-h4-line-height);
-  }
-
-  &[data-level='5'] {
-    font-family: var(--desktop-title-h5-font);
-    font-size: var(--desktop-title-h5-size);
-    line-height: var(--desktop-title-h5-line-height);
-  }
-
-  &[data-level='6'] {
-    font-family: var(--desktop-title-h6-font);
-    font-size: var(--desktop-title-h6-size);
-    line-height: var(--desktop-title-h6-line-height);
-  }
 }
 
 @mixin drawer-description {
@@ -285,13 +253,16 @@
   font-size: var(--desktop-body-m-base-size);
   font-weight: 400;
   line-height: var(--desktop-body-m-base-line-height);
+
+  // Reset the UA <p> margin (tokens ships no global reset) so the description
+  // sits flush inside the body.
   margin: 0;
 }
 
 @mixin drawer-body {
   width: 100%;
   min-width: 0;
-  padding: 0 var(--notification-body-h-padding);
+  padding: var(--notification-body-v-padding) var(--notification-body-h-padding);
   flex: 1 1 auto;
   overflow-y: auto;
   color: var(--text-dark);
@@ -322,7 +293,7 @@
   }
 }
 
-@mixin drawer-close-button {
+@mixin drawer-close {
   display: inline-flex;
   width: 32px;
   height: 32px;
@@ -335,9 +306,7 @@
   background: transparent;
   color: var(--icon-sub-base);
   cursor: pointer;
-  transition:
-    background-color 0.2s ease-in-out,
-    color 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out;
 
   @include mixins.focus-ring(var(--neutral-focus));
 

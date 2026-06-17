@@ -23,17 +23,15 @@ export const inputScope = { Field, Input };
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <div className="w-full max-w-90">
-      <Field>
-        <Field.Label>Passenger name</Field.Label>
-        <Input>
-          <Input.Field placeholder="Ada Lovelace" />
-        </Input>
-        <Field.Description>
-          Match the name on your travel document.
-        </Field.Description>
-      </Field>
-    </div>
+    <Field className="w-full max-w-90">
+      <Field.Label>Passenger name</Field.Label>
+      <Input>
+        <Input.Field placeholder="Ada Lovelace" />
+      </Input>
+      <Field.Description>
+        Match the name on your travel document.
+      </Field.Description>
+    </Field>
   );
 }
 
@@ -43,7 +41,7 @@ render(<PlaygroundDemo />);
 export const fieldWithInputDemo = String.raw`
 function FieldWithInputDemo() {
   return (
-    <div className="flex flex-col gap-4 w-full max-w-90">
+    <div className="grid w-full max-w-90 gap-3">
       <Field required>
         <Field.Label>Email</Field.Label>
         <Input>
@@ -58,6 +56,13 @@ function FieldWithInputDemo() {
           <Input.Field defaultValue="not-a-phone" />
         </Input>
         <Field.ErrorMessage>Enter a valid phone number.</Field.ErrorMessage>
+      </Field>
+
+      <Field optional>
+        <Field.Label>Frequent flyer number</Field.Label>
+        <Input>
+          <Input.Field placeholder="Optional" />
+        </Input>
       </Field>
 
       <Field disabled>
@@ -83,7 +88,7 @@ render(<FieldWithInputDemo />);
 export const sizesDemo = String.raw`
 function SizesDemo() {
   return (
-    <div className="flex flex-col gap-4 w-full max-w-90">
+    <div className="grid w-full max-w-90 gap-3">
       <Field>
         <Field.Label>Small</Field.Label>
         <Input size="small">
@@ -125,7 +130,7 @@ function AdornmentsDemo() {
   );
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-90">
+    <div className="grid w-full max-w-90 gap-3">
       <Field>
         <Field.Label>Amount</Field.Label>
         <Input>
@@ -395,14 +400,14 @@ field value from context) but renders just below the bordered row, and
 ## Using with `Field`
 
 `Field` is the generic ARIA wrapper. Setting `invalid`, `disabled`, `required`,
-or `readOnly` on `Field` cascades into the nested `Input`, and `Field.Label`,
-`Field.Description`, and `Field.ErrorMessage` are wired to the field control
-through shared IDs.
+`optional`, or `readOnly` on `Field` cascades into the nested `Input`, and
+`Field.Label`, `Field.Description`, and `Field.ErrorMessage` are wired to the
+field control through shared IDs.
 
 <LiveCode
   code={fieldWithInputDemo}
   noInline
-  previewMinHeight={460}
+  previewMinHeight={560}
   previewWrapper={ReactSparDemoRoot}
   scope={inputScope}
 />

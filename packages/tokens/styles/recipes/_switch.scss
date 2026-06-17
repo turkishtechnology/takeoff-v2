@@ -17,19 +17,6 @@
   user-select: none;
   opacity: 1;
 
-  .tk-toggle-control {
-    @include mixins.host-button-reset;
-
-    display: inline-flex;
-    align-items: center;
-    padding: 0;
-    cursor: inherit;
-
-    &:disabled {
-      opacity: 1;
-    }
-  }
-
   .tk-toggle-input-container {
     position: relative;
     flex-shrink: 0;
@@ -55,80 +42,10 @@
       background-color 0.3s ease;
   }
 
-  .tk-toggle-thumb-icon {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-  }
-
-  .tk-toggle-thumb-icon svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .tk-toggle-label {
-    align-self: center;
-    color: var(--text-darkest);
-    font-family: var(--desktop-body-s-font);
-    font-size: var(--desktop-body-s-size);
-    font-style: normal;
-    font-weight: 400;
-    line-height: var(--desktop-body-s-line-height);
-  }
-
-  .tk-toggle-hint {
-    flex-basis: 100%;
-    color: var(--text-base);
-    font-size: var(--desktop-body-xs-size);
-    line-height: var(--desktop-body-xs-line-height);
-    font-weight: 400;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-  }
-
-  .tk-toggle-hint-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--icon-base);
-    line-height: 1;
-  }
-
-  .tk-toggle-hint-icon svg {
-    display: block;
-    width: 1em;
-    height: 1em;
-  }
-
-  &[data-invalid]:not([data-disabled]) {
-    .tk-toggle-hint,
-    .tk-toggle-hint-icon {
-      color: var(--states-danger-base);
-    }
-  }
-
-  .tk-toggle-asterisk {
-    color: var(--states-danger-base);
-    margin-inline-start: 0.125rem;
-  }
-
   &[data-hover]:not([data-disabled]):not([data-readonly]):not([data-checked]) {
     .tk-toggle-input-container {
       background: var(--background-sub-base);
     }
-  }
-
-  &[data-checked] {
-    .tk-toggle-thumb-icon {
-      display: flex;
-    }
-  }
-
-  .tk-toggle-control:focus {
-    outline: none;
   }
 
   &:not([data-disabled]) {
@@ -137,15 +54,11 @@
         .tk-toggle-input-container {
           background-color: var(--states-info-base);
         }
-
-        .tk-toggle-thumb-icon {
-          color: var(--states-info-dark);
-        }
       }
 
       &[data-hover][data-checked]:not([data-readonly]) {
         .tk-toggle-thumb {
-          background-color: var(--states-info-lightest);
+          background-color: var(--states-info-light);
         }
       }
     }
@@ -155,20 +68,18 @@
         .tk-toggle-input-container {
           background-color: var(--states-success-base);
         }
-
-        .tk-toggle-thumb-icon {
-          color: var(--states-success-dark);
-        }
       }
 
       &[data-hover][data-checked]:not([data-readonly]) {
         .tk-toggle-thumb {
-          background-color: var(--states-success-lightest);
+          background-color: var(--states-success-light);
         }
       }
     }
 
-    .tk-toggle-control:focus-visible {
+    &[data-focus]:not([data-disabled]) {
+      outline: none;
+
       .tk-toggle-input-container {
         outline: 2px solid var(--states-info-base);
         outline-offset: 2px;
@@ -192,10 +103,12 @@
           .tk-toggle-thumb {
             background: var(--background-lightest);
           }
+        }
+      }
 
-          .tk-toggle-thumb-icon {
-            color: var(--states-danger-base);
-          }
+      &[data-hover][data-checked]:not([data-readonly]) {
+        .tk-toggle-thumb {
+          background-color: var(--states-danger-light);
         }
       }
     }
@@ -216,14 +129,6 @@
       background: var(--background-light);
       box-shadow: none;
     }
-
-    .tk-toggle-thumb-icon {
-      color: var(--icon-lightest);
-    }
-
-    .tk-toggle-label {
-      color: var(--text-sub-base);
-    }
   }
 
   &[data-size='xlarge'] {
@@ -235,12 +140,6 @@
     .tk-toggle-thumb {
       width: 28px;
       height: 28px;
-    }
-
-    .tk-toggle-thumb-icon {
-      width: 20px;
-      height: 20px;
-      font-size: 20px;
     }
 
     &[data-checked] .tk-toggle-thumb {
@@ -259,12 +158,6 @@
       height: 24px;
     }
 
-    .tk-toggle-thumb-icon {
-      width: 20px;
-      height: 20px;
-      font-size: 20px;
-    }
-
     &[data-checked] .tk-toggle-thumb {
       transform: translateX(24px);
     }
@@ -279,12 +172,6 @@
     .tk-toggle-thumb {
       width: 20px;
       height: 20px;
-    }
-
-    .tk-toggle-thumb-icon {
-      width: 16px;
-      height: 16px;
-      font-size: 16px;
     }
 
     &[data-checked] .tk-toggle-thumb {
@@ -303,12 +190,6 @@
       height: 16px;
     }
 
-    .tk-toggle-thumb-icon {
-      width: 12px;
-      height: 12px;
-      font-size: 12px;
-    }
-
     &[data-checked] .tk-toggle-thumb {
       transform: translateX(16px);
     }
@@ -323,12 +204,6 @@
     .tk-toggle-thumb {
       width: 12px;
       height: 12px;
-    }
-
-    .tk-toggle-thumb-icon {
-      width: 8px;
-      height: 8px;
-      font-size: 8px;
     }
 
     &[data-checked] .tk-toggle-thumb {

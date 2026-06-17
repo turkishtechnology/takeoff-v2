@@ -8,7 +8,7 @@
 // emits state as data attributes on the root: `data-checked`,
 // `data-indeterminate`, `data-disabled`, `data-readonly`, `data-focus`,
 // `data-hover`, `data-active`, `data-required`. The wrapper additionally
-// stamps `data-size`, `data-type`, and `data-invalid` on the root.
+// stamps `data-size` and `data-invalid` on the root.
 //
 // Slots produced by the wrapper:
 //
@@ -22,9 +22,10 @@
 // ---------------------------------------------------------------------------
 
 @mixin checkbox {
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
   display: inline-flex;
   align-items: center;
+  gap: var(--basic-switcher-content-gap);
   padding: 2px;
   color: var(--text-darkest);
   cursor: pointer;
@@ -92,12 +93,19 @@
 
   // ---- Focus ----
 
-  &[data-focus] {
+  &[data-focus]:not([data-disabled]) {
+    outline: none;
+
     .tk-checkbox-indicator {
-      border-color: var(--states-info-base);
-      box-shadow: var(--info-focus);
-      outline: none;
+      box-shadow:
+        0px 0px 0px 2px var(--static-light),
+        0px 0px 0px 4px var(--states-info-base);
     }
+  }
+
+  &[data-focus][data-checked]:not([data-disabled]) .tk-checkbox-indicator,
+  &[data-focus][data-indeterminate]:not([data-disabled]) .tk-checkbox-indicator {
+    border-color: var(--states-info-light);
   }
 
   // ---- Disabled ----
@@ -107,7 +115,7 @@
     color: var(--text-sub-base);
 
     .tk-checkbox-indicator {
-      border-color: var(--border-sub-base);
+      border-color: var(--background-light);
       background-color: var(--background-light);
     }
 
@@ -149,6 +157,18 @@
       border-color: var(--states-danger-sub-base);
       background-color: var(--states-danger-light);
     }
+
+    &[data-focus]:not([data-disabled]) .tk-checkbox-indicator {
+      border-color: var(--states-danger-base);
+      box-shadow:
+        0px 0px 0px 2px var(--static-light),
+        0px 0px 0px 4px var(--states-danger-base);
+    }
+
+    &[data-focus][data-checked]:not([data-disabled]) .tk-checkbox-indicator,
+    &[data-focus][data-indeterminate]:not([data-disabled]) .tk-checkbox-indicator {
+      border-color: var(--states-danger-light);
+    }
   }
 
   // ---- Sizes ----
@@ -178,31 +198,6 @@
     .tk-checkbox-icon {
       width: 10px;
       height: 10px;
-    }
-  }
-
-  // ---- Variants ----
-
-  // Card variant — shared with tk-radio via `--card-switcher-*`
-  // (tokens/component/radio-checkbox.json).
-  &[data-type='card'] {
-    border-radius: var(--card-switcher-container-radius);
-    border: 1px solid var(--border-light);
-    background-color: var(--static-light);
-    gap: var(--card-switcher-container-gap);
-    padding: var(--card-switcher-container-v-padding) var(--card-switcher-container-h-padding);
-
-    &[data-hover]:not([data-disabled]):not([data-readonly]) {
-      background-color: var(--background-lightest);
-    }
-
-    &[data-checked],
-    &[data-indeterminate] {
-      border-color: var(--states-info-light);
-    }
-
-    &[data-invalid] {
-      border-color: var(--states-danger-base);
     }
   }
 }

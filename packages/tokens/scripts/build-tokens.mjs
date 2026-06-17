@@ -8,7 +8,7 @@
  */
 
 import StyleDictionary from 'style-dictionary';
-import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync, rmSync, cpSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as sass from 'sass';
@@ -722,6 +722,18 @@ function compileFonts() {
   return result.css;
 }
 
+function copyFontAssets() {
+  const sourceDir = resolve(ROOT, 'assets/fonts');
+  if (!existsSync(sourceDir)) return;
+
+  const outputDirs = [resolve(DIST_DIR, 'css/assets/fonts'), resolve(DIST_DIR, 'assets/fonts')];
+
+  for (const outputDir of outputDirs) {
+    mkdirSync(outputDir, { recursive: true });
+    cpSync(sourceDir, outputDir, { recursive: true });
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Brand Discovery
 // ---------------------------------------------------------------------------
@@ -791,6 +803,7 @@ async function build() {
     writeFileSync(resolve(fontsDir, 'fonts.css'), `${HEADER}\n${fontsCss}\n`);
     console.log(`  fonts.css: ${fontsCss.length} bytes compiled`);
   }
+  copyFontAssets();
 
   for (const brand of sortedBrands) {
     // ── Light build ──────────────────────────────────────────────────

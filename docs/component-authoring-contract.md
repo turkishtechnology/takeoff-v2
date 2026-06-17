@@ -190,7 +190,7 @@ are public:
 Accordion.Item   Accordion.Header   Accordion.Trigger   Accordion.Content
 
 Dialog.Trigger   Dialog.Panel    Dialog.Header   Dialog.Title
-Dialog.Description   Dialog.Body   Dialog.Footer   Dialog.CloseButton
+Dialog.Description   Dialog.Body   Dialog.Footer   Dialog.Close
 
 Field.Label   Field.Description   Field.ErrorMessage
 

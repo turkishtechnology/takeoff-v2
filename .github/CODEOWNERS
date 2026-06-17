@@ -1,0 +1,9 @@
+# Code owners — auto-requests review when matching files change.
+#
+# Single reviewer: the team lead owns the whole repo. Every PR auto-requests
+# review from @harun-demir.
+#
+# CODEOWNERS only *requests* review. To make it *block* merge, enable
+# "Require review from Code Owners" in branch protection for `develop`.
+
+* @harun-demir

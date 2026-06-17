@@ -1,27 +1,42 @@
-@use '../abstracts/mixins' as mixins;
-
 // ---------------------------------------------------------------------------
 // Tooltip recipe
 // ---------------------------------------------------------------------------
 
 @mixin tooltip-content {
-  font-family: var(--family-body, 'Geologica', sans-serif);
-  font-size: var(--desktop-body-s-size, 0.75rem);
-  font-weight: 400;
-  line-height: 20px;
-  letter-spacing: 0.01em;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   position: relative;
+  font-size: var(--desktop-body-xs-size);
+  font-weight: 300;
+  line-height: var(--desktop-body-xs-line-height);
   z-index: 1300;
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  max-width: 300px;
+  max-width: 296px;
   width: max-content;
   padding: var(--tooltips-base-v-padding, 8px) var(--tooltips-base-h-padding, 12px);
   border-radius: var(--tooltips-base-radius, 8px);
+  box-shadow:
+    0 2px 2px -1px var(--shadow-black-alpha-light),
+    0 6px 12px -2px var(--shadow-black-alpha-light),
+    0 8px 20px 0 var(--shadow-black-alpha-light);
   word-wrap: break-word;
   white-space: normal;
   pointer-events: auto;
   animation: tk-tooltip-fade-in 150ms ease-out;
+
+  &[data-variant='white'],
+  &[data-variant='info'],
+  &[data-variant='success'],
+  &[data-variant='warning'],
+  &[data-variant='danger'],
+  &[data-variant='neutral'] {
+    color: var(--text-dark);
+
+    .tk-tooltip-header {
+      color: var(--text-darkest);
+    }
+  }
 
   // ---------------------------------------------------------------------------
   // Variants
@@ -29,15 +44,11 @@
 
   &[data-variant='dark'] {
     background: var(--background-darkest);
-    color: var(--static-white);
+    color: var(--text-light);
     border: 1px solid var(--border-dark);
 
     .tk-tooltip-header {
       color: var(--text-lightest);
-    }
-
-    .tk-tooltip-description {
-      color: var(--text-sub-base);
     }
 
     .tk-tooltip-arrow {
@@ -46,107 +57,53 @@
   }
 
   &[data-variant='white'] {
-    background: var(--background-lightest);
-    color: var(--text-darkest);
+    background: var(--static-light);
     border: 1px solid var(--border-light);
 
-    .tk-tooltip-header {
-      color: var(--text-darkest);
-    }
-
-    .tk-tooltip-description {
-      color: var(--text-dark);
-    }
-
     .tk-tooltip-arrow {
-      color: var(--background-lightest);
+      color: var(--static-light);
     }
   }
 
   &[data-variant='info'] {
-    background-color: var(--states-info-lightest);
-    color: var(--text-darkest);
-    border: 1px solid var(--states-info-light);
-
-    .tk-tooltip-header {
-      color: var(--text-darkest);
-    }
-
-    .tk-tooltip-description {
-      color: var(--text-dark);
-    }
+    background-color: var(--states-info-light);
+    border: 1px solid var(--states-info-sub-base);
 
     .tk-tooltip-arrow {
-      color: var(--states-info-lightest);
+      color: var(--states-info-light);
     }
   }
 
   &[data-variant='success'] {
-    background-color: var(--states-success-lightest);
-    color: var(--text-darkest);
-    border: 1px solid var(--states-success-light);
-
-    .tk-tooltip-header {
-      color: var(--text-darkest);
-    }
-
-    .tk-tooltip-description {
-      color: var(--text-dark);
-    }
+    background-color: var(--states-success-light);
+    border: 1px solid var(--states-success-sub-base);
 
     .tk-tooltip-arrow {
-      color: var(--states-success-lightest);
+      color: var(--states-success-light);
     }
   }
 
   &[data-variant='warning'] {
-    background-color: var(--states-warning-lightest);
-    color: var(--text-darkest);
-    border: 1px solid var(--states-warning-light);
-
-    .tk-tooltip-header {
-      color: var(--text-darkest);
-    }
-
-    .tk-tooltip-description {
-      color: var(--text-dark);
-    }
+    background-color: var(--states-warning-light);
+    border: 1px solid var(--states-warning-sub-base);
 
     .tk-tooltip-arrow {
-      color: var(--states-warning-lightest);
+      color: var(--states-warning-light);
     }
   }
 
   &[data-variant='danger'] {
-    background-color: var(--states-danger-lightest);
-    color: var(--text-darkest);
-    border: 1px solid var(--states-danger-light);
-
-    .tk-tooltip-header {
-      color: var(--text-darkest);
-    }
-
-    .tk-tooltip-description {
-      color: var(--text-dark);
-    }
+    background-color: var(--states-danger-light);
+    border: 1px solid var(--states-danger-sub-base);
 
     .tk-tooltip-arrow {
-      color: var(--states-danger-lightest);
+      color: var(--states-danger-light);
     }
   }
 
   &[data-variant='neutral'] {
-    background-color: var(--background-light);
-    color: var(--text-darkest);
-    border: 1px solid var(--states-light);
-
-    .tk-tooltip-header {
-      color: var(--text-darkest);
-    }
-
-    .tk-tooltip-description {
-      color: var(--text-dark);
-    }
+    background: var(--background-light);
+    border: 1px solid var(--border-sub-base);
 
     .tk-tooltip-arrow {
       color: var(--background-light);
@@ -159,20 +116,21 @@
   font-weight: 400;
   font-size: var(--desktop-body-s-size, 0.75rem);
   font-style: normal;
-  line-height: 20px;
+  line-height: var(--desktop-body-s-line-height);
   margin: 0;
 }
 
 @mixin tooltip-description {
   font-weight: 300;
   font-size: var(--desktop-body-xs-size, 0.625rem);
-  line-height: 20px;
+  line-height: var(--desktop-body-xs-line-height);
   margin: 0;
 }
 
 @mixin tooltip-arrow {
   display: block;
   pointer-events: none;
+  color: var(--background-darkest);
 }
 
 // ---------------------------------------------------------------------------

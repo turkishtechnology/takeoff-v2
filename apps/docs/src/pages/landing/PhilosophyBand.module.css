@@ -59,7 +59,7 @@
 }
 
 .head .title {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: clamp(2rem, 3vw + 1rem, 3rem);
   line-height: 1.1;
   font-weight: 700;
@@ -69,7 +69,7 @@
 }
 
 .head .lede {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 1.125rem;
   line-height: 1.6;
   color: var(--runway-ink-dim, #b6b6be);
@@ -118,7 +118,7 @@
 }
 
 .pillarVerb {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: 2rem;
   line-height: 1;
   font-weight: 800;
@@ -128,7 +128,7 @@
 }
 
 .pillarAphorism {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 1rem;
   line-height: 1.6;
   color: var(--runway-ink-dim, #b6b6be);

@@ -1,34 +1,34 @@
 {
   "aviation-amber": {
     "$type": "color",
-    "50": {
+    "amber-50": {
       "$value": "#FFF2E5"
     },
-    "100": {
+    "amber-100": {
       "$value": "#FFD9B2"
     },
-    "200": {
+    "amber-200": {
       "$value": "#FFCC99"
     },
-    "300": {
+    "amber-300": {
       "$value": "#FFB366"
     },
-    "400": {
+    "amber-400": {
       "$value": "#FF9933"
     },
-    "500": {
+    "amber-500": {
       "$value": "#FF8000"
     },
-    "600": {
+    "amber-600": {
       "$value": "#CC6600"
     },
-    "700": {
+    "amber-700": {
       "$value": "#994D00"
     },
-    "800": {
+    "amber-800": {
       "$value": "#663300"
     },
-    "900": {
+    "amber-900": {
       "$value": "#4D2600"
     }
   }

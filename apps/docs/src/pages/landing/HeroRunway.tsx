@@ -4,7 +4,7 @@ import TakeoffLogo3D from '@site/src/components/TakeoffLogo3D';
 import styles from './HeroRunway.module.css';
 
 const INSTALL_CMD = 'pnpm add @takeoff-ui/react-spar';
-const GITHUB_REPO_URL = 'https://github.com/turkishtechnology/takeoff-spar';
+const GITHUB_REPO_URL = 'https://github.com/turkishtechnology/takeoff-v2';
 
 function CopyIcon(): JSX.Element {
   return (
