@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------
 
 @mixin tooltip-content {
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
   position: relative;
   font-size: var(--desktop-body-xs-size);
   font-weight: 300;

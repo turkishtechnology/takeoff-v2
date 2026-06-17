@@ -24,7 +24,7 @@
   position: relative;
   display: inline-flex;
   width: 100%;
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
 }
 
 // ---------------------------------------------------------------------------
@@ -131,7 +131,7 @@
 // ---------------------------------------------------------------------------
 
 @mixin select-content {
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
   z-index: 800;
   display: flex;
   flex-direction: column;

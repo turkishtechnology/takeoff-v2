@@ -17,7 +17,7 @@
 }
 
 @mixin popover-content {
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: var(--desktop-body-xs-size);
   font-weight: 300;
   line-height: var(--desktop-body-xs-line-height);

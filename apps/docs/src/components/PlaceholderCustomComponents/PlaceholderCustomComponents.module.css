@@ -70,7 +70,7 @@
   font-size: 12px;
   color: var(--runway-ink-dim);
   font-weight: 500;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
 }
 
 .avatar:first-child {
