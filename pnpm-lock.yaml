@@ -132,8 +132,8 @@ importers:
   packages/react-spar:
     dependencies:
       "@turkish-technology/spar":
-        specifier: 0.2.0-beta.1
-        version: 0.2.0-beta.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: 0.2.0-beta.2
+        version: 0.2.0-beta.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -2718,8 +2718,8 @@ packages:
     cpu: [arm64]
     os: [win32]
 
-  "@turkish-technology/spar@0.2.0-beta.1":
-    resolution: { integrity: sha512-M/H5SoNhwTrFWauSsWocVht8BncLfauzraEhXMlpxGOHcR7hOUeoALlUeChh9yFAe6A9UvMZu/5KykaVzbNITA== }
+  "@turkish-technology/spar@0.2.0-beta.2":
+    resolution: { integrity: sha512-yQqxHSL8RvT1KwFOqb5GSUXjNxEJorf9dnyJcHQblpoP4Uz3rk5hKPNPSoG2VgA/ZNQuYxGIPMQsF+UIiyh2RQ== }
     engines: { node: ">=22.18.0", pnpm: ">=10.0.0" }
     peerDependencies:
       react: ">=19.0.0"
@@ -11142,7 +11142,7 @@ snapshots:
   "@turbo/windows-arm64@2.9.18":
     optional: true
 
-  "@turkish-technology/spar@0.2.0-beta.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)":
+  "@turkish-technology/spar@0.2.0-beta.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)":
     dependencies:
       "@floating-ui/react-dom": 2.1.8(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react: 19.2.7
