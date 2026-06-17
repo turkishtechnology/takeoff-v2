@@ -3,4 +3,4 @@
 '@takeoff-design/tokens': patch
 ---
 
-Add Card component with compound sections, styles, tests, and docs
+Add Card component with compound sections, styles, and docs

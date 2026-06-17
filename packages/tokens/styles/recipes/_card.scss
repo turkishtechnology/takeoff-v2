@@ -24,19 +24,20 @@
   border-radius: var(--radius-xl);
   box-sizing: border-box;
   border: 1px solid var(--border-light);
+  // Three stacked layers share one alpha color; the depth comes from the
+  // offset/blur/spread, not the color. (No composite elevation token exists.)
   box-shadow:
     0 2px 2px -1px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
     0 6px 12px 2px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
     0 8px 20px 4px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08));
 
-  .tk-card-header,
   .tk-card-body,
   .tk-card-footer {
     padding: 16px;
   }
 
   .tk-card-header {
-    padding-block: 10px;
+    padding: 10px 16px;
   }
 }
 

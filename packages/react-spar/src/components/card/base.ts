@@ -2,6 +2,8 @@ import { createComponentBase } from '../../core';
 
 import type { CardBodyProps, CardDescriptionProps, CardFooterProps, CardHeaderProps, CardProps, CardTitleProps } from './types';
 
+// @archetype react-enhancement — no upstream Spar primitive for Card; the
+// takeoff layer owns the `tk-card` classes and the compound-part structure.
 export const CardBase = createComponentBase<CardProps, 'root'>({
   name: 'Card',
   slots: ['root'] as const,

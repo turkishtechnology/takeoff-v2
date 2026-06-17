@@ -10,8 +10,10 @@ export const CardTitle = <T extends ElementType = 'h5'>(props: CardTitleProps<T>
   const theme = useComponentTheme('CardTitle');
 
   const { rootAttrs, rest } = composeRootAttrs<CardTitleProps, CardTitleSlot>(CardTitleBase, props as CardTitleProps<'h5'>, theme, {
-    stateAttrs: ({ level = 5 }) => ({
-      'data-level': String(level),
+    // `data-level` reflects the rendered heading element, so emit it only when
+    // `level` actually drives the element — i.e. when `as` is not overriding it.
+    stateAttrs: ({ as, level = 5 }) => ({
+      'data-level': as ? undefined : String(level),
     }),
   });
 

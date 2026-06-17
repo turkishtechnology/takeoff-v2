@@ -70,8 +70,8 @@ export default {
         dataSlotRoot,
         {
           attribute: 'data-level',
-          appliedWhen: 'Always',
-          purpose: 'Reflects the semantic heading `level`.',
+          appliedWhen: 'When `as` is not set',
+          purpose: 'Reflects the `level` prop that drives the rendered heading element.',
         },
       ],
     },
