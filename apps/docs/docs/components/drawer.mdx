@@ -476,17 +476,18 @@ animation library is required.
 
 #### Props {#drawer-title-props}
 
-| Name                            | Type                                                                                | Default | Description         |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
-| <ApiBadge label="level" />      | <code>number</code>                                                                 | 5       | Heading level (1-6) |
+| Name                            | Type                                                                                | Default | Description                                                                                                                                              |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                                                                                                                                                          |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                                                                                                                                                          |
+| <ApiBadge label="level" />      | <code>number</code>                                                                 | 5       | Semantic heading level (1-6). Sets the rendered tag (`h1`-`h6`) and `data-level` for the document outline; the visual size is fixed regardless of level. |
 
 #### Data attributes {#drawer-title-data-attributes}
 
-| Attribute                                       | Applied when | Purpose                                               |
-| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                                                                   |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.                                     |
+| <ApiBadge label="data-level" />                 | Always       | Reflects the resolved `level` prop for the document outline (does not change typography). |
 
 ### Drawer.Description {#drawer-description}
 

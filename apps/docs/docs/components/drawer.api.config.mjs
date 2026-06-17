@@ -20,6 +20,13 @@ const classNameOverride = {
 
 const levelOverride = {
   default: '5',
+  description: 'Semantic heading level (1-6). Sets the rendered tag (`h1`-`h6`) and ' + '`data-level` for the document outline; the visual size is fixed regardless of level.',
+};
+
+const dataLevel = {
+  attribute: 'data-level',
+  appliedWhen: 'Always',
+  purpose: 'Reflects the resolved `level` prop for the document outline (does not change typography).',
 };
 
 const dataSlotRoot = {
@@ -138,7 +145,7 @@ export default {
         className: classNameOverride,
         level: levelOverride,
       },
-      dataAttributes: [dataSlotRoot],
+      dataAttributes: [dataSlotRoot, dataLevel],
     },
     {
       sourceFile: drawerTypesFile,

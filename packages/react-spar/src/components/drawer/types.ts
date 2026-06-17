@@ -93,7 +93,7 @@ export type DrawerPanelProps<T extends ElementType = 'div'> = PolymorphicProps<
     // Focus management (trap/restore/initial/final + auto-focus hooks) and
     // dismiss event hooks. Consumers need these to integrate with their own
     // focus orchestration and to veto dismissal. Spar's visual content props
-    // (e.g. forceMount) are not exposed — takeoff-v5 sets them internally.
+    // (e.g. forceMount) are not exposed — takeoff-v2 sets them internally.
     Pick<
       SparDialogContentProps,
       | 'container'

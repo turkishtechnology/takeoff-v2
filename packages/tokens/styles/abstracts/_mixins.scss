@@ -54,6 +54,17 @@
   }
 }
 
+// Soft backdrop blur for overlay/scrim surfaces (Dialog mask, Drawer overlay).
+// Single source of truth for the blur radius so the modal surfaces stay in
+// sync. Gated behind `prefers-reduced-transparency` so users who requested
+// reduced effects — and the GPU cost a full-viewport backdrop-filter carries
+// while the overlay opacity-animates — do not get the blur.
+@mixin overlay-blur {
+  @media (prefers-reduced-transparency: no-preference) {
+    backdrop-filter: blur(2px);
+  }
+}
+
 // Reset native <button> styles for recipe slots that may render as buttons
 // in light-DOM consumers. Keep layout choices in the recipe itself.
 @mixin host-button-reset {
