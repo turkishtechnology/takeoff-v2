@@ -7,10 +7,10 @@ import { useComponentTheme } from '../../provider';
 import { DrawerTitleBase } from './base';
 import type { DrawerTitleProps } from './types';
 
-export const DrawerTitle = <T extends ElementType = 'h2'>(props: DrawerTitleProps<T>) => {
+export const DrawerTitle = <T extends ElementType = 'h5'>(props: DrawerTitleProps<T>) => {
   const theme = useComponentTheme('DrawerTitle');
 
-  const { rootAttrs, rest } = composeRootAttrs(DrawerTitleBase, props as DrawerTitleProps<'h2'>, theme);
+  const { rootAttrs, rest } = composeRootAttrs(DrawerTitleBase, props as DrawerTitleProps<'h5'>, theme);
 
   const { level = 5, children, ref, ...titleProps } = rest;
 
@@ -21,4 +21,4 @@ export const DrawerTitle = <T extends ElementType = 'h2'>(props: DrawerTitleProp
   );
 };
 
-DrawerTitle.displayName = 'DrawerTitle';
+DrawerTitle.displayName = 'Drawer.Title';

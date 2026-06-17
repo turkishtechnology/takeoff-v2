@@ -2,7 +2,7 @@ import { createComponentBase } from '../../core';
 
 import type {
   DrawerBodyProps,
-  DrawerCloseButtonProps,
+  DrawerCloseProps,
   DrawerDescriptionProps,
   DrawerFooterProps,
   DrawerHeaderProps,
@@ -61,10 +61,10 @@ export const DrawerFooterBase = createComponentBase<DrawerFooterProps, 'root'>({
   classes: { root: 'tk-drawer-footer' },
 });
 
-export const DrawerCloseButtonBase = createComponentBase<DrawerCloseButtonProps, 'root'>({
-  name: 'DrawerCloseButton',
+export const DrawerCloseBase = createComponentBase<DrawerCloseProps, 'root'>({
+  name: 'DrawerClose',
   slots: ['root'] as const,
-  classes: { root: 'tk-drawer-close-button' },
+  classes: { root: 'tk-drawer-close' },
 });
 
 export const DrawerTriggerBase = createComponentBase<DrawerTriggerProps, 'root'>({

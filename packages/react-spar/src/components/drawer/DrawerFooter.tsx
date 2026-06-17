@@ -26,4 +26,4 @@ export const DrawerFooter = <T extends ElementType = 'div'>(props: DrawerFooterP
   );
 };
 
-DrawerFooter.displayName = 'DrawerFooter';
+DrawerFooter.displayName = 'Drawer.Footer';

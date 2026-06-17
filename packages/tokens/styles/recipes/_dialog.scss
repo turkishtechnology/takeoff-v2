@@ -20,7 +20,7 @@
   }
 
   &[data-blur] {
-    backdrop-filter: blur(2px);
+    @include mixins.overlay-blur;
   }
 
   &[data-invisible] {
