@@ -26,4 +26,4 @@ export const DrawerHeader = <T extends ElementType = 'div'>(props: DrawerHeaderP
   );
 };
 
-DrawerHeader.displayName = 'DrawerHeader';
+DrawerHeader.displayName = 'Drawer.Header';

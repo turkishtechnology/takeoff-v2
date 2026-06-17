@@ -21,4 +21,4 @@ export const DrawerDescription = <T extends ElementType = 'p'>(props: DrawerDesc
   );
 };
 
-DrawerDescription.displayName = 'DrawerDescription';
+DrawerDescription.displayName = 'Drawer.Description';

@@ -12,7 +12,7 @@ const preventDefault = (e: Event) => e.preventDefault();
 
 export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelProps<T>) => {
   const theme = useComponentTheme('DrawerPanel');
-  const { placement, dismissable } = useDrawerOwnContext();
+  const { placement, dismissible } = useDrawerOwnContext();
 
   const { rootAttrs, rest } = composeRootAttrs(DrawerPanelBase, props as DrawerPanelProps<'div'>, theme, {
     stateAttrs: () => ({
@@ -22,7 +22,7 @@ export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelPro
 
   const { container, children, ref, ...panelProps } = rest;
 
-  const dismissHandlers = !dismissable && {
+  const dismissHandlers = !dismissible && {
     onEscapeKeyDown: preventDefault,
     onPointerDownOutside: preventDefault,
   };
@@ -33,4 +33,4 @@ export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelPro
   );
 };
 
-DrawerPanel.displayName = 'DrawerPanel';
+DrawerPanel.displayName = 'Drawer.Panel';
