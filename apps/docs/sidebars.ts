@@ -27,6 +27,12 @@ const sidebars: SidebarsConfig = {
         'components/tooltip',
       ],
     },
+    {
+      type: 'category',
+      label: 'Forms',
+      collapsed: false,
+      items: ['forms/react-hook-form', 'forms/tanstack-form'],
+    },
   ],
 };
 

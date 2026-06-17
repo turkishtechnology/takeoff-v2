@@ -19,17 +19,46 @@ export const buttonScope = { Button };
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   return (
-    <div className="flex flex-wrap justify-center gap-3">
-      <Button>Primary</Button>
-      <Button variant="secondary">Secondary</Button>
-      <Button appearance="outlined">Outlined</Button>
-      <Button appearance="text">Text</Button>
-      <Button variant="danger">Danger</Button>
-    </div>
+    <Button>Primary</Button>
   );
 }
 
 render(<PlaygroundDemo />);
+`;
+
+export const variantsDemo = String.raw`
+function VariantsDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Button variant="primary">Primary</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="neutral">Neutral</Button>
+      <Button variant="info">Info</Button>
+      <Button variant="success">Success</Button>
+      <Button variant="danger">Danger</Button>
+      <Button variant="warning">Warning</Button>
+      <Button variant="white">White</Button>
+      <Button variant="black">Black</Button>
+    </div>
+  );
+}
+
+render(<VariantsDemo />);
+`;
+
+export const appearanceDemo = String.raw`
+function AppearanceDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3 items-center">
+      <Button appearance="filled">Filled</Button>
+      <Button appearance="filledLight">FilledLight</Button>
+      <Button appearance="outlined">Outlined</Button>
+      <Button appearance="text">Text</Button>
+    </div>
+  );
+}
+
+render(<AppearanceDemo />);
 `;
 
 export const sizesDemo = String.raw`
@@ -48,20 +77,20 @@ render(<SizesDemo />);
 
 export const loadingDemo = String.raw`
 function LoadingDemo() {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   return (
     <div className="flex flex-wrap justify-center gap-3">
-      <Button isLoading>Saving…</Button>
-      <Button variant="secondary" isLoading>
+      <Button loading>Saving…</Button>
+      <Button variant="secondary" loading>
         Loading
       </Button>
       <Button
         variant="primary"
-        isLoading={isLoading}
+        loading={loading}
         onClick={() => {
-          setIsLoading(true);
-          setTimeout(() => setIsLoading(false), 2000);
+          setLoading(true);
+          setTimeout(() => setLoading(false), 2000);
         }}
       >
         Click to load
@@ -90,11 +119,11 @@ render(<DisabledDemo />);
 
 export const toggleDemo = String.raw`
 function ToggleButtonDemo() {
-  const [isPressed, setIsPressed] = useState(false);
+  const [pressed, setPressed] = useState(false);
 
   return (
-    <Button variant={isPressed ? 'primary' : 'secondary'} isPressed={isPressed} onPressedChange={setIsPressed}>
-      {isPressed ? 'On' : 'Off'}
+    <Button variant={pressed ? 'primary' : 'secondary'} pressed={pressed} onPressedChange={setPressed}>
+      {pressed ? 'On' : 'Off'}
     </Button>
   );
 }
@@ -173,6 +202,26 @@ import { Button } from '@takeoff-ui/react-spar';
 
 <LiveCode
   code={playgroundDemo}
+  noInline
+  previewMinHeight={80}
+  previewWrapper={ReactSparDemoRoot}
+  scope={buttonScope}
+/>
+
+## Variants
+
+<LiveCode
+  code={variantsDemo}
+  noInline
+  previewMinHeight={80}
+  previewWrapper={ReactSparDemoRoot}
+  scope={buttonScope}
+/>
+
+## Appearance
+
+<LiveCode
+  code={appearanceDemo}
   noInline
   previewMinHeight={80}
   previewWrapper={ReactSparDemoRoot}
@@ -263,10 +312,10 @@ for primitive behavior.
 | <ApiBadge label="rounded" />      | <code>boolean</code>                                                                                                        | false     | Renders a pill-shaped (circular) button. Ideal for icon-only actions.                                                               |
 | <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                                                | -         | Content rendered before children — typically an icon, but accepts any node (spinner, badge, kbd, etc.). Wrapped in the `icon` slot. |
 | <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                                                | -         | Content rendered after children. Same shape as `startContent`.                                                                      |
+| <ApiBadge label="loading" />      | <code>boolean</code>                                                                                                        | -         | Whether the button shows a loading spinner.                                                                                         |
+| <ApiBadge label="pressed" />      | <code>boolean</code>                                                                                                        | -         | Whether the button is pressed. When defined, creates a toggle button.                                                               |
 | <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#button-td-buttonslot">ButtonSlot</a>, string&gt;&gt;</code>                            | -         | Per-slot extra classes.                                                                                                             |
 | <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#button-td-buttonslot">ButtonSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                                                                                  |
-| <ApiBadge label="isLoading" />    | <code>boolean</code>                                                                                                        | false     | Loading state with screen reader support                                                                                            |
-| <ApiBadge label="isPressed" />    | <code>boolean</code>                                                                                                        | undefined | Toggle state - when defined, creates a toggle button                                                                                |
 | <ApiBadge label="className" />    | <code>string</code>                                                                                                         | -         | Appends custom classes to the root slot of this part.                                                                               |
 
 #### Events {#button-events}

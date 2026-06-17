@@ -23,12 +23,16 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     permissions:
+      # contents:read is required for actions/checkout to clone a private repo.
+      # Naming any permission drops all unnamed ones to `none`, so checkout would
+      # otherwise fail with "Repository not found" on a private repo.
+      contents: read
       issues: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Sync labels from .github/labels.yml
-        uses: crazy-max/ghaction-github-labeler@v5
+        uses: crazy-max/ghaction-github-labeler@v6
         with:
           yaml-file: .github/labels.yml
           dry-run: false

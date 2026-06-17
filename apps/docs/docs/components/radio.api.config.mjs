@@ -31,12 +31,6 @@ const dataSize = {
   purpose: 'Reflects the resolved `size` prop so theme recipes can scope size variants.',
 };
 
-const dataType = {
-  attribute: 'data-type',
-  appliedWhen: 'Always',
-  purpose: 'Reflects the resolved `type` prop. Theme recipes target the card variant per item.',
-};
-
 const dataPosition = {
   attribute: 'data-position',
   appliedWhen: 'Always',
@@ -70,7 +64,6 @@ export default {
       dataAttributes: [
         dataSlotRoot,
         dataSize,
-        dataType,
         dataPosition,
         dataInvalidWhenTrue,
         {
@@ -115,7 +108,6 @@ export default {
       dataAttributes: [
         dataSlotRoot,
         dataSize,
-        dataType,
         dataPosition,
         {
           attribute: 'data-state="checked"',
