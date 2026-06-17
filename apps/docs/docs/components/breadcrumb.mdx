@@ -525,14 +525,14 @@ for primitive behavior.
 
 #### Props {#breadcrumb-props}
 
-| Name                            | Type                                                                                | Default | Description                                             |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | `Breadcrumb.List` rendered inside the `<nav>` landmark. |
-| <ApiBadge label="size" />       | <code><a href="#breadcrumb-td-breadcrumbsize">BreadcrumbSize</a></code>             | 'base'  | Density scale cascaded to every part through context.   |
-| <ApiBadge label="type" />       | <code><a href="#breadcrumb-td-breadcrumbtype">BreadcrumbType</a></code>             | 'basic' | Visual style cascaded to every part through context.    |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                          |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                      |
-| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.   |
+| Name                            | Type                                                                                      | Default | Description                                             |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -       | `Breadcrumb.List` rendered inside the `<nav>` landmark. |
+| <ApiBadge label="size" />       | <code><a href="#breadcrumb-td-breadcrumbsize">BreadcrumbSize</a></code>                   | 'base'  | Density scale cascaded to every part through context.   |
+| <ApiBadge label="type" />       | <code><a href="#breadcrumb-td-breadcrumbtype">BreadcrumbType</a></code>                   | 'basic' | Visual style cascaded to every part through context.    |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                          |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                      |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.   |
 
 #### Data attributes {#breadcrumb-data-attributes}
 
@@ -609,7 +609,7 @@ for primitive behavior.
 | <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                                    | -         | Override the separator glyph entirely; takes priority over `variant`. The owner `<li aria-hidden>` element stays invariant. |
 | <ApiBadge label="variant" />    | <code><a href="#breadcrumb-td-breadcrumbseparatorvariant">BreadcrumbSeparatorVariant</a></code> | 'chevron' | Glyph preset rendered when no `children` are given.                                                                         |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                        | -         | Per-slot class name overrides.                                                                                              |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>             | -         | Per-slot HTML attribute overrides.                                                                                          |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>       | -         | Per-slot HTML attribute overrides.                                                                                          |
 | <ApiBadge label="className" />  | <code>string</code>                                                                             | -         | Appends custom classes to the root slot of this part.                                                                       |
 
 #### Data attributes {#breadcrumb-separator-data-attributes}
