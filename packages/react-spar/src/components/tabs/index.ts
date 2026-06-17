@@ -11,4 +11,4 @@ const Tabs = Object.assign(TabsRoot, {
 
 export { Tabs };
 
-export type { TabsActivationMode, TabsContentProps, TabsListProps, TabsProps, TabsSize, TabsTriggerProps, TabsTriggerRenderProps } from './types';
+export type { TabsActivationMode, TabsAppearance, TabsContentProps, TabsListProps, TabsProps, TabsSize, TabsTriggerProps, TabsTriggerRenderProps, TabsVariant } from './types';
