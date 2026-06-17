@@ -1,0 +1,276 @@
+---
+title: Chip
+description:
+  Compact inline labels for filters, selections, and user-entered values.
+  Supports variants, sizes, and optional remove actions.
+sidebar_label: Chip
+sidebar_position: 4
+slug: /components/chip
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import { Chip, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const chipScope = { Chip };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Chip>Economy</Chip>
+      <Chip variant="success" removable>Confirmed</Chip>
+      <Chip variant="danger" appearance="outlined">Delayed</Chip>
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const variantsDemo = String.raw`
+function VariantsDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Chip variant="primary">Primary</Chip>
+      <Chip variant="secondary">Secondary</Chip>
+      <Chip variant="neutral">Neutral</Chip>
+      <Chip variant="info">Info</Chip>
+      <Chip variant="success">Success</Chip>
+      <Chip variant="danger">Danger</Chip>
+      <Chip variant="warning">Warning</Chip>
+      <Chip variant="verified">Verified</Chip>
+      <Chip variant="purple">Purple</Chip>
+      <Chip variant="cyan">Cyan</Chip>
+      <Chip variant="business">Business</Chip>
+      <Chip variant="teal">Teal</Chip>
+      <Chip variant="white">White</Chip>
+      <Chip variant="dark">Dark</Chip>
+    </div>
+  );
+}
+
+render(<VariantsDemo />);
+`;
+
+export const appearancesDemo = String.raw`
+function AppearancesDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Chip appearance="filled">Filled</Chip>
+      <Chip appearance="filledLight">Filled Light</Chip>
+      <Chip appearance="outlined">Outlined</Chip>
+    </div>
+  );
+}
+
+render(<AppearancesDemo />);
+`;
+
+export const sizesDemo = String.raw`
+function SizesDemo() {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-3">
+      <Chip size="small">Small</Chip>
+      <Chip size="base">Base</Chip>
+      <Chip size="large">Large</Chip>
+    </div>
+  );
+}
+
+render(<SizesDemo />);
+`;
+
+export const removeDemo = String.raw`
+function RemoveDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <Chip removable>Removable</Chip>
+      <Chip variant="primary" removable>Cabin bag</Chip>
+      <Chip disabled removable>Disabled</Chip>
+    </div>
+  );
+}
+
+render(<RemoveDemo />);
+`;
+
+export const clickableDemo = String.raw`
+function ClickableDemo() {
+  const [selected, setSelected] = React.useState('Economy');
+
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      {['Economy', 'Business', 'Miles'].map(option => (
+        <Chip
+          appearance={selected === option ? 'filled' : 'outlined'}
+          clickable
+          key={option}
+          onClick={() => setSelected(option)}
+          variant={selected === option ? 'primary' : 'secondary'}
+        >
+          {option}
+        </Chip>
+      ))}
+    </div>
+  );
+}
+
+render(<ClickableDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Chip
+
+`Chip` is a compact inline label used for filters, entered values, and short
+metadata. It can optionally expose a built-in remove action that dismisses the
+chip from the DOM.
+
+Static chips are not keyboard-focusable. Chips become focusable when they are
+clickable or removable. Disabled chips are removed from the tab order.
+
+## Usage
+
+```tsx
+import { Chip } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Chip removable>Business class</Chip>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={72}
+  previewWrapper={ReactSparDemoRoot}
+  scope={chipScope}
+/>
+
+## Variants
+
+<LiveCode
+  code={variantsDemo}
+  noInline
+  previewMinHeight={72}
+  previewWrapper={ReactSparDemoRoot}
+  scope={chipScope}
+/>
+
+## Appearances
+
+<LiveCode
+  code={appearancesDemo}
+  noInline
+  previewMinHeight={72}
+  previewWrapper={ReactSparDemoRoot}
+  scope={chipScope}
+/>
+
+## Sizes
+
+<LiveCode
+  code={sizesDemo}
+  noInline
+  previewMinHeight={72}
+  previewWrapper={ReactSparDemoRoot}
+  scope={chipScope}
+/>
+
+## Remove
+
+Removable chips keep a single tab stop on the chip root. The inner remove button
+is not part of the tab sequence. Press `Backspace` or `Delete` while the chip is
+focused to request removal.
+
+Use `onRemove` to sync removal with application state. By default, a removable
+chip dismisses itself after a remove action. Set `autoDismiss={false}` when the
+parent owns the chip list.
+
+<LiveCode
+  code={removeDemo}
+  noInline
+  previewMinHeight={72}
+  previewWrapper={ReactSparDemoRoot}
+  scope={chipScope}
+/>
+
+## Clickable
+
+Use `clickable` when the chip performs an action, such as selecting a filter.
+Clickable chips are keyboard-focusable and trigger their `onClick` handler with
+`Enter` or `Space`.
+
+<LiveCode
+  code={clickableDemo}
+  noInline
+  previewMinHeight={72}
+  previewWrapper={ReactSparDemoRoot}
+  scope={chipScope}
+/>
+
+## Accessibility
+
+- Static chip roots are not focusable.
+- Clickable chips use a button-like root and support `Enter` and `Space`.
+- Removable chips support `Delete` and `Backspace`.
+- Disabled chips do not receive focus and do not respond to remove actions.
+- The remove button stays out of the tab sequence so dense chip groups keep one
+  tab stop per chip.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Chip {#chip}
+
+#### Props {#chip-props}
+
+| Name                             | Type                                                                                                                  | Default   | Description                                                                |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                                                          | -         | Chip content.                                                              |
+| <ApiBadge label="variant" />     | <code><a href="#chip-td-chipvariant">ChipVariant</a></code>                                                           | 'primary' | Color variant.                                                             |
+| <ApiBadge label="appearance" />  | <code><a href="#chip-td-chipappearance">ChipAppearance</a></code>                                                     | 'filled'  | Visual appearance.                                                         |
+| <ApiBadge label="size" />        | <code><a href="#chip-td-chipsize">ChipSize</a></code>                                                                 | 'base'    | Size scale.                                                                |
+| <ApiBadge label="disabled" />    | <code>boolean</code>                                                                                                  | false     | Disables interactive affordances and remove actions.                       |
+| <ApiBadge label="removable" />   | <code>boolean</code>                                                                                                  | false     | Renders a remove button that dismisses the chip from the DOM when pressed. |
+| <ApiBadge label="clickable" />   | <code>boolean</code>                                                                                                  | false     | Makes the chip root keyboard-focusable and button-like for click actions.  |
+| <ApiBadge label="autoDismiss" /> | <code>boolean</code>                                                                                                  | true      | Whether the chip removes itself after a non-prevented remove action.       |
+| <ApiBadge label="removeLabel" /> | <code>string</code>                                                                                                   | 'Remove'  | Accessible label for the remove button.                                    |
+| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;<a href="#chip-td-chipslot">ChipSlot</a>, string&gt;&gt;</code>                            | -         | Per-slot extra classes.                                                    |
+| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;<a href="#chip-td-chipslot">ChipSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                         |
+| <ApiBadge label="className" />   | <code>string</code>                                                                                                   | -         | Appends custom classes to the root slot.                                   |
+
+#### Events {#chip-events}
+
+| Name                          | Type                       | Default | Description                                                                             |
+| ----------------------------- | -------------------------- | ------- | --------------------------------------------------------------------------------------- |
+| <ApiBadge label="onRemove" /> | <code>() =&gt; void</code> | -       | Called when the remove button is pressed or the focused chip receives Backspace/Delete. |
+
+#### Data attributes {#chip-data-attributes}
+
+| Attribute                                       | Applied when             | Purpose                                                           |
+| ----------------------------------------------- | ------------------------ | ----------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                   | Stable selector for wrapper styling on the root slot.             |
+| <ApiBadge label="data-variant" />               | Always                   | Reflects the resolved `variant` prop for theme recipe scoping.    |
+| <ApiBadge label="data-type" />                  | Always                   | Reflects the resolved `appearance` prop for theme recipe scoping. |
+| <ApiBadge label="data-size" />                  | Always                   | Reflects the resolved `size` prop for theme recipe scoping.       |
+| <ApiBadge label="data-clickable" />             | When `clickable` is true | Styling hook for chips with a click action.                       |
+| <ApiBadge label="data-disabled" />              | When `disabled` is true  | Styling hook for the disabled state.                              |
+| <ApiBadge label="data-removable" />             | When `removable` is true | Styling hook for chip with a remove action.                       |
+
+### Type Definitions {#chip-type-definitions}
+
+| Name                                                                         | Definition                                                                                                                                                                                                                                     |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="chip-td-chipvariant"><ApiBadge label="ChipVariant" /></span>       | <code>&#124; 'primary' &#124; 'secondary' &#124; 'neutral' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning' &#124; 'verified' &#124; 'purple' &#124; 'cyan' &#124; 'business' &#124; 'teal' &#124; 'white' &#124; 'dark'</code> |
+| <span id="chip-td-chipappearance"><ApiBadge label="ChipAppearance" /></span> | <code>'filled' &#124; 'filledLight' &#124; 'outlined'</code>                                                                                                                                                                                   |
+| <span id="chip-td-chipsize"><ApiBadge label="ChipSize" /></span>             | <code>'small' &#124; 'base' &#124; 'large'</code>                                                                                                                                                                                              |
+| <span id="chip-td-chipslot"><ApiBadge label="ChipSlot" /></span>             | <code>'root' &#124; 'label' &#124; 'remove'</code>                                                                                                                                                                                             |
+
+{/* api-tables:end */}

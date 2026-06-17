@@ -8,6 +8,7 @@
 @use 'recipes/button';
 @use 'recipes/card';
 @use 'recipes/checkbox';
+@use 'recipes/chip';
 @use 'recipes/dialog';
 @use 'recipes/drawer';
 @use 'recipes/field';
@@ -151,6 +152,10 @@
 
 .tk-checkbox {
   @include checkbox.checkbox;
+}
+
+.tk-chip {
+  @include chip.chip;
 }
 
 .tk-toggle {

@@ -1,0 +1,411 @@
+@use '../abstracts/mixins' as mixins;
+
+// ---------------------------------------------------------------------------
+// Chip recipe — apply to `.tk-chip` root.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-chip               — root (span, visual container)
+//   .tk-chip-label         — text content
+//   .tk-chip-remove — dismiss action
+//
+// State/variant attributes on root:
+//   data-variant   — color variant
+//   data-type      — appearance (filled | filledLight | outlined)
+//   data-size      — size scale (small | base | large)
+//   data-clickable — click action is available
+//   data-disabled  — disabled state
+//   data-removable — remove button is mounted
+// ---------------------------------------------------------------------------
+
+@mixin chip-variant-filled($bg-color, $text-color, $hover-bg: $bg-color) {
+  background-color: $bg-color;
+  border-color: transparent;
+  color: $text-color;
+
+  .tk-chip-remove {
+    color: $text-color;
+  }
+
+  &:where(:not([data-disabled])):is([data-clickable], [data-removable]):hover {
+    background-color: $hover-bg;
+  }
+}
+
+@mixin chip-variant-filledLight($bg-color, $text-color, $hover-bg: $bg-color) {
+  background-color: $bg-color;
+  border-color: transparent;
+  color: $text-color;
+
+  .tk-chip-remove {
+    color: $text-color;
+  }
+
+  &:where(:not([data-disabled])):is([data-clickable], [data-removable]):hover {
+    background-color: $hover-bg;
+  }
+}
+
+@mixin chip-variant-outlined($text-color, $border-color, $hover-bg) {
+  background-color: transparent;
+  border-color: $border-color;
+  color: $text-color;
+
+  .tk-chip-remove {
+    color: $text-color;
+  }
+
+  &:where(:not([data-disabled])):is([data-clickable], [data-removable]):hover {
+    background-color: $hover-bg;
+  }
+}
+
+@mixin chip-size($height, $font-size, $line-height, $radius, $v-padding, $h-padding, $gap, $icon-size) {
+  min-height: $height;
+  font-size: $font-size;
+  line-height: $line-height;
+  border-radius: $radius;
+  padding: $v-padding $h-padding;
+  gap: $gap;
+
+  .tk-chip-remove {
+    width: $icon-size;
+    height: $icon-size;
+    font-size: $icon-size;
+  }
+
+  &[data-removable] {
+    padding-inline-end: $v-padding;
+  }
+}
+
+@mixin chip {
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  max-width: 100%;
+  outline: none;
+  white-space: nowrap;
+  user-select: none;
+  vertical-align: middle;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+
+  &:focus-within {
+    outline: none;
+  }
+
+  @include mixins.focus-ring(var(--secondary-focus));
+
+  .tk-chip-label {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tk-chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .tk-chip-remove svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+    stroke: currentColor;
+  }
+
+  .tk-chip-remove {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &[data-clickable]:where(:not([data-disabled])) {
+    cursor: pointer;
+  }
+
+  &[data-size='small'] {
+    @include chip-size(
+      20px,
+      var(--desktop-body-xs-size),
+      var(--desktop-body-xs-line-height),
+      var(--chips-small-radius),
+      var(--chips-small-v-padding),
+      var(--chips-small-h-padding),
+      var(--chips-small-gap),
+      var(--chips-small-icon-size)
+    );
+  }
+
+  &[data-size='base'] {
+    @include chip-size(
+      24px,
+      var(--desktop-body-s-size),
+      var(--desktop-body-s-line-height),
+      var(--chips-base-radius),
+      var(--chips-base-v-padding),
+      var(--chips-base-h-padding),
+      var(--chips-base-gap),
+      var(--chips-base-icon-size)
+    );
+  }
+
+  &[data-size='large'] {
+    @include chip-size(
+      28px,
+      var(--desktop-body-m-base-size),
+      var(--desktop-body-m-base-line-height),
+      var(--chips-large-radius),
+      var(--chips-large-v-padding),
+      var(--chips-large-h-padding),
+      var(--chips-large-gap),
+      var(--chips-large-icon-size)
+    );
+  }
+
+  &[data-variant='primary'] {
+    &:focus-visible {
+      box-shadow: var(--primary-focus);
+    }
+
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--primary-base), var(--static-white), var(--primary-dark));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--primary-lightest), var(--primary-base), var(--primary-light));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--primary-base), var(--primary-light), var(--primary-lightest));
+    }
+  }
+
+  &[data-variant='secondary'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--secondary-darkest), var(--text-lightest), var(--secondary-dark));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--secondary-light), var(--secondary-darkest), var(--secondary-sub-base));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--secondary-darkest), var(--secondary-sub-base), var(--secondary-lightest));
+    }
+  }
+
+  &[data-variant='neutral'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--background-darkest), var(--text-lightest), var(--background-dark));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--background-light), var(--text-darkest), var(--background-sub-base));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--text-darkest), var(--background-sub-base), var(--background-lightest));
+    }
+  }
+
+  &[data-variant='info'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--states-info-dark), var(--text-lightest), var(--states-info-darkest));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--states-info-light), var(--states-info-dark), var(--states-info-sub-base));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--states-info-dark), var(--states-info-sub-base), var(--states-info-lightest));
+    }
+  }
+
+  &[data-variant='success'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--states-success-dark), var(--text-lightest), var(--states-success-darkest));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--states-success-light), var(--states-success-dark), var(--states-success-sub-base));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--states-success-dark), var(--states-success-sub-base), var(--states-success-lightest));
+    }
+  }
+
+  &[data-variant='danger'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--states-danger-dark), var(--text-lightest), var(--states-danger-darkest));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--states-danger-light), var(--states-danger-dark), var(--states-danger-sub-base));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--states-danger-dark), var(--states-danger-sub-base), var(--states-danger-lightest));
+    }
+  }
+
+  &[data-variant='warning'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--states-warning-dark), var(--text-lightest), var(--states-warning-darkest));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--states-warning-light), var(--states-warning-dark), var(--states-warning-sub-base));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--states-warning-dark), var(--states-warning-sub-base), var(--states-warning-lightest));
+    }
+  }
+
+  &[data-variant='verified'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--states-verified-dark), var(--text-lightest), var(--states-verified-darkest));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--states-verified-light), var(--states-verified-dark), var(--states-verified-sub-base));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--states-verified-dark), var(--states-verified-sub-base), var(--states-verified-lightest));
+    }
+  }
+
+  &[data-variant='purple'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--purple-600), var(--text-lightest), var(--purple-700));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--purple-100), var(--purple-700), var(--purple-200));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--purple-700), var(--purple-200), var(--purple-50));
+    }
+  }
+
+  &[data-variant='cyan'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--cyan-600), var(--text-lightest), var(--cyan-700));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--cyan-100), var(--cyan-700), var(--cyan-200));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--cyan-700), var(--cyan-200), var(--cyan-50));
+    }
+  }
+
+  &[data-variant='business'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--business-600), var(--text-lightest), var(--business-700));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--business-100), var(--business-700), var(--business-200));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--business-700), var(--business-200), var(--business-50));
+    }
+  }
+
+  &[data-variant='teal'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--teal-600), var(--text-lightest), var(--teal-700));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--teal-100), var(--teal-700), var(--teal-200));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--teal-700), var(--teal-200), var(--teal-50));
+    }
+  }
+
+  &[data-variant='white'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--static-light), var(--text-darkest), var(--background-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--overlay-white-light), var(--static-light), var(--overlay-white-base));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--static-light), var(--overlay-white-light), var(--overlay-white-light));
+    }
+  }
+
+  &[data-variant='dark'] {
+    &[data-type='filled'] {
+      @include chip-variant-filled(var(--static-dark), var(--text-lightest), var(--background-darkest));
+    }
+
+    &[data-type='filledLight'] {
+      @include chip-variant-filledLight(var(--overlay-black-light), var(--static-dark), var(--overlay-black-base));
+    }
+
+    &[data-type='outlined'] {
+      @include chip-variant-outlined(var(--static-dark), var(--overlay-black-light), var(--overlay-black-light));
+    }
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    pointer-events: none;
+
+    &[data-type='filled'],
+    &[data-type='filledLight'] {
+      background: var(--frames-light);
+      border-color: transparent;
+      color: var(--text-sub-base);
+
+      .tk-chip-remove {
+        color: var(--text-sub-base);
+      }
+    }
+
+    &[data-type='outlined'] {
+      border: 1px solid var(--border-sub-base);
+      background: var(--static-light);
+      color: var(--text-sub-base);
+
+      .tk-chip-remove {
+        color: var(--text-sub-base);
+      }
+    }
+  }
+}
