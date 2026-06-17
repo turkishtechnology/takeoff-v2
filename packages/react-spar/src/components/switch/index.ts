@@ -7,12 +7,4 @@ const Switch = Object.assign(SwitchRoot, {
 
 export { Switch };
 
-export type {
-  SwitchIndicatorProps,
-  SwitchIndicatorRenderProps,
-  SwitchProps,
-  SwitchRenderProps,
-  SwitchSize,
-  SwitchSlot,
-  SwitchVariant,
-} from './types';
+export type { SwitchIndicatorProps, SwitchIndicatorRenderProps, SwitchProps, SwitchRenderProps, SwitchSize, SwitchSlot, SwitchVariant } from './types';
