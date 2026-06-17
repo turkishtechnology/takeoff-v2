@@ -4,7 +4,9 @@
 
 @use 'recipes/accordion';
 @use 'recipes/badge';
+@use 'recipes/breadcrumb';
 @use 'recipes/button';
+@use 'recipes/card';
 @use 'recipes/checkbox';
 @use 'recipes/dialog';
 @use 'recipes/drawer';
@@ -15,6 +17,7 @@
 @use 'recipes/radio';
 @use 'recipes/select';
 @use 'recipes/switch';
+@use 'recipes/tabs';
 @use 'recipes/tooltip';
 
 @include button.button-keyframes;
@@ -24,6 +27,30 @@
 
 .tk-button {
   @include button.button;
+}
+
+.tk-card {
+  @include card.card;
+}
+
+.tk-card-header {
+  @include card.card-header;
+}
+
+.tk-card-title {
+  @include card.card-title;
+}
+
+.tk-card-description {
+  @include card.card-description;
+}
+
+.tk-card-body {
+  @include card.card-body;
+}
+
+.tk-card-footer {
+  @include card.card-footer;
 }
 
 .tk-accordion {
@@ -138,6 +165,22 @@
   @include radio.radio-item;
 }
 
+.tk-tabs {
+  @include tabs.tabs;
+}
+
+.tk-tabs-list {
+  @include tabs.tabs-list;
+}
+
+.tk-tabs-trigger {
+  @include tabs.tabs-trigger;
+}
+
+.tk-tabs-content {
+  @include tabs.tabs-content;
+}
+
 .tk-tooltip-content {
   @include tooltip.tooltip-content;
 }
@@ -156,6 +199,10 @@
 
 .tk-badge {
   @include badge.badge;
+}
+
+.tk-breadcrumb {
+  @include breadcrumb.breadcrumb;
 }
 
 .tk-popover-trigger {

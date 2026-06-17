@@ -15,7 +15,9 @@ const sidebars: SidebarsConfig = {
       items: [
         'components/accordion',
         'components/badge',
+        'components/breadcrumb',
         'components/button',
+        'components/card',
         'components/checkbox',
         'components/drawer',
         'components/input',
@@ -24,6 +26,7 @@ const sidebars: SidebarsConfig = {
         'components/select',
         'components/switch',
         'components/radio',
+        'components/tabs',
         'components/tooltip',
       ],
     },

@@ -1,6 +1,8 @@
 import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItemBase, AccordionTriggerBase } from './components/accordion/base';
 import { BadgeBase } from './components/badge/base';
+import { BreadcrumbBase, BreadcrumbItemBase, BreadcrumbLinkBase, BreadcrumbListBase, BreadcrumbPageBase, BreadcrumbSeparatorBase } from './components/breadcrumb/base';
 import { ButtonBase } from './components/button/base';
+import { CardBase, CardBodyBase, CardDescriptionBase, CardFooterBase, CardHeaderBase, CardTitleBase } from './components/card/base';
 import { CheckboxBase } from './components/checkbox/base';
 import {
   DrawerBase,
@@ -18,6 +20,7 @@ import { FieldBase, FieldDescriptionBase, FieldErrorMessageBase, FieldLabelBase 
 import { InputBase, InputContainerBase, InputFieldBase, InputPrefixBase, InputSuffixBase } from './components/input/base';
 import { SelectBase, SelectContentBase, SelectGroupBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
 import { SwitchBase } from './components/switch/base';
+import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
@@ -41,7 +44,19 @@ export const slotClassRegistry = {
   accordionTrigger: { slots: AccordionTriggerBase.classes },
   accordionContent: { slots: AccordionContentBase.classes },
   badge: { slots: BadgeBase.classes },
+  breadcrumb: { slots: BreadcrumbBase.classes },
+  breadcrumbList: { slots: BreadcrumbListBase.classes },
+  breadcrumbItem: { slots: BreadcrumbItemBase.classes },
+  breadcrumbLink: { slots: BreadcrumbLinkBase.classes },
+  breadcrumbPage: { slots: BreadcrumbPageBase.classes },
+  breadcrumbSeparator: { slots: BreadcrumbSeparatorBase.classes },
   button: { slots: ButtonBase.classes },
+  card: { slots: CardBase.classes },
+  cardHeader: { slots: CardHeaderBase.classes },
+  cardTitle: { slots: CardTitleBase.classes },
+  cardDescription: { slots: CardDescriptionBase.classes },
+  cardBody: { slots: CardBodyBase.classes },
+  cardFooter: { slots: CardFooterBase.classes },
   checkbox: { slots: CheckboxBase.classes },
   drawer: { slots: DrawerBase.classes },
   drawerOverlay: { slots: DrawerOverlayBase.classes },
@@ -70,6 +85,10 @@ export const slotClassRegistry = {
   selectLabel: { slots: SelectLabelBase.classes },
   selectSeparator: { slots: SelectSeparatorBase.classes },
   switch: { slots: SwitchBase.classes },
+  tabs: { slots: TabsBase.classes },
+  tabsList: { slots: TabsListBase.classes },
+  tabsTrigger: { slots: TabsTriggerBase.classes },
+  tabsContent: { slots: TabsContentBase.classes },
   popoverTrigger: { slots: PopoverTriggerBase.classes },
   popoverContent: { slots: PopoverContentBase.classes },
   popoverArrow: { slots: PopoverArrowBase.classes },

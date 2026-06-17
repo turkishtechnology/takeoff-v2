@@ -1,6 +1,8 @@
 export * from './accordion';
 export * from './badge';
+export * from './breadcrumb';
 export * from './button';
+export * from './card';
 export * from './checkbox';
 export * from './drawer';
 export * from './field';
@@ -10,4 +12,5 @@ export * from './radio';
 export * from './popover';
 export * from './select';
 export * from './switch';
+export * from './tabs';
 export * from './tooltip';
