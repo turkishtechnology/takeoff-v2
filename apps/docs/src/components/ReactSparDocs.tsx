@@ -1,8 +1,27 @@
 import { useColorMode } from '@docusaurus/theme-common';
 import { type PropsWithChildren } from 'react';
-import { Accordion, Badge, Button, Checkbox, Dialog, Drawer, Field, Input, Popover, Radio, Select, Switch, TakeoffSparProvider, Tooltip } from '@takeoff-ui/react-spar';
+import {
+  Accordion,
+  Badge,
+  Breadcrumb,
+  Button,
+  Card,
+  Checkbox,
+  Dialog,
+  Drawer,
+  Field,
+  Input,
+  Label,
+  Popover,
+  Radio,
+  Select,
+  Switch,
+  Tabs,
+  TakeoffSparProvider,
+  Tooltip,
+} from '@takeoff-ui/react-spar';
 
-export { Accordion, Badge, Button, Checkbox, Dialog, Drawer, Field, Input, Popover, Radio, Select, Switch, Tooltip };
+export { Accordion, Badge, Breadcrumb, Button, Card, Checkbox, Dialog, Drawer, Field, Input, Label, Popover, Radio, Select, Switch, Tabs, Tooltip };
 
 export function ReactSparDemoRoot({ children }: PropsWithChildren) {
   const { colorMode } = useColorMode();

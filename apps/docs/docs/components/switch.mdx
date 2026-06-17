@@ -280,7 +280,7 @@ render(<SwitchFormDemo />);
 
 `Switch` lets users turn a single setting on or off, especially for preferences,
 permissions, and form options. The root owns visual state (`size`, `variant`,
-plus inherited `invalid` / `disabled` / `required` / `readOnly`),
+plus inherited `invalid` / `disabled` / `required` / `optional` / `readOnly`),
 `Switch.Indicator` is the track + sliding thumb. Wrap `Switch` in a `Field` to
 attach a label, description, or error message — the field-level state cascades
 into the switch automatically.
@@ -315,9 +315,9 @@ import { Field, Switch } from '@takeoff-ui/react-spar';
 ## Using with `Field`
 
 `Field` is the generic ARIA wrapper. Setting `invalid`, `disabled`, `required`,
-or `readOnly` on `Field` cascades into the nested `Switch`, and `Field.Label`,
-`Field.Description`, and `Field.ErrorMessage` are wired to the switch through
-shared IDs.
+`optional`, or `readOnly` on `Field` cascades into the nested `Switch`, and
+`Field.Label`, `Field.Description`, and `Field.ErrorMessage` are wired to the
+switch through shared IDs.
 
 <LiveCode
   code={fieldWithSwitchDemo}

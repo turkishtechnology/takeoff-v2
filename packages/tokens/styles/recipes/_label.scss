@@ -1,0 +1,43 @@
+// ---------------------------------------------------------------------------
+// Label recipe — apply to `.tk-label`.
+//
+// State attributes on root:
+//   data-required — marks the related field as required
+//   data-optional — marks the related field as optional
+//   data-disabled — disabled visual state
+//   data-readonly — read-only visual state
+//   data-invalid  — invalid visual state
+// ---------------------------------------------------------------------------
+
+@mixin label {
+  font-family: var(--family-label, 'tk-text', sans-serif);
+  color: var(--text-darkest);
+  font-size: var(--desktop-label-m-base-size);
+  font-weight: 400;
+  line-height: var(--desktop-label-m-base-line-height);
+  cursor: default;
+  margin: 0;
+
+  &[for] {
+    cursor: pointer;
+  }
+
+  &[data-required]::after {
+    content: '*';
+    color: var(--states-danger-base);
+    font-size: var(--desktop-label-s-size);
+    font-weight: 300;
+    line-height: var(--desktop-label-s-line-height);
+    margin-inline-start: 0.125rem;
+  }
+
+  &[data-disabled],
+  &[data-readonly] {
+    color: var(--text-sub-base);
+    cursor: default;
+  }
+
+  &[data-invalid] {
+    color: var(--states-danger-base);
+  }
+}
