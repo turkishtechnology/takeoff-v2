@@ -21,4 +21,4 @@ export const DrawerTrigger = <T extends ElementType = 'button'>(props: DrawerTri
   );
 };
 
-DrawerTrigger.displayName = 'DrawerTrigger';
+DrawerTrigger.displayName = 'Drawer.Trigger';

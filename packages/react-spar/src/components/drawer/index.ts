@@ -7,7 +7,7 @@ import { DrawerTitle } from './DrawerTitle';
 import { DrawerDescription } from './DrawerDescription';
 import { DrawerBody } from './DrawerBody';
 import { DrawerFooter } from './DrawerFooter';
-import { DrawerCloseButton } from './DrawerCloseButton';
+import { DrawerClose } from './DrawerClose';
 
 const Drawer = Object.assign(DrawerRoot, {
   Trigger: DrawerTrigger,
@@ -18,14 +18,14 @@ const Drawer = Object.assign(DrawerRoot, {
   Description: DrawerDescription,
   Body: DrawerBody,
   Footer: DrawerFooter,
-  CloseButton: DrawerCloseButton,
+  Close: DrawerClose,
 });
 
 export { Drawer };
 
 export type {
   DrawerBodyProps,
-  DrawerCloseButtonProps,
+  DrawerCloseProps,
   DrawerDescriptionProps,
   DrawerFooterProps,
   DrawerHeaderProps,

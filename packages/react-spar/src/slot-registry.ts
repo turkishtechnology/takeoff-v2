@@ -19,7 +19,7 @@ import {
 import {
   DrawerBase,
   DrawerBodyBase,
-  DrawerCloseButtonBase,
+  DrawerCloseBase,
   DrawerDescriptionBase,
   DrawerFooterBase,
   DrawerHeaderBase,
@@ -88,7 +88,7 @@ export const slotClassRegistry = {
   drawerDescription: { slots: DrawerDescriptionBase.classes },
   drawerBody: { slots: DrawerBodyBase.classes },
   drawerFooter: { slots: DrawerFooterBase.classes },
-  drawerCloseButton: { slots: DrawerCloseButtonBase.classes },
+  drawerClose: { slots: DrawerCloseBase.classes },
   drawerTrigger: { slots: DrawerTriggerBase.classes },
   field: { slots: FieldBase.classes },
   fieldLabel: { slots: FieldLabelBase.classes },

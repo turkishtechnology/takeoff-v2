@@ -33,7 +33,7 @@
 }
 
 .title {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: clamp(1.75rem, 2.5vw + 1rem, 2.5rem);
   line-height: 1.1;
   font-weight: 700;
@@ -43,7 +43,7 @@
 }
 
 .lede {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 1rem;
   line-height: 1.65;
   color: var(--runway-ink-dim, #b6b6be);

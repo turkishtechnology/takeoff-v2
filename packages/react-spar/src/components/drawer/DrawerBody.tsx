@@ -21,4 +21,4 @@ export const DrawerBody = <T extends ElementType = 'div'>(props: DrawerBodyProps
   );
 };
 
-DrawerBody.displayName = 'DrawerBody';
+DrawerBody.displayName = 'Drawer.Body';

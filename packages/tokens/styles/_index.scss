@@ -122,8 +122,8 @@
   @include drawer.drawer-footer;
 }
 
-.tk-drawer-close-button {
-  @include drawer.drawer-close-button;
+.tk-drawer-close {
+  @include drawer.drawer-close;
 }
 
 .tk-field {
