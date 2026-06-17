@@ -11,4 +11,4 @@ const Radio = Object.assign(RadioRoot, {
 
 export { Radio };
 
-export type { RadioIndicatorProps, RadioItemProps, RadioItemSlot, RadioLabelProps, RadioPosition, RadioProps, RadioRenderProps, RadioSize, RadioSlot, RadioType } from './types';
+export type { RadioIndicatorProps, RadioItemProps, RadioItemSlot, RadioLabelProps, RadioPosition, RadioProps, RadioRenderProps, RadioSize, RadioSlot } from './types';
