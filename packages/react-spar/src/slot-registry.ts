@@ -2,6 +2,7 @@ import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItem
 import { BadgeBase } from './components/badge/base';
 import { BreadcrumbBase, BreadcrumbItemBase, BreadcrumbLinkBase, BreadcrumbListBase, BreadcrumbPageBase, BreadcrumbSeparatorBase } from './components/breadcrumb/base';
 import { ButtonBase } from './components/button/base';
+import { CardBase, CardBodyBase, CardDescriptionBase, CardFooterBase, CardHeaderBase, CardTitleBase } from './components/card/base';
 import { CheckboxBase } from './components/checkbox/base';
 import {
   DrawerBase,
@@ -49,6 +50,12 @@ export const slotClassRegistry = {
   breadcrumbPage: { slots: BreadcrumbPageBase.classes },
   breadcrumbSeparator: { slots: BreadcrumbSeparatorBase.classes },
   button: { slots: ButtonBase.classes },
+  card: { slots: CardBase.classes },
+  cardHeader: { slots: CardHeaderBase.classes },
+  cardTitle: { slots: CardTitleBase.classes },
+  cardDescription: { slots: CardDescriptionBase.classes },
+  cardBody: { slots: CardBodyBase.classes },
+  cardFooter: { slots: CardFooterBase.classes },
   checkbox: { slots: CheckboxBase.classes },
   drawer: { slots: DrawerBase.classes },
   drawerOverlay: { slots: DrawerOverlayBase.classes },
