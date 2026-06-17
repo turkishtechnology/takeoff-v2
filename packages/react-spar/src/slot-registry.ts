@@ -1,5 +1,6 @@
 import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItemBase, AccordionTriggerBase } from './components/accordion/base';
 import { BadgeBase } from './components/badge/base';
+import { BreadcrumbBase, BreadcrumbItemBase, BreadcrumbLinkBase, BreadcrumbListBase, BreadcrumbPageBase, BreadcrumbSeparatorBase } from './components/breadcrumb/base';
 import { ButtonBase } from './components/button/base';
 import { CardBase, CardBodyBase, CardDescriptionBase, CardFooterBase, CardHeaderBase, CardTitleBase } from './components/card/base';
 import { CheckboxBase } from './components/checkbox/base';
@@ -42,6 +43,12 @@ export const slotClassRegistry = {
   accordionTrigger: { slots: AccordionTriggerBase.classes },
   accordionContent: { slots: AccordionContentBase.classes },
   badge: { slots: BadgeBase.classes },
+  breadcrumb: { slots: BreadcrumbBase.classes },
+  breadcrumbList: { slots: BreadcrumbListBase.classes },
+  breadcrumbItem: { slots: BreadcrumbItemBase.classes },
+  breadcrumbLink: { slots: BreadcrumbLinkBase.classes },
+  breadcrumbPage: { slots: BreadcrumbPageBase.classes },
+  breadcrumbSeparator: { slots: BreadcrumbSeparatorBase.classes },
   button: { slots: ButtonBase.classes },
   card: { slots: CardBase.classes },
   cardHeader: { slots: CardHeaderBase.classes },

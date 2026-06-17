@@ -1,9 +1,5 @@
 import type { ElementType } from 'react';
-import {
-  Switch as SparSwitch,
-  type SwitchProps as SparSwitchProps,
-  type SwitchRenderProps as SparSwitchRenderProps,
-} from '@turkish-technology/spar';
+import { Switch as SparSwitch, type SwitchProps as SparSwitchProps, type SwitchRenderProps as SparSwitchRenderProps } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
@@ -47,12 +43,7 @@ export const Switch = <T extends ElementType = 'button'>(props: SwitchProps<T>) 
   } = rest;
 
   return (
-    <SparSwitch
-      {...(sparProps as unknown as SparSwitchProps)}
-      invalid={invalid}
-      ref={ref}
-      {...rootAttrs}
-    >
+    <SparSwitch {...(sparProps as unknown as SparSwitchProps)} invalid={invalid} ref={ref} {...rootAttrs}>
       {(state: SparSwitchRenderProps) => (
         <SwitchProvider
           value={{

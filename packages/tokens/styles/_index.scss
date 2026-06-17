@@ -4,6 +4,7 @@
 
 @use 'recipes/accordion';
 @use 'recipes/badge';
+@use 'recipes/breadcrumb';
 @use 'recipes/button';
 @use 'recipes/card';
 @use 'recipes/checkbox';
@@ -176,6 +177,10 @@
 
 .tk-badge {
   @include badge.badge;
+}
+
+.tk-breadcrumb {
+  @include breadcrumb.breadcrumb;
 }
 
 .tk-popover-trigger {

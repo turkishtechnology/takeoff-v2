@@ -9,8 +9,40 @@
 
 @mixin focus-ring($shadow) {
   &:focus-visible {
-    outline: none;
+    // A transparent outline paints nothing while the box-shadow draws the
+    // ring, but forced-colors mode (Windows High Contrast) drops box-shadows
+    // and recolors outlines to a system color — so keyboard focus stays
+    // visible there. `outline: none` would leave no indicator at all.
+    outline: 2px solid transparent;
+    outline-offset: 2px;
     box-shadow: $shadow;
+  }
+}
+
+// Slim brand scrollbar for recipe-owned scroll containers. Ported verbatim
+// from takeoff-ui/core `takeoff-scrollbar`.
+@mixin takeoff-scrollbar {
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--background-lightest);
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: var(--secondary-sub-base);
+
+    &:hover {
+      background: var(--secondary-dark);
+    }
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: var(--background-lightest);
   }
 }
 
