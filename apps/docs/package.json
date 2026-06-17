@@ -30,7 +30,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.78.0",
     "react-live": "^4.1.8",
-    "three": "^0.170.0",
+    "three": "^0.184.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
