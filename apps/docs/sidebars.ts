@@ -21,6 +21,7 @@ const sidebars: SidebarsConfig = {
         'components/checkbox',
         'components/chip',
         'components/drawer',
+        'components/dialog',
         'components/input',
         'components/label',
         'components/popover',

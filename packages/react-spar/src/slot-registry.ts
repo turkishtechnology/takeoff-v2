@@ -6,6 +6,17 @@ import { CardBase, CardBodyBase, CardDescriptionBase, CardFooterBase, CardHeader
 import { CheckboxBase } from './components/checkbox/base';
 import { ChipBase } from './components/chip/base';
 import {
+  DialogBodyBase,
+  DialogCloseBase,
+  DialogPanelBase,
+  DialogDescriptionBase,
+  DialogFooterBase,
+  DialogHeaderBase,
+  DialogOverlayBase,
+  DialogTitleBase,
+  DialogTriggerBase,
+} from './components/dialog/base';
+import {
   DrawerBase,
   DrawerBodyBase,
   DrawerCloseButtonBase,
@@ -60,6 +71,15 @@ export const slotClassRegistry = {
   cardFooter: { slots: CardFooterBase.classes },
   checkbox: { slots: CheckboxBase.classes },
   chip: { slots: ChipBase.classes },
+  dialogTrigger: { slots: DialogTriggerBase.classes },
+  dialogOverlay: { slots: DialogOverlayBase.classes },
+  dialogPanel: { slots: DialogPanelBase.classes },
+  dialogHeader: { slots: DialogHeaderBase.classes },
+  dialogTitle: { slots: DialogTitleBase.classes },
+  dialogDescription: { slots: DialogDescriptionBase.classes },
+  dialogBody: { slots: DialogBodyBase.classes },
+  dialogFooter: { slots: DialogFooterBase.classes },
+  dialogClose: { slots: DialogCloseBase.classes },
   drawer: { slots: DrawerBase.classes },
   drawerOverlay: { slots: DrawerOverlayBase.classes },
   drawerPanel: { slots: DrawerPanelBase.classes },

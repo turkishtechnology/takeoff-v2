@@ -8,6 +8,7 @@ import {
   Card,
   Checkbox,
   Chip,
+  Dialog,
   Drawer,
   Field,
   Input,
@@ -21,7 +22,7 @@ import {
   Tooltip,
 } from '@takeoff-ui/react-spar';
 
-export { Accordion, Badge, Breadcrumb, Button, Card, Checkbox, Chip, Drawer, Field, Input, Label, Popover, Radio, Select, Switch, Tabs, Tooltip };
+export { Accordion, Badge, Breadcrumb, Button, Card, Checkbox, Chip, Dialog, Drawer, Field, Input, Label, Popover, Radio, Select, Switch, Tabs, Tooltip };
 
 export function ReactSparDemoRoot({ children }: PropsWithChildren) {
   const { colorMode } = useColorMode();

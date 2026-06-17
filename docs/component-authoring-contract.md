@@ -177,7 +177,7 @@ are public:
 Accordion.Item   Accordion.Header   Accordion.Trigger   Accordion.Content
 
 Dialog.Trigger   Dialog.Panel    Dialog.Header   Dialog.Title
-Dialog.Description   Dialog.Body   Dialog.Footer   Dialog.CloseButton
+Dialog.Description   Dialog.Body   Dialog.Footer   Dialog.Close
 
 Input.Label   Input.Field   Input.Description   Input.ErrorMessage
 ```
