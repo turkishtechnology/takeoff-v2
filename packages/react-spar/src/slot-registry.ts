@@ -20,6 +20,7 @@ import { FieldBase, FieldDescriptionBase, FieldErrorMessageBase, FieldLabelBase 
 import { InputBase, InputContainerBase, InputFieldBase, InputPrefixBase, InputSuffixBase } from './components/input/base';
 import { SelectBase, SelectContentBase, SelectGroupBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
 import { SwitchBase } from './components/switch/base';
+import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
@@ -84,6 +85,10 @@ export const slotClassRegistry = {
   selectLabel: { slots: SelectLabelBase.classes },
   selectSeparator: { slots: SelectSeparatorBase.classes },
   switch: { slots: SwitchBase.classes },
+  tabs: { slots: TabsBase.classes },
+  tabsList: { slots: TabsListBase.classes },
+  tabsTrigger: { slots: TabsTriggerBase.classes },
+  tabsContent: { slots: TabsContentBase.classes },
   popoverTrigger: { slots: PopoverTriggerBase.classes },
   popoverContent: { slots: PopoverContentBase.classes },
   popoverArrow: { slots: PopoverArrowBase.classes },

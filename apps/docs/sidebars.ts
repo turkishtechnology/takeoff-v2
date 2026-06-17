@@ -25,6 +25,7 @@ const sidebars: SidebarsConfig = {
         'components/select',
         'components/switch',
         'components/radio',
+        'components/tabs',
         'components/tooltip',
       ],
     },
