@@ -11,8 +11,8 @@ import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type FieldSlot = 'root';
 export type FieldLabelSlot = 'root' | 'asterisk';
-export type FieldDescriptionSlot = 'root';
-export type FieldErrorMessageSlot = 'root';
+export type FieldDescriptionSlot = 'root' | 'icon';
+export type FieldErrorMessageSlot = 'root' | 'icon';
 
 export interface FieldOwnProps {
   classNames?: ClassNamesMap<FieldSlot>;

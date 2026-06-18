@@ -67,17 +67,15 @@ function BookingRequestDemo() {
             <Field invalid={invalid} required>
               <Field.Label>Request title</Field.Label>
               <Input>
-                <Input.Container>
-                  <Input.Field
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                    onBlur={field.handleBlur}
-                    aria-invalid={invalid}
-                    placeholder="Change return flight"
-                    autoComplete="off"
-                  />
-                </Input.Container>
+                <Input.Field
+                  name={field.name}
+                  value={field.state.value}
+                  onChange={(event) => field.handleChange(event.target.value)}
+                  onBlur={field.handleBlur}
+                  aria-invalid={invalid}
+                  placeholder="Change return flight"
+                  autoComplete="off"
+                />
               </Input>
               {invalid ? <Field.ErrorMessage>{message}</Field.ErrorMessage> : <Field.Description>Use a short, specific title.</Field.Description>}
             </Field>
@@ -186,28 +184,26 @@ function PassengerArrayDemo() {
                       <Field invalid={invalid} required>
                         <Field.Label>Passenger {index + 1}</Field.Label>
                         <Input>
-                          <Input.Container>
-                            <Input.Field
-                              name={field.name}
-                              value={field.state.value}
-                              onChange={(event) => field.handleChange(event.target.value)}
-                              onBlur={field.handleBlur}
-                              aria-invalid={invalid}
-                              autoComplete="name"
-                              placeholder="Ada Lovelace"
-                            />
-                            <Input.Suffix>
-                              <button
-                                type="button"
-                                aria-label={canRemove ? 'Remove passenger ' + (index + 1) : 'At least one passenger is required'}
-                                disabled={!canRemove}
-                                onClick={() => passengersField.removeValue(index)}
-                                className="inline-flex h-5 w-5 justify-center"
-                              >
-                                x
-                              </button>
-                            </Input.Suffix>
-                          </Input.Container>
+                          <Input.Field
+                            name={field.name}
+                            value={field.state.value}
+                            onChange={(event) => field.handleChange(event.target.value)}
+                            onBlur={field.handleBlur}
+                            aria-invalid={invalid}
+                            autoComplete="name"
+                            placeholder="Ada Lovelace"
+                          />
+                          <Input.Suffix>
+                            <button
+                              type="button"
+                              aria-label={canRemove ? 'Remove passenger ' + (index + 1) : 'At least one passenger is required'}
+                              disabled={!canRemove}
+                              onClick={() => passengersField.removeValue(index)}
+                              className="inline-flex h-5 w-5 justify-center"
+                            >
+                              x
+                            </button>
+                          </Input.Suffix>
                         </Input>
                         {invalid ? <Field.ErrorMessage>{message}</Field.ErrorMessage> : null}
                       </Field>
@@ -291,16 +287,14 @@ you a clear place to map form state into Takeoff props.
       <Field invalid={invalid} required>
         <Field.Label>Request title</Field.Label>
         <Input>
-          <Input.Container>
-            <Input.Field
-              name={field.name}
-              value={field.state.value}
-              onChange={event => field.handleChange(event.target.value)}
-              onBlur={field.handleBlur}
-              aria-invalid={invalid}
-              autoComplete="off"
-            />
-          </Input.Container>
+          <Input.Field
+            name={field.name}
+            value={field.state.value}
+            onChange={event => field.handleChange(event.target.value)}
+            onBlur={field.handleBlur}
+            aria-invalid={invalid}
+            autoComplete="off"
+          />
         </Input>
         <Field.Description>Use a short, specific title.</Field.Description>
         {invalid ? (
@@ -422,16 +416,14 @@ export function BookingRequestForm() {
             <Field invalid={invalid} required>
               <Field.Label>Request title</Field.Label>
               <Input>
-                <Input.Container>
-                  <Input.Field
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={event => field.handleChange(event.target.value)}
-                    onBlur={field.handleBlur}
-                    aria-invalid={invalid}
-                    autoComplete="off"
-                  />
-                </Input.Container>
+                <Input.Field
+                  name={field.name}
+                  value={field.state.value}
+                  onChange={event => field.handleChange(event.target.value)}
+                  onBlur={field.handleBlur}
+                  aria-invalid={invalid}
+                  autoComplete="off"
+                />
               </Input>
               {invalid ? (
                 <Field.ErrorMessage>
@@ -616,15 +608,13 @@ return (
   <Field invalid={invalid}>
     <Field.Label>Request title</Field.Label>
     <Input>
-      <Input.Container>
-        <Input.Field
-          name={field.name}
-          value={field.state.value}
-          onChange={event => field.handleChange(event.target.value)}
-          onBlur={field.handleBlur}
-          aria-invalid={invalid}
-        />
-      </Input.Container>
+      <Input.Field
+        name={field.name}
+        value={field.state.value}
+        onChange={event => field.handleChange(event.target.value)}
+        onBlur={field.handleBlur}
+        aria-invalid={invalid}
+      />
     </Input>
     {invalid ? <Field.ErrorMessage>{error.message}</Field.ErrorMessage> : null}
   </Field>

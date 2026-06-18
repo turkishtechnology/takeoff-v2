@@ -54,9 +54,7 @@ function PlaygroundDemo() {
       <div className="grid gap-2 rounded-xl border border-neutral-200 p-4">
         <Label id="passenger-name-label" htmlFor="passenger-name-field">Passenger name</Label>
         <Input id="passenger-name">
-          <Input.Container>
-            <Input.Field placeholder="Ada Lovelace" />
-          </Input.Container>
+          <Input.Field placeholder="Ada Lovelace" />
         </Input>
       </div>
     </div>
@@ -72,9 +70,7 @@ function FieldComparisonDemo() {
     <Field className="w-full max-w-90" required>
       <Field.Label>Passenger email</Field.Label>
       <Input>
-        <Input.Container>
-          <Input.Field type="email" placeholder="you@example.com" />
-        </Input.Container>
+        <Input.Field type="email" placeholder="you@example.com" />
       </Input>
       <Field.Description>
         Use Field when the label, helper text, invalid state, and control should be wired together.
@@ -158,9 +154,7 @@ better choice. If you do wire it manually, set the base id on `Input` and point
   Passenger name
 </Label>
 <Input id="passenger-name">
-  <Input.Container>
-    <Input.Field />
-  </Input.Container>
+  <Input.Field />
 </Input>
 ```
 

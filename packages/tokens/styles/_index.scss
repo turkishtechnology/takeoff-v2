@@ -159,6 +159,14 @@
   @include input.input;
 }
 
+.tk-input-strength {
+  @include input.input-strength;
+}
+
+.tk-input-chips {
+  @include input.input-chips;
+}
+
 .tk-label {
   @include label.label;
 }

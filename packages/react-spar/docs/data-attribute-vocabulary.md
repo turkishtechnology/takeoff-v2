@@ -93,16 +93,17 @@ table needs updating.
 
 ### Semantic
 
-| Attribute             | Component             | Meaning                                          |
-| --------------------- | --------------------- | ------------------------------------------------ |
-| `data-icon-only`      | Button                | No label content, only icon                      |
-| `data-rounded`        | Button                | Circular icon-only shape                         |
-| `data-underline`      | Button                | Label is underlined                              |
-| `data-icon-kind`      | Button, AccordionItem | Distinguishes string icons from ReactNode icons  |
-| `data-hide-arrows`    | Accordion root        | Auto-rendered arrows are hidden                  |
-| `data-arrow-position` | Accordion root        | Layout intent for trigger arrows                 |
-| `data-position`       | Radio root/item       | Indicator placement (`left` / `right`)           |
-| `data-spread`         | Radio root            | Items share available space along the group axis |
+| Attribute             | Component              | Meaning                                          |
+| --------------------- | ---------------------- | ------------------------------------------------ |
+| `data-icon-only`      | Button                 | No label content, only icon                      |
+| `data-rounded`        | Button                 | Circular icon-only shape                         |
+| `data-underline`      | Button                 | Label is underlined                              |
+| `data-icon-kind`      | Button, AccordionItem  | Distinguishes string icons from ReactNode icons  |
+| `data-hide-arrows`    | Accordion root         | Auto-rendered arrows are hidden                  |
+| `data-arrow-position` | Accordion root         | Layout intent for trigger arrows                 |
+| `data-position`       | Radio root/item        | Indicator placement (`left` / `right`)           |
+| `data-spread`         | Radio root             | Items share available space along the group axis |
+| `data-level`          | Input strength segment | Strength tier for filled password meter segments |
 
 ### Out-of-band attributes
 
@@ -162,3 +163,10 @@ should explain **why** the deviation exists so reviewers do not "fix" it later.
 - **Checked/unchecked state stays Spar-owned.** `Radio.Item` exposes Spar's
   `data-state="checked" | "unchecked"`; the wrapper recipe consumes that state
   for the indicator fill instead of mirroring selection in React.
+
+### Input
+
+- **`data-level` lives on strength segments, not on the Input root.** Filled
+  `.tk-input-strength-segment` nodes use `weak`, `medium`, or `strong`; empty
+  segments omit the attribute so the neutral segment style remains the base
+  state.

@@ -93,9 +93,7 @@ describe('Label', () => {
           Booking reference
         </Label>
         <Input id="booking-reference">
-          <Input.Container>
-            <Input.Field />
-          </Input.Container>
+          <Input.Field />
         </Input>
       </div>,
     );
