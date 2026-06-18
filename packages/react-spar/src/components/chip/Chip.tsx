@@ -32,7 +32,6 @@ export const Chip = (props: ChipProps) => {
     disabled = false,
     removable = false,
     onRemove,
-    removeLabel = DEFAULT_REMOVE_LABEL,
     children,
     ref,
     role,
@@ -117,7 +116,9 @@ export const Chip = (props: ChipProps) => {
     >
       {children != null && <span {...labelSlotAttrs}>{children}</span>}
       {removable && (
-        <button {...removeSlotAttrs} aria-label={removeLabel} disabled={disabled} onClick={handleRemoveClick} type="button">
+        // The icon-only remove control needs an accessible name. Default it,
+        // but let `slotProps.remove` (spread after) override via `aria-label`.
+        <button aria-label={DEFAULT_REMOVE_LABEL} {...removeSlotAttrs} disabled={disabled} onClick={handleRemoveClick} type="button">
           <PlaceholderClose />
         </button>
       )}

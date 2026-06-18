@@ -1,0 +1,294 @@
+---
+title: Alert
+description:
+  A contextual feedback surface for success, warning, informational, danger, and
+  neutral messages.
+sidebar_label: Alert
+sidebar_position: 1
+slug: /components/alert
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Alert,
+  Button,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const alertScope = { Alert, Button };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  return (
+    <Alert variant="info" appearance="outlined" className="max-w-160">
+      <Alert.Content>
+        <Alert.Title>Gate changed</Alert.Title>
+        <Alert.Description>
+          Your flight TK1983 now departs from gate A8.
+        </Alert.Description>
+      </Alert.Content>
+      <Alert.Actions>
+        <Button appearance="text">Details</Button>
+      </Alert.Actions>
+    </Alert>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const variantsDemo = String.raw`
+function VariantsDemo() {
+  const variants = ['success', 'warning', 'info', 'danger', 'neutral'];
+
+  return (
+    <div className="flex w-full max-w-160 flex-col gap-3">
+      {variants.map((variant) => (
+        <Alert key={variant} variant={variant}>
+          <Alert.Content>
+            <Alert.Title>{variant}</Alert.Title>
+            <Alert.Description>Contextual feedback message.</Alert.Description>
+          </Alert.Content>
+        </Alert>
+      ))}
+    </div>
+  );
+}
+
+render(<VariantsDemo />);
+`;
+
+export const appearancesDemo = String.raw`
+function AppearancesDemo() {
+  const appearances = ['filled', 'filledLight', 'outlined', 'gradient'];
+
+  return (
+    <div className="flex w-full max-w-160 flex-col gap-3">
+      {appearances.map((appearance) => (
+        <Alert key={appearance} variant="success" appearance={appearance}>
+          <Alert.Content>
+            <Alert.Title>{appearance}</Alert.Title>
+            <Alert.Description>Visual appearance preview.</Alert.Description>
+          </Alert.Content>
+        </Alert>
+      ))}
+    </div>
+  );
+}
+
+render(<AppearancesDemo />);
+`;
+
+export const actionsDemo = String.raw`
+function ActionsDemo() {
+  return (
+    <Alert variant="warning" appearance="outlined" className="max-w-160">
+      <Alert.Content>
+        <Alert.Title>Payment requires attention</Alert.Title>
+        <Alert.Description>
+          Update your billing method to avoid service interruption.
+        </Alert.Description>
+      </Alert.Content>
+      <Alert.Actions>
+        <Button size="small" variant="neutral" appearance="text">Later</Button>
+        <Button size="small" variant="warning">Update</Button>
+      </Alert.Actions>
+    </Alert>
+  );
+}
+
+render(<ActionsDemo />);
+`;
+
+export const closeDemo = String.raw`
+function CloseDemo() {
+  const [visible, setVisible] = React.useState(true);
+
+  return (
+    <div className="flex w-full max-w-160 flex-col gap-3">
+      {visible ? (
+        <Alert variant="info" appearance="outlined" onClose={() => setVisible(false)}>
+          <Alert.Content>
+            <Alert.Title>Dismissible alert</Alert.Title>
+            <Alert.Description>
+              Closing the alert calls onClose; the parent owns visibility.
+            </Alert.Description>
+          </Alert.Content>
+          <Alert.Close aria-label="Close alert" />
+        </Alert>
+      ) : (
+        <Button size="small" appearance="outlined" onClick={() => setVisible(true)}>
+          Show alert
+        </Button>
+      )}
+    </div>
+  );
+}
+
+render(<CloseDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Alert
+
+`Alert` displays contextual feedback inside the page layout. Leading status
+icons are intentionally omitted in this version; only `Alert.Close` ships a
+built-in icon. Status-icon anatomy can be added later without changing the root
+contract.
+
+## Usage
+
+```tsx
+import { Alert } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Alert variant="info" appearance="outlined">
+  <Alert.Content>
+    <Alert.Title>Gate changed</Alert.Title>
+    <Alert.Description>Your flight now departs from gate A8.</Alert.Description>
+  </Alert.Content>
+</Alert>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={alertScope}
+/>
+
+## Variants
+
+<LiveCode
+  code={variantsDemo}
+  noInline
+  previewMinHeight={360}
+  previewWrapper={ReactSparDemoRoot}
+  scope={alertScope}
+/>
+
+## Appearances
+
+<LiveCode
+  code={appearancesDemo}
+  noInline
+  previewMinHeight={300}
+  previewWrapper={ReactSparDemoRoot}
+  scope={alertScope}
+/>
+
+## Actions
+
+<LiveCode
+  code={actionsDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={alertScope}
+/>
+
+## Close
+
+<LiveCode
+  code={closeDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={alertScope}
+/>
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Alert {#alert}
+
+#### Props {#alert-props}
+
+| Name                            | Type                                                                                      | Default   | Description                                                                       |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -         | Alert content, usually Alert.Content plus optional Alert.Actions and Alert.Close. |
+| <ApiBadge label="variant" />    | <code><a href="#alert-td-alertvariant">AlertVariant</a></code>                            | 'neutral' | Defines the visual variant of the alert.                                          |
+| <ApiBadge label="appearance" /> | <code><a href="#alert-td-alertappearance">AlertAppearance</a></code>                      | 'filled'  | Visual appearance of the alert.                                                   |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -         | Per-slot extra classes.                                                           |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                                |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -         | Appends custom classes to the root slot of this part.                             |
+
+#### Events {#alert-events}
+
+| Name                         | Type                       | Default | Description                           |
+| ---------------------------- | -------------------------- | ------- | ------------------------------------- |
+| <ApiBadge label="onClose" /> | <code>() =&gt; void</code> | -       | Called when `Alert.Close` is clicked. |
+
+#### Data attributes {#alert-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                                           |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.             |
+| <ApiBadge label="data-variant" />               | Always       | Reflects the resolved `variant` prop for theme recipe scoping.    |
+| <ApiBadge label="data-type" />                  | Always       | Reflects the resolved `appearance` prop for theme recipe scoping. |
+
+### Alert.Content {#alert-content}
+
+#### Data attributes {#alert-content-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Alert.Title {#alert-title}
+
+#### Props {#alert-title-props}
+
+| Name                            | Type                                                                                      | Default | Description                                            |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------ |
+| <ApiBadge label="level" />      | <code>1 &#124; 2 &#124; 3 &#124; 4 &#124; 5 &#124; 6</code>                               | 5       | Semantic heading level used when `as` is not provided. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot extra classes.                                |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML-attribute overrides.                     |
+
+#### Data attributes {#alert-title-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Alert.Description {#alert-description}
+
+#### Data attributes {#alert-description-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Alert.Actions {#alert-actions}
+
+#### Data attributes {#alert-actions-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Alert.Close {#alert-close}
+
+#### Data attributes {#alert-close-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#alert-type-definitions}
+
+| Name                                                                            | Definition                                                                             |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| <span id="alert-td-alertvariant"><ApiBadge label="AlertVariant" /></span>       | <code>'success' &#124; 'warning' &#124; 'info' &#124; 'danger' &#124; 'neutral'</code> |
+| <span id="alert-td-alertappearance"><ApiBadge label="AlertAppearance" /></span> | <code>'filled' &#124; 'filledLight' &#124; 'outlined' &#124; 'gradient'</code>         |
+
+{/* api-tables:end */}

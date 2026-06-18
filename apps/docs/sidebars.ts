@@ -14,6 +14,7 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: [
         'components/accordion',
+        'components/alert',
         'components/badge',
         'components/breadcrumb',
         'components/button',

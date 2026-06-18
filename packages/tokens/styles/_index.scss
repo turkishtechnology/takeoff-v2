@@ -3,6 +3,7 @@
 @forward 'foundations';
 
 @use 'recipes/accordion';
+@use 'recipes/alert';
 @use 'recipes/badge';
 @use 'recipes/breadcrumb';
 @use 'recipes/button';
@@ -28,6 +29,30 @@
 
 .tk-button {
   @include button.button;
+}
+
+.tk-alert {
+  @include alert.alert;
+}
+
+.tk-alert-content {
+  @include alert.alert-content;
+}
+
+.tk-alert-title {
+  @include alert.alert-title;
+}
+
+.tk-alert-description {
+  @include alert.alert-description;
+}
+
+.tk-alert-actions {
+  @include alert.alert-actions;
+}
+
+.tk-alert-close {
+  @include alert.alert-close;
 }
 
 .tk-card {
