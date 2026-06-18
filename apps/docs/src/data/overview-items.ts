@@ -66,10 +66,10 @@ const overviewSeeds: OverviewSeed[] = [
     imageDark: '/img/overview/checkbox-dark.png',
   },
   {
-    title: 'Chips',
-    slug: 'Chips',
-    image: '/img/overview/chips.png',
-    imageDark: '/img/overview/chips-dark.png',
+    title: 'Chip',
+    slug: 'Chip',
+    image: '/img/overview/chip.png',
+    imageDark: '/img/overview/chip-dark.png',
   },
   {
     title: 'Color Picker',

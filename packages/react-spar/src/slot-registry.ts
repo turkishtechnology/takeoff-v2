@@ -4,6 +4,7 @@ import { BreadcrumbBase, BreadcrumbItemBase, BreadcrumbLinkBase, BreadcrumbListB
 import { ButtonBase } from './components/button/base';
 import { CardBase, CardBodyBase, CardDescriptionBase, CardFooterBase, CardHeaderBase, CardTitleBase } from './components/card/base';
 import { CheckboxBase } from './components/checkbox/base';
+import { ChipBase } from './components/chip/base';
 import {
   DialogBodyBase,
   DialogCloseBase,
@@ -69,6 +70,7 @@ export const slotClassRegistry = {
   cardBody: { slots: CardBodyBase.classes },
   cardFooter: { slots: CardFooterBase.classes },
   checkbox: { slots: CheckboxBase.classes },
+  chip: { slots: ChipBase.classes },
   dialogTrigger: { slots: DialogTriggerBase.classes },
   dialogOverlay: { slots: DialogOverlayBase.classes },
   dialogPanel: { slots: DialogPanelBase.classes },
