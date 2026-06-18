@@ -56,11 +56,6 @@ export interface ChipProps extends Omit<TakeoffHTMLProps<'span'>, 'children'> {
    * receives Backspace/Delete.
    */
   onRemove?: () => void;
-  /**
-   * Accessible label for the remove button.
-   * @defaultValue 'Remove'
-   */
-  removeLabel?: string;
   /** Chip content. */
   children?: ReactNode;
   /** Ref forwarded to the root span element. */
