@@ -13,9 +13,33 @@ import type { InputProps } from './types';
 export const Input = <T extends ElementType = 'div'>(props: InputProps<T>) => {
   const theme = useComponentTheme('Input');
   const fieldRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const [fieldNode, setFieldNode] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const [fieldValue, setFieldValue] = useState('');
   const [revealed, setRevealed] = useState(false);
   const toggleReveal = useCallback(() => setRevealed(value => !value), []);
+
+  // Registry of content-owning parts (e.g. Input.Chips) so Input.ClearButton can
+  // show when any of them has content and clear all of them in one click.
+  const clearablesRef = useRef(new Map<symbol, { hasContent: boolean; clear: () => void }>());
+  const [hasAuxContent, setHasAuxContent] = useState(false);
+  const setClearable = useCallback((id: symbol, entry: { hasContent: boolean; clear: () => void } | null) => {
+    if (entry) {
+      clearablesRef.current.set(id, entry);
+    } else {
+      clearablesRef.current.delete(id);
+    }
+    let any = false;
+    for (const value of clearablesRef.current.values()) {
+      if (value.hasContent) {
+        any = true;
+        break;
+      }
+    }
+    setHasAuxContent(any);
+  }, []);
+  const clearAux = useCallback(() => {
+    for (const value of clearablesRef.current.values()) value.clear();
+  }, []);
 
   // `data-invalid`, `data-disabled`, `data-required`, `data-readonly` are NOT
   // emitted here — Spar's Input root already sets them. `data-size` is
@@ -32,8 +56,21 @@ export const Input = <T extends ElementType = 'div'>(props: InputProps<T>) => {
   // (Prefix/Suffix/icons/etc.) don't re-render on every keystroke. fieldRef and
   // the setters are stable; only size/fieldValue/revealed drive a new identity.
   const contextValue = useMemo(
-    () => ({ size, fieldRef, fieldValue, setFieldValue, revealed, setRevealed, toggleReveal }),
-    [size, fieldValue, revealed, setFieldValue, setRevealed, toggleReveal],
+    () => ({
+      size,
+      fieldRef,
+      fieldNode,
+      setFieldNode,
+      fieldValue,
+      setFieldValue,
+      revealed,
+      setRevealed,
+      toggleReveal,
+      setClearable,
+      hasAuxContent,
+      clearAux,
+    }),
+    [size, fieldNode, fieldValue, revealed, setFieldValue, setRevealed, toggleReveal, setClearable, hasAuxContent, clearAux],
   );
 
   // Input.Strength is a sibling *below* the bordered row in the design, but it

@@ -18,7 +18,7 @@ type RenderedInputFieldProps = {
 
 export const InputField = <T extends ElementType = 'input'>(props: InputFieldProps<T>) => {
   const theme = useComponentTheme('InputField');
-  const { fieldRef, setFieldValue, revealed, setRevealed } = useInputOwnContext('Input.Field');
+  const { fieldRef, setFieldNode, setFieldValue, revealed, setRevealed } = useInputOwnContext('Input.Field');
 
   const { rootAttrs, rest } = composeRootAttrs(InputFieldBase, props as InputFieldProps<'input'>, theme);
 
@@ -28,6 +28,9 @@ export const InputField = <T extends ElementType = 'input'>(props: InputFieldPro
   const setFieldRef = useCallback(
     (node: HTMLInputElement | HTMLTextAreaElement | null) => {
       fieldRef.current = node;
+      // Also publish the node as reactive state so parts that subscribe to it
+      // (Input.Chips's keydown listener) re-bind when the field is replaced.
+      setFieldNode(node);
       if (node) setFieldValue(node.value);
       if (typeof ref === 'function') {
         ref(node);
@@ -35,7 +38,7 @@ export const InputField = <T extends ElementType = 'input'>(props: InputFieldPro
         (ref as RefObject<HTMLInputElement | HTMLTextAreaElement | null>).current = node;
       }
     },
-    [fieldRef, ref, setFieldValue],
+    [fieldRef, ref, setFieldNode, setFieldValue],
   );
 
   // Mirror the live DOM value into context when a controlled `value` (or

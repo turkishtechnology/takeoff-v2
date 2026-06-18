@@ -1,4 +1,4 @@
-import { useCallback, useEffect, type ElementType } from 'react';
+import { useCallback, useEffect, useRef, type ElementType } from 'react';
 import { useInputContext } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
@@ -14,7 +14,7 @@ import type { InputChipsProps } from './types';
 export const InputChips = <T extends ElementType = 'div'>(props: InputChipsProps<T>) => {
   const theme = useComponentTheme('InputChips');
   const { disabled, readOnly } = useInputContext();
-  const { size, fieldRef } = useInputOwnContext('Input.Chips');
+  const { size, fieldNode, setClearable } = useInputOwnContext('Input.Chips');
 
   const { rootAttrs, rest } = composeRootAttrs(InputChipsBase, props as InputChipsProps<'div'>, theme);
 
@@ -48,10 +48,25 @@ export const InputChips = <T extends ElementType = 'div'>(props: InputChipsProps
     setChips(chips.slice(0, -1));
   }, [chips, disabled, readOnly, setChips]);
 
+  // Register with the Input so a sibling Input.ClearButton stays visible while
+  // there are chips and clears them (along with the typed text) in one click.
+  const clearId = useRef(Symbol('input-chips')).current;
+  const clearAll = useCallback(() => {
+    if (disabled || readOnly) return;
+    setChips([]);
+  }, [disabled, readOnly, setChips]);
   useEffect(() => {
-    const field = fieldRef.current;
+    setClearable(clearId, { hasContent: chips.length > 0, clear: clearAll });
+    return () => setClearable(clearId, null);
+  }, [clearId, chips.length, clearAll, setClearable]);
+
+  useEffect(() => {
+    const field = fieldNode;
     if (!field) return;
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Ignore keystrokes while an IME composition is active — e.g. pressing
+      // Enter to confirm a CJK candidate must not commit a half-composed chip.
+      if (event.isComposing) return;
       if (event.key === 'Enter' || (separator && event.key === separator)) {
         if (!field.value.trim()) return;
         event.preventDefault();
@@ -63,7 +78,7 @@ export const InputChips = <T extends ElementType = 'div'>(props: InputChipsProps
     };
     field.addEventListener('keydown', handleKeyDown as EventListener);
     return () => field.removeEventListener('keydown', handleKeyDown as EventListener);
-  }, [fieldRef, addChip, removeLast, separator]);
+  }, [fieldNode, addChip, removeLast, separator]);
 
   return (
     <Component {...rendered} ref={ref} {...rootAttrs}>

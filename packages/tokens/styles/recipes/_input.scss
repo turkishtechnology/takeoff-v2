@@ -18,15 +18,10 @@
 
 @mixin input-size(
   $height,
-  $container-gap,
   $input-v-padding,
   $input-h-padding,
   $input-gap,
   $radius,
-  $label-v-padding,
-  $label-h-padding,
-  $label-size,
-  $label-line-height,
   $field-size,
   $field-line-height,
   $icon-size
@@ -417,15 +412,10 @@
   &[data-size='large'] {
     @include input-size(
       3rem,
-      var(--input-external-label-large-container-gap),
       var(--input-external-label-large-input-v-padding),
       var(--input-external-label-large-input-h-padding),
       var(--input-external-label-large-input-gap),
       var(--input-external-label-large-text-area-radius),
-      var(--input-external-label-large-label-v-padding),
-      var(--input-external-label-large-label-h-padding),
-      var(--desktop-label-l-size),
-      var(--desktop-label-l-line-height),
       var(--desktop-body-m-base-size),
       var(--desktop-body-m-base-line-height),
       var(--input-external-label-large-icon-size)
@@ -435,15 +425,10 @@
   &[data-size='base'] {
     @include input-size(
       2.5rem,
-      var(--input-external-label-base-div-gap),
       var(--input-external-label-base-input-v-padding),
       var(--input-external-label-base-input-h-padding),
       var(--input-external-label-base-input-gap),
       var(--input-external-label-base-text-area-radius),
-      var(--input-external-label-base-label-v-padding),
-      var(--input-external-label-base-label-h-padding),
-      var(--desktop-label-m-base-size),
-      var(--desktop-label-m-base-line-height),
       var(--desktop-body-s-size),
       var(--desktop-body-s-line-height),
       var(--input-external-label-base-icon-size)
@@ -453,15 +438,10 @@
   &[data-size='small'] {
     @include input-size(
       2rem,
-      var(--input-external-label-small-container-gap),
       var(--input-external-label-small-input-v-padding),
       var(--input-external-label-small-input-h-padding),
       var(--input-external-label-small-input-gap),
       var(--input-external-label-small-text-area-radius),
-      var(--input-external-label-small-label-v-padding),
-      var(--input-external-label-small-label-h-padding),
-      var(--desktop-label-s-size),
-      var(--desktop-label-s-line-height),
       var(--desktop-body-xs-size),
       var(--desktop-body-xs-line-height),
       var(--input-external-label-small-icon-size)
