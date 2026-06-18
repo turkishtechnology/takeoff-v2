@@ -8,6 +8,7 @@ import { Button } from '../button';
 
 import { InputDecrementBase } from './base';
 import { useInputOwnContext } from './context';
+import { stepField } from './dom';
 import type { InputDecrementProps } from './types';
 
 export const InputDecrement = <T extends ElementType = 'button'>(props: InputDecrementProps<T>) => {
@@ -19,18 +20,10 @@ export const InputDecrement = <T extends ElementType = 'button'>(props: InputDec
 
   const { children, onClick, ref, 'type': _type, 'disabled': _disabled, 'aria-label': ariaLabel = 'Decrement value', ...buttonProps } = rest;
 
-  const decrement = () => {
-    const field = fieldRef.current;
-    if (!(field instanceof HTMLInputElement)) return;
-    field.stepDown();
-    field.dispatchEvent(new Event('input', { bubbles: true }));
-    field.focus();
-  };
-
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);
     if (event.defaultPrevented) return;
-    decrement();
+    stepField(fieldRef.current, 'down');
   };
 
   return (

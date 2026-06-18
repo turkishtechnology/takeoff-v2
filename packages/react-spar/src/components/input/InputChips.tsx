@@ -8,17 +8,8 @@ import { Chip } from '../chip';
 
 import { InputChipsBase } from './base';
 import { useInputOwnContext } from './context';
+import { setNativeValue } from './dom';
 import type { InputChipsProps } from './types';
-
-// Mirrors InputClearButton's native value setter so committing/clearing a tag
-// goes through React's input pipeline (keeps the scalar fieldValue mirror in
-// sync for any sibling ClearButton/Strength).
-const clearFieldValue = (field: HTMLInputElement | HTMLTextAreaElement) => {
-  const prototype = field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
-  const valueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set;
-  valueSetter?.call(field, '');
-  field.dispatchEvent(new Event('input', { bubbles: true }));
-};
 
 export const InputChips = <T extends ElementType = 'div'>(props: InputChipsProps<T>) => {
   const theme = useComponentTheme('InputChips');
@@ -65,7 +56,7 @@ export const InputChips = <T extends ElementType = 'div'>(props: InputChipsProps
         if (!field.value.trim()) return;
         event.preventDefault();
         addChip(field.value);
-        clearFieldValue(field);
+        setNativeValue(field, '');
       } else if (event.key === 'Backspace' && field.value === '') {
         removeLast();
       }

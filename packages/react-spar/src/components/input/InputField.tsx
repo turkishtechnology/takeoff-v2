@@ -18,7 +18,7 @@ type RenderedInputFieldProps = {
 
 export const InputField = <T extends ElementType = 'input'>(props: InputFieldProps<T>) => {
   const theme = useComponentTheme('InputField');
-  const { fieldRef, setFieldValue, revealed } = useInputOwnContext('Input.Field');
+  const { fieldRef, setFieldValue, revealed, setRevealed } = useInputOwnContext('Input.Field');
 
   const { rootAttrs, rest } = composeRootAttrs(InputFieldBase, props as InputFieldProps<'input'>, theme);
 
@@ -38,10 +38,20 @@ export const InputField = <T extends ElementType = 'input'>(props: InputFieldPro
     [fieldRef, ref, setFieldValue],
   );
 
+  // Mirror the live DOM value into context when a controlled `value` (or
+  // `defaultValue`) changes from the outside — typing is already mirrored by
+  // handleInput/handleChange, and the mount sync runs in setFieldRef, so this
+  // only needs to re-run when the externally-supplied value changes (not on
+  // every render).
   useEffect(() => {
     const node = fieldRef.current;
     if (node) setFieldValue(node.value);
-  });
+  }, [fieldRef, setFieldValue, spar.value, spar.defaultValue]);
+
+  // `revealed` lives on the shared Input context, so reset it when this field
+  // unmounts — otherwise a later password field would mount already revealed
+  // and leak its value as plain text.
+  useEffect(() => () => setRevealed(false), [setRevealed]);
 
   const handleInput = (event: FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     onInput?.(event);

@@ -8,6 +8,7 @@ import { Button } from '../button';
 
 import { InputIncrementBase } from './base';
 import { useInputOwnContext } from './context';
+import { stepField } from './dom';
 import type { InputIncrementProps } from './types';
 
 export const InputIncrement = <T extends ElementType = 'button'>(props: InputIncrementProps<T>) => {
@@ -19,18 +20,10 @@ export const InputIncrement = <T extends ElementType = 'button'>(props: InputInc
 
   const { children, onClick, ref, 'type': _type, 'disabled': _disabled, 'aria-label': ariaLabel = 'Increment value', ...buttonProps } = rest;
 
-  const increment = () => {
-    const field = fieldRef.current;
-    if (!(field instanceof HTMLInputElement)) return;
-    field.stepUp();
-    field.dispatchEvent(new Event('input', { bubbles: true }));
-    field.focus();
-  };
-
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);
     if (event.defaultPrevented) return;
-    increment();
+    stepField(fieldRef.current, 'up');
   };
 
   return (

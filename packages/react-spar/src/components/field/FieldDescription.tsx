@@ -17,7 +17,8 @@ export const FieldDescription = <T extends ElementType = 'div'>(props: FieldDesc
 
   // The leading info icon is a wrapper-owned convention matching the design
   // system's helper-text anatomy, so it is auto-rendered (decorative, hidden
-  // from assistive tech) ahead of the description text.
+  // from assistive tech) ahead of the description text. It is gated on having
+  // content so an empty/childless description doesn't paint a stray icon.
   const iconAttrs = buildSlotAttrs(FieldDescriptionBase.getSlotProps('icon'), 'icon' as FieldDescriptionSlot, {
     themeSlotProps: theme?.slotProps,
     themeClassNames: theme?.classNames,
@@ -25,11 +26,15 @@ export const FieldDescription = <T extends ElementType = 'div'>(props: FieldDesc
     instanceClassNames: props.classNames,
   });
 
+  const hasContent = children != null && children !== '';
+
   return (
     <SparFieldDescription {...spar} ref={ref} {...rootAttrs}>
-      <span {...iconAttrs} aria-hidden="true">
-        <PlaceholderInfo />
-      </span>
+      {hasContent && (
+        <span {...iconAttrs} aria-hidden="true">
+          <PlaceholderInfo />
+        </span>
+      )}
       {children}
     </SparFieldDescription>
   );

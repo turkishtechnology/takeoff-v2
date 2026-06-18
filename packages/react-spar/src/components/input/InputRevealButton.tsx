@@ -19,13 +19,17 @@ export const InputRevealButton = <T extends ElementType = 'button'>(props: Input
 
   const { children, onClick, ref, 'type': _type, 'aria-label': _ariaLabel, 'aria-pressed': _ariaPressed, ...buttonProps } = rest;
 
+  // Re-hide the password on form submit. Re-running on every `revealed` change
+  // re-resolves the form, so a form/field that mounts after this button (or
+  // remounts) still gets the listener, and we only listen while revealed.
   useEffect(() => {
+    if (!revealed) return;
     const form = fieldRef.current?.form;
     if (!form) return;
     const handleSubmit = () => setRevealed(false);
     form.addEventListener('submit', handleSubmit);
     return () => form.removeEventListener('submit', handleSubmit);
-  }, [fieldRef, setRevealed]);
+  }, [revealed, fieldRef, setRevealed]);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);

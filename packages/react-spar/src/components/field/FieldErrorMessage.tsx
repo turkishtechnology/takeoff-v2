@@ -16,7 +16,8 @@ export const FieldErrorMessage = <T extends ElementType = 'div'>(props: FieldErr
   const { children, ref, ...spar } = rest;
 
   // Mirrors Field.Description: a decorative leading error icon precedes the
-  // message text, matching the design system's helper-text anatomy.
+  // message text, matching the design system's helper-text anatomy. Gated on
+  // having content so an invalid field with an empty message shows no lone icon.
   const iconAttrs = buildSlotAttrs(FieldErrorMessageBase.getSlotProps('icon'), 'icon' as FieldErrorMessageSlot, {
     themeSlotProps: theme?.slotProps,
     themeClassNames: theme?.classNames,
@@ -24,11 +25,15 @@ export const FieldErrorMessage = <T extends ElementType = 'div'>(props: FieldErr
     instanceClassNames: props.classNames,
   });
 
+  const hasContent = children != null && children !== '';
+
   return (
     <SparFieldErrorMessage {...spar} ref={ref} {...rootAttrs}>
-      <span {...iconAttrs} aria-hidden="true">
-        <PlaceholderError />
-      </span>
+      {hasContent && (
+        <span {...iconAttrs} aria-hidden="true">
+          <PlaceholderError />
+        </span>
+      )}
       {children}
     </SparFieldErrorMessage>
   );

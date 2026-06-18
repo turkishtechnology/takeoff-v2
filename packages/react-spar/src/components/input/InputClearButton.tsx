@@ -8,13 +8,8 @@ import { Button } from '../button';
 
 import { InputClearButtonBase } from './base';
 import { useInputOwnContext } from './context';
+import { setNativeValue } from './dom';
 import type { InputClearButtonProps } from './types';
-
-const clearNativeValue = (field: HTMLInputElement | HTMLTextAreaElement) => {
-  const prototype = field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
-  const valueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set;
-  valueSetter?.call(field, '');
-};
 
 export const InputClearButton = <T extends ElementType = 'button'>(props: InputClearButtonProps<T>) => {
   const theme = useComponentTheme('InputClearButton');
@@ -30,8 +25,7 @@ export const InputClearButton = <T extends ElementType = 'button'>(props: InputC
   const clear = () => {
     const field = fieldRef.current;
     if (!field) return;
-    clearNativeValue(field);
-    field.dispatchEvent(new Event('input', { bubbles: true }));
+    setNativeValue(field, '');
     setFieldValue('');
     onClear?.();
     field.focus();
