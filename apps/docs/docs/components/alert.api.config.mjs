@@ -101,7 +101,7 @@ export default {
       displayName: 'Alert.Close',
       headingBase: 'alert-close',
       propOverrides: {
-        children: childrenOverride('Close control content. Defaults to "Close".'),
+        children: childrenOverride('Close control content. Defaults to a built-in close icon; pass `aria-label` to name it.'),
         className: classNameOverride,
       },
       dataAttributes: [dataSlotRoot],

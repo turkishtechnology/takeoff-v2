@@ -117,7 +117,7 @@ function CloseDemo() {
               Closing the alert calls onClose; the parent owns visibility.
             </Alert.Description>
           </Alert.Content>
-          <Alert.Close aria-label="Close alert">✕</Alert.Close>
+          <Alert.Close aria-label="Close alert" />
         </Alert>
       ) : (
         <Button size="small" appearance="outlined" onClick={() => setVisible(true)}>
@@ -135,9 +135,10 @@ render(<CloseDemo />);
 
 # Alert
 
-`Alert` displays contextual feedback inside the page layout. The first version
-is intentionally icon-free; icon anatomy can be added later without changing the
-root contract.
+`Alert` displays contextual feedback inside the page layout. Leading status
+icons are intentionally omitted in this version; only `Alert.Close` ships a
+built-in icon. Status-icon anatomy can be added later without changing the root
+contract.
 
 ## Usage
 

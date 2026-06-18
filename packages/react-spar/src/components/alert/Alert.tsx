@@ -18,7 +18,11 @@ export const Alert = <T extends ElementType = 'div'>(props: AlertProps<T>) => {
     }),
   });
 
-  const { as, variant: _variant, appearance: _appearance, onClose, children, ref, role = 'alert', ...alertProps } = rest;
+  // `role="status"` (polite live region) is the safer default: most alerts are
+  // present on initial render, where `role="alert"`'s assertive announcement is
+  // both unnecessary and noisy on re-render. Consumers surfacing a genuinely
+  // urgent, dynamically-inserted message can pass `role="alert"`.
+  const { as, variant: _variant, appearance: _appearance, onClose, children, ref, role = 'status', ...alertProps } = rest;
   const Component = (as ?? 'div') as ElementType;
 
   return (
