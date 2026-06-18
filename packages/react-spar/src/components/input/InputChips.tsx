@@ -94,7 +94,11 @@ export const InputChips = <T extends ElementType = 'div'>(props: InputChipsProps
           removable={!disabled && !readOnly}
           disabled={disabled || readOnly}
           autoDismiss={false}
-          removeLabel={`Remove ${chip}`}
+          // Give each remove button a tag-specific accessible name (e.g.
+          // "Remove apple"). Chip exposes no `removeLabel` prop; its remove
+          // <button> reads `aria-label` from `slotProps.remove`, which is
+          // spread after the default so it overrides it.
+          slotProps={{ remove: { 'aria-label': `Remove ${chip}` } }}
           onRemove={() => removeChip(index)}
         >
           {chip}
