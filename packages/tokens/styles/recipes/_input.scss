@@ -16,16 +16,7 @@
 // Size mixin — applies size-scoped tokens to the bordered input row
 // ---------------------------------------------------------------------------
 
-@mixin input-size(
-  $height,
-  $input-v-padding,
-  $input-h-padding,
-  $input-gap,
-  $radius,
-  $field-size,
-  $field-line-height,
-  $icon-size
-) {
+@mixin input-size($height, $input-v-padding, $input-h-padding, $input-gap, $radius, $field-size, $field-line-height, $icon-size) {
   height: $height;
   gap: $input-gap;
   padding: $input-v-padding $input-h-padding;
@@ -354,21 +345,26 @@
     }
   }
 
-  // Counter look (Core mode='counter'): Decrement/Increment placed as direct
-  // children flanking the field — outside Input.Stepper — keep the Button text
-  // variant's brand colour instead of the neutral action-icon colour, matching
-  // takeoff-ui. The value is centred between them. No mode/data-* flag needed.
-  & > .tk-input-decrement.tk-button[data-type='text'],
-  & > .tk-input-increment.tk-button[data-type='text'] {
-    color: var(--primary-base);
-
-    .tk-button-content {
+  // Counter look (Core mode='counter'): opt in with `data-layout="counter"` on
+  // the Input root, then place Input.Decrement / Input.Increment flanking
+  // Input.Field. The brand-coloured buttons flank a centred value, matching
+  // takeoff-ui. This replaces the former DOM-placement recipe (which keyed on
+  // Decrement/Increment being direct children outside Input.Stepper); the look
+  // no longer depends on child arrangement, so wrapping or reordering the
+  // controls can't silently break it.
+  &[data-layout='counter'] {
+    .tk-input-decrement.tk-button[data-type='text'],
+    .tk-input-increment.tk-button[data-type='text'] {
       color: var(--primary-base);
-    }
-  }
 
-  &:has(> .tk-input-decrement):has(> .tk-input-increment) .tk-input-field {
-    text-align: center;
+      .tk-button-content {
+        color: var(--primary-base);
+      }
+    }
+
+    .tk-input-field {
+      text-align: center;
+    }
   }
 
   .tk-input-stepper {

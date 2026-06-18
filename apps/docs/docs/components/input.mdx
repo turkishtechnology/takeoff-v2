@@ -276,7 +276,7 @@ function CounterDemo() {
     <div className="w-full max-w-90">
       <Field>
         <Field.Label>Passengers</Field.Label>
-        <Input>
+        <Input data-layout="counter">
           <Input.Decrement aria-label="Remove passenger">−</Input.Decrement>
           <Input.Field type="number" defaultValue={2} inputMode="numeric" />
           <Input.Increment aria-label="Add passenger">+</Input.Increment>
@@ -480,10 +480,10 @@ clamping on blur).
 
 ## Counter
 
-The counter is the same stepper buttons placed as **direct children flanking**
-`Input.Field` (outside `Input.Stepper`). In that position the recipe centers the
-value and paints the buttons in the brand colour, matching the design system's
-counter — no `mode` prop is involved.
+The counter layout centers the value between brand-coloured buttons. Select it
+with `data-layout="counter"` on the `Input` root and place `Input.Decrement` /
+`Input.Increment` flanking `Input.Field`. The recipe keys on the explicit
+attribute, so the look no longer depends on where the buttons sit in the DOM.
 
 <LiveCode
   code={counterDemo}
@@ -492,6 +492,11 @@ counter — no `mode` prop is involved.
   previewWrapper={ReactSparDemoRoot}
   scope={inputScope}
 />
+
+> **Migration:** earlier the counter look was selected purely by DOM placement —
+> `Input.Decrement` / `Input.Increment` as direct children flanking the field.
+> That detection is gone; add `data-layout="counter"` to the `Input` root to opt
+> in. Without it the same markup now renders as a plain left-aligned field.
 
 ## Chips
 
@@ -581,14 +586,15 @@ for primitive behavior.
 
 #### Data attributes {#input-data-attributes}
 
-| Attribute                                       | Applied when             | Purpose                                                                     |
-| ----------------------------------------------- | ------------------------ | --------------------------------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                   | Stable selector for wrapper styling on the root slot.                       |
-| <ApiBadge label="data-size" />                  | Always                   | Reflects the resolved `size` prop so theme recipes can scope size variants. |
-| <ApiBadge label="data-invalid" />               | When `invalid` is true.  | Theme hook for the invalid state. Emitted by Spar Input on the root.        |
-| <ApiBadge label="data-disabled" />              | When `disabled` is true. | Theme hook for the disabled state. Emitted by Spar Input.                   |
-| <ApiBadge label="data-required" />              | When `required` is true. | Theme hook used by the parent `Field` to auto-render its required asterisk. |
-| <ApiBadge label="data-readonly" />              | When `readOnly` is true. | Theme hook for the read-only state. Emitted by Spar Input.                  |
+| Attribute                                            | Applied when              | Purpose                                                                                                                                                  |
+| ---------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />      | Always                    | Stable selector for wrapper styling on the root slot.                                                                                                    |
+| <ApiBadge label="data-size" />                       | Always                    | Reflects the resolved `size` prop so theme recipes can scope size variants.                                                                              |
+| <ApiBadge label="data-layout=&quot;counter&quot;" /> | When set by the consumer. | Opts into the counter look (centered value, brand-coloured flanking `Input.Decrement` / `Input.Increment`). Replaces the former DOM-placement detection. |
+| <ApiBadge label="data-invalid" />                    | When `invalid` is true.   | Theme hook for the invalid state. Emitted by Spar Input on the root.                                                                                     |
+| <ApiBadge label="data-disabled" />                   | When `disabled` is true.  | Theme hook for the disabled state. Emitted by Spar Input.                                                                                                |
+| <ApiBadge label="data-required" />                   | When `required` is true.  | Theme hook used by the parent `Field` to auto-render its required asterisk.                                                                              |
+| <ApiBadge label="data-readonly" />                   | When `readOnly` is true.  | Theme hook for the read-only state. Emitted by Spar Input.                                                                                               |
 
 ### Input.Field {#input-field}
 
