@@ -1,5 +1,4 @@
 import { Input as InputRoot } from './Input';
-import { InputChip } from './InputChip';
 import { InputChips } from './InputChips';
 import { InputClearButton } from './InputClearButton';
 import { InputDecrement } from './InputDecrement';
@@ -28,14 +27,11 @@ const Input = Object.assign(InputRoot, {
   Decrement: InputDecrement,
   Increment: InputIncrement,
   Chips: InputChips,
-  Chip: InputChip,
 });
 
 export { Input };
 
 export type {
-  InputChipProps,
-  InputChipSlot,
   InputChipsProps,
   InputChipsSlot,
   InputClearButtonProps,

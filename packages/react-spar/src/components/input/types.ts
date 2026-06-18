@@ -19,7 +19,6 @@ export type InputStepperSlot = 'root';
 export type InputDecrementSlot = 'root';
 export type InputIncrementSlot = 'root';
 export type InputChipsSlot = 'root';
-export type InputChipSlot = 'root' | 'label' | 'remove';
 
 /**
  * Visual + slot props owned by takeoff-v2 for the Input root. The `size`
@@ -211,25 +210,12 @@ export interface InputChipsOwnProps {
 }
 
 /**
- * Chips region rendered next to `Input.Field`. Owns the tag array and attaches
- * its key handling (Enter to commit, Backspace to remove the last tag) to the
- * shared field ref so `Input.Field` stays generic.
+ * Chips region rendered next to `Input.Field`. Owns the tag array, renders each
+ * committed tag via the shared `Chip` token, and attaches its key handling
+ * (Enter to commit, Backspace to remove the last tag) to the shared field ref
+ * so `Input.Field` stays generic.
  */
 export type InputChipsProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, InputChipsOwnProps>;
-
-export interface InputChipOwnProps {
-  /** Called when the remove control is activated. */
-  onRemove?: () => void;
-  /** Render the remove control. @defaultValue true */
-  removable?: boolean;
-  /** Per-slot class name overrides. */
-  classNames?: ClassNamesMap<InputChipSlot>;
-  /** Per-slot HTML attribute overrides. */
-  slotProps?: SlotPropsMap<InputChipSlot>;
-  children?: ReactNode;
-}
-
-export type InputChipProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, InputChipOwnProps>;
 
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {
@@ -247,6 +233,5 @@ declare module '../../core/theme' {
     InputDecrement: import('../../core').ComponentThemeConfig<InputDecrementProps, InputDecrementSlot>;
     InputIncrement: import('../../core').ComponentThemeConfig<InputIncrementProps, InputIncrementSlot>;
     InputChips: import('../../core').ComponentThemeConfig<InputChipsProps, InputChipsSlot>;
-    InputChip: import('../../core').ComponentThemeConfig<InputChipProps, InputChipSlot>;
   }
 }

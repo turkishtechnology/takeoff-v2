@@ -31,7 +31,6 @@ import {
 import { FieldBase, FieldDescriptionBase, FieldErrorMessageBase, FieldLabelBase } from './components/field/base';
 import {
   InputBase,
-  InputChipBase,
   InputChipsBase,
   InputClearButtonBase,
   InputDecrementBase,
@@ -124,7 +123,6 @@ export const slotClassRegistry = {
   inputDecrement: { slots: InputDecrementBase.classes },
   inputIncrement: { slots: InputIncrementBase.classes },
   inputChips: { slots: InputChipsBase.classes },
-  inputChip: { slots: InputChipBase.classes },
   select: { slots: SelectBase.classes },
   selectTrigger: { slots: SelectTriggerBase.classes },
   selectContent: { slots: SelectContentBase.classes },

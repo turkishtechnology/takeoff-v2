@@ -261,19 +261,5 @@ export default {
       },
       dataAttributes: [dataSlotRoot],
     },
-    {
-      sourceFile: inputTypesFile,
-      typeName: 'InputChipProps',
-      displayName: 'Input.Chip',
-      headingBase: 'input-chip',
-      prependPropNames: ['children'],
-      appendPropNames: ['className'],
-      skipPropNames: ['ref'],
-      propOverrides: {
-        children: childrenOverride('The tag label. `Input.Chips` renders one chip per value; the remove button is auto-rendered.'),
-        className: classNameOverride,
-      },
-      dataAttributes: [dataSlotRoot],
-    },
   ],
 };

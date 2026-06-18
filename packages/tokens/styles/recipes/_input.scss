@@ -121,59 +121,15 @@
 }
 
 // ---------------------------------------------------------------------------
-// Chips mixins — apply to .tk-input-chips (region) and .tk-input-chip (token).
-// The region is display:contents so committed tags become flex children of the
-// bordered row and wrap inline with the field. The token matches takeoff-ui's
-// default chip (neutral / outlined / small) with a focusable remove button.
+// Chips region mixin — apply to .tk-input-chips. The region is display:contents
+// so the committed tags (rendered as shared .tk-chip tokens) become flex
+// children of the bordered row and wrap inline with the field. The tag token
+// styling itself lives in the Chip recipe (_chip.scss); Input.Chips renders it
+// in the neutral / outlined parity look.
 // ---------------------------------------------------------------------------
 
 @mixin input-chips {
   display: contents;
-}
-
-@mixin input-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xxs);
-  flex-shrink: 0;
-  max-width: 100%;
-  box-sizing: border-box;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-m-base);
-  padding-block: var(--spacing-xxs);
-  padding-inline: var(--spacing-xs);
-  color: var(--text-darkest);
-  background-color: transparent;
-  font-size: var(--desktop-body-xs-size);
-  line-height: 1;
-  user-select: none;
-
-  .tk-input-chip-label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .tk-input-chip-remove {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--icon-base);
-    font-size: 1.25em;
-    line-height: 1;
-    cursor: pointer;
-    transition: color 0.15s ease-in-out;
-
-    &:hover {
-      color: var(--icon-darkest);
-    }
-
-    @include mixins.focus-ring(var(--neutral-focus));
-  }
 }
 
 // ---------------------------------------------------------------------------

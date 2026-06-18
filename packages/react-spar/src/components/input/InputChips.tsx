@@ -4,10 +4,10 @@ import { useInputContext } from '@turkish-technology/spar';
 import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 import { useControllableState } from '../../hooks';
+import { Chip } from '../chip';
 
 import { InputChipsBase } from './base';
 import { useInputOwnContext } from './context';
-import { InputChip } from './InputChip';
 import type { InputChipsProps } from './types';
 
 // Mirrors InputClearButton's native value setter so committing/clearing a tag
@@ -23,7 +23,7 @@ const clearFieldValue = (field: HTMLInputElement | HTMLTextAreaElement) => {
 export const InputChips = <T extends ElementType = 'div'>(props: InputChipsProps<T>) => {
   const theme = useComponentTheme('InputChips');
   const { disabled, readOnly } = useInputContext();
-  const { fieldRef } = useInputOwnContext('Input.Chips');
+  const { size, fieldRef } = useInputOwnContext('Input.Chips');
 
   const { rootAttrs, rest } = composeRootAttrs(InputChipsBase, props as InputChipsProps<'div'>, theme);
 
@@ -77,9 +77,22 @@ export const InputChips = <T extends ElementType = 'div'>(props: InputChipsProps
   return (
     <Component {...rendered} ref={ref} {...rootAttrs}>
       {chips.map((chip, index) => (
-        <InputChip key={`${chip}-${index}`} onRemove={() => removeChip(index)}>
+        // Render the shared Chip token in the input's neutral/outlined parity
+        // look. `autoDismiss={false}` because Input.Chips owns the tag array —
+        // removal must flow through onRemove into our state, not the chip's own.
+        <Chip
+          key={`${chip}-${index}`}
+          appearance="outlined"
+          variant="neutral"
+          size={size}
+          removable={!disabled && !readOnly}
+          disabled={disabled || readOnly}
+          autoDismiss={false}
+          removeLabel={`Remove ${chip}`}
+          onRemove={() => removeChip(index)}
+        >
           {chip}
-        </InputChip>
+        </Chip>
       ))}
       {children}
     </Component>

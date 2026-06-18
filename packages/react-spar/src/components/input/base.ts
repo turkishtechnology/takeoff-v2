@@ -1,7 +1,6 @@
 import { createComponentBase } from '../../core';
 
 import type {
-  InputChipProps,
   InputChipsProps,
   InputClearButtonProps,
   InputDecrementProps,
@@ -109,16 +108,10 @@ export const InputIncrementBase = createComponentBase<InputIncrementProps, 'root
   classes: { root: 'tk-input-increment' },
 });
 
-// @archetype react-enhancement — no Spar equivalent; owns internal chips array state
+// @archetype react-enhancement — no Spar equivalent; owns internal chips array
+// state and renders each committed tag via the shared Chip token.
 export const InputChipsBase = createComponentBase<InputChipsProps, 'root'>({
   name: 'InputChips',
   slots: ['root'] as const,
   classes: { root: 'tk-input-chips' },
-});
-
-// @archetype react-enhancement — no Spar equivalent; removable tag token
-export const InputChipBase = createComponentBase<InputChipProps, 'root' | 'label' | 'remove'>({
-  name: 'InputChip',
-  slots: ['root', 'label', 'remove'] as const,
-  classes: { root: 'tk-input-chip', label: 'tk-input-chip-label', remove: 'tk-input-chip-remove' },
 });
