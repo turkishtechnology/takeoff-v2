@@ -19,6 +19,7 @@ const sidebars: SidebarsConfig = {
         'components/button',
         'components/card',
         'components/checkbox',
+        'components/chip',
         'components/drawer',
         'components/dialog',
         'components/input',
