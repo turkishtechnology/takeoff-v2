@@ -405,14 +405,14 @@ outside the component.
 
 #### Props {#dialog-overlay-props}
 
-| Name                            | Type                                                                                | Default       | Description                                                                |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
-| <ApiBadge label="invisible" />  | <code>boolean</code>                                                                | false         | When true, the overlay is rendered but visually invisible.                 |
-| <ApiBadge label="intensity" />  | <code><a href="#dialog-td-dialogoverlayintensity">DialogOverlayIntensity</a></code> | 'base'        | Overlay backdrop intensity.                                                |
-| <ApiBadge label="blur" />       | <code>boolean</code>                                                                | false         | Applies backdrop blur on the overlay.                                      |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             |                                                                            |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             |                                                                            |
-| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
+| Name                            | Type                                                                                      | Default       | Description                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="invisible" />  | <code>boolean</code>                                                                      | false         | When true, the overlay is rendered but visually invisible.                 |
+| <ApiBadge label="intensity" />  | <code><a href="#dialog-td-dialogoverlayintensity">DialogOverlayIntensity</a></code>       | 'base'        | Overlay backdrop intensity.                                                |
+| <ApiBadge label="blur" />       | <code>boolean</code>                                                                      | false         | Applies backdrop blur on the overlay.                                      |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -             |                                                                            |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             |                                                                            |
+| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                      | document.body | Portal container element. Content is portaled to document.body by default. |
 
 #### Data attributes {#dialog-overlay-data-attributes}
 
@@ -428,16 +428,16 @@ outside the component.
 
 #### Props {#dialog-panel-props}
 
-| Name                              | Type                                                                                | Default       | Description                                                                |
-| --------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
-| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             |                                                                            |
-| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             |                                                                            |
-| <ApiBadge label="role" />         | <code>AriaRole</code>                                                               | 'dialog'      | ARIA role for dialog type                                                  |
-| <ApiBadge label="container" />    | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
-| <ApiBadge label="trapFocus" />    | <code>boolean</code>                                                                | true          | Enable focus trapping                                                      |
-| <ApiBadge label="restoreFocus" /> | <code>boolean</code>                                                                | true          | Restore focus on close                                                     |
-| <ApiBadge label="initialFocus" /> | <code>HTMLElement &#124; (() =&gt; HTMLElement)</code>                              | -             | Element to focus on open                                                   |
-| <ApiBadge label="finalFocus" />   | <code>HTMLElement &#124; (() =&gt; HTMLElement)</code>                              | -             | Element to focus on close                                                  |
+| Name                              | Type                                                                                      | Default       | Description                                                                |
+| --------------------------------- | ----------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -             |                                                                            |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             |                                                                            |
+| <ApiBadge label="role" />         | <code>React.AriaRole</code>                                                               | 'dialog'      | ARIA role for dialog type                                                  |
+| <ApiBadge label="container" />    | <code>HTMLElement &#124; null</code>                                                      | document.body | Portal container element. Content is portaled to document.body by default. |
+| <ApiBadge label="trapFocus" />    | <code>boolean</code>                                                                      | true          | Enable focus trapping                                                      |
+| <ApiBadge label="restoreFocus" /> | <code>boolean</code>                                                                      | true          | Restore focus on close                                                     |
+| <ApiBadge label="initialFocus" /> | <code>HTMLElement &#124; (() =&gt; HTMLElement)</code>                                    | -             | Element to focus on open                                                   |
+| <ApiBadge label="finalFocus" />   | <code>HTMLElement &#124; (() =&gt; HTMLElement)</code>                                    | -             | Element to focus on close                                                  |
 
 #### Events {#dialog-panel-events}
 
@@ -462,11 +462,11 @@ outside the component.
 
 #### Props {#dialog-header-props}
 
-| Name                            | Type                                                                                | Default | Description         |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
-| <ApiBadge label="headerType" /> | <code><a href="#dialog-td-dialogheadertype">DialogHeaderType</a></code>             | 'basic' | Type of the header. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
+| Name                            | Type                                                                                      | Default | Description         |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ------------------- |
+| <ApiBadge label="headerType" /> | <code><a href="#dialog-td-dialogheadertype">DialogHeaderType</a></code>                   | 'basic' | Type of the header. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       |                     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
 
 #### Data attributes {#dialog-header-data-attributes}
 
@@ -479,11 +479,11 @@ outside the component.
 
 #### Props {#dialog-title-props}
 
-| Name                            | Type                                                                                | Default | Description         |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
-| <ApiBadge label="level" />      | <code>number</code>                                                                 | 5       | Heading level (1-6) |
+| Name                            | Type                                                                                      | Default | Description         |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ------------------- |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       |                     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
+| <ApiBadge label="level" />      | <code>number</code>                                                                       | 5       | Heading level (1-6) |
 
 #### Data attributes {#dialog-title-data-attributes}
 
@@ -511,11 +511,11 @@ outside the component.
 
 #### Props {#dialog-footer-props}
 
-| Name                            | Type                                                                                | Default | Description         |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------- |
-| <ApiBadge label="footerType" /> | <code><a href="#dialog-td-dialogfootertype">DialogFooterType</a></code>             | 'basic' | Type of the footer. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       |                     |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
+| Name                            | Type                                                                                      | Default | Description         |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ------------------- |
+| <ApiBadge label="footerType" /> | <code><a href="#dialog-td-dialogfootertype">DialogFooterType</a></code>                   | 'basic' | Type of the footer. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       |                     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       |                     |
 
 #### Data attributes {#dialog-footer-data-attributes}
 
