@@ -17,13 +17,14 @@ import {
   Popover,
   Radio,
   Select,
+  Spinner,
   Switch,
   Tabs,
   TakeoffSparProvider,
   Tooltip,
 } from '@takeoff-ui/react-spar';
 
-export { Accordion, Alert, Badge, Breadcrumb, Button, Card, Checkbox, Chip, Dialog, Drawer, Field, Input, Label, Popover, Radio, Select, Switch, Tabs, Tooltip };
+export { Accordion, Alert, Badge, Breadcrumb, Button, Card, Checkbox, Chip, Dialog, Drawer, Field, Input, Label, Popover, Radio, Select, Spinner, Switch, Tabs, Tooltip };
 
 export function ReactSparDemoRoot({ children }: PropsWithChildren) {
   const { colorMode } = useColorMode();

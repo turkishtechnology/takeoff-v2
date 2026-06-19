@@ -18,6 +18,7 @@
 @use 'recipes/popover';
 @use 'recipes/radio';
 @use 'recipes/select';
+@use 'recipes/spinner';
 @use 'recipes/switch';
 @use 'recipes/tabs';
 @use 'recipes/tooltip';
@@ -25,6 +26,7 @@
 @include button.button-keyframes;
 @include input.input-keyframes;
 @include popover.popover-keyframes;
+@include spinner.spinner-keyframes;
 @include tooltip.tooltip-keyframes;
 
 .tk-button {
@@ -205,6 +207,10 @@
 
 .tk-select-separator {
   @include select.select-separator;
+}
+
+.tk-spinner {
+  @include spinner.spinner;
 }
 
 .tk-checkbox {
