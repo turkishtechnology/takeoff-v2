@@ -1,0 +1,60 @@
+---
+title: Web Component
+sidebar_label: Web Component
+sidebar_position: 2
+---
+
+# Web Component
+
+`@takeoff-icons/wc` ships a framework-agnostic `<takeoff-icon>` custom element
+built with Stencil. Use it in any framework — or none — wherever HTML runs.
+
+```bash
+pnpm add @takeoff-icons/wc
+```
+
+## Registering the element
+
+Import the package once to register `<takeoff-icon>`, then use it in markup. The
+element takes the icon **data object** (not a name string) via its `icon`
+property — import the data for the variant you want from `@takeoff-icons/core`:
+
+```ts
+import '@takeoff-icons/wc';
+import addIcon from '@takeoff-icons/core/icons/outlined/rounded/add';
+
+const el = document.querySelector('takeoff-icon');
+el.icon = addIcon;
+```
+
+Import only the single element to keep the bundle minimal:
+
+```ts
+import '@takeoff-icons/wc/components/takeoff-icon';
+```
+
+## Properties
+
+| Property  | Type                                                                                               | Description                                                                                                     |
+| --------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `icon`    | `IconData`                                                                                         | The icon data object from `@takeoff-icons/core`.                                                                |
+| `size`    | `'xxlarge' \| 'xlarge' \| 'large' \| 'medium' \| 'base' \| 'small' \| 'xsmall'`                    | Named size preset.                                                                                              |
+| `variant` | `'primary' \| 'secondary' \| 'neutral' \| 'info' \| 'success' \| 'danger' \| 'warning' \| 'white'` | Semantic color variant.                                                                                         |
+| `color`   | `string`                                                                                           | Explicit color override.                                                                                        |
+| `label`   | `string`                                                                                           | Accessible label. When set, the icon is exposed to assistive technology; otherwise it is decorative and hidden. |
+
+## Example (in a framework)
+
+In frameworks that bind properties (Vue, Angular, Lit, …), pass the imported
+icon data straight to the `icon` property:
+
+```html
+<!-- Vue -->
+<takeoff-icon :icon="addIcon" size="large" variant="danger" label="Add item" />
+```
+
+:::note Custom elements rely on the browser's Custom Elements registry and a
+JS-bound `icon` property, so a live preview is omitted here. The snippets run
+as-is once the package is imported. :::
+
+Browse every icon name in the [Gallery](../gallery).
