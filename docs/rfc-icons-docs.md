@@ -40,10 +40,9 @@ Bu repoya uyuyor çünkü veri zaten makine-okunabilir durumda:
 - `@takeoff-icons/core`, `iconMetadata` (name, category, tags, aliases,
   variants), `categories`, `iconNames`, `searchIndex` ve yardımcı fonksiyonları
   sağlar — hepsi `icons-svg/metadata/icons.meta.yaml`'dan otomatik üretilir.
-  Doğruluk kaynağı:
-  [icons-core/src/metadata.ts](../../takeoff-icons/packages/icons-core/src/metadata.ts),
-  [search-index.ts](../../takeoff-icons/packages/icons-core/src/search-index.ts),
-  [types.ts](../../takeoff-icons/packages/icons-core/src/types.ts).
+  Doğruluk kaynağı (ayrı `takeoff-icons` reposunda):
+  `icons-core/src/metadata.ts`, `icons-core/src/search-index.ts`,
+  `icons-core/src/types.ts`.
 - `@takeoff-icons/react`, ikon başına bir subpath export eder
   (`@takeoff-icons/react/<icon-name>`); her variant için isimli export'larla,
   örn. `AddIconOutlinedRounded`. Her biri, `SVGProps` kabul eden bir
