@@ -70,7 +70,20 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
-  plugins: [tailwindPlugin, packageChangelogsPlugin],
+  plugins: [
+    tailwindPlugin,
+    packageChangelogsPlugin,
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'icons',
+        path: 'icons',
+        routeBasePath: 'icons',
+        sidebarPath: './sidebars.icons.ts',
+        sidebarCollapsed: false,
+      },
+    ],
+  ],
   themeConfig: {
     image: 'img/takeoff-og.jpg',
     colorMode: {
@@ -98,6 +111,13 @@ const config: Config = {
           sidebarId: 'tutorialSidebar',
           position: 'left',
           label: 'Docs',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'iconsSidebar',
+          docsPluginId: 'icons',
+          position: 'left',
+          label: 'Icons',
         },
         {
           to: '/changelog',

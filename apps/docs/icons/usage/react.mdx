@@ -1,0 +1,80 @@
+---
+title: React
+sidebar_label: React
+sidebar_position: 1
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import { AddIconOutlinedRounded } from '@takeoff-icons/react/add';
+import { AlertIconFilledRounded } from '@takeoff-icons/react/alert';
+import { AccountCircleIconOutlinedSharp } from '@takeoff-icons/react/account-circle';
+
+# React
+
+`@takeoff-icons/react` ships one React component per icon variant. Each is a
+`forwardRef` SVG that accepts the full `SVGProps<SVGSVGElement>`, renders at
+`1em`, and inherits color via `currentColor`.
+
+```bash
+pnpm add @takeoff-icons/react
+```
+
+## Importing an icon
+
+Each icon lives under a per-icon subpath; the named export encodes the variant
+(`<Name>Icon<Style><Type>`):
+
+```tsx
+import { AddIconOutlinedRounded } from '@takeoff-icons/react/add';
+
+export function Example() {
+  return <AddIconOutlinedRounded />;
+}
+```
+
+<LiveCode
+  scope={{
+    AddIconOutlinedRounded,
+    AlertIconFilledRounded,
+    AccountCircleIconOutlinedSharp,
+  }}
+  code={`<div style={{ display: 'flex', gap: 16, fontSize: 32 }}>
+  <AddIconOutlinedRounded />
+  <AlertIconFilledRounded />
+  <AccountCircleIconOutlinedSharp />
+</div>`}
+/>
+
+## Sizing & color
+
+Icons scale with `font-size` and take their color from the CSS `color` of the
+surrounding element, so they compose with text without extra props:
+
+<LiveCode
+  scope={{ AlertIconFilledRounded }}
+  code={`<span style={{ fontSize: 48, color: '#c8102e' }}>
+  <AlertIconFilledRounded />
+</span>`}
+/>
+
+You can also pass any SVG prop directly (`width`, `height`, `color`,
+`className`, `aria-label`, …):
+
+```tsx
+<AddIconOutlinedRounded width={40} height={40} aria-label="Add item" />
+```
+
+## Accessibility
+
+Pass `title` (or `aria-label`) to expose the icon to assistive technology as an
+image. Without one, the icon is `aria-hidden` and treated as decorative:
+
+```tsx
+// Meaningful icon — announced as "Add item"
+<AddIconOutlinedRounded title="Add item" />
+
+// Decorative icon — hidden from screen readers
+<AddIconOutlinedRounded />
+```
+
+Browse every icon and copy its import from the [Gallery](../gallery).
