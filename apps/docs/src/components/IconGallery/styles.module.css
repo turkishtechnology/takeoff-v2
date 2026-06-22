@@ -118,3 +118,113 @@
   white-space: nowrap;
   color: var(--docs-text-muted, #888);
 }
+
+/* ---- Detail dialog --------------------------------------------------- */
+/* The shell (overlay, panel chrome, header/footer dividers, close button,
+   scroll, focus trap) comes from takeoff-v2 `Dialog`; code blocks come from
+   Docusaurus `@theme/CodeBlock`. Only the in-panel layout lives here.
+   `min-width: 0` on the flex/grid children is what lets CodeBlock scroll long
+   import paths INSIDE the block instead of widening the dialog. */
+
+.dialogPanel {
+  width: min(560px, calc(100vw - 32px));
+  max-width: 100%;
+}
+
+.dialogHeading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.dialogPreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex: none;
+  border: 1px solid var(--docs-border-subtle);
+  border-radius: var(--radius-l, 12px);
+  background: var(--docs-surface-2);
+}
+
+.dialogGlyph {
+  font-size: 32px;
+  color: inherit;
+}
+
+.dialogTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.dialogTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+.dialogMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--docs-text-muted, #888);
+}
+
+.dialogCategory {
+  text-transform: capitalize;
+}
+
+.dialogClose {
+  flex: none;
+  cursor: pointer;
+}
+
+.dialogBody {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.dialogVariantRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.formatPanel {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding-top: 16px;
+}
+
+/* Keep CodeBlock from stretching the panel: each block scrolls within itself. */
+.formatPanel :global(.theme-code-block),
+.formatPanel pre {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Reserve a constant height for the code block sized to the tallest snippet
+   (Web Component, ~6 lines) so switching tabs never resizes the dialog. The
+   inner CodeBlock stretches to fill, keeping every panel the same height. */
+.codeSlot {
+  min-width: 0;
+  min-height: 11.5em;
+  display: flex;
+}
+
+.codeSlot > :global(.theme-code-block) {
+  flex: 1 1 auto;
+  margin: 0;
+}
+
+.codeSlot :global(pre) {
+  height: 100%;
+}

@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import useIsBrowser from '@docusaurus/useIsBrowser';
+import { useCallback, useMemo, useState } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import clsx from 'clsx';
 
-import { DEFAULT_VARIANT, iconCategories, iconEntries, type IconGalleryEntry, type IconVariantSvg } from '@site/src/data/icons.generated';
-import { reactExportName } from './reactExportName';
+import { DEFAULT_VARIANT, iconCategories, iconEntries, type IconGalleryEntry } from '@site/src/data/icons.generated';
+import { useVariantSvg } from './useVariantSvg';
+import IconDetailDialog from './IconDetailDialog';
 import styles from './styles.module.css';
 
 const STYLES = ['outlined', 'filled'] as const;
@@ -12,83 +11,47 @@ const TYPES = ['rounded', 'sharp', 'bevel', 'tk'] as const;
 
 const [DEFAULT_STYLE, DEFAULT_TYPE] = DEFAULT_VARIANT.split('/') as [string, string];
 
-/**
- * Lazily fetch a whole variant's SVG map. The default variant is inlined in the
- * data module; every other variant is ONE static JSON file under
- * `/icon-svg/<style>-<type>.json` (emitted by `gen:icons`) — a map of
- * `{ [iconName]: { viewBox, svg } }` — fetched once the first time the user
- * switches to that variant, then served from cache for every cell. We fetch a
- * static file rather than dynamically importing from `@takeoff-icons/core`
- * because the package's `exports` map blocks webpack's dynamic-import context
- * module. Each variant's fetch promise is memoized so concurrent cells share it.
- */
-type VariantMap = Record<string, IconVariantSvg>;
-const variantCache = new Map<string, Promise<VariantMap>>();
-
-function loadVariantMap(baseUrl: string, variant: string): Promise<VariantMap> {
-  const cached = variantCache.get(variant);
-  if (cached) return cached;
-  const fileName = `${variant.replace('/', '-')}.json`;
-  const promise = fetch(`${baseUrl}${fileName}`)
-    .then(res => (res.ok ? (res.json() as Promise<VariantMap>) : {}))
-    .catch(() => ({}) as VariantMap);
-  variantCache.set(variant, promise);
-  return promise;
-}
-
 interface IconCellProps {
   entry: IconGalleryEntry;
   variant: string;
   svgBaseUrl: string;
-  copied: boolean;
-  onCopy: (entry: IconGalleryEntry, exportName: string) => void;
+  onOpen: (entry: IconGalleryEntry) => void;
 }
 
-function IconCell({ entry, variant, svgBaseUrl, copied, onCopy }: IconCellProps) {
-  // Default variant comes inlined; anything else is fetched and stored here.
-  const isDefault = variant === DEFAULT_VARIANT;
-  const [svg, setSvg] = useState<IconVariantSvg | null>(isDefault ? entry.defaultSvg : null);
-
-  useEffect(() => {
-    if (isDefault) {
-      setSvg(entry.defaultSvg);
-      return;
-    }
-    if (!entry.variants.includes(variant)) {
-      setSvg(null);
-      return;
-    }
-    let active = true;
-    void loadVariantMap(svgBaseUrl, variant).then(map => {
-      if (active) setSvg(map[entry.name] ?? null);
-    });
-    return () => {
-      active = false;
-    };
-  }, [entry, variant, isDefault, svgBaseUrl]);
-
-  const exportName = reactExportName(entry.name, variant);
+function IconCell({ entry, variant, svgBaseUrl, onOpen }: IconCellProps) {
+  const svg = useVariantSvg(entry, variant, svgBaseUrl);
 
   return (
-    <button type="button" className={clsx(styles.cell, copied && styles.cellCopied)} onClick={() => onCopy(entry, exportName)} title={`${entry.name} — click to copy import`}>
+    <button type="button" className={styles.cell} onClick={() => onOpen(entry)} title={`${entry.name} — click for usage`}>
       {svg ? (
         <svg className={styles.glyph} viewBox={svg.viewBox} width="1em" height="1em" role="img" aria-label={entry.name} dangerouslySetInnerHTML={{ __html: svg.svg }} />
       ) : (
         <span className={styles.glyphPlaceholder} aria-hidden="true" />
       )}
-      <span className={styles.cellName}>{copied ? 'Copied!' : entry.name}</span>
+      <span className={styles.cellName}>{entry.name}</span>
     </button>
   );
 }
 
+/**
+ * Resolves the preview SVG for the dialog's *current* variant (which the dialog
+ * can change independently of the grid) and forwards it down. Kept as a thin
+ * wrapper so the SVG-loading hook stays out of the dialog's own concerns.
+ */
+function DialogHost({ entry, galleryVariant, svgBaseUrl, onClose }: { entry: IconGalleryEntry; galleryVariant: string; svgBaseUrl: string; onClose: () => void }) {
+  const [variant, setVariant] = useState(galleryVariant);
+  const svg = useVariantSvg(entry, variant, svgBaseUrl);
+
+  return <IconDetailDialog entry={entry} initialVariant={galleryVariant} svg={svg} onVariantChange={setVariant} onClose={onClose} />;
+}
+
 export default function IconGallery() {
-  const isBrowser = useIsBrowser();
   const svgBaseUrl = useBaseUrl('/icon-svg/');
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
   const [style, setStyle] = useState(DEFAULT_STYLE);
   const [type, setType] = useState(DEFAULT_TYPE);
-  const [copiedName, setCopiedName] = useState<string | null>(null);
+  const [selected, setSelected] = useState<IconGalleryEntry | null>(null);
 
   const variant = `${style}/${type}`;
 
@@ -101,16 +64,8 @@ export default function IconGallery() {
     });
   }, [query, category]);
 
-  const handleCopy = useCallback(
-    (entry: IconGalleryEntry, exportName: string) => {
-      if (!isBrowser) return;
-      const snippet = `import { ${exportName} } from '@takeoff-icons/react/${entry.name}';`;
-      void navigator.clipboard?.writeText(snippet);
-      setCopiedName(entry.name);
-      window.setTimeout(() => setCopiedName(current => (current === entry.name ? null : current)), 1200);
-    },
-    [isBrowser],
-  );
+  const handleOpen = useCallback((entry: IconGalleryEntry) => setSelected(entry), []);
+  const handleClose = useCallback(() => setSelected(null), []);
 
   return (
     <div className={styles.root}>
@@ -161,10 +116,12 @@ export default function IconGallery() {
       ) : (
         <div className={styles.grid}>
           {filtered.map(entry => (
-            <IconCell key={entry.name} entry={entry} variant={variant} svgBaseUrl={svgBaseUrl} copied={copiedName === entry.name} onCopy={handleCopy} />
+            <IconCell key={entry.name} entry={entry} variant={variant} svgBaseUrl={svgBaseUrl} onOpen={handleOpen} />
           ))}
         </div>
       )}
+
+      {selected ? <DialogHost entry={selected} galleryVariant={variant} svgBaseUrl={svgBaseUrl} onClose={handleClose} /> : null}
     </div>
   );
 }
