@@ -21,6 +21,7 @@
 @use 'recipes/switch';
 @use 'recipes/tabs';
 @use 'recipes/tooltip';
+@use 'recipes/toast';
 
 @include button.button-keyframes;
 @include input.input-keyframes;
@@ -53,6 +54,14 @@
 
 .tk-alert-close {
   @include alert.alert-close;
+}
+
+.tk-toaster {
+  @include toast.toaster;
+}
+
+.tk-toast {
+  @include toast.toast;
 }
 
 .tk-card {

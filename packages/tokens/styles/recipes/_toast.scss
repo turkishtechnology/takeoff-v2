@@ -1,0 +1,178 @@
+// ---------------------------------------------------------------------------
+// Toast recipe — viewport and item shell for headless Spar Toast wrapped by
+// React Spar. The actual notification surface is `.tk-alert`.
+//
+// Slots/classes:
+//   .tk-toaster — viewport/stack
+//   .tk-toast   — individual toast shell
+//
+// State attributes:
+//   data-placement — top-start | top | top-end | bottom-start | bottom | bottom-end
+//   data-status    — visible | dismissing
+// ---------------------------------------------------------------------------
+
+@mixin toaster {
+  --toast-width: 360px;
+  --toast-min-width: 320px;
+  --toast-max-width: calc(100vw - (2 * var(--spacing-4xl)));
+  --toast-overlap-offset: 56px;
+
+  position: fixed;
+  z-index: 2000;
+  display: flex;
+  width: min(var(--toast-width), var(--toast-max-width));
+  min-width: min(var(--toast-min-width), var(--toast-max-width));
+  flex-direction: column;
+  gap: var(--alert-base-gap);
+  pointer-events: none;
+
+  &[data-placement='top-start'] {
+    top: var(--spacing-4xl);
+    left: var(--spacing-4xl);
+  }
+
+  &[data-placement='top'] {
+    top: var(--spacing-4xl);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &[data-placement='top-end'] {
+    top: var(--spacing-4xl);
+    right: var(--spacing-4xl);
+  }
+
+  &[data-placement='bottom-start'] {
+    bottom: var(--spacing-4xl);
+    left: var(--spacing-4xl);
+    flex-direction: column-reverse;
+  }
+
+  &[data-placement='bottom'] {
+    bottom: var(--spacing-4xl);
+    left: 50%;
+    flex-direction: column-reverse;
+    transform: translateX(-50%);
+  }
+
+  &[data-placement='bottom-end'] {
+    right: var(--spacing-4xl);
+    bottom: var(--spacing-4xl);
+    flex-direction: column-reverse;
+  }
+
+  &[data-overlap] {
+    .tk-toast {
+      --toast-enter-offset: var(--toast-overlap-offset);
+
+      filter: drop-shadow(var(--effect-1-default-lg));
+    }
+
+    @for $index from 1 through 64 {
+      .tk-toast:nth-child(#{$index}) {
+        z-index: 65 - $index;
+      }
+    }
+  }
+
+  &[data-overlap][data-placement^='bottom'] {
+    flex-direction: column;
+
+    @for $index from 1 through 64 {
+      .tk-toast:nth-child(#{$index}) {
+        z-index: $index;
+      }
+    }
+  }
+
+  &[data-overlap]:not([data-expanded]) {
+    .tk-toast + .tk-toast {
+      margin-block-start: calc(-1 * var(--toast-overlap-offset));
+    }
+  }
+}
+
+@mixin toast {
+  --toast-motion-duration: 220ms;
+  --toast-motion-easing: cubic-bezier(0.2, 0, 0, 1);
+  --toast-enter-offset: 8px;
+  --toast-dismiss-offset: 4px;
+
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+  animation: tk-toast-slide-in-from-top var(--toast-motion-duration) var(--toast-motion-easing);
+  transition:
+    opacity var(--toast-motion-duration) var(--toast-motion-easing),
+    transform var(--toast-motion-duration) var(--toast-motion-easing),
+    margin-block-start var(--toast-motion-duration) var(--toast-motion-easing),
+    margin-block-end var(--toast-motion-duration) var(--toast-motion-easing);
+  will-change: opacity, transform;
+
+  &[data-status='dismissing'] {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--toast-dismiss-offset)));
+  }
+
+  .tk-toaster[data-placement^='bottom'] & {
+    animation-name: tk-toast-slide-in-from-bottom;
+
+    &[data-status='dismissing'] {
+      transform: translateY(var(--toast-dismiss-offset));
+    }
+  }
+
+  .tk-alert {
+    display: grid;
+    align-items: flex-start;
+    gap: var(--alert-base-content-gap);
+    grid-template-areas:
+      'content close'
+      'actions actions';
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .tk-alert-content {
+    grid-area: content;
+    min-width: 0;
+  }
+
+  .tk-alert-actions {
+    grid-area: actions;
+    justify-content: flex-start;
+    padding-inline-start: 0;
+  }
+
+  .tk-alert-close {
+    grid-area: close;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    transition: none;
+  }
+}
+
+@keyframes tk-toast-slide-in-from-top {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--toast-enter-offset)));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tk-toast-slide-in-from-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(var(--toast-enter-offset));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -198,6 +198,13 @@ const overviewSeeds: OverviewSeed[] = [
     image: '/img/overview/tooltip.png',
     imageDark: '/img/overview/tooltip-dark.png',
   },
+  {
+    title: 'Toast',
+    slug: 'Toast',
+    image: '/img/overview/alert.png',
+    imageDark: '/img/overview/alert-dark.png',
+    isNew: true,
+  },
 ];
 
 export const overviewItems: OverviewItem[] = overviewSeeds.map(({ slug, ...item }) => ({
