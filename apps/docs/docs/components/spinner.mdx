@@ -1,0 +1,247 @@
+---
+title: Spinner
+description:
+  A compact loading indicator for indeterminate work. Supports size and color
+  variants while keeping accessibility defaults built in.
+sidebar_label: Spinner
+sidebar_position: 15
+slug: /components/spinner
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Label,
+  Spinner,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const spinnerScope = { Label, Spinner };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  return (
+    <div className="flex items-center justify-center gap-4">
+      <Spinner />
+      <Spinner variant="primary" />
+      <Spinner variant="success" size="large" aria-label="Saving" />
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const variantsDemo = String.raw`
+function VariantsDemo() {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-5">
+      <Spinner variant="primary" aria-label="Primary loading" />
+      <Spinner variant="secondary" aria-label="Secondary loading" />
+      <Spinner variant="neutral" aria-label="Neutral loading" />
+      <Spinner variant="info" aria-label="Info loading" />
+      <Spinner variant="success" aria-label="Success loading" />
+      <Spinner variant="danger" aria-label="Danger loading" />
+      <Spinner variant="warning" aria-label="Warning loading" />
+    </div>
+  );
+}
+
+render(<VariantsDemo />);
+`;
+
+export const appearancesDemo = String.raw`
+function AppearancesDemo() {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-5">
+      <Spinner appearance="rounded" aria-label="Rounded loading" />
+      <Spinner appearance="dots" aria-label="Dots loading" />
+      <Spinner appearance="lines" aria-label="Lines loading" />
+      <Spinner appearance="pulse" aria-label="Pulse loading" />
+      <Spinner appearance="threeDots" aria-label="Three dots loading" />
+      <Spinner appearance="loader" aria-label="Loader loading" />
+      <Spinner appearance="logo" aria-label="Logo loading" />
+    </div>
+  );
+}
+
+render(<AppearancesDemo />);
+`;
+
+export const sizesDemo = String.raw`
+function SizesDemo() {
+  return (
+    <div className="flex items-center justify-center gap-5">
+      <Spinner size="small" aria-label="Small loading" />
+      <Spinner size="base" aria-label="Base loading" />
+      <Spinner size="large" aria-label="Large loading" />
+      <Spinner size="xlarge" aria-label="Extra large loading" />
+    </div>
+  );
+}
+
+render(<SizesDemo />);
+`;
+
+export const labelDemo = String.raw`
+function LabelDemo() {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-8">
+      <div className="flex flex-col items-center gap-1">
+        <Spinner aria-labelledby="spinner-flight-label" variant="primary" />
+        <Label as="span" id="spinner-flight-label">Loading flights</Label>
+      </div>
+      <div className="flex flex-col items-center gap-1">
+        <Spinner appearance="threeDots" aria-labelledby="spinner-saving-label" variant="success" />
+        <Label as="span" id="spinner-saving-label">Saving</Label>
+      </div>
+      <div className="flex flex-col items-center gap-1">
+        <Spinner appearance="logo" aria-labelledby="spinner-preparing-label" variant="neutral" />
+        <Label as="span" id="spinner-preparing-label">Preparing</Label>
+      </div>
+    </div>
+  );
+}
+
+render(<LabelDemo />);
+`;
+
+export const accessibilityDemo = String.raw`
+function AccessibilityDemo() {
+  return (
+    <div className="flex items-center justify-center gap-5">
+      <Spinner aria-label="Loading flight results" />
+      <Spinner aria-hidden />
+    </div>
+  );
+}
+
+render(<AccessibilityDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Spinner
+
+A compact indeterminate loading indicator with built-in status semantics.
+
+## Usage
+
+```tsx
+import { Spinner } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Spinner aria-label="Loading results" />
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={96}
+  previewWrapper={ReactSparDemoRoot}
+  scope={spinnerScope}
+/>
+
+## Variants
+
+<LiveCode
+  code={variantsDemo}
+  noInline
+  previewMinHeight={96}
+  previewWrapper={ReactSparDemoRoot}
+  scope={spinnerScope}
+/>
+
+## Appearances
+
+<LiveCode
+  code={appearancesDemo}
+  noInline
+  previewMinHeight={96}
+  previewWrapper={ReactSparDemoRoot}
+  scope={spinnerScope}
+/>
+
+## Sizes
+
+<LiveCode
+  code={sizesDemo}
+  noInline
+  previewMinHeight={96}
+  previewWrapper={ReactSparDemoRoot}
+  scope={spinnerScope}
+/>
+
+## Label
+
+`Spinner` does not provide label layout. When visible loading text is needed,
+compose it with `Label` and connect the text with `aria-labelledby`.
+
+<LiveCode
+  code={labelDemo}
+  noInline
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={spinnerScope}
+/>
+
+## Accessibility
+
+`Spinner` renders a polite status by default. Use `aria-label` or
+`aria-labelledby` for a domain-specific name; use native `aria-hidden` only when
+the spinner is purely decorative next to another loading message. When
+`aria-hidden` is true, `Spinner` does not apply the status role or default
+accessible name.
+
+<LiveCode
+  code={accessibilityDemo}
+  noInline
+  previewMinHeight={96}
+  previewWrapper={ReactSparDemoRoot}
+  scope={spinnerScope}
+/>
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Spinner {#spinner}
+
+#### Props {#spinner-props}
+
+| Name                                 | Type                                                                                                                                 | Default   | Description                                                                                                               |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="size" />            | <code><a href="#spinner-td-spinnersize">SpinnerSize</a></code>                                                                       | 'base'    | Size scale.                                                                                                               |
+| <ApiBadge label="appearance" />      | <code><a href="#spinner-td-spinnerappearance">SpinnerAppearance</a></code>                                                           | 'rounded' | Visual spinner style.                                                                                                     |
+| <ApiBadge label="variant" />         | <code><a href="#spinner-td-spinnervariant">SpinnerVariant</a></code>                                                                 | 'neutral' | Color variant.                                                                                                            |
+| <ApiBadge label="classNames" />      | <code>Partial&lt;Record&lt;<a href="#spinner-td-spinnerslot">SpinnerSlot</a>, string&gt;&gt;</code>                                  | -         | Per-slot extra classes.                                                                                                   |
+| <ApiBadge label="slotProps" />       | <code>Partial&lt;Record&lt;<a href="#spinner-td-spinnerslot">SpinnerSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                                                                        |
+| <ApiBadge label="className" />       | <code>string</code>                                                                                                                  | -         | Appends custom classes to the root slot.                                                                                  |
+| <ApiBadge label="aria-label" />      | <code>string</code>                                                                                                                  | 'Loading' | Accessible name for the loading status. Override it for domain-specific loading text.                                     |
+| <ApiBadge label="aria-labelledby" /> | <code>string</code>                                                                                                                  | -         | ID reference for visible loading text. When provided, the default `aria-label` is not applied.                            |
+| <ApiBadge label="aria-hidden" />     | <code>boolean</code>                                                                                                                 | false     | Hides a decorative spinner from assistive technology. When true, status role and default accessible name are not applied. |
+
+#### Data attributes {#spinner-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                                           |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.             |
+| <ApiBadge label="data-variant" />               | Always       | Reflects the resolved `variant` prop for theme recipe scoping.    |
+| <ApiBadge label="data-size" />                  | Always       | Reflects the resolved `size` prop for theme recipe scoping.       |
+| <ApiBadge label="data-type" />                  | Always       | Reflects the resolved `appearance` prop for theme recipe scoping. |
+
+### Type Definitions {#spinner-type-definitions}
+
+| Name                                                                                  | Definition                                                                                                                 |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| <span id="spinner-td-spinnersize"><ApiBadge label="SpinnerSize" /></span>             | <code>'small' &#124; 'base' &#124; 'large' &#124; 'xlarge'</code>                                                          |
+| <span id="spinner-td-spinnerappearance"><ApiBadge label="SpinnerAppearance" /></span> | <code>'rounded' &#124; 'dots' &#124; 'lines' &#124; 'pulse' &#124; 'threeDots' &#124; 'loader' &#124; 'logo'</code>        |
+| <span id="spinner-td-spinnervariant"><ApiBadge label="SpinnerVariant" /></span>       | <code>'primary' &#124; 'secondary' &#124; 'neutral' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning'</code> |
+| <span id="spinner-td-spinnerslot"><ApiBadge label="SpinnerSlot" /></span>             | <code>'root' &#124; 'indicator'</code>                                                                                     |
+
+{/* api-tables:end */}

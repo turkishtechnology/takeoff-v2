@@ -1,0 +1,50 @@
+---
+title: Raw SVG
+sidebar_label: Raw SVG
+sidebar_position: 4
+---
+
+# Raw SVG
+
+`@takeoff-icons/svg` ships the optimized source `.svg` files. Use it when you
+want the raw assets — for a build-time pipeline, an `<img>` tag, or your own
+loader.
+
+```bash
+pnpm add @takeoff-icons/svg
+```
+
+## Layout
+
+Files are organized by `style/type/name`:
+
+```
+@takeoff-icons/svg/svg/outlined/rounded/add.svg
+@takeoff-icons/svg/svg/filled/sharp/alert.svg
+```
+
+## Using a file
+
+Reference it however your bundler resolves assets — for example as an image
+source:
+
+```html
+<img
+  src="@takeoff-icons/svg/svg/outlined/rounded/add.svg"
+  alt="Add"
+  width="24"
+  height="24"
+/>
+```
+
+Or import the URL with a bundler that supports asset imports:
+
+```ts
+import addUrl from '@takeoff-icons/svg/svg/outlined/rounded/add.svg';
+```
+
+:::tip The SVGs use `fill="currentColor"`, so when inlined into the DOM they
+inherit the surrounding `color`. An `<img>` tag does not — use the React, Web
+Component, or font packages if you need color inheritance. :::
+
+Browse every icon name in the [Gallery](../gallery).

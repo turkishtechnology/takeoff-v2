@@ -1,0 +1,51 @@
+---
+title: Installation
+sidebar_label: Installation
+sidebar_position: 2
+slug: /installation
+---
+
+# Installation
+
+Install the package that matches your stack. All packages are published under
+the `@takeoff-icons/*` scope.
+
+## React
+
+```bash
+pnpm add @takeoff-icons/react
+```
+
+Each icon variant is a named export under a per-icon subpath:
+
+```tsx
+import { AddIconOutlinedRounded } from '@takeoff-icons/react/add';
+
+export function Example() {
+  return <AddIconOutlinedRounded />;
+}
+```
+
+React `>=18` is the only peer dependency.
+
+## Web Component
+
+```bash
+pnpm add @takeoff-icons/wc
+```
+
+## Icon font
+
+```bash
+pnpm add @takeoff-icons/font
+```
+
+## Raw SVG / sprite / core data
+
+```bash
+pnpm add @takeoff-icons/svg     # individual optimized SVG files
+pnpm add @takeoff-icons/sprite  # single sprite sheet
+pnpm add @takeoff-icons/core    # metadata + search index + SVG data
+```
+
+Once installed, browse everything available in the [Gallery](./gallery).

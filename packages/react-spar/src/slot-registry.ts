@@ -47,6 +47,7 @@ import {
   InputTrailingIconBase,
 } from './components/input/base';
 import { SelectBase, SelectContentBase, SelectGroupBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
+import { SpinnerBase } from './components/spinner/base';
 import { SwitchBase } from './components/switch/base';
 import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
@@ -137,6 +138,7 @@ export const slotClassRegistry = {
   selectGroup: { slots: SelectGroupBase.classes },
   selectLabel: { slots: SelectLabelBase.classes },
   selectSeparator: { slots: SelectSeparatorBase.classes },
+  spinner: { slots: SpinnerBase.classes },
   switch: { slots: SwitchBase.classes },
   tabs: { slots: TabsBase.classes },
   tabsList: { slots: TabsListBase.classes },

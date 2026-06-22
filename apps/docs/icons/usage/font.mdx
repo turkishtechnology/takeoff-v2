@@ -1,0 +1,60 @@
+---
+title: Icon font
+sidebar_label: Icon font
+sidebar_position: 3
+---
+
+# Icon font
+
+`@takeoff-icons/font` ships a webfont plus a stylesheet of utility classes. Use
+it when you want icons via CSS classes with zero JavaScript.
+
+```bash
+pnpm add @takeoff-icons/font
+```
+
+## Setup
+
+Import the stylesheet once (it pulls in the `@font-face` rules and `woff2`
+files):
+
+```ts
+import '@takeoff-icons/font';
+```
+
+## Using an icon
+
+Apply the base `.ti` class plus the per-icon class `.ti-<name>`:
+
+```html
+<i class="ti ti-add"></i>
+<i class="ti ti-alert"></i>
+<i class="ti ti-account-circle"></i>
+```
+
+## Choosing a variant
+
+The default is `outlined/rounded`. Switch **type** with a modifier class and
+**style** with the `-filled` suffix on the icon class:
+
+```html
+<!-- Type: rounded (default) / sharp / bevel / tk -->
+<i class="ti ti-add ti-sharp"></i>
+<i class="ti ti-add ti-bevel"></i>
+
+<!-- Style: filled -->
+<i class="ti ti-add-filled"></i>
+
+<!-- Combined: filled + sharp -->
+<i class="ti ti-add-filled ti-sharp"></i>
+```
+
+## Sizing & color
+
+Icons are glyphs, so they size with `font-size` and color with `color`:
+
+```html
+<i class="ti ti-alert" style="font-size: 32px; color: #c8102e"></i>
+```
+
+Browse every icon name in the [Gallery](../gallery).

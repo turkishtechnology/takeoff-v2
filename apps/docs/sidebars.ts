@@ -27,6 +27,7 @@ const sidebars: SidebarsConfig = {
         'components/label',
         'components/popover',
         'components/select',
+        'components/spinner',
         'components/switch',
         'components/radio',
         'components/tabs',
