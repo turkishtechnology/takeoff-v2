@@ -146,43 +146,6 @@ const config: Config = {
         },
       ],
     },
-    footer: {
-      style: 'dark',
-      links: [
-        {
-          title: 'Documentation',
-          items: [
-            {
-              label: 'Getting Started',
-              to: '/docs',
-            },
-            {
-              label: 'Installation',
-              to: '/docs/installation',
-            },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
-            {
-              label: 'Releases',
-              href: 'https://github.com/turkishtechnology/takeoff-v2/releases',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/turkishtechnology/takeoff-v2',
-            },
-          ],
-        },
-      ],
-      copyright: `Copyright © ${new Date().getFullYear()} Takeoff Spar`,
-    },
     algolia: {
       appId: process.env.ALGOLIA_APP_ID || 'X1Z85QJPUV',
       apiKey: process.env.ALGOLIA_SEARCH_API_KEY || 'bf7211c161e8205da2f933a02534105a',
