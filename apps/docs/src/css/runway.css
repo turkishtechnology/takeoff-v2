@@ -155,9 +155,6 @@
   --runway-ring-color: rgba(255, 23, 54, 0.18);
 }
 
-/* --- Load JetBrains Mono once, alongside the default Tk font stack ------- */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
-
 /* --- Surface classes (opt-in) -------------------------------------------- */
 .runway-surface-dark {
   background: var(--runway-black);

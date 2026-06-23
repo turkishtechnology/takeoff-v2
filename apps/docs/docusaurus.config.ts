@@ -48,6 +48,7 @@ const config: Config = {
   favicon: 'img/favicon.ico',
   url: 'https://takeoff-v2.app.turkishtechlab.com',
   baseUrl: '/',
+  stylesheets: ['https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap'],
   onBrokenLinks: 'throw',
   i18n: {
     defaultLocale: 'en',
