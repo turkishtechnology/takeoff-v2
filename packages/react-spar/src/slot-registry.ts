@@ -46,7 +46,7 @@ import {
   InputSuffixBase,
   InputTrailingIconBase,
 } from './components/input/base';
-import { SelectBase, SelectContentBase, SelectGroupBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
+import { SelectBase, SelectContentBase, SelectGroupBase, SelectIndicatorBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
 import { SpinnerBase } from './components/spinner/base';
 import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
@@ -134,6 +134,7 @@ export const slotClassRegistry = {
   inputChips: { slots: InputChipsBase.classes },
   select: { slots: SelectBase.classes },
   selectTrigger: { slots: SelectTriggerBase.classes },
+  selectIndicator: { slots: SelectIndicatorBase.classes },
   selectContent: { slots: SelectContentBase.classes },
   selectItem: { slots: SelectItemBase.classes },
   selectGroup: { slots: SelectGroupBase.classes },

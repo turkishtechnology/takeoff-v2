@@ -180,10 +180,18 @@
 
 .tk-select-trigger {
   @include select.select-trigger;
+
+  &[data-state='open'] .tk-select-indicator {
+    @include select.select-trigger-open-indicator;
+  }
 }
 
 .tk-select-value {
   @include select.select-value;
+}
+
+.tk-select-indicator {
+  @include select.select-indicator;
 }
 
 .tk-select-content {

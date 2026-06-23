@@ -1,4 +1,4 @@
-import type { ElementType } from 'react';
+import type { ElementType, ReactNode } from 'react';
 import type {
   SelectProps as SparSelectProps,
   SelectTriggerProps as SparSelectTriggerProps,
@@ -25,7 +25,8 @@ export type SelectSize = 'small' | 'base' | 'large';
 export type SelectContentWidth = 'trigger' | 'content' | number | string;
 
 export type SelectSlot = 'root';
-export type SelectTriggerSlot = 'root';
+export type SelectTriggerSlot = 'root' | 'indicator';
+export type SelectIndicatorSlot = 'root';
 export type SelectContentSlot = 'root';
 export type SelectItemSlot = 'root';
 export type SelectGroupSlot = 'root';
@@ -76,7 +77,32 @@ export type SelectProps<T extends ElementType = 'div'> = PolymorphicProps<
     Pick<SparSelectProps, 'id' | 'value' | 'defaultValue' | 'onChange' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled' | 'readOnly' | 'required' | 'name' | 'autoFocus'>
 >;
 
+/**
+ * State surface delivered to a render-function `indicator` (on the Trigger) or
+ * to {@link SelectIndicatorProps.children}. Lets consumers swap icons by open
+ * state without pulling the select context themselves. Mirrors the Accordion
+ * indicator's render state.
+ */
+export interface SelectIndicatorRenderState {
+  isOpen: boolean;
+}
+
 export interface SelectTriggerOwnProps {
+  /**
+   * Disclosure indicator rendered at the trailing edge of the trigger,
+   * after the value/placeholder. Defaults to a chevron that flips direction
+   * with the open state (parity with `Accordion.Indicator`).
+   *
+   * - omit / `true` → the default chevron
+   * - `false` / `null` → no indicator
+   * - a ReactNode → custom static icon (rendered in every state)
+   * - a render function receiving `{ isOpen }` → swap icons by open state
+   *
+   * For full layout control, drop a standalone `<Select.Indicator />` into the
+   * trigger's render-prop `children` instead.
+   * @defaultValue true
+   */
+  indicator?: boolean | ReactNode | ((state: SelectIndicatorRenderState) => ReactNode);
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<SelectTriggerSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -95,6 +121,22 @@ export type SelectTriggerProps<T extends ElementType = 'button'> = PolymorphicPr
     // no longer exists), so the wrapper must forward it.
     Pick<SparSelectTriggerProps, 'children' | 'placeholder'>
 >;
+
+export interface SelectIndicatorOwnProps {
+  /**
+   * Override the default chevron. Accepts a ReactNode (rendered in every
+   * state) or a render function receiving the live `{ isOpen }` state — use
+   * the render-prop form to swap icons by open state without consuming the
+   * select context manually. Mirrors `Accordion.Indicator`.
+   */
+  children?: ReactNode | ((state: SelectIndicatorRenderState) => ReactNode);
+  /** Per-slot class name overrides. */
+  classNames?: ClassNamesMap<SelectIndicatorSlot>;
+  /** Per-slot HTML attribute overrides. */
+  slotProps?: SlotPropsMap<SelectIndicatorSlot>;
+}
+
+export type SelectIndicatorProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, SelectIndicatorOwnProps>;
 
 export interface SelectContentOwnProps {
   /** Per-slot class name overrides. */
@@ -181,6 +223,7 @@ declare module '../../core/theme' {
   interface ComponentThemeRegistry {
     Select: import('../../core').ComponentThemeConfig<SelectProps, SelectSlot>;
     SelectTrigger: import('../../core').ComponentThemeConfig<SelectTriggerProps, SelectTriggerSlot>;
+    SelectIndicator: import('../../core').ComponentThemeConfig<SelectIndicatorProps, SelectIndicatorSlot>;
     SelectContent: import('../../core').ComponentThemeConfig<SelectContentProps, SelectContentSlot>;
     SelectItem: import('../../core').ComponentThemeConfig<SelectItemProps, SelectItemSlot>;
     SelectGroup: import('../../core').ComponentThemeConfig<SelectGroupProps, SelectGroupSlot>;
