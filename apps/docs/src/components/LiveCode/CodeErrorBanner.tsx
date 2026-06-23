@@ -35,8 +35,7 @@ export const CodeErrorBanner = ({ onCopy }: CodeErrorBannerProps) => {
     return null;
   }
 
-  const parsedError = parseErrorString(error);
-  const errorState = { hasError: true as const, ...parsedError, timestamp: 0 };
+  const errorState = parseErrorString(error);
 
   const handleDismiss = () => {
     setIsDismissed(true);

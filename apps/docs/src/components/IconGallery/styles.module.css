@@ -92,10 +92,6 @@
   transform: translateY(-1px);
 }
 
-.cellCopied {
-  border-color: var(--ifm-color-primary, #c8102e);
-}
-
 .glyph {
   font-size: 28px;
   color: inherit;

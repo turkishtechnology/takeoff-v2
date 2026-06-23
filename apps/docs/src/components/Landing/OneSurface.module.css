@@ -231,13 +231,6 @@
   outline-offset: 1px;
 }
 
-.editorTabActive,
-.editorTabActive:hover {
-  color: var(--runway-ink);
-  background: var(--runway-bg-3);
-  border-color: var(--runway-surface-dark-border-2);
-}
-
 .editorBadge {
   font-family: var(--runway-type-mono-family);
   font-size: 11px;

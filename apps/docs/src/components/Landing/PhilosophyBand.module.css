@@ -136,25 +136,6 @@
   flex: 1;
 }
 
-.pillarLink {
-  font-family: var(--runway-type-mono-family);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--runway-cardinal-bright, #e6001f);
-  margin-top: auto;
-}
-
-.pillarLink::after {
-  content: ' →';
-  transition: transform var(--runway-duration-base, 220ms) ease;
-  display: inline-block;
-}
-
-.pillar:hover .pillarLink::after {
-  transform: translateX(3px);
-}
-
 @media (max-width: 960px) {
   .pillars {
     grid-template-columns: 1fr;
