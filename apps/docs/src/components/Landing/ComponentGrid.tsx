@@ -1,16 +1,14 @@
 import type { JSX } from 'react';
 import Link from '@docusaurus/Link';
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import { Badge, Button, Field, Input, Switch } from '@takeoff-ui/react-spar';
+import { Accordion, Badge, Button, Field, Input, Spinner, Switch } from '@takeoff-ui/react-spar';
 import { ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
-import { PlaceholderProgress, PlaceholderAvatarGroup } from '@site/src/components/PlaceholderCustomComponents';
 import styles from './ComponentGrid.module.css';
 
 /*
  * ComponentGrid — six live-preview cards for the landing. Button, Input,
- * Badge, and Switch render the real `@takeoff-ui/react-spar` components.
- * Progress and AvatarGroup are still placeholder mocks until those ship —
- * tracked in PlaceholderCustomComponents/index.tsx.
+ * Badge, Switch, Accordion, and Spinner render the real
+ * `@takeoff-ui/react-spar` components.
  */
 
 function TakeoffIcon(): JSX.Element {
@@ -145,21 +143,41 @@ function SwitchCardDemo(): JSX.Element {
   );
 }
 
-function ProgressCardDemo(): JSX.Element {
+function AccordionCardDemo(): JSX.Element {
   return (
-    <div className={styles.demo} style={{ padding: '18px 16px' }}>
-      <div className={styles.progress}>
-        <PlaceholderProgress label="Boarding" value="~78%" pulse />
-        <PlaceholderProgress label="Baggage loaded" value="100%" />
-      </div>
+    <div className={`${styles.demo} ${styles.accordionDemo}`}>
+      <Accordion defaultValue="fare" mode="compact">
+        <Accordion.Item value="fare">
+          <Accordion.Header>
+            <Accordion.Trigger>
+              Fare conditions
+              <Accordion.Indicator />
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>Changes are available before departure.</Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item value="baggage">
+          <Accordion.Header>
+            <Accordion.Trigger>
+              Baggage allowance
+              <Accordion.Indicator />
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>One cabin bag is included.</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>
     </div>
   );
 }
 
-function AvatarGroupCardDemo(): JSX.Element {
+function SpinnerCardDemo(): JSX.Element {
   return (
     <div className={styles.demo}>
-      <PlaceholderAvatarGroup initials={['EY', 'MK', 'SA', '+12']} />
+      <div className={styles.spinnerRow} aria-hidden="true">
+        <Spinner appearance="rounded" variant="primary" size="large" />
+        <Spinner appearance="dots" variant="info" size="large" />
+        <Spinner appearance="pulse" variant="neutral" size="large" />
+      </div>
     </div>
   );
 }
@@ -180,8 +198,7 @@ export default function ComponentGrid(): JSX.Element {
             <em>shipped with the full contract.</em>
           </h2>
           <p className={styles.lede}>
-            Accordion, Button, Drawer, and Tooltip are shipped today. The previews alongside them show what is coming next, but nothing ships without docs, examples, and API
-            coverage in place.
+            Explore shipped components through live previews. Every surface comes with usage guidance, examples, and API coverage so implementation starts from the same contract.
           </p>
         </div>
 
@@ -242,20 +259,32 @@ export default function ComponentGrid(): JSX.Element {
             </BrowserOnly>
           </Link>
 
-          <Link to="/docs/" className={styles.card} aria-label="Progress — planned">
+          <Link to="/docs/components/accordion" className={styles.card}>
             <div className={styles.cardTitle}>
-              <h4>Progress</h4>
-              <span className={styles.cardMono}>Progress</span>
+              <h4>Accordion</h4>
+              <span className={styles.cardMono}>Accordion</span>
             </div>
-            <ProgressCardDemo />
+            <BrowserOnly fallback={<div className={styles.demo} />}>
+              {() => (
+                <ReactSparDemoRoot>
+                  <AccordionCardDemo />
+                </ReactSparDemoRoot>
+              )}
+            </BrowserOnly>
           </Link>
 
-          <Link to="/docs/" className={styles.card} aria-label="Avatar group — planned">
+          <Link to="/docs/components/spinner" className={styles.card}>
             <div className={styles.cardTitle}>
-              <h4>Avatar group</h4>
-              <span className={styles.cardMono}>AvatarGroup</span>
+              <h4>Spinner</h4>
+              <span className={styles.cardMono}>Spinner</span>
             </div>
-            <AvatarGroupCardDemo />
+            <BrowserOnly fallback={<div className={styles.demo} />}>
+              {() => (
+                <ReactSparDemoRoot>
+                  <SpinnerCardDemo />
+                </ReactSparDemoRoot>
+              )}
+            </BrowserOnly>
           </Link>
         </div>
 

@@ -144,7 +144,6 @@
   padding: 18px 14px;
 }
 
-/* Containers for placeholder mocks — placeholders bring their own inner styles */
 .badgeRow {
   display: flex;
   gap: 8px;
@@ -168,12 +167,21 @@
   color: var(--runway-ink-dim);
 }
 
-.progress {
+.accordionDemo {
+  align-items: stretch;
+  padding: 14px;
+}
+
+.accordionDemo > * {
+  width: 100%;
+}
+
+.spinnerRow {
   width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 4px 6px;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
 
 /* Footer explore link */
