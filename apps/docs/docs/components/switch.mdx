@@ -17,8 +17,17 @@ import {
   Switch,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
+import { BlockIconOutlinedRounded } from '@takeoff-icons/react/block';
+import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
 
-export const switchScope = { Badge, Button, Field, Switch };
+export const switchScope = {
+  Badge,
+  BlockIconOutlinedRounded,
+  Button,
+  CheckIconOutlinedRounded,
+  Field,
+  Switch,
+};
 
 {/* prettier-ignore-start */}
 
@@ -182,9 +191,12 @@ render(<VariantDemo />);
 
 export const customIndicatorDemo = String.raw`
 function CustomIndicatorDemo() {
-  const ToggleLabel = ({ active }) => (
-    <span aria-hidden="true" className="inline-flex h-full w-full items-center justify-center whitespace-nowrap">
-      <span className="text-[7px] font-semibold leading-none tracking-[0.08em] text-static-white">{active ? 'ON' : 'OFF'}</span>
+  const SliderThumb = ({ active }) => (
+    <span
+      aria-hidden="true"
+      className="inline-flex h-full w-full items-center justify-center whitespace-nowrap transition-transform duration-200"
+    >
+      {active ? <CheckIconOutlinedRounded width={20} height={20} /> : <BlockIconOutlinedRounded width={20} height={20} />}
     </span>
   );
 
@@ -195,8 +207,8 @@ function CustomIndicatorDemo() {
         <Switch defaultChecked variant="success">
           <Switch.Indicator>
             {({ checked }) => (
-              <span data-slot="thumb" className="inline-flex h-full w-full items-center justify-center">
-                <ToggleLabel active={checked} />
+              <span data-slot="thumb" className="tk-toggle-thumb inline-flex items-center justify-center">
+                <SliderThumb active={checked} />
               </span>
             )}
           </Switch.Indicator>
