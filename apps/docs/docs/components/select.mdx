@@ -131,6 +131,78 @@ function GroupsDemo() {
 render(<GroupsDemo />);
 `;
 
+export const indicatorDemo = String.raw`
+function IndicatorDemo() {
+  const PlusMinus = ({ isOpen }) => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      {!isOpen && <path d="M8 3v10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />}
+    </svg>
+  );
+
+  return (
+    <div className="grid w-full max-w-90 gap-3">
+      {/* Default — a chevron that flips direction with the open state. */}
+      <Select defaultValue="ist">
+        <Select.Trigger placeholder="Default chevron" />
+        <Select.Content>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+        </Select.Content>
+      </Select>
+
+      {/* Custom indicator via the Trigger prop — render function gets { isOpen }. */}
+      <Select defaultValue="ist">
+        <Select.Trigger placeholder="Custom icon" indicator={(state) => <PlusMinus isOpen={state.isOpen} />} />
+        <Select.Content>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+        </Select.Content>
+      </Select>
+
+      {/* Opt out entirely. */}
+      <Select defaultValue="ist">
+        <Select.Trigger placeholder="No indicator" indicator={false} />
+        <Select.Content>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+        </Select.Content>
+      </Select>
+    </div>
+  );
+}
+
+render(<IndicatorDemo />);
+`;
+
+export const indicatorCompoundDemo = String.raw`
+function IndicatorCompoundDemo() {
+  // Full layout control: drive the trigger's render-prop children and drop a
+  // standalone <Select.Indicator /> wherever you want it.
+  return (
+    <Select className="max-w-90" defaultValue="ist">
+      <Select.Trigger>
+        {({ label, isOpen }) => (
+          <>
+            <span className="tk-select-value">{label ?? 'Choose a city'}</span>
+            <Select.Indicator>
+              {({ isOpen }) => (isOpen ? '▲' : '▼')}
+            </Select.Indicator>
+          </>
+        )}
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+        <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+        <Select.Item value="izm" label="Izmir">Izmir</Select.Item>
+      </Select.Content>
+    </Select>
+  );
+}
+
+render(<IndicatorCompoundDemo />);
+`;
+
 export const controlledDemo = String.raw`
 function ControlledSelectDemo() {
   const [value, setValue] = useState('eco');
@@ -290,6 +362,35 @@ trigger through shared IDs.
   scope={selectScope}
 />
 
+## Indicator
+
+`Select.Trigger` renders a disclosure chevron at its trailing edge by default —
+it flips direction (and switches to the primary color) with the open state, the
+same visual language as [`Accordion.Indicator`](/components/accordion). Pass the
+`indicator` prop to customize it: a node for a custom static icon, a render
+function `({ isOpen }) => …` to swap icons by open state, or `false` to hide it.
+
+<LiveCode
+  code={indicatorDemo}
+  noInline
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={selectScope}
+/>
+
+For full layout control, drive the trigger's render-prop `children` and place a
+standalone `<Select.Indicator />` wherever you need it. Its `children` accept the
+same node-or-render-function form, so you can swap the glyph by `isOpen` without
+reaching for a hook.
+
+<LiveCode
+  code={indicatorCompoundDemo}
+  noInline
+  previewMinHeight={140}
+  previewWrapper={ReactSparDemoRoot}
+  scope={selectScope}
+/>
+
 ## Controlled
 
 <LiveCode
@@ -384,13 +485,14 @@ for primitive behavior.
 
 #### Props {#select-trigger-props}
 
-| Name                             | Type                                                                                      | Default | Description                                                                                                                                                          |
-| -------------------------------- | ----------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                              | -       | Trigger content. Defaults to the selected item label or `placeholder`; supply children to override the rendering, or pass a render function for full layout control. |
-| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                       |
-| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                   |
-| <ApiBadge label="placeholder" /> | <code>React.React.ReactNode</code>                                                        | -       | Text shown when no value is selected                                                                                                                                 |
-| <ApiBadge label="className" />   | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.                                                                                                                |
+| Name                             | Type                                                                                                                                                               | Default | Description                                                                                                                                                                                                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                                                                                                       | -       | Trigger content. Defaults to the selected item label or `placeholder`; supply children to override the rendering, or pass a render function for full layout control.                                                        |
+| <ApiBadge label="indicator" />   | <code>boolean &#124; React.ReactNode &#124; ((state: <a href="#select-td-selectindicatorrenderstate">SelectIndicatorRenderState</a>) =&gt; React.ReactNode)</code> | true    | Disclosure indicator after the value. Defaults to a chevron that flips with the open state. Pass `false` to hide it, a node for a custom static icon, or a render function `({ isOpen }) => …` to swap icons by open state. |
+| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;<a href="#select-td-selecttriggerslot">SelectTriggerSlot</a>, string&gt;&gt;</code>                                                     | -       | Per-slot class name overrides.                                                                                                                                                                                              |
+| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;<a href="#select-td-selecttriggerslot">SelectTriggerSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>                    | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                          |
+| <ApiBadge label="placeholder" /> | <code>React.ReactNode</code>                                                                                                                                       | -       | Text shown when no value is selected                                                                                                                                                                                        |
+| <ApiBadge label="className" />   | <code>string</code>                                                                                                                                                | -       | Appends custom classes to the root slot of this part.                                                                                                                                                                       |
 
 #### Data attributes {#select-trigger-data-attributes}
 
@@ -402,6 +504,18 @@ for primitive behavior.
 | <ApiBadge label="data-state=&quot;open&quot;" />   | While the dropdown is open.   | Spar open-state hook on the trigger and content.                            |
 | <ApiBadge label="data-state=&quot;closed&quot;" /> | While the dropdown is closed. | Spar closed-state hook on the trigger.                                      |
 | <ApiBadge label="data-placeholder" />              | When no value is selected.    | Theme hook to style the placeholder color.                                  |
+
+### Select.Indicator {#select-indicator}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Data attributes {#select-indicator-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Select.Content {#select-content}
 
@@ -501,11 +615,13 @@ for primitive behavior.
 
 ### Type Definitions {#select-type-definitions}
 
-| Name                                                                                   | Definition                                                          |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| <span id="select-td-selectsize"><ApiBadge label="SelectSize" /></span>                 | <code>'small' &#124; 'base' &#124; 'large'</code>                   |
-| <span id="select-td-selectcontentwidth"><ApiBadge label="SelectContentWidth" /></span> | <code>'trigger' &#124; 'content' &#124; number &#124; string</code> |
-| <span id="select-td-side"><ApiBadge label="Side" /></span>                             | <code>'top' &#124; 'right' &#124; 'bottom' &#124; 'left'</code>     |
-| <span id="select-td-align"><ApiBadge label="Align" /></span>                           | <code>'start' &#124; 'center' &#124; 'end'</code>                   |
+| Name                                                                                                   | Definition                                                          |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| <span id="select-td-selectsize"><ApiBadge label="SelectSize" /></span>                                 | <code>'small' &#124; 'base' &#124; 'large'</code>                   |
+| <span id="select-td-selectcontentwidth"><ApiBadge label="SelectContentWidth" /></span>                 | <code>'trigger' &#124; 'content' &#124; number &#124; string</code> |
+| <span id="select-td-selectindicatorrenderstate"><ApiBadge label="SelectIndicatorRenderState" /></span> | <code>&#123; isOpen: boolean &#125;</code>                          |
+| <span id="select-td-selecttriggerslot"><ApiBadge label="SelectTriggerSlot" /></span>                   | <code>'root' &#124; 'indicator'</code>                              |
+| <span id="select-td-side"><ApiBadge label="Side" /></span>                                             | <code>'top' &#124; 'right' &#124; 'bottom' &#124; 'left'</code>     |
+| <span id="select-td-align"><ApiBadge label="Align" /></span>                                           | <code>'start' &#124; 'center' &#124; 'end'</code>                   |
 
 {/* api-tables:end */}

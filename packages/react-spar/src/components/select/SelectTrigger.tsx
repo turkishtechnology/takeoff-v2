@@ -1,12 +1,13 @@
-import type { ElementType } from 'react';
-import { SelectTrigger as SparSelectTrigger } from '@turkish-technology/spar';
+import { type ElementType, type ReactNode } from 'react';
+import { SelectTrigger as SparSelectTrigger, type SelectTriggerRenderProps } from '@turkish-technology/spar';
 
-import { composeRootAttrs } from '../../core';
+import { buildSlotAttrs, composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { SelectTriggerBase } from './base';
+import { defaultIndicatorIcon } from './chevrons';
 import { useSelectOwnContext } from './context';
-import type { SelectTriggerProps } from './types';
+import type { SelectIndicatorRenderState, SelectTriggerProps } from './types';
 
 export const SelectTrigger = <T extends ElementType = 'button'>(props: SelectTriggerProps<T>) => {
   const theme = useComponentTheme('SelectTrigger');
@@ -22,11 +23,58 @@ export const SelectTrigger = <T extends ElementType = 'button'>(props: SelectTri
     }),
   });
 
-  const { children, ref, ...spar } = rest;
+  const { children, indicator, ref, ...spar } = rest;
 
+  // `false` / `null` opt out entirely; anything else (incl. `undefined`/`true`)
+  // shows an indicator. The default is the open-state-aware chevron, matching
+  // `Accordion.Indicator`.
+  const showIndicator = indicator !== false && indicator !== null;
+
+  // No indicator → forward children/placeholder to Spar verbatim so the
+  // primitive keeps full control of the auto value/placeholder rendering.
+  if (!showIndicator) {
+    return (
+      <SparSelectTrigger {...spar} ref={ref} {...rootAttrs}>
+        {children as ReactNode}
+      </SparSelectTrigger>
+    );
+  }
+
+  const resolveIndicatorNode = (state: SelectIndicatorRenderState): ReactNode => {
+    if (indicator === undefined || indicator === true) return defaultIndicatorIcon(state.isOpen);
+    if (typeof indicator === 'function') return (indicator as (s: SelectIndicatorRenderState) => ReactNode)(state);
+    return indicator as ReactNode;
+  };
+
+  const indicatorAttrs = buildSlotAttrs(SelectTriggerBase.getSlotProps('indicator'), 'indicator', {
+    themeSlotProps: theme?.slotProps,
+    themeClassNames: theme?.classNames,
+    instanceSlotProps: props.slotProps,
+    instanceClassNames: props.classNames,
+  });
+
+  // With an indicator we must compose the trigger content ourselves. Spar
+  // renders `children` OR the auto label/placeholder, never both — so we drive
+  // Spar's render-prop form to reconstruct the value region (`label ??
+  // placeholder`, or the consumer's own children) and append the indicator as
+  // a trailing sibling inside the button.
   return (
     <SparSelectTrigger {...spar} ref={ref} {...rootAttrs}>
-      {children}
+      {(state: SelectTriggerRenderProps) => {
+        const value: ReactNode = typeof children === 'function' ? children(state) : (children ?? state.label ?? spar.placeholder);
+
+        return (
+          <>
+            {/* Truncating value region — keeps long selections from shoving the
+                indicator out of the trigger (the `space-between` layout pins
+                the indicator to the trailing edge). */}
+            <span className="tk-select-value">{value}</span>
+            <span {...indicatorAttrs} aria-hidden="true">
+              {resolveIndicatorNode({ isOpen: state.isOpen })}
+            </span>
+          </>
+        );
+      }}
     </SparSelectTrigger>
   );
 };
