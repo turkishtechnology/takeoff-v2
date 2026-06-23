@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import { themes as prismThemes } from 'prism-react-renderer';
+import reactSparPackage from '../../packages/react-spar/package.json';
 import tailwindPlugin from './plugins/tailwind';
 import packageChangelogsPlugin from './plugins/package-changelogs';
 
@@ -110,7 +111,7 @@ const config: Config = {
         {
           type: 'html',
           position: 'left',
-          value: '<span class="navbar__version-pill">v0.0.1</span>',
+          value: `<span class="navbar__version-pill">v${reactSparPackage.version}</span>`,
         },
         {
           type: 'docSidebar',
