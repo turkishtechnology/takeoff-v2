@@ -1,13 +1,20 @@
 import { type ElementType, type ReactNode } from 'react';
 import { SelectTrigger as SparSelectTrigger, type SelectTriggerRenderProps } from '@turkish-technology/spar';
+import { ChevronBottomIconOutlinedRounded } from '@takeoff-icons/react/chevron-bottom';
+import { ChevronTopIconOutlinedRounded } from '@takeoff-icons/react/chevron-top';
 
 import { buildSlotAttrs, composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { SelectTriggerBase } from './base';
-import { defaultIndicatorIcon } from './chevrons';
 import { useSelectOwnContext } from './context';
 import type { SelectIndicatorRenderState, SelectTriggerProps } from './types';
+
+// Default disclosure chevrons — same glyphs as the standalone Select.Indicator
+// (official Takeoff icon set, outlined/rounded). The `tk-select-indicator`
+// recipe drives size/color via `1em` + `currentColor`.
+const DEFAULT_EXPAND_ICON = <ChevronBottomIconOutlinedRounded />;
+const DEFAULT_COLLAPSE_ICON = <ChevronTopIconOutlinedRounded />;
 
 export const SelectTrigger = <T extends ElementType = 'button'>(props: SelectTriggerProps<T>) => {
   const theme = useComponentTheme('SelectTrigger');
@@ -41,7 +48,7 @@ export const SelectTrigger = <T extends ElementType = 'button'>(props: SelectTri
   }
 
   const resolveIndicatorNode = (state: SelectIndicatorRenderState): ReactNode => {
-    if (indicator === undefined || indicator === true) return defaultIndicatorIcon(state.isOpen);
+    if (indicator === undefined || indicator === true) return state.isOpen ? DEFAULT_COLLAPSE_ICON : DEFAULT_EXPAND_ICON;
     if (typeof indicator === 'function') return (indicator as (s: SelectIndicatorRenderState) => ReactNode)(state);
     return indicator as ReactNode;
   };
