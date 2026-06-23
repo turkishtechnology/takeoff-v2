@@ -4,6 +4,9 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 import { Badge, Button, Field, Input, Switch } from '@takeoff-ui/react-spar';
 import { ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
 import { PlaceholderProgress, PlaceholderAvatarGroup } from '@site/src/components/PlaceholderCustomComponents';
+import { ArrowRightIconOutlinedRounded } from '@takeoff-icons/react/arrow-right';
+import { ShoppingBagIconOutlinedRounded } from '@takeoff-icons/react/shopping-bag';
+import { TakeoffRocketIconOutlinedRounded } from '@takeoff-icons/react/takeoff-rocket';
 import styles from './ComponentGrid.module.css';
 
 /*
@@ -12,40 +15,6 @@ import styles from './ComponentGrid.module.css';
  * Progress and AvatarGroup are still placeholder mocks until those ship —
  * tracked in PlaceholderCustomComponents/index.tsx.
  */
-
-function TakeoffIcon(): JSX.Element {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M3 17l6-2 3-8 3 3-1 4 6-2 2 2-17 6v-3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function LuggageIcon(): JSX.Element {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect x="5" y="7" width="14" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M9 7V4h6v3" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M9 12h6M9 16h6" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function ArrowIcon(): JSX.Element {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function BadgeDot(): JSX.Element {
-  return (
-    <svg width="6" height="6" viewBox="0 0 6 6" aria-hidden="true">
-      <circle cx="3" cy="3" r="3" fill="currentColor" />
-    </svg>
-  );
-}
 
 /* ──────────────────────────────────────────────────────────────────────
  * Live demos rendering the real react-spar primitives
@@ -77,10 +46,10 @@ function ButtonsCardDemo(): JSX.Element {
         </Button>
       </div>
       <div className={styles.stack}>
-        <Button variant="primary" appearance="filled" size="small" startContent={<TakeoffIcon />}>
+        <Button variant="primary" appearance="filled" size="small" startContent={<TakeoffRocketIconOutlinedRounded width={14} height={14} />}>
           Book flight
         </Button>
-        <Button variant="neutral" appearance="outlined" size="small" startContent={<LuggageIcon />}>
+        <Button variant="neutral" appearance="outlined" size="small" startContent={<ShoppingBagIconOutlinedRounded width={14} height={14} />}>
           Baggage
         </Button>
       </div>
@@ -105,16 +74,16 @@ function BadgeCardDemo(): JSX.Element {
   return (
     <div className={styles.demo}>
       <div className={styles.badgeRow}>
-        <Badge variant="info" appearance="filledLight" startContent={<BadgeDot />}>
+        <Badge variant="info" appearance="filledLight">
           On time
         </Badge>
-        <Badge variant="success" appearance="filledLight" startContent={<BadgeDot />}>
+        <Badge variant="success" appearance="filledLight">
           Confirmed
         </Badge>
-        <Badge variant="warning" appearance="filledLight" startContent={<BadgeDot />}>
+        <Badge variant="warning" appearance="filledLight">
           Delayed
         </Badge>
-        <Badge variant="danger" appearance="filledLight" startContent={<BadgeDot />}>
+        <Badge variant="danger" appearance="filledLight">
           Cancelled
         </Badge>
       </div>
@@ -262,7 +231,7 @@ export default function ComponentGrid(): JSX.Element {
         <div className={styles.exploreRow}>
           <Link to="/docs/" className={styles.exploreLink}>
             Browse the full component set
-            <ArrowIcon />
+            <ArrowRightIconOutlinedRounded width={20} height={20} aria-hidden="true" />
           </Link>
         </div>
       </div>

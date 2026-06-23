@@ -31,26 +31,3 @@ export function parseErrorString(raw: string): Omit<ErrorState, 'hasError' | 'ti
 
   return { errorName, errorMessage, stack, line, column };
 }
-
-export function getPreviewErrorMessage(errorString: string): string {
-  const parsed = parseErrorString(errorString);
-  const errorName = parsed.errorName;
-
-  switch (errorName) {
-    case 'SyntaxError':
-      return 'Syntax error. Preview not updated.';
-    case 'ReferenceError':
-      return 'Reference error (possible typo or missing import). Preview may be stale.';
-    case 'TypeError':
-      return 'Type error at runtime. Preview may be stale.';
-    case 'RangeError':
-      return 'Runtime error. Preview may be stale.';
-    case 'ChunkLoadError':
-      return 'Failed to load demo code. Try resetting.';
-    default:
-      if (/load|chunk/i.test(errorName) || /load|chunk/i.test(parsed.errorMessage)) {
-        return 'Failed to load demo code. Try resetting.';
-      }
-      return 'Runtime error. Preview may be stale.';
-  }
-}
