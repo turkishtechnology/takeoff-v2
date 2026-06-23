@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import FooterRunway from '@site/src/pages/landing/FooterRunway';
+import FooterRunway from '@site/src/components/Landing/FooterRunway';
 
 // Sync Docusaurus dark mode (data-theme='dark') → our token system (data-scheme='dark')
 function SchemeSyncer() {
