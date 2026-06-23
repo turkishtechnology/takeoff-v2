@@ -12,8 +12,8 @@ export default function ClosingCTA(): JSX.Element {
             A stable surface to <em>build on.</em>
           </h2>
           <p className={styles.subhead}>
-            Installation guides, component references, philosophy notes, migration paths, and changelog all point at the same contract. That alignment is what makes the library
-            usable in real product work.
+            Installation guidance, component references, form integrations, and changelog all point at the same contract. That alignment is what makes the library usable in real
+            product work.
           </p>
           <div className={styles.ctaRow}>
             <Link to="/docs/installation" className={styles.ctaPrimary}>
