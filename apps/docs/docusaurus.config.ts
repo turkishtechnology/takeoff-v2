@@ -61,6 +61,7 @@ const config: Config = {
     [
       'classic',
       {
+        blog: false,
         docs: {
           sidebarPath: './sidebars.ts',
           sidebarCollapsed: false,
