@@ -1,0 +1,343 @@
+---
+title: Table
+description:
+  Props-first, TanStack-backed data table — sorting, filtering, selection,
+  expansion, pagination, sticky columns, and a column-def escape hatch.
+sidebar_label: Table
+sidebar_position: 9
+slug: /components/table
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Badge,
+  Button,
+  Table,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const tableScope = { Badge, Button, Table };
+
+Table is the catalog's first **TanStack-backed** component: its state engine is
+[`@tanstack/react-table`](https://tanstack.com/table), not a Spar primitive
+(Spar intentionally has no table). The public API is **props-first** — a common
+table is a single `<Table data columns getRowId />` call — with a **column-def +
+slot escape hatch** for customization. `getRowId` is mandatory: it is the single
+identity source row selection keys on.
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  const data = [
+    { id: '1', name: 'Ada Lovelace', role: 'admin', city: 'London', age: 36 },
+    { id: '2', name: 'Linus Torvalds', role: 'user', city: 'Helsinki', age: 35 },
+    { id: '3', name: 'Grace Hopper', role: 'admin', city: 'New York', age: 45 },
+    { id: '4', name: 'Alan Turing', role: 'user', city: 'London', age: 41 },
+    { id: '5', name: 'Margaret Hamilton', role: 'admin', city: 'Boston', age: 33 },
+    { id: '6', name: 'Dennis Ritchie', role: 'user', city: 'Bronxville', age: 48 },
+  ];
+
+  const columns = [
+    { id: 'name', header: 'Name', accessor: 'name', sortable: true },
+    {
+      id: 'role',
+      header: 'Role',
+      accessor: 'role',
+      filter: { type: 'checkbox', options: [
+        { label: 'Admin', value: 'admin' },
+        { label: 'User', value: 'user' },
+      ] },
+      cell: ({ row }) => (
+        <Badge variant={row.original.role === 'admin' ? 'info' : 'neutral'}>
+          {row.original.role}
+        </Badge>
+      ),
+    },
+    { id: 'city', header: 'City', accessor: 'city' },
+    { id: 'age', header: 'Age', accessor: 'age', align: 'end', sortable: true },
+  ];
+
+  return (
+    <Table
+      data={data}
+      columns={columns}
+      getRowId={(row) => row.id}
+      sorting={{ multi: true }}
+      selection={{ mode: 'multiple' }}
+      pagination={{ pageSize: 4 }}
+      striped
+    />
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const basicDemo = String.raw`
+function BasicDemo() {
+  const data = [
+    { id: '1', flight: 'TK1980', from: 'IST', to: 'LHR', status: 'On time' },
+    { id: '2', flight: 'TK1', from: 'IST', to: 'JFK', status: 'Delayed' },
+    { id: '3', flight: 'TK162', from: 'ESB', to: 'IST', status: 'Boarding' },
+  ];
+  const columns = [
+    { id: 'flight', header: 'Flight', accessor: 'flight' },
+    { id: 'from', header: 'From', accessor: 'from' },
+    { id: 'to', header: 'To', accessor: 'to' },
+    { id: 'status', header: 'Status', accessor: 'status' },
+  ];
+  return <Table data={data} columns={columns} getRowId={(r) => r.id} bordered />;
+}
+
+render(<BasicDemo />);
+`;
+
+export const customCellDemo = String.raw`
+function CustomCellDemo() {
+  const data = [
+    { id: '1', name: 'Ada Lovelace', role: 'admin' },
+    { id: '2', name: 'Linus Torvalds', role: 'user' },
+  ];
+  const columns = [
+    { id: 'name', header: 'Name', accessor: 'name' },
+    {
+      id: 'role',
+      header: 'Role',
+      cell: ({ row }) => (
+        <Badge variant={row.original.role === 'admin' ? 'info' : 'neutral'}>
+          {row.original.role}
+        </Badge>
+      ),
+    },
+    {
+      id: 'actions',
+      header: '',
+      align: 'end',
+      cell: ({ row }) => (
+        <Button size="small" appearance="text" onClick={() => alert('Edit ' + row.original.name)}>
+          Edit
+        </Button>
+      ),
+    },
+  ];
+  return <Table data={data} columns={columns} getRowId={(r) => r.id} />;
+}
+
+render(<CustomCellDemo />);
+`;
+
+export const expansionDemo = String.raw`
+function ExpansionDemo() {
+  const data = [
+    { id: '1', name: 'Ada Lovelace', note: 'First programmer; worked on the Analytical Engine.' },
+    { id: '2', name: 'Grace Hopper', note: 'Invented the first compiler; coined "debugging".' },
+  ];
+  const columns = [{ id: 'name', header: 'Name', accessor: 'name' }];
+  return (
+    <Table
+      data={data}
+      columns={columns}
+      getRowId={(r) => r.id}
+      expansion={{ render: (row) => <div style={{ padding: 8 }}>{row.note}</div> }}
+    />
+  );
+}
+
+render(<ExpansionDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+## Playground
+
+A single `<Table>` call with sortable headers, a `Badge` cell, a checkbox column
+filter, multi-row selection, striping, and client pagination.
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={420}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tableScope}
+/>
+
+## Basic
+
+The minimum is `data`, `columns`, and `getRowId`. `accessor` is a property key,
+a dot-path (`'user.city'`), or a `(row) => value` function.
+
+<LiveCode
+  code={basicDemo}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tableScope}
+/>
+
+## Custom cells & actions
+
+A column's `cell` is a **React render-prop** (never an HTML string) — put a
+`Badge`, `Button`, icon, or anything else inside. Table still owns the `<td>`
+container (padding, alignment, sticky, a11y); `cell` only supplies the content.
+
+<LiveCode
+  code={customCellDemo}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tableScope}
+/>
+
+## Expandable rows
+
+Pass `expansion.render` to render a disclosure row beneath each row.
+
+<LiveCode
+  code={expansionDemo}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tableScope}
+/>
+
+## Server (manual) data
+
+In `manual` mode Table processes nothing in-memory. It maps to TanStack's
+`manualSorting` / `manualFiltering` / `manualPagination` and emits **one bundled
+`onDataRequest`** derived from the current sorting, filters, and pagination —
+fetch the page yourself and feed the result back through `data`. `pagination`
+must carry `rowCount` so the page count and Next/Last controls can be computed.
+
+```tsx
+<Table
+  data={page.rows}
+  columns={columns}
+  getRowId={row => row.id}
+  manual
+  sorting={{ value: sorting, onChange: setSorting }}
+  filtering={{ value: filters, onChange: setFilters }}
+  pagination={{
+    pageSize,
+    pageIndex,
+    rowCount: page.total,
+    onChange: setPagination,
+  }}
+  onDataRequest={({ pagination, sorting, filters }) =>
+    fetchPage({ pagination, sorting, filters })
+  }
+  loading={isFetching}
+/>
+```
+
+## Exporting data
+
+Table ships **no export engine** — it exposes the current filtered + sorted rows
+as a plain value projection via `getExportRows(tableRef.current)`. Formatting
+and file download (CSV / Excel / PDF) stay on your side, keeping those heavy
+dependencies out of the bundle.
+
+```tsx
+import { Table, getExportRows } from '@takeoff-ui/react-spar';
+
+const tableRef = useRef(null);
+
+<Table
+  data={rows}
+  columns={columns}
+  getRowId={r => r.id}
+  tableRef={tableRef}
+/>;
+
+// later — e.g. a "Download CSV" button:
+const rowsToExport = getExportRows(tableRef.current); // Array<Record<columnId, value>>
+```
+
+## Accessibility
+
+- Renders a native `<table>` / `<thead>` / `<tbody>` / `<th scope="col">` /
+  `<td>`, so screen-reader table navigation, header association, and row/column
+  counts come for free.
+- Sortable headers are real `<button>`s (Enter / Space toggle sorting) and the
+  `<th>` carries `aria-sort` (`ascending` | `descending` | `none`).
+- Row selection composes Spar `Checkbox` (multiple) or `Radio` (single) with
+  accessible names; the select-all header checkbox is multiple-mode only.
+- Pagination is a labelled `navigation` region; the page-size control is a Spar
+  `Select` with an accessible name, and the nav buttons carry `aria-label`s.
+- The loading overlay surfaces the Spar `Spinner` (`role="status"`) and the
+  table is marked `aria-busy` while `loading`.
+
+| Key                                 | Behavior                                        |
+| ----------------------------------- | ----------------------------------------------- |
+| <kbd>Tab</kbd>                      | Move between interactive controls in the table. |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Toggle sorting on a focused sortable header.    |
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Table {#table}
+
+See [TanStack Table docs](https://tanstack.com/table/latest/docs/introduction)
+for primitive behavior.
+
+#### Props {#table-props}
+
+| Name                              | Type                                                                                                                           | Default | Description                                                                                                                                                                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data" />         | <code>TData[]</code>                                                                                                           | -       | Row data. In `manual` mode this is the current server page.                                                                                                                                                                   |
+| <ApiBadge label="columns" />      | <code>TableColumnDef&lt;TData&gt;[]</code>                                                                                     | -       | Column definitions. See `TableColumnDef`.                                                                                                                                                                                     |
+| <ApiBadge label="getRowId" />     | <code>(row: TData, index: number) =&gt; string</code>                                                                          | -       | Stable row identity (single source of truth).                                                                                                                                                                                 |
+| <ApiBadge label="size" />         | <code><a href="#table-td-tablesize">TableSize</a></code>                                                                       | 'base'  | Density scale.                                                                                                                                                                                                                |
+| <ApiBadge label="striped" />      | <code>boolean</code>                                                                                                           | false   | Zebra-stripe rows → `data-striped`.                                                                                                                                                                                           |
+| <ApiBadge label="bordered" />     | <code>boolean</code>                                                                                                           | false   | Cell borders → `data-bordered`.                                                                                                                                                                                               |
+| <ApiBadge label="stickyHeader" /> | <code>boolean</code>                                                                                                           | false   | Pin the header row during vertical scroll → `data-sticky-header`.                                                                                                                                                             |
+| <ApiBadge label="manual" />       | <code>boolean</code>                                                                                                           | false   | Server mode. When `true`, Table processes nothing in-memory — it maps to TanStack's `manualSorting`/`manualFiltering`/`manualPagination` and emits a single bundled `onDataRequest` (RFC §3.3).                               |
+| <ApiBadge label="selection" />    | <code><a href="#table-td-tableselectionconfig">TableSelectionConfig</a></code>                                                 | -       | Row selection (single/multiple + select-all). Composes Spar Checkbox/Radio.                                                                                                                                                   |
+| <ApiBadge label="sorting" />      | <code><a href="#table-td-tablesortingconfig">TableSortingConfig</a></code>                                                     | -       | Sorting (multi-sort opt-in).                                                                                                                                                                                                  |
+| <ApiBadge label="filtering" />    | <code><a href="#table-td-tablefilteringconfig">TableFilteringConfig</a></code>                                                 | -       | Column filtering. Filter UIs render in a Spar `Popover`.                                                                                                                                                                      |
+| <ApiBadge label="expansion" />    | <code>TableExpansionConfig&lt;TData&gt;</code>                                                                                 | -       | Expandable rows with a render-prop body.                                                                                                                                                                                      |
+| <ApiBadge label="pagination" />   | <code>boolean &#124; <a href="#table-td-tablepaginationconfig">TablePaginationConfig</a></code>                                | -       | Pagination. `true` enables it with defaults; an object configures it.                                                                                                                                                         |
+| <ApiBadge label="loading" />      | <code>boolean</code>                                                                                                           | false   | Loading state → `data-loading` + a loading overlay.                                                                                                                                                                           |
+| <ApiBadge label="emptyState" />   | <code>React.ReactNode</code>                                                                                                   | -       | Content rendered when there are no rows.                                                                                                                                                                                      |
+| <ApiBadge label="getSubRows" />   | <code>(row: TData) =&gt; TData[]</code>                                                                                        | -       | Optional sub-row reader for tree data (feeds TanStack `getSubRows`). When omitted, expansion is driven purely by `expansion.render`.                                                                                          |
+| <ApiBadge label="tableRef" />     | <code>Ref&lt;TanStackTable&lt;TData&gt; &#124; null&gt;</code>                                                                 | -       | Escape hatch for the rare imperative need — receives the TanStack table instance (RFC §2.3: controlled props + an optional instance ref, never an imperative `@Method` surface). Also the access point for `getExportRows()`. |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#table-td-tableslot">TableSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                                                                                |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#table-td-tableslot">TableSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                            |
+| <ApiBadge label="className" />    | <code>string</code>                                                                                                            | -       | Appends custom classes to the root scroll container.                                                                                                                                                                          |
+
+#### Events {#table-events}
+
+| Name                               | Type                                                                                         | Default | Description                                                                   |
+| ---------------------------------- | -------------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------- |
+| <ApiBadge label="onDataRequest" /> | <code>(request: <a href="#table-td-tabledatarequest">TableDataRequest</a>) =&gt; void</code> | -       | Bundled server data-request callback (`manual` mode). See `TableDataRequest`. |
+
+#### Data attributes {#table-data-attributes}
+
+| Attribute                                       | Applied when                                                              | Purpose                                                                                                    |
+| ----------------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                                    | Stable selector for the root scroll container.                                                             |
+| <ApiBadge label="data-size" />                  | Always                                                                    | Reflects the resolved `size` (density) so recipes can scope cell padding.                                  |
+| <ApiBadge label="data-striped" />               | When `striped` is true.                                                   | Enables zebra striping on body rows.                                                                       |
+| <ApiBadge label="data-bordered" />              | When `bordered` is true.                                                  | Adds vertical separators between columns.                                                                  |
+| <ApiBadge label="data-sticky-header" />         | When `stickyHeader` is true.                                              | Pins the header row during vertical scroll (opaque background + bottom shadow).                            |
+| <ApiBadge label="data-loading" />               | When `loading` is true.                                                   | Shows the loading overlay; the table is also marked `aria-busy`.                                           |
+| <ApiBadge label="data-align" />                 | On every header/body cell with an `align` (or column `meta.headerAlign`). | Drives cell `text-align` (`start` \| `center` \| `end`).                                                   |
+| <ApiBadge label="data-sticky" />                | On cells of a column with `sticky: "left" \| "right"`.                    | Pins the column; per-edge offset + z-index are applied inline.                                             |
+| <ApiBadge label="aria-sort" />                  | On sortable header cells.                                                 | A11y sort state (`ascending` \| `descending` \| `none`); the sort chevron mirrors it via `data-direction`. |
+| <ApiBadge label="data-selected" />              | On a selected body row.                                                   | Theme hook for the selected-row background.                                                                |
+
+### Type Definitions {#table-type-definitions}
+
+| Name                                                                                        | Definition                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="table-td-tablesize"><ApiBadge label="TableSize" /></span>                         | <code>'xsmall' &#124; 'small' &#124; 'base'</code>                                                                                                                                                                                                                                                                                                                    |
+| <span id="table-td-tableselectionconfig"><ApiBadge label="TableSelectionConfig" /></span>   | <code>&#123; mode: 'single' &#124; 'multiple' &#125;</code>                                                                                                                                                                                                                                                                                                           |
+| <span id="table-td-tablesortingconfig"><ApiBadge label="TableSortingConfig" /></span>       | <code>&#123; multi?: boolean &#125;</code>                                                                                                                                                                                                                                                                                                                            |
+| <span id="table-td-tablefilteringconfig"><ApiBadge label="TableFilteringConfig" /></span>   | <code>&#123; value?: T; defaultValue?: T; onChange?: (value: T) =&gt; void &#125;</code>                                                                                                                                                                                                                                                                              |
+| <span id="table-td-tablepaginationconfig"><ApiBadge label="TablePaginationConfig" /></span> | <code>&#123; pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) =&gt; void &#125;</code>                                                                                                                                                                                                  |
+| <span id="table-td-tableslot"><ApiBadge label="TableSlot" /></span>                         | <code>&#124; 'root' &#124; 'table' &#124; 'header' &#124; 'headerRow' &#124; 'headerCell' &#124; 'sortTrigger' &#124; 'sortIcon' &#124; 'body' &#124; 'row' &#124; 'cell' &#124; 'selectionCell' &#124; 'expandCell' &#124; 'expandButton' &#124; 'expandedRow' &#124; 'filterInput' &#124; 'filterOption' &#124; 'pagination' &#124; 'empty' &#124; 'loading'</code> |
+| <span id="table-td-tabledatarequest"><ApiBadge label="TableDataRequest" /></span>           | <code>&#123; pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState &#125;</code>                                                                                                                                                                                                                                                            |
+
+{/* api-tables:end */}

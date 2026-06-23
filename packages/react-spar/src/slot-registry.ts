@@ -49,6 +49,7 @@ import {
 import { SelectBase, SelectContentBase, SelectGroupBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
 import { SpinnerBase } from './components/spinner/base';
 import { SwitchBase } from './components/switch/base';
+import { TableBase } from './components/table/base';
 import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
@@ -140,6 +141,7 @@ export const slotClassRegistry = {
   selectSeparator: { slots: SelectSeparatorBase.classes },
   spinner: { slots: SpinnerBase.classes },
   switch: { slots: SwitchBase.classes },
+  table: { slots: TableBase.classes },
   tabs: { slots: TabsBase.classes },
   tabsList: { slots: TabsListBase.classes },
   tabsTrigger: { slots: TabsTriggerBase.classes },

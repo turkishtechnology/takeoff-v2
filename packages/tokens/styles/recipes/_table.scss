@@ -1,0 +1,384 @@
+@use '../abstracts/mixins' as mixins;
+
+// ===========================================================================
+// Table — TanStack-backed data table recipe.
+//
+// Slot identity is class-based (`.tk-table-*`); state/variant flags are data
+// attributes emitted by the wrapper (`data-size`, `data-striped`,
+// `data-bordered`, `data-sticky-header`, `data-loading`, `data-align`,
+// `data-sticky`, `data-selected`, `aria-sort`).
+//
+// Sticky contract (RFC §6.5): the table uses `border-collapse: separate` +
+// `border-spacing: 0` so `position: sticky` cells keep their borders (a known
+// browser bug breaks borders under `border-collapse: collapse`). Pinned cells
+// get an OPAQUE background here (cell offset/z-index are inline, owned by the
+// wrapper). Edge separation is drawn with `box-shadow` so it survives the
+// separate-borders model.
+// ===========================================================================
+
+// Per-density cell padding. xsmall / small / base map to the wrapper's
+// `data-size`. Header and body cells share the scale.
+$table-density: (
+  'xsmall': 0.25rem 0.5rem,
+  'small': 0.5rem 0.75rem,
+  'base': 0.75rem 1rem,
+);
+
+// ---------------------------------------------------------------------------
+// Root — scroll container. Owns the border box, density cascade, striped /
+// bordered / sticky-header state, and the loading overlay anchor.
+// ---------------------------------------------------------------------------
+
+@mixin table {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-l-base, 0.75rem);
+  background-color: var(--static-light);
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  color: var(--text-darkest);
+
+  @include mixins.takeoff-scrollbar;
+
+  // Density cascade — padding lives on the root so it scopes header + body
+  // cells without each cell needing its own size attr.
+  @each $size, $padding in $table-density {
+    &[data-size='#{$size}'] {
+      .tk-table-header-cell,
+      .tk-table-cell,
+      .tk-table-selection-cell,
+      .tk-table-expand-cell {
+        padding: $padding;
+      }
+    }
+  }
+
+  // Zebra striping (opt-in). Skipped for the disclosure rows so an expanded
+  // row visually belongs to its parent.
+  &[data-striped] .tk-table-row:nth-of-type(odd) > * {
+    background-color: var(--background-lightest);
+  }
+
+  // Vertical separators between columns (opt-in).
+  &[data-bordered] {
+    .tk-table-header-cell,
+    .tk-table-cell {
+      border-inline-end: 1px solid var(--border-light);
+
+      &:last-child {
+        border-inline-end: 0;
+      }
+    }
+  }
+
+  // Sticky header — the wrapper sets `position: sticky; top: 0` inline; the
+  // recipe supplies the opaque background + bottom elevation while scrolled.
+  &[data-sticky-header] .tk-table-header-cell {
+    background-color: var(--background-lightest);
+    box-shadow: inset 0 -1px 0 var(--border-light);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Table element — the sticky workaround lives here.
+// ---------------------------------------------------------------------------
+
+@mixin table-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
+  font-size: var(--desktop-body-s-size);
+  line-height: var(--desktop-body-s-line-height);
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+
+@mixin table-header {
+  background-color: var(--background-lightest);
+}
+
+@mixin table-header-row {
+  // Layout owner; visuals live on the cells.
+}
+
+@mixin table-header-cell {
+  position: relative;
+  box-sizing: border-box;
+  font-weight: 600;
+  text-align: start;
+  color: var(--text-sub-base);
+  border-bottom: 1px solid var(--border-light);
+  background-color: var(--background-lightest);
+  white-space: nowrap;
+  vertical-align: middle;
+
+  &[data-align='center'] {
+    text-align: center;
+  }
+
+  &[data-align='end'] {
+    text-align: end;
+  }
+
+  &[data-sortable] {
+    cursor: pointer;
+  }
+
+  // Pinned header cell — opaque background already set above; add the edge
+  // shadow so the seam reads while scrolling horizontally.
+  &[data-sticky='left'] {
+    box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+
+  &[data-sticky='right'] {
+    box-shadow: -2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// Sort affordance — a real button so Enter/Space toggle sorting.
+@mixin table-sort-trigger {
+  @include mixins.host-button-reset;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  width: 100%;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  font-weight: inherit;
+
+  @include mixins.focus-ring(0 0 0 2px var(--states-info-light, rgba(0, 90, 255, 0.4)));
+}
+
+@mixin table-sort-icon {
+  flex: 0 0 auto;
+  font-size: 0.875em;
+  line-height: 1;
+  opacity: 0.4;
+
+  &::before {
+    content: '↕';
+  }
+
+  &[data-direction='asc'] {
+    opacity: 1;
+
+    &::before {
+      content: '↑';
+    }
+  }
+
+  &[data-direction='desc'] {
+    opacity: 1;
+
+    &::before {
+      content: '↓';
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Body
+// ---------------------------------------------------------------------------
+
+@mixin table-body {
+  // Layout owner.
+}
+
+@mixin table-row {
+  transition: background-color 0.15s ease-in-out;
+
+  &:hover > * {
+    background-color: var(--background-lightest);
+  }
+
+  &[data-selected] > * {
+    background-color: var(--states-info-light, rgba(0, 90, 255, 0.08));
+  }
+}
+
+@mixin table-cell {
+  box-sizing: border-box;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-light);
+  background-color: inherit;
+
+  &[data-align='center'] {
+    text-align: center;
+  }
+
+  &[data-align='end'] {
+    text-align: end;
+  }
+
+  // Pinned body cell — opaque background so scrolled columns don't show
+  // through, plus the same edge shadow as the header.
+  &[data-sticky='left'],
+  &[data-sticky='right'] {
+    background-color: var(--static-light);
+  }
+
+  &[data-sticky='left'] {
+    box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+
+  &[data-sticky='right'] {
+    box-shadow: -2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Utility cells — selection + expansion
+// ---------------------------------------------------------------------------
+
+@mixin table-selection-cell {
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-light);
+
+  &[data-sticky='left'] {
+    background-color: var(--static-light);
+    box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@mixin table-expand-cell {
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-light);
+
+  &[data-sticky='left'] {
+    background-color: var(--static-light);
+    box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@mixin table-expand-button {
+  @include mixins.host-button-reset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-s, 0.25rem);
+  cursor: pointer;
+  color: var(--text-sub-base);
+  transition: background-color 0.15s ease-in-out;
+
+  &:hover {
+    background-color: var(--background-light);
+  }
+
+  @include mixins.focus-ring(0 0 0 2px var(--states-info-light, rgba(0, 90, 255, 0.4)));
+}
+
+@mixin table-expanded-row {
+  > td {
+    padding: 0.75rem 1rem;
+    background-color: var(--background-lightest);
+    border-bottom: 1px solid var(--border-light);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Column filter (rendered inside a Spar Popover)
+// ---------------------------------------------------------------------------
+
+@mixin table-filter-button {
+  @include mixins.host-button-reset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: 0.25rem;
+  padding: 0.125rem;
+  border-radius: var(--radius-s, 0.25rem);
+  cursor: pointer;
+  color: var(--text-sub-base);
+  font-size: 0.75rem;
+
+  &:hover {
+    color: var(--text-darkest);
+  }
+
+  &[data-active] {
+    color: var(--states-info-base);
+  }
+}
+
+@mixin table-filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 12rem;
+}
+
+@mixin table-filter-input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-s, 0.25rem);
+  background-color: var(--static-light);
+  color: var(--text-darkest);
+  font: inherit;
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--states-info-base);
+  }
+}
+
+@mixin table-filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+// ---------------------------------------------------------------------------
+// Pagination (composed Select + Buttons), empty + loading states
+// ---------------------------------------------------------------------------
+
+@mixin table-pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--border-light);
+  font-size: var(--desktop-body-xs-size);
+  color: var(--text-sub-base);
+
+  // Keep the page-size Select compact and shrink-wrapped.
+  .tk-select {
+    width: auto;
+    min-width: 4.5rem;
+  }
+
+  // Push the navigation buttons to the trailing edge.
+  > span[aria-live] {
+    margin-inline-start: auto;
+  }
+}
+
+@mixin table-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-sub-base);
+}
+
+@mixin table-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--static-light);
+  opacity: 0.6;
+  z-index: 4;
+}

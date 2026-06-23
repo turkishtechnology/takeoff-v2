@@ -20,6 +20,7 @@
 @use 'recipes/select';
 @use 'recipes/spinner';
 @use 'recipes/switch';
+@use 'recipes/table';
 @use 'recipes/tabs';
 @use 'recipes/tooltip';
 
@@ -295,4 +296,88 @@
 
 .tk-popover-close {
   @include popover.popover-close;
+}
+
+.tk-table {
+  @include table.table;
+}
+
+.tk-table-table {
+  @include table.table-table;
+}
+
+.tk-table-header {
+  @include table.table-header;
+}
+
+.tk-table-header-row {
+  @include table.table-header-row;
+}
+
+.tk-table-header-cell {
+  @include table.table-header-cell;
+}
+
+.tk-table-sort-trigger {
+  @include table.table-sort-trigger;
+}
+
+.tk-table-sort-icon {
+  @include table.table-sort-icon;
+}
+
+.tk-table-body {
+  @include table.table-body;
+}
+
+.tk-table-row {
+  @include table.table-row;
+}
+
+.tk-table-cell {
+  @include table.table-cell;
+}
+
+.tk-table-selection-cell {
+  @include table.table-selection-cell;
+}
+
+.tk-table-expand-cell {
+  @include table.table-expand-cell;
+}
+
+.tk-table-expand-button {
+  @include table.table-expand-button;
+}
+
+.tk-table-expanded-row {
+  @include table.table-expanded-row;
+}
+
+.tk-table-filter-button {
+  @include table.table-filter-button;
+}
+
+.tk-table-filter-panel {
+  @include table.table-filter-panel;
+}
+
+.tk-table-filter-input {
+  @include table.table-filter-input;
+}
+
+.tk-table-filter-option {
+  @include table.table-filter-option;
+}
+
+.tk-table-pagination {
+  @include table.table-pagination;
+}
+
+.tk-table-empty {
+  @include table.table-empty;
+}
+
+.tk-table-loading {
+  @include table.table-loading;
 }
