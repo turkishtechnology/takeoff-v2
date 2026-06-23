@@ -10,6 +10,12 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Foundations',
+      collapsed: false,
+      items: ['foundations/theming', 'foundations/composition-styling'],
+    },
+    {
+      type: 'category',
       label: 'Components',
       collapsed: false,
       items: [
