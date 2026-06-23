@@ -2,7 +2,6 @@ import type { JSX } from 'react';
 import Layout from '@theme/Layout';
 import { usePluginData } from '@docusaurus/useGlobalData';
 import { useRunwaySurface } from '@site/src/hooks/useRunwaySurface';
-import FooterRunway from './landing/FooterRunway';
 import { CHANGELOG_ENTRIES, type ChangelogEntry, type ChangelogItem, type ChangelogMedia, type ChangelogSection } from '@site/src/data/changelog';
 import type { PackageChangelogsData } from '@site/src/data/package-changelogs-types';
 import styles from './changelog.module.css';
@@ -265,7 +264,7 @@ function Entry({ entry }: { entry: ChangelogEntry }): JSX.Element {
 export default function Changelog(): JSX.Element {
   useRunwaySurface();
   return (
-    <Layout title="Changelog" description="Release notes for @takeoff-ui/react-spar." noFooter>
+    <Layout title="Changelog" description="Release notes for @takeoff-ui/react-spar.">
       <main data-runway-landing="true" className={styles.page}>
         <div className={styles.container}>
           <header className={styles.header}>
@@ -279,7 +278,6 @@ export default function Changelog(): JSX.Element {
             ))}
           </div>
         </div>
-        <FooterRunway />
       </main>
     </Layout>
   );

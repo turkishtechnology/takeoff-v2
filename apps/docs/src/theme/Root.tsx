@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import FooterRunway from '@site/src/pages/landing/FooterRunway';
 
 // Sync Docusaurus dark mode (data-theme='dark') → our token system (data-scheme='dark')
 function SchemeSyncer() {
@@ -38,6 +39,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
     <>
       <SchemeSyncer />
       {children}
+      <FooterRunway />
     </>
   );
 }
