@@ -212,7 +212,7 @@
 }
 
 /* Reserve a constant height for the code block sized to the tallest snippet
-   (Web Component, ~6 lines) so switching tabs never resizes the dialog. The
+   longest usage snippet so switching tabs never resizes the dialog. The
    inner CodeBlock stretches to fill, keeping every panel the same height. */
 .codeSlot {
   min-width: 0;
