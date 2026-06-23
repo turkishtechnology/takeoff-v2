@@ -1,5 +1,6 @@
 import { Highlight, type PrismTheme } from 'prism-react-renderer';
 import { useState, type JSX } from 'react';
+import { Tabs } from '@takeoff-ui/react-spar';
 import styles from './OneSurface.module.css';
 
 const SPAR_DOCS_URL = 'https://spar.app.turkishtechlab.com/';
@@ -228,7 +229,7 @@ export default function OneSurface(): JSX.Element {
           </div>
         </div>
 
-        <div className={styles.editor}>
+        <Tabs value={active} onValueChange={value => setActive(value as SampleKey)} className={styles.editor}>
           <div className={styles.editorChrome}>
             <div className={styles.editorDots} aria-hidden="true">
               <span />
@@ -236,32 +237,21 @@ export default function OneSurface(): JSX.Element {
               <span />
             </div>
             <span className={styles.editorFilename}>{meta.filename}</span>
-            <div role="tablist" aria-label="Ecosystem layer" className={styles.editorTabs}>
-              {SAMPLE_ORDER.map(key => {
-                const entry = SAMPLE_META[key];
-                const selected = active === key;
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    role="tab"
-                    id={`surface-tab-${key}`}
-                    aria-selected={selected}
-                    aria-controls="surface-panel"
-                    className={`${styles.editorTab} ${selected ? styles.editorTabActive : ''}`}
-                    onClick={() => setActive(key)}
-                  >
-                    {entry.label}
-                  </button>
-                );
-              })}
-            </div>
+            <Tabs.List aria-label="Ecosystem layer" className={styles.editorTabs}>
+              {SAMPLE_ORDER.map(key => (
+                <Tabs.Trigger key={key} value={key} className={styles.editorTab}>
+                  {SAMPLE_META[key].label}
+                </Tabs.Trigger>
+              ))}
+            </Tabs.List>
             <span className={styles.editorBadge}>{meta.badge}</span>
           </div>
-          <div id="surface-panel" role="tabpanel" aria-labelledby={`surface-tab-${active}`} className={styles.editorBody}>
-            <CodeSample source={meta.source} language={meta.language} />
-          </div>
-        </div>
+          {SAMPLE_ORDER.map(key => (
+            <Tabs.Content key={key} value={key} className={styles.editorBody}>
+              <CodeSample source={SAMPLE_META[key].source} language={SAMPLE_META[key].language} />
+            </Tabs.Content>
+          ))}
+        </Tabs>
       </div>
     </section>
   );
