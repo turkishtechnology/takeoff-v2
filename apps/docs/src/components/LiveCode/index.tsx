@@ -159,8 +159,6 @@ export const LiveCode = ({ code, previewMinHeight = 220, previewWrapper, scope =
     setIsCodeCollapsed(previousValue => !previousValue);
   }, []);
 
-  const handleDismissError = useCallback(() => {}, []);
-
   return (
     <div className="live-code-container">
       <LiveProvider code={formattedCode} scope={liveScope} noInline={noInline}>
@@ -188,7 +186,7 @@ export const LiveCode = ({ code, previewMinHeight = 220, previewWrapper, scope =
         >
           <div className={`live-code-expandable${isCodeExpanded ? ' expanded' : ''}${canExpand ? ' has-overflow' : ''}`} ref={expandableRef}>
             <div className="live-code-wrapper">
-              {editable && <CodeErrorBanner onCopy={handleCopyError} onDismiss={handleDismissError} />}
+              {editable && <CodeErrorBanner onCopy={handleCopyError} />}
 
               {editable ? (
                 <LiveEditor theme={selectedTheme} className="live-editor" code={formattedCode} />

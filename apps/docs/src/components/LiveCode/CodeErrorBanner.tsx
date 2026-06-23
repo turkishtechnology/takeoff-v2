@@ -6,12 +6,12 @@ import { CheckIcon, CloseIcon, CopyIcon, ErrorIcon } from './icons';
 
 interface CodeErrorBannerProps {
   onCopy: (errorName: string, errorMessage: string, stack: string) => void;
-  onDismiss: () => void;
 }
 
-export const CodeErrorBanner = ({ onCopy, onDismiss }: CodeErrorBannerProps) => {
+export const CodeErrorBanner = ({ onCopy }: CodeErrorBannerProps) => {
   const { error } = useContext(LiveContext);
   const previousErrorRef = useRef(error);
+  const copyFeedbackTimeoutRef = useRef<number | null>(null);
   const [isDismissed, setIsDismissed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
@@ -23,6 +23,14 @@ export const CodeErrorBanner = ({ onCopy, onDismiss }: CodeErrorBannerProps) => 
     }
   }, [error]);
 
+  useEffect(() => {
+    return () => {
+      if (copyFeedbackTimeoutRef.current !== null) {
+        window.clearTimeout(copyFeedbackTimeoutRef.current);
+      }
+    };
+  }, []);
+
   if (!error || isDismissed) {
     return null;
   }
@@ -32,13 +40,20 @@ export const CodeErrorBanner = ({ onCopy, onDismiss }: CodeErrorBannerProps) => 
 
   const handleDismiss = () => {
     setIsDismissed(true);
-    onDismiss();
   };
 
   const handleCopy = () => {
     onCopy(errorState.errorName, errorState.errorMessage, errorState.stack);
     setIsCopied(true);
-    window.setTimeout(() => setIsCopied(false), 2000);
+
+    if (copyFeedbackTimeoutRef.current !== null) {
+      window.clearTimeout(copyFeedbackTimeoutRef.current);
+    }
+
+    copyFeedbackTimeoutRef.current = window.setTimeout(() => {
+      setIsCopied(false);
+      copyFeedbackTimeoutRef.current = null;
+    }, 2000);
   };
 
   return (
