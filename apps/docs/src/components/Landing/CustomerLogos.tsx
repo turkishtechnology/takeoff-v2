@@ -11,8 +11,13 @@ export default function CustomerLogos(): JSX.Element {
     <section className={styles.strip} aria-label="Takeoff ecosystem">
       <div className={styles.inner}>
         <p className={styles.label}>Built for teams across the Takeoff ecosystem</p>
+        <ul className={styles.srOnly}>
+          {BRANDS.map(brand => (
+            <li key={brand}>{brand}</li>
+          ))}
+        </ul>
         <div className={styles.viewport}>
-          <div className={styles.track} aria-hidden="false">
+          <div className={styles.track} aria-hidden="true">
             {TRACK.map((b, i) => (
               <span key={`${b}-${i}`} className={styles.item}>
                 {b}
