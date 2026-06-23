@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import { themes as prismThemes } from 'prism-react-renderer';
 import tailwindPlugin from './plugins/tailwind';
 import packageChangelogsPlugin from './plugins/package-changelogs';
 
@@ -86,6 +87,10 @@ const config: Config = {
   ],
   themeConfig: {
     image: 'img/takeoff-og.jpg',
+    prism: {
+      theme: prismThemes.github,
+      darkTheme: prismThemes.vsDark,
+    },
     colorMode: {
       defaultMode: 'dark',
       respectPrefersColorScheme: false,
