@@ -1,5 +1,7 @@
 import { flexRender, type Header } from '@tanstack/react-table';
 
+import { PlaceholderChevronDown, PlaceholderChevronsUpDown, PlaceholderChevronUp } from '../../icons';
+
 import { useTableContext } from './context';
 import { resolveStickyCell } from './helpers';
 import { TableColumnFilter } from './TableColumnFilter';
@@ -43,7 +45,9 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
       {canSort ? (
         <button {...slotAttrs('sortTrigger')} type="button" onClick={column.getToggleSortingHandler()}>
           {content}
-          <span {...slotAttrs('sortIcon')} data-direction={sorted || 'none'} aria-hidden="true" />
+          <span {...slotAttrs('sortIcon')} data-direction={sorted || 'none'} aria-hidden="true">
+            {sorted === 'asc' ? <PlaceholderChevronUp /> : sorted === 'desc' ? <PlaceholderChevronDown /> : <PlaceholderChevronsUpDown />}
+          </span>
         </button>
       ) : (
         content

@@ -362,12 +362,8 @@
   @include table.table-filter-panel;
 }
 
-.tk-table-filter-input {
-  @include table.table-filter-input;
-}
-
-.tk-table-filter-option {
-  @include table.table-filter-option;
+.tk-table-filter-panel-body {
+  @include table.table-filter-panel-body;
 }
 
 .tk-table-pagination {

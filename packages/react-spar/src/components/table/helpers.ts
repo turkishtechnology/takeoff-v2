@@ -2,30 +2,82 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { ColumnDef, FilterFn, Table as TanStackTable } from '@tanstack/react-table';
 
 import { DEFAULT_COLUMN_WIDTH, UTILITY_COLUMN_WIDTH } from './defaults';
-import type { TableColumnDef, TableStickySide } from './types';
+import type { TableColumnDef, TableColumnFilter, TableColumnFilterType, TableStickySide } from './types';
 
 /** Synthetic keys for the manually-rendered leading utility cells. */
 export const SELECTION_COLUMN_KEY = '__tk_selection__';
 export const EXPAND_COLUMN_KEY = '__tk_expand__';
 
-/**
- * `checkbox` faceted filter: keep a row when its (stringified) cell value is in
- * the selected set. An empty/absent selection matches everything.
- */
+/** A filter value that should not narrow anything (clears the filter). */
+const isEmptyFilterValue = (value: unknown): boolean => value == null || value === '' || (Array.isArray(value) && value.length === 0);
+
+// ── Filter matching predicates ───────────────────────────────────────────────
+
+/** Case-insensitive substring (the `text` preset, and the string-shape default). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const checkboxFilterFn: FilterFn<any> = (row, columnId, filterValue) => {
+const substringFilterFn: FilterFn<any> = (row, columnId, filterValue) => {
+  if (isEmptyFilterValue(filterValue)) return true;
+  return String(row.getValue(columnId)).toLowerCase().includes(String(filterValue).toLowerCase());
+};
+substringFilterFn.autoRemove = isEmptyFilterValue;
+
+/** Strict (stringified) equality (the single-choice `select`/`radio` presets). */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const equalsFilterFn: FilterFn<any> = (row, columnId, filterValue) => {
+  if (isEmptyFilterValue(filterValue)) return true;
+  return String(row.getValue(columnId)) === String(filterValue);
+};
+equalsFilterFn.autoRemove = isEmptyFilterValue;
+
+/** Membership of the selected set (the multi-choice `multi-select`/`checkbox` presets). */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const membershipFilterFn: FilterFn<any> = (row, columnId, filterValue) => {
   if (!Array.isArray(filterValue) || filterValue.length === 0) return true;
   return filterValue.map(String).includes(String(row.getValue(columnId)));
 };
-checkboxFilterFn.autoRemove = value => !Array.isArray(value) || value.length === 0;
+membershipFilterFn.autoRemove = value => !Array.isArray(value) || value.length === 0;
 
-/** `radio` single-choice filter: exact (stringified) equality. */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const radioFilterFn: FilterFn<any> = (row, columnId, filterValue) => {
-  if (filterValue == null || filterValue === '') return true;
-  return String(row.getValue(columnId)) === String(filterValue);
+/** The matching fn each preset uses (consumers can still override via `filter.filterFn`). */
+const PRESET_FILTER_FN: Record<TableColumnFilterType, FilterFn<unknown>> = {
+  'text': substringFilterFn,
+  'select': equalsFilterFn,
+  'radio': equalsFilterFn,
+  'multi-select': membershipFilterFn,
+  'checkbox': membershipFilterFn,
 };
-radioFilterFn.autoRemove = value => value == null || value === '';
+
+/**
+ * Shape-detecting default `filterFn` for a **custom `render`** filter that did
+ * not supply its own. Matches on the *value shape* the control writes:
+ * `string` → substring, `array` → membership, else strict equality.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const defaultFilterFn: FilterFn<any> = (row, columnId, filterValue) => {
+  if (isEmptyFilterValue(filterValue)) return true;
+  const cell = row.getValue(columnId);
+
+  if (typeof filterValue === 'string') return String(cell).toLowerCase().includes(filterValue.toLowerCase());
+  if (Array.isArray(filterValue)) return filterValue.map(String).includes(String(cell));
+  return String(cell) === String(filterValue);
+};
+defaultFilterFn.autoRemove = isEmptyFilterValue;
+
+/**
+ * Normalize the two-tier `filter` config to a single object shape the renderer
+ * can consume uniformly: a bare preset string (`'text'`) becomes `{ type }`.
+ * An object passes through. Returns `undefined` when no filter is configured.
+ */
+export const normalizeColumnFilter = <TData>(filter: TableColumnFilterType | TableColumnFilter<TData> | undefined): TableColumnFilter<TData> | undefined => {
+  if (filter == null) return undefined;
+  return typeof filter === 'string' ? { type: filter } : filter;
+};
+
+/** Resolve the matching fn for a normalized filter: explicit > preset > shape-default. */
+const resolveFilterFn = <TData>(filter: TableColumnFilter<TData>): FilterFn<unknown> => {
+  if (filter.filterFn) return filter.filterFn as FilterFn<unknown>;
+  if (filter.render == null && filter.type) return PRESET_FILTER_FN[filter.type];
+  return defaultFilterFn;
+};
 
 /**
  * Adapt v2-owned {@link TableColumnDef}s into TanStack `ColumnDef`s: thread the
@@ -37,6 +89,10 @@ export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): Colu
   columns.map(col => {
     const { id, header, accessor, cell, sortable, filter, sticky, width, align, meta } = col;
 
+    // Collapse the two-tier filter (string preset | object) to one object shape
+    // so the renderer + filterFn resolution never branch on the input form.
+    const normalizedFilter = normalizeColumnFilter(filter);
+
     // Build loosely then cast once: TanStack's `ColumnDef` is a 4-way union
     // (accessorKey vs accessorFn vs display vs group) that resists conditional
     // field assignment. The shape is correct by construction.
@@ -44,7 +100,7 @@ export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): Colu
       id,
       header,
       enableSorting: sortable ?? false,
-      enableColumnFilter: filter != null,
+      enableColumnFilter: normalizedFilter != null,
       meta: {
         align,
         sticky,
@@ -52,7 +108,7 @@ export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): Colu
         className: meta?.className,
         headerClassName: meta?.headerClassName,
         headerAlign: meta?.headerAlign,
-        filter,
+        filter: normalizedFilter,
       },
     };
 
@@ -65,8 +121,8 @@ export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): Colu
       def.accessorKey = accessor;
     }
 
-    if (filter) {
-      def.filterFn = filter.type === 'text' ? 'includesString' : filter.type === 'checkbox' ? checkboxFilterFn : radioFilterFn;
+    if (normalizedFilter) {
+      def.filterFn = resolveFilterFn(normalizedFilter);
     }
 
     return def as unknown as ColumnDef<TData>;

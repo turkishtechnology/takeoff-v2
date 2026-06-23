@@ -30,6 +30,7 @@ const sidebars: SidebarsConfig = {
         'components/spinner',
         'components/switch',
         'components/radio',
+        'components/table',
         'components/tabs',
         'components/tooltip',
       ],

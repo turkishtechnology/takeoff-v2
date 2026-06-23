@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import type { Row } from '@tanstack/react-table';
 
+import { PlaceholderChevronDown, PlaceholderChevronRight } from '../../icons';
 import { Checkbox } from '../checkbox';
 import { Radio } from '../radio';
 
@@ -94,7 +95,7 @@ export const ExpandBodyCell = ({ row }: { row: Row<any> }) => {
           aria-expanded={expanded}
           onClick={row.getToggleExpandedHandler()}
         >
-          <span aria-hidden="true">{expanded ? '▾' : '▸'}</span>
+          {expanded ? <PlaceholderChevronDown /> : <PlaceholderChevronRight />}
         </button>
       )}
     </td>

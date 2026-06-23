@@ -1,8 +1,10 @@
 import type { ReactNode, Ref } from 'react';
 import type {
   CellContext,
+  Column,
   ColumnFiltersState,
   ExpandedState,
+  FilterFn,
   HeaderContext,
   PaginationState,
   RowSelectionState,
@@ -50,8 +52,7 @@ export type TableSlot =
   | 'expandCell'
   | 'expandButton'
   | 'expandedRow'
-  | 'filterInput'
-  | 'filterOption'
+  | 'filterPanel'
   | 'pagination'
   | 'empty'
   | 'loading';
@@ -66,23 +67,94 @@ export type TableSlot =
  */
 export type TableColumnAccessor<TData> = keyof TData | (string & {}) | ((row: TData) => unknown);
 
-/** Per-column filter UI (Phase 1: text / checkbox / radio — RFC §7 Q3). */
-export type TableColumnFilterType = 'text' | 'checkbox' | 'radio';
+/**
+ * Context handed to a column's {@link TableColumnFilter.render}. Table owns the
+ * filter **plumbing** — the header trigger, the `Popover`, the active-state dot,
+ * the TanStack wiring — and inverts control of the panel **content** to the
+ * consumer (the same inversion as `cell` and `expansion.render`).
+ *
+ * `value` is whatever shape the consumer's control writes via `setValue`; Table
+ * never interprets it beyond feeding TanStack's filter state and the
+ * {@link TableColumnFilter.isActive} predicate.
+ */
+export interface TableColumnFilterContext<TData = unknown> {
+  /** Current filter value for this column (the last `setValue`, or `undefined`). */
+  value: unknown;
+  /** Write the column's filter value. Pass `undefined` to clear the filter. */
+  setValue: (value: unknown) => void;
+  /** Convenience for `setValue(undefined)`. */
+  clear: () => void;
+  /** The TanStack column — escape hatch for faceted values, sizing, etc. */
+  column: Column<TData, unknown>;
+  /** Close the filter popover (e.g. an apply-and-close button). */
+  close: () => void;
+}
 
+/**
+ * Built-in filter presets — the common cases, declarative and one-line. Table
+ * renders the control (with v2 components) and wires the matching:
+ *
+ * - `text`         → `Input`; case-insensitive substring match.
+ * - `select`       → single-choice `Select` dropdown; equality match.
+ * - `multi-select` → multi-choice `Select` dropdown; membership match.
+ * - `radio`        → inline `Radio` group (single choice); equality match.
+ * - `checkbox`     → inline `Checkbox` list (multi choice); membership match.
+ *
+ * For anything outside this set (range, date, combobox, async options, …) use
+ * the {@link TableColumnFilter.render} escape hatch instead.
+ */
+export type TableColumnFilterType = 'text' | 'select' | 'multi-select' | 'radio' | 'checkbox';
+
+/** Option for the `select` / `multi-select` / `radio` / `checkbox` presets. */
 export interface TableColumnFilterOption {
-  /** Visible label for the option. */
+  /** Visible label. */
   label: ReactNode;
-  /** Value matched against the (stringified) cell value. */
+  /** Value written to filter state (matched against the stringified cell value). */
   value: string;
 }
 
-export interface TableColumnFilter {
-  /** Filter control rendered inside the header filter `Popover`. */
-  type: TableColumnFilterType;
-  /** Options for `checkbox` / `radio` filters. Ignored for `text`. */
+/**
+ * Per-column filter config. **Two tiers** (mirroring Mantine/Material React
+ * Table, AG Grid, MUI X — every mature table layers a shorthand under an escape
+ * hatch):
+ *
+ * 1. **Preset** — the 90% case in one line. Pass a {@link TableColumnFilterType}
+ *    string (`filter: 'text'`) or this object with `type` (+ `options` for the
+ *    choice presets). Table renders the control and picks the matching fn.
+ * 2. **Escape hatch** — pass `render` to own the panel content entirely (the
+ *    inversion of control used by `cell` / `expansion.render`). `type`/`options`
+ *    are ignored when `render` is present.
+ *
+ * Either way Table keeps owning the surrounding trigger + `Popover` (a real
+ * React portal — also the fix for the legacy sticky-cell z-index bug).
+ */
+export interface TableColumnFilter<TData = unknown> {
+  /** Preset control to render. Ignored when {@link render} is supplied. */
+  type?: TableColumnFilterType;
+  /** Options for the `select` / `multi-select` / `radio` / `checkbox` presets. */
   options?: TableColumnFilterOption[];
-  /** Placeholder for the `text` filter input. */
+  /** Placeholder for the `text` preset's input / `select` triggers. */
   placeholder?: string;
+  /**
+   * Escape hatch: render the filter control yourself. Receives the column's
+   * value + setter (see {@link TableColumnFilterContext}). When present, the
+   * preset fields above are ignored.
+   */
+  render?: (ctx: TableColumnFilterContext<TData>) => ReactNode;
+  /**
+   * Whether a given filter value counts as "active" — drives the trigger's
+   * active indicator. Defaults to a sensible heuristic (non-empty string,
+   * non-empty array, or any non-nullish value); presets set this for you.
+   */
+  isActive?: (value: unknown) => boolean;
+  /**
+   * Row-matching predicate (client mode). Presets supply their own; for a
+   * custom `render` you can pass one here, else Table defaults by value shape:
+   * `string` → substring, `array` → membership, else strict equality. Ignored
+   * in `manual` mode, where the server matches. Signature is TanStack's
+   * `FilterFn`, so any built-in name or fn works.
+   */
+  filterFn?: FilterFn<TData>;
 }
 
 /**
@@ -122,8 +194,12 @@ export interface TableColumnDef<TData> {
   cell?: (ctx: CellContext<TData, unknown>) => ReactNode;
   /** Opt this column into sorting (emits `aria-sort` + header keyboard). */
   sortable?: boolean;
-  /** Attach a header filter control. See {@link TableColumnFilter}. */
-  filter?: TableColumnFilter;
+  /**
+   * Attach a header filter. A preset string (`'text'`), a preset object
+   * (`{ type: 'select', options }`), or a custom `{ render }`. See
+   * {@link TableColumnFilter}.
+   */
+  filter?: TableColumnFilterType | TableColumnFilter<TData>;
   /** Pin the column to an edge. */
   sticky?: TableStickySide;
   /** Fixed column width (px). Feeds sticky-offset math and `col` sizing. */
@@ -286,6 +362,6 @@ declare module '@tanstack/react-table' {
     className?: string;
     headerClassName?: string;
     headerAlign?: TableAlign;
-    filter?: TableColumnFilter;
+    filter?: TableColumnFilterType | TableColumnFilter<TData>;
   }
 }

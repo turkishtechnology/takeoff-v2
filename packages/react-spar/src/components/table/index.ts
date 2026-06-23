@@ -12,6 +12,7 @@ export type {
   TableColumnAccessor,
   TableColumnDef,
   TableColumnFilter,
+  TableColumnFilterContext,
   TableColumnFilterOption,
   TableColumnFilterType,
   TableColumnMeta,

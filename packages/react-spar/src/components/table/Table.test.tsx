@@ -158,34 +158,38 @@ describe('Table (props-first)', () => {
   });
 
   describe('filtering', () => {
+    // Two-tier API: declarative presets (`'text'`, `{ type: 'checkbox', options }`)
+    // for the common cases, and a `render` escape hatch for everything else.
+    // These cover both tiers plus the plumbing Table owns (trigger, Clear, active).
+
     it('filters rows from controlled column-filter state', () => {
       const columns: TableColumnDef<User>[] = [
-        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'checkbox', options: [{ label: 'Admin', value: 'admin' }] } },
+        { id: 'role', header: 'Role', accessor: 'role', filter: 'text' },
         { id: 'name', header: 'Name', accessor: 'name' },
       ];
-      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} filtering={{ value: [{ id: 'role', value: ['admin'] }] }} />);
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} filtering={{ value: [{ id: 'role', value: 'admin' }] }} />);
 
       expect(bodyRowTexts(container)).toEqual(['admin', 'admin']);
       expect(screen.queryByText('user')).not.toBeInTheDocument();
     });
 
     it('renders a filter trigger for filterable columns', () => {
-      const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'text' } }];
+      const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: 'text' }];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
       expect(screen.getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
     });
 
-    it('narrows rows through the text-filter popover', async () => {
+    it('narrows rows through the `text` preset (string shorthand)', async () => {
       const user = userEvent.setup();
-      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: { type: 'text', placeholder: 'Search name' } }];
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
       await user.click(screen.getByRole('button', { name: 'Filter column' }));
-      await user.type(await screen.findByPlaceholderText('Search name'), 'Ada');
+      await user.type(await screen.findByRole('searchbox'), 'Ada');
       expect(bodyRowTexts(container)).toEqual(['Ada']);
     });
 
-    it('narrows rows through the radio-filter popover and clears', async () => {
+    it('narrows rows through the `radio` preset and clears', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [
         {
@@ -209,6 +213,76 @@ describe('Table (props-first)', () => {
 
       await user.click(screen.getByRole('button', { name: 'Clear' }));
       expect(bodyRowTexts(container)).toEqual(['admin', 'user', 'admin']);
+    });
+
+    it('narrows rows through the `checkbox` preset (multi-select, membership)', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        {
+          id: 'role',
+          header: 'Role',
+          accessor: 'role',
+          filter: {
+            type: 'checkbox',
+            options: [
+              { label: 'Admin', value: 'admin' },
+              { label: 'User', value: 'user' },
+            ],
+          },
+        },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(await screen.findByRole('checkbox', { name: 'Admin' }));
+      expect(bodyRowTexts(container)).toEqual(['admin', 'admin']);
+    });
+
+    it('narrows rows through a custom `render` escape hatch', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        {
+          id: 'name',
+          header: 'Name',
+          accessor: 'name',
+          filter: {
+            render: ({ value, setValue }) => (
+              <input aria-label="custom filter" value={typeof value === 'string' ? value : ''} onChange={event => setValue(event.target.value || undefined)} />
+            ),
+          },
+        },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.type(await screen.findByLabelText('custom filter'), 'Grace');
+      expect(bodyRowTexts(container)).toEqual(['Grace']);
+    });
+
+    it('uses a custom isActive to drive the trigger active state', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        {
+          id: 'name',
+          header: 'Name',
+          accessor: 'name',
+          filter: {
+            isActive: value => typeof value === 'string' && value.length >= 2,
+            render: ({ value, setValue }) => <input aria-label="filter" value={typeof value === 'string' ? value : ''} onChange={e => setValue(e.target.value || undefined)} />,
+          },
+        },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      expect(trigger).not.toHaveAttribute('data-active');
+
+      await user.click(trigger);
+      const input = await screen.findByLabelText('filter');
+      await user.type(input, 'A'); // length 1 → still inactive by custom predicate
+      expect(trigger).not.toHaveAttribute('data-active');
+      await user.type(input, 'd'); // length 2 → active
+      expect(trigger).toHaveAttribute('data-active');
     });
   });
 

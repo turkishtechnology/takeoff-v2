@@ -61,6 +61,31 @@ $table-density: (
     background-color: var(--background-lightest);
   }
 
+  // Hover + selection on UNSTRIPED tables. Nothing competes here, so the
+  // natural (0,3,0) specificity is enough. Hover uses a deeper neutral than
+  // the stripe fill so it also reads on striped rows (below).
+  & .tk-table-row:hover > * {
+    background-color: var(--background-light);
+  }
+
+  & .tk-table-row[data-selected] > * {
+    background-color: var(--states-info-light, rgba(0, 90, 255, 0.08));
+  }
+
+  // Hover + selection on STRIPED tables. The striping rule above is (0,4,0)
+  // (`.tk-table` + `[data-striped]` + `.tk-table-row` + `:nth-of-type`), so a
+  // plain (0,3,0) override loses on odd rows — hover gives no feedback and
+  // selection is invisible. Re-qualifying with `[data-striped]` matches that
+  // (0,4,0) and, being later in source order, wins. Selection is declared
+  // after hover so a selected row keeps its highlight while hovered.
+  &[data-striped] .tk-table-row:hover > * {
+    background-color: var(--background-light);
+  }
+
+  &[data-striped] .tk-table-row[data-selected] > * {
+    background-color: var(--states-info-light, rgba(0, 90, 255, 0.08));
+  }
+
   // Vertical separators between columns (opt-in).
   &[data-bordered] {
     .tk-table-header-cell,
@@ -146,39 +171,50 @@ $table-density: (
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
+  // `host-button-reset` zeroes margin but NOT padding, so the UA button
+  // padding would otherwise stack on top of the cell padding and misalign
+  // sortable headers against plain ones.
+  padding: 0;
   width: 100%;
   cursor: pointer;
   font: inherit;
   color: inherit;
   font-weight: inherit;
 
+  // Mirror the cell's `data-align` so a sortable header's label + chevron
+  // track its column's text alignment (e.g. an `align: end` numeric column).
+  // The trigger fills the cell (`width: 100%`), so without this the content
+  // stays left-packed while the body cells align right.
+  .tk-table-header-cell[data-align='center'] & {
+    justify-content: center;
+  }
+
+  .tk-table-header-cell[data-align='end'] & {
+    justify-content: flex-end;
+  }
+
   @include mixins.focus-ring(0 0 0 2px var(--states-info-light, rgba(0, 90, 255, 0.4)));
 }
 
+// Sort affordance icon — hosts an inline SVG (icon set, not a Unicode glyph).
+// The neutral up-down chevron is dimmed until the column is actually sorted, at
+// which point the directional chevron goes full-strength.
 @mixin table-sort-icon {
+  display: inline-flex;
   flex: 0 0 auto;
-  font-size: 0.875em;
-  line-height: 1;
+  align-items: center;
+  font-size: 1em;
+  line-height: 0;
   opacity: 0.4;
 
-  &::before {
-    content: '↕';
+  svg {
+    width: 0.875em;
+    height: 0.875em;
   }
 
-  &[data-direction='asc'] {
-    opacity: 1;
-
-    &::before {
-      content: '↑';
-    }
-  }
-
+  &[data-direction='asc'],
   &[data-direction='desc'] {
     opacity: 1;
-
-    &::before {
-      content: '↓';
-    }
   }
 }
 
@@ -191,14 +227,11 @@ $table-density: (
 }
 
 @mixin table-row {
-  transition: background-color 0.15s ease-in-out;
-
-  &:hover > * {
-    background-color: var(--background-lightest);
-  }
-
-  &[data-selected] > * {
-    background-color: var(--states-info-light, rgba(0, 90, 255, 0.08));
+  // Only the transition lives here. The hover + selected fills are declared at
+  // root scope (`@mixin table`) so their specificity beats the striping rule;
+  // duplicating them here at lower specificity would just be dead overrides.
+  > * {
+    transition: background-color 0.15s ease-in-out;
   }
 }
 
@@ -270,6 +303,11 @@ $table-density: (
   color: var(--text-sub-base);
   transition: background-color 0.15s ease-in-out;
 
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
   &:hover {
     background-color: var(--background-light);
   }
@@ -299,7 +337,11 @@ $table-density: (
   border-radius: var(--radius-s, 0.25rem);
   cursor: pointer;
   color: var(--text-sub-base);
-  font-size: 0.75rem;
+
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
 
   &:hover {
     color: var(--text-darkest);
@@ -310,6 +352,9 @@ $table-density: (
   }
 }
 
+// Popover content wrapper around the consumer's filter control + the Clear
+// button. Table owns this container (layout + a sane min-width); the control
+// itself is whatever the column's `filter.render` returned.
 @mixin table-filter-panel {
   display: flex;
   flex-direction: column;
@@ -317,28 +362,13 @@ $table-density: (
   min-width: 12rem;
 }
 
-@mixin table-filter-input {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 0.375rem 0.5rem;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-s, 0.25rem);
-  background-color: var(--static-light);
-  color: var(--text-darkest);
-  font: inherit;
-
-  &:focus-visible {
-    outline: none;
-    border-color: var(--states-info-base);
-  }
-}
-
-@mixin table-filter-option {
+// Inner wrapper the consumer's `filter.render` output is mounted into (the
+// `filterPanel` slot). Kept minimal on purpose — the consumer's own components
+// bring their styling; this only guarantees the content stacks predictably.
+@mixin table-filter-panel-body {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 0.5rem;
-  cursor: pointer;
-  user-select: none;
 }
 
 // ---------------------------------------------------------------------------
@@ -378,7 +408,12 @@ $table-density: (
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--static-light);
-  opacity: 0.6;
+  // The scrim is the translucent layer — NOT the overlay box. Putting
+  // `opacity` on the container would fade the Spinner along with it, leaving a
+  // washed-out indicator. A semi-transparent background dims the table beneath
+  // while the Spinner stays fully opaque. `color-mix` keeps it theme-driven
+  // (dark mode gets a dark scrim) with an rgba fallback for old engines.
+  background-color: rgba(255, 255, 255, 0.6);
+  background-color: color-mix(in srgb, var(--static-light) 60%, transparent);
   z-index: 4;
 }

@@ -12,12 +12,14 @@ import LiveCode from '@site/src/components/LiveCode';
 import {
   Badge,
   Button,
+  Checkbox,
+  Input,
   Table,
   ReactSparDemoRoot,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const tableScope = { Badge, Button, Table };
+export const tableScope = { Badge, Button, Checkbox, Input, Table };
 
 Table is the catalog's first **TanStack-backed** component: its state engine is
 [`@tanstack/react-table`](https://tanstack.com/table), not a Spar primitive
@@ -45,6 +47,7 @@ function PlaygroundDemo() {
       id: 'role',
       header: 'Role',
       accessor: 'role',
+      // Declarative preset — one line for the common case.
       filter: { type: 'checkbox', options: [
         { label: 'Admin', value: 'admin' },
         { label: 'User', value: 'user' },
@@ -128,6 +131,74 @@ function CustomCellDemo() {
 render(<CustomCellDemo />);
 `;
 
+export const filterPresetDemo = String.raw`
+function FilterPresetDemo() {
+  const data = [
+    { id: '1', name: 'Ada Lovelace', role: 'admin' },
+    { id: '2', name: 'Linus Torvalds', role: 'user' },
+    { id: '3', name: 'Grace Hopper', role: 'admin' },
+    { id: '4', name: 'Alan Turing', role: 'user' },
+  ];
+  const columns = [
+    // Bare string preset — the shortest form.
+    { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+    // Object preset — a choice control needs its options.
+    {
+      id: 'role',
+      header: 'Role',
+      accessor: 'role',
+      filter: { type: 'checkbox', options: [
+        { label: 'Admin', value: 'admin' },
+        { label: 'User', value: 'user' },
+      ] },
+    },
+  ];
+  return <Table data={data} columns={columns} getRowId={(r) => r.id} />;
+}
+
+render(<FilterPresetDemo />);
+`;
+
+export const filterCustomDemo = String.raw`
+function FilterCustomDemo() {
+  const data = [
+    { id: '1', name: 'Ada Lovelace', score: 91 },
+    { id: '2', name: 'Linus Torvalds', score: 64 },
+    { id: '3', name: 'Grace Hopper', score: 88 },
+    { id: '4', name: 'Alan Turing', score: 73 },
+  ];
+  const columns = [
+    { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+    {
+      id: 'score',
+      header: 'Score',
+      accessor: 'score',
+      align: 'end',
+      // Escape hatch: a "minimum score" filter no preset covers. You render
+      // the control + supply the matching predicate; Table owns the popover.
+      filter: {
+        isActive: (value) => value != null && value !== '',
+        filterFn: (row, columnId, value) =>
+          value == null || value === '' ? true : row.getValue(columnId) >= Number(value),
+        render: ({ value, setValue }) => (
+          <Input>
+            <Input.Field
+              type="number"
+              placeholder="Min score"
+              value={value ?? ''}
+              onChange={(e) => setValue(e.target.value || undefined)}
+            />
+          </Input>
+        ),
+      },
+    },
+  ];
+  return <Table data={data} columns={columns} getRowId={(r) => r.id} />;
+}
+
+render(<FilterCustomDemo />);
+`;
+
 export const expansionDemo = String.raw`
 function ExpansionDemo() {
   const data = [
@@ -186,6 +257,73 @@ container (padding, alignment, sticky, a11y); `cell` only supplies the content.
   code={customCellDemo}
   noInline
   previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tableScope}
+/>
+
+## Column filtering
+
+A column's `filter` is **two-tier**: declarative presets for the common cases,
+and a render escape hatch for everything else. Either way Table owns the
+plumbing — the header trigger, the `Popover` (a real portal), the active-state
+dot, and the value wiring to TanStack.
+
+### Presets
+
+For the common controls, pass a preset — a bare string for `text`, or an object
+with `type` (+ `options` for the choice controls):
+
+| `type`         | Control           | Filter value | Match      |
+| -------------- | ----------------- | ------------ | ---------- |
+| `text`         | `Input`           | `string`     | substring  |
+| `select`       | `Select` (single) | `string`     | equality   |
+| `radio`        | `Radio` list      | `string`     | equality   |
+| `checkbox`     | `Checkbox` list   | `string[]`   | membership |
+| `multi-select` | `Checkbox` list¹  | `string[]`   | membership |
+
+```tsx
+{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }
+
+{ id: 'role', header: 'Role', accessor: 'role',
+  filter: { type: 'checkbox', options: [
+    { label: 'Admin', value: 'admin' },
+    { label: 'User', value: 'user' },
+  ] } }
+```
+
+<small>
+  ¹ Spar's `Select` has no multi mode yet, so `multi-select` currently renders
+  the same `Checkbox` list as `checkbox`.
+</small>
+
+<LiveCode
+  code={filterPresetDemo}
+  noInline
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tableScope}
+/>
+
+### Custom filters (escape hatch)
+
+When no preset fits — a number range, a date range, a combobox, async-loaded
+options — pass `render` instead. It receives
+`{ value, setValue, clear, column, close }` and returns any control; Table still
+owns the surrounding popover. `value` is whatever shape your control writes, so
+pair it with a `filterFn` (client mode) and, if the default non-empty heuristic
+is wrong, an `isActive` predicate for the active dot.
+
+:::note Why both tiers? The legacy takeoff-ui filter was a closed `type` enum,
+which could never cover every column's needs — customization ended up blocked on
+a library change. Every mature table (Mantine/Material React Table, AG Grid, MUI
+X) instead layers a short preset under a render escape hatch. Presets keep the
+90% one-line; `render` (the same inversion as `cell` / `expansion.render`)
+leaves the rest fully open. :::
+
+<LiveCode
+  code={filterCustomDemo}
+  noInline
+  previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
   scope={tableScope}
 />
@@ -330,14 +468,14 @@ for primitive behavior.
 
 ### Type Definitions {#table-type-definitions}
 
-| Name                                                                                        | Definition                                                                                                                                                                                                                                                                                                                                                            |
-| ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <span id="table-td-tablesize"><ApiBadge label="TableSize" /></span>                         | <code>'xsmall' &#124; 'small' &#124; 'base'</code>                                                                                                                                                                                                                                                                                                                    |
-| <span id="table-td-tableselectionconfig"><ApiBadge label="TableSelectionConfig" /></span>   | <code>&#123; mode: 'single' &#124; 'multiple' &#125;</code>                                                                                                                                                                                                                                                                                                           |
-| <span id="table-td-tablesortingconfig"><ApiBadge label="TableSortingConfig" /></span>       | <code>&#123; multi?: boolean &#125;</code>                                                                                                                                                                                                                                                                                                                            |
-| <span id="table-td-tablefilteringconfig"><ApiBadge label="TableFilteringConfig" /></span>   | <code>&#123; value?: T; defaultValue?: T; onChange?: (value: T) =&gt; void &#125;</code>                                                                                                                                                                                                                                                                              |
-| <span id="table-td-tablepaginationconfig"><ApiBadge label="TablePaginationConfig" /></span> | <code>&#123; pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) =&gt; void &#125;</code>                                                                                                                                                                                                  |
-| <span id="table-td-tableslot"><ApiBadge label="TableSlot" /></span>                         | <code>&#124; 'root' &#124; 'table' &#124; 'header' &#124; 'headerRow' &#124; 'headerCell' &#124; 'sortTrigger' &#124; 'sortIcon' &#124; 'body' &#124; 'row' &#124; 'cell' &#124; 'selectionCell' &#124; 'expandCell' &#124; 'expandButton' &#124; 'expandedRow' &#124; 'filterInput' &#124; 'filterOption' &#124; 'pagination' &#124; 'empty' &#124; 'loading'</code> |
-| <span id="table-td-tabledatarequest"><ApiBadge label="TableDataRequest" /></span>           | <code>&#123; pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState &#125;</code>                                                                                                                                                                                                                                                            |
+| Name                                                                                        | Definition                                                                                                                                                                                                                                                                                                                                      |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="table-td-tablesize"><ApiBadge label="TableSize" /></span>                         | <code>'xsmall' &#124; 'small' &#124; 'base'</code>                                                                                                                                                                                                                                                                                              |
+| <span id="table-td-tableselectionconfig"><ApiBadge label="TableSelectionConfig" /></span>   | <code>&#123; mode: 'single' &#124; 'multiple' &#125;</code>                                                                                                                                                                                                                                                                                     |
+| <span id="table-td-tablesortingconfig"><ApiBadge label="TableSortingConfig" /></span>       | <code>&#123; multi?: boolean &#125;</code>                                                                                                                                                                                                                                                                                                      |
+| <span id="table-td-tablefilteringconfig"><ApiBadge label="TableFilteringConfig" /></span>   | <code>&#123; value?: T; defaultValue?: T; onChange?: (value: T) =&gt; void &#125;</code>                                                                                                                                                                                                                                                        |
+| <span id="table-td-tablepaginationconfig"><ApiBadge label="TablePaginationConfig" /></span> | <code>&#123; pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) =&gt; void &#125;</code>                                                                                                                                                                            |
+| <span id="table-td-tableslot"><ApiBadge label="TableSlot" /></span>                         | <code>&#124; 'root' &#124; 'table' &#124; 'header' &#124; 'headerRow' &#124; 'headerCell' &#124; 'sortTrigger' &#124; 'sortIcon' &#124; 'body' &#124; 'row' &#124; 'cell' &#124; 'selectionCell' &#124; 'expandCell' &#124; 'expandButton' &#124; 'expandedRow' &#124; 'filterPanel' &#124; 'pagination' &#124; 'empty' &#124; 'loading'</code> |
+| <span id="table-td-tabledatarequest"><ApiBadge label="TableDataRequest" /></span>           | <code>&#123; pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState &#125;</code>                                                                                                                                                                                                                                      |
 
 {/* api-tables:end */}

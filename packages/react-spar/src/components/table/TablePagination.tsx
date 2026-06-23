@@ -1,3 +1,4 @@
+import { PlaceholderChevronLeft, PlaceholderChevronRight, PlaceholderChevronsLeft, PlaceholderChevronsRight } from '../../icons';
 import { Button } from '../button';
 import { Select } from '../select';
 
@@ -28,18 +29,10 @@ export const TablePagination = () => {
 
       <span aria-live="polite">{pageCount > 0 ? `Page ${pageIndex + 1} of ${pageCount}` : `Page ${pageIndex + 1}`}</span>
 
-      <Button size="small" appearance="text" aria-label="First page" disabled={!table.getCanPreviousPage()} onClick={() => table.setPageIndex(0)}>
-        «
-      </Button>
-      <Button size="small" appearance="text" aria-label="Previous page" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}>
-        ‹
-      </Button>
-      <Button size="small" appearance="text" aria-label="Next page" disabled={!table.getCanNextPage() || pageCount <= 0} onClick={() => table.nextPage()}>
-        ›
-      </Button>
-      <Button size="small" appearance="text" aria-label="Last page" disabled={!table.getCanNextPage() || pageCount <= 0} onClick={() => table.setPageIndex(pageCount - 1)}>
-        »
-      </Button>
+      <Button size="small" appearance="text" aria-label="First page" startContent={<PlaceholderChevronsLeft />} disabled={!table.getCanPreviousPage()} onClick={() => table.setPageIndex(0)} />
+      <Button size="small" appearance="text" aria-label="Previous page" startContent={<PlaceholderChevronLeft />} disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} />
+      <Button size="small" appearance="text" aria-label="Next page" startContent={<PlaceholderChevronRight />} disabled={!table.getCanNextPage() || pageCount <= 0} onClick={() => table.nextPage()} />
+      <Button size="small" appearance="text" aria-label="Last page" startContent={<PlaceholderChevronsRight />} disabled={!table.getCanNextPage() || pageCount <= 0} onClick={() => table.setPageIndex(pageCount - 1)} />
     </div>
   );
 };

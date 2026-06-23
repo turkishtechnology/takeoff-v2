@@ -43,6 +43,41 @@ export const PlaceholderChevronUp = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+export const PlaceholderChevronLeft = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...baseSvgProps} data-placeholder-icon="chevron-left" {...props}>
+    <path d="m15 18-6-6 6-6" />
+  </svg>
+);
+
+export const PlaceholderChevronRight = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...baseSvgProps} data-placeholder-icon="chevron-right" {...props}>
+    <path d="m9 18 6-6-6-6" />
+  </svg>
+);
+
+// Double chevrons — first/last page controls.
+export const PlaceholderChevronsLeft = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...baseSvgProps} data-placeholder-icon="chevrons-left" {...props}>
+    <path d="m11 17-5-5 5-5" />
+    <path d="m18 17-5-5 5-5" />
+  </svg>
+);
+
+export const PlaceholderChevronsRight = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...baseSvgProps} data-placeholder-icon="chevrons-right" {...props}>
+    <path d="m6 17 5-5-5-5" />
+    <path d="m13 17 5-5-5-5" />
+  </svg>
+);
+
+// Up-down chevron — the neutral "sortable but unsorted" affordance.
+export const PlaceholderChevronsUpDown = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...baseSvgProps} data-placeholder-icon="chevrons-up-down" {...props}>
+    <path d="m7 15 5 5 5-5" />
+    <path d="m7 9 5-5 5 5" />
+  </svg>
+);
+
 export const PlaceholderClose = (props: SVGProps<SVGSVGElement>) => (
   <svg {...baseSvgProps} data-placeholder-icon="close" {...props}>
     <path d="M18 6 6 18" />
