@@ -19,6 +19,7 @@ const sidebars: SidebarsConfig = {
       label: 'Components',
       collapsed: false,
       items: [
+        'components/index',
         'components/accordion',
         'components/alert',
         'components/badge',

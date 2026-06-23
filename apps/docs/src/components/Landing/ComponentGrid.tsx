@@ -289,7 +289,7 @@ export default function ComponentGrid(): JSX.Element {
         </div>
 
         <div className={styles.exploreRow}>
-          <Link to="/docs/" className={styles.exploreLink}>
+          <Link to="/docs/components" className={styles.exploreLink}>
             Browse the full component set
             <ArrowIcon />
           </Link>
