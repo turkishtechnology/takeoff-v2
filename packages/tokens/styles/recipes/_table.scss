@@ -450,56 +450,54 @@
 // ---------------------------------------------------------------------------
 
 @mixin table-pagination {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  display: flex;
   align-items: center;
-  column-gap: var(--pagination-base-container-gap);
+  justify-content: space-between;
+  margin-top: 12px;
+  gap: var(--pagination-base-container-gap);
   font-size: var(--desktop-body-xs-size);
   color: var(--icon-base);
 
-  // Keep the page-size Select compact and shrink-wrapped.
-  .tk-select {
-    width: auto;
-    min-width: 4.5rem;
-  }
-}
-@mixin table-pagination-info {
-  justify-self: start;
-}
-
-@mixin table-pagination-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--pagination-base-arrow-gap);
-
-  svg {
-    width: 16px;
-    height: 16px;
+  .tk-table-pagination-info {
+    display: flex;
+    flex-direction: column;
   }
 
-  > span {
-    display: inline-flex;
+  .tk-table-pagination-nav {
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: var(--pagination-cell-small-size);
+    gap: var(--pagination-base-arrow-gap);
+
+    > .tk-button {
+      min-width: 32px;
+      min-height: 32px;
+    }
+
+    > span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+    }
   }
-}
 
-@mixin table-pagination-size {
-  display: flex;
-  align-items: center;
-  gap: var(--pagination-base-container-gap);
-  justify-self: end;
-}
+  .tk-table-pagination-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--pagination-base-right-gap);
+  }
 
-@mixin table-pagination-go-to-page {
-  display: flex;
-  align-items: center;
-  gap: var(--pagination-base-arrow-gap);
+  .tk-table-pagination-size {
+    display: flex;
+    align-items: center;
+    min-width: 52px;
+  }
 
-  .tk-input {
-    width: 4.5rem;
+  .tk-table-pagination-go-to-page {
+    display: flex;
+    align-items: center;
+    min-width: 72px;
   }
 }
 

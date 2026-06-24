@@ -1,9 +1,8 @@
-import { useState, type SubmitEvent } from 'react';
+import { useState } from 'react';
 import { ArrowLeftIconOutlinedRounded } from '@takeoff-icons/react/arrow-left';
 import { ArrowRightIconOutlinedRounded } from '@takeoff-icons/react/arrow-right';
 import { ChevronLeftIconOutlinedRounded } from '@takeoff-icons/react/chevron-left';
 import { ChevronRightIconOutlinedRounded } from '@takeoff-icons/react/chevron-right';
-
 import { Button } from '../button';
 import { Input } from '../input';
 import { Select } from '../select';
@@ -30,26 +29,27 @@ export const TablePagination = () => {
   const pageCount = table.getPageCount();
   const paginationItems = getPaginationItems(pageIndex, pageCount);
   const [pageInput, setPageInput] = useState('');
-  const paginationGoToPageAttrs = slotAttrs('paginationGoToPage');
 
-  const handleGoToPage = (event: SubmitEvent<HTMLFormElement>) => {
-    paginationGoToPageAttrs.onSubmit?.(event);
-    if (event.defaultPrevented) return;
-    event.preventDefault();
+  const totalRows = table.getRowCount();
+  const startItem = pageIndex * pageSize + 1;
+  const endItem = Math.min((pageIndex + 1) * pageSize, totalRows);
+  const itemsLabel = totalRows === 0 ? '0 items' : `Items ${startItem}-${endItem} of ${totalRows}`;
+
+  const goToPage = () => {
     const requestedPage = Number(pageInput);
-    if (!Number.isFinite(requestedPage) || pageCount <= 0) return;
+    if (!Number.isFinite(requestedPage) || pageCount <= 0 || pageInput === '') return;
     const targetPage = Math.min(Math.max(Math.trunc(requestedPage), 1), pageCount);
     table.setPageIndex(targetPage - 1);
-    setPageInput(String(targetPage));
+    setPageInput('');
   };
 
   return (
     <div {...slotAttrs('pagination')} role="navigation" aria-label="Pagination">
-      <span {...slotAttrs('paginationInfo')} aria-live="polite">
-        {pageCount > 0 ? `Page ${pageIndex + 1} of ${pageCount}` : `Page ${pageIndex + 1}`}
-      </span>
-
-      <div {...slotAttrs('paginationActions')}>
+      <div className="tk-table-pagination-info">
+        <span aria-live="polite">{pageCount > 0 ? `Page ${pageIndex + 1} of ${pageCount}` : `Page ${pageIndex + 1}`}</span>
+        <span aria-live="polite">{itemsLabel}</span>
+      </div>
+      <div className="tk-table-pagination-nav">
         <Button
           size="small"
           variant="neutral"
@@ -113,9 +113,20 @@ export const TablePagination = () => {
           onClick={() => table.setPageIndex(pageCount - 1)}
         />
       </div>
-
-      <div {...slotAttrs('paginationSize')}>
-        <form {...paginationGoToPageAttrs} onSubmit={handleGoToPage}>
+      <div className="tk-table-pagination-actions">
+        <div className="tk-table-pagination-size">
+          <Select size="small" value={String(pageSize)} onChange={value => table.setPageSize(Number(value))}>
+            <Select.Trigger aria-label="Rows per page">{pageSize}</Select.Trigger>
+            <Select.Content>
+              {pageSizeOptions.map(option => (
+                <Select.Item key={option} value={String(option)}>
+                  {option}
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select>
+        </div>
+        <div className="tk-table-pagination-go-to-page">
           <Input size="small">
             <Input.Field
               type="number"
@@ -127,26 +138,15 @@ export const TablePagination = () => {
               value={pageInput}
               disabled={pageCount <= 0}
               onChange={event => setPageInput(event.currentTarget.value)}
+              onKeyDown={event => {
+                if (event.key === 'Enter') goToPage();
+              }}
             />
-            <Input.Suffix>
-              {' '}
-              <Button type="submit" size="small" variant="neutral" appearance="text" disabled={pageCount <= 0 || pageInput === ''}>
-                Go
-              </Button>
-            </Input.Suffix>
+            <Input.TrailingIcon as="button" type="button" aria-label="Go to page" disabled={pageCount <= 0} onClick={goToPage}>
+              <ChevronRightIconOutlinedRounded />
+            </Input.TrailingIcon>
           </Input>
-        </form>
-
-        <Select value={String(pageSize)} onChange={value => table.setPageSize(Number(value))}>
-          <Select.Trigger aria-label="Rows per page">{pageSize}</Select.Trigger>
-          <Select.Content>
-            {pageSizeOptions.map(option => (
-              <Select.Item key={option} value={String(option)}>
-                {option}
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select>
+        </div>
       </div>
     </div>
   );

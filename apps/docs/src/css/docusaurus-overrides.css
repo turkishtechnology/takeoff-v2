@@ -785,6 +785,10 @@ pre,
 
 /* --- Tables -------------------------------------------------------------- */
 
+.tk-table-table {
+  margin-bottom: 0;
+}
+
 .theme-doc-markdown table:not(.tk-table-table) {
   background: var(--docs-surface-1);
   border: 1px solid var(--docs-border-subtle);
