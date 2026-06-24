@@ -14,8 +14,20 @@ import {
   ReactSparDemoRoot,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
+import { LocationOnIconOutlinedRounded } from '@takeoff-icons/react/location-on';
+import { ArrowRightIconOutlinedRounded } from '@takeoff-icons/react/arrow-right';
+import { NotificationIconOutlinedRounded } from '@takeoff-icons/react/notification';
+import { PersonIconOutlinedRounded } from '@takeoff-icons/react/person';
+import { PublicIconOutlinedRounded } from '@takeoff-icons/react/public';
 
-export const breadcrumbScope = { Breadcrumb };
+export const breadcrumbScope = {
+  Breadcrumb,
+  LocationOnIconOutlinedRounded,
+  ArrowRightIconOutlinedRounded,
+  NotificationIconOutlinedRounded,
+  PersonIconOutlinedRounded,
+  PublicIconOutlinedRounded,
+};
 
 <!-- prettier-ignore-start -->
 
@@ -166,11 +178,15 @@ export const customSeparatorDemo = String.raw`
     <Breadcrumb.Item>
       <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
     </Breadcrumb.Item>
-    <Breadcrumb.Separator>→</Breadcrumb.Separator>
+    <Breadcrumb.Separator>
+      <ArrowRightIconOutlinedRounded />
+    </Breadcrumb.Separator>
     <Breadcrumb.Item>
       <Breadcrumb.Link href="#loyalty">Loyalty</Breadcrumb.Link>
     </Breadcrumb.Item>
-    <Breadcrumb.Separator>→</Breadcrumb.Separator>
+    <Breadcrumb.Separator>
+      <ArrowRightIconOutlinedRounded />
+    </Breadcrumb.Separator>
     <Breadcrumb.Item>
       <Breadcrumb.Page>Status & miles</Breadcrumb.Page>
     </Breadcrumb.Item>
@@ -179,31 +195,51 @@ export const customSeparatorDemo = String.raw`
 `;
 
 export const iconsDemo = String.raw`
-<Breadcrumb>
-  <Breadcrumb.List>
-    <Breadcrumb.Item>
-      <Breadcrumb.Link href="#">
-        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path
-            d="M2.5 6.5L8 2l5.5 4.5V13a1 1 0 0 1-1 1h-3v-4h-3v4h-3a1 1 0 0 1-1-1V6.5Z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-        </svg>
-        Home
-      </Breadcrumb.Link>
-    </Breadcrumb.Item>
-    <Breadcrumb.Separator />
-    <Breadcrumb.Item>
-      <Breadcrumb.Link href="#flights">Flights</Breadcrumb.Link>
-    </Breadcrumb.Item>
-    <Breadcrumb.Separator />
-    <Breadcrumb.Item>
-      <Breadcrumb.Page>Istanbul → London</Breadcrumb.Page>
-    </Breadcrumb.Item>
-  </Breadcrumb.List>
-</Breadcrumb>
+<div className="breadcrumb-demo-stack">
+  <Breadcrumb>
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="#">
+          <LocationOnIconOutlinedRounded />
+          Home
+        </Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="#flights">Flights</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>Istanbul → London</Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+
+  <Breadcrumb>
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="#notifications">
+          <NotificationIconOutlinedRounded />
+          Notifications
+        </Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="#notifications-inbox">
+          <PersonIconOutlinedRounded />
+          Team inbox
+        </Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator />
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>
+          <PublicIconOutlinedRounded />
+          All updates
+        </Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+</div>
 `;
 
 export const longTrailDemo = String.raw`

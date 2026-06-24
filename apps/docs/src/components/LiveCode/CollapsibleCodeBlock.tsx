@@ -1,17 +1,16 @@
-import { useContext, useEffect, useId, useRef, type ReactNode, type RefObject } from 'react';
+import { useContext, useEffect, useId, useRef, type ReactNode } from 'react';
 import Translate from '@docusaurus/Translate';
 import { LiveContext } from 'react-live';
-import { CodeToggleIcon } from './icons';
+import { ArrowCodeIconOutlinedRounded } from '@takeoff-icons/react/arrow-code';
 
 interface CollapsibleCodeBlockProps {
   children?: ReactNode;
   headerActions?: ReactNode;
-  codeBlockRef?: RefObject<HTMLDivElement | null>;
   isCollapsed: boolean;
   onToggle: () => void;
 }
 
-export const CollapsibleCodeBlock = ({ children, headerActions, codeBlockRef, isCollapsed, onToggle }: CollapsibleCodeBlockProps) => {
+export const CollapsibleCodeBlock = ({ children, headerActions, isCollapsed, onToggle }: CollapsibleCodeBlockProps) => {
   const { error } = useContext(LiveContext);
   const contentId = useId();
   const previousErrorRef = useRef(error);
@@ -29,9 +28,7 @@ export const CollapsibleCodeBlock = ({ children, headerActions, codeBlockRef, is
     <div className="collapsible-code-block" data-state={isCollapsed ? 'closed' : 'open'}>
       <div className="collapsible-header">
         <button className="collapsible-toggle" onClick={onToggle} type="button" aria-controls={contentId} aria-expanded={!isCollapsed}>
-          <span className="toggle-icon">
-            <CodeToggleIcon />
-          </span>
+          <ArrowCodeIconOutlinedRounded className="toggle-icon" />
           <span className="toggle-text">
             <Translate id="liveCode.codeToggle">Code</Translate>
           </span>
@@ -40,7 +37,7 @@ export const CollapsibleCodeBlock = ({ children, headerActions, codeBlockRef, is
         {!isCollapsed && headerActions && <div className="collapsible-header-actions">{headerActions}</div>}
       </div>
 
-      <div className="collapsible-content" id={contentId} ref={codeBlockRef} aria-hidden={isCollapsed} style={{ display: isCollapsed ? 'none' : 'block' }}>
+      <div className="collapsible-content" id={contentId} aria-hidden={isCollapsed} style={{ display: isCollapsed ? 'none' : 'block' }}>
         {children}
       </div>
     </div>
