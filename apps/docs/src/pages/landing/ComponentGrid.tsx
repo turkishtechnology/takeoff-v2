@@ -1,49 +1,20 @@
 import type { JSX } from 'react';
 import Link from '@docusaurus/Link';
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import { Accordion, Badge, Button, Field, Input, Spinner, Switch } from '@takeoff-ui/react-spar';
+import { Badge, Button, Field, Input, Switch } from '@takeoff-ui/react-spar';
 import { ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import { PlaceholderProgress, PlaceholderAvatarGroup } from '@site/src/components/PlaceholderCustomComponents';
+import { ArrowRightIconOutlinedRounded } from '@takeoff-icons/react/arrow-right';
+import { ShoppingBagIconOutlinedRounded } from '@takeoff-icons/react/shopping-bag';
+import { TakeoffRocketIconOutlinedRounded } from '@takeoff-icons/react/takeoff-rocket';
 import styles from './ComponentGrid.module.css';
 
 /*
  * ComponentGrid — six live-preview cards for the landing. Button, Input,
- * Badge, Switch, Accordion, and Spinner render the real
- * `@takeoff-ui/react-spar` components.
+ * Badge, and Switch render the real `@takeoff-ui/react-spar` components.
+ * Progress and AvatarGroup are still placeholder mocks until those ship —
+ * tracked in PlaceholderCustomComponents/index.tsx.
  */
-
-function TakeoffIcon(): JSX.Element {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M3 17l6-2 3-8 3 3-1 4 6-2 2 2-17 6v-3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function LuggageIcon(): JSX.Element {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect x="5" y="7" width="14" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M9 7V4h6v3" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M9 12h6M9 16h6" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function ArrowIcon(): JSX.Element {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function BadgeDot(): JSX.Element {
-  return (
-    <svg width="6" height="6" viewBox="0 0 6 6" aria-hidden="true">
-      <circle cx="3" cy="3" r="3" fill="currentColor" />
-    </svg>
-  );
-}
 
 /* ──────────────────────────────────────────────────────────────────────
  * Live demos rendering the real react-spar primitives
@@ -75,10 +46,10 @@ function ButtonsCardDemo(): JSX.Element {
         </Button>
       </div>
       <div className={styles.stack}>
-        <Button variant="primary" appearance="filled" size="small" startContent={<TakeoffIcon />}>
+        <Button variant="primary" appearance="filled" size="small" startContent={<TakeoffRocketIconOutlinedRounded width={14} height={14} />}>
           Book flight
         </Button>
-        <Button variant="neutral" appearance="outlined" size="small" startContent={<LuggageIcon />}>
+        <Button variant="neutral" appearance="outlined" size="small" startContent={<ShoppingBagIconOutlinedRounded width={14} height={14} />}>
           Baggage
         </Button>
       </div>
@@ -103,16 +74,16 @@ function BadgeCardDemo(): JSX.Element {
   return (
     <div className={styles.demo}>
       <div className={styles.badgeRow}>
-        <Badge variant="info" appearance="filledLight" startContent={<BadgeDot />}>
+        <Badge variant="info" appearance="filledLight">
           On time
         </Badge>
-        <Badge variant="success" appearance="filledLight" startContent={<BadgeDot />}>
+        <Badge variant="success" appearance="filledLight">
           Confirmed
         </Badge>
-        <Badge variant="warning" appearance="filledLight" startContent={<BadgeDot />}>
+        <Badge variant="warning" appearance="filledLight">
           Delayed
         </Badge>
-        <Badge variant="danger" appearance="filledLight" startContent={<BadgeDot />}>
+        <Badge variant="danger" appearance="filledLight">
           Cancelled
         </Badge>
       </div>
@@ -143,41 +114,21 @@ function SwitchCardDemo(): JSX.Element {
   );
 }
 
-function AccordionCardDemo(): JSX.Element {
+function ProgressCardDemo(): JSX.Element {
   return (
-    <div className={`${styles.demo} ${styles.accordionDemo}`}>
-      <Accordion defaultValue="fare" mode="compact">
-        <Accordion.Item value="fare">
-          <Accordion.Header>
-            <Accordion.Trigger>
-              Fare conditions
-              <Accordion.Indicator />
-            </Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content>Changes are available before departure.</Accordion.Content>
-        </Accordion.Item>
-        <Accordion.Item value="baggage">
-          <Accordion.Header>
-            <Accordion.Trigger>
-              Baggage allowance
-              <Accordion.Indicator />
-            </Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content>One cabin bag is included.</Accordion.Content>
-        </Accordion.Item>
-      </Accordion>
+    <div className={styles.demo} style={{ padding: '18px 16px' }}>
+      <div className={styles.progress}>
+        <PlaceholderProgress label="Boarding" value="~78%" pulse />
+        <PlaceholderProgress label="Baggage loaded" value="100%" />
+      </div>
     </div>
   );
 }
 
-function SpinnerCardDemo(): JSX.Element {
+function AvatarGroupCardDemo(): JSX.Element {
   return (
     <div className={styles.demo}>
-      <div className={styles.spinnerRow} aria-hidden="true">
-        <Spinner appearance="rounded" variant="primary" size="large" />
-        <Spinner appearance="dots" variant="info" size="large" />
-        <Spinner appearance="pulse" variant="neutral" size="large" />
-      </div>
+      <PlaceholderAvatarGroup initials={['EY', 'MK', 'SA', '+12']} />
     </div>
   );
 }
@@ -198,7 +149,8 @@ export default function ComponentGrid(): JSX.Element {
             <em>shipped with the full contract.</em>
           </h2>
           <p className={styles.lede}>
-            Explore shipped components through live previews. Every surface comes with usage guidance, examples, and API coverage so implementation starts from the same contract.
+            Accordion, Button, Drawer, and Tooltip are shipped today. The previews alongside them show what is coming next, but nothing ships without docs, examples, and API
+            coverage in place.
           </p>
         </div>
 
@@ -259,39 +211,27 @@ export default function ComponentGrid(): JSX.Element {
             </BrowserOnly>
           </Link>
 
-          <Link to="/docs/components/accordion" className={styles.card}>
+          <Link to="/docs/" className={styles.card} aria-label="Progress — planned">
             <div className={styles.cardTitle}>
-              <h4>Accordion</h4>
-              <span className={styles.cardMono}>Accordion</span>
+              <h4>Progress</h4>
+              <span className={styles.cardMono}>Progress</span>
             </div>
-            <BrowserOnly fallback={<div className={styles.demo} />}>
-              {() => (
-                <ReactSparDemoRoot>
-                  <AccordionCardDemo />
-                </ReactSparDemoRoot>
-              )}
-            </BrowserOnly>
+            <ProgressCardDemo />
           </Link>
 
-          <Link to="/docs/components/spinner" className={styles.card}>
+          <Link to="/docs/" className={styles.card} aria-label="Avatar group — planned">
             <div className={styles.cardTitle}>
-              <h4>Spinner</h4>
-              <span className={styles.cardMono}>Spinner</span>
+              <h4>Avatar group</h4>
+              <span className={styles.cardMono}>AvatarGroup</span>
             </div>
-            <BrowserOnly fallback={<div className={styles.demo} />}>
-              {() => (
-                <ReactSparDemoRoot>
-                  <SpinnerCardDemo />
-                </ReactSparDemoRoot>
-              )}
-            </BrowserOnly>
+            <AvatarGroupCardDemo />
           </Link>
         </div>
 
         <div className={styles.exploreRow}>
-          <Link to="/docs/components" className={styles.exploreLink}>
+          <Link to="/docs/" className={styles.exploreLink}>
             Browse the full component set
-            <ArrowIcon />
+            <ArrowRightIconOutlinedRounded width={20} height={20} aria-hidden="true" />
           </Link>
         </div>
       </div>

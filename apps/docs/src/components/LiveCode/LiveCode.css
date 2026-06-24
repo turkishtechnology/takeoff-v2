@@ -14,10 +14,8 @@
   min-width: 0;
 }
 
-/* --- Preview card: owns the border, contains canvas + footer ------------ */
+/* --- Preview card: owns the border and contains the canvas -------------- */
 .live-code-container .live-preview-card {
-  display: grid;
-  grid-template-rows: 1fr auto;
   width: 100%;
   min-width: 0;
   border: 1px solid var(--docs-border-subtle);
@@ -54,7 +52,7 @@
 /* --- Code error banner (top of code panel) ------------------------------ */
 .live-code-container .code-error-banner {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   padding: 8px 12px;
   background: color-mix(in srgb, var(--states-danger-base, #ff3d32) 6%, var(--docs-surface-1));
@@ -69,10 +67,9 @@
 }
 
 .live-code-container .code-error-banner .code-error-banner-icon {
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  margin-top: 1px;
   color: var(--states-danger-base, #dc2626);
 }
 
@@ -96,25 +93,33 @@
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
-  margin-top: 1px;
 }
 
 .live-code-container .code-error-banner .code-error-banner-btn {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 3px 8px;
+  justify-content: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 8px;
   border: 1px solid color-mix(in srgb, var(--states-danger-base, #ff3d32) 30%, transparent);
   border-radius: 4px;
   background: transparent;
   color: inherit;
   font-size: 11px;
+  line-height: 1;
   cursor: pointer;
   transition:
     background 0.15s,
     border-color 0.15s,
     color 0.15s;
   white-space: nowrap;
+}
+
+.live-code-container .code-error-banner .code-error-banner-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .live-code-container .code-error-banner .code-error-banner-btn:hover:not(:disabled) {
@@ -132,7 +137,8 @@
 }
 
 .live-code-container .code-error-banner .code-error-banner-dismiss {
-  padding: 3px 5px;
+  width: 26px;
+  padding: 0;
 }
 
 /* --- Collapsible code block: one unified "basic" card with merged header  */
@@ -183,11 +189,10 @@
 }
 
 .live-code-container .collapsible-code-block .collapsible-toggle .toggle-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 24px;
   height: 24px;
+  padding: 2px;
+  box-sizing: border-box;
   border-radius: 6px;
   background: var(--docs-surface-2);
   color: var(--docs-ink-base);
@@ -199,10 +204,6 @@
 .live-code-container .collapsible-code-block[data-state='open'] .collapsible-toggle .toggle-icon {
   background: var(--docs-cardinal-soft);
   color: var(--docs-cardinal);
-}
-
-.live-code-container .collapsible-code-block .collapsible-toggle .toggle-icon svg path {
-  fill: currentColor;
 }
 
 .live-code-container .collapsible-code-block .collapsible-header-actions {
@@ -327,12 +328,58 @@
   background: var(--docs-surface-1);
 }
 
+/* --- Action bar: tabs + copy, lives in collapsible-header-actions ------ */
+.collapsible-code-block .tabs-list {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 7px;
+  border: 1px solid var(--docs-border-subtle);
+  background: var(--docs-surface-1);
+}
+
+.collapsible-code-block .tab {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.collapsible-code-block .tab .tab-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 5px;
+  font-family: var(--docs-mono-family);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--docs-ink-faint);
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.collapsible-code-block .tab:hover:not([data-state='active']) .tab-label {
+  color: var(--docs-ink-strong);
+  background: var(--docs-surface-2);
+}
+
+.collapsible-code-block .tab[data-state='active'] .tab-label {
+  background: var(--docs-cardinal);
+  color: #fff;
+}
+
 .collapsible-code-block .live-code-action-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: 1px solid transparent;
   border-radius: 6px;
   background: transparent;
@@ -352,6 +399,11 @@
 
 .collapsible-code-block .live-code-action-button[data-copied] {
   color: var(--states-success-base, #188a42);
+}
+
+.collapsible-code-block .live-code-action-button svg {
+  width: 20px;
+  height: 20px;
 }
 
 .live-code-wrapper .live-editor {
