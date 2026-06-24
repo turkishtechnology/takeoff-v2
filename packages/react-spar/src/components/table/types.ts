@@ -55,6 +55,10 @@ export type TableSlot =
   | 'expandedRow'
   | 'filterPanel'
   | 'pagination'
+  | 'paginationInfo'
+  | 'paginationActions'
+  | 'paginationSize'
+  | 'paginationGoToPage'
   | 'empty'
   | 'loading';
 

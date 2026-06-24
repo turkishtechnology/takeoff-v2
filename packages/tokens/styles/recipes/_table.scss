@@ -450,23 +450,56 @@
 // ---------------------------------------------------------------------------
 
 @mixin table-pagination {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border-top: 1px solid var(--border-light);
+  column-gap: var(--pagination-base-container-gap);
   font-size: var(--desktop-body-xs-size);
-  color: var(--text-sub-base);
+  color: var(--icon-base);
 
   // Keep the page-size Select compact and shrink-wrapped.
   .tk-select {
     width: auto;
     min-width: 4.5rem;
   }
+}
+@mixin table-pagination-info {
+  justify-self: start;
+}
 
-  // Push the navigation buttons to the trailing edge.
-  > span[aria-live] {
-    margin-inline-start: auto;
+@mixin table-pagination-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pagination-base-arrow-gap);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--pagination-cell-small-size);
+  }
+}
+
+@mixin table-pagination-size {
+  display: flex;
+  align-items: center;
+  gap: var(--pagination-base-container-gap);
+  justify-self: end;
+}
+
+@mixin table-pagination-go-to-page {
+  display: flex;
+  align-items: center;
+  gap: var(--pagination-base-arrow-gap);
+
+  .tk-input {
+    width: 4.5rem;
   }
 }
 

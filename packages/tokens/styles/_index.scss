@@ -382,6 +382,22 @@
   @include table.table-pagination;
 }
 
+.tk-table-pagination-info {
+  @include table.table-pagination-info;
+}
+
+.tk-table-pagination-actions {
+  @include table.table-pagination-actions;
+}
+
+.tk-table-pagination-size {
+  @include table.table-pagination-size;
+}
+
+.tk-table-pagination-go-to-page {
+  @include table.table-pagination-go-to-page;
+}
+
 .tk-table-empty {
   @include table.table-empty;
 }
