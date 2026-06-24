@@ -326,6 +326,10 @@
   @include table.table-header-cell;
 }
 
+.tk-table-header-content {
+  @include table.table-header-content;
+}
+
 .tk-table-sort-trigger {
   @include table.table-sort-trigger;
 }

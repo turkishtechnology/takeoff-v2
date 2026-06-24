@@ -100,9 +100,11 @@
     background-color: var(--static-light);
   }
 
-  // Zebra striping (opt-in). Skipped for the disclosure rows so an expanded
-  // row visually belongs to its parent.
-  &[data-striped] .tk-table-row:nth-of-type(even) > * {
+  // Count only data rows so disclosure rows never shift the zebra sequence.
+  // An expanded row continues its parent row's stripe instead of becoming an
+  // independent stripe.
+  &[data-striped] .tk-table-row:nth-child(even of .tk-table-row) > *,
+  &[data-striped] .tk-table-row:nth-child(even of .tk-table-row) + .tk-table-expanded-row > * {
     background-color: var(--background-lightest);
   }
 
@@ -213,21 +215,14 @@
   }
 }
 
-// Sort affordance — a real button so Enter/Space toggle sorting.
-@mixin table-sort-trigger {
-  @include mixins.host-button-reset;
-  display: inline-flex;
+@mixin table-header-content {
+  display: flex;
   align-items: center;
   gap: 8px;
-  // `host-button-reset` zeroes margin but NOT padding, so the UA button
-  // padding would otherwise stack on top of the cell padding and misalign
-  // sortable headers against plain ones.
-  cursor: pointer;
+  width: 100%;
+  min-width: 0;
+  justify-content: space-between;
 
-  // Mirror the cell's `data-align` so a sortable header's label + chevron
-  // track its column's text alignment (e.g. an `align: end` numeric column).
-  // The trigger fills the cell (`width: 100%`), so without this the content
-  // stays left-packed while the body cells align right.
   .tk-table-header-cell[data-align='center'] & {
     justify-content: center;
   }
@@ -235,6 +230,21 @@
   .tk-table-header-cell[data-align='end'] & {
     justify-content: flex-end;
   }
+}
+
+// Sort affordance — a real button so Enter/Space toggle sorting.
+@mixin table-sort-trigger {
+  @include mixins.host-button-reset;
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  // `host-button-reset` zeroes margin but NOT padding, so the UA button
+  // padding would otherwise stack on top of the cell padding and misalign
+  // sortable headers against plain ones.
+  cursor: pointer;
 
   @include mixins.focus-ring(var(--secondary-focus));
 }
@@ -246,9 +256,10 @@
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
-  font-size: 1em;
+  width: 1.5rem;
+  height: 1.5rem;
   line-height: 0;
-  opacity: 0.4;
+  color: var(--icon-base);
 
   svg {
     width: var(--desktop-body-s-size);
@@ -257,7 +268,7 @@
 
   &[data-direction='asc'],
   &[data-direction='desc'] {
-    opacity: 1;
+    color: var(--icon-darkest);
   }
 }
 
@@ -348,12 +359,12 @@
   height: 1.5rem;
   border-radius: var(--radius-m-base);
   cursor: pointer;
-  color: var(--text-sub-base);
+  color: var(--icon-base);
   transition: background-color 0.15s ease-in-out;
 
   svg {
-    width: 1rem;
-    height: 1rem;
+    width: var(--desktop-body-s-size);
+    height: var(--desktop-body-s-size);
   }
 
   &:hover {
@@ -367,8 +378,6 @@
   border: 0;
 
   > td {
-    padding: 0.75rem 1rem;
-    background-color: var(--background-lightest);
     border: 0;
     border-bottom: 1px solid var(--border-light);
   }
@@ -381,17 +390,20 @@
 @mixin table-filter-button {
   @include mixins.host-button-reset;
   display: inline-flex;
+  flex: 0 0 auto;
+  width: 1.5rem;
+  height: 1.5rem;
   align-items: center;
   justify-content: center;
-  margin-inline-start: 0.25rem;
+  margin-inline-start: auto;
   padding: 0.125rem;
   border-radius: var(--radius-m-base);
   cursor: pointer;
-  color: var(--text-sub-base);
+  color: var(--icon-base);
 
   svg {
-    width: 0.875rem;
-    height: 0.875rem;
+    width: var(--desktop-body-s-size);
+    height: var(--desktop-body-s-size);
   }
 
   &:hover {
@@ -399,7 +411,7 @@
   }
 
   &[data-active] {
-    color: var(--states-info-base);
+    color: var(--primary-base);
   }
 }
 
@@ -409,7 +421,7 @@
 @mixin table-filter-panel {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--popconfirm-base-gap);
   min-width: 12rem;
 }
 
@@ -419,7 +431,7 @@
 @mixin table-filter-panel-body {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--popconfirm-base-gap);
 }
 
 // ---------------------------------------------------------------------------

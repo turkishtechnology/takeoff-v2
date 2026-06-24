@@ -42,17 +42,19 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
       data-sortable={canSort ? '' : undefined}
       style={{ ...attrs.style, ...sticky.style, ...(hasWidth ? { width: column.getSize() } : undefined) }}
     >
-      {canSort ? (
-        <button {...slotAttrs('sortTrigger')} type="button" onClick={column.getToggleSortingHandler()}>
-          {content}
-          <span {...slotAttrs('sortIcon')} data-direction={sorted || 'none'} aria-hidden="true">
-            {sorted === 'asc' ? <PlaceholderChevronUp /> : sorted === 'desc' ? <PlaceholderChevronDown /> : <PlaceholderChevronsUpDown />}
-          </span>
-        </button>
-      ) : (
-        content
-      )}
-      {canFilter && <TableColumnFilter header={header} />}
+      <div {...slotAttrs('headerContent')}>
+        {canSort ? (
+          <button {...slotAttrs('sortTrigger')} type="button" onClick={column.getToggleSortingHandler()}>
+            {content}
+            <span {...slotAttrs('sortIcon')} data-direction={sorted || 'none'} aria-hidden="true">
+              {sorted === 'asc' ? <PlaceholderChevronUp /> : sorted === 'desc' ? <PlaceholderChevronDown /> : <PlaceholderChevronsUpDown />}
+            </span>
+          </button>
+        ) : (
+          content
+        )}
+        {canFilter && <TableColumnFilter header={header} />}
+      </div>
     </th>
   );
 };
