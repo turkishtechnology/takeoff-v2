@@ -11,8 +11,22 @@ slug: /components/badge
 import LiveCode from '@site/src/components/LiveCode';
 import { Badge, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
+import { BlockIconOutlinedRounded } from '@takeoff-icons/react/block';
+import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
+import { MailIconOutlinedRounded } from '@takeoff-icons/react/mail';
+import { NotificationIconOutlinedRounded } from '@takeoff-icons/react/notification';
+import { PersonIconOutlinedRounded } from '@takeoff-icons/react/person';
+import { PublicIconOutlinedRounded } from '@takeoff-icons/react/public';
 
-export const badgeScope = { Badge };
+export const badgeScope = {
+  Badge,
+  BlockIconOutlinedRounded,
+  CheckIconOutlinedRounded,
+  MailIconOutlinedRounded,
+  NotificationIconOutlinedRounded,
+  PersonIconOutlinedRounded,
+  PublicIconOutlinedRounded,
+};
 
 {/* prettier-ignore-start */}
 
@@ -87,7 +101,7 @@ render(<SizesDemo />);
 `;
 
 export const roundedDemo = String.raw`
-function RoundedDemo() {
+function TkDemo() {
   return (
     <div className="flex flex-wrap justify-center gap-3">
       <Badge rounded>12</Badge>
@@ -97,28 +111,16 @@ function RoundedDemo() {
   );
 }
 
-render(<RoundedDemo />);
+render(<TkDemo />);
 `;
 
 export const iconsDemo = String.raw`
 function IconsDemo() {
-  const CheckIcon = () => (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 13l4 4L19 7" />
-    </svg>
-  );
-
-  const DotIcon = () => (
-    <svg width="8" height="8" viewBox="0 0 8 8">
-      <circle cx="4" cy="4" r="4" fill="currentColor" />
-    </svg>
-  );
-
   return (
     <div className="flex flex-wrap justify-center gap-3">
-      <Badge variant="success" startContent={<CheckIcon />}>Verified</Badge>
-      <Badge variant="info" startContent={<DotIcon />}>Online</Badge>
-      <Badge variant="danger" endContent={<DotIcon />}>Offline</Badge>
+      <Badge variant="success" startContent={<CheckIconOutlinedRounded width={20} height={20} />}>Verified</Badge>
+      <Badge variant="info" startContent={<PublicIconOutlinedRounded width={20} height={20} />}>Online</Badge>
+      <Badge variant="danger" endContent={<BlockIconOutlinedRounded width={20} height={20} />}>Offline</Badge>
     </div>
   );
 }
@@ -148,30 +150,21 @@ function FloatDemo() {
     <div className="flex flex-wrap items-center justify-center gap-8">
       <div className="relative">
         <div className="w-10 h-10 rounded-lg bg-neutral-200 flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-          </svg>
+          <NotificationIconOutlinedRounded width={32} height={32} />
         </div>
         <Badge variant="danger" appearance="filledLight" size="large" rounded className="absolute -top-3 -right-3">3</Badge>
       </div>
 
       <div className="relative inline-flex">
         <div className="w-10 h-10 rounded-full bg-neutral-200 flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
+          <PersonIconOutlinedRounded width={32} height={32} />
         </div>
         <Badge variant="success" dot className="absolute top-0 right-0" />
       </div>
 
       <div className="relative inline-flex">
         <div className="w-10 h-10 rounded-lg bg-neutral-200 flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-            <polyline points="22,6 12,13 2,6" />
-          </svg>
+          <MailIconOutlinedRounded width={32} height={32} />
         </div>
         <Badge variant="info" size="small" className="absolute -top-1.5 -right-1.5">99</Badge>
       </div>

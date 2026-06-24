@@ -5,12 +5,12 @@ import { format } from 'prettier/standalone';
 import prettierPluginBabel from 'prettier/plugins/babel';
 import prettierPluginEstree from 'prettier/plugins/estree';
 import { LiveEditor, LiveProvider } from 'react-live';
+import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
+import { ChevronBottomIconOutlinedRounded } from '@takeoff-icons/react/chevron-bottom';
+import { CopyIconOutlinedRounded } from '@takeoff-icons/react/copy';
 import './LiveCode.css';
 import { CodeErrorBanner } from './CodeErrorBanner';
 import { CollapsibleCodeBlock } from './CollapsibleCodeBlock';
-import { CheckIcon, CopyIcon } from './icons';
-import { PreviewErrorFooter } from './PreviewErrorFooter';
-import { PreviewErrorOverlay } from './PreviewErrorOverlay';
 import { SnapshotPreview } from './SnapshotPreview';
 
 interface LiveCodeProps {
@@ -30,7 +30,7 @@ interface LiveCodeProps {
   /**
    * When `false`, the code panel becomes display-only: react-live still
    * renders the preview, but the editable textarea, prettier formatting,
-   * and reset/error tooling are skipped. Use it for the supporting demos
+   * and error tooling are skipped. Use it for the supporting demos
    * on a component page so only the single Playground stays interactive.
    * Default is `true`.
    */
@@ -42,13 +42,10 @@ export const LiveCode = ({ code, previewMinHeight = 220, previewWrapper, scope =
   const selectedTheme = colorMode === 'dark' ? themes.vsDark : themes.github;
   const [isCopied, setIsCopied] = useState(false);
   const [formattedCode, setFormattedCode] = useState(code || '');
-  const [resetKey, setResetKey] = useState(0);
-  const [hasRenderedOnce, setHasRenderedOnce] = useState(false);
   const [isCodeCollapsed, setIsCodeCollapsed] = useState(false);
   const [isCodeExpanded, setIsCodeExpanded] = useState(false);
   const [canExpand, setCanExpand] = useState(false);
   const copyFeedbackTimeoutRef = useRef<number | null>(null);
-  const codeBlockRef = useRef<HTMLDivElement>(null);
   const expandableRef = useRef<HTMLDivElement>(null);
 
   const liveScope = useMemo(
@@ -159,102 +156,76 @@ export const LiveCode = ({ code, previewMinHeight = 220, previewWrapper, scope =
     }
   }, []);
 
-  const handleShowInCode = useCallback(() => {
-    setIsCodeCollapsed(false);
-    setIsCodeExpanded(true);
-    requestAnimationFrame(() => {
-      if (codeBlockRef.current) {
-        codeBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        codeBlockRef.current.setAttribute('tabindex', '-1');
-        codeBlockRef.current.focus({ preventScroll: true });
-      }
-    });
-  }, []);
-
   const handleToggleCode = useCallback(() => {
     setIsCodeCollapsed(previousValue => !previousValue);
-  }, []);
-
-  const handleReset = useCallback(() => {
-    setHasRenderedOnce(false);
-    setResetKey(currentValue => currentValue + 1);
-    setIsCodeCollapsed(false);
-    setIsCodeExpanded(false);
   }, []);
 
   const handleDismissError = useCallback(() => {}, []);
 
   return (
     <div className="live-code-container">
-      <React.Fragment key={resetKey}>
-        <LiveProvider code={formattedCode} scope={liveScope} noInline={noInline}>
-          <div className="live-preview-card">
-            <div className="live-preview-wrapper" style={{ minHeight: `${previewMinHeight}px` }}>
-              <SnapshotPreview onHasRendered={() => setHasRenderedOnce(true)} previewWrapper={previewWrapper} scope={liveScope} noInline={noInline} />
-              {editable && <PreviewErrorOverlay hasRenderedOnce={hasRenderedOnce} onShowInCode={handleShowInCode} onReset={handleReset} />}
-            </div>
-            {editable && <PreviewErrorFooter hasRenderedOnce={hasRenderedOnce} isCodePanelOpen={!isCodeCollapsed} onShowInCode={handleShowInCode} onReset={handleReset} />}
+      <LiveProvider code={formattedCode} scope={liveScope} noInline={noInline}>
+        <div className="live-preview-card">
+          <div className="live-preview-wrapper" style={{ minHeight: `${previewMinHeight}px` }}>
+            <SnapshotPreview previewWrapper={previewWrapper} scope={liveScope} noInline={noInline} />
           </div>
+        </div>
 
-          <CollapsibleCodeBlock
-            codeBlockRef={codeBlockRef}
-            isCollapsed={isCodeCollapsed}
-            onToggle={handleToggleCode}
-            headerActions={
-              <button
-                className="live-code-action-button"
-                type="button"
-                onClick={handleCopy}
-                aria-label={isCopied ? 'Copied to clipboard' : 'Copy code'}
-                data-copied={isCopied ? '' : undefined}
-              >
-                {isCopied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
-              </button>
-            }
-          >
-            <div className={`live-code-expandable${isCodeExpanded ? ' expanded' : ''}${canExpand ? ' has-overflow' : ''}`} ref={expandableRef}>
-              <div className="live-code-wrapper">
-                {editable && <CodeErrorBanner onCopy={handleCopyError} onDismiss={handleDismissError} />}
+        <CollapsibleCodeBlock
+          isCollapsed={isCodeCollapsed}
+          onToggle={handleToggleCode}
+          headerActions={
+            <button
+              className="live-code-action-button"
+              type="button"
+              onClick={handleCopy}
+              aria-label={isCopied ? 'Copied to clipboard' : 'Copy code'}
+              data-copied={isCopied ? '' : undefined}
+            >
+              {isCopied ? <CheckIconOutlinedRounded /> : <CopyIconOutlinedRounded />}
+            </button>
+          }
+        >
+          <div className={`live-code-expandable${isCodeExpanded ? ' expanded' : ''}${canExpand ? ' has-overflow' : ''}`} ref={expandableRef}>
+            <div className="live-code-wrapper">
+              {editable && <CodeErrorBanner onCopy={handleCopyError} onDismiss={handleDismissError} />}
 
-                {editable ? (
-                  <LiveEditor theme={selectedTheme} className="live-editor" code={formattedCode} />
-                ) : (
-                  <Highlight theme={selectedTheme} code={formattedCode} language="tsx">
-                    {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                      <pre
-                        className={`live-editor ${className}`}
-                        style={{
-                          ...style,
-                          overflowX: 'auto',
-                          overflowY: 'auto',
-                          whiteSpace: 'pre',
-                          wordWrap: 'normal',
-                        }}
-                      >
-                        {tokens.map((line, lineIndex) => (
-                          <div key={lineIndex} {...getLineProps({ line })}>
-                            {line.map((token, tokenIndex) => (
-                              <span key={tokenIndex} {...getTokenProps({ token })} />
-                            ))}
-                          </div>
-                        ))}
-                      </pre>
-                    )}
-                  </Highlight>
-                )}
-              </div>
+              {editable ? (
+                <LiveEditor theme={selectedTheme} className="live-editor" code={formattedCode} />
+              ) : (
+                <Highlight theme={selectedTheme} code={formattedCode} language="tsx">
+                  {({ className, style, tokens, getLineProps, getTokenProps }) => (
+                    <pre
+                      className={`live-editor ${className}`}
+                      style={{
+                        ...style,
+                        overflowX: 'auto',
+                        overflowY: 'auto',
+                        whiteSpace: 'pre',
+                        wordWrap: 'normal',
+                      }}
+                    >
+                      {tokens.map((line, lineIndex) => (
+                        <div key={lineIndex} {...getLineProps({ line })}>
+                          {line.map((token, tokenIndex) => (
+                            <span key={tokenIndex} {...getTokenProps({ token })} />
+                          ))}
+                        </div>
+                      ))}
+                    </pre>
+                  )}
+                </Highlight>
+              )}
             </div>
-            {canExpand && (
-              <button className="show-more-toggle" type="button" onClick={() => setIsCodeExpanded(prev => !prev)}>
-                {isCodeExpanded ? 'Show less' : 'Show more'}
-                <svg className={`show-more-chevron${isCodeExpanded ? ' rotated' : ''}`} xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-            )}
-          </CollapsibleCodeBlock>
-        </LiveProvider>
-      </React.Fragment>
+          </div>
+          {canExpand && (
+            <button className="show-more-toggle" type="button" onClick={() => setIsCodeExpanded(prev => !prev)}>
+              {isCodeExpanded ? 'Show less' : 'Show more'}
+              <ChevronBottomIconOutlinedRounded className={`show-more-chevron${isCodeExpanded ? ' rotated' : ''}`} aria-hidden="true" />
+            </button>
+          )}
+        </CollapsibleCodeBlock>
+      </LiveProvider>
     </div>
   );
 };

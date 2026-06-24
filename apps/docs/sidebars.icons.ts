@@ -13,7 +13,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Usage',
       collapsed: false,
-      items: ['usage/react', 'usage/web-component', 'usage/font', 'usage/svg', 'usage/sprite'],
+      items: ['usage/react', 'usage/font', 'usage/svg'],
     },
     'metadata',
   ],

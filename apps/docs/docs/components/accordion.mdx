@@ -15,8 +15,15 @@ import {
   ReactSparDemoRoot,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
+import { AddIconOutlinedRounded } from '@takeoff-icons/react/add';
+import { RemoveIconOutlinedRounded } from '@takeoff-icons/react/remove';
 
-export const accordionScope = { Accordion, Badge };
+export const accordionScope = {
+  Accordion,
+  AddIconOutlinedRounded,
+  Badge,
+  RemoveIconOutlinedRounded,
+};
 
 {/* prettier-ignore-start */}
 
@@ -147,43 +154,12 @@ render(<ControlledAccordionDemo />);
 
 export const customIndicatorDemo = String.raw`
 function CustomIndicatorDemo() {
-  const PlusIcon = () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-
-  const MinusIcon = () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-
   return (
     <Accordion className="w-full max-w-90" defaultValue="service" size="large">
       <Accordion.Item value="service">
         <Accordion.Header level={2}>
           <Accordion.Trigger>
-            <Accordion.Indicator>{({ isOpen }) => (isOpen ? <MinusIcon /> : <PlusIcon />)}</Accordion.Indicator>
+            <Accordion.Indicator>{({ isOpen }) => (isOpen ? <RemoveIconOutlinedRounded /> : <AddIconOutlinedRounded />)}</Accordion.Indicator>
             Service options
           </Accordion.Trigger>
         </Accordion.Header>
@@ -196,7 +172,7 @@ function CustomIndicatorDemo() {
       <Accordion.Item value="support">
         <Accordion.Header level={2}>
           <Accordion.Trigger>
-            <Accordion.Indicator>{({ isOpen }) => (isOpen ? <MinusIcon /> : <PlusIcon />)}</Accordion.Indicator>
+            <Accordion.Indicator>{({ isOpen }) => (isOpen ? <RemoveIconOutlinedRounded /> : <AddIconOutlinedRounded />)}</Accordion.Indicator>
             Support channels
           </Accordion.Trigger>
         </Accordion.Header>

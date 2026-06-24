@@ -61,7 +61,7 @@
    * Takeoff UI landing palette (exact hex values) so dark mode gets the
    * deep, engineered look we want for the marketing surface.
    *
-   * All CSS across /src/pages/landing/ references these as --runway-*
+   * All CSS across /src/components/Landing/ references these as --runway-*
    * names; only this file needs to know about the two-layer strategy.
    * ──────────────────────────────────────────────────────────────── */
 
@@ -154,9 +154,6 @@
   --runway-bracket-color: #ff1736;
   --runway-ring-color: rgba(255, 23, 54, 0.18);
 }
-
-/* --- Load JetBrains Mono once, alongside the default Tk font stack ------- */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* --- Surface classes (opt-in) -------------------------------------------- */
 .runway-surface-dark {
