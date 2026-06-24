@@ -17,6 +17,7 @@ import type { TableProps, TableSlot } from './types';
  * own hooks; recorded under "Component-specific decisions → Table"):
  *   Root:        data-size, data-striped, data-bordered, data-sticky-header,
  *                data-loading
+ *   Viewport:    data-scrolled (presence while scrollTop > 0)
  *   Header/cell: data-align (start|center|end), data-sticky (left|right),
  *                data-sortable (presence) + aria-sort (a11y source of truth)
  *   Sort icon:   data-direction (asc|desc|none) — node-local chevron hook, NOT
@@ -29,6 +30,7 @@ export const TableBase = createComponentBase<TableProps, TableSlot>({
   name: 'Table',
   slots: [
     'root',
+    'tableViewport',
     'table',
     'header',
     'headerRow',
@@ -54,6 +56,7 @@ export const TableBase = createComponentBase<TableProps, TableSlot>({
   ] as const,
   classes: {
     root: 'tk-table',
+    tableViewport: 'tk-table-viewport',
     table: 'tk-table-table',
     header: 'tk-table-header',
     headerRow: 'tk-table-header-row',

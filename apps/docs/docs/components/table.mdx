@@ -97,6 +97,183 @@ function BasicDemo() {
 render(<BasicDemo />);
 `;
 
+
+export const headerControlsDemo = String.raw`
+function HeaderControlsDemo() {
+  const data = [
+    { id: '1', plain: 'Plain', sortable: 'Sort me', filterable: 'London', both: 'Admin', centered: 'Center', amount: 1280 },
+    { id: '2', plain: 'Long content', sortable: 'Another value', filterable: 'Helsinki', both: 'User', centered: 'Middle', amount: 940 },
+  ];
+  const roleOptions = [
+    { label: 'Admin', value: 'Admin' },
+    { label: 'User', value: 'User' },
+  ];
+  const columns = [
+    { id: 'plain', header: 'Plain header', accessor: 'plain', width: 180 },
+    { id: 'sortable', header: 'Sort only', accessor: 'sortable', sortable: true, width: 180 },
+    { id: 'filterable', header: 'Filter only', accessor: 'filterable', filter: 'text', width: 180 },
+    {
+      id: 'both',
+      header: 'Sort + filter',
+      accessor: 'both',
+      sortable: true,
+      filter: { type: 'checkbox', options: roleOptions },
+      width: 190,
+    },
+    { id: 'centered', header: 'Centered', accessor: 'centered', align: 'center', width: 160 },
+    { id: 'amount', header: 'End aligned', accessor: 'amount', align: 'end', sortable: true, width: 160 },
+  ];
+
+  return (
+    <div style={{ maxWidth: '100%', overflow: 'auto' }}>
+      <Table data={data} columns={columns} getRowId={(row) => row.id} bordered sorting={{ multi: true }} />
+    </div>
+  );
+}
+
+render(<HeaderControlsDemo />);
+`;
+
+export const stateMatrixDemo = String.raw`
+function StateMatrixDemo() {
+  const data = [
+    { id: '1', name: 'Ada Lovelace', role: 'Admin', note: 'First row detail content.' },
+    { id: '2', name: 'Grace Hopper', role: 'Admin', note: 'Middle row detail content.' },
+    { id: '3', name: 'Alan Turing', role: 'User', note: 'Last row detail checks the outer bottom border.' },
+  ];
+  const columns = [
+    { id: 'name', header: 'Name', accessor: 'name', sortable: true },
+    { id: 'role', header: 'Role', accessor: 'role' },
+  ];
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20 }}>
+      <section>
+        <h3 style={{ margin: '0 0 8px' }}>Multiple selection + striped</h3>
+        <Table
+          data={data}
+          columns={columns}
+          getRowId={(row) => row.id}
+          selection={{ mode: 'multiple', defaultValue: { '2': true } }}
+          striped
+          bordered
+        />
+      </section>
+      <section>
+        <h3 style={{ margin: '0 0 8px' }}>Single selection</h3>
+        <Table
+          data={data}
+          columns={columns}
+          getRowId={(row) => row.id}
+          selection={{ mode: 'single', defaultValue: { '1': true } }}
+          bordered
+        />
+      </section>
+      <section>
+        <h3 style={{ margin: '0 0 8px' }}>Expanded middle row</h3>
+        <Table
+          data={data}
+          columns={columns}
+          getRowId={(row) => row.id}
+          expansion={{
+            defaultValue: { '2': true },
+            render: (row) => <div style={{ padding: 12 }}>{row.note}</div>,
+          }}
+          bordered
+        />
+      </section>
+      <section>
+        <h3 style={{ margin: '0 0 8px' }}>Expanded last row</h3>
+        <Table
+          data={data}
+          columns={columns}
+          getRowId={(row) => row.id}
+          expansion={{
+            defaultValue: { '3': true },
+            render: (row) => <div style={{ padding: 12 }}>{row.note}</div>,
+          }}
+          striped
+          bordered
+        />
+      </section>
+    </div>
+  );
+}
+
+render(<StateMatrixDemo />);
+`;
+
+export const stickyOverflowDemo = String.raw`
+function StickyOverflowDemo() {
+  const data = Array.from({ length: 10 }, (_, index) => ({
+    id: String(index + 1),
+    name: ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Margaret Hamilton'][index % 4],
+    department: ['Engineering', 'Research', 'Operations'][index % 3],
+    city: ['London', 'New York', 'Helsinki'][index % 3],
+    project: 'Long project name ' + (index + 1),
+    status: index % 2 ? 'Active' : 'Review',
+    score: 70 + index,
+  }));
+  const columns = [
+    { id: 'name', header: 'Pinned name', accessor: 'name', sticky: 'left', width: 180, sortable: true },
+    { id: 'department', header: 'Department', accessor: 'department', width: 180, filter: 'text' },
+    { id: 'city', header: 'City', accessor: 'city', width: 160 },
+    { id: 'project', header: 'A deliberately long project heading', accessor: 'project', width: 300 },
+    { id: 'status', header: 'Status', accessor: 'status', width: 160 },
+    { id: 'score', header: 'Pinned score', accessor: 'score', sticky: 'right', width: 140, align: 'end', sortable: true },
+  ];
+
+  return (
+    <Table
+      data={data}
+      columns={columns}
+      getRowId={(row) => row.id}
+      stickyHeader
+      striped
+      bordered
+      selection={{ mode: 'multiple' }}
+      slotProps={{ tableViewport: { style: { maxHeight: 300 } } }}
+    />
+  );
+}
+
+render(<StickyOverflowDemo />);
+`;
+
+export const terminalStatesDemo = String.raw`
+function TerminalStatesDemo() {
+  const columns = [
+    { id: 'name', header: 'Name', accessor: 'name' },
+    { id: 'status', header: 'Status', accessor: 'status' },
+  ];
+  const loadingData = [
+    { id: '1', name: 'Ada Lovelace', status: 'Loading update' },
+    { id: '2', name: 'Grace Hopper', status: 'Loading update' },
+  ];
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
+      <section>
+        <h3 style={{ margin: '0 0 8px' }}>Empty</h3>
+        <Table
+          data={[]}
+          columns={columns}
+          getRowId={(row) => row.id}
+          emptyState={<div style={{ padding: 8 }}>No matching records</div>}
+          bordered
+        />
+      </section>
+      <section>
+        <h3 style={{ margin: '0 0 8px' }}>Loading overlay</h3>
+        <Table data={loadingData} columns={columns} getRowId={(row) => row.id} loading striped bordered />
+      </section>
+    </div>
+  );
+}
+
+render(<TerminalStatesDemo />);
+`;
+
 export const customCellDemo = String.raw`
 function CustomCellDemo() {
   const data = [
@@ -243,6 +420,48 @@ a dot-path (`'user.city'`), or a `(row) => value` function.
   code={basicDemo}
   noInline
   previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tableScope}
+/>
+
+## Header control combinations
+
+Plain, sort-only, filter-only, sort + filter, centered, and end-aligned headers
+share one deliberately wide table. This catches icon alignment, long-label,
+fixed-width, and horizontal-overflow regressions.
+
+<LiveCode
+  code={headerControlsDemo}
+  noInline
+  previewMinHeight={240}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tableScope}
+/>
+
+## Selection and expansion states
+
+Multiple and single selection are shown beside middle-row and last-row
+expansion. The last case specifically exercises the expanded-row bottom edge
+against the table's outer border.
+
+<LiveCode
+  code={stateMatrixDemo}
+  noInline
+  previewMinHeight={760}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tableScope}
+/>
+
+## Sticky and overflow stress test
+
+Scroll both directions to verify a sticky header, left/right pinned columns,
+selection cells, long headings, sorting, filtering, striping, and borders in the
+same constrained viewport.
+
+<LiveCode
+  code={stickyOverflowDemo}
+  noInline
+  previewMinHeight={380}
   previewWrapper={ReactSparDemoRoot}
   scope={tableScope}
 />
@@ -443,7 +662,7 @@ for primitive behavior.
 | <ApiBadge label="tableRef" />     | <code>Ref&lt;TanStackTable&lt;TData&gt; &#124; null&gt;</code>                                                                 | -       | Escape hatch for the rare imperative need — receives the TanStack table instance (RFC §2.3: controlled props + an optional instance ref, never an imperative `@Method` surface). Also the access point for `getExportRows()`. |
 | <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#table-td-tableslot">TableSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                                                                                |
 | <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#table-td-tableslot">TableSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                            |
-| <ApiBadge label="className" />    | <code>string</code>                                                                                                            | -       | Appends custom classes to the root scroll container.                                                                                                                                                                          |
+| <ApiBadge label="className" />    | <code>string</code>                                                                                                            | -       | Appends custom classes to the root container.                                                                                                                                                                                 |
 
 #### Events {#table-events}
 
@@ -453,29 +672,31 @@ for primitive behavior.
 
 #### Data attributes {#table-data-attributes}
 
-| Attribute                                       | Applied when                                                              | Purpose                                                                                                    |
-| ----------------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                                    | Stable selector for the root scroll container.                                                             |
-| <ApiBadge label="data-size" />                  | Always                                                                    | Reflects the resolved `size` (density) so recipes can scope cell padding.                                  |
-| <ApiBadge label="data-striped" />               | When `striped` is true.                                                   | Enables zebra striping on body rows.                                                                       |
-| <ApiBadge label="data-bordered" />              | When `bordered` is true.                                                  | Adds vertical separators between columns.                                                                  |
-| <ApiBadge label="data-sticky-header" />         | When `stickyHeader` is true.                                              | Pins the header row during vertical scroll (opaque background + bottom shadow).                            |
-| <ApiBadge label="data-loading" />               | When `loading` is true.                                                   | Shows the loading overlay; the table is also marked `aria-busy`.                                           |
-| <ApiBadge label="data-align" />                 | On every header/body cell with an `align` (or column `meta.headerAlign`). | Drives cell `text-align` (`start` \| `center` \| `end`).                                                   |
-| <ApiBadge label="data-sticky" />                | On cells of a column with `sticky: "left" \| "right"`.                    | Pins the column; per-edge offset + z-index are applied inline.                                             |
-| <ApiBadge label="aria-sort" />                  | On sortable header cells.                                                 | A11y sort state (`ascending` \| `descending` \| `none`); the sort chevron mirrors it via `data-direction`. |
-| <ApiBadge label="data-selected" />              | On a selected body row.                                                   | Theme hook for the selected-row background.                                                                |
+| Attribute                                                 | Applied when                                                              | Purpose                                                                                                    |
+| --------------------------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />           | Always                                                                    | Stable selector for the root container.                                                                    |
+| <ApiBadge label="data-slot=&quot;table-viewport&quot;" /> | Always                                                                    | The table-only horizontal/vertical scroll container; pagination remains outside it.                        |
+| <ApiBadge label="data-size" />                            | Always                                                                    | Reflects the resolved `size` (density) so recipes can scope cell padding.                                  |
+| <ApiBadge label="data-striped" />                         | When `striped` is true.                                                   | Enables zebra striping on body rows.                                                                       |
+| <ApiBadge label="data-bordered" />                        | When `bordered` is true.                                                  | Adds vertical separators between columns.                                                                  |
+| <ApiBadge label="data-sticky-header" />                   | When `stickyHeader` is true.                                              | Pins the header row during vertical scroll.                                                                |
+| <ApiBadge label="data-scrolled" />                        | On the table viewport while `scrollTop > 0`.                              | Adds sticky-header elevation only after vertical scrolling begins.                                         |
+| <ApiBadge label="data-loading" />                         | When `loading` is true.                                                   | Shows the loading overlay; the table is also marked `aria-busy`.                                           |
+| <ApiBadge label="data-align" />                           | On every header/body cell with an `align` (or column `meta.headerAlign`). | Drives cell `text-align` (`start` \| `center` \| `end`).                                                   |
+| <ApiBadge label="data-sticky" />                          | On cells of a column with `sticky: "left" \| "right"`.                    | Pins the column; per-edge offset + z-index are applied inline.                                             |
+| <ApiBadge label="aria-sort" />                            | On sortable header cells.                                                 | A11y sort state (`ascending` \| `descending` \| `none`); the sort chevron mirrors it via `data-direction`. |
+| <ApiBadge label="data-selected" />                        | On a selected body row.                                                   | Theme hook for the selected-row background.                                                                |
 
 ### Type Definitions {#table-type-definitions}
 
-| Name                                                                                        | Definition                                                                                                                                                                                                                                                                                                                                      |
-| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <span id="table-td-tablesize"><ApiBadge label="TableSize" /></span>                         | <code>'xsmall' &#124; 'small' &#124; 'base'</code>                                                                                                                                                                                                                                                                                              |
-| <span id="table-td-tableselectionconfig"><ApiBadge label="TableSelectionConfig" /></span>   | <code>&#123; mode: 'single' &#124; 'multiple' &#125;</code>                                                                                                                                                                                                                                                                                     |
-| <span id="table-td-tablesortingconfig"><ApiBadge label="TableSortingConfig" /></span>       | <code>&#123; multi?: boolean &#125;</code>                                                                                                                                                                                                                                                                                                      |
-| <span id="table-td-tablefilteringconfig"><ApiBadge label="TableFilteringConfig" /></span>   | <code>&#123; value?: T; defaultValue?: T; onChange?: (value: T) =&gt; void &#125;</code>                                                                                                                                                                                                                                                        |
-| <span id="table-td-tablepaginationconfig"><ApiBadge label="TablePaginationConfig" /></span> | <code>&#123; pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) =&gt; void &#125;</code>                                                                                                                                                                            |
-| <span id="table-td-tableslot"><ApiBadge label="TableSlot" /></span>                         | <code>&#124; 'root' &#124; 'table' &#124; 'header' &#124; 'headerRow' &#124; 'headerCell' &#124; 'sortTrigger' &#124; 'sortIcon' &#124; 'body' &#124; 'row' &#124; 'cell' &#124; 'selectionCell' &#124; 'expandCell' &#124; 'expandButton' &#124; 'expandedRow' &#124; 'filterPanel' &#124; 'pagination' &#124; 'empty' &#124; 'loading'</code> |
-| <span id="table-td-tabledatarequest"><ApiBadge label="TableDataRequest" /></span>           | <code>&#123; pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState &#125;</code>                                                                                                                                                                                                                                      |
+| Name                                                                                        | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="table-td-tablesize"><ApiBadge label="TableSize" /></span>                         | <code>'xsmall' &#124; 'small' &#124; 'base'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| <span id="table-td-tableselectionconfig"><ApiBadge label="TableSelectionConfig" /></span>   | <code>&#123; mode: 'single' &#124; 'multiple' &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| <span id="table-td-tablesortingconfig"><ApiBadge label="TableSortingConfig" /></span>       | <code>&#123; multi?: boolean &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| <span id="table-td-tablefilteringconfig"><ApiBadge label="TableFilteringConfig" /></span>   | <code>&#123; value?: T; defaultValue?: T; onChange?: (value: T) =&gt; void &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                             |
+| <span id="table-td-tablepaginationconfig"><ApiBadge label="TablePaginationConfig" /></span> | <code>&#123; pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) =&gt; void &#125;</code>                                                                                                                                                                                                                                                                                                                                 |
+| <span id="table-td-tableslot"><ApiBadge label="TableSlot" /></span>                         | <code>&#124; 'root' &#124; 'tableViewport' &#124; 'table' &#124; 'header' &#124; 'headerRow' &#124; 'headerCell' &#124; 'headerContent' &#124; 'sortTrigger' &#124; 'sortIcon' &#124; 'body' &#124; 'row' &#124; 'cell' &#124; 'selectionCell' &#124; 'expandCell' &#124; 'expandButton' &#124; 'expandedRow' &#124; 'filterPanel' &#124; 'pagination' &#124; 'paginationInfo' &#124; 'paginationActions' &#124; 'paginationSize' &#124; 'paginationGoToPage' &#124; 'empty' &#124; 'loading'</code> |
+| <span id="table-td-tabledatarequest"><ApiBadge label="TableDataRequest" /></span>           | <code>&#123; pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                           |
 
 {/* api-tables:end */}

@@ -310,6 +310,10 @@
   @include table.table;
 }
 
+.tk-table-viewport {
+  @include table.table-viewport;
+}
+
 .tk-table-table {
   @include table.table-table;
 }

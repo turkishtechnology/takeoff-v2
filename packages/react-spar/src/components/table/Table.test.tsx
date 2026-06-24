@@ -1,4 +1,5 @@
 import type { Table as TanStackTable } from '@tanstack/react-table';
+import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
@@ -52,7 +53,9 @@ describe('Table (props-first)', () => {
       const root = container.querySelector('[data-slot="root"]');
       expect(root).toHaveClass('tk-table');
       expect(root).toHaveAttribute('data-size', 'base');
-      expect(container.querySelector('table')).toBeInTheDocument();
+      const viewport = container.querySelector('[data-slot="table-viewport"]');
+      expect(viewport).toHaveClass('tk-table-viewport');
+      expect(viewport).toContainElement(container.querySelector('table'));
       expect(screen.getAllByRole('columnheader')).toHaveLength(4);
       // 3 data rows (header row is in a separate rowgroup but still a row).
       expect(within(container.querySelector('tbody') as HTMLElement).getAllByRole('row')).toHaveLength(3);
@@ -177,6 +180,15 @@ describe('Table (props-first)', () => {
       const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: 'text' }];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
       expect(screen.getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
+    });
+
+    it('groups sort and filter controls in the header content slot', () => {
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', sortable: true, filter: 'text' }];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
+      const headerContent = container.querySelector('[data-slot="header-content"]') as HTMLElement;
+
+      expect(within(headerContent).getByRole('button', { name: 'Name' })).toBeInTheDocument();
+      expect(within(headerContent).getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
     });
 
     it('narrows rows through the `text` preset (string shorthand)', async () => {
@@ -304,11 +316,33 @@ describe('Table (props-first)', () => {
 
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus']);
       expect(screen.getByRole('button', { name: 'Previous page' })).toBeDisabled();
+      expect(container.querySelector('[data-slot="pagination-info"]')).toHaveTextContent('Page 1 of 2');
+      expect(within(container.querySelector('[data-slot="pagination-actions"]') as HTMLElement).getAllByRole('button')).toHaveLength(6);
+      expect(screen.getByRole('button', { name: 'Page 1, current page' })).toHaveAttribute('aria-current', 'page');
+      expect(container.querySelector('[data-slot="pagination-size"] .tk-select')).toBeInTheDocument();
 
       await user.click(screen.getByRole('button', { name: 'Next page' }));
       expect(bodyRowTexts(container)).toEqual(['Grace']);
       expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
       expect(screen.getByRole('button', { name: 'Previous page' })).toBeEnabled();
+      expect(screen.getByRole('button', { name: 'Page 2, current page' })).toHaveAttribute('aria-current', 'page');
+
+      const pageInput = screen.getByRole('spinbutton', { name: 'Go to page' });
+      await user.type(pageInput, '1{enter}');
+      expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus']);
+      expect(screen.getByRole('button', { name: 'Page 1, current page' })).toHaveAttribute('aria-current', 'page');
+    });
+
+    it('condenses large page ranges around the current page', () => {
+      const { container } = render(
+        <Table data={users} columns={baseColumns} getRowId={getRowId} manual pagination={{ pageSize: 10, pageIndex: 5, rowCount: 100 }} onDataRequest={vi.fn()} />,
+      );
+      const actions = container.querySelector('[data-slot="pagination-actions"]') as HTMLElement;
+
+      expect(within(actions).getByRole('button', { name: 'Go to page 1' })).toBeInTheDocument();
+      expect(within(actions).getByRole('button', { name: 'Page 6, current page' })).toHaveAttribute('aria-current', 'page');
+      expect(within(actions).getByRole('button', { name: 'Go to page 10' })).toBeInTheDocument();
+      expect(actions.querySelectorAll(':scope > span')).toHaveLength(2);
     });
   });
 
@@ -347,6 +381,15 @@ describe('Table (props-first)', () => {
       expect(stickyHeader.style.position).toBe('sticky');
       expect(stickyHeader.style.left).toBe('0px');
       expect(container.querySelector('td[data-sticky="left"]')).toBeInTheDocument();
+
+      const viewport = container.querySelector('[data-slot="table-viewport"]') as HTMLElement;
+      expect(viewport).not.toHaveAttribute('data-scrolled');
+      viewport.scrollTop = 20;
+      fireEvent.scroll(viewport);
+      expect(viewport).toHaveAttribute('data-scrolled', '');
+      viewport.scrollTop = 0;
+      fireEvent.scroll(viewport);
+      expect(viewport).not.toHaveAttribute('data-scrolled');
     });
   });
 
@@ -374,11 +417,19 @@ describe('Table (props-first)', () => {
   describe('customization surfaces', () => {
     it('lands classNames and slotProps on the correct slot owner nodes', () => {
       const { container } = render(
-        <Table data={users} columns={baseColumns} getRowId={getRowId} classNames={{ cell: 'my-cell' }} slotProps={{ table: { 'aria-label': 'Users' } }} />,
+        <Table
+          data={users}
+          columns={baseColumns}
+          getRowId={getRowId}
+          classNames={{ cell: 'my-cell', headerContent: 'my-header-content' }}
+          slotProps={{ table: { 'aria-label': 'Users' }, headerContent: { 'aria-label': 'Header content' } }}
+        />,
       );
 
       expect(container.querySelector('table')).toHaveAttribute('aria-label', 'Users');
       expect(container.querySelector('td[data-slot="cell"]')).toHaveClass('tk-table-cell', 'my-cell');
+      expect(container.querySelector('[data-slot="header-content"]')).toHaveClass('tk-table-header-content', 'my-header-content');
+      expect(container.querySelector('[data-slot="header-content"]')).toHaveAttribute('aria-label', 'Header content');
     });
   });
 

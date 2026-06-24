@@ -24,22 +24,20 @@
 // (only `base` + `small`), so it keeps literal fallbacks until tokens land.
 
 // ---------------------------------------------------------------------------
-// Root — scroll container. Owns the border box, density cascade, striped /
-// bordered / sticky-header state, and the loading overlay anchor.
+// Root — owns the density cascade, striped / bordered / sticky-header state,
+// pagination, and the loading overlay anchor. Scrolling belongs to the table
+// viewport so pagination stays fixed outside the scroll area.
 // ---------------------------------------------------------------------------
 
 @mixin table {
   position: relative;
   display: block;
   width: 100%;
-  overflow: auto;
   // Match legacy `tk-table`: a thin border + the medium radius (`--radius-l-base`
   // is not emitted by the token build, so the old value always fell back to the
   // literal; `--radius-m-base` is real and is what legacy uses).
   font-family: var(--family-body);
   color: var(--text-dark);
-
-  @include mixins.takeoff-scrollbar;
 
   // Density cascade — padding lives on the root so it scopes the cells without
   // each one needing its own size attr. Header and body draw from their own
@@ -140,12 +138,28 @@
     border-bottom: 0;
   }
 
-  // Sticky header — the wrapper sets `position: sticky; top: 0` inline; the
-  // recipe supplies the opaque background + bottom elevation while scrolled.
+  // Sticky header is always opaque, but elevation appears only after the table
+  // viewport has moved vertically.
   &[data-sticky-header] .tk-table-header-cell {
     background-color: var(--background-lightest);
+  }
+
+  &[data-sticky-header] .tk-table-viewport[data-scrolled] .tk-table-header-cell {
     box-shadow: inset 0 -1px 0 var(--border-light);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Table viewport — the only scroll container. The native table stays
+// `display: table`, preserving layout and accessibility semantics.
+// ---------------------------------------------------------------------------
+
+@mixin table-viewport {
+  display: block;
+  width: 100%;
+  overflow: auto;
+
+  @include mixins.takeoff-scrollbar;
 }
 
 // ---------------------------------------------------------------------------

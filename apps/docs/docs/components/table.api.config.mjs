@@ -14,7 +14,7 @@ const tanstackDocsUrl = 'https://tanstack.com/table/latest/docs/introduction';
 
 const classNameOverride = {
   type: 'string',
-  description: 'Appends custom classes to the root scroll container.',
+  description: 'Appends custom classes to the root container.',
 };
 
 export default {
@@ -35,7 +35,12 @@ export default {
         {
           attribute: 'data-slot="root"',
           appliedWhen: 'Always',
-          purpose: 'Stable selector for the root scroll container.',
+          purpose: 'Stable selector for the root container.',
+        },
+        {
+          attribute: 'data-slot="table-viewport"',
+          appliedWhen: 'Always',
+          purpose: 'The table-only horizontal/vertical scroll container; pagination remains outside it.',
         },
         {
           attribute: 'data-size',
@@ -55,7 +60,12 @@ export default {
         {
           attribute: 'data-sticky-header',
           appliedWhen: 'When `stickyHeader` is true.',
-          purpose: 'Pins the header row during vertical scroll (opaque background + bottom shadow).',
+          purpose: 'Pins the header row during vertical scroll.',
+        },
+        {
+          attribute: 'data-scrolled',
+          appliedWhen: 'On the table viewport while `scrollTop > 0`.',
+          purpose: 'Adds sticky-header elevation only after vertical scrolling begins.',
         },
         {
           attribute: 'data-loading',

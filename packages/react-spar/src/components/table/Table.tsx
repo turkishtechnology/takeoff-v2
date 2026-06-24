@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type UIEventHandler } from 'react';
 import {
   functionalUpdate,
   getCoreRowModel,
@@ -40,7 +40,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const theme = useComponentTheme('Table');
 
   const { rootAttrs, rest } = composeRootAttrs(TableBase, props as TableProps, theme, {
-    // Visual vocabulary lives on the root scroll container so recipes cascade
+    // Visual vocabulary lives on the root so recipes cascade
     // to the portal-free table descendants. `data-loading` mirrors the
     // boolean-presence convention (rule 5).
     stateAttrs: ({ size = DEFAULT_SIZE, striped, bordered, stickyHeader, loading }) => ({
@@ -89,6 +89,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const paginationConfig = typeof pagination === 'object' ? pagination : undefined;
   const paginationEnabled = pagination === true || !!paginationConfig;
   const pageSizeOptions = paginationConfig?.pageSizeOptions ?? DEFAULT_PAGE_SIZE_OPTIONS;
+  const [tableViewportScrolled, setTableViewportScrolled] = useState(false);
 
   // ── Controlled/uncontrolled state slices ─────────────────────────────────
   const [sortingState, setSorting] = useControllableState<SortingState>(sortingConfig?.value, sortingConfig?.defaultValue ?? EMPTY_SORTING, sortingConfig?.onChange);
@@ -229,13 +230,22 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     slotAttrs,
   };
 
+  const tableViewportAttrs = slotAttrs('tableViewport');
+  const handleTableViewportScroll: UIEventHandler<HTMLDivElement> = event => {
+    tableViewportAttrs.onScroll?.(event);
+    const nextScrolled = event.currentTarget.scrollTop > 0;
+    setTableViewportScrolled(current => (current === nextScrolled ? current : nextScrolled));
+  };
+
   return (
     <TableProvider value={contextValue}>
       <div {...rootAttrs} ref={ref}>
-        <table {...slotAttrs('table')} aria-busy={loading || undefined}>
-          <TableHeader />
-          <TableBody />
-        </table>
+        <div {...tableViewportAttrs} data-scrolled={tableViewportScrolled ? '' : undefined} onScroll={handleTableViewportScroll}>
+          <table {...slotAttrs('table')} aria-busy={loading || undefined}>
+            <TableHeader />
+            <TableBody />
+          </table>
+        </div>
         {paginationEnabled && <TablePagination />}
         {loading && (
           // No `aria-hidden`: the Spar Spinner ships `role="status"` +
