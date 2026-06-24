@@ -11,8 +11,14 @@ slug: /components/button
 import LiveCode from '@site/src/components/LiveCode';
 import { Button, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
+import { ArrowRightIconOutlinedRounded } from '@takeoff-icons/react/arrow-right';
+import { StarIconOutlinedRounded } from '@takeoff-icons/react/star';
 
-export const buttonScope = { Button };
+export const buttonScope = {
+  ArrowRightIconOutlinedRounded,
+  Button,
+  StarIconOutlinedRounded,
+};
 
 {/* prettier-ignore-start */}
 
@@ -133,44 +139,14 @@ render(<ToggleButtonDemo />);
 
 export const iconsDemo = String.raw`
 function IconsDemo() {
-  const StarIcon = () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.77 4.29 12.9l.71-4.12-3-2.93 4.15-.6L8 1.5z" />
-    </svg>
-  );
-
-  const ArrowIcon = () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 8h10M9 4l4 4-4 4" />
-    </svg>
-  );
-
   return (
     <div className="flex flex-wrap justify-center gap-3">
-      <Button startContent={<StarIcon />}>Favorite</Button>
-      <Button endContent={<ArrowIcon />}>Continue</Button>
-      <Button startContent={<StarIcon />} endContent={<ArrowIcon />}>
+      <Button startContent={<StarIconOutlinedRounded />}>Favorite</Button>
+      <Button endContent={<ArrowRightIconOutlinedRounded />}>Continue</Button>
+      <Button startContent={<StarIconOutlinedRounded />} endContent={<ArrowRightIconOutlinedRounded />}>
         Both
       </Button>
-      <Button startContent={<StarIcon />} rounded />
+      <Button startContent={<StarIconOutlinedRounded />} rounded />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { Highlight, type PrismTheme } from 'prism-react-renderer';
 import { useState, type JSX } from 'react';
-import { Tabs } from '@takeoff-ui/react-spar';
+import { DocumentSearchIconOutlinedRounded } from '@takeoff-icons/react/document-search';
+import { OpenIconOutlinedRounded } from '@takeoff-icons/react/open';
 import styles from './OneSurface.module.css';
 
 const SPAR_DOCS_URL = 'https://spar.app.turkishtechlab.com/';
@@ -28,24 +29,6 @@ function StencilIcon(): JSX.Element {
         fill="currentColor"
         d="M17.4167 16.8792C19.157 16.8792 20.067 18.9479 18.891 20.2306L16.0301 23.3515C15.6513 23.7647 15.1164 24 14.5558 24H7.94059C6.20508 24 5.29323 21.941 6.4596 20.6559L9.29206 17.535C9.67114 17.1173 10.209 16.8792 10.773 16.8792H17.4167ZM25.1214 8.43952C26.8613 8.43952 27.7714 10.5077 26.596 11.7906L23.7365 14.9116C23.3576 15.3251 22.8226 15.5605 22.2618 15.5605H2.87797C1.138 15.5605 0.227897 13.4923 1.40333 12.2094L4.2628 9.08843C4.64164 8.67496 5.17666 8.43952 5.73744 8.43952H25.1214ZM20.0421 0C21.7801 0 22.691 2.06422 21.5194 3.34809L18.6717 6.46894C18.2927 6.88422 17.7565 7.12084 17.1943 7.12084H10.5727C8.83397 7.12084 7.92339 5.05519 9.09634 3.77166L11.9483 0.650814C12.3272 0.236187 12.863 0 13.4247 0H20.0421Z"
       />
-    </svg>
-  );
-}
-
-function DocsIcon(): JSX.Element {
-  return (
-    <svg className={styles.arrowIcon} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M4 3h8v10H4z" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M6 6h4M6 8h4M6 10h3" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function ExternalArrowIcon(): JSX.Element {
-  return (
-    <svg className={styles.arrowIcon} viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M6 12 L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M7 5 H13 V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -215,21 +198,21 @@ export default function OneSurface(): JSX.Element {
 
             <a href={SPAR_DOCS_URL} className={`${styles.pill} ${styles.pillLink}`} target="_blank" rel="noreferrer noopener">
               <span className={styles.pillIcon}>
-                <DocsIcon />
+                <DocumentSearchIconOutlinedRounded />
               </span>
               Spar
-              <ExternalArrowIcon />
+              <OpenIconOutlinedRounded className={styles.arrowIcon} />
             </a>
 
             <a href={TAKEOFF_UI_CORE_URL} className={`${styles.pill} ${styles.pillLink}`} target="_blank" rel="noreferrer noopener">
               <TakeoffCoreIcon />
               Takeoff UI Core
-              <ExternalArrowIcon />
+              <OpenIconOutlinedRounded className={styles.arrowIcon} />
             </a>
           </div>
         </div>
 
-        <Tabs value={active} onValueChange={value => setActive(value as SampleKey)} className={styles.editor}>
+        <div className={styles.editor}>
           <div className={styles.editorChrome}>
             <div className={styles.editorDots} aria-hidden="true">
               <span />
@@ -237,21 +220,32 @@ export default function OneSurface(): JSX.Element {
               <span />
             </div>
             <span className={styles.editorFilename}>{meta.filename}</span>
-            <Tabs.List aria-label="Ecosystem layer" className={styles.editorTabs}>
-              {SAMPLE_ORDER.map(key => (
-                <Tabs.Trigger key={key} value={key} className={styles.editorTab}>
-                  {SAMPLE_META[key].label}
-                </Tabs.Trigger>
-              ))}
-            </Tabs.List>
+            <div role="tablist" aria-label="Ecosystem layer" className={styles.editorTabs}>
+              {SAMPLE_ORDER.map(key => {
+                const entry = SAMPLE_META[key];
+                const selected = active === key;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    role="tab"
+                    id={`surface-tab-${key}`}
+                    aria-selected={selected}
+                    aria-controls="surface-panel"
+                    className={`${styles.editorTab} ${selected ? styles.editorTabActive : ''}`}
+                    onClick={() => setActive(key)}
+                  >
+                    {entry.label}
+                  </button>
+                );
+              })}
+            </div>
             <span className={styles.editorBadge}>{meta.badge}</span>
           </div>
-          {SAMPLE_ORDER.map(key => (
-            <Tabs.Content key={key} value={key} className={styles.editorBody}>
-              <CodeSample source={SAMPLE_META[key].source} language={SAMPLE_META[key].language} />
-            </Tabs.Content>
-          ))}
-        </Tabs>
+          <div id="surface-panel" role="tabpanel" aria-labelledby={`surface-tab-${active}`} className={styles.editorBody}>
+            <CodeSample source={meta.source} language={meta.language} />
+          </div>
+        </div>
       </div>
     </section>
   );

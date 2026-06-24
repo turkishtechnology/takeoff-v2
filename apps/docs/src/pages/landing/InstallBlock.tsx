@@ -1,5 +1,4 @@
 import { useState, type JSX } from 'react';
-import { Tabs } from '@takeoff-ui/react-spar';
 import styles from './InstallBlock.module.css';
 
 type PackageManager = 'pnpm' | 'npm' | 'yarn' | 'bun';
@@ -23,8 +22,6 @@ export function App({ children }) {
     </TakeoffSparProvider>
   );
 }`;
-
-const PACKAGE_MANAGERS: PackageManager[] = ['pnpm', 'npm', 'yarn', 'bun'];
 
 function CopyButton({ value }: { value: string }): JSX.Element {
   const [copied, setCopied] = useState(false);
@@ -150,6 +147,9 @@ function ProviderCode(): JSX.Element {
 }
 
 export default function InstallBlock(): JSX.Element {
+  const [pm, setPm] = useState<PackageManager>('pnpm');
+  const activeCommand = INSTALL_COMMANDS[pm];
+
   return (
     <section className={styles.section} aria-labelledby="runway-install-title">
       <div className={styles.inner}>
@@ -165,29 +165,34 @@ export default function InstallBlock(): JSX.Element {
         </div>
 
         <div className={styles.steps}>
-          <Tabs defaultValue="pnpm" className={styles.step}>
+          <div className={styles.step}>
             <div className={styles.stepHead}>
               <span className={styles.stepLabel}>
                 <span className={styles.stepIndex}>01</span>
                 Install
               </span>
-              <Tabs.List aria-label="Package manager" className={styles.tabs}>
-                {PACKAGE_MANAGERS.map(candidate => (
-                  <Tabs.Trigger key={candidate} value={candidate} className={styles.tab}>
+              <div className={styles.tabs} role="tablist" aria-label="Package manager">
+                {(['pnpm', 'npm', 'yarn', 'bun'] as PackageManager[]).map(candidate => (
+                  <button
+                    key={candidate}
+                    type="button"
+                    role="tab"
+                    aria-selected={pm === candidate}
+                    className={`${styles.tab} ${pm === candidate ? styles.tabActive : ''}`}
+                    onClick={() => setPm(candidate)}
+                  >
                     {candidate}
-                  </Tabs.Trigger>
+                  </button>
                 ))}
-              </Tabs.List>
+              </div>
             </div>
-            {PACKAGE_MANAGERS.map(candidate => (
-              <Tabs.Content key={candidate} value={candidate} className={styles.codeWrap}>
-                <pre>
-                  <InstallCommandCode command={INSTALL_COMMANDS[candidate]} />
-                </pre>
-                <CopyButton value={INSTALL_COMMANDS[candidate]} />
-              </Tabs.Content>
-            ))}
-          </Tabs>
+            <div className={styles.codeWrap}>
+              <pre>
+                <InstallCommandCode command={activeCommand} />
+              </pre>
+              <CopyButton value={activeCommand} />
+            </div>
+          </div>
 
           <div className={styles.step}>
             <div className={styles.stepHead}>

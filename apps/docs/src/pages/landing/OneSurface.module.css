@@ -69,8 +69,8 @@
 }
 
 .arrowIcon {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
@@ -229,6 +229,13 @@
 .editorTab:focus-visible {
   outline: 2px solid var(--runway-ink-dim);
   outline-offset: 1px;
+}
+
+.editorTabActive,
+.editorTabActive:hover {
+  color: var(--runway-ink);
+  background: var(--runway-bg-3);
+  border-color: var(--runway-surface-dark-border-2);
 }
 
 .editorBadge {

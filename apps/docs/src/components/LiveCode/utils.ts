@@ -1,6 +1,10 @@
-export function parseErrorString(raw: string): { errorName: string; errorMessage: string; stack: string } {
+import type { ErrorState } from './types';
+
+export function parseErrorString(raw: string): Omit<ErrorState, 'hasError' | 'timestamp'> {
   let errorName = 'Error';
   let errorMessage;
+  let line: number | null = null;
+  let column: number | null = null;
 
   const newlineIndex = raw.indexOf('\n');
   const firstLine = newlineIndex > -1 ? raw.slice(0, newlineIndex) : raw;
@@ -14,5 +18,16 @@ export function parseErrorString(raw: string): { errorName: string; errorMessage
     errorMessage = firstLine;
   }
 
-  return { errorName, errorMessage, stack };
+  const lineColumnMatch = raw.match(/\((\d+):(\d+)\)/) || raw.match(/(\d+):(\d+)/);
+  if (lineColumnMatch) {
+    line = Number.parseInt(lineColumnMatch[1], 10);
+    column = Number.parseInt(lineColumnMatch[2], 10);
+  } else {
+    const lineOnlyMatch = raw.match(/line\s+(\d+)/i);
+    if (lineOnlyMatch) {
+      line = Number.parseInt(lineOnlyMatch[1], 10);
+    }
+  }
+
+  return { errorName, errorMessage, stack, line, column };
 }

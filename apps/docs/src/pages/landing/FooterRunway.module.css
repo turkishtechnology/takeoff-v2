@@ -74,7 +74,6 @@
 }
 
 .column a {
-  display: flex;
   color: var(--runway-ink-faint);
   text-decoration: none;
   font-size: 14px;
