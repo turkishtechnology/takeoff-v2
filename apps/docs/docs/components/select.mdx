@@ -366,9 +366,10 @@ trigger through shared IDs.
 
 `Select.Trigger` renders a disclosure chevron at its trailing edge by default —
 it flips direction (and switches to the primary color) with the open state, the
-same visual language as [`Accordion.Indicator`](/components/accordion). Pass the
-`indicator` prop to customize it: a node for a custom static icon, a render
-function `({ isOpen }) => …` to swap icons by open state, or `false` to hide it.
+same visual language as [`Accordion.Indicator`](/docs/components/accordion).
+Pass the `indicator` prop to customize it: a node for a custom static icon, a
+render function `({ isOpen }) => …` to swap icons by open state, or `false` to
+hide it.
 
 <LiveCode
   code={indicatorDemo}
@@ -379,9 +380,9 @@ function `({ isOpen }) => …` to swap icons by open state, or `false` to hide i
 />
 
 For full layout control, drive the trigger's render-prop `children` and place a
-standalone `<Select.Indicator />` wherever you need it. Its `children` accept the
-same node-or-render-function form, so you can swap the glyph by `isOpen` without
-reaching for a hook.
+standalone `<Select.Indicator />` wherever you need it. Its `children` accept
+the same node-or-render-function form, so you can swap the glyph by `isOpen`
+without reaching for a hook.
 
 <LiveCode
   code={indicatorCompoundDemo}
