@@ -90,7 +90,7 @@ export default function HeroRunway(): JSX.Element {
               <dd className={styles.statLabel}>Theme layer</dd>
             </div>
             <div>
-              <dt className={styles.statValue}>MIT</dt>
+              <dt className={styles.statValue}>Apache-2.0</dt>
               <dd className={styles.statLabel}>License</dd>
             </div>
           </dl>

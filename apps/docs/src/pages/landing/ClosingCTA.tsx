@@ -9,7 +9,7 @@ export default function ClosingCTA(): JSX.Element {
     <section className={styles.band} aria-labelledby="runway-closing-title">
       <div className={styles.panel}>
         <div className={styles.inner}>
-          <p className={styles.eyebrow}>MIT licensed · React 19 · public docs</p>
+          <p className={styles.eyebrow}>Apache-2.0 licensed · React 19 · public docs</p>
           <h2 id="runway-closing-title" className={styles.headline}>
             A stable surface to <em>build on.</em>
           </h2>

@@ -1,6 +1,13 @@
 import { useColorMode } from '@docusaurus/theme-common';
 import { type PropsWithChildren } from 'react';
-import {
+import { TakeoffSparProvider } from '@takeoff-ui/react-spar';
+
+// Re-export Spar components straight from the package with the aggregate
+// `export … from` form. The previous "import the bindings, then `export { … }`"
+// pattern hid these names from webpack's static export analysis, so every MDX
+// that imported a component through `@site/src/components/ReactSparDocs` logged
+// an `export '…' was not found` warning at build time.
+export {
   Accordion,
   Alert,
   Badge,
@@ -20,11 +27,8 @@ import {
   Spinner,
   Switch,
   Tabs,
-  TakeoffSparProvider,
   Tooltip,
 } from '@takeoff-ui/react-spar';
-
-export { Accordion, Alert, Badge, Breadcrumb, Button, Card, Checkbox, Chip, Dialog, Drawer, Field, Input, Label, Popover, Radio, Select, Spinner, Switch, Tabs, Tooltip };
 
 export function ReactSparDemoRoot({ children }: PropsWithChildren) {
   const { colorMode } = useColorMode();

@@ -25,3 +25,7 @@ pnpm add @takeoff-ui/react-spar @takeoff-design/tokens
 
 - [Installation](/docs/installation) — add `@takeoff-ui/react-spar` to your
   project and import the token stylesheet
+- [Theming & tokens](/docs/foundations/theming) — configure color mode, branded
+  themes, and shared component defaults
+- [Composition & styling](/docs/foundations/composition-styling) — understand
+  compound anatomy, slots, classes, and stable `data-*` hooks
