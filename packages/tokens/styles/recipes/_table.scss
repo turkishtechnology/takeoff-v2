@@ -16,13 +16,12 @@
 // separate-borders model.
 // ===========================================================================
 
-// Per-density cell padding. xsmall / small / base map to the wrapper's
-// `data-size`. Header and body cells share the scale.
-$table-density: (
-  'xsmall': 0.25rem 0.5rem,
-  'small': 0.5rem 0.75rem,
-  'base': 0.75rem 1rem,
-);
+// Per-density cell padding now flows from the shared `--table-items-*` tokens
+// (component/table.json) — the SAME source the legacy `tk-table` consumes — so
+// header and body track the design scale and change in one place. Header and
+// body have distinct vertical rhythm, so unlike the old single-map approach
+// they are emitted separately below. `xsmall` has no token set in table.json
+// (only `base` + `small`), so it keeps literal fallbacks until tokens land.
 
 // ---------------------------------------------------------------------------
 // Root — scroll container. Owns the border box, density cascade, striped /
@@ -34,24 +33,59 @@ $table-density: (
   display: block;
   width: 100%;
   overflow: auto;
+  // Match legacy `tk-table`: a thin border + the medium radius (`--radius-l-base`
+  // is not emitted by the token build, so the old value always fell back to the
+  // literal; `--radius-m-base` is real and is what legacy uses).
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-l-base, 0.75rem);
+  border-radius: var(--radius-m-base, 0.5rem);
   background-color: var(--static-light);
   font-family: var(--family-body, 'tk-text', sans-serif);
-  color: var(--text-darkest);
+  color: var(--text-dark);
 
   @include mixins.takeoff-scrollbar;
 
-  // Density cascade — padding lives on the root so it scopes header + body
-  // cells without each cell needing its own size attr.
-  @each $size, $padding in $table-density {
-    &[data-size='#{$size}'] {
-      .tk-table-header-cell,
-      .tk-table-cell,
-      .tk-table-selection-cell,
-      .tk-table-expand-cell {
-        padding: $padding;
-      }
+  // Density cascade — padding lives on the root so it scopes the cells without
+  // each one needing its own size attr. Header and body draw from their own
+  // `--table-items-{head,body}-{size}-text-*` tokens so the vertical rhythm
+  // differs the way legacy's does (e.g. base body is roomier horizontally).
+  &[data-size='base'] {
+    .tk-table-header-cell {
+      padding: var(--table-items-head-base-text-v-padding, 1rem) var(--table-items-head-base-text-h-padding, 0.75rem);
+    }
+    .tk-table-cell,
+    .tk-table-selection-cell,
+    .tk-table-expand-cell {
+      padding: var(--table-items-body-base-text-v-padding, 1rem) var(--table-items-body-base-text-h-padding, 1.5rem);
+    }
+  }
+
+  &[data-size='small'] {
+    .tk-table-header-cell {
+      padding: var(--table-items-head-small-text-v-padding, 0.5rem) var(--table-items-head-small-text-h-padding, 0.75rem);
+    }
+    .tk-table-cell,
+    .tk-table-selection-cell,
+    .tk-table-expand-cell {
+      padding: var(--table-items-body-small-text-v-padding, 0.5rem) var(--table-items-body-small-text-h-padding, 1.5rem);
+    }
+  }
+
+  // `xsmall` has no token set yet — keep the compact literal scale. Like
+  // legacy, xsmall also steps the type down to the body-xs size. The font is
+  // set on `.tk-table-table` (not the root) because that element declares its
+  // own `font-size` in `table-table`, which would otherwise shadow a root-level
+  // override.
+  &[data-size='xsmall'] {
+    .tk-table-table {
+      font-size: var(--desktop-body-xs-size);
+      line-height: var(--desktop-body-xs-line-height);
+    }
+
+    .tk-table-header-cell,
+    .tk-table-cell,
+    .tk-table-selection-cell,
+    .tk-table-expand-cell {
+      padding: 0.25rem 0.75rem;
     }
   }
 
@@ -62,10 +96,10 @@ $table-density: (
   }
 
   // Hover + selection on UNSTRIPED tables. Nothing competes here, so the
-  // natural (0,3,0) specificity is enough. Hover uses a deeper neutral than
-  // the stripe fill so it also reads on striped rows (below).
+  // natural (0,3,0) specificity is enough. Matches legacy `tk-table`: a light
+  // neutral hover, info-tinted selection.
   & .tk-table-row:hover > * {
-    background-color: var(--background-light);
+    background-color: var(--background-lightest);
   }
 
   & .tk-table-row[data-selected] > * {
@@ -76,10 +110,12 @@ $table-density: (
   // (`.tk-table` + `[data-striped]` + `.tk-table-row` + `:nth-of-type`), so a
   // plain (0,3,0) override loses on odd rows — hover gives no feedback and
   // selection is invisible. Re-qualifying with `[data-striped]` matches that
-  // (0,4,0) and, being later in source order, wins. Selection is declared
-  // after hover so a selected row keeps its highlight while hovered.
+  // (0,4,0) and, being later in source order, wins. Like legacy, striped hover
+  // uses the info tint (the neutral stripe would swallow a neutral hover).
+  // Selection is declared after hover so a selected row keeps its highlight
+  // while hovered.
   &[data-striped] .tk-table-row:hover > * {
-    background-color: var(--background-light);
+    background-color: var(--states-info-light, rgba(0, 90, 255, 0.08));
   }
 
   &[data-striped] .tk-table-row[data-selected] > * {
@@ -134,9 +170,11 @@ $table-density: (
 @mixin table-header-cell {
   position: relative;
   box-sizing: border-box;
-  font-weight: 600;
+  // Legacy `tk-table` headers read as regular-weight, darkest-ink labels — not
+  // the bold/grey treatment v2 started with.
+  font-weight: 400;
   text-align: start;
-  color: var(--text-sub-base);
+  color: var(--text-darkest);
   border-bottom: 1px solid var(--border-light);
   background-color: var(--background-lightest);
   white-space: nowrap;
