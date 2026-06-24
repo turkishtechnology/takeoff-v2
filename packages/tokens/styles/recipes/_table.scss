@@ -36,10 +36,7 @@
   // Match legacy `tk-table`: a thin border + the medium radius (`--radius-l-base`
   // is not emitted by the token build, so the old value always fell back to the
   // literal; `--radius-m-base` is real and is what legacy uses).
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-m-base, 0.5rem);
-  background-color: var(--static-light);
-  font-family: var(--family-body, 'tk-text', sans-serif);
+  font-family: var(--family-body);
   color: var(--text-dark);
 
   @include mixins.takeoff-scrollbar;
@@ -50,23 +47,30 @@
   // differs the way legacy's does (e.g. base body is roomier horizontally).
   &[data-size='base'] {
     .tk-table-header-cell {
-      padding: var(--table-items-head-base-text-v-padding, 1rem) var(--table-items-head-base-text-h-padding, 0.75rem);
+      padding: var(--table-items-head-base-text-v-padding) var(--table-items-head-base-text-h-padding);
     }
-    .tk-table-cell,
+    .tk-table-cell {
+      padding: var(--table-items-body-base-text-v-padding) 12px var(--table-items-body-base-text-v-padding) var(--table-items-body-base-text-h-padding);
+    }
+
     .tk-table-selection-cell,
     .tk-table-expand-cell {
-      padding: var(--table-items-body-base-text-v-padding, 1rem) var(--table-items-body-base-text-h-padding, 1.5rem);
+      padding: var(--table-items-body-base-text-v-padding) 12px;
     }
   }
 
   &[data-size='small'] {
     .tk-table-header-cell {
-      padding: var(--table-items-head-small-text-v-padding, 0.5rem) var(--table-items-head-small-text-h-padding, 0.75rem);
+      padding: 12px var(--table-items-head-small-text-h-padding);
     }
-    .tk-table-cell,
+
+    .tk-table-cell {
+      padding: var(--table-items-body-small-text-v-padding) 12px var(--table-items-body-small-text-v-padding) var(--table-items-body-small-text-h-padding);
+    }
+
     .tk-table-selection-cell,
     .tk-table-expand-cell {
-      padding: var(--table-items-body-small-text-v-padding, 0.5rem) var(--table-items-body-small-text-h-padding, 1.5rem);
+      padding: var(--table-items-body-small-text-v-padding) 12px;
     }
   }
 
@@ -80,18 +84,25 @@
       font-size: var(--desktop-body-xs-size);
       line-height: var(--desktop-body-xs-line-height);
     }
+    .tk-table-header-cell {
+      padding: 8px 12px;
+    }
 
-    .tk-table-header-cell,
     .tk-table-cell,
     .tk-table-selection-cell,
     .tk-table-expand-cell {
-      padding: 0.25rem 0.75rem;
+      padding: 4px 12px;
     }
+  }
+
+  .tk-table-row > *,
+  .tk-table-expanded-row > * {
+    background-color: var(--static-light);
   }
 
   // Zebra striping (opt-in). Skipped for the disclosure rows so an expanded
   // row visually belongs to its parent.
-  &[data-striped] .tk-table-row:nth-of-type(odd) > * {
+  &[data-striped] .tk-table-row:nth-of-type(even) > * {
     background-color: var(--background-lightest);
   }
 
@@ -103,35 +114,28 @@
   }
 
   & .tk-table-row[data-selected] > * {
-    background-color: var(--states-info-light, rgba(0, 90, 255, 0.08));
-  }
-
-  // Hover + selection on STRIPED tables. The striping rule above is (0,4,0)
-  // (`.tk-table` + `[data-striped]` + `.tk-table-row` + `:nth-of-type`), so a
-  // plain (0,3,0) override loses on odd rows — hover gives no feedback and
-  // selection is invisible. Re-qualifying with `[data-striped]` matches that
-  // (0,4,0) and, being later in source order, wins. Like legacy, striped hover
-  // uses the info tint (the neutral stripe would swallow a neutral hover).
-  // Selection is declared after hover so a selected row keeps its highlight
-  // while hovered.
-  &[data-striped] .tk-table-row:hover > * {
-    background-color: var(--states-info-light, rgba(0, 90, 255, 0.08));
-  }
-
-  &[data-striped] .tk-table-row[data-selected] > * {
-    background-color: var(--states-info-light, rgba(0, 90, 255, 0.08));
+    background-color: var(--states-info-light);
   }
 
   // Vertical separators between columns (opt-in).
   &[data-bordered] {
     .tk-table-header-cell,
-    .tk-table-cell {
+    .tk-table-cell,
+    .tk-table-selection-cell,
+    .tk-table-expand-cell {
       border-inline-end: 1px solid var(--border-light);
 
       &:last-child {
         border-inline-end: 0;
       }
     }
+  }
+
+  // The table border owns the outer bottom edge; the final row only needs the
+  // internal separators supplied by the rows above it.
+  .tk-table-body > .tk-table-row:last-child > *,
+  .tk-table-body > .tk-table-expanded-row:last-child > * {
+    border-bottom: 0;
   }
 
   // Sticky header — the wrapper sets `position: sticky; top: 0` inline; the
@@ -147,8 +151,12 @@
 // ---------------------------------------------------------------------------
 
 @mixin table-table {
+  display: table;
   width: 100%;
   border-collapse: separate;
+  border-radius: var(--radius-m-base);
+  overflow: hidden;
+  border: 1px solid var(--border-light);
   border-spacing: 0;
   table-layout: auto;
   font-size: var(--desktop-body-s-size);
@@ -160,11 +168,12 @@
 // ---------------------------------------------------------------------------
 
 @mixin table-header {
+  border-top-left-radius: var(--radius-m-base);
+  border-top-right-radius: var(--radius-m-base);
   background-color: var(--background-lightest);
 }
 
 @mixin table-header-row {
-  // Layout owner; visuals live on the cells.
 }
 
 @mixin table-header-cell {
@@ -175,6 +184,7 @@
   font-weight: 400;
   text-align: start;
   color: var(--text-darkest);
+  border: 0;
   border-bottom: 1px solid var(--border-light);
   background-color: var(--background-lightest);
   white-space: nowrap;
@@ -208,16 +218,11 @@
   @include mixins.host-button-reset;
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 8px;
   // `host-button-reset` zeroes margin but NOT padding, so the UA button
   // padding would otherwise stack on top of the cell padding and misalign
   // sortable headers against plain ones.
-  padding: 0;
-  width: 100%;
   cursor: pointer;
-  font: inherit;
-  color: inherit;
-  font-weight: inherit;
 
   // Mirror the cell's `data-align` so a sortable header's label + chevron
   // track its column's text alignment (e.g. an `align: end` numeric column).
@@ -231,7 +236,7 @@
     justify-content: flex-end;
   }
 
-  @include mixins.focus-ring(0 0 0 2px var(--states-info-light, rgba(0, 90, 255, 0.4)));
+  @include mixins.focus-ring(var(--secondary-focus));
 }
 
 // Sort affordance icon — hosts an inline SVG (icon set, not a Unicode glyph).
@@ -246,8 +251,8 @@
   opacity: 0.4;
 
   svg {
-    width: 0.875em;
-    height: 0.875em;
+    width: var(--desktop-body-s-size);
+    height: var(--desktop-body-s-size);
   }
 
   &[data-direction='asc'],
@@ -265,6 +270,8 @@
 }
 
 @mixin table-row {
+  border: 0;
+
   // Only the transition lives here. The hover + selected fills are declared at
   // root scope (`@mixin table`) so their specificity beats the striping rule;
   // duplicating them here at lower specificity would just be dead overrides.
@@ -276,6 +283,7 @@
 @mixin table-cell {
   box-sizing: border-box;
   vertical-align: middle;
+  border: 0;
   border-bottom: 1px solid var(--border-light);
   background-color: inherit;
 
@@ -310,6 +318,7 @@
 @mixin table-selection-cell {
   text-align: center;
   vertical-align: middle;
+  border: 0;
   border-bottom: 1px solid var(--border-light);
 
   &[data-sticky='left'] {
@@ -321,6 +330,7 @@
 @mixin table-expand-cell {
   text-align: center;
   vertical-align: middle;
+  border: 0;
   border-bottom: 1px solid var(--border-light);
 
   &[data-sticky='left'] {
@@ -336,7 +346,7 @@
   justify-content: center;
   width: 1.5rem;
   height: 1.5rem;
-  border-radius: var(--radius-s, 0.25rem);
+  border-radius: var(--radius-m-base);
   cursor: pointer;
   color: var(--text-sub-base);
   transition: background-color 0.15s ease-in-out;
@@ -350,13 +360,16 @@
     background-color: var(--background-light);
   }
 
-  @include mixins.focus-ring(0 0 0 2px var(--states-info-light, rgba(0, 90, 255, 0.4)));
+  @include mixins.focus-ring(var(--secondary-focus));
 }
 
 @mixin table-expanded-row {
+  border: 0;
+
   > td {
     padding: 0.75rem 1rem;
     background-color: var(--background-lightest);
+    border: 0;
     border-bottom: 1px solid var(--border-light);
   }
 }
@@ -372,7 +385,7 @@
   justify-content: center;
   margin-inline-start: 0.25rem;
   padding: 0.125rem;
-  border-radius: var(--radius-s, 0.25rem);
+  border-radius: var(--radius-m-base);
   cursor: pointer;
   color: var(--text-sub-base);
 
@@ -436,6 +449,7 @@
 
 @mixin table-empty {
   padding: 2rem 1rem;
+  border: 0;
   text-align: center;
   color: var(--text-sub-base);
 }
