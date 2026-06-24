@@ -39,6 +39,7 @@ export type TableStickySide = 'left' | 'right';
  */
 export type TableSlot =
   | 'root'
+  | 'tableViewport'
   | 'table'
   | 'header'
   | 'headerRow'

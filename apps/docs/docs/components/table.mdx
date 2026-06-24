@@ -219,6 +219,88 @@ function ExpansionDemo() {
 render(<ExpansionDemo />);
 `;
 
+export const stickyDemo = String.raw`
+function StickyDemo() {
+  const data = [
+    { id: '1',  name: 'Ada Lovelace',       dept: 'Engineering', role: 'admin',   city: 'London',      country: 'UK', age: 36, salary: 92000, status: 'active'   },
+    { id: '2',  name: 'Linus Torvalds',     dept: 'Engineering', role: 'user',    city: 'Helsinki',    country: 'FI', age: 35, salary: 88000, status: 'active'   },
+    { id: '3',  name: 'Grace Hopper',       dept: 'Research',    role: 'admin',   city: 'New York',    country: 'US', age: 45, salary: 97000, status: 'active'   },
+    { id: '4',  name: 'Alan Turing',        dept: 'Research',    role: 'user',    city: 'London',      country: 'UK', age: 41, salary: 85000, status: 'inactive' },
+    { id: '5',  name: 'Margaret Hamilton',  dept: 'Engineering', role: 'admin',   city: 'Boston',      country: 'US', age: 33, salary: 99000, status: 'active'   },
+    { id: '6',  name: 'Dennis Ritchie',     dept: 'Engineering', role: 'user',    city: 'Bronxville',  country: 'US', age: 48, salary: 91000, status: 'active'   },
+    { id: '7',  name: 'Barbara Liskov',     dept: 'Research',    role: 'admin',   city: 'Cambridge',   country: 'US', age: 52, salary: 103000, status: 'active'  },
+    { id: '8',  name: 'Ken Thompson',       dept: 'Engineering', role: 'user',    city: 'San Jose',    country: 'US', age: 50, salary: 89000, status: 'inactive' },
+    { id: '9',  name: 'Bjarne Stroustrup',  dept: 'Engineering', role: 'user',    city: 'Aarhus',      country: 'DK', age: 47, salary: 87000, status: 'active'   },
+    { id: '10', name: 'Guido van Rossum',   dept: 'Research',    role: 'admin',   city: 'Amsterdam',   country: 'NL', age: 44, salary: 95000, status: 'active'   },
+    { id: '11', name: 'James Gosling',      dept: 'Engineering', role: 'user',    city: 'Calgary',     country: 'CA', age: 49, salary: 86000, status: 'inactive' },
+    { id: '12', name: 'Tim Berners-Lee',    dept: 'Research',    role: 'admin',   city: 'London',      country: 'UK', age: 43, salary: 101000, status: 'active'  },
+  ];
+
+  const columns = [
+    { id: 'name',    header: 'Name',       accessor: 'name',    sticky: 'left',  sortable: true, minWidth: 180 },
+    { id: 'dept',    header: 'Department', accessor: 'dept',    sortable: true,  minWidth: 140,
+      filter: { type: 'checkbox', options: [
+        { label: 'Engineering', value: 'Engineering' },
+        { label: 'Research', value: 'Research' },
+      ]},
+    },
+    { id: 'role',    header: 'Role',       accessor: 'role',    minWidth: 100,
+      filter: { type: 'radio', options: [
+        { label: 'Admin', value: 'admin' },
+        { label: 'User', value: 'user' },
+      ]},
+      cell: ({ row }) => (
+        <Badge variant={row.original.role === 'admin' ? 'info' : 'neutral'}>
+          {row.original.role}
+        </Badge>
+      ),
+    },
+    { id: 'city',    header: 'City',       accessor: 'city',    minWidth: 130 },
+    { id: 'country', header: 'Country',    accessor: 'country', minWidth: 100, align: 'center' },
+    { id: 'age',     header: 'Age',        accessor: 'age',     minWidth: 80,  align: 'end', sortable: true },
+    { id: 'salary',  header: 'Salary',     accessor: 'salary',  minWidth: 110, align: 'end', sortable: true,
+      cell: ({ row }) => '$' + row.original.salary.toLocaleString() },
+    { id: 'status',  header: 'Status',     accessor: 'status',  minWidth: 110,
+      filter: { type: 'checkbox', options: [
+        { label: 'Active', value: 'active' },
+        { label: 'Inactive', value: 'inactive' },
+      ]},
+      cell: ({ row }) => (
+        <Badge variant={row.original.status === 'active' ? 'success' : 'neutral'}>
+          {row.original.status}
+        </Badge>
+      ),
+    },
+    { id: 'actions', header: '', align: 'end', sticky: 'right', minWidth: 80,
+      cell: ({ row }) => (
+        <Button size="small" appearance="text" onClick={() => alert('Edit ' + row.original.name)}>
+          Edit
+        </Button>
+      ),
+    },
+  ];
+
+  return (
+    <div style={{ maxWidth: 720 }}>
+      <Table
+        data={data}
+        columns={columns}
+        getRowId={(r) => r.id}
+        sorting={{ multi: true }}
+        selection={{ mode: 'multiple' }}
+        pagination={{ pageSize: 6, pageSizeOptions: [6, 12] }}
+        slotProps={{ tableViewport: { style: { maxHeight: 280 } } }}
+        stickyHeader
+        striped
+        bordered
+      />
+    </div>
+  );
+}
+
+render(<StickyDemo />);
+`;
+
 {/* prettier-ignore-end */}
 
 ## Playground
@@ -340,6 +422,23 @@ Pass `expansion.render` to render a disclosure row beneath each row.
   scope={tableScope}
 />
 
+## Sticky columns & header
+
+Pin columns to the left or right edge with `sticky: 'left' | 'right'` on a
+column def. Add `stickyHeader` to also pin the header row during vertical
+scroll. Pass `maxHeight` to the viewport via `slotProps.tableViewport` to enable
+vertical scroll — sticky header only activates when the viewport itself scrolls,
+not a parent container. The example below constrains the wrapper to `720px` wide
+and the viewport to `280px` tall so both axes scroll.
+
+<LiveCode
+  code={stickyDemo}
+  noInline
+  previewMinHeight={420}
+  previewWrapper={ReactSparDemoRoot}
+  scope={tableScope}
+/>
+
 ## Server (manual) data
 
 In `manual` mode Table processes nothing in-memory. It maps to TanStack's
@@ -443,7 +542,7 @@ for primitive behavior.
 | <ApiBadge label="tableRef" />     | <code>Ref&lt;TanStackTable&lt;TData&gt; &#124; null&gt;</code>                                                                 | -       | Escape hatch for the rare imperative need — receives the TanStack table instance (RFC §2.3: controlled props + an optional instance ref, never an imperative `@Method` surface). Also the access point for `getExportRows()`. |
 | <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#table-td-tableslot">TableSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                                                                                |
 | <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#table-td-tableslot">TableSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                            |
-| <ApiBadge label="className" />    | <code>string</code>                                                                                                            | -       | Appends custom classes to the root scroll container.                                                                                                                                                                          |
+| <ApiBadge label="className" />    | <code>string</code>                                                                                                            | -       | Appends custom classes to the root container.                                                                                                                                                                                 |
 
 #### Events {#table-events}
 
@@ -453,29 +552,31 @@ for primitive behavior.
 
 #### Data attributes {#table-data-attributes}
 
-| Attribute                                       | Applied when                                                              | Purpose                                                                                                    |
-| ----------------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                                    | Stable selector for the root scroll container.                                                             |
-| <ApiBadge label="data-size" />                  | Always                                                                    | Reflects the resolved `size` (density) so recipes can scope cell padding.                                  |
-| <ApiBadge label="data-striped" />               | When `striped` is true.                                                   | Enables zebra striping on body rows.                                                                       |
-| <ApiBadge label="data-bordered" />              | When `bordered` is true.                                                  | Adds vertical separators between columns.                                                                  |
-| <ApiBadge label="data-sticky-header" />         | When `stickyHeader` is true.                                              | Pins the header row during vertical scroll (opaque background + bottom shadow).                            |
-| <ApiBadge label="data-loading" />               | When `loading` is true.                                                   | Shows the loading overlay; the table is also marked `aria-busy`.                                           |
-| <ApiBadge label="data-align" />                 | On every header/body cell with an `align` (or column `meta.headerAlign`). | Drives cell `text-align` (`start` \| `center` \| `end`).                                                   |
-| <ApiBadge label="data-sticky" />                | On cells of a column with `sticky: "left" \| "right"`.                    | Pins the column; per-edge offset + z-index are applied inline.                                             |
-| <ApiBadge label="aria-sort" />                  | On sortable header cells.                                                 | A11y sort state (`ascending` \| `descending` \| `none`); the sort chevron mirrors it via `data-direction`. |
-| <ApiBadge label="data-selected" />              | On a selected body row.                                                   | Theme hook for the selected-row background.                                                                |
+| Attribute                                                 | Applied when                                                              | Purpose                                                                                                    |
+| --------------------------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />           | Always                                                                    | Stable selector for the root container.                                                                    |
+| <ApiBadge label="data-slot=&quot;table-viewport&quot;" /> | Always                                                                    | The table-only horizontal/vertical scroll container; pagination remains outside it.                        |
+| <ApiBadge label="data-size" />                            | Always                                                                    | Reflects the resolved `size` (density) so recipes can scope cell padding.                                  |
+| <ApiBadge label="data-striped" />                         | When `striped` is true.                                                   | Enables zebra striping on body rows.                                                                       |
+| <ApiBadge label="data-bordered" />                        | When `bordered` is true.                                                  | Adds vertical separators between columns.                                                                  |
+| <ApiBadge label="data-sticky-header" />                   | When `stickyHeader` is true.                                              | Pins the header row during vertical scroll.                                                                |
+| <ApiBadge label="data-scrolled" />                        | On the table viewport while `scrollTop > 0`.                              | Adds sticky-header elevation only after vertical scrolling begins.                                         |
+| <ApiBadge label="data-loading" />                         | When `loading` is true.                                                   | Shows the loading overlay; the table is also marked `aria-busy`.                                           |
+| <ApiBadge label="data-align" />                           | On every header/body cell with an `align` (or column `meta.headerAlign`). | Drives cell `text-align` (`start` \| `center` \| `end`).                                                   |
+| <ApiBadge label="data-sticky" />                          | On cells of a column with `sticky: "left" \| "right"`.                    | Pins the column; per-edge offset + z-index are applied inline.                                             |
+| <ApiBadge label="aria-sort" />                            | On sortable header cells.                                                 | A11y sort state (`ascending` \| `descending` \| `none`); the sort chevron mirrors it via `data-direction`. |
+| <ApiBadge label="data-selected" />                        | On a selected body row.                                                   | Theme hook for the selected-row background.                                                                |
 
 ### Type Definitions {#table-type-definitions}
 
-| Name                                                                                        | Definition                                                                                                                                                                                                                                                                                                                                                             |
-| ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <span id="table-td-tablesize"><ApiBadge label="TableSize" /></span>                         | <code>'xsmall' &#124; 'small' &#124; 'base'</code>                                                                                                                                                                                                                                                                                                                     |
-| <span id="table-td-tableselectionconfig"><ApiBadge label="TableSelectionConfig" /></span>   | <code>&#123; mode: 'single' &#124; 'multiple' &#125;</code>                                                                                                                                                                                                                                                                                                            |
-| <span id="table-td-tablesortingconfig"><ApiBadge label="TableSortingConfig" /></span>       | <code>&#123; multi?: boolean &#125;</code>                                                                                                                                                                                                                                                                                                                             |
-| <span id="table-td-tablefilteringconfig"><ApiBadge label="TableFilteringConfig" /></span>   | <code>&#123; value?: T; defaultValue?: T; onChange?: (value: T) =&gt; void &#125;</code>                                                                                                                                                                                                                                                                               |
-| <span id="table-td-tablepaginationconfig"><ApiBadge label="TablePaginationConfig" /></span> | <code>&#123; pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) =&gt; void &#125;</code>                                                                                                                                                                                                   |
-| <span id="table-td-tableslot"><ApiBadge label="TableSlot" /></span>                         | <code>&#124; 'root' &#124; 'table' &#124; 'header' &#124; 'headerRow' &#124; 'headerCell' &#124; 'headerContent' &#124; 'sortTrigger' &#124; 'sortIcon' &#124; 'body' &#124; 'row' &#124; 'cell' &#124; 'selectionCell' &#124; 'expandCell' &#124; 'expandButton' &#124; 'expandedRow' &#124; 'filterPanel' &#124; 'pagination' &#124; 'empty' &#124; 'loading'</code> |
-| <span id="table-td-tabledatarequest"><ApiBadge label="TableDataRequest" /></span>           | <code>&#123; pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState &#125;</code>                                                                                                                                                                                                                                                             |
+| Name                                                                                        | Definition                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="table-td-tablesize"><ApiBadge label="TableSize" /></span>                         | <code>'xsmall' &#124; 'small' &#124; 'base'</code>                                                                                                                                                                                                                                                                                                                                            |
+| <span id="table-td-tableselectionconfig"><ApiBadge label="TableSelectionConfig" /></span>   | <code>&#123; mode: 'single' &#124; 'multiple' &#125;</code>                                                                                                                                                                                                                                                                                                                                   |
+| <span id="table-td-tablesortingconfig"><ApiBadge label="TableSortingConfig" /></span>       | <code>&#123; multi?: boolean &#125;</code>                                                                                                                                                                                                                                                                                                                                                    |
+| <span id="table-td-tablefilteringconfig"><ApiBadge label="TableFilteringConfig" /></span>   | <code>&#123; value?: T; defaultValue?: T; onChange?: (value: T) =&gt; void &#125;</code>                                                                                                                                                                                                                                                                                                      |
+| <span id="table-td-tablepaginationconfig"><ApiBadge label="TablePaginationConfig" /></span> | <code>&#123; pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) =&gt; void &#125;</code>                                                                                                                                                                                                                          |
+| <span id="table-td-tableslot"><ApiBadge label="TableSlot" /></span>                         | <code>&#124; 'root' &#124; 'tableViewport' &#124; 'table' &#124; 'header' &#124; 'headerRow' &#124; 'headerCell' &#124; 'headerContent' &#124; 'sortTrigger' &#124; 'sortIcon' &#124; 'body' &#124; 'row' &#124; 'cell' &#124; 'selectionCell' &#124; 'expandCell' &#124; 'expandButton' &#124; 'expandedRow' &#124; 'filterPanel' &#124; 'pagination' &#124; 'empty' &#124; 'loading'</code> |
+| <span id="table-td-tabledatarequest"><ApiBadge label="TableDataRequest" /></span>           | <code>&#123; pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState &#125;</code>                                                                                                                                                                                                                                                                                    |
 
 {/* api-tables:end */}
