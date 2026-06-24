@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent } from 'react';
 import type { Header } from '@tanstack/react-table';
+import { SearchIconOutlinedRounded } from '@takeoff-icons/react/search';
 
-import { PlaceholderChevronDown } from '../../icons';
 import { Button } from '../button';
 import { Checkbox } from '../checkbox';
 import { Input } from '../input';
@@ -56,7 +56,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <Popover.Trigger className="tk-table-filter-button" aria-label="Filter column" data-active={active ? '' : undefined}>
-        <PlaceholderChevronDown aria-hidden="true" />
+        <SearchIconOutlinedRounded aria-hidden="true" />
       </Popover.Trigger>
       <Popover.Content className="tk-table-filter-panel">
         <div {...slotAttrs('filterPanel')}>{filter.render ? filter.render(ctx) : <PresetFilterControl filter={filter} ctx={ctx} />}</div>
@@ -123,7 +123,17 @@ const PresetFilterControl = ({ filter, ctx }: { filter: TableColumnFilterConfig;
 
 PresetFilterControl.displayName = 'Table.PresetFilterControl';
 
-const SelectFilter = ({ options, placeholder, value, onChange }: { options: TableColumnFilterOption[]; placeholder?: string; value: string; onChange: (value: string) => void }) => {
+const SelectFilter = ({
+  options,
+  placeholder,
+  value,
+  onChange,
+}: {
+  options: TableColumnFilterOption[];
+  placeholder?: string;
+  value: string;
+  onChange: (value: string) => void;
+}) => {
   const selected = options.find(option => option.value === value);
   return (
     <Select value={value} onChange={onChange}>
