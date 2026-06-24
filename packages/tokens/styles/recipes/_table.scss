@@ -192,6 +192,17 @@
   white-space: nowrap;
   vertical-align: middle;
 
+  .tk-table:not([data-bordered]) &:not(:last-child)::after {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0;
+    width: 1px;
+    height: calc(2 * var(--desktop-body-s-size));
+    background-color: var(--border-light);
+    content: '';
+    transform: translateY(-50%);
+  }
+
   &[data-align='center'] {
     text-align: center;
   }
