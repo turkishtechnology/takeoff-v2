@@ -132,26 +132,20 @@
   }
 
   &[data-header-type='dark'] {
-    background: var(--background-darkest);
+    background: var(--neutral-800);
 
-    .tk-dialog-title {
-      color: var(--text-lightest);
-    }
-
+    .tk-dialog-title,
     .tk-dialog-close {
-      color: var(--icon-base);
+      color: var(--static-white);
     }
   }
 
   &[data-header-type='primary'] {
     background: var(--primary-base);
 
-    .tk-dialog-title {
-      color: var(--text-lightest);
-    }
-
+    .tk-dialog-title,
     .tk-dialog-close {
-      color: var(--primary-lightest);
+      color: var(--static-white);
     }
   }
 }

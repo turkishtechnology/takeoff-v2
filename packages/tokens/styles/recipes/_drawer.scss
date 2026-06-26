@@ -208,21 +208,21 @@
     background: var(--background-lightest);
   }
 
-  // ─── Header type: dark ───────────────────────────────────────────
   &[data-header-type='dark'] {
-    background: var(--background-darkest);
+    background: var(--neutral-800);
 
-    .tk-drawer-title {
-      color: var(--text-lightest);
+    .tk-drawer-title,
+    .tk-drawer-close {
+      color: var(--static-white);
     }
   }
 
-  // ─── Header type: primary ────────────────────────────────────────
   &[data-header-type='primary'] {
     background: var(--primary-base);
 
-    .tk-drawer-title {
-      color: var(--text-lightest);
+    .tk-drawer-title,
+    .tk-drawer-close {
+      color: var(--static-white);
     }
   }
 }
