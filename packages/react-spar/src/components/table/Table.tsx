@@ -84,6 +84,9 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const hasSelection = !!selection;
   const selectionMode = selection?.mode;
   const hasExpansion = !!expansion;
+  // Tree mode (sub-rows) vs detail-panel mode (`expansion.render`) are exclusive
+  // expansion shapes; sub-rows win so a row never renders both at once.
+  const treeMode = !!getSubRows;
   const hasColumnFilters = !!filtering || columns.some(column => !!column.filter);
   const hasSortableColumn = columns.some(column => !!column.sortable);
   const paginationConfig = typeof pagination === 'object' ? pagination : undefined;
@@ -117,8 +120,23 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const expanded = expandedState ?? EMPTY_EXPANDED;
   const paginationValue = paginationStateRaw ?? initialPagination;
 
-  const onSortingChange: OnChangeFn<SortingState> = updater => setSorting(functionalUpdate(updater, sorting));
-  const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> = updater => setFilters(functionalUpdate(updater, columnFilters));
+  // Narrowing a sort/filter can shrink the result below the current page. In
+  // client mode TanStack's `autoResetPageIndex` snaps back to page 0 for us; in
+  // server (`manual`) mode that reset is off (we don't own the row model), so we
+  // reset here — otherwise the next `onDataRequest` fetches an out-of-range,
+  // empty page (e.g. filtering while on page 5).
+  const resetPageOnManual = () => {
+    if (manual && paginationValue.pageIndex !== 0) setPagination({ ...paginationValue, pageIndex: 0 });
+  };
+
+  const onSortingChange: OnChangeFn<SortingState> = updater => {
+    setSorting(functionalUpdate(updater, sorting));
+    resetPageOnManual();
+  };
+  const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> = updater => {
+    setFilters(functionalUpdate(updater, columnFilters));
+    resetPageOnManual();
+  };
   const onRowSelectionChange: OnChangeFn<RowSelectionState> = updater => setSelection(functionalUpdate(updater, rowSelection));
   const onExpandedChange: OnChangeFn<ExpandedState> = updater => setExpanded(functionalUpdate(updater, expanded));
   const onPaginationChange: OnChangeFn<PaginationState> = updater => setPagination(functionalUpdate(updater, paginationValue));
@@ -139,7 +157,11 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     onRowSelectionChange,
     onExpandedChange,
     onPaginationChange,
-    enableSorting: hasSortableColumn || !!sortingConfig,
+    // Table-level sort switch. Per-column `sortable` is the real gate
+    // (`column.getCanSort()` ANDs both), so a `sorting` config without any
+    // `sortable` column makes no header interactive — keying off the columns
+    // alone is sufficient and avoids implying otherwise.
+    enableSorting: hasSortableColumn,
     enableMultiSort: sortingConfig?.multi ?? false,
     enableRowSelection: hasSelection,
     enableMultiRowSelection: selectionMode === 'multiple',
@@ -177,13 +199,24 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const onDataRequestRef = useRef(onDataRequest);
   onDataRequestRef.current = onDataRequest;
 
+  // Key the request effect on a serialized snapshot of the slices, not their
+  // reference identity. `paginationValue` keeps a stable identity, but a
+  // *controlled* `sorting`/`filtering` consumer that passes a fresh array each
+  // render (the common case) would otherwise hand the effect a new dependency
+  // every render and self-sustain an infinite refetch loop. Serializing makes
+  // the effect fire once per real *value* change, no stable-reference
+  // requirement pushed onto the consumer.
+  const dataRequestKey = useMemo(() => JSON.stringify({ pagination: paginationValue, sorting, filters: columnFilters }), [paginationValue, sorting, columnFilters]);
+
   // Server mode: emit one bundled data request derived from the granular state
   // slices (RFC §3.3). Debounce is the consumer's call (RFC §7 Q2). Fires once
   // per real pagination/sorting/filter change, regardless of callback identity.
+  // `dataRequestKey` encodes the slice values; the slices themselves are read
+  // fresh inside but intentionally excluded from deps to avoid reference churn.
   useEffect(() => {
     if (!manual) return;
     onDataRequestRef.current?.({ pagination: paginationValue, sorting, filters: columnFilters });
-  }, [manual, paginationValue, sorting, columnFilters]);
+  }, [manual, dataRequestKey]);
 
   // Client mode: let a changed `pageSize` prop drive the (uncontrolled) table.
   // The equality guard prevents clobbering a size the user picked via the
@@ -193,6 +226,16 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     if (table.getState().pagination.pageSize === paginationConfig.pageSize) return;
     table.setPageSize(paginationConfig.pageSize);
   }, [paginationControlled, paginationConfig?.pageSize, table]);
+
+  // Client mode: same treatment for `pageIndex` — a changed prop jumps the
+  // (uncontrolled) table to that page. Symmetric with `pageSize` above; the
+  // equality guard keeps the consumer's own page navigation from being reset on
+  // unrelated re-renders.
+  useEffect(() => {
+    if (paginationControlled || paginationConfig?.pageIndex == null) return;
+    if (table.getState().pagination.pageIndex === paginationConfig.pageIndex) return;
+    table.setPageIndex(paginationConfig.pageIndex);
+  }, [paginationControlled, paginationConfig?.pageIndex, table]);
 
   const slotAttrs = useCallback(
     (slot: Parameters<TableContextValue['slotAttrs']>[0], attrs?: { className?: string }): SlotAttrs =>
@@ -220,6 +263,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     hasSelection,
     selectionMode,
     hasExpansion,
+    treeMode,
     expansionRender: expansion?.render,
     hasColumnFilters,
     stickyLayout,

@@ -49,7 +49,13 @@ export const SelectionBodyCell = ({ row }: { row: Row<any> }) => {
     <td {...attrs} data-sticky={sticky.dataSticky} data-selection-mode={selectionMode} style={mergeStyle(attrs.style, sticky.style, { width: UTILITY_COLUMN_WIDTH })}>
       {/* Single mode = mutually-exclusive choice → Radio (role=radio); multiple
           = independent toggles → Checkbox. TanStack's enableMultiRowSelection
-          already caps single mode to one row (RFC §2.3, types.ts contract). */}
+          already caps single mode to one row (RFC §2.3, types.ts contract).
+
+          TODO(a11y, separate PR): single mode renders one 1-item Radio group per
+          row, so each control reads as "1 of 1" and arrow keys can't move
+          between rows; selection also can't be cleared within its own group.
+          Move to a single table-wide radio group (one `name`, arrow-navigable)
+          so the rows form one logical radiogroup. Tracked off PR #120 review. */}
       {selectionMode === 'single' ? (
         <Radio aria-label="Select row" value={row.getIsSelected() ? row.id : ''} onChange={() => row.toggleSelected(true)}>
           <Radio.Item value={row.id} disabled={!row.getCanSelect()}>

@@ -78,6 +78,18 @@ describe('Table (props-first)', () => {
       expect(badge.closest('td')).toHaveAttribute('data-slot', 'cell');
     });
 
+    it('falls back to a stringified value (and warns) when an accessor returns an object with no cell render-prop', () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+      // Accessor returns a plain object and the column has no `cell` — would
+      // otherwise throw "Objects are not valid as a React child".
+      const columns: TableColumnDef<User>[] = [{ id: 'profile', header: 'Profile', accessor: row => row.profile }];
+
+      expect(() => render(<Table data={users} columns={columns} getRowId={getRowId} />)).not.toThrow();
+      expect(screen.getByText('{"city":"London"}')).toBeInTheDocument();
+      expect(consoleError).toHaveBeenCalledWith(expect.stringContaining('non-renderable object value'));
+      consoleError.mockRestore();
+    });
+
     it('emits density + striped visual hooks on the root', () => {
       const { container } = render(<Table data={users} columns={baseColumns} getRowId={getRowId} size="small" striped bordered />);
       const root = container.querySelector('[data-slot="root"]');
@@ -307,6 +319,39 @@ describe('Table (props-first)', () => {
       await user.click(screen.getAllByRole('button', { name: 'Expand row' })[0]);
       expect(screen.getByText('Detail for Ada')).toBeInTheDocument();
     });
+
+    it('reveals flattened sub-rows in tree mode (getSubRows) and suppresses the detail panel', async () => {
+      const user = userEvent.setup();
+      interface TreeUser extends User {
+        reports?: TreeUser[];
+      }
+      const tree: TreeUser[] = [
+        { id: '1', name: 'Ada', role: 'admin', age: 42, profile: { city: 'London' }, reports: [{ id: '1a', name: 'Junior', role: 'user', age: 24, profile: { city: 'Leeds' } }] },
+      ];
+      const treeColumns: TableColumnDef<TreeUser>[] = [{ id: 'name', header: 'Name', accessor: 'name' }];
+
+      const { container } = render(
+        // `expansion.render` supplied alongside `getSubRows` must NOT double-render:
+        // tree mode wins, so the detail panel is suppressed.
+        <Table
+          data={tree}
+          columns={treeColumns}
+          getRowId={(row: TreeUser) => row.id}
+          getSubRows={row => row.reports}
+          expansion={{ render: () => <span>SHOULD NOT RENDER</span> }}
+        />,
+      );
+
+      expect(screen.queryByText('Junior')).not.toBeInTheDocument();
+      expect(container.querySelectorAll('tbody tr')).toHaveLength(1);
+      await user.click(screen.getAllByRole('button', { name: 'Expand row' })[0]);
+      // Sub-row is now a real body row (2 rows: parent + flattened child).
+      expect(screen.getByText('Junior')).toBeInTheDocument();
+      expect(container.querySelectorAll('tbody tr')).toHaveLength(2);
+      // Detail panel suppressed.
+      expect(screen.queryByText('SHOULD NOT RENDER')).not.toBeInTheDocument();
+      expect(container.querySelector('.tk-table-expanded-row')).not.toBeInTheDocument();
+    });
   });
 
   describe('pagination', () => {
@@ -331,6 +376,16 @@ describe('Table (props-first)', () => {
       await user.type(pageInput, '1{enter}');
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus']);
       expect(screen.getByRole('button', { name: 'Page 1, current page' })).toHaveAttribute('aria-current', 'page');
+    });
+
+    it('includes the active pageSize in the size Select even when it is outside pageSizeOptions', async () => {
+      const user = userEvent.setup();
+      const { container } = render(<Table data={users} columns={baseColumns} getRowId={getRowId} pagination={{ pageSize: 3, pageSizeOptions: [10, 25, 50] }} />);
+
+      // pageSize 3 is not one of the options — it must still be a selectable item.
+      const sizeSelect = container.querySelector('.tk-table-pagination-size .tk-select-trigger') as HTMLElement;
+      await user.click(sizeSelect);
+      expect(screen.getByRole('option', { name: '3' })).toBeInTheDocument();
     });
 
     it('condenses large page ranges around the current page', () => {
@@ -365,6 +420,47 @@ describe('Table (props-first)', () => {
       // A fresh inline callback (new identity) with unchanged state must not re-fetch.
       rerender(<Table data={users} columns={baseColumns} getRowId={getRowId} manual pagination={{ pageSize: 10, rowCount: 50 }} onDataRequest={() => fetchSpy()} />);
       expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does NOT re-fire onDataRequest when a controlled sorting array changes identity but not value', () => {
+      const fetchSpy = vi.fn();
+      const props = (sorting: { id: string; desc: boolean }[]) => (
+        <Table
+          data={users}
+          columns={baseColumns}
+          getRowId={getRowId}
+          manual
+          sorting={{ value: sorting }}
+          pagination={{ pageSize: 10, rowCount: 50 }}
+          onDataRequest={() => fetchSpy()}
+        />
+      );
+      // Fresh array identity, same value — the serialized request key keeps the
+      // effect from self-sustaining a refetch loop.
+      const { rerender } = render(props([{ id: 'name', desc: false }]));
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      rerender(props([{ id: 'name', desc: false }]));
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('resets pageIndex to 0 when sorting changes mid-pagination (server mode)', async () => {
+      const user = userEvent.setup();
+      const onPaginationChange = vi.fn();
+      render(
+        <Table
+          data={users}
+          columns={baseColumns}
+          getRowId={getRowId}
+          manual
+          pagination={{ pageSize: 10, pageIndex: 3, rowCount: 100, onChange: onPaginationChange }}
+          onDataRequest={vi.fn()}
+        />,
+      );
+
+      // Toggling a sortable header from page 3 must snap pagination back to page 0
+      // so the next fetch isn't for an out-of-range page.
+      await user.click(screen.getByRole('button', { name: 'Name' }));
+      expect(onPaginationChange).toHaveBeenCalledWith(expect.objectContaining({ pageIndex: 0 }));
     });
   });
 

@@ -98,8 +98,10 @@ export interface SelectTriggerOwnProps {
    * - a ReactNode → custom static icon (rendered in every state)
    * - a render function receiving `{ isOpen }` → swap icons by open state
    *
-   * For full layout control, drop a standalone `<Select.Indicator />` into the
-   * trigger's render-prop `children` instead.
+   * Ignored when `children` is a render function: a render-prop `children` opts
+   * the trigger out of the built-in indicator and value wrapper entirely, so
+   * you can drop a standalone `<Select.Indicator />` into your own layout
+   * without a doubled chevron.
    * @defaultValue true
    */
   indicator?: boolean | ReactNode | ((state: SelectIndicatorRenderState) => ReactNode);

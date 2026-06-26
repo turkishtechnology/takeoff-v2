@@ -1,5 +1,7 @@
-import type { CSSProperties, ReactNode } from 'react';
-import type { ColumnDef, FilterFn, Table as TanStackTable } from '@tanstack/react-table';
+import { isValidElement, type CSSProperties, type ReactNode } from 'react';
+import type { CellContext, ColumnDef, FilterFn, Table as TanStackTable } from '@tanstack/react-table';
+
+import { isDevelopment } from '../../utils';
 
 import { DEFAULT_COLUMN_WIDTH, UTILITY_COLUMN_WIDTH } from './defaults';
 import type { TableColumnDef, TableColumnFilter, TableColumnFilterType, TableStickySide } from './types';
@@ -7,6 +9,41 @@ import type { TableColumnDef, TableColumnFilter, TableColumnFilterType, TableSti
 /** Synthetic keys for the manually-rendered leading utility cells. */
 export const SELECTION_COLUMN_KEY = '__tk_selection__';
 export const EXPAND_COLUMN_KEY = '__tk_expand__';
+
+/**
+ * Coerce a bare accessor value into something React can render. Primitives and
+ * elements pass through; a plain object/array (e.g. an accessor that returns
+ * `{ first, last }` with no `cell` render-prop) would otherwise reach the DOM as
+ * the useless `[object Object]` (TanStack's default cell `.toString()`s it). We
+ * stringify it as a last-resort fallback and warn in dev so the missing `cell`
+ * is obvious.
+ */
+const toRenderableValue = (value: unknown, columnId: string): ReactNode => {
+  if (value == null || typeof value !== 'object' || isValidElement(value)) return value as ReactNode;
+
+  if (isDevelopment()) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `[Table] Column "${columnId}" resolved to a non-renderable object value. ` +
+        'Provide a `cell` render-prop (or an accessor that returns a primitive/element) — ' +
+        'falling back to JSON.stringify.',
+    );
+  }
+
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+};
+
+/**
+ * Default cell renderer for a column without a consumer `cell`. Overrides
+ * TanStack's built-in default (which blindly `.toString()`s the value) so an
+ * object/array accessor value degrades to JSON instead of `[object Object]`.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const defaultCell = (ctx: CellContext<any, unknown>): ReactNode => toRenderableValue(ctx.getValue(), ctx.column.id);
 
 /** A filter value that should not narrow anything (clears the filter). */
 const isEmptyFilterValue = (value: unknown): boolean => value == null || value === '' || (Array.isArray(value) && value.length === 0);
@@ -112,7 +149,10 @@ export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): Colu
       },
     };
 
-    if (cell) def.cell = cell;
+    // Always set an explicit cell: the consumer's, or our object-safe default.
+    // Otherwise TanStack merges its own default cell (a bare `.toString()`),
+    // which renders object values as `[object Object]`.
+    def.cell = cell ?? defaultCell;
     if (width != null) def.size = width;
 
     if (typeof accessor === 'function') {
@@ -201,11 +241,16 @@ export const buildOrderedColumns = <TData>(table: TanStackTable<TData>, options:
 };
 
 /**
- * Project the **current filtered + sorted** rows (pre-pagination) to plain
- * value records keyed by column id — the data-only export surface (RFC §5).
- * Formatting and file generation are the consumer's job; Table ships no export
- * engine. Reach it via the `tableRef` instance:
- * `getExportRows(tableRef.current)`.
+ * Project the table's current rows to plain value records keyed by column id —
+ * the data-only export surface (RFC §5). Formatting and file generation are the
+ * consumer's job; Table ships no export engine. Reach it via the `tableRef`
+ * instance: `getExportRows(tableRef.current)`.
+ *
+ * **Scope depends on mode.** In **client** mode this is every filtered + sorted
+ * row *across all pages* (pre-pagination), since Table holds the full dataset.
+ * In **server (`manual`)** mode Table only ever holds the current page, so the
+ * export is limited to the rows currently loaded — fetch the full result set
+ * yourself if you need to export beyond the visible page.
  */
 export const getExportRows = <TData>(table: TanStackTable<TData> | null | undefined): Record<string, unknown>[] => {
   if (!table) return [];

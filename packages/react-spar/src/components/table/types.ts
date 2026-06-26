@@ -235,8 +235,17 @@ export interface TableSelectionConfig extends ControlledState<RowSelectionState>
 }
 
 export interface TableExpansionConfig<TData> extends ControlledState<ExpandedState> {
-  /** Renders the disclosure content for an expanded row. */
-  render: (row: TData) => ReactNode;
+  /**
+   * Detail-panel renderer for an expanded row. Optional: when omitted, the
+   * Table is in **tree mode** — pair `expansion` with the top-level
+   * {@link TableProps.getSubRows} so expanding a row reveals its (flattened)
+   * sub-rows instead of a detail panel.
+   *
+   * `render` and `getSubRows` are mutually exclusive expansion shapes. Supplying
+   * both would draw the sub-rows *and* a detail panel for the same row, so when
+   * `getSubRows` is present the detail panel is suppressed (tree mode wins).
+   */
+  render?: (row: TData) => ReactNode;
 }
 
 export interface TablePaginationConfig {
@@ -326,8 +335,11 @@ export interface TableProps<TData = any> {
   /** Content rendered when there are no rows. */
   emptyState?: ReactNode;
   /**
-   * Optional sub-row reader for tree data (feeds TanStack `getSubRows`). When
-   * omitted, expansion is driven purely by `expansion.render`.
+   * Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with
+   * `expansion` (sans `render`) so expanding a row reveals its flattened
+   * sub-rows. When `getSubRows` is omitted, expansion falls back to the
+   * detail-panel mode driven by `expansion.render`. Supplying both keeps tree
+   * mode and suppresses the detail panel.
    */
   getSubRows?: (row: TData) => TData[] | undefined;
   /**

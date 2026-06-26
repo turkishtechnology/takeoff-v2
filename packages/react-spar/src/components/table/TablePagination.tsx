@@ -35,6 +35,12 @@ export const TablePagination = () => {
   const endItem = Math.min((pageIndex + 1) * pageSize, totalRows);
   const itemsLabel = totalRows === 0 ? '0 items' : `Items ${startItem}-${endItem} of ${totalRows}`;
 
+  // The active `pageSize` can come from a `pagination.pageSize` prop that isn't
+  // one of `pageSizeOptions`. Fold it in (sorted) so the Select always has a
+  // matching item for its current value instead of rendering an unselectable
+  // mismatch.
+  const sizeOptions = pageSizeOptions.includes(pageSize) ? pageSizeOptions : [...pageSizeOptions, pageSize].sort((a, b) => a - b);
+
   const goToPage = () => {
     const requestedPage = Number(pageInput);
     if (!Number.isFinite(requestedPage) || pageCount <= 0 || pageInput === '') return;
@@ -118,7 +124,7 @@ export const TablePagination = () => {
           <Select size="small" value={String(pageSize)} onChange={value => table.setPageSize(Number(value))}>
             <Select.Trigger aria-label="Rows per page">{pageSize}</Select.Trigger>
             <Select.Content>
-              {pageSizeOptions.map(option => (
+              {sizeOptions.map(option => (
                 <Select.Item key={option} value={String(option)}>
                   {option}
                 </Select.Item>

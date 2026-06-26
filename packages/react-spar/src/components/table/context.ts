@@ -26,6 +26,12 @@ export interface TableContextValue {
   hasSelection: boolean;
   selectionMode?: 'single' | 'multiple';
   hasExpansion: boolean;
+  /**
+   * `getSubRows` is in play → expansion reveals flattened sub-rows (tree mode),
+   * not a detail panel. The detail panel is suppressed even if `expansion.render`
+   * is also supplied, so the two expansion shapes never double-render a row.
+   */
+  treeMode: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   expansionRender?: (row: any) => ReactNode;
   hasColumnFilters: boolean;

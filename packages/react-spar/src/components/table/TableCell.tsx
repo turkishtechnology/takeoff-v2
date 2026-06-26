@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import { flexRender, type Cell } from '@tanstack/react-table';
 
 import { useTableContext } from './context';
@@ -8,9 +7,10 @@ import { resolveStickyCell } from './helpers';
 type AnyCell = Cell<any, unknown>;
 
 /**
- * One data `<td>`. Renders the column's `cell` render-prop, or falls back to the
- * resolved accessor value (TanStack does not inject a default cell for manually
- * built column defs). Container concerns (align, sticky, width) are Table-owned.
+ * One data `<td>`. Renders the column's `cell` render-prop. Every column carries
+ * an explicit cell — the consumer's, or our object-safe default (see
+ * `toTanStackColumns`) — so `flexRender` always has one. Container concerns
+ * (align, sticky, width) are Table-owned.
  */
 export const TableCell = ({ cell }: { cell: AnyCell }) => {
   const { slotAttrs, stickyLayout, stickyHeader } = useTableContext('Table.Cell');
@@ -21,7 +21,7 @@ export const TableCell = ({ cell }: { cell: AnyCell }) => {
   const hasWidth = meta?.width != null || stickyLayout.has(column.id);
   const attrs = slotAttrs('cell', { className: meta?.className });
 
-  const content = column.columnDef.cell ? flexRender(column.columnDef.cell, cell.getContext()) : (cell.getValue() as ReactNode);
+  const content = flexRender(column.columnDef.cell, cell.getContext());
 
   return (
     <td {...attrs} data-align={meta?.align} data-sticky={sticky.dataSticky} style={{ ...attrs.style, ...sticky.style, ...(hasWidth ? { width: column.getSize() } : undefined) }}>

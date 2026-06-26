@@ -237,14 +237,14 @@ function StickyDemo() {
   ];
 
   const columns = [
-    { id: 'name',    header: 'Name',       accessor: 'name',    sticky: 'left',  sortable: true, minWidth: 180 },
-    { id: 'dept',    header: 'Department', accessor: 'dept',    sortable: true,  minWidth: 140,
+    { id: 'name',    header: 'Name',       accessor: 'name',    sticky: 'left',  sortable: true, width: 180 },
+    { id: 'dept',    header: 'Department', accessor: 'dept',    sortable: true,  width: 140,
       filter: { type: 'checkbox', options: [
         { label: 'Engineering', value: 'Engineering' },
         { label: 'Research', value: 'Research' },
       ]},
     },
-    { id: 'role',    header: 'Role',       accessor: 'role',    minWidth: 100,
+    { id: 'role',    header: 'Role',       accessor: 'role',    width: 100,
       filter: { type: 'radio', options: [
         { label: 'Admin', value: 'admin' },
         { label: 'User', value: 'user' },
@@ -255,12 +255,12 @@ function StickyDemo() {
         </Badge>
       ),
     },
-    { id: 'city',    header: 'City',       accessor: 'city',    minWidth: 130 },
-    { id: 'country', header: 'Country',    accessor: 'country', minWidth: 100, align: 'center' },
-    { id: 'age',     header: 'Age',        accessor: 'age',     minWidth: 80,  align: 'end', sortable: true },
-    { id: 'salary',  header: 'Salary',     accessor: 'salary',  minWidth: 110, align: 'end', sortable: true,
+    { id: 'city',    header: 'City',       accessor: 'city',    width: 130 },
+    { id: 'country', header: 'Country',    accessor: 'country', width: 100, align: 'center' },
+    { id: 'age',     header: 'Age',        accessor: 'age',     width: 80,  align: 'end', sortable: true },
+    { id: 'salary',  header: 'Salary',     accessor: 'salary',  width: 110, align: 'end', sortable: true,
       cell: ({ row }) => '$' + row.original.salary.toLocaleString() },
-    { id: 'status',  header: 'Status',     accessor: 'status',  minWidth: 110,
+    { id: 'status',  header: 'Status',     accessor: 'status',  width: 110,
       filter: { type: 'checkbox', options: [
         { label: 'Active', value: 'active' },
         { label: 'Inactive', value: 'inactive' },
@@ -271,7 +271,7 @@ function StickyDemo() {
         </Badge>
       ),
     },
-    { id: 'actions', header: '', align: 'end', sticky: 'right', minWidth: 80,
+    { id: 'actions', header: '', align: 'end', sticky: 'right', width: 80,
       cell: ({ row }) => (
         <Button size="small" appearance="text" onClick={() => alert('Edit ' + row.original.name)}>
           Edit

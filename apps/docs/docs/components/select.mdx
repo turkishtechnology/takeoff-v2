@@ -177,14 +177,15 @@ render(<IndicatorDemo />);
 
 export const indicatorCompoundDemo = String.raw`
 function IndicatorCompoundDemo() {
-  // Full layout control: drive the trigger's render-prop children and drop a
-  // standalone <Select.Indicator /> wherever you want it.
+  // Full layout control: a render-prop children opts the trigger out of the
+  // built-in indicator, so you own every node — drop a standalone
+  // <Select.Indicator /> wherever you want it.
   return (
     <Select className="max-w-90" defaultValue="ist">
       <Select.Trigger>
-        {({ label, isOpen }) => (
+        {({ label }) => (
           <>
-            <span className="tk-select-value">{label ?? 'Choose a city'}</span>
+            <span className="tk-select-value">{label || 'Choose a city'}</span>
             <Select.Indicator>
               {({ isOpen }) => (isOpen ? '▲' : '▼')}
             </Select.Indicator>
@@ -379,10 +380,12 @@ hide it.
   scope={selectScope}
 />
 
-For full layout control, drive the trigger's render-prop `children` and place a
-standalone `<Select.Indicator />` wherever you need it. Its `children` accept
-the same node-or-render-function form, so you can swap the glyph by `isOpen`
-without reaching for a hook.
+For full layout control, drive the trigger's render-prop `children`. A
+render-function `children` opts the trigger out of its built-in indicator and
+value wrapper entirely — you own every node, so place a standalone
+`<Select.Indicator />` wherever you need it. Its `children` accept the same
+node-or-render-function form, so you can swap the glyph by `isOpen` without
+reaching for a hook.
 
 <LiveCode
   code={indicatorCompoundDemo}
