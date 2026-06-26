@@ -54,8 +54,14 @@ export type TableSlot =
   | 'expandCell'
   | 'expandButton'
   | 'expandedRow'
+  | 'filterButton'
   | 'filterPanel'
   | 'pagination'
+  | 'paginationInfo'
+  | 'paginationNav'
+  | 'paginationActions'
+  | 'paginationSize'
+  | 'paginationGoToPage'
   | 'empty'
   | 'loading';
 
@@ -202,7 +208,12 @@ export interface TableColumnDef<TData> {
    * {@link TableColumnFilter}.
    */
   filter?: TableColumnFilterType | TableColumnFilter<TData>;
-  /** Pin the column to an edge. */
+  /**
+   * Pin the column to an edge. Pinned columns must be **contiguous** against
+   * their edge — all `left` pins together at the start, all `right` pins
+   * together at the end. An unpinned column between two same-edge pins breaks
+   * the sticky-offset math (the later pin overlaps the gap); dev builds warn.
+   */
   sticky?: TableStickySide;
   /** Fixed column width (px). Feeds sticky-offset math and `col` sizing. */
   width?: number;

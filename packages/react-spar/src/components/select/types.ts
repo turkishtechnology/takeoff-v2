@@ -25,7 +25,7 @@ export type SelectSize = 'small' | 'base' | 'large';
 export type SelectContentWidth = 'trigger' | 'content' | number | string;
 
 export type SelectSlot = 'root';
-export type SelectTriggerSlot = 'root' | 'indicator';
+export type SelectTriggerSlot = 'root' | 'value' | 'indicator';
 export type SelectIndicatorSlot = 'root';
 export type SelectContentSlot = 'root';
 export type SelectItemSlot = 'root';

@@ -1,5 +1,5 @@
 import { isValidElement, type CSSProperties, type ReactNode } from 'react';
-import type { CellContext, ColumnDef, FilterFn, Table as TanStackTable } from '@tanstack/react-table';
+import type { CellContext, Column, ColumnDef, FilterFn, Table as TanStackTable } from '@tanstack/react-table';
 
 import { isDevelopment } from '../../utils';
 
@@ -46,7 +46,7 @@ const toRenderableValue = (value: unknown, columnId: string): ReactNode => {
 const defaultCell = (ctx: CellContext<any, unknown>): ReactNode => toRenderableValue(ctx.getValue(), ctx.column.id);
 
 /** A filter value that should not narrow anything (clears the filter). */
-const isEmptyFilterValue = (value: unknown): boolean => value == null || value === '' || (Array.isArray(value) && value.length === 0);
+export const isEmptyFilterValue = (value: unknown): boolean => value == null || value === '' || (Array.isArray(value) && value.length === 0);
 
 // ── Filter matching predicates ───────────────────────────────────────────────
 
@@ -188,9 +188,19 @@ export type StickyLayout = Map<string, StickyColumnPlacement>;
  * widths of preceding left-pinned columns; right-pinned columns accumulate the
  * widths of following right-pinned columns. The offset/z-index math owner is
  * the scroll-container part, per RFC §6.5 ("Zorunlu styling-contract uyarısı").
+ *
+ * **Constraint: pinned columns must be contiguous against their edge.** The
+ * offset of a left-pinned column is the sum of *all* preceding left-pinned
+ * widths — it assumes no unpinned column sits between them. Pinning a
+ * non-contiguous set (e.g. columns 1 and 3 left, 2 unpinned) makes the later
+ * pinned column overlap the unpinned one it scrolls over. Dev builds warn when
+ * this is detected (see {@link warnNonContiguousPinning}); the layout is still
+ * computed best-effort.
  */
 export const computeStickyLayout = (ordered: OrderedColumn[]): StickyLayout => {
   const layout: StickyLayout = new Map();
+
+  if (isDevelopment()) warnNonContiguousPinning(ordered);
 
   let leftOffset = 0;
   for (const column of ordered) {
@@ -210,6 +220,46 @@ export const computeStickyLayout = (ordered: OrderedColumn[]): StickyLayout => {
   }
 
   return layout;
+};
+
+/**
+ * Dev-only guard: warn when pinned columns are not contiguous against their
+ * edge. Left pins must form a prefix of the visual order and right pins a
+ * suffix; an unpinned column between two same-edge pins breaks the offset math.
+ */
+const warnNonContiguousPinning = (ordered: OrderedColumn[]): void => {
+  // Left pins must be a contiguous prefix: once a non-left column appears, no
+  // later column may be left-pinned.
+  let seenNonLeft = false;
+  for (const column of ordered) {
+    if (column.side === 'left') {
+      if (seenNonLeft) return warnPinning('left');
+    } else {
+      seenNonLeft = true;
+    }
+  }
+
+  // Right pins must be a contiguous suffix: scanning from the end, once a
+  // non-right column appears, no earlier column may be right-pinned.
+  let seenNonRight = false;
+  for (let i = ordered.length - 1; i >= 0; i -= 1) {
+    const column = ordered[i];
+    if (column?.side === 'right') {
+      if (seenNonRight) return warnPinning('right');
+    } else {
+      seenNonRight = true;
+    }
+  }
+};
+
+const warnPinning = (side: TableStickySide): void => {
+  // eslint-disable-next-line no-console
+  console.error(
+    `[Table] Non-contiguous ${side} column pinning detected. Pinned columns must ` +
+      `be contiguous against the ${side} edge (no unpinned column between them); ` +
+      'otherwise the sticky offset math overlaps the unpinned column. Move the pinned ' +
+      'columns together or unpin the gap.',
+  );
 };
 
 /**
@@ -266,9 +316,6 @@ export const getExportRows = <TData>(table: TanStackTable<TData> | null | undefi
   });
 };
 
-/** Resolve a header cell's content for rendering when it is a plain node. */
-export const isRenderFn = (value: unknown): value is (...args: unknown[]) => ReactNode => typeof value === 'function';
-
 export interface StickyCellResult {
   style?: CSSProperties;
   dataSticky?: TableStickySide;
@@ -300,4 +347,16 @@ export const resolveStickyCell = (layout: StickyLayout, key: string, options: { 
   style.zIndex = isStickyColumn && stickyHeaderActive ? 3 : stickyHeaderActive ? 2 : 1;
 
   return { style: style as CSSProperties, dataSticky: placement?.side };
+};
+
+/**
+ * Resolve a cell's explicit width style. A column gets a fixed `width` only when
+ * it declares one (`meta.width`) or is sticky (pinned columns must be measured
+ * for the offset math). Shared by the body and header cell renderers so the two
+ * stay in lockstep. Returns `undefined` when the column is auto-width.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: StickyLayout): CSSProperties | undefined => {
+  const hasWidth = column.columnDef.meta?.width != null || stickyLayout.has(column.id);
+  return hasWidth ? { width: column.getSize() } : undefined;
 };

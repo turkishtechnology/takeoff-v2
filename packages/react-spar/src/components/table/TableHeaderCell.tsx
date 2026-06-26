@@ -4,7 +4,7 @@ import { ChevronTopIconOutlinedRounded } from '@takeoff-icons/react/chevron-top'
 import { SwapIconOutlinedRounded } from '@takeoff-icons/react/swap';
 
 import { useTableContext } from './context';
-import { resolveStickyCell } from './helpers';
+import { resolveCellWidth, resolveStickyCell } from './helpers';
 import { TableColumnFilter } from './TableColumnFilter';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,7 +26,6 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
   const sorted = column.getIsSorted();
 
   const sticky = resolveStickyCell(stickyLayout, column.id, { isHeader: true, stickyHeader });
-  const hasWidth = meta?.width != null || stickyLayout.has(column.id);
   const attrs = slotAttrs('headerCell', { className: meta?.headerClassName });
 
   const ariaSort = canSort ? (sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : 'none') : undefined;
@@ -41,7 +40,7 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
       data-align={align}
       data-sticky={sticky.dataSticky}
       data-sortable={canSort ? '' : undefined}
-      style={{ ...attrs.style, ...sticky.style, ...(hasWidth ? { width: column.getSize() } : undefined) }}
+      style={{ ...attrs.style, ...sticky.style, ...resolveCellWidth(column, stickyLayout) }}
     >
       <div {...slotAttrs('headerContent')}>
         {canSort ? (

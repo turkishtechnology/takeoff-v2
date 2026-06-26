@@ -183,6 +183,9 @@ follow the standard conventions (presence = `''`, finite = string).
   `data-sticky-header`, and `data-loading`. Density padding cascades from the
   root via descendant selectors (`.tk-table[data-size='small'] .tk-table-cell`),
   matching the Accordion/Radio root-cascade precedent.
+- **`data-scrolled` (State, presence) on the scroll viewport.**
+  `.tk-table-viewport` gains it once `scrollTop > 0`, letting the recipe reveal
+  the sticky-header shadow only after the body has scrolled under it.
 - **`data-align` (Variant) lives on every header + body cell.** `start` |
   `center` | `end`; drives `text-align`. Header cells may override via
   `meta.headerAlign`; otherwise they inherit the column `align`.
@@ -190,7 +193,10 @@ follow the standard conventions (presence = `''`, finite = string).
   `.tk-table-header-cell` / `.tk-table-cell` / the selection + expand utility
   cells. The per-edge offset and 3-layer z-index are inline `style` (computed by
   the wrapper, RFC §6.5); the recipe keys on `data-sticky` only for the opaque
-  background + edge shadow.
+  background + edge shadow. **Pinned columns must be contiguous against their
+  edge** (all `left` pins at the start, all `right` pins at the end); the offset
+  math sums same-edge widths and assumes no unpinned column sits between them.
+  Dev builds warn on a non-contiguous pin set.
 - **Sorting splits across two nodes by design.** The `<th>` carries the a11y
   source of truth `aria-sort` plus a `data-sortable` presence flag (cursor); the
   chevron glyph `.tk-table-sort-icon` carries `data-direction` (`asc` | `desc` |

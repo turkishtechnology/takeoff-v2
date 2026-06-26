@@ -100,8 +100,13 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const [selectionState, setSelection] = useControllableState<RowSelectionState>(selection?.value, selection?.defaultValue ?? EMPTY_SELECTION, selection?.onChange);
   const [expandedState, setExpanded] = useControllableState<ExpandedState>(expansion?.value, expansion?.defaultValue ?? EMPTY_EXPANDED, expansion?.onChange);
 
+  // Read the `{ pageIndex, pageSize }` slice off the config with defaults. Same
+  // shape for the initial (mount-snapshot) and controlled (per-render) values
+  // below; only their memo dependencies differ.
+  const readPaginationSlice = (): PaginationState => ({ pageIndex: paginationConfig?.pageIndex ?? 0, pageSize: paginationConfig?.pageSize ?? DEFAULT_PAGE_SIZE });
+
   // Initial value only (empty deps): subsequent page changes flow through state.
-  const initialPagination = useMemo<PaginationState>(() => ({ pageIndex: paginationConfig?.pageIndex ?? 0, pageSize: paginationConfig?.pageSize ?? DEFAULT_PAGE_SIZE }), []);
+  const initialPagination = useMemo<PaginationState>(readPaginationSlice, []);
   // In server (`manual`) mode the consumer owns pagination, so the slice is
   // controlled and read from props every render (defaulting `pageIndex` to 0
   // until supplied). This avoids the first-render controlled/uncontrolled latch
@@ -109,7 +114,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   // first fetch resolves. Client mode stays uncontrolled.
   const paginationControlled = manual && !!paginationConfig;
   const controlledPagination = useMemo<PaginationState | undefined>(
-    () => (paginationControlled ? { pageIndex: paginationConfig?.pageIndex ?? 0, pageSize: paginationConfig?.pageSize ?? DEFAULT_PAGE_SIZE } : undefined),
+    () => (paginationControlled ? readPaginationSlice() : undefined),
     [paginationControlled, paginationConfig?.pageIndex, paginationConfig?.pageSize],
   );
   const [paginationStateRaw, setPagination] = useControllableState<PaginationState>(controlledPagination, initialPagination, paginationConfig?.onChange);

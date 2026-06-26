@@ -20,9 +20,12 @@ export const SelectBase = createComponentBase<SelectProps, 'root'>({
 
 export const SelectTriggerBase = createComponentBase<SelectTriggerProps, SelectTriggerSlot>({
   name: 'SelectTrigger',
-  slots: ['root', 'indicator'] as const,
+  slots: ['root', 'value', 'indicator'] as const,
   classes: {
     root: 'tk-select-trigger',
+    // Truncating value region wrapping the selected label/placeholder; pins the
+    // indicator to the trailing edge of the `space-between` trigger.
+    value: 'tk-select-value',
     // Wrapper around the built-in trigger indicator. Shares the
     // `tk-select-indicator` recipe with the standalone Select.Indicator so both
     // entry points style identically.

@@ -9,19 +9,24 @@ import { Popover } from '../popover';
 import { Radio } from '../radio';
 import { Select } from '../select';
 
+import { TableBase } from './base';
 import { useTableContext } from './context';
+import { isEmptyFilterValue } from './helpers';
 import type { TableColumnFilter as TableColumnFilterConfig, TableColumnFilterContext, TableColumnFilterOption } from './types';
+
+// `Popover.Trigger` owns its node (emits its own `data-slot`), so the Table
+// `data-slot` can't ride along — but the class still comes from `base.ts`, the
+// single source of truth for `tk-*` names.
+const FILTER_BUTTON_CLASS = TableBase.getSlotProps('filterButton').className;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyHeader = Header<any, unknown>;
 
 // Default "is this filter applied?" heuristic when neither a preset nor the
-// column supplies its own `isActive`. Covers the common value shapes.
-const defaultIsActive = (value: unknown): boolean => {
-  if (Array.isArray(value)) return value.length > 0;
-  if (typeof value === 'string') return value.length > 0;
-  return value != null;
-};
+// column supplies its own `isActive`. A filter is active exactly when its value
+// is not the "clears the filter" empty value — the inverse of the matching
+// predicates' `autoRemove`.
+const defaultIsActive = (value: unknown): boolean => !isEmptyFilterValue(value);
 
 /**
  * Header filter control rendered inside a Spar `Popover`. **Two tiers**: a
@@ -55,7 +60,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   // is styled by class. The panel wrapper IS a Table-owned slot node.
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <Popover.Trigger className="tk-table-filter-button" aria-label="Filter column" data-active={active ? '' : undefined}>
+      <Popover.Trigger className={FILTER_BUTTON_CLASS} aria-label="Filter column" data-active={active ? '' : undefined}>
         <SearchIconOutlinedRounded aria-hidden="true" />
       </Popover.Trigger>
       <Popover.Content className="tk-table-filter-panel">

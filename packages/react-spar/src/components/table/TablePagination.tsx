@@ -51,11 +51,11 @@ export const TablePagination = () => {
 
   return (
     <div {...slotAttrs('pagination')} role="navigation" aria-label="Pagination">
-      <div className="tk-table-pagination-info">
+      <div {...slotAttrs('paginationInfo')}>
         <span aria-live="polite">{pageCount > 0 ? `Page ${pageIndex + 1} of ${pageCount}` : `Page ${pageIndex + 1}`}</span>
         <span aria-live="polite">{itemsLabel}</span>
       </div>
-      <div className="tk-table-pagination-nav">
+      <div {...slotAttrs('paginationNav')}>
         <Button
           size="small"
           variant="neutral"
@@ -119,8 +119,8 @@ export const TablePagination = () => {
           onClick={() => table.setPageIndex(pageCount - 1)}
         />
       </div>
-      <div className="tk-table-pagination-actions">
-        <div className="tk-table-pagination-size">
+      <div {...slotAttrs('paginationActions')}>
+        <div {...slotAttrs('paginationSize')}>
           <Select size="small" value={String(pageSize)} onChange={value => table.setPageSize(Number(value))}>
             <Select.Trigger aria-label="Rows per page">{pageSize}</Select.Trigger>
             <Select.Content>
@@ -132,7 +132,7 @@ export const TablePagination = () => {
             </Select.Content>
           </Select>
         </div>
-        <div className="tk-table-pagination-go-to-page">
+        <div {...slotAttrs('paginationGoToPage')}>
           <Input size="small">
             <Input.Field
               type="number"
