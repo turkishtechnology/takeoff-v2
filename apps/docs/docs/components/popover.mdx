@@ -57,15 +57,15 @@ function TypesDemo() {
   return (
     <div className="flex flex-wrap justify-center gap-3">
       <Popover>
-        <Popover.Trigger as={Button}>Dark</Popover.Trigger>
-        <Popover.Content variant="dark">
-          <Popover.Description>Dark variant popover</Popover.Description>
-        </Popover.Content>
-      </Popover>
-      <Popover>
         <Popover.Trigger as={Button}>White</Popover.Trigger>
         <Popover.Content variant="white">
           <Popover.Description>White variant popover</Popover.Description>
+        </Popover.Content>
+      </Popover>
+      <Popover>
+        <Popover.Trigger as={Button}>Dark</Popover.Trigger>
+        <Popover.Content variant="dark">
+          <Popover.Description>Dark variant popover</Popover.Description>
         </Popover.Content>
       </Popover>
       <Popover>
@@ -344,7 +344,7 @@ for primitive behavior.
 | Name                            | Type                                                                                      | Default       | Description                                                                |
 | ------------------------------- | ----------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
 | <ApiBadge label="children" />   | <code>React.React.ReactNode</code>                                                        | -             |                                                                            |
-| <ApiBadge label="variant" />    | <code><a href="#popover-td-popovervariant">PopoverVariant</a></code>                      | 'dark'        | Color variant.                                                             |
+| <ApiBadge label="variant" />    | <code><a href="#popover-td-popovervariant">PopoverVariant</a></code>                      | 'white'       | Color variant.                                                             |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -             | Per-slot extra classes.                                                    |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |
 | <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                      | document.body | Portal container element. Content is portaled to document.body by default. |
@@ -399,7 +399,7 @@ for primitive behavior.
 
 | Name                                                                                                  | Definition                                                                                                                      |
 | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| <span id="popover-td-popovervariant"><ApiBadge label="PopoverVariant" /></span>                       | <code>'dark' &#124; 'white' &#124; 'info' &#124; 'success' &#124; 'warning' &#124; 'danger' &#124; 'neutral'</code>             |
+| <span id="popover-td-popovervariant"><ApiBadge label="PopoverVariant" /></span>                       | <code>'white' &#124; 'dark' &#124; 'info' &#124; 'success' &#124; 'warning' &#124; 'danger' &#124; 'neutral'</code>             |
 | <span id="popover-td-side"><ApiBadge label="Side" /></span>                                           | <code>'top' &#124; 'right' &#124; 'bottom' &#124; 'left'</code>                                                                 |
 | <span id="popover-td-align"><ApiBadge label="Align" /></span>                                         | <code>'start' &#124; 'center' &#124; 'end'</code>                                                                               |
 | <span id="popover-td-popovertriggerrenderprops"><ApiBadge label="PopoverTriggerRenderProps" /></span> | <code>&#123; isOpen: boolean; disabled: boolean; open: () =&gt; void; close: () =&gt; void; toggle: () =&gt; void &#125;</code> |
