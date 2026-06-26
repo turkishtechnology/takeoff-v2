@@ -40,15 +40,15 @@ function VariantsDemo() {
   return (
     <div className="flex flex-wrap justify-center gap-3">
       <Tooltip>
-        <Tooltip.Trigger as={Button}>Dark</Tooltip.Trigger>
-        <Tooltip.Content variant="dark">
-          <Tooltip.Description>Dark variant</Tooltip.Description>
-        </Tooltip.Content>
-      </Tooltip>
-      <Tooltip>
         <Tooltip.Trigger as={Button}>White</Tooltip.Trigger>
         <Tooltip.Content variant="white">
           <Tooltip.Description>White variant</Tooltip.Description>
+        </Tooltip.Content>
+      </Tooltip>
+      <Tooltip>
+        <Tooltip.Trigger as={Button}>Dark</Tooltip.Trigger>
+        <Tooltip.Content variant="dark">
+          <Tooltip.Description>Dark variant</Tooltip.Description>
         </Tooltip.Content>
       </Tooltip>
       <Tooltip>
@@ -363,7 +363,7 @@ for primitive behavior.
 | Name                            | Type                                                                                      | Default       | Description                                                                |
 | ------------------------------- | ----------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
 | <ApiBadge label="children" />   | <code>React.React.ReactNode</code>                                                        | -             |                                                                            |
-| <ApiBadge label="variant" />    | <code><a href="#tooltip-td-tooltipvariant">TooltipVariant</a></code>                      | 'dark'        | Color variant.                                                             |
+| <ApiBadge label="variant" />    | <code><a href="#tooltip-td-tooltipvariant">TooltipVariant</a></code>                      | 'white'       | Color variant.                                                             |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -             | Per-slot extra classes.                                                    |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |
 | <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                      | document.body | Portal container element. Content is portaled to document.body by default. |
@@ -411,7 +411,7 @@ for primitive behavior.
 
 | Name                                                                                                  | Definition                                                                                                          |
 | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| <span id="tooltip-td-tooltipvariant"><ApiBadge label="TooltipVariant" /></span>                       | <code>'dark' &#124; 'white' &#124; 'info' &#124; 'success' &#124; 'warning' &#124; 'danger' &#124; 'neutral'</code> |
+| <span id="tooltip-td-tooltipvariant"><ApiBadge label="TooltipVariant" /></span>                       | <code>'white' &#124; 'dark' &#124; 'info' &#124; 'success' &#124; 'warning' &#124; 'danger' &#124; 'neutral'</code> |
 | <span id="tooltip-td-side"><ApiBadge label="Side" /></span>                                           | <code>'top' &#124; 'right' &#124; 'bottom' &#124; 'left'</code>                                                     |
 | <span id="tooltip-td-align"><ApiBadge label="Align" /></span>                                         | <code>'start' &#124; 'center' &#124; 'end'</code>                                                                   |
 | <span id="tooltip-td-tooltiptriggerrenderprops"><ApiBadge label="TooltipTriggerRenderProps" /></span> | <code>&#123; isOpen: boolean; disabled: boolean; show: () =&gt; void; hide: () =&gt; void &#125;</code>             |

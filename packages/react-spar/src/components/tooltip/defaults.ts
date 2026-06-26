@@ -1,3 +1,3 @@
 import type { TooltipVariant } from './types';
 
-export const DEFAULT_VARIANT: TooltipVariant = 'dark';
+export const DEFAULT_VARIANT: TooltipVariant = 'white';
