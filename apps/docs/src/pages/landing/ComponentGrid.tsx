@@ -1,19 +1,17 @@
 import type { JSX } from 'react';
 import Link from '@docusaurus/Link';
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import { Badge, Button, Field, Input, Switch } from '@takeoff-ui/react-spar';
+import { Alert, Badge, Button, Field, Input, Switch, Table } from '@takeoff-ui/react-spar';
 import { ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
-import { PlaceholderProgress, PlaceholderAvatarGroup } from '@site/src/components/PlaceholderCustomComponents';
 import { ArrowRightIconOutlinedRounded } from '@takeoff-icons/react/arrow-right';
 import { ShoppingBagIconOutlinedRounded } from '@takeoff-icons/react/shopping-bag';
 import { TakeoffRocketIconOutlinedRounded } from '@takeoff-icons/react/takeoff-rocket';
 import styles from './ComponentGrid.module.css';
 
 /*
- * ComponentGrid — six live-preview cards for the landing. Button, Input,
- * Badge, and Switch render the real `@takeoff-ui/react-spar` components.
- * Progress and AvatarGroup are still placeholder mocks until those ship —
- * tracked in PlaceholderCustomComponents/index.tsx.
+ * ComponentGrid — six live-preview cards for the landing. Every card renders a
+ * real `@takeoff-ui/react-spar` component: Button, Input, Badge, Switch, Alert,
+ * and Table (the TanStack-backed flagship). No placeholder mocks.
  */
 
 /* ──────────────────────────────────────────────────────────────────────
@@ -114,21 +112,35 @@ function SwitchCardDemo(): JSX.Element {
   );
 }
 
-function ProgressCardDemo(): JSX.Element {
+function AlertCardDemo(): JSX.Element {
   return (
-    <div className={styles.demo} style={{ padding: '18px 16px' }}>
-      <div className={styles.progress}>
-        <PlaceholderProgress label="Boarding" value="~78%" pulse />
-        <PlaceholderProgress label="Baggage loaded" value="100%" />
-      </div>
+    <div className={styles.demo} style={{ padding: '18px 14px', alignItems: 'stretch' }}>
+      <Alert variant="info" appearance="outlined">
+        <Alert.Content>
+          <Alert.Title>Gate changed</Alert.Title>
+          <Alert.Description>Flight TK1983 now departs from gate A8.</Alert.Description>
+        </Alert.Content>
+      </Alert>
     </div>
   );
 }
 
-function AvatarGroupCardDemo(): JSX.Element {
+const TABLE_DEMO_DATA = [
+  { id: '1', flight: 'TK1980', from: 'IST', to: 'LHR' },
+  { id: '2', flight: 'TK1', from: 'IST', to: 'JFK' },
+  { id: '3', flight: 'TK162', from: 'ESB', to: 'IST' },
+];
+
+const TABLE_DEMO_COLUMNS = [
+  { id: 'flight', header: 'Flight', accessor: 'flight' },
+  { id: 'from', header: 'From', accessor: 'from' },
+  { id: 'to', header: 'To', accessor: 'to' },
+];
+
+function TableCardDemo(): JSX.Element {
   return (
-    <div className={styles.demo}>
-      <PlaceholderAvatarGroup initials={['EY', 'MK', 'SA', '+12']} />
+    <div className={styles.demo} style={{ padding: '14px', alignItems: 'stretch' }}>
+      <Table data={TABLE_DEMO_DATA} columns={TABLE_DEMO_COLUMNS} getRowId={row => row.id} size="small" striped />
     </div>
   );
 }
@@ -149,8 +161,8 @@ export default function ComponentGrid(): JSX.Element {
             <em>shipped with the full contract.</em>
           </h2>
           <p className={styles.lede}>
-            Accordion, Button, Drawer, and Tooltip are shipped today. The previews alongside them show what is coming next, but nothing ships without docs, examples, and API
-            coverage in place.
+            Every preview below is the real component, rendered live from <code>@takeoff-ui/react-spar</code> — Button, Input, Badge, Switch, Alert, and the TanStack-backed Table.
+            Nothing ships without docs, examples, and API coverage in place.
           </p>
         </div>
 
@@ -211,20 +223,32 @@ export default function ComponentGrid(): JSX.Element {
             </BrowserOnly>
           </Link>
 
-          <Link to="/docs/" className={styles.card} aria-label="Progress — planned">
+          <Link to="/docs/components/alert" className={styles.card}>
             <div className={styles.cardTitle}>
-              <h4>Progress</h4>
-              <span className={styles.cardMono}>Progress</span>
+              <h4>Alert</h4>
+              <span className={styles.cardMono}>Alert</span>
             </div>
-            <ProgressCardDemo />
+            <BrowserOnly fallback={<div className={styles.demo} />}>
+              {() => (
+                <ReactSparDemoRoot>
+                  <AlertCardDemo />
+                </ReactSparDemoRoot>
+              )}
+            </BrowserOnly>
           </Link>
 
-          <Link to="/docs/" className={styles.card} aria-label="Avatar group — planned">
+          <Link to="/docs/components/table" className={styles.card}>
             <div className={styles.cardTitle}>
-              <h4>Avatar group</h4>
-              <span className={styles.cardMono}>AvatarGroup</span>
+              <h4>Table</h4>
+              <span className={styles.cardMono}>Table</span>
             </div>
-            <AvatarGroupCardDemo />
+            <BrowserOnly fallback={<div className={styles.demo} />}>
+              {() => (
+                <ReactSparDemoRoot>
+                  <TableCardDemo />
+                </ReactSparDemoRoot>
+              )}
+            </BrowserOnly>
           </Link>
         </div>
 

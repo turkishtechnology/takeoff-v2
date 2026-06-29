@@ -1,7 +1,7 @@
 import type { JSX } from 'react';
 import styles from './TypeScriptBand.module.css';
 
-const VARIANTS = ['primary', 'secondary', 'neutral', 'info', 'success', 'danger', 'warning'];
+const VARIANTS = ['primary', 'secondary', 'neutral', 'info', 'success', 'danger', 'warning', 'white', 'black'];
 
 export default function TypeScriptBand(): JSX.Element {
   return (

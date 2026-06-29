@@ -16,7 +16,7 @@ const PILLARS: Pillar[] = [
   {
     label: 'Principle 02',
     verb: 'Align it.',
-    aphorism: 'React surfaces stay aligned with Takeoff Core on the contracts consumers actually depend on: state, slots, and styling hooks.',
+    aphorism: 'React surfaces stay aligned with Takeoff UI Core on the contracts consumers actually depend on: state, slots, and styling hooks.',
   },
   {
     label: 'Principle 03',
