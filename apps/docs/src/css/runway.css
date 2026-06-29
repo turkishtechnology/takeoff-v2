@@ -61,7 +61,7 @@
    * Takeoff UI landing palette (exact hex values) so dark mode gets the
    * deep, engineered look we want for the marketing surface.
    *
-   * All CSS across /src/pages/landing/ references these as --runway-*
+   * All CSS across /src/components/Landing/ references these as --runway-*
    * names; only this file needs to know about the two-layer strategy.
    * ──────────────────────────────────────────────────────────────── */
 
@@ -155,9 +155,6 @@
   --runway-ring-color: rgba(255, 23, 54, 0.18);
 }
 
-/* --- Load JetBrains Mono once, alongside Geologica ----------------------- */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
-
 /* --- Surface classes (opt-in) -------------------------------------------- */
 .runway-surface-dark {
   background: var(--runway-black);
@@ -189,7 +186,7 @@
 }
 
 .runway-display {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: var(--runway-type-display);
   line-height: var(--runway-type-display-lh);
   font-weight: var(--runway-type-display-weight);
@@ -199,7 +196,7 @@
 }
 
 .runway-h1 {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: var(--runway-type-h1);
   line-height: var(--runway-type-h1-lh);
   font-weight: var(--runway-type-h1-weight);
@@ -208,7 +205,7 @@
 }
 
 .runway-h2 {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: var(--runway-type-h2);
   line-height: var(--runway-type-h2-lh);
   font-weight: var(--runway-type-h2-weight);
@@ -216,7 +213,7 @@
 }
 
 .runway-h3 {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: var(--runway-type-h3);
   line-height: var(--runway-type-h3-lh);
   font-weight: var(--runway-type-h3-weight);
@@ -224,7 +221,7 @@
 }
 
 .runway-body {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: var(--runway-type-body);
   line-height: var(--runway-type-body-lh);
   font-weight: var(--runway-type-body-weight);

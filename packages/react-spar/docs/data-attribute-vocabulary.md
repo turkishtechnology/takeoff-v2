@@ -93,16 +93,17 @@ table needs updating.
 
 ### Semantic
 
-| Attribute             | Component             | Meaning                                          |
-| --------------------- | --------------------- | ------------------------------------------------ |
-| `data-icon-only`      | Button                | No label content, only icon                      |
-| `data-rounded`        | Button                | Circular icon-only shape                         |
-| `data-underline`      | Button                | Label is underlined                              |
-| `data-icon-kind`      | Button, AccordionItem | Distinguishes string icons from ReactNode icons  |
-| `data-hide-arrows`    | Accordion root        | Auto-rendered arrows are hidden                  |
-| `data-arrow-position` | Accordion root        | Layout intent for trigger arrows                 |
-| `data-position`       | Radio root/item       | Indicator placement (`left` / `right`)           |
-| `data-spread`         | Radio root            | Items share available space along the group axis |
+| Attribute             | Component              | Meaning                                          |
+| --------------------- | ---------------------- | ------------------------------------------------ |
+| `data-icon-only`      | Button                 | No label content, only icon                      |
+| `data-rounded`        | Button                 | Circular icon-only shape                         |
+| `data-underline`      | Button                 | Label is underlined                              |
+| `data-icon-kind`      | Button, AccordionItem  | Distinguishes string icons from ReactNode icons  |
+| `data-hide-arrows`    | Accordion root         | Auto-rendered arrows are hidden                  |
+| `data-arrow-position` | Accordion root         | Layout intent for trigger arrows                 |
+| `data-position`       | Radio root/item        | Indicator placement (`left` / `right`)           |
+| `data-spread`         | Radio root             | Items share available space along the group axis |
+| `data-level`          | Input strength segment | Strength tier for filled password meter segments |
 
 ### Out-of-band attributes
 
@@ -162,3 +163,54 @@ should explain **why** the deviation exists so reviewers do not "fix" it later.
 - **Checked/unchecked state stays Spar-owned.** `Radio.Item` exposes Spar's
   `data-state="checked" | "unchecked"`; the wrapper recipe consumes that state
   for the indicator fill instead of mirroring selection in React.
+
+### Input
+
+- **`data-level` lives on strength segments, not on the Input root.** Filled
+  `.tk-input-strength-segment` nodes use `weak`, `medium`, or `strong`; empty
+  segments omit the attribute so the neutral segment style remains the base
+  state.
+
+### Table
+
+Table is a **v2-owned, TanStack-backed** component with no upstream Spar
+primitive, so — unlike the Spar wrappers — it introduces its own `data-*`
+vocabulary rather than inheriting one. Recorded here per rule 10. All values
+follow the standard conventions (presence = `''`, finite = string).
+
+- **Root carries the visual variants/state.** `.tk-table` emits `data-size`
+  (`xsmall` | `small` | `base`), `data-striped`, `data-bordered`,
+  `data-sticky-header`, and `data-loading`. Density padding cascades from the
+  root via descendant selectors (`.tk-table[data-size='small'] .tk-table-cell`),
+  matching the Accordion/Radio root-cascade precedent.
+- **`data-scrolled` (State, presence) on the scroll viewport.**
+  `.tk-table-viewport` gains it once `scrollTop > 0`, letting the recipe reveal
+  the sticky-header shadow only after the body has scrolled under it.
+- **`data-align` (Variant) lives on every header + body cell.** `start` |
+  `center` | `end`; drives `text-align`. Header cells may override via
+  `meta.headerAlign`; otherwise they inherit the column `align`.
+- **`data-sticky` (Variant) marks pinned cells.** `left` | `right` on
+  `.tk-table-header-cell` / `.tk-table-cell` / the selection + expand utility
+  cells. The per-edge offset and 3-layer z-index are inline `style` (computed by
+  the wrapper, RFC §6.5); the recipe keys on `data-sticky` only for the opaque
+  background + edge shadow. **Pinned columns must be contiguous against their
+  edge** (all `left` pins at the start, all `right` pins at the end); the offset
+  math sums same-edge widths and assumes no unpinned column sits between them.
+  Dev builds warn on a non-contiguous pin set.
+- **Sorting splits across two nodes by design.** The `<th>` carries the a11y
+  source of truth `aria-sort` plus a `data-sortable` presence flag (cursor); the
+  chevron glyph `.tk-table-sort-icon` carries `data-direction` (`asc` | `desc` |
+  `none`). `data-direction` is **not** a duplicate of `aria-sort` — it is a
+  node-local hook so the recipe can rotate the glyph without an ancestor lookup
+  (same rationale as Accordion's per-item mirror).
+- **`data-selected` (State, presence) lives on the body `<tr>`.** Row selection
+  is React/TanStack-owned (no Spar primitive backs it), so unlike Radio/Checkbox
+  the state is wrapper-emitted here.
+- **`data-selection-mode` (Variant) on the selection cell.** `single` |
+  `multiple` — lets the recipe distinguish the radio vs. checkbox affordance
+  column.
+- **`data-active` (State, presence) on the filter trigger.** Marks a column
+  whose filter currently narrows the data. The trigger is the Spar
+  `Popover.Trigger` owner node (which emits its own `data-slot="root"`), so the
+  filter button/panel are styled by class (`.tk-table-filter-button` /
+  `.tk-table-filter-panel`) rather than a Table `data-slot` anchor.

@@ -1,18 +1,16 @@
 import type { ElementType } from 'react';
 import { DialogContent as SparDialogContent } from '@turkish-technology/spar';
 
-import { composeRootAttrs } from '../../core';
+import { blockDismiss, composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { DrawerPanelBase } from './base';
 import { useDrawerOwnContext } from './context';
 import type { DrawerPanelProps } from './types';
 
-const preventDefault = (e: Event) => e.preventDefault();
-
 export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelProps<T>) => {
   const theme = useComponentTheme('DrawerPanel');
-  const { placement, dismissable } = useDrawerOwnContext();
+  const { placement, dismissible } = useDrawerOwnContext();
 
   const { rootAttrs, rest } = composeRootAttrs(DrawerPanelBase, props as DrawerPanelProps<'div'>, theme, {
     stateAttrs: () => ({
@@ -22,9 +20,10 @@ export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelPro
 
   const { container, children, ref, ...panelProps } = rest;
 
-  const dismissHandlers = !dismissable && {
-    onEscapeKeyDown: preventDefault,
-    onPointerDownOutside: preventDefault,
+  const dismissHandlers = !dismissible && {
+    onEscapeKeyDown: blockDismiss(panelProps.onEscapeKeyDown),
+    onPointerDownOutside: blockDismiss(panelProps.onPointerDownOutside),
+    onInteractOutside: blockDismiss(panelProps.onInteractOutside),
   };
   return (
     <SparDialogContent {...panelProps} container={container} ref={ref} {...rootAttrs} {...dismissHandlers}>
@@ -33,4 +32,4 @@ export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelPro
   );
 };
 
-DrawerPanel.displayName = 'DrawerPanel';
+DrawerPanel.displayName = 'Drawer.Panel';

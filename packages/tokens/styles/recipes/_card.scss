@@ -1,0 +1,111 @@
+// ---------------------------------------------------------------------------
+// Card recipe — apply to `.tk-card` root and its compound parts.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-card             — root
+//   .tk-card-header      — header section
+//   .tk-card-title       — heading
+//   .tk-card-description — supporting text
+//   .tk-card-body        — main content
+//   .tk-card-footer      — footer/actions section
+//
+// State/variant attributes on compound parts:
+//   data-header-type — basic | divided | light | dark | primary
+//   data-footer-type — basic | divided | light
+// ---------------------------------------------------------------------------
+
+@mixin card {
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  display: flex;
+  flex-direction: column;
+  color: var(--text-darkest);
+  background: var(--static-light);
+  border-radius: var(--radius-xl);
+  box-sizing: border-box;
+  border: 1px solid var(--border-light);
+  // Three stacked layers share one alpha color; the depth comes from the
+  // offset/blur/spread, not the color. (No composite elevation token exists.)
+  box-shadow:
+    0 2px 2px -1px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
+    0 6px 12px 2px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
+    0 8px 20px 4px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08));
+
+  .tk-card-body,
+  .tk-card-footer {
+    padding: 16px;
+  }
+
+  .tk-card-header {
+    padding: 10px 16px;
+  }
+}
+
+@mixin card-header {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+
+  &[data-header-type='divided'] {
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  &[data-header-type='light'] {
+    border-bottom: 1px solid var(--border-light);
+    background: var(--background-lightest);
+  }
+
+  &[data-header-type='dark'] {
+    background: var(--neutral-800);
+
+    .tk-card-title {
+      color: var(--static-white);
+    }
+  }
+
+  &[data-header-type='primary'] {
+    background: var(--primary-base);
+
+    .tk-card-title {
+      color: var(--static-white);
+    }
+  }
+}
+
+@mixin card-title {
+  color: var(--text-darkest);
+  font-family: var(--desktop-title-h5-font);
+  font-size: var(--desktop-title-h5-size);
+  font-weight: 400;
+  line-height: var(--desktop-title-h5-line-height);
+}
+
+@mixin card-description {
+  color: var(--text-sub-base);
+  font-size: var(--desktop-body-s-size);
+  line-height: var(--desktop-body-s-line-height);
+}
+
+@mixin card-body {
+  color: var(--text-base);
+  font-size: var(--desktop-body-base-size);
+  line-height: var(--desktop-body-base-line-height);
+}
+
+@mixin card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  align-self: stretch;
+  gap: var(--sizes-base-gap, 6px);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+
+  &[data-footer-type='divided'] {
+    border-top: 1px solid var(--border-light);
+  }
+
+  &[data-footer-type='light'] {
+    border-top: 1px solid var(--border-light);
+    background: var(--background-lightest);
+  }
+}

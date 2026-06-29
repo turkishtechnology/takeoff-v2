@@ -1,6 +1,6 @@
 {
   "name": "@takeoff-ui/react-spar",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "React-first Takeoff wrappers built on top of @turkish-technology/spar.",
   "type": "module",
   "author": "Turkish Technology Frontend Infrastructure Team <takeoffui@thy.com>",
@@ -47,18 +47,20 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "pack:check": "npm pack --dry-run --json --cache ../../.npm-cache",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "generate": "node ./scripts/generate-component.mjs",
     "lint:spar-pick": "node ./scripts/check-spar-pick.mjs",
     "prepack": "tsup"
   },
   "dependencies": {
-    "@turkish-technology/spar": "0.2.0-beta.1",
+    "@takeoff-icons/react": "^0.1.1",
+    "@tanstack/react-table": "8.21.3",
+    "@turkish-technology/spar": "0.2.0",
     "clsx": "^2.1.1"
   },
   "peerDependencies": {
-    "@takeoff-design/tokens": "0.1.2",
+    "@takeoff-design/tokens": ">=0.1.2 <1.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -68,11 +70,11 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
-    "@types/react": "^19.0.0",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^19.0.0",
     "jsdom": "^29.0.2",
     "tsup": "^8.5.1",
-    "typescript": "^5.7.0",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.4",
     "vitest-axe": "^0.1.0"
   },

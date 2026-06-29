@@ -11,8 +11,8 @@ import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type FieldSlot = 'root';
 export type FieldLabelSlot = 'root' | 'asterisk';
-export type FieldDescriptionSlot = 'root';
-export type FieldErrorMessageSlot = 'root';
+export type FieldDescriptionSlot = 'root' | 'icon';
+export type FieldErrorMessageSlot = 'root' | 'icon';
 
 export interface FieldOwnProps {
   classNames?: ClassNamesMap<FieldSlot>;
@@ -29,8 +29,8 @@ export type FieldProps<T extends ElementType = 'div'> = PolymorphicProps<
   T,
   FieldOwnProps &
     // Spar Field root: identity + form/a11y state (invalid, disabled, required,
-    // readOnly) and children render-function support.
-    Pick<SparFieldProps, 'id' | 'invalid' | 'disabled' | 'required' | 'readOnly' | 'children'>
+    // optional, readOnly) and children render-function support.
+    Pick<SparFieldProps, 'id' | 'invalid' | 'disabled' | 'required' | 'optional' | 'readOnly' | 'children'>
 >;
 
 export interface FieldLabelOwnProps {

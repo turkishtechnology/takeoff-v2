@@ -3,26 +3,92 @@
 @forward 'foundations';
 
 @use 'recipes/accordion';
+@use 'recipes/alert';
 @use 'recipes/badge';
+@use 'recipes/breadcrumb';
 @use 'recipes/button';
+@use 'recipes/card';
 @use 'recipes/checkbox';
+@use 'recipes/chip';
 @use 'recipes/dialog';
 @use 'recipes/drawer';
 @use 'recipes/field';
 @use 'recipes/input';
+@use 'recipes/label';
 @use 'recipes/popover';
 @use 'recipes/radio';
 @use 'recipes/select';
+@use 'recipes/spinner';
 @use 'recipes/switch';
+@use 'recipes/table';
+@use 'recipes/tabs';
 @use 'recipes/tooltip';
+@use 'recipes/toast';
 
 @include button.button-keyframes;
 @include input.input-keyframes;
 @include popover.popover-keyframes;
+@include spinner.spinner-keyframes;
 @include tooltip.tooltip-keyframes;
 
 .tk-button {
   @include button.button;
+}
+
+.tk-alert {
+  @include alert.alert;
+}
+
+.tk-alert-content {
+  @include alert.alert-content;
+}
+
+.tk-alert-title {
+  @include alert.alert-title;
+}
+
+.tk-alert-description {
+  @include alert.alert-description;
+}
+
+.tk-alert-actions {
+  @include alert.alert-actions;
+}
+
+.tk-alert-close {
+  @include alert.alert-close;
+}
+
+.tk-toaster {
+  @include toast.toaster;
+}
+
+.tk-toast {
+  @include toast.toast;
+}
+
+.tk-card {
+  @include card.card;
+}
+
+.tk-card-header {
+  @include card.card-header;
+}
+
+.tk-card-title {
+  @include card.card-title;
+}
+
+.tk-card-description {
+  @include card.card-description;
+}
+
+.tk-card-body {
+  @include card.card-body;
+}
+
+.tk-card-footer {
+  @include card.card-footer;
 }
 
 .tk-accordion {
@@ -33,12 +99,36 @@
   @include accordion.accordion-item;
 }
 
-.tk-dialog-mask {
-  @include dialog.dialog-mask;
+.tk-dialog-overlay {
+  @include dialog.dialog-overlay;
 }
 
-.tk-dialog {
-  @include dialog.dialog;
+.tk-dialog-panel {
+  @include dialog.dialog-panel;
+}
+
+.tk-dialog-header {
+  @include dialog.dialog-header;
+}
+
+.tk-dialog-title {
+  @include dialog.dialog-title;
+}
+
+.tk-dialog-description {
+  @include dialog.dialog-description;
+}
+
+.tk-dialog-close {
+  @include dialog.dialog-close;
+}
+
+.tk-dialog-body {
+  @include dialog.dialog-body;
+}
+
+.tk-dialog-footer {
+  @include dialog.dialog-footer;
 }
 
 .tk-drawer-overlay {
@@ -69,8 +159,8 @@
   @include drawer.drawer-footer;
 }
 
-.tk-drawer-close-button {
-  @include drawer.drawer-close-button;
+.tk-drawer-close {
+  @include drawer.drawer-close;
 }
 
 .tk-field {
@@ -81,16 +171,36 @@
   @include input.input;
 }
 
+.tk-input-strength {
+  @include input.input-strength;
+}
+
+.tk-input-chips {
+  @include input.input-chips;
+}
+
+.tk-label {
+  @include label.label;
+}
+
 .tk-select {
   @include select.select;
 }
 
 .tk-select-trigger {
   @include select.select-trigger;
+
+  &[data-state='open'] .tk-select-indicator {
+    @include select.select-trigger-open-indicator;
+  }
 }
 
 .tk-select-value {
   @include select.select-value;
+}
+
+.tk-select-indicator {
+  @include select.select-indicator;
 }
 
 .tk-select-content {
@@ -117,8 +227,16 @@
   @include select.select-separator;
 }
 
+.tk-spinner {
+  @include spinner.spinner;
+}
+
 .tk-checkbox {
   @include checkbox.checkbox;
+}
+
+.tk-chip {
+  @include chip.chip;
 }
 
 .tk-toggle {
@@ -131,6 +249,22 @@
 
 .tk-radio-item {
   @include radio.radio-item;
+}
+
+.tk-tabs {
+  @include tabs.tabs;
+}
+
+.tk-tabs-list {
+  @include tabs.tabs-list;
+}
+
+.tk-tabs-trigger {
+  @include tabs.tabs-trigger;
+}
+
+.tk-tabs-content {
+  @include tabs.tabs-content;
 }
 
 .tk-tooltip-content {
@@ -151,6 +285,10 @@
 
 .tk-badge {
   @include badge.badge;
+}
+
+.tk-breadcrumb {
+  @include breadcrumb.breadcrumb;
 }
 
 .tk-popover-trigger {
@@ -175,4 +313,92 @@
 
 .tk-popover-close {
   @include popover.popover-close;
+}
+
+.tk-table {
+  @include table.table;
+}
+
+.tk-table-viewport {
+  @include table.table-viewport;
+}
+
+.tk-table-table {
+  @include table.table-table;
+}
+
+.tk-table-header {
+  @include table.table-header;
+}
+
+.tk-table-header-row {
+  @include table.table-header-row;
+}
+
+.tk-table-header-cell {
+  @include table.table-header-cell;
+}
+
+.tk-table-header-content {
+  @include table.table-header-content;
+}
+
+.tk-table-sort-trigger {
+  @include table.table-sort-trigger;
+}
+
+.tk-table-sort-icon {
+  @include table.table-sort-icon;
+}
+
+.tk-table-body {
+  @include table.table-body;
+}
+
+.tk-table-row {
+  @include table.table-row;
+}
+
+.tk-table-cell {
+  @include table.table-cell;
+}
+
+.tk-table-selection-cell {
+  @include table.table-selection-cell;
+}
+
+.tk-table-expand-cell {
+  @include table.table-expand-cell;
+}
+
+.tk-table-expand-button {
+  @include table.table-expand-button;
+}
+
+.tk-table-expanded-row {
+  @include table.table-expanded-row;
+}
+
+.tk-table-filter-button {
+  @include table.table-filter-button;
+}
+
+.tk-table-filter-panel {
+  @include table.table-filter-panel;
+}
+
+.tk-table-filter-panel-body {
+  @include table.table-filter-panel-body;
+}
+
+.tk-table-pagination {
+  @include table.table-pagination;
+}
+
+.tk-table-empty {
+  @include table.table-empty;
+}
+
+.tk-table-loading {
+  @include table.table-loading;
 }

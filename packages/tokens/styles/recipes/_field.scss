@@ -7,7 +7,7 @@
 // ---------------------------------------------------------------------------
 
 @mixin field {
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -44,17 +44,38 @@
 
   .tk-field-description,
   .tk-field-error-message {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--base-gap, 0.25rem);
     font-size: var(--desktop-body-xs-size);
     line-height: var(--desktop-body-xs-line-height);
     font-weight: 400;
     margin-block-start: var(--spacing-xxs);
   }
 
+  // Leading helper-text icon — sized a touch larger than the text and centred
+  // on the first line so multi-line messages stay aligned.
+  .tk-field-description-icon,
+  .tk-field-error-message-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    height: var(--desktop-body-xs-line-height);
+    font-size: 0.875rem;
+    line-height: 1;
+  }
+
   .tk-field-description {
     color: var(--text-base);
   }
 
-  .tk-field-error-message {
+  .tk-field-description-icon {
+    color: var(--icon-base);
+  }
+
+  .tk-field-error-message,
+  .tk-field-error-message-icon {
     color: var(--states-danger-base);
   }
 

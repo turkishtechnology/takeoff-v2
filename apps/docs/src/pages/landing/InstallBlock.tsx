@@ -4,10 +4,10 @@ import styles from './InstallBlock.module.css';
 type PackageManager = 'pnpm' | 'npm' | 'yarn' | 'bun';
 
 const INSTALL_COMMANDS: Record<PackageManager, string> = {
-  pnpm: 'pnpm add @takeoff-ui/react-spar',
-  npm: 'npm install @takeoff-ui/react-spar',
-  yarn: 'yarn add @takeoff-ui/react-spar',
-  bun: 'bun add @takeoff-ui/react-spar',
+  pnpm: 'pnpm add @takeoff-ui/react-spar @takeoff-design/tokens',
+  npm: 'npm install @takeoff-ui/react-spar @takeoff-design/tokens',
+  yarn: 'yarn add @takeoff-ui/react-spar @takeoff-design/tokens',
+  bun: 'bun add @takeoff-ui/react-spar @takeoff-design/tokens',
 };
 
 const CSS_IMPORT = `import '@takeoff-design/tokens/css/default/theme.css';`;

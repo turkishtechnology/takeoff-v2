@@ -9,7 +9,7 @@ import type {
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
-export type TooltipVariant = 'dark' | 'white' | 'info' | 'success' | 'warning' | 'danger' | 'neutral';
+export type TooltipVariant = 'white' | 'dark' | 'info' | 'success' | 'warning' | 'danger' | 'neutral';
 
 export type TooltipTriggerSlot = 'root';
 
@@ -59,7 +59,7 @@ export type TooltipTriggerProps<T extends ElementType = 'button'> = PolymorphicP
 export interface TooltipContentOwnProps {
   /**
    * Color variant.
-   * @defaultValue 'dark'
+   * @defaultValue 'white'
    */
   variant?: TooltipVariant;
   /** Per-slot extra classes. */

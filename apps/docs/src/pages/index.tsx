@@ -7,7 +7,6 @@ import HeroRunway from '@site/src/pages/landing/HeroRunway';
 import ComponentGrid from '@site/src/pages/landing/ComponentGrid';
 import ValueRow from '@site/src/pages/landing/ValueRow';
 import OneSurface from '@site/src/pages/landing/OneSurface';
-import CustomerLogos from '@site/src/pages/landing/CustomerLogos';
 import PhilosophyBand from '@site/src/pages/landing/PhilosophyBand';
 import InstallBlock from '@site/src/pages/landing/InstallBlock';
 import TypeScriptBand from '@site/src/pages/landing/TypeScriptBand';
@@ -29,7 +28,6 @@ export default function Home(): JSX.Element {
         <ComponentGrid />
         <ValueRow />
         <OneSurface />
-        <CustomerLogos />
         <PhilosophyBand />
         <InstallBlock />
         <TypeScriptBand />

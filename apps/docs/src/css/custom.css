@@ -1,6 +1,5 @@
 @import 'tailwindcss' layer(utilities);
 @import '@takeoff-design/tailwind';
-@import url('https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap');
 @import '@takeoff-design/tokens/css/default/theme.css';
 @import './docusaurus-overrides.css';
 @import './layout.css';
@@ -41,4 +40,19 @@ h6 {
 .theme-back-to-top-button {
   background: var(--primary-base, #c90019);
   color: var(--static-white, #ffffff);
+}
+
+/*
+ * Select dropdown stacking above dialog/drawer surfaces.
+ *
+ * `Select.Content` portals with `z-index: 800`, but the Dialog/Drawer
+ * overlay+panel sit at 1500/1501. A Select dropdown should always float above
+ * the surface that owns it; lift the portaled content above that layer so it is
+ * visible whether it portals to <body> or into a panel that stacks its own
+ * content. (See the icon gallery's usage dialog, which also portals the
+ * dropdown INTO the panel so picking an option does not dismiss the dialog:
+ * apps/docs/src/components/IconGallery/IconDetailDialog.tsx.)
+ */
+.tk-select-content {
+  z-index: 1600;
 }

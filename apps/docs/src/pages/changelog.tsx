@@ -2,9 +2,9 @@ import type { JSX } from 'react';
 import Layout from '@theme/Layout';
 import { usePluginData } from '@docusaurus/useGlobalData';
 import { useRunwaySurface } from '@site/src/hooks/useRunwaySurface';
-import FooterRunway from './landing/FooterRunway';
 import { CHANGELOG_ENTRIES, type ChangelogEntry, type ChangelogItem, type ChangelogMedia, type ChangelogSection } from '@site/src/data/changelog';
 import type { PackageChangelogsData } from '@site/src/data/package-changelogs-types';
+import { ChevronBottomIconOutlinedRounded } from '@takeoff-icons/react/chevron-bottom';
 import styles from './changelog.module.css';
 
 const DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
@@ -19,11 +19,7 @@ function formatDate(iso: string): string {
 }
 
 function Chevron(): JSX.Element {
-  return (
-    <svg className={styles.collapsibleChevron} width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path d="M3.5 5.25L7 8.75L10.5 5.25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+  return <ChevronBottomIconOutlinedRounded className={styles.collapsibleChevron} aria-hidden="true" />;
 }
 
 // Render plain text with inline backtick spans (`code`) as <code>. Keeps the
@@ -200,7 +196,9 @@ function PackageChanges({ entry }: { entry: ChangelogEntry }): JSX.Element | nul
     <details className={styles.packageDisclosure}>
       <summary className={styles.packageSummary}>
         <span>Package details</span>
-        <span className={styles.packageCount}>{resolved.length} package{resolved.length === 1 ? '' : 's'}</span>
+        <span className={styles.packageCount}>
+          {resolved.length} package{resolved.length === 1 ? '' : 's'}
+        </span>
         <Chevron />
       </summary>
       <div className={styles.packageContent}>
@@ -265,7 +263,7 @@ function Entry({ entry }: { entry: ChangelogEntry }): JSX.Element {
 export default function Changelog(): JSX.Element {
   useRunwaySurface();
   return (
-    <Layout title="Changelog" description="Release notes for @takeoff-ui/react-spar." noFooter>
+    <Layout title="Changelog" description="Release notes for @takeoff-ui/react-spar.">
       <main data-runway-landing="true" className={styles.page}>
         <div className={styles.container}>
           <header className={styles.header}>
@@ -279,7 +277,6 @@ export default function Changelog(): JSX.Element {
             ))}
           </div>
         </div>
-        <FooterRunway />
       </main>
     </Layout>
   );

@@ -2,6 +2,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import { themes as prismThemes } from 'prism-react-renderer';
+import reactSparPackage from '../../packages/react-spar/package.json';
 import tailwindPlugin from './plugins/tailwind';
 import packageChangelogsPlugin from './plugins/package-changelogs';
 
@@ -46,6 +48,7 @@ const config: Config = {
   favicon: 'img/favicon.ico',
   url: 'https://takeoff-v2.app.turkishtechlab.com',
   baseUrl: '/',
+  stylesheets: ['https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap'],
   onBrokenLinks: 'throw',
   i18n: {
     defaultLocale: 'en',
@@ -60,6 +63,7 @@ const config: Config = {
     [
       'classic',
       {
+        blog: false,
         docs: {
           sidebarPath: './sidebars.ts',
           sidebarCollapsed: false,
@@ -70,9 +74,26 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
-  plugins: [tailwindPlugin, packageChangelogsPlugin],
+  plugins: [
+    tailwindPlugin,
+    packageChangelogsPlugin,
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'icons',
+        path: 'icons',
+        routeBasePath: 'icons',
+        sidebarPath: './sidebars.icons.ts',
+        sidebarCollapsed: false,
+      },
+    ],
+  ],
   themeConfig: {
     image: 'img/takeoff-og.jpg',
+    prism: {
+      theme: prismThemes.github,
+      darkTheme: prismThemes.vsDark,
+    },
     colorMode: {
       defaultMode: 'dark',
       respectPrefersColorScheme: false,
@@ -91,13 +112,20 @@ const config: Config = {
         {
           type: 'html',
           position: 'left',
-          value: '<span class="navbar__version-pill">v0.0.1</span>',
+          value: `<span class="navbar__version-pill">v${reactSparPackage.version}</span>`,
         },
         {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
           label: 'Docs',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'iconsSidebar',
+          docsPluginId: 'icons',
+          position: 'left',
+          label: 'Icons',
         },
         {
           to: '/changelog',
@@ -125,43 +153,6 @@ const config: Config = {
           value: '<a class="navbar__cta-primary" href="/docs/">Get started</a>',
         },
       ],
-    },
-    footer: {
-      style: 'dark',
-      links: [
-        {
-          title: 'Documentation',
-          items: [
-            {
-              label: 'Getting Started',
-              to: '/docs',
-            },
-            {
-              label: 'Installation',
-              to: '/docs/installation',
-            },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
-            {
-              label: 'Releases',
-              href: 'https://github.com/turkishtechnology/takeoff-v2/releases',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/turkishtechnology/takeoff-v2',
-            },
-          ],
-        },
-      ],
-      copyright: `Copyright © ${new Date().getFullYear()} Takeoff Spar`,
     },
     algolia: {
       appId: process.env.ALGOLIA_APP_ID || 'X1Z85QJPUV',

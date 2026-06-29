@@ -62,7 +62,7 @@
 }
 
 .headline {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: clamp(36px, 5vw, 64px);
   font-weight: 500;
   line-height: 1.05;
@@ -77,7 +77,7 @@
 }
 
 .subhead {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 17px;
   line-height: 1.55;
   color: var(--runway-ink-dim, #b8b8c2);
@@ -146,8 +146,8 @@
 }
 
 .icon {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
 }
 
 @media (max-width: 720px) {

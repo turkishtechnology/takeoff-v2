@@ -43,13 +43,13 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           # Pinned via .nvmrc (currently 24). Node 24 ships with npm 11.x which
           # supports OIDC trusted publishing natively; CI uses the same .nvmrc so

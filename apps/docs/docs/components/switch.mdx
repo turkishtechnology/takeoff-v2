@@ -17,8 +17,17 @@ import {
   Switch,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
+import { BlockIconOutlinedRounded } from '@takeoff-icons/react/block';
+import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
 
-export const switchScope = { Badge, Button, Field, Switch };
+export const switchScope = {
+  Badge,
+  BlockIconOutlinedRounded,
+  Button,
+  CheckIconOutlinedRounded,
+  Field,
+  Switch,
+};
 
 {/* prettier-ignore-start */}
 
@@ -182,9 +191,12 @@ render(<VariantDemo />);
 
 export const customIndicatorDemo = String.raw`
 function CustomIndicatorDemo() {
-  const ToggleLabel = ({ active }) => (
-    <span aria-hidden="true" className="inline-flex h-full w-full items-center justify-center whitespace-nowrap">
-      <span className="text-[7px] font-semibold leading-none tracking-[0.08em] text-static-white">{active ? 'ON' : 'OFF'}</span>
+  const SliderThumb = ({ active }) => (
+    <span
+      aria-hidden="true"
+      className="inline-flex h-full w-full items-center justify-center whitespace-nowrap transition-transform duration-200"
+    >
+      {active ? <CheckIconOutlinedRounded width={20} height={20} /> : <BlockIconOutlinedRounded width={20} height={20} />}
     </span>
   );
 
@@ -195,8 +207,8 @@ function CustomIndicatorDemo() {
         <Switch defaultChecked variant="success">
           <Switch.Indicator>
             {({ checked }) => (
-              <span data-slot="thumb" className="inline-flex h-full w-full items-center justify-center">
-                <ToggleLabel active={checked} />
+              <span data-slot="thumb" className="tk-toggle-thumb inline-flex items-center justify-center">
+                <SliderThumb active={checked} />
               </span>
             )}
           </Switch.Indicator>
@@ -280,7 +292,7 @@ render(<SwitchFormDemo />);
 
 `Switch` lets users turn a single setting on or off, especially for preferences,
 permissions, and form options. The root owns visual state (`size`, `variant`,
-plus inherited `invalid` / `disabled` / `required` / `readOnly`),
+plus inherited `invalid` / `disabled` / `required` / `optional` / `readOnly`),
 `Switch.Indicator` is the track + sliding thumb. Wrap `Switch` in a `Field` to
 attach a label, description, or error message — the field-level state cascades
 into the switch automatically.
@@ -315,9 +327,9 @@ import { Field, Switch } from '@takeoff-ui/react-spar';
 ## Using with `Field`
 
 `Field` is the generic ARIA wrapper. Setting `invalid`, `disabled`, `required`,
-or `readOnly` on `Field` cascades into the nested `Switch`, and `Field.Label`,
-`Field.Description`, and `Field.ErrorMessage` are wired to the switch through
-shared IDs.
+`optional`, or `readOnly` on `Field` cascades into the nested `Switch`, and
+`Field.Label`, `Field.Description`, and `Field.ErrorMessage` are wired to the
+switch through shared IDs.
 
 <LiveCode
   code={fieldWithSwitchDemo}
@@ -435,7 +447,7 @@ for primitive behavior.
 | <ApiBadge label="variant" />    | <code><a href="#switch-td-switchvariant">SwitchVariant</a></code>                                                                 | 'info'  | Color variant used while checked.                                                                              |
 | <ApiBadge label="invalid" />    | <code>boolean</code>                                                                                                              | false   | Marks the switch as visually invalid. Inherited from `<Field>` automatically; pass this prop only to override. |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;<a href="#switch-td-switchslot">SwitchSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                 |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;<a href="#switch-td-switchslot">SwitchSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>       | -       | Per-slot HTML attribute overrides.                                                                             |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;<a href="#switch-td-switchslot">SwitchSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                             |
 | <ApiBadge label="className" />  | <code>string</code>                                                                                                               | -       | Appends custom classes to the root slot of this part.                                                          |
 
 #### Data attributes {#switch-data-attributes}

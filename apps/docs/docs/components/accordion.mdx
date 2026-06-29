@@ -15,8 +15,15 @@ import {
   ReactSparDemoRoot,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
+import { AddIconOutlinedRounded } from '@takeoff-icons/react/add';
+import { RemoveIconOutlinedRounded } from '@takeoff-icons/react/remove';
 
-export const accordionScope = { Accordion, Badge };
+export const accordionScope = {
+  Accordion,
+  AddIconOutlinedRounded,
+  Badge,
+  RemoveIconOutlinedRounded,
+};
 
 {/* prettier-ignore-start */}
 
@@ -147,43 +154,12 @@ render(<ControlledAccordionDemo />);
 
 export const customIndicatorDemo = String.raw`
 function CustomIndicatorDemo() {
-  const PlusIcon = () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-
-  const MinusIcon = () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-
   return (
     <Accordion className="w-full max-w-90" defaultValue="service" size="large">
       <Accordion.Item value="service">
         <Accordion.Header level={2}>
           <Accordion.Trigger>
-            <Accordion.Indicator>{({ isOpen }) => (isOpen ? <MinusIcon /> : <PlusIcon />)}</Accordion.Indicator>
+            <Accordion.Indicator>{({ isOpen }) => (isOpen ? <RemoveIconOutlinedRounded /> : <AddIconOutlinedRounded />)}</Accordion.Indicator>
             Service options
           </Accordion.Trigger>
         </Accordion.Header>
@@ -196,7 +172,7 @@ function CustomIndicatorDemo() {
       <Accordion.Item value="support">
         <Accordion.Header level={2}>
           <Accordion.Trigger>
-            <Accordion.Indicator>{({ isOpen }) => (isOpen ? <MinusIcon /> : <PlusIcon />)}</Accordion.Indicator>
+            <Accordion.Indicator>{({ isOpen }) => (isOpen ? <RemoveIconOutlinedRounded /> : <AddIconOutlinedRounded />)}</Accordion.Indicator>
             Support channels
           </Accordion.Trigger>
         </Accordion.Header>
@@ -430,21 +406,21 @@ for primitive behavior.
 
 #### Props {#accordion-props}
 
-| Name                              | Type                                                                                 | Default    | Description                                                                                                                                                |
-| --------------------------------- | ------------------------------------------------------------------------------------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                         | -          | `Accordion.Item` elements rendered inside the disclosure container.                                                                                        |
-| <ApiBadge label="type" />         | <code><a href="#accordion-td-accordiontype">AccordionType</a></code>                 | 'grouped'  | Visual grouping.                                                                                                                                           |
-| <ApiBadge label="mode" />         | <code><a href="#accordion-td-accordionmode">AccordionMode</a></code>                 | 'default'  | Density mode. Pairs with any `AccordionType`.                                                                                                              |
-| <ApiBadge label="size" />         | <code><a href="#accordion-td-accordionsize">AccordionSize</a></code>                 | 'base'     | Size scale.                                                                                                                                                |
-| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                             | -          | Per-slot class name overrides.                                                                                                                             |
-| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>  | -          | Per-slot HTML attribute overrides.                                                                                                                         |
-| <ApiBadge label="defaultValue" /> | <code><a href="#accordion-td-accordioncurrentvalue">AccordionCurrentValue</a></code> | -          | Uncontrolled initial item identifier(s). Used only on mount.                                                                                               |
-| <ApiBadge label="multiple" />     | <code>boolean</code>                                                                 | false      | When `true`, multiple items can be expanded at once.                                                                                                       |
-| <ApiBadge label="value" />        | <code><a href="#accordion-td-accordioncurrentvalue">AccordionCurrentValue</a></code> | -          | Controlled item identifier(s). Match the `value` of the items that should be expanded.                                                                     |
-| <ApiBadge label="collapsible" />  | <code>boolean</code>                                                                 | true       | In single mode, when `true`, an active item can be collapsed by clicking it again. When `false`, one item is always expanded. Has no effect in multi mode. |
-| <ApiBadge label="disabled" />     | <code>boolean</code>                                                                 | false      | Disables every item in the accordion.                                                                                                                      |
-| <ApiBadge label="orientation" />  | <code><a href="#accordion-td-orientation">Orientation</a></code>                     | 'vertical' | Orientation for keyboard navigation.                                                                                                                       |
-| <ApiBadge label="className" />    | <code>string</code>                                                                  | -          | Appends custom classes to the root slot of this part.                                                                                                      |
+| Name                              | Type                                                                                      | Default    | Description                                                                                                                                                |
+| --------------------------------- | ----------------------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                              | -          | `Accordion.Item` elements rendered inside the disclosure container.                                                                                        |
+| <ApiBadge label="type" />         | <code><a href="#accordion-td-accordiontype">AccordionType</a></code>                      | 'grouped'  | Visual grouping.                                                                                                                                           |
+| <ApiBadge label="mode" />         | <code><a href="#accordion-td-accordionmode">AccordionMode</a></code>                      | 'default'  | Density mode. Pairs with any `AccordionType`.                                                                                                              |
+| <ApiBadge label="size" />         | <code><a href="#accordion-td-accordionsize">AccordionSize</a></code>                      | 'base'     | Size scale.                                                                                                                                                |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -          | Per-slot class name overrides.                                                                                                                             |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -          | Per-slot HTML attribute overrides.                                                                                                                         |
+| <ApiBadge label="defaultValue" /> | <code><a href="#accordion-td-accordioncurrentvalue">AccordionCurrentValue</a></code>      | -          | Uncontrolled initial item identifier(s). Used only on mount.                                                                                               |
+| <ApiBadge label="multiple" />     | <code>boolean</code>                                                                      | false      | When `true`, multiple items can be expanded at once.                                                                                                       |
+| <ApiBadge label="value" />        | <code><a href="#accordion-td-accordioncurrentvalue">AccordionCurrentValue</a></code>      | -          | Controlled item identifier(s). Match the `value` of the items that should be expanded.                                                                     |
+| <ApiBadge label="collapsible" />  | <code>boolean</code>                                                                      | true       | In single mode, when `true`, an active item can be collapsed by clicking it again. When `false`, one item is always expanded. Has no effect in multi mode. |
+| <ApiBadge label="disabled" />     | <code>boolean</code>                                                                      | false      | Disables every item in the accordion.                                                                                                                      |
+| <ApiBadge label="orientation" />  | <code><a href="#accordion-td-orientation">Orientation</a></code>                          | 'vertical' | Orientation for keyboard navigation.                                                                                                                       |
+| <ApiBadge label="className" />    | <code>string</code>                                                                       | -          | Appends custom classes to the root slot of this part.                                                                                                      |
 
 #### Events {#accordion-events}
 
@@ -468,14 +444,14 @@ for primitive behavior.
 
 #### Props {#accordion-item-props}
 
-| Name                            | Type                                                                                | Default | Description                                                                |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | `Accordion.Header` and `Accordion.Content` elements that compose the item. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                             |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                         |
-| <ApiBadge label="value" />      | <code><a href="#accordion-td-accordionvalue">AccordionValue</a></code>              | -       | Stable identity for this item.                                             |
-| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                | false   | Disables this item.                                                        |
-| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.                      |
+| Name                            | Type                                                                                      | Default | Description                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -       | `Accordion.Header` and `Accordion.Content` elements that compose the item. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                             |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                         |
+| <ApiBadge label="value" />      | <code><a href="#accordion-td-accordionvalue">AccordionValue</a></code>                    | -       | Stable identity for this item.                                             |
+| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                      | false   | Disables this item.                                                        |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.                      |
 
 #### Data attributes {#accordion-item-data-attributes}
 
@@ -496,13 +472,13 @@ for primitive behavior.
 
 #### Props {#accordion-header-props}
 
-| Name                            | Type                                                                                | Default | Description                                                  |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------ |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | `Accordion.Trigger` element rendered inside the heading tag. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                               |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                           |
-| <ApiBadge label="level" />      | <code>number</code>                                                                 | 3       | Heading level (1-6) for document hierarchy                   |
-| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part.        |
+| Name                            | Type                                                                                      | Default | Description                                                  |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------ |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -       | `Accordion.Trigger` element rendered inside the heading tag. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                               |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                           |
+| <ApiBadge label="level" />      | <code>number</code>                                                                       | 3       | Heading level (1-6) for document hierarchy                   |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.        |
 
 #### Data attributes {#accordion-header-data-attributes}
 
@@ -520,13 +496,13 @@ for primitive behavior.
 
 #### Props {#accordion-trigger-props}
 
-| Name                              | Type                                                                                                                                               | Default | Description                                                                                                                                                                            |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                                                                       | -       | Accessible label for the trigger button.                                                                                                                                               |
-| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                                                                       | -       | Leading content rendered before the title — typically an icon, but accepts any node. The wrapper element (class + `data-slot`) is invariant; only the inner node is consumer-supplied. |
-| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#accordion-td-accordiontriggerslot">AccordionTriggerSlot</a>, string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                                                                                                                                         |
-| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#accordion-td-accordiontriggerslot">AccordionTriggerSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                     |
-| <ApiBadge label="className" />    | <code>string</code>                                                                                                                                | -       | Appends custom classes to the root slot of this part.                                                                                                                                  |
+| Name                              | Type                                                                                                                                                     | Default | Description                                                                                                                                                                            |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                                                                             | -       | Accessible label for the trigger button.                                                                                                                                               |
+| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                                                                             | -       | Leading content rendered before the title — typically an icon, but accepts any node. The wrapper element (class + `data-slot`) is invariant; only the inner node is consumer-supplied. |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#accordion-td-accordiontriggerslot">AccordionTriggerSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                                         |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#accordion-td-accordiontriggerslot">AccordionTriggerSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                     |
+| <ApiBadge label="className" />    | <code>string</code>                                                                                                                                      | -       | Appends custom classes to the root slot of this part.                                                                                                                                  |
 
 #### Data attributes {#accordion-trigger-data-attributes}
 
@@ -544,13 +520,13 @@ for primitive behavior.
 
 #### Props {#accordion-content-props}
 
-| Name                            | Type                                                                                | Default | Description                                           |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | ----------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -       | Panel body. Animated open/closed by Spar.             |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                        |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                    |
-| <ApiBadge label="forceMount" /> | <code>boolean</code>                                                                | false   | Force content to remain mounted when closed           |
-| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot of this part. |
+| Name                            | Type                                                                                      | Default | Description                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -       | Panel body. Animated open/closed by Spar.             |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                        |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                    |
+| <ApiBadge label="forceMount" /> | <code>boolean</code>                                                                      | false   | Force content to remain mounted when closed           |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part. |
 
 #### Events {#accordion-content-events}
 

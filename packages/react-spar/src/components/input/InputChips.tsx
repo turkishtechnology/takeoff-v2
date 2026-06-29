@@ -1,0 +1,112 @@
+import { useCallback, useEffect, useRef, type ElementType } from 'react';
+import { useInputContext } from '@turkish-technology/spar';
+
+import { composeRootAttrs } from '../../core';
+import { useComponentTheme } from '../../provider';
+import { useControllableState } from '../../hooks';
+import { Chip } from '../chip';
+
+import { InputChipsBase } from './base';
+import { useInputOwnContext } from './context';
+import { setNativeValue } from './dom';
+import type { InputChipsProps } from './types';
+
+export const InputChips = <T extends ElementType = 'div'>(props: InputChipsProps<T>) => {
+  const theme = useComponentTheme('InputChips');
+  const { disabled, readOnly } = useInputContext();
+  const { size, fieldNode, setClearable } = useInputOwnContext('Input.Chips');
+
+  const { rootAttrs, rest } = composeRootAttrs(InputChipsBase, props as InputChipsProps<'div'>, theme);
+
+  const { as, value, defaultValue, onValueChange, separator, max, allowDuplicates = false, children, ref, ...rendered } = rest;
+  const Component = (as ?? 'div') as ElementType;
+
+  const [chips = [], setChips] = useControllableState<string[]>(value, defaultValue ?? [], onValueChange);
+
+  const addChip = useCallback(
+    (raw: string) => {
+      if (disabled || readOnly) return;
+      const label = raw.trim();
+      if (!label) return;
+      if (max !== undefined && chips.length >= max) return;
+      if (!allowDuplicates && chips.includes(label)) return;
+      setChips([...chips, label]);
+    },
+    [chips, disabled, readOnly, max, allowDuplicates, setChips],
+  );
+
+  const removeChip = useCallback(
+    (index: number) => {
+      if (disabled || readOnly) return;
+      setChips(chips.filter((_, i) => i !== index));
+    },
+    [chips, disabled, readOnly, setChips],
+  );
+
+  const removeLast = useCallback(() => {
+    if (disabled || readOnly || chips.length === 0) return;
+    setChips(chips.slice(0, -1));
+  }, [chips, disabled, readOnly, setChips]);
+
+  // Register with the Input so a sibling Input.ClearButton stays visible while
+  // there are chips and clears them (along with the typed text) in one click.
+  const clearId = useRef(Symbol('input-chips')).current;
+  const clearAll = useCallback(() => {
+    if (disabled || readOnly) return;
+    setChips([]);
+  }, [disabled, readOnly, setChips]);
+  useEffect(() => {
+    setClearable(clearId, { hasContent: chips.length > 0, clear: clearAll });
+    return () => setClearable(clearId, null);
+  }, [clearId, chips.length, clearAll, setClearable]);
+
+  useEffect(() => {
+    const field = fieldNode;
+    if (!field) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Ignore keystrokes while an IME composition is active — e.g. pressing
+      // Enter to confirm a CJK candidate must not commit a half-composed chip.
+      if (event.isComposing) return;
+      if (event.key === 'Enter' || (separator && event.key === separator)) {
+        if (!field.value.trim()) return;
+        event.preventDefault();
+        addChip(field.value);
+        setNativeValue(field, '');
+      } else if (event.key === 'Backspace' && field.value === '') {
+        removeLast();
+      }
+    };
+    field.addEventListener('keydown', handleKeyDown as EventListener);
+    return () => field.removeEventListener('keydown', handleKeyDown as EventListener);
+  }, [fieldNode, addChip, removeLast, separator]);
+
+  return (
+    <Component {...rendered} ref={ref} {...rootAttrs}>
+      {chips.map((chip, index) => (
+        // Render the shared Chip token in the input's neutral/outlined parity
+        // look. `autoDismiss={false}` because Input.Chips owns the tag array —
+        // removal must flow through onRemove into our state, not the chip's own.
+        <Chip
+          key={`${chip}-${index}`}
+          appearance="outlined"
+          variant="neutral"
+          size={size}
+          removable={!disabled && !readOnly}
+          disabled={disabled || readOnly}
+          autoDismiss={false}
+          // Give each remove button a tag-specific accessible name (e.g.
+          // "Remove apple"). Chip exposes no `removeLabel` prop; its remove
+          // <button> reads `aria-label` from `slotProps.remove`, which is
+          // spread after the default so it overrides it.
+          slotProps={{ remove: { 'aria-label': `Remove ${chip}` } }}
+          onRemove={() => removeChip(index)}
+        >
+          {chip}
+        </Chip>
+      ))}
+      {children}
+    </Component>
+  );
+};
+
+InputChips.displayName = 'Input.Chips';

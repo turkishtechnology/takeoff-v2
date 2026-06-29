@@ -1,4 +1,4 @@
-import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { buildSlotAttrs, composeRootAttrs, isRenderableNode } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { BadgeBase } from './base';
@@ -40,9 +40,9 @@ export const Badge = (props: BadgeProps) => {
 
   return (
     <span {...nativeProps} {...rootAttrs} ref={ref}>
-      {startContent && <span {...iconSlotAttrs}>{startContent}</span>}
-      {children && <span {...labelSlotAttrs}>{children}</span>}
-      {endContent && <span {...iconSlotAttrs}>{endContent}</span>}
+      {isRenderableNode(startContent) && <span {...iconSlotAttrs}>{startContent}</span>}
+      {isRenderableNode(children) && <span {...labelSlotAttrs}>{children}</span>}
+      {isRenderableNode(endContent) && <span {...iconSlotAttrs}>{endContent}</span>}
     </span>
   );
 };

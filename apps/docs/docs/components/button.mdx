@@ -11,8 +11,14 @@ slug: /components/button
 import LiveCode from '@site/src/components/LiveCode';
 import { Button, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
+import { ArrowRightIconOutlinedRounded } from '@takeoff-icons/react/arrow-right';
+import { StarIconOutlinedRounded } from '@takeoff-icons/react/star';
 
-export const buttonScope = { Button };
+export const buttonScope = {
+  ArrowRightIconOutlinedRounded,
+  Button,
+  StarIconOutlinedRounded,
+};
 
 {/* prettier-ignore-start */}
 
@@ -133,44 +139,14 @@ render(<ToggleButtonDemo />);
 
 export const iconsDemo = String.raw`
 function IconsDemo() {
-  const StarIcon = () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.77 4.29 12.9l.71-4.12-3-2.93 4.15-.6L8 1.5z" />
-    </svg>
-  );
-
-  const ArrowIcon = () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 8h10M9 4l4 4-4 4" />
-    </svg>
-  );
-
   return (
     <div className="flex flex-wrap justify-center gap-3">
-      <Button startContent={<StarIcon />}>Favorite</Button>
-      <Button endContent={<ArrowIcon />}>Continue</Button>
-      <Button startContent={<StarIcon />} endContent={<ArrowIcon />}>
+      <Button startContent={<StarIconOutlinedRounded />}>Favorite</Button>
+      <Button endContent={<ArrowRightIconOutlinedRounded />}>Continue</Button>
+      <Button startContent={<StarIconOutlinedRounded />} endContent={<ArrowRightIconOutlinedRounded />}>
         Both
       </Button>
-      <Button startContent={<StarIcon />} rounded />
+      <Button startContent={<StarIconOutlinedRounded />} rounded />
     </div>
   );
 }
@@ -303,20 +279,20 @@ for primitive behavior.
 
 #### Props {#button-props}
 
-| Name                              | Type                                                                                                                        | Default   | Description                                                                                                                         |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                                                | -         | Button label content.                                                                                                               |
-| <ApiBadge label="variant" />      | <code><a href="#button-td-buttonvariant">ButtonVariant</a></code>                                                           | 'primary' | Color variant.                                                                                                                      |
-| <ApiBadge label="appearance" />   | <code><a href="#button-td-buttonappearance">ButtonAppearance</a></code>                                                     | 'filled'  | Visual appearance.                                                                                                                  |
-| <ApiBadge label="size" />         | <code><a href="#button-td-buttonsize">ButtonSize</a></code>                                                                 | 'base'    | Size scale.                                                                                                                         |
-| <ApiBadge label="rounded" />      | <code>boolean</code>                                                                                                        | false     | Renders a pill-shaped (circular) button. Ideal for icon-only actions.                                                               |
-| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                                                | -         | Content rendered before children — typically an icon, but accepts any node (spinner, badge, kbd, etc.). Wrapped in the `icon` slot. |
-| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                                                | -         | Content rendered after children. Same shape as `startContent`.                                                                      |
-| <ApiBadge label="loading" />      | <code>boolean</code>                                                                                                        | -         | Whether the button shows a loading spinner.                                                                                         |
-| <ApiBadge label="pressed" />      | <code>boolean</code>                                                                                                        | -         | Whether the button is pressed. When defined, creates a toggle button.                                                               |
-| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#button-td-buttonslot">ButtonSlot</a>, string&gt;&gt;</code>                            | -         | Per-slot extra classes.                                                                                                             |
-| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#button-td-buttonslot">ButtonSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                                                                                  |
-| <ApiBadge label="className" />    | <code>string</code>                                                                                                         | -         | Appends custom classes to the root slot of this part.                                                                               |
+| Name                              | Type                                                                                                                              | Default   | Description                                                                                                                         |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                                                      | -         | Button label content.                                                                                                               |
+| <ApiBadge label="variant" />      | <code><a href="#button-td-buttonvariant">ButtonVariant</a></code>                                                                 | 'primary' | Color variant.                                                                                                                      |
+| <ApiBadge label="appearance" />   | <code><a href="#button-td-buttonappearance">ButtonAppearance</a></code>                                                           | 'filled'  | Visual appearance.                                                                                                                  |
+| <ApiBadge label="size" />         | <code><a href="#button-td-buttonsize">ButtonSize</a></code>                                                                       | 'base'    | Size scale.                                                                                                                         |
+| <ApiBadge label="rounded" />      | <code>boolean</code>                                                                                                              | false     | Renders a pill-shaped (circular) button. Ideal for icon-only actions.                                                               |
+| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                                                      | -         | Content rendered before children — typically an icon, but accepts any node (spinner, badge, kbd, etc.). Wrapped in the `icon` slot. |
+| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                                                      | -         | Content rendered after children. Same shape as `startContent`.                                                                      |
+| <ApiBadge label="loading" />      | <code>boolean</code>                                                                                                              | -         | Whether the button shows a loading spinner.                                                                                         |
+| <ApiBadge label="pressed" />      | <code>boolean</code>                                                                                                              | -         | Whether the button is pressed. When defined, creates a toggle button.                                                               |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#button-td-buttonslot">ButtonSlot</a>, string&gt;&gt;</code>                                  | -         | Per-slot extra classes.                                                                                                             |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#button-td-buttonslot">ButtonSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                                                                                  |
+| <ApiBadge label="className" />    | <code>string</code>                                                                                                               | -         | Appends custom classes to the root slot of this part.                                                                               |
 
 #### Events {#button-events}
 

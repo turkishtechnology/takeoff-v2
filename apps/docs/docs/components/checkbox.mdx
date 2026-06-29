@@ -17,8 +17,15 @@ import {
   ReactSparDemoRoot,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
+import { StarIconOutlinedRounded } from '@takeoff-icons/react/star';
 
-export const checkboxScope = { Badge, Button, Checkbox, Field };
+export const checkboxScope = {
+  Badge,
+  Button,
+  Checkbox,
+  Field,
+  StarIconOutlinedRounded,
+};
 
 {/* prettier-ignore-start */}
 
@@ -184,25 +191,13 @@ render(<SizeDemo />);
 
 export const customIconDemo = String.raw`
 function CustomIconDemo() {
-  const StarIcon = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2 15 9l7 .5-5.5 4.5L18 22l-6-4-6 4 1.5-8L2 9.5 9 9z" />
-    </svg>
-  );
-
-  const DashIcon = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-      <path d="M5 12h14" />
-    </svg>
-  );
-
   return (
     <div className="grid gap-3">
       <Field>
         <Field.Label>Favorite this route</Field.Label>
         <Checkbox defaultChecked>
           <Checkbox.Indicator>
-            {({ checked, indeterminate }) => (indeterminate ? <DashIcon /> : checked ? <StarIcon /> : null)}
+            {({ checked }) => (checked ? <StarIconOutlinedRounded /> : null)}
           </Checkbox.Indicator>
         </Checkbox>
       </Field>
@@ -299,10 +294,10 @@ render(<CheckboxFormDemo />);
 # Checkbox
 
 `Checkbox` is a compound, accessible toggle control. The root owns visual state
-(`size`, plus inherited `invalid` / `disabled` / `required` / `readOnly`), and
-`Checkbox.Indicator` is the bordered box that hosts the icon. Wrap `Checkbox` in
-a `Field` to attach a form-level label, description, or error message — the
-field-level state cascades into the checkbox automatically.
+(`size`, plus inherited `invalid` / `disabled` / `required` / `optional` /
+`readOnly`), and `Checkbox.Indicator` is the bordered box that hosts the icon.
+Wrap `Checkbox` in a `Field` to attach a form-level label, description, or error
+message — the field-level state cascades into the checkbox automatically.
 
 ## Usage
 
@@ -334,9 +329,9 @@ import { Checkbox, Field } from '@takeoff-ui/react-spar';
 ## Using with `Field`
 
 `Field` is the generic ARIA wrapper. Setting `invalid`, `disabled`, `required`,
-or `readOnly` on `Field` cascades into the nested `Checkbox`, and `Field.Label`,
-`Field.Description`, and `Field.ErrorMessage` are wired to the field control
-through shared IDs.
+`optional`, or `readOnly` on `Field` cascades into the nested `Checkbox`, and
+`Field.Label`, `Field.Description`, and `Field.ErrorMessage` are wired to the
+field control through shared IDs.
 
 <LiveCode
   code={fieldWithCheckboxDemo}
@@ -458,7 +453,7 @@ for primitive behavior.
 | <ApiBadge label="invalid" />       | <code>boolean</code>                                                                                                                    | false   | Marks the checkbox as visually invalid.                                                                             |
 | <ApiBadge label="size" />          | <code><a href="#checkbox-td-checkboxsize">CheckboxSize</a></code>                                                                       | 'base'  | Size scale.                                                                                                         |
 | <ApiBadge label="classNames" />    | <code>Partial&lt;Record&lt;<a href="#checkbox-td-checkboxslot">CheckboxSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                      |
-| <ApiBadge label="slotProps" />     | <code>Partial&lt;Record&lt;<a href="#checkbox-td-checkboxslot">CheckboxSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>       | -       | Per-slot HTML attribute overrides.                                                                                  |
+| <ApiBadge label="slotProps" />     | <code>Partial&lt;Record&lt;<a href="#checkbox-td-checkboxslot">CheckboxSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                  |
 | <ApiBadge label="className" />     | <code>string</code>                                                                                                                     | -       | Appends custom classes to the root slot of this part.                                                               |
 
 #### Data attributes {#checkbox-data-attributes}

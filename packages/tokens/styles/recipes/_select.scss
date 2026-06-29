@@ -24,7 +24,7 @@
   position: relative;
   display: inline-flex;
   width: 100%;
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
 }
 
 // ---------------------------------------------------------------------------
@@ -127,11 +127,37 @@
 }
 
 // ---------------------------------------------------------------------------
+// Indicator — trailing disclosure chevron inside the trigger. Shared by the
+// built-in `Select.Trigger` indicator and the standalone `Select.Indicator`
+// part (both render inside `.tk-select-trigger`). Mirrors the Accordion
+// indicator's visual language: flips to the primary color while open.
+// ---------------------------------------------------------------------------
+
+@mixin select-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+  // Takeoff icons render at `1em`; pin the box to 16px so the chevron stays a
+  // stable size independent of the trigger's text scale.
+  font-size: 1rem;
+  color: var(--text-dark);
+  transition: color 0.2s ease-in-out;
+}
+
+// Open-state color hook. The indicator sits inside the trigger button, which
+// carries Spar's `data-state="open"` — so this targets both entry points.
+@mixin select-trigger-open-indicator {
+  color: var(--primary-base);
+}
+
+// ---------------------------------------------------------------------------
 // Content — portalled dropdown panel.
 // ---------------------------------------------------------------------------
 
 @mixin select-content {
-  font-family: var(--family-body, 'Geologica', sans-serif);
+  font-family: var(--family-body, 'tk-text', sans-serif);
   z-index: 800;
   display: flex;
   flex-direction: column;

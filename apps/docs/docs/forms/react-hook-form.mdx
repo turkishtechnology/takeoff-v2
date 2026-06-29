@@ -64,14 +64,12 @@ function BookingRequestDemo() {
           <Field invalid={fieldState.invalid} required>
             <Field.Label>Request title</Field.Label>
             <Input>
-              <Input.Container>
-                <Input.Field
-                  {...field}
-                  aria-invalid={fieldState.invalid}
-                  placeholder="Change return flight"
-                  autoComplete="off"
-                />
-              </Input.Container>
+              <Input.Field
+                {...field}
+                aria-invalid={fieldState.invalid}
+                placeholder="Change return flight"
+                autoComplete="off"
+              />
             </Input>
             {fieldState.invalid ? (
               <Field.ErrorMessage>{fieldState.error?.message}</Field.ErrorMessage>
@@ -179,25 +177,23 @@ function PassengerArrayDemo() {
               <Field invalid={fieldState.invalid} required>
                 <Field.Label>Passenger {index + 1}</Field.Label>
                 <Input>
-                  <Input.Container>
-                    <Input.Field
-                      {...field}
-                      aria-invalid={fieldState.invalid}
-                      autoComplete="name"
-                      placeholder="Ada Lovelace"
-                    />
-                    <Input.Suffix>
-                      <button
-                        type="button"
-                        aria-label={canRemove ? 'Remove passenger ' + (index + 1) : 'At least one passenger is required'}
-                        disabled={!canRemove}
-                        onClick={() => remove(index)}
-                        className="inline-flex h-5 w-5 justify-center"
-                      >
-                        x
-                      </button>
-                    </Input.Suffix>
-                  </Input.Container>
+                  <Input.Field
+                    {...field}
+                    aria-invalid={fieldState.invalid}
+                    autoComplete="name"
+                    placeholder="Ada Lovelace"
+                  />
+                  <Input.Suffix>
+                    <button
+                      type="button"
+                      aria-label={canRemove ? 'Remove passenger ' + (index + 1) : 'At least one passenger is required'}
+                      disabled={!canRemove}
+                      onClick={() => remove(index)}
+                      className="inline-flex h-5 w-5 justify-center"
+                    >
+                      x
+                    </button>
+                  </Input.Suffix>
                 </Input>
                 {fieldState.invalid ? <Field.ErrorMessage>{fieldState.error?.message}</Field.ErrorMessage> : null}
               </Field>
@@ -276,14 +272,12 @@ function gives you a clear place to map form state into Takeoff props.
     <Field invalid={fieldState.invalid} required>
       <Field.Label>Request title</Field.Label>
       <Input>
-        <Input.Container>
-          <Input.Field
-            {...field}
-            aria-invalid={fieldState.invalid}
-            placeholder="Change return flight"
-            autoComplete="off"
-          />
-        </Input.Container>
+        <Input.Field
+          {...field}
+          aria-invalid={fieldState.invalid}
+          placeholder="Change return flight"
+          autoComplete="off"
+        />
       </Input>
       <Field.Description>Use a short, specific title.</Field.Description>
       {fieldState.invalid ? (
@@ -379,13 +373,11 @@ export function BookingRequestForm() {
           <Field invalid={fieldState.invalid} required>
             <Field.Label>Request title</Field.Label>
             <Input>
-              <Input.Container>
-                <Input.Field
-                  {...field}
-                  aria-invalid={fieldState.invalid}
-                  autoComplete="off"
-                />
-              </Input.Container>
+              <Input.Field
+                {...field}
+                aria-invalid={fieldState.invalid}
+                autoComplete="off"
+              />
             </Input>
             {fieldState.invalid ? (
               <Field.ErrorMessage>
@@ -518,9 +510,7 @@ Display errors next to the field they belong to. For styling and accessibility:
     <Field invalid={fieldState.invalid}>
       <Field.Label>Request title</Field.Label>
       <Input>
-        <Input.Container>
-          <Input.Field {...field} aria-invalid={fieldState.invalid} />
-        </Input.Container>
+        <Input.Field {...field} aria-invalid={fieldState.invalid} />
       </Input>
       {fieldState.invalid ? (
         <Field.ErrorMessage>{fieldState.error?.message}</Field.ErrorMessage>

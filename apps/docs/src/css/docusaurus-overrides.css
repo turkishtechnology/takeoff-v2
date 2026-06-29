@@ -31,8 +31,8 @@
   --ifm-z-index-overlay: 1000;
 
   /* Typography */
-  --ifm-font-family-base: 'Geologica', sans-serif;
-  --ifm-heading-font-family: 'Geologica', sans-serif;
+  --ifm-font-family-base: var(--family-body, 'tk-text', sans-serif);
+  --ifm-heading-font-family: var(--family-title, 'tk-display', sans-serif);
   --ifm-heading-color: var(--text-darkest);
   --ifm-heading-font-weight: 400;
 
@@ -270,7 +270,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-weight: 600;
   font-size: 15px;
   letter-spacing: -0.2px;
@@ -278,7 +278,7 @@
 }
 
 .navbar__title {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-weight: 600;
   font-size: 15px;
   letter-spacing: -0.2px;
@@ -302,7 +302,7 @@
 }
 
 .navbar__link {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 14px;
   font-weight: 400;
   padding: 6px 2px;
@@ -455,7 +455,7 @@
   gap: 6px;
   padding: 8px 14px !important;
   border-radius: 8px;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-weight: 500;
   font-size: 13px;
   text-decoration: none !important;
@@ -723,6 +723,16 @@ a.breadcrumbs__link {
   line-height: 1.65;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
 /* Inline code */
 .theme-doc-markdown code:not(pre code) {
   background: none;
@@ -775,7 +785,11 @@ pre,
 
 /* --- Tables -------------------------------------------------------------- */
 
-.theme-doc-markdown table {
+.tk-table-table {
+  margin-bottom: 0;
+}
+
+.theme-doc-markdown table:not(.tk-table-table) {
   background: var(--docs-surface-1);
   border: 1px solid var(--docs-border-subtle);
   border-radius: 10px;
@@ -787,13 +801,13 @@ pre,
   word-break: break-word;
 }
 
-.theme-doc-markdown th,
-.theme-doc-markdown td {
+.theme-doc-markdown table:not(.tk-table-table) th,
+.theme-doc-markdown table:not(.tk-table-table) td {
   overflow-wrap: break-word;
   word-break: break-word;
 }
 
-.theme-doc-markdown th {
+.theme-doc-markdown table:not(.tk-table-table) th {
   background: var(--docs-surface-2);
   color: var(--docs-ink-strong);
   font-family: var(--docs-mono-family);
@@ -804,11 +818,11 @@ pre,
   border-bottom: 1px solid var(--docs-border-subtle);
 }
 
-.theme-doc-markdown td {
+.theme-doc-markdown table:not(.tk-table-table) td {
   border-color: var(--docs-border-subtle);
 }
 
-[data-theme='dark'] .theme-doc-markdown tr:nth-child(even) {
+[data-theme='dark'] .theme-doc-markdown table:not(.tk-table-table) tr:nth-child(even) {
   background: rgba(23, 23, 29, 0.4);
 }
 
@@ -914,7 +928,7 @@ footer.footer {
 
 footer.footer .footer__title {
   color: var(--docs-ink-strong);
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.02em;

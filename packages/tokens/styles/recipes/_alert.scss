@@ -1,0 +1,178 @@
+// ---------------------------------------------------------------------------
+// Alert recipe — apply to `.tk-alert` root and its compound parts.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-alert             — root
+//   .tk-alert-content     — content stack
+//   .tk-alert-title       — heading
+//   .tk-alert-description — supporting text
+//   .tk-alert-actions     — action area
+//   .tk-alert-close       — close control
+//
+// State/variant attributes on root:
+//   data-variant     — success | warning | info | danger | neutral
+//   data-type        — appearance (filled | filledLight | outlined | gradient)
+// ---------------------------------------------------------------------------
+
+@use '../abstracts/mixins' as mixins;
+
+@mixin alert-variant($base-color, $sub-color, $light-color, $lightest-color, $gradient, $filled-text: var(--text-lightest), $outlined-border-color: $base-color) {
+  border-color: $sub-color;
+
+  &[data-type='filled'] {
+    color: $filled-text;
+    background: $base-color;
+    border-color: $base-color;
+  }
+
+  &[data-type='filledLight'] {
+    color: var(--text-darkest);
+    background: $lightest-color;
+  }
+
+  &[data-type='outlined'] {
+    color: var(--text-darkest);
+    background: var(--background-lightest);
+    border-color: $outlined-border-color;
+  }
+
+  &[data-type='gradient'] {
+    color: var(--text-darkest);
+    background: $gradient;
+  }
+}
+
+@mixin alert {
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  display: flex;
+  align-items: center;
+  gap: var(--alert-base-gap);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--alert-base-v-padding) var(--alert-base-h-padding);
+  border: 1px solid transparent;
+  border-radius: var(--alert-base-radius);
+  box-shadow: var(--effect-1-default-lg);
+
+  &[data-variant='success'] {
+    @include alert-variant(
+      var(--states-success-base),
+      var(--states-success-sub-base),
+      var(--states-success-light),
+      var(--states-success-lightest),
+      linear-gradient(270deg, var(--background-lightest, #f9fafc) 89%, var(--states-success-sub-base, #a0e6ba) 100%)
+    );
+  }
+
+  &[data-variant='warning'] {
+    @include alert-variant(
+      var(--states-warning-base),
+      var(--states-warning-sub-base),
+      var(--states-warning-light),
+      var(--states-warning-lightest),
+      linear-gradient(270deg, var(--background-lightest, #f9fafc) 89%, var(--states-warning-sub-base, #f6de95) 100%)
+    );
+  }
+
+  &[data-variant='info'] {
+    @include alert-variant(
+      var(--states-info-base),
+      var(--states-info-sub-base),
+      var(--states-info-light),
+      var(--states-info-lightest),
+      linear-gradient(270deg, var(--background-lightest, #f9fafc) 89%, var(--states-info-sub-base, #abc9fb) 100%)
+    );
+  }
+
+  &[data-variant='danger'] {
+    @include alert-variant(
+      var(--states-danger-base),
+      var(--states-danger-sub-base),
+      var(--states-danger-light),
+      var(--states-danger-lightest),
+      linear-gradient(270deg, var(--background-lightest, #f9fafc) 89%, var(--states-danger-sub-base, #ffaca7) 100%)
+    );
+  }
+
+  &[data-variant='neutral'] {
+    @include alert-variant(
+      var(--background-sub-base),
+      var(--border-sub-base),
+      var(--background-light),
+      var(--background-lightest),
+      linear-gradient(270deg, var(--background-lightest, #f9fafc) 89%, var(--background-sub-base, #cacfd8) 100%),
+      var(--text-darkest),
+      var(--border-sub-base)
+    );
+  }
+
+  &[data-type='filled']:not([data-variant='neutral']) {
+    .tk-alert-title,
+    .tk-alert-description,
+    .tk-alert-action {
+      color: var(--text-lightest);
+    }
+
+    .tk-alert-action:hover,
+    .tk-alert-close:hover {
+      background-color: var(--overlay-white-light);
+    }
+  }
+
+  .tk-alert-close {
+    color: inherit;
+  }
+}
+
+@mixin alert-content {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+}
+
+@mixin alert-title {
+  color: var(--text-darkest);
+  font-size: var(--desktop-body-s-size);
+  font-weight: 400;
+  line-height: var(--desktop-body-s-line-height);
+}
+
+@mixin alert-description {
+  color: var(--text-dark);
+  font-size: var(--desktop-body-xs-size);
+  font-weight: 300;
+  line-height: var(--desktop-body-xs-line-height);
+}
+
+@mixin alert-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--alert-base-content-gap, 8px);
+}
+
+@mixin alert-close {
+  display: inline-flex;
+  min-width: 32px;
+  min-height: 32px;
+  padding: var(--spacing-xs);
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: var(--radius-m-base);
+  background: transparent;
+  color: var(--icon-darkest);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease-in-out,
+    color 0.2s ease-in-out;
+
+  @include mixins.focus-ring(var(--neutral-focus));
+
+  &:hover {
+    background-color: var(--overlay-black-lightest);
+  }
+}

@@ -41,7 +41,7 @@
 }
 
 .title {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: clamp(32px, 4.2vw, 48px);
   line-height: 1.05;
   letter-spacing: -1px;
@@ -51,7 +51,7 @@
 }
 
 .lead {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 17px;
   line-height: 1.6;
   font-weight: 400;
@@ -127,7 +127,7 @@
 }
 
 .entryTitle {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: clamp(24px, 2.8vw, 32px);
   line-height: 1.18;
   letter-spacing: -0.5px;
@@ -137,7 +137,7 @@
 }
 
 .entrySummary {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 16px;
   line-height: 1.65;
   font-weight: 400;
@@ -177,7 +177,7 @@
 }
 
 .sectionTitle {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: 15px;
   font-weight: 500;
   line-height: 1.4;
@@ -198,7 +198,7 @@
 }
 
 .sectionItem {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 15px;
   line-height: 1.6;
   color: var(--runway-ink-dim);
@@ -311,7 +311,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 18px 2px;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 15px;
   font-weight: 500;
   line-height: 1.4;
@@ -371,7 +371,7 @@
   align-items: center;
   gap: 14px;
   padding: 18px 2px;
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 14px;
   font-weight: 500;
   line-height: 1.4;
@@ -448,7 +448,7 @@
 }
 
 .packageBodyHeading {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -458,7 +458,7 @@
 }
 
 .packageBodyParagraph {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 14px;
   line-height: 1.6;
   color: var(--runway-ink-dim);
@@ -475,7 +475,7 @@
 }
 
 .packageBodyItem {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 14px;
   line-height: 1.55;
   color: var(--runway-ink-dim);

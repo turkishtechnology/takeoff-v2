@@ -45,7 +45,7 @@
 }
 
 .title {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: clamp(32px, 4.5vw, 54px);
   line-height: 1.05;
   font-weight: 500;
@@ -60,7 +60,7 @@
 }
 
 .headBody {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 17px;
   line-height: 1.55;
   color: var(--runway-ink-dim, #b8b8c2);
@@ -117,18 +117,21 @@
   color: var(--runway-cardinal-bright, #ff1736);
 }
 
-.iconChip svg {
+.iconChip > svg {
   width: 22px;
   height: 22px;
+}
+
+.iconChip > .inlineIcon {
+  fill: none;
   stroke: currentColor;
   stroke-width: 1.5;
-  fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .cardTitle {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-title, 'tk-display', sans-serif);
   font-size: 20px;
   font-weight: 500;
   letter-spacing: -0.3px;
@@ -138,7 +141,7 @@
 }
 
 .cardBody {
-  font-family: 'Geologica', sans-serif;
+  font-family: var(--family-body, 'tk-text', sans-serif);
   font-size: 14px;
   line-height: 1.55;
   color: var(--runway-ink-dim, #b8b8c2);

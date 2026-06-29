@@ -74,12 +74,12 @@ authoring model. Concretely:
 - The root accepts **state props only**: variant/size/type/mode flags,
   controlled/uncontrolled value pairs, lifecycle callbacks, and native HTML
   attributes that target the root element.
-- Content, icons, descriptions, error messages, spinners, footers, masks, close
-  buttons, and every other structural or content-bearing piece live in
+- Content, icons, descriptions, error messages, spinners, footers, overlays,
+  close buttons, and every other structural or content-bearing piece live in
   **compound subcomponents** (`Root.Label`, `Root.LeadingIcon`, `Root.Icon`,
   `Root.Description`, `Root.ErrorMessage`, `Root.Spinner`, `Root.Header`,
-  `Root.Body`, `Root.Footer`, `Root.CloseButton`, `Root.Mask`, `Root.Panel`, and
-  so on).
+  `Root.Body`, `Root.Footer`, `Root.Close`, `Root.Overlay`, `Root.Panel`, and so
+  on).
 - Subcomponents share state with the root through **context**, not props. For
   example, `Input.Asterisk` only renders when `required` is true on the root;
   `Input.ErrorMessage` only renders when `invalid` is true; `Button.Spinner`
@@ -261,8 +261,8 @@ For every slot, classify it before exposing customization:
 - **decorative** — optional ornaments (icons, spinners, arrows). The
   subcomponent can be omitted entirely, or accept custom children.
 
-Typical structural subcomponents include `Root`, `Mask`, `Panel`, `Body`,
-`Header`, `Footer`, `CloseButton`, `Item`, `Trigger`.
+Typical structural subcomponents include `Root`, `Overlay`, `Panel`, `Body`,
+`Header`, `Footer`, `Close`, `Item`, `Trigger`.
 
 ### Base file responsibility
 
@@ -280,11 +280,11 @@ The compound-only baseline decides _that_ every component has compound parts.
 This section decides _what each part renders underneath_. Every compound part
 falls into exactly one of three archetypes:
 
-| Archetype             | When it applies                                                                             | Canonical example                                                                 |
-| --------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| **Inherited**         | The upstream Spar primitive already exports a part for this slot                            | `Input.Label` → `SparInputLabel`                                                  |
-| **React-enhancement** | No upstream part exists for this slot; the wrapper owns the DOM tag and styling hooks alone | `Button.Spinner`, `Input.Container`, `Dialog.SignIcon`                            |
-| **Bypass**            | An upstream part exists but the wrapper renders a plain tag for a specific, recorded reason | `Dialog.Mask` is the class to avoid; justified bypasses carry an inline rationale |
+| Archetype             | When it applies                                                                             | Canonical example                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| **Inherited**         | The upstream Spar primitive already exports a part for this slot                            | `Input.Label` → `SparInputLabel`                                                     |
+| **React-enhancement** | No upstream part exists for this slot; the wrapper owns the DOM tag and styling hooks alone | `Button.Spinner`, `Input.LeadingIcon`, `Dialog.SignIcon`                             |
+| **Bypass**            | An upstream part exists but the wrapper renders a plain tag for a specific, recorded reason | `Dialog.Overlay` is the class to avoid; justified bypasses carry an inline rationale |
 
 Classification happens at contract time, before implementation begins. A missing
 archetype classification is a contract blocker — see the
@@ -324,7 +324,7 @@ Canonical examples:
 - **Inherited root, mix of inherited + react-enhancement parts** — `Input` and
   `Dialog`. Upstream compound parts exist for semantic anchors (`Label`,
   `Title`, `Description`, `Field`, …) and are inherited; visual chrome parts
-  (`Container`, `LeadingIcon`, `SignIcon`, `Header`, …) are react-enhancement.
+  (`LeadingIcon`, `ClearButton`, `SignIcon`, `Header`, …) are react-enhancement.
 - **Compound-in-react over a leaf upstream** — `Button` and `Checkbox`.
   `SparButton` and `SparCheckbox` are leaves; every `.Label` / `.Icon` /
   `.Indicator` / `.Spinner` part is react-enhancement.

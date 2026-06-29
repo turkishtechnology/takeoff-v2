@@ -115,7 +115,8 @@ export default {
       propOverrides: {
         children: {
           type: 'React.ReactNode | ((state: SwitchIndicatorRenderProps) => React.ReactNode)',
-          description: 'Indicator content. When omitted, the built-in track + thumb anatomy is rendered. When a function, receives the current `checked` / `disabled` / `readOnly` state. A `ReactNode` replaces the default `thumb` slot entirely.',
+          description:
+            'Indicator content. When omitted, the built-in track + thumb anatomy is rendered. When a function, receives the current `checked` / `disabled` / `readOnly` state. A `ReactNode` replaces the default `thumb` slot entirely.',
           default: 'a built-in `thumb` slot inside the indicator track',
         },
         className: classNameOverride,

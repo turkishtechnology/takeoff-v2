@@ -4,10 +4,12 @@ import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { InputPrefixBase } from './base';
+import { useInputOwnContext } from './context';
 import type { InputPrefixProps } from './types';
 
 export const InputPrefix = <T extends ElementType = 'span'>(props: InputPrefixProps<T>) => {
   const theme = useComponentTheme('InputPrefix');
+  useInputOwnContext('Input.Prefix');
   const Component = (props.as ?? 'span') as ElementType;
 
   const { rootAttrs, rest } = composeRootAttrs(InputPrefixBase, props as InputPrefixProps<'span'>, theme);

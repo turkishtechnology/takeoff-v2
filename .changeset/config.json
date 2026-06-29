@@ -8,6 +8,9 @@
   "baseBranch": "develop",
   "updateInternalDependencies": "patch",
   "ignore": ["docs"],
+  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+    "onlyUpdatePeerDependentsWhenOutOfRange": true
+  },
   "snapshot": {
     "useCalculatedVersion": true,
     "prereleaseTemplate": "{tag}-{commit}"

@@ -1,0 +1,33 @@
+.wrap {
+  position: relative;
+}
+
+/* Sit the actions in the top-right corner, aligned with the page title. */
+.actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Keep long titles from running under the floating actions. */
+.wrap :global(.markdown) > header > h1,
+.wrap :global(.markdown) > h1 {
+  padding-right: 14rem;
+}
+
+/* On narrow viewports, drop the buttons onto their own row above the title. */
+@media (max-width: 996px) {
+  .actions {
+    position: static;
+    margin-bottom: 1rem;
+    justify-content: flex-end;
+  }
+
+  .wrap :global(.markdown) > header > h1,
+  .wrap :global(.markdown) > h1 {
+    padding-right: 0;
+  }
+}

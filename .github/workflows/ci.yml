@@ -14,13 +14,13 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           # Single source of truth for Node — matches the release workflow so a
           # green CI can't hide a publish-time Node mismatch.
@@ -38,6 +38,13 @@ jobs:
 
       - name: Validate Spar prop Pick<> discipline
         run: pnpm --filter @takeoff-ui/react-spar lint:spar-pick
+
+      # Regenerates the docs API tables from the component `types.ts` and fails
+      # if that produces a diff — i.e. someone changed a type without re-running
+      # `gen:api`, leaving the published API reference stale. Pure codegen +
+      # `git diff`, no package build needed (reads source via the TS compiler).
+      - name: Validate docs API tables are in sync
+        run: pnpm --filter docs gen:api:check
 
       - name: Validate markdown link integrity
         uses: lycheeverse/lychee-action@v2

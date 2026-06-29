@@ -9,8 +9,40 @@
 
 @mixin focus-ring($shadow) {
   &:focus-visible {
-    outline: none;
+    // A transparent outline paints nothing while the box-shadow draws the
+    // ring, but forced-colors mode (Windows High Contrast) drops box-shadows
+    // and recolors outlines to a system color — so keyboard focus stays
+    // visible there. `outline: none` would leave no indicator at all.
+    outline: 2px solid transparent;
+    outline-offset: 2px;
     box-shadow: $shadow;
+  }
+}
+
+// Slim brand scrollbar for recipe-owned scroll containers. Ported verbatim
+// from takeoff-ui/core `takeoff-scrollbar`.
+@mixin takeoff-scrollbar {
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--background-lightest);
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: var(--secondary-sub-base);
+
+    &:hover {
+      background: var(--secondary-dark);
+    }
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: var(--background-lightest);
   }
 }
 
@@ -19,6 +51,17 @@
   &:disabled,
   &[aria-disabled='true'] {
     @content;
+  }
+}
+
+// Soft backdrop blur for overlay/scrim surfaces (Dialog mask, Drawer overlay).
+// Single source of truth for the blur radius so the modal surfaces stay in
+// sync. Gated behind `prefers-reduced-transparency` so users who requested
+// reduced effects — and the GPU cost a full-viewport backdrop-filter carries
+// while the overlay opacity-animates — do not get the blur.
+@mixin overlay-blur {
+  @media (prefers-reduced-transparency: no-preference) {
+    backdrop-filter: blur(2px);
   }
 }
 

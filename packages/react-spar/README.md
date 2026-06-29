@@ -4,26 +4,47 @@ Current-phase React package for Takeoff components backed by
 `@turkish-technology/spar`. Components ship as compound surfaces: state lives on
 the root and structure lives in named subcomponents.
 
-The public API uses React primitive vocabulary for Accordion state (`value`,
-`defaultValue`, `onValueChange`, item `value`) while preserving visual Takeoff
-vocabulary (`type`, `mode`, `size`) and translating framework mechanics into
-React conventions (`default*` props, `on*` callbacks, and compound children
-instead of Web Component slots).
+The public API uses React primitive vocabulary (`value`, `defaultValue`,
+`checked`, `open`, `on*Change`) while preserving visual Takeoff vocabulary
+(`variant`, `appearance`, `type`, `mode`, `size`) and translating framework
+mechanics into React conventions (`default*` props, `on*` callbacks, and
+compound children instead of Web Component slots).
 
 ## Current Surface
 
-The package currently exports:
+The package currently exports these component roots:
 
 - `Accordion`
+- `Alert`
+- `Badge`
+- `Breadcrumb`
 - `Button`
+- `Card`
+- `Checkbox`
+- `Chip`
+- `Dialog`
 - `Drawer`
+- `Field`
+- `Input`
+- `Label`
+- `Popover`
+- `Radio`
+- `Select`
+- `Spinner`
+- `Switch`
+- `Table`
+- `Tabs`
+- `Toast`
 - `Tooltip`
-- `TakeoffSparProvider`
-- customization and theme types from the package root
 
-See the docs site for components queued next. Additional wrappers are added only
-after their component contract is source-backed and any upstream Spar behavior
-gaps are resolved.
+The package root also exports `TakeoffSparProvider`, `useTheme`,
+`useComponentTheme`, and customization/theme types. Compound components expose
+their public parts through the root object, for example `Accordion.Item`,
+`Dialog.Panel`, `Input.Field`, `Select.Trigger`, and `Tabs.List`.
+
+State-only roots such as `Dialog`, `Drawer`, `Popover`, and `Tooltip` render no
+DOM element themselves; styling and slot customization live on their rendered
+parts (`Dialog.Panel`, `Drawer.Overlay`, `Tooltip.Content`, etc.).
 
 ## Reference
 
@@ -91,8 +112,12 @@ export function Example() {
 
 `TakeoffSparProvider` accepts `colorMode` (`'light' | 'dark'`, default
 `'light'`), an optional `locale` string, and an optional `components`
-customization map. The provider renders a `display: contents` wrapper that
-writes `data-theme` from `colorMode` and `lang` from `locale`.
+customization map. The provider renders no DOM of its own. It writes
+`data-theme` from `colorMode` and `lang` from `locale` to
+`document.documentElement` in a client effect so portal-mounted descendants
+(`Dialog`, `Popover`, `Tooltip`, etc.) inherit the same theme and language
+context. In SSR apps, set matching `<html data-theme="..." lang="...">`
+attributes on the server to avoid first-paint mismatch.
 
 ## Accordion
 
@@ -127,7 +152,8 @@ writes `data-theme` from `colorMode` and `lang` from `locale`.
 
 ## Customization
 
-Every public component part exposes the same customization layers:
+Every rendered component root and rendered component part exposes the same
+customization layers:
 
 - `className`: appended to the canonical root slot class.
 - `classNames`: per-slot extra classes, concatenated with canonical `tk-*`
@@ -138,6 +164,9 @@ Every public component part exposes the same customization layers:
   component name.
 
 Canonical `tk-*` classes and `data-slot` attributes are always preserved.
+State-only roots (`Dialog`, `Drawer`, `Popover`, `Tooltip`) have no DOM target
+for root-level styling, so their provider entries expose `defaultProps` only;
+style their rendered parts instead.
 
 ### Theme-level Defaults
 
@@ -208,8 +237,8 @@ remain in place.
 </Accordion>
 ```
 
-Custom arrow content is rendered inside the canonical `.tk-accordion-item-arrow`
-owner node so recipes keep their stable selector.
+Custom indicator content is rendered inside the canonical
+`.tk-accordion-item-indicator` owner node so recipes keep their stable selector.
 
 `Accordion.Indicator` is opt-in — omit it to render a trigger without a
 disclosure affordance. Its owner node carries the canonical

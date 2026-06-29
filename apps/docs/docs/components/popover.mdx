@@ -57,15 +57,15 @@ function TypesDemo() {
   return (
     <div className="flex flex-wrap justify-center gap-3">
       <Popover>
-        <Popover.Trigger as={Button}>Dark</Popover.Trigger>
-        <Popover.Content variant="dark">
-          <Popover.Description>Dark variant popover</Popover.Description>
-        </Popover.Content>
-      </Popover>
-      <Popover>
         <Popover.Trigger as={Button}>White</Popover.Trigger>
         <Popover.Content variant="white">
           <Popover.Description>White variant popover</Popover.Description>
+        </Popover.Content>
+      </Popover>
+      <Popover>
+        <Popover.Trigger as={Button}>Dark</Popover.Trigger>
+        <Popover.Content variant="dark">
+          <Popover.Description>Dark variant popover</Popover.Description>
         </Popover.Content>
       </Popover>
       <Popover>
@@ -322,14 +322,14 @@ for primitive behavior.
 
 #### Props {#popover-props}
 
-| Name                             | Type                         | Default | Description                                                                                                                                                      |
-| -------------------------------- | ---------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />    | <code>React.ReactNode</code> | -       | PopoverTrigger and PopoverContent components                                                                                                                     |
-| <ApiBadge label="id" />          | <code>string</code>          | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
-| <ApiBadge label="disabled" />    | <code>boolean</code>         | false   | Disables all popover triggers (prevents opening)                                                                                                                 |
-| <ApiBadge label="open" />        | <code>boolean</code>         | -       | Controlled state for popover visibility                                                                                                                          |
-| <ApiBadge label="defaultOpen" /> | <code>boolean</code>         | false   | Initial open state for uncontrolled mode                                                                                                                         |
-| <ApiBadge label="modal" />       | <code>boolean</code>         | false   | Whether popover should behave modally (focus trap + backdrop)                                                                                                    |
+| Name                             | Type                               | Default | Description                                                                                                                                                      |
+| -------------------------------- | ---------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.React.ReactNode</code> | -       | PopoverTrigger and PopoverContent components                                                                                                                     |
+| <ApiBadge label="id" />          | <code>string</code>                | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
+| <ApiBadge label="disabled" />    | <code>boolean</code>               | false   | Disables all popover triggers (prevents opening)                                                                                                                 |
+| <ApiBadge label="open" />        | <code>boolean</code>               | -       | Controlled state for popover visibility                                                                                                                          |
+| <ApiBadge label="defaultOpen" /> | <code>boolean</code>               | false   | Initial open state for uncontrolled mode                                                                                                                         |
+| <ApiBadge label="modal" />       | <code>boolean</code>               | false   | Whether popover should behave modally (focus trap + backdrop)                                                                                                    |
 
 #### Events {#popover-events}
 
@@ -341,17 +341,17 @@ for primitive behavior.
 
 #### Props {#popover-content-props}
 
-| Name                            | Type                                                                                | Default       | Description                                                                |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -             |                                                                            |
-| <ApiBadge label="variant" />    | <code><a href="#popover-td-popovervariant">PopoverVariant</a></code>                | 'dark'        | Color variant.                                                             |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -             | Per-slot extra classes.                                                    |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |
-| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                | document.body | Portal container element. Content is portaled to document.body by default. |
-| <ApiBadge label="trapFocus" />  | <code>boolean</code>                                                                | false         | Whether to trap focus within content                                       |
-| <ApiBadge label="side" />       | <code><a href="#popover-td-side">Side</a></code>                                    | 'bottom'      | Side of trigger to position against                                        |
-| <ApiBadge label="align" />      | <code><a href="#popover-td-align">Align</a></code>                                  | 'center'      | Alignment relative to trigger                                              |
-| <ApiBadge label="className" />  | <code>string</code>                                                                 | -             |                                                                            |
+| Name                            | Type                                                                                      | Default       | Description                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.React.ReactNode</code>                                                        | -             |                                                                            |
+| <ApiBadge label="variant" />    | <code><a href="#popover-td-popovervariant">PopoverVariant</a></code>                      | 'white'       | Color variant.                                                             |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -             | Per-slot extra classes.                                                    |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |
+| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                      | document.body | Portal container element. Content is portaled to document.body by default. |
+| <ApiBadge label="trapFocus" />  | <code>boolean</code>                                                                      | false         | Whether to trap focus within content                                       |
+| <ApiBadge label="side" />       | <code><a href="#popover-td-side">Side</a></code>                                          | 'bottom'      | Side of trigger to position against                                        |
+| <ApiBadge label="align" />      | <code><a href="#popover-td-align">Align</a></code>                                        | 'center'      | Alignment relative to trigger                                              |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -             |                                                                            |
 
 #### Events {#popover-content-events}
 
@@ -399,7 +399,7 @@ for primitive behavior.
 
 | Name                                                                                                  | Definition                                                                                                                      |
 | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| <span id="popover-td-popovervariant"><ApiBadge label="PopoverVariant" /></span>                       | <code>'dark' &#124; 'white' &#124; 'info' &#124; 'success' &#124; 'warning' &#124; 'danger' &#124; 'neutral'</code>             |
+| <span id="popover-td-popovervariant"><ApiBadge label="PopoverVariant" /></span>                       | <code>'white' &#124; 'dark' &#124; 'info' &#124; 'success' &#124; 'warning' &#124; 'danger' &#124; 'neutral'</code>             |
 | <span id="popover-td-side"><ApiBadge label="Side" /></span>                                           | <code>'top' &#124; 'right' &#124; 'bottom' &#124; 'left'</code>                                                                 |
 | <span id="popover-td-align"><ApiBadge label="Align" /></span>                                         | <code>'start' &#124; 'center' &#124; 'end'</code>                                                                               |
 | <span id="popover-td-popovertriggerrenderprops"><ApiBadge label="PopoverTriggerRenderProps" /></span> | <code>&#123; isOpen: boolean; disabled: boolean; open: () =&gt; void; close: () =&gt; void; toggle: () =&gt; void &#125;</code> |
