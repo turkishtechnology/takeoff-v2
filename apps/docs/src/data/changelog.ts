@@ -67,6 +67,70 @@ export type ChangelogEntry = {
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: 'v0-2-0-component-catalog-expansion',
+    date: '2026-06-29',
+    version: '0.2.0',
+    title: 'react-spar 0.2.0: ten new components, Table flagship, and API polish',
+    packageVersions: {
+      'react-spar': '0.2.0',
+      'tokens': '0.2.0',
+      'tailwind': '0.1.1',
+    },
+    summary:
+      'The catalog roughly doubles. `@takeoff-ui/react-spar` 0.2.0 adds ten components — including the TanStack-backed `Table`, the compound `Alert`, and `Toast`/`Toaster` — alongside `Card`, `Chip`, `Dialog`, `Tabs`, `Breadcrumb`, `Spinner`, and `Label`. Existing components get prop and styling polish, and a few public APIs were renamed/removed; each change below ships with a one-line migration. The library deliberately stays on 0.x (no major bump) while it has a single consumer, so these are released under a minor.',
+    sections: [
+      {
+        title: 'New components',
+        items: [
+          '**Table** — the catalog’s first TanStack-backed component (`@tanstack/react-table`). A props-first `<Table data columns getRowId />` with sorting, column filters in a Spar `Popover`, row selection, pagination, sticky header/columns, density, and a data-only `getExportRows()` projection.',
+          '**Alert** — compound `Alert` with `variant`/`appearance`, actions, and close handling.',
+          '**Toast** — `Toast`, `Toaster`, and `createToaster` powered by the Spar headless toast controller: types, positions, promise toasts, updates, persistent toasts, and overlap stacks.',
+          'Also new: **Card**, **Chip**, **Dialog**, **Tabs**, **Breadcrumb**, **Spinner**, and **Label**.',
+        ],
+      },
+      {
+        title: 'Breaking changes',
+        collapsible: true,
+        items: [
+          {
+            text: '**Button** — `isLoading`/`isPressed` renamed to `loading`/`pressed`.',
+            code: {
+              language: 'tsx',
+              before: '<Button isLoading isPressed />',
+              after: '<Button loading pressed />',
+            },
+          },
+          {
+            text: '**Radio / Checkbox** — the `type` prop (and the `card` variant) were removed. Wrap in your own bordered container if you need a card-style row.',
+            code: {
+              language: 'tsx',
+              before: '<Radio type="card" />',
+              after: '<Radio />',
+            },
+          },
+          {
+            text: '**Input** — `Input.Container` is removed; the bordered row is now the `Input` root, with `Input.LeadingIcon` / `Input.TrailingIcon` for icons.',
+            code: {
+              language: 'tsx',
+              before: '<Input>\n  <Input.Container startContent={<Icon />}>\n    <Input.Field />\n  </Input.Container>\n</Input>',
+              after: '<Input>\n  <Input.LeadingIcon>\n    <Icon />\n  </Input.LeadingIcon>\n  <Input.Field />\n</Input>',
+            },
+          },
+          {
+            text: '**Drawer** — `dismissable` → `dismissible`, and `Drawer.CloseButton` → `Drawer.Close` (CSS class `.tk-drawer-close-button` → `.tk-drawer-close`).',
+            code: {
+              language: 'tsx',
+              before: '<Drawer dismissable={false}>\n  <Drawer.CloseButton />\n</Drawer>',
+              after: '<Drawer dismissible={false}>\n  <Drawer.Close />\n</Drawer>',
+            },
+          },
+          '**Tooltip / Popover** — the default `Content` `variant` changed from `dark` to `white`. Pass `variant="dark"` to keep the previous look.',
+          '**Select** — `Select.Trigger` now renders a disclosure chevron by default; pass `indicator={false}` to opt out.',
+        ],
+      },
+    ],
+  },
+  {
     id: 'v0-1-0-tailwind-initial-release',
     date: '2026-05-21',
     version: 'tailwind 0.1.0',
