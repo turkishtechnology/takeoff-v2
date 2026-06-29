@@ -215,6 +215,9 @@
     .tk-drawer-title {
       color: var(--text-lightest);
     }
+    .tk-drawer-close {
+      color: var(--static-white);
+    }
   }
 
   // ─── Header type: primary ────────────────────────────────────────
@@ -223,6 +226,9 @@
 
     .tk-drawer-title {
       color: var(--text-lightest);
+    }
+    .tk-drawer-close {
+      color: var(--static-white);
     }
   }
 }
@@ -295,8 +301,8 @@
 
 @mixin drawer-close {
   display: inline-flex;
-  width: 32px;
-  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   padding: var(--spacing-xs);
   align-items: center;
   justify-content: center;
@@ -304,9 +310,11 @@
   border: 0;
   border-radius: var(--radius-m-base);
   background: transparent;
-  color: var(--icon-sub-base);
+  color: var(--icon-darkest);
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  transition:
+    background-color 0.2s ease-in-out,
+    color 0.2s ease-in-out;
 
   @include mixins.focus-ring(var(--neutral-focus));
 
