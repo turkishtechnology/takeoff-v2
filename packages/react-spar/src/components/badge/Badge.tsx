@@ -1,9 +1,13 @@
+import type { ReactNode } from 'react';
+
 import { buildSlotAttrs, composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { BadgeBase } from './base';
 import { DEFAULT_APPEARANCE, DEFAULT_SIZE, DEFAULT_VARIANT } from './defaults';
 import type { BadgeProps, BadgeSlot } from './types';
+
+const isRenderableNode = (node: ReactNode): boolean => node !== null && node !== undefined && typeof node !== 'boolean';
 
 export const Badge = (props: BadgeProps) => {
   const theme = useComponentTheme('Badge');
@@ -40,9 +44,9 @@ export const Badge = (props: BadgeProps) => {
 
   return (
     <span {...nativeProps} {...rootAttrs} ref={ref}>
-      {startContent && <span {...iconSlotAttrs}>{startContent}</span>}
-      {children && <span {...labelSlotAttrs}>{children}</span>}
-      {endContent && <span {...iconSlotAttrs}>{endContent}</span>}
+      {isRenderableNode(startContent) && <span {...iconSlotAttrs}>{startContent}</span>}
+      {isRenderableNode(children) && <span {...labelSlotAttrs}>{children}</span>}
+      {isRenderableNode(endContent) && <span {...iconSlotAttrs}>{endContent}</span>}
     </span>
   );
 };

@@ -16,11 +16,16 @@ export const AlertClose = <T extends ElementType = 'button'>(props: AlertClosePr
   const { rootAttrs, rest } = composeRootAttrs<AlertCloseProps, AlertCloseSlot>(AlertCloseBase, props as AlertCloseProps<'button'>, theme);
 
   const { as, children, onClick, ref, type, 'aria-label': ariaLabel, ...closeProps } = rest;
+  const { onClick: slotOnClick, ...closeRootAttrs } = rootAttrs as typeof rootAttrs & {
+    onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  };
   const Component = (as ?? 'button') as ElementType;
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    onClose?.();
     onClick?.(event);
+    slotOnClick?.(event);
+    if (event.defaultPrevented) return;
+    onClose?.();
   };
 
   // Default to an icon-only control sized by the `.tk-alert-close` recipe.
@@ -35,7 +40,7 @@ export const AlertClose = <T extends ElementType = 'button'>(props: AlertClosePr
       type={as ? type : (type ?? 'button')}
       aria-label={ariaLabel ?? (hasCustomChildren ? undefined : DEFAULT_CLOSE_LABEL)}
       onClick={handleClick}
-      {...rootAttrs}
+      {...closeRootAttrs}
     >
       {hasCustomChildren ? children : <PlaceholderClose />}
     </Component>

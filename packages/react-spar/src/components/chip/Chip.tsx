@@ -22,6 +22,14 @@ export const Chip = (props: ChipProps) => {
       'data-removable': removable ? '' : undefined,
     }),
   });
+  const {
+    onClick: rootSlotOnClick,
+    onKeyDown: rootSlotOnKeyDown,
+    ...chipRootAttrs
+  } = rootAttrs as typeof rootAttrs & {
+    onClick?: (event: MouseEvent<HTMLSpanElement>) => void;
+    onKeyDown?: (event: KeyboardEvent<HTMLSpanElement>) => void;
+  };
 
   const {
     variant: _variant,
@@ -53,6 +61,9 @@ export const Chip = (props: ChipProps) => {
     instanceSlotProps: props.slotProps,
     instanceClassNames: props.classNames,
   });
+  const { onClick: removeSlotOnClick, ...removeButtonAttrs } = removeSlotAttrs as typeof removeSlotAttrs & {
+    onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  };
 
   // Only a clickable chip turns the root into a focusable widget. A
   // removable-only chip keeps the root non-interactive and exposes the
@@ -76,6 +87,8 @@ export const Chip = (props: ChipProps) => {
     // Keep a click on the remove button from also reaching a clickable
     // chip's root onClick (which would both remove and activate the chip).
     event.stopPropagation();
+    removeSlotOnClick?.(event);
+    if (event.defaultPrevented) return;
     remove();
   };
 
@@ -85,10 +98,12 @@ export const Chip = (props: ChipProps) => {
     // solely on the recipe's `pointer-events: none`.
     if (disabled) return;
     onClick?.(event);
+    rootSlotOnClick?.(event);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLSpanElement>) => {
     nativeProps.onKeyDown?.(event);
+    rootSlotOnKeyDown?.(event);
     if (event.defaultPrevented || disabled) return;
 
     if (clickable && removable && (event.key === 'Backspace' || event.key === 'Delete')) {
@@ -106,7 +121,7 @@ export const Chip = (props: ChipProps) => {
   return (
     <span
       {...nativeProps}
-      {...rootAttrs}
+      {...chipRootAttrs}
       aria-disabled={disabled || undefined}
       onClick={handleRootClick}
       onKeyDown={handleKeyDown}
@@ -118,7 +133,7 @@ export const Chip = (props: ChipProps) => {
       {removable && (
         // The icon-only remove control needs an accessible name. Default it,
         // but let `slotProps.remove` (spread after) override via `aria-label`.
-        <button aria-label={DEFAULT_REMOVE_LABEL} {...removeSlotAttrs} disabled={disabled} onClick={handleRemoveClick} type="button">
+        <button aria-label={DEFAULT_REMOVE_LABEL} {...removeButtonAttrs} disabled={disabled} onClick={handleRemoveClick} type="button">
           <PlaceholderClose />
         </button>
       )}
