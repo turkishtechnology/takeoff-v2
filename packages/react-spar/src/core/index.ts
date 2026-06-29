@@ -1,6 +1,8 @@
+export { blockDismiss } from './blockDismiss';
 export { buildSlotAttrs } from './buildSlotAttrs';
 export type { BuildSlotAttrsLayers } from './buildSlotAttrs';
 export { composeRootAttrs } from './composeRootAttrs';
+export { isRenderableNode } from './isRenderableNode';
 export type { ComposeRootOptions, RootAttrsResult } from './composeRootAttrs';
 export { createComponentBase } from './createComponentBase';
 export type { ComponentBase, CreateComponentBaseConfig, DataSlotName } from './createComponentBase';

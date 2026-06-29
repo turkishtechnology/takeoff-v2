@@ -17,6 +17,16 @@ export const InputClearButton = <T extends ElementType = 'button'>(props: InputC
   const { size, fieldRef, fieldValue, setFieldValue, hasAuxContent, clearAux } = useInputOwnContext('Input.ClearButton');
 
   const { rootAttrs, rest } = composeRootAttrs(InputClearButtonBase, props as InputClearButtonProps<'button'>, theme);
+  // Compose `slotProps.root` handlers rather than letting the explicit
+  // `onClick`/`onKeyDown` (spread last) silently drop them.
+  const {
+    onClick: slotOnClick,
+    onKeyDown: slotOnKeyDown,
+    ...clearRootAttrs
+  } = rootAttrs as typeof rootAttrs & {
+    onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+    onKeyDown?: (event: KeyboardEvent<HTMLButtonElement>) => void;
+  };
 
   const { children, onClear, onClick, onKeyDown, ref, 'type': _type, 'aria-label': ariaLabel = 'Clear input', ...buttonProps } = rest;
 
@@ -40,12 +50,14 @@ export const InputClearButton = <T extends ElementType = 'button'>(props: InputC
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);
+    slotOnClick?.(event);
     if (event.defaultPrevented) return;
     clear();
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     onKeyDown?.(event);
+    slotOnKeyDown?.(event);
     if (event.defaultPrevented || event.key !== 'Escape') return;
     event.preventDefault();
     clear();
@@ -54,7 +66,7 @@ export const InputClearButton = <T extends ElementType = 'button'>(props: InputC
   return (
     <Button
       {...buttonProps}
-      {...rootAttrs}
+      {...clearRootAttrs}
       ref={ref}
       type="button"
       appearance="text"

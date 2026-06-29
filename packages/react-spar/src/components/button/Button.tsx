@@ -1,7 +1,7 @@
 import type { ElementType } from 'react';
 import { Button as SparButton, type ButtonProps as SparButtonProps } from '@turkish-technology/spar';
 
-import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { buildSlotAttrs, composeRootAttrs, isRenderableNode } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { ButtonBase } from './base';
@@ -17,8 +17,8 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
     // setting them again would create two sources of truth that drift the
     // moment Spar renames or extends its vocabulary.
     stateAttrs: ({ variant = DEFAULT_VARIANT, appearance = DEFAULT_APPEARANCE, size = DEFAULT_SIZE, rounded, startContent, endContent, children }) => {
-      const hasIcon = !!(startContent || endContent);
-      const isIconOnly = hasIcon && !children;
+      const hasIcon = isRenderableNode(startContent) || isRenderableNode(endContent);
+      const isIconOnly = hasIcon && !isRenderableNode(children);
       return {
         'data-variant': variant,
         'data-type': appearance,
@@ -71,9 +71,9 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
   return (
     <SparButton {...(sparProps as unknown as SparButtonProps)} disabled={disabled} isLoading={loading} isPressed={pressed} ref={ref} {...rootAttrs}>
       {loading && <span {...spinnerSlotAttrs} />}
-      {startContent && !loading && <span {...contentSlotAttrs}>{startContent}</span>}
-      {children && <span {...labelSlotAttrs}>{children}</span>}
-      {endContent && !loading && <span {...contentSlotAttrs}>{endContent}</span>}
+      {isRenderableNode(startContent) && !loading && <span {...contentSlotAttrs}>{startContent}</span>}
+      {isRenderableNode(children) && <span {...labelSlotAttrs}>{children}</span>}
+      {isRenderableNode(endContent) && !loading && <span {...contentSlotAttrs}>{endContent}</span>}
     </SparButton>
   );
 };
