@@ -50,6 +50,17 @@ updates:
           - "*"
         exclude-patterns:
           - "@turkish-technology/*"
+      # Group all remaining production deps (three, react-hook-form, zod…) into
+      # one PR. Ungrouped prod bumps each open a separate PR that touches
+      # pnpm-lock.yaml, so they collide with each other and with the base branch
+      # the moment one lands. Collapsing them into a single PR means a single
+      # lockfile delta and a single merge — no cross-PR lockfile conflicts.
+      production-deps:
+        dependency-type: "production"
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@turkish-technology/*"
 
   # ── GitHub Actions used in .github/workflows ──────────────────────────────
   - package-ecosystem: "github-actions"
