@@ -17,11 +17,17 @@ export const InputDecrement = <T extends ElementType = 'button'>(props: InputDec
   const { size, fieldRef } = useInputOwnContext('Input.Decrement');
 
   const { rootAttrs, rest } = composeRootAttrs(InputDecrementBase, props as InputDecrementProps<'button'>, theme);
+  // Compose a `slotProps.root.onClick` rather than letting the explicit
+  // `onClick={handleClick}` (spread last) silently drop it.
+  const { onClick: slotOnClick, ...decrementRootAttrs } = rootAttrs as typeof rootAttrs & {
+    onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  };
 
   const { children, onClick, ref, 'type': _type, 'disabled': _disabled, 'aria-label': ariaLabel = 'Decrement value', ...buttonProps } = rest;
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);
+    slotOnClick?.(event);
     if (event.defaultPrevented) return;
     stepField(fieldRef.current, 'down');
   };
@@ -29,7 +35,7 @@ export const InputDecrement = <T extends ElementType = 'button'>(props: InputDec
   return (
     <Button
       {...buttonProps}
-      {...rootAttrs}
+      {...decrementRootAttrs}
       ref={ref}
       type="button"
       appearance="text"

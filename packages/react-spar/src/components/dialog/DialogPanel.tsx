@@ -1,24 +1,12 @@
 import type { ElementType } from 'react';
 import { DialogContent as SparDialogContent } from '@turkish-technology/spar';
 
-import { composeRootAttrs } from '../../core';
+import { blockDismiss, composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { DialogPanelBase } from './base';
 import { useDialogOwnContext } from './context';
 import type { DialogPanelProps, DialogPanelSlot } from './types';
-
-// When the dialog is non-dismissible, block the close while still invoking the
-// consumer's own handler (if any), so a passed `onEscapeKeyDown` /
-// `onPointerDownOutside` / `onInteractOutside` is preserved rather than silently
-// overwritten. `preventDefault` is called first so the consumer cannot
-// accidentally re-enable the close.
-const blockDismiss =
-  <E extends { preventDefault: () => void }>(handler?: (event: E) => void) =>
-  (event: E) => {
-    event.preventDefault();
-    handler?.(event);
-  };
 
 export const DialogPanel = <T extends ElementType = 'div'>(props: DialogPanelProps<T>) => {
   const theme = useComponentTheme('DialogPanel');

@@ -1,19 +1,12 @@
 import type { ElementType } from 'react';
 import { DialogContent as SparDialogContent } from '@turkish-technology/spar';
 
-import { composeRootAttrs } from '../../core';
+import { blockDismiss, composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { DrawerPanelBase } from './base';
 import { useDrawerOwnContext } from './context';
 import type { DrawerPanelProps } from './types';
-
-const blockDismiss =
-  <E extends { preventDefault: () => void }>(handler?: (event: E) => void) =>
-  (event: E) => {
-    event.preventDefault();
-    handler?.(event);
-  };
 
 export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelProps<T>) => {
   const theme = useComponentTheme('DrawerPanel');

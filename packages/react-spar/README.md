@@ -32,7 +32,9 @@ The package currently exports these component roots:
 - `Select`
 - `Spinner`
 - `Switch`
+- `Table`
 - `Tabs`
+- `Toast`
 - `Tooltip`
 
 The package root also exports `TakeoffSparProvider`, `useTheme`,

@@ -1,14 +1,12 @@
-import type { ElementType, ReactNode } from 'react';
+import type { ElementType } from 'react';
 import { Button as SparButton, type ButtonProps as SparButtonProps } from '@turkish-technology/spar';
 
-import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { buildSlotAttrs, composeRootAttrs, isRenderableNode } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { ButtonBase } from './base';
 import { DEFAULT_APPEARANCE, DEFAULT_SIZE, DEFAULT_VARIANT } from './defaults';
 import type { ButtonProps, ButtonSlot } from './types';
-
-const isRenderableNode = (node: ReactNode): boolean => node !== null && node !== undefined && typeof node !== 'boolean';
 
 export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) => {
   const theme = useComponentTheme('Button');

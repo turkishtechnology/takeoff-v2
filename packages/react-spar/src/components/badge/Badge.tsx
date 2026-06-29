@@ -1,13 +1,9 @@
-import type { ReactNode } from 'react';
-
-import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { buildSlotAttrs, composeRootAttrs, isRenderableNode } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { BadgeBase } from './base';
 import { DEFAULT_APPEARANCE, DEFAULT_SIZE, DEFAULT_VARIANT } from './defaults';
 import type { BadgeProps, BadgeSlot } from './types';
-
-const isRenderableNode = (node: ReactNode): boolean => node !== null && node !== undefined && typeof node !== 'boolean';
 
 export const Badge = (props: BadgeProps) => {
   const theme = useComponentTheme('Badge');

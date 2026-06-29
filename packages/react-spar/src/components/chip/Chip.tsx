@@ -1,6 +1,6 @@
 import { useState, type KeyboardEvent, type MouseEvent } from 'react';
 
-import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { buildSlotAttrs, composeRootAttrs, isRenderableNode } from '../../core';
 import { PlaceholderClose } from '../../icons';
 import { useComponentTheme } from '../../provider';
 
@@ -86,7 +86,9 @@ export const Chip = (props: ChipProps) => {
   const handleRemoveClick = (event: MouseEvent<HTMLButtonElement>) => {
     // Keep a click on the remove button from also reaching a clickable
     // chip's root onClick (which would both remove and activate the chip).
-    event.stopPropagation();
+    // A removable-only chip has no root onClick to protect, so let the click
+    // bubble so ancestor delegation (e.g. a list's onClick) still sees it.
+    if (clickable) event.stopPropagation();
     removeSlotOnClick?.(event);
     if (event.defaultPrevented) return;
     remove();
@@ -102,9 +104,17 @@ export const Chip = (props: ChipProps) => {
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLSpanElement>) => {
+    // Gate on `disabled` before any handler so a disabled chip never runs the
+    // consumer's slot/native keydown handler — symmetric with `handleRootClick`.
+    if (disabled) return;
+
     nativeProps.onKeyDown?.(event);
     rootSlotOnKeyDown?.(event);
-    if (event.defaultPrevented || disabled) return;
+    // Only an explicit cancel by the consumer's own keydown handlers blocks the
+    // built-in activation. The chip's keys (Enter/Space/Backspace/Delete) are
+    // rarely intercepted, so a slot handler that `preventDefault`s for an
+    // unrelated key still leaves activation working for the relevant keys.
+    if (event.defaultPrevented) return;
 
     if (clickable && removable && (event.key === 'Backspace' || event.key === 'Delete')) {
       event.preventDefault();
@@ -129,7 +139,7 @@ export const Chip = (props: ChipProps) => {
       role={resolvedRole}
       tabIndex={resolvedTabIndex}
     >
-      {children != null && <span {...labelSlotAttrs}>{children}</span>}
+      {isRenderableNode(children) && <span {...labelSlotAttrs}>{children}</span>}
       {removable && (
         // The icon-only remove control needs an accessible name. Default it,
         // but let `slotProps.remove` (spread after) override via `aria-label`.

@@ -16,6 +16,11 @@ export const InputRevealButton = <T extends ElementType = 'button'>(props: Input
   const { size, fieldRef, revealed, setRevealed, toggleReveal } = useInputOwnContext('Input.RevealButton');
 
   const { rootAttrs, rest } = composeRootAttrs(InputRevealButtonBase, props as InputRevealButtonProps<'button'>, theme);
+  // Compose a `slotProps.root.onClick` rather than letting the explicit
+  // `onClick={handleClick}` (spread last) silently drop it.
+  const { onClick: slotOnClick, ...revealRootAttrs } = rootAttrs as typeof rootAttrs & {
+    onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  };
 
   const { children, onClick, ref, 'type': _type, 'aria-label': _ariaLabel, 'aria-pressed': _ariaPressed, ...buttonProps } = rest;
 
@@ -33,6 +38,7 @@ export const InputRevealButton = <T extends ElementType = 'button'>(props: Input
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);
+    slotOnClick?.(event);
     if (event.defaultPrevented) return;
     toggleReveal();
     fieldRef.current?.focus();
@@ -41,7 +47,7 @@ export const InputRevealButton = <T extends ElementType = 'button'>(props: Input
   return (
     <Button
       {...buttonProps}
-      {...rootAttrs}
+      {...revealRootAttrs}
       ref={ref}
       type="button"
       appearance="text"
