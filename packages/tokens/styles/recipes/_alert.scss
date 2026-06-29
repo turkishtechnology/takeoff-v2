@@ -109,8 +109,14 @@
 
   &[data-type='filled']:not([data-variant='neutral']) {
     .tk-alert-title,
-    .tk-alert-description {
+    .tk-alert-description,
+    .tk-alert-action {
       color: var(--text-lightest);
+    }
+
+    .tk-alert-action:hover,
+    .tk-alert-close:hover {
+      background-color: var(--overlay-white-light);
     }
   }
 

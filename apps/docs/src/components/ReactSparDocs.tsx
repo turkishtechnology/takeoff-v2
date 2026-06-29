@@ -28,7 +28,11 @@ export {
   Switch,
   Table,
   Tabs,
+  TakeoffSparProvider,
+  Toast,
+  Toaster,
   Tooltip,
+  createToaster,
 } from '@takeoff-ui/react-spar';
 
 export function ReactSparDemoRoot({ children }: PropsWithChildren) {

@@ -39,6 +39,7 @@ const sidebars: SidebarsConfig = {
         'components/radio',
         'components/table',
         'components/tabs',
+        'components/toast',
         'components/tooltip',
       ],
     },
