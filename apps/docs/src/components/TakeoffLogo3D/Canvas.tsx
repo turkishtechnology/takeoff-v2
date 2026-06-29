@@ -72,7 +72,7 @@ export default function TakeoffLogoCanvas({ color = '#e6001f', rotationSpeed = 0
     const disposables: Array<{ dispose: () => void }> = [material];
 
     svgData.paths.forEach(path => {
-      const shapes = path.toShapes(true);
+      const shapes = path.toShapes();
       shapes.forEach(shape => {
         const geometry = new THREE.ExtrudeGeometry(shape, {
           depth,
@@ -99,7 +99,7 @@ export default function TakeoffLogoCanvas({ color = '#e6001f', rotationSpeed = 0
       const glowInner = new THREE.Group();
       glowInner.position.set(-35.5, -35.5, -depth / 2);
       svgData.paths.forEach(path => {
-        const shapes = path.toShapes(true);
+        const shapes = path.toShapes();
         shapes.forEach(shape => {
           const geometry = new THREE.ExtrudeGeometry(shape, {
             depth,
