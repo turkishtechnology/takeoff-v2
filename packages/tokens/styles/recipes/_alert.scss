@@ -150,6 +150,7 @@
 @mixin alert-close {
   display: inline-flex;
   min-width: 32px;
+  min-height: 32px;
   padding: var(--spacing-xs);
   align-items: center;
   justify-content: center;
@@ -157,7 +158,7 @@
   border: 0;
   border-radius: var(--radius-m-base);
   background: transparent;
-  color: var(--icon-sub-base);
+  color: var(--icon-darkest);
   cursor: pointer;
   transition:
     background-color 0.2s ease-in-out,
