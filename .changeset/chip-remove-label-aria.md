@@ -2,9 +2,9 @@
 '@takeoff-ui/react-spar': minor
 ---
 
-**Breaking:** Remove the `Chip` `removeLabel` prop. The remove button's
-accessible name now defaults to "Remove" and is customized through the standard
-slot mechanism instead of a dedicated prop, matching `Alert.Close`.
+Add accessible labeling for the `Chip` remove button. Its accessible name
+defaults to "Remove" and can be customized through the standard slot mechanism,
+matching `Alert.Close`.
 
-Migration: replace `<Chip removeLabel="…" />` with
+To set a custom label, pass it via the `remove` slot:
 `<Chip slotProps={{ remove: { 'aria-label': '…' } }} />`.
