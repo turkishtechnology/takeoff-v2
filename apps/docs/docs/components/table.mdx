@@ -10,6 +10,7 @@ slug: /components/table
 
 import LiveCode from '@site/src/components/LiveCode';
 import {
+  Alert,
   Badge,
   Button,
   Checkbox,
@@ -527,12 +528,19 @@ owns the surrounding popover. `value` is whatever shape your control writes, so
 pair it with a `filterFn` (client mode) and, if the default non-empty heuristic
 is wrong, an `isActive` predicate for the active dot.
 
-:::note Why both tiers? The legacy takeoff-ui filter was a closed `type` enum,
-which could never cover every column's needs — customization ended up blocked on
-a library change. Every mature table (Mantine/Material React Table, AG Grid, MUI
-X) instead layers a short preset under a render escape hatch. Presets keep the
-90% one-line; `render` (the same inversion as `cell` / `expansion.render`)
-leaves the rest fully open. :::
+<Alert variant="info" appearance="outlined" className="my-8 w-full">
+  <Alert.Content>
+    <Alert.Title>Why both tiers?</Alert.Title>
+    <Alert.Description>
+      The legacy takeoff-ui filter was a closed `type` enum, which could never
+      cover every column's needs, so customization ended up blocked on a library
+      change. Every mature table (Mantine/Material React Table, AG Grid, MUI X)
+      instead layers a short preset under a render escape hatch. Presets keep
+      the 90% case one-line; `render` (the same inversion as `cell` /
+      `expansion.render`) leaves the rest fully open.
+    </Alert.Description>
+  </Alert.Content>
+</Alert>
 
 <LiveCode
   code={filterCustomDemo}
