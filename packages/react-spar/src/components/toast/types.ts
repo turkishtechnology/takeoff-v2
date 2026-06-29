@@ -1,12 +1,12 @@
 import type { ElementType, ReactNode } from 'react';
 import type {
   CreateToasterOptions,
+  PolymorphicProps,
   ToastData as SparToastData,
   ToastOptions as SparToastOptions,
   ToastAnnouncement,
   ToastPlacement,
   ToastPromiseOptions,
-  ToastRootProps as SparToastRootProps,
   ToastStatus,
   ToastType,
   ToastUpdateOptions,
@@ -38,7 +38,11 @@ export interface ToasterOwnProps {
   children?: (toast: ToastData) => ReactNode;
 }
 
-export type ToasterProps<T extends ElementType = 'div'> = Omit<SparToasterProps<T>, 'toaster' | 'children'> & ToasterOwnProps;
+// Spar Toaster viewport surface. `toaster` (controller), `children` (render
+// prop), `appearance`, `closeLabel`, and `overlap` are takeoff-v2's own — in
+// ToasterOwnProps above. Only the screen-reader region `label` and the focus
+// `hotkey` are re-exposed from Spar as-is.
+export type ToasterProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, ToasterOwnProps & Pick<SparToasterProps, 'label' | 'hotkey'>>;
 
 export interface ToastOwnProps {
   toast: ToastData;
@@ -49,10 +53,17 @@ export interface ToastOwnProps {
   slotProps?: SlotPropsMap<ToastSlot>;
 }
 
-export type ToastProps<T extends ElementType = 'div'> = Omit<SparToastRootProps<T>, 'toast' | 'toaster' | 'children'> &
+// Spar Toast.Root surface. Its only non-native fields are `toast` and
+// `toaster`, both re-declared in ToastOwnProps above, so nothing is picked
+// from Spar here — the polymorphic `as`/`ref` and native HTML attributes come
+// from PolymorphicProps. `children` is the optional custom-render escape hatch.
+export type ToastProps<T extends ElementType = 'div'> = PolymorphicProps<
+  'div',
+  T,
   ToastOwnProps & {
     children?: ReactNode;
-  };
+  }
+>;
 
 export type { CreateToasterOptions, ToastAnnouncement, ToastPlacement, ToastPromiseOptions, ToastStatus, ToastType, ToastUpdateOptions, ToasterController };
 

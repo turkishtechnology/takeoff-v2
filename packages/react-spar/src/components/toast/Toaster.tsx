@@ -1,4 +1,4 @@
-import type { ElementType } from 'react';
+import { Fragment, type ElementType } from 'react';
 import { Toaster as SparToaster } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
@@ -23,7 +23,12 @@ export const Toaster = <T extends ElementType = 'div'>(props: ToasterProps<T>) =
 
   return (
     <SparToaster {...toasterProps} as={Component} ref={ref} toaster={toaster} overlap={overlap} {...rootAttrs}>
-      {(toast: ToastData) => (children ? children(toast) : <Toast key={toast.id} toast={toast} toaster={toaster} appearance={appearance} closeLabel={closeLabel} />)}
+      {(toast: ToastData) =>
+        // Spar renders each item directly into a mapped array, so the key must
+        // live on the element this render prop returns. The default branch keys
+        // <Toast>; a consumer `children` result is keyed via Fragment here.
+        children ? <Fragment key={toast.id}>{children(toast)}</Fragment> : <Toast key={toast.id} toast={toast} toaster={toaster} appearance={appearance} closeLabel={closeLabel} />
+      }
     </SparToaster>
   );
 };

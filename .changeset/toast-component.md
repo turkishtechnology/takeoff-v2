@@ -15,4 +15,4 @@ Add the Toast component and toaster styles.
 - Added token recipe styles for toast viewport placement, default layout,
   enter/exit motion, overlap expansion, width constraints, and stacked z-index
   ordering.
-- Added Toast documentation, API tables, demos, and component tests.
+- Added Toast documentation, API tables, and demos.

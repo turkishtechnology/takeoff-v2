@@ -14,39 +14,31 @@ import { toastTypeToVariant } from './utils';
 export const Toast = <T extends ElementType = 'div'>(props: ToastProps<T>) => {
   const theme = useComponentTheme('Toast');
 
-  const { rootAttrs, rest } = composeRootAttrs<ToastProps, ToastSlot>(ToastBase, props as ToastProps<'div'>, theme, {
-    stateAttrs: ({ toast }) => ({
-      'data-status': toast.status,
-      'data-type': toast.type,
-    }),
-  });
+  // Spar's Toast.Root already emits `data-status`/`data-type` from the same
+  // `toast` object (after spreading incoming props), so no `stateAttrs` are
+  // layered here — they would be dead, always-overwritten attributes.
+  const { rootAttrs, rest } = composeRootAttrs<ToastProps, ToastSlot>(ToastBase, props as ToastProps<'div'>, theme);
 
   const { as, toast, toaster, appearance = DEFAULT_TOAST_APPEARANCE, closeLabel = DEFAULT_CLOSE_LABEL, children, ref, ...toastProps } = rest;
   const Component = (as ?? 'div') as ElementType;
   const variant = toastTypeToVariant(toast.type);
 
-  if (children) {
-    return (
-      <SparToast.Root {...toastProps} as={Component} ref={ref} toast={toast} toaster={toaster} {...rootAttrs}>
-        {children}
-      </SparToast.Root>
-    );
-  }
-
   return (
     <SparToast.Root {...toastProps} as={Component} ref={ref} toast={toast} toaster={toaster} {...rootAttrs}>
-      <Alert variant={variant} appearance={appearance} role="presentation">
-        <Alert.Content>
-          {toast.title && <SparToast.Title as={Alert.Title}>{toast.title}</SparToast.Title>}
-          {toast.description && <SparToast.Description as={Alert.Description}>{toast.description}</SparToast.Description>}
-        </Alert.Content>
-        <SparToast.Close as={Alert.Close} aria-label={closeLabel} />
-        {toast.action && (
-          <Alert.Actions>
-            <SparToast.Action as={Button} className="tk-alert-action" variant={variant} appearance="text" size="small" />
-          </Alert.Actions>
-        )}
-      </Alert>
+      {children ?? (
+        <Alert variant={variant} appearance={appearance} role="presentation">
+          <Alert.Content>
+            {toast.title != null && <SparToast.Title as={Alert.Title}>{toast.title}</SparToast.Title>}
+            {toast.description != null && <SparToast.Description as={Alert.Description}>{toast.description}</SparToast.Description>}
+          </Alert.Content>
+          <SparToast.Close as={Alert.Close} aria-label={closeLabel} />
+          {toast.action && (
+            <Alert.Actions>
+              <SparToast.Action as={Button} className="tk-alert-action" variant={variant} appearance="text" size="small" />
+            </Alert.Actions>
+          )}
+        </Alert>
+      )}
     </SparToast.Root>
   );
 };

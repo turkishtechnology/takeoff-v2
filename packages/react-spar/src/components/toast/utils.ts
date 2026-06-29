@@ -10,8 +10,7 @@ export const toastTypeToVariant = (type: ToastType): ToastVariant => {
       return 'warning';
     case 'info':
       return 'info';
-    case 'default':
-    case 'loading':
+    // 'default' and 'loading' have no dedicated Alert variant.
     default:
       return 'neutral';
   }
