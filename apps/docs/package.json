@@ -6,6 +6,7 @@
     "build:tokens": "pnpm --filter @takeoff-design/tokens build",
     "build:react-spar": "pnpm --filter @takeoff-ui/react-spar build",
     "gen:api": "node scripts/generate-api-mdx.mjs",
+    "gen:api:check": "node scripts/check-api-mdx.mjs",
     "gen:icons": "node scripts/generate-icons.mjs",
     "gen:llms": "node scripts/generate-llms.mjs",
     "predev": "pnpm run build:tokens && pnpm run build:react-spar && pnpm run gen:api && pnpm run gen:icons && pnpm run gen:llms",
