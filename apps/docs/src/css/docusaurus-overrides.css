@@ -785,7 +785,11 @@ pre,
 
 /* --- Tables -------------------------------------------------------------- */
 
-.theme-doc-markdown table {
+.tk-table-table {
+  margin-bottom: 0;
+}
+
+.theme-doc-markdown table:not(.tk-table-table) {
   background: var(--docs-surface-1);
   border: 1px solid var(--docs-border-subtle);
   border-radius: 10px;
@@ -797,13 +801,13 @@ pre,
   word-break: break-word;
 }
 
-.theme-doc-markdown th,
-.theme-doc-markdown td {
+.theme-doc-markdown table:not(.tk-table-table) th,
+.theme-doc-markdown table:not(.tk-table-table) td {
   overflow-wrap: break-word;
   word-break: break-word;
 }
 
-.theme-doc-markdown th {
+.theme-doc-markdown table:not(.tk-table-table) th {
   background: var(--docs-surface-2);
   color: var(--docs-ink-strong);
   font-family: var(--docs-mono-family);
@@ -814,11 +818,11 @@ pre,
   border-bottom: 1px solid var(--docs-border-subtle);
 }
 
-.theme-doc-markdown td {
+.theme-doc-markdown table:not(.tk-table-table) td {
   border-color: var(--docs-border-subtle);
 }
 
-[data-theme='dark'] .theme-doc-markdown tr:nth-child(even) {
+[data-theme='dark'] .theme-doc-markdown table:not(.tk-table-table) tr:nth-child(even) {
   background: rgba(23, 23, 29, 0.4);
 }
 

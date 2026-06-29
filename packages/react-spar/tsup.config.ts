@@ -12,7 +12,7 @@ export default defineConfig({
       js: format === 'esm' ? '.mjs' : '.cjs',
     };
   },
-  external: ['react', 'react-dom', '@turkish-technology/spar', '@takeoff-design/tokens'],
+  external: ['react', 'react-dom', '@turkish-technology/spar', '@takeoff-design/tokens', '@tanstack/react-table', '@takeoff-icons/react'],
   esbuildOptions(options) {
     options.jsx = 'automatic';
   },

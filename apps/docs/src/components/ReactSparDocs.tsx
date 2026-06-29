@@ -26,6 +26,7 @@ export {
   Select,
   Spinner,
   Switch,
+  Table,
   Tabs,
   Tooltip,
 } from '@takeoff-ui/react-spar';

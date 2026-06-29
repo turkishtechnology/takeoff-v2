@@ -4,5 +4,7 @@ export { composeRootAttrs } from './composeRootAttrs';
 export type { ComposeRootOptions, RootAttrsResult } from './composeRootAttrs';
 export { createComponentBase } from './createComponentBase';
 export type { ComponentBase, CreateComponentBaseConfig, DataSlotName } from './createComponentBase';
+export { DEFAULT_DISCLOSURE_COLLAPSE_ICON, DEFAULT_DISCLOSURE_EXPAND_ICON, resolveDisclosureIndicator } from './disclosure';
+export type { DisclosureIndicatorRenderState } from './disclosure';
 export type { ComponentName, ComponentThemeConfig, ComponentThemeRegistry, ComponentsThemeMap, StateOnlyComponentThemeConfig } from './theme';
 export type { ClassNamesMap, SlotClassNames, SlotPropsMap, TakeoffHTMLProps, TakeoffSlotOverrides } from './types';
