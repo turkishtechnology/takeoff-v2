@@ -1,25 +1,11 @@
-import { type ElementType, type ReactNode } from 'react';
+import { type ElementType } from 'react';
 import { useAccordionItemContext } from '@turkish-technology/spar';
 
-import { composeRootAttrs } from '../../core';
+import { composeRootAttrs, resolveDisclosureIndicator } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { AccordionIndicatorBase } from './base';
 import type { AccordionIndicatorProps } from './types';
-
-// Default chevrons. Kept inline until the dedicated icon package lands; the
-// `tk-accordion-item-indicator` recipe targets these via the wrapper class.
-const DEFAULT_EXPAND_ICON: ReactNode = (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-    <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const DEFAULT_COLLAPSE_ICON: ReactNode = (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-    <path d="M4 10L8 6L12 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
 
 export const AccordionIndicator = <T extends ElementType = 'span'>(props: AccordionIndicatorProps<T>) => {
   const theme = useComponentTheme('AccordionIndicator');
@@ -31,7 +17,9 @@ export const AccordionIndicator = <T extends ElementType = 'span'>(props: Accord
 
   const { as: _as, children, ref, ...rendered } = rest;
 
-  const resolved = typeof children === 'function' ? children({ isOpen }) : (children ?? (isOpen ? DEFAULT_COLLAPSE_ICON : DEFAULT_EXPAND_ICON));
+  // Default chevron flips with the open state; the `tk-accordion-item-indicator`
+  // recipe drives its size/color (the glyph is `1em` + `currentColor`).
+  const resolved = resolveDisclosureIndicator(children, isOpen);
 
   return (
     <Component {...rendered} ref={ref} aria-hidden="true" {...rootAttrs}>

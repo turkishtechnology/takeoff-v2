@@ -1,8 +1,11 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import Translate from '@docusaurus/Translate';
 import { LiveContext } from 'react-live';
+import { AlertCircleIconOutlinedRounded } from '@takeoff-icons/react/alert-circle';
+import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
+import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
+import { CopyIconOutlinedRounded } from '@takeoff-icons/react/copy';
 import { parseErrorString } from './utils';
-import { CheckIcon, CloseIcon, CopyIcon, ErrorIcon } from './icons';
 
 interface CodeErrorBannerProps {
   onCopy: (errorName: string, errorMessage: string, stack: string) => void;
@@ -43,9 +46,7 @@ export const CodeErrorBanner = ({ onCopy, onDismiss }: CodeErrorBannerProps) => 
 
   return (
     <div className="code-error-banner" role="alert">
-      <span className="code-error-banner-icon">
-        <ErrorIcon size={14} />
-      </span>
+      <AlertCircleIconOutlinedRounded className="code-error-banner-icon" />
       <span className="code-error-banner-text">
         <strong>{errorState.errorName}:</strong> {errorState.errorMessage}
       </span>
@@ -57,11 +58,11 @@ export const CodeErrorBanner = ({ onCopy, onDismiss }: CodeErrorBannerProps) => 
           title={isCopied ? 'Copied' : 'Copy error'}
           aria-label={isCopied ? 'Copied' : 'Copy error'}
         >
-          {isCopied ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
+          {isCopied ? <CheckIconOutlinedRounded /> : <CopyIconOutlinedRounded />}
           {isCopied ? <Translate id="liveCode.copied">Copied</Translate> : <Translate id="liveCode.copy">Copy</Translate>}
         </button>
         <button className="code-error-banner-btn code-error-banner-dismiss" type="button" onClick={handleDismiss} title="Dismiss" aria-label="Dismiss error">
-          <CloseIcon size={12} />
+          <CloseIconOutlinedRounded />
         </button>
       </div>
     </div>

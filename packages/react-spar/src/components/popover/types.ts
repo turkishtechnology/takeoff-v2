@@ -11,9 +11,9 @@ import type { ClassNamesMap, SlotPropsMap, StateOnlyComponentThemeConfig } from 
 
 /**
  * Visual variant of the popover content.
- * @defaultValue 'dark'
+ * @defaultValue 'white'
  */
-export type PopoverVariant = 'dark' | 'white' | 'info' | 'success' | 'warning' | 'danger' | 'neutral';
+export type PopoverVariant = 'white' | 'dark' | 'info' | 'success' | 'warning' | 'danger' | 'neutral';
 
 export type PopoverTriggerSlot = 'root';
 
@@ -56,7 +56,7 @@ export type PopoverTriggerProps<T extends ElementType = 'button'> = PolymorphicP
 export interface PopoverContentOwnProps {
   /**
    * Color variant.
-   * @defaultValue 'dark'
+   * @defaultValue 'white'
    */
   variant?: PopoverVariant;
   /** Per-slot extra classes. */

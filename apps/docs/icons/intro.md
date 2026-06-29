@@ -8,8 +8,8 @@ sidebar_position: 1
 # Takeoff Icons
 
 A framework-agnostic icon library shipped as the `@takeoff-icons/*` packages.
-Pick the package that fits your stack — React, Web Components, an icon font, raw
-SVG, an SVG sprite, or the framework-neutral core data.
+Pick the package that fits your stack — React, an icon font, raw SVG, or the
+framework-neutral core data.
 
 ## Variant model
 
@@ -38,13 +38,11 @@ each React component forwards `SVGProps<SVGSVGElement>`.
 
 ## Packages
 
-| Package                 | Use it for                             |
-| ----------------------- | -------------------------------------- |
-| `@takeoff-icons/react`  | React components, one per icon variant |
-| `@takeoff-icons/wc`     | Framework-agnostic Web Components      |
-| `@takeoff-icons/font`   | Icon font (CSS classes / ligatures)    |
-| `@takeoff-icons/svg`    | Raw optimized SVG files                |
-| `@takeoff-icons/sprite` | Single SVG sprite sheet                |
-| `@takeoff-icons/core`   | Metadata, search index, and SVG data   |
+| Package                | Use it for                             |
+| ---------------------- | -------------------------------------- |
+| `@takeoff-icons/react` | React components, one per icon variant |
+| `@takeoff-icons/font`  | Icon font (CSS classes / ligatures)    |
+| `@takeoff-icons/svg`   | Raw optimized SVG files                |
+| `@takeoff-icons/core`  | Metadata, search index, and SVG data   |
 
 Head to [Installation](./installation) to add the package you need.

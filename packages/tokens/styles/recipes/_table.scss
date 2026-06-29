@@ -1,0 +1,537 @@
+@use '../abstracts/mixins' as mixins;
+
+// ===========================================================================
+// Table — TanStack-backed data table recipe.
+//
+// Slot identity is class-based (`.tk-table-*`); state/variant flags are data
+// attributes emitted by the wrapper (`data-size`, `data-striped`,
+// `data-bordered`, `data-sticky-header`, `data-loading`, `data-align`,
+// `data-sticky`, `data-selected`, `aria-sort`).
+//
+// Sticky contract (RFC §6.5): the table uses `border-collapse: separate` +
+// `border-spacing: 0` so `position: sticky` cells keep their borders (a known
+// browser bug breaks borders under `border-collapse: collapse`). Pinned cells
+// get an OPAQUE background here (cell offset/z-index are inline, owned by the
+// wrapper). Edge separation is drawn with `box-shadow` so it survives the
+// separate-borders model.
+// ===========================================================================
+
+// Per-density cell padding now flows from the shared `--table-items-*` tokens
+// (component/table.json) — the SAME source the legacy `tk-table` consumes — so
+// header and body track the design scale and change in one place. Header and
+// body have distinct vertical rhythm, so unlike the old single-map approach
+// they are emitted separately below. `xsmall` has no token set in table.json
+// (only `base` + `small`), so it keeps literal fallbacks until tokens land.
+
+// ---------------------------------------------------------------------------
+// Root — owns the density cascade, striped / bordered / sticky-header state,
+// pagination, and the loading overlay anchor. Scrolling belongs to the table
+// viewport so pagination stays fixed outside the scroll area.
+// ---------------------------------------------------------------------------
+
+@mixin table {
+  position: relative;
+  display: block;
+  width: 100%;
+  // Match legacy `tk-table`: a thin border + the medium radius (`--radius-l-base`
+  // is not emitted by the token build, so the old value always fell back to the
+  // literal; `--radius-m-base` is real and is what legacy uses).
+  font-family: var(--family-body);
+  color: var(--text-dark);
+
+  // Density cascade — padding lives on the root so it scopes the cells without
+  // each one needing its own size attr. Header and body draw from their own
+  // `--table-items-{head,body}-{size}-text-*` tokens so the vertical rhythm
+  // differs the way legacy's does (e.g. base body is roomier horizontally).
+  &[data-size='base'] {
+    .tk-table-header-cell {
+      padding: var(--table-items-head-base-text-v-padding) var(--table-items-head-base-text-h-padding);
+    }
+    .tk-table-cell {
+      padding: var(--table-items-body-base-text-v-padding) 12px var(--table-items-body-base-text-v-padding) var(--table-items-body-base-text-h-padding);
+    }
+
+    .tk-table-selection-cell,
+    .tk-table-expand-cell {
+      padding: var(--table-items-body-base-text-v-padding) 12px;
+    }
+  }
+
+  &[data-size='small'] {
+    .tk-table-header-cell {
+      padding: 12px var(--table-items-head-small-text-h-padding);
+    }
+
+    .tk-table-cell {
+      padding: var(--table-items-body-small-text-v-padding) 12px var(--table-items-body-small-text-v-padding) var(--table-items-body-small-text-h-padding);
+    }
+
+    .tk-table-selection-cell,
+    .tk-table-expand-cell {
+      padding: var(--table-items-body-small-text-v-padding) 12px;
+    }
+  }
+
+  // `xsmall` has no token set yet — keep the compact literal scale. Like
+  // legacy, xsmall also steps the type down to the body-xs size. The font is
+  // set on `.tk-table-table` (not the root) because that element declares its
+  // own `font-size` in `table-table`, which would otherwise shadow a root-level
+  // override.
+  &[data-size='xsmall'] {
+    .tk-table-table {
+      font-size: var(--desktop-body-xs-size);
+      line-height: var(--desktop-body-xs-line-height);
+    }
+    .tk-table-header-cell {
+      padding: 8px 12px;
+    }
+
+    .tk-table-cell,
+    .tk-table-selection-cell,
+    .tk-table-expand-cell {
+      padding: 4px 12px;
+    }
+  }
+
+  .tk-table-row > *,
+  .tk-table-expanded-row > * {
+    background-color: var(--static-light);
+  }
+
+  // Count only data rows so disclosure rows never shift the zebra sequence.
+  // An expanded row continues its parent row's stripe instead of becoming an
+  // independent stripe.
+  &[data-striped] .tk-table-row:nth-child(even of .tk-table-row) > *,
+  &[data-striped] .tk-table-row:nth-child(even of .tk-table-row) + .tk-table-expanded-row > * {
+    background-color: var(--background-lightest);
+  }
+
+  // Hover + selection on UNSTRIPED tables. Nothing competes here, so the
+  // natural (0,3,0) specificity is enough. Matches legacy `tk-table`: a light
+  // neutral hover, info-tinted selection.
+  & .tk-table-row:hover > * {
+    background-color: var(--background-lightest);
+  }
+
+  & .tk-table-row[data-selected] > * {
+    background-color: var(--states-info-light);
+  }
+
+  // Vertical separators between columns (opt-in).
+  &[data-bordered] {
+    .tk-table-header-cell,
+    .tk-table-cell,
+    .tk-table-selection-cell,
+    .tk-table-expand-cell {
+      border-inline-end: 1px solid var(--border-light);
+
+      &:last-child {
+        border-inline-end: 0;
+      }
+    }
+  }
+
+  // The table border owns the outer bottom edge; the final row only needs the
+  // internal separators supplied by the rows above it.
+  .tk-table-body > .tk-table-row:last-child > *,
+  .tk-table-body > .tk-table-expanded-row:last-child > * {
+    border-bottom: 0;
+  }
+
+  // Sticky header is always opaque, but elevation appears only after the table
+  // viewport has moved vertically.
+  &[data-sticky-header] .tk-table-header-cell {
+    background-color: var(--background-lightest);
+  }
+
+  &[data-sticky-header] .tk-table-viewport[data-scrolled] .tk-table-header-cell {
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Table viewport — the only scroll container. The native table stays
+// `display: table`, preserving layout and accessibility semantics.
+// ---------------------------------------------------------------------------
+
+@mixin table-viewport {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  border-radius: var(--radius-m-base);
+  border: 1px solid var(--border-light);
+
+  @include mixins.takeoff-scrollbar;
+}
+
+// ---------------------------------------------------------------------------
+// Table element — the sticky workaround lives here.
+// ---------------------------------------------------------------------------
+
+@mixin table-table {
+  display: table;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
+  font-size: var(--desktop-body-s-size);
+  line-height: var(--desktop-body-s-line-height);
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+
+@mixin table-header {
+  border-top-left-radius: var(--radius-m-base);
+  border-top-right-radius: var(--radius-m-base);
+  background-color: var(--background-lightest);
+}
+
+@mixin table-header-row {
+}
+
+@mixin table-header-cell {
+  position: relative;
+  box-sizing: border-box;
+  // Legacy `tk-table` headers read as regular-weight, darkest-ink labels — not
+  // the bold/grey treatment v2 started with.
+  font-weight: 400;
+  text-align: start;
+  color: var(--text-darkest);
+  border: 0;
+  border-bottom: 1px solid var(--border-light);
+  background-color: var(--background-lightest);
+  white-space: nowrap;
+  vertical-align: middle;
+
+  .tk-table:not([data-bordered]) &:not(:last-child)::after {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0;
+    width: 1px;
+    height: calc(2 * var(--desktop-body-s-size));
+    background-color: var(--border-light);
+    content: '';
+    transform: translateY(-50%);
+  }
+
+  &[data-align='center'] {
+    text-align: center;
+  }
+
+  &[data-align='end'] {
+    text-align: end;
+  }
+
+  &[data-sortable] {
+    cursor: pointer;
+  }
+
+  // Pinned header cell — opaque background already set above; add the edge
+  // shadow so the seam reads while scrolling horizontally.
+  &[data-sticky='left'] {
+    box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+
+  &[data-sticky='right'] {
+    box-shadow: -2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@mixin table-header-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  justify-content: space-between;
+
+  .tk-table-header-cell[data-align='center'] & {
+    justify-content: center;
+  }
+
+  .tk-table-header-cell[data-align='end'] & {
+    justify-content: flex-end;
+  }
+}
+
+// Sort affordance — a real button so Enter/Space toggle sorting.
+@mixin table-sort-trigger {
+  @include mixins.host-button-reset;
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  // `host-button-reset` zeroes margin but NOT padding, so the UA button
+  // padding would otherwise stack on top of the cell padding and misalign
+  // sortable headers against plain ones.
+  cursor: pointer;
+
+  @include mixins.focus-ring(var(--secondary-focus));
+}
+
+// Sort affordance icon — hosts an inline SVG (icon set, not a Unicode glyph).
+// The neutral up-down chevron is dimmed until the column is actually sorted, at
+// which point the directional chevron goes full-strength.
+@mixin table-sort-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  line-height: 0;
+  color: var(--icon-base);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &[data-direction='asc'],
+  &[data-direction='desc'] {
+    color: var(--icon-darkest);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Body
+// ---------------------------------------------------------------------------
+
+@mixin table-body {
+  // Layout owner.
+}
+
+@mixin table-row {
+  border: 0;
+
+  // Only the transition lives here. The hover + selected fills are declared at
+  // root scope (`@mixin table`) so their specificity beats the striping rule;
+  // duplicating them here at lower specificity would just be dead overrides.
+  > * {
+    transition: background-color 0.15s ease-in-out;
+  }
+}
+
+@mixin table-cell {
+  box-sizing: border-box;
+  vertical-align: middle;
+  border: 0;
+  border-bottom: 1px solid var(--border-light);
+  background-color: inherit;
+
+  &[data-align='center'] {
+    text-align: center;
+  }
+
+  &[data-align='end'] {
+    text-align: end;
+  }
+
+  // Pinned body cell — opaque background so scrolled columns don't show
+  // through, plus the same edge shadow as the header.
+  &[data-sticky='left'],
+  &[data-sticky='right'] {
+    background-color: var(--static-light);
+  }
+
+  &[data-sticky='left'] {
+    box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+
+  &[data-sticky='right'] {
+    box-shadow: -2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Utility cells — selection + expansion
+// ---------------------------------------------------------------------------
+
+@mixin table-selection-cell {
+  text-align: center;
+  vertical-align: middle;
+  border: 0;
+  border-bottom: 1px solid var(--border-light);
+
+  &[data-sticky='left'] {
+    background-color: var(--static-light);
+    box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@mixin table-expand-cell {
+  text-align: center;
+  vertical-align: middle;
+  border: 0;
+  border-bottom: 1px solid var(--border-light);
+
+  &[data-sticky='left'] {
+    background-color: var(--static-light);
+    box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@mixin table-expand-button {
+  @include mixins.host-button-reset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-m-base);
+  cursor: pointer;
+  color: var(--icon-base);
+  transition: background-color 0.15s ease-in-out;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background-color: var(--background-light);
+  }
+
+  @include mixins.focus-ring(var(--secondary-focus));
+}
+
+@mixin table-expanded-row {
+  border: 0;
+
+  > td {
+    border: 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Column filter (rendered inside a Spar Popover)
+// ---------------------------------------------------------------------------
+
+@mixin table-filter-button {
+  @include mixins.host-button-reset;
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: auto;
+  padding: 0.125rem;
+  border-radius: var(--radius-m-base);
+  cursor: pointer;
+  color: var(--icon-base);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    color: var(--text-darkest);
+  }
+
+  &[data-active] {
+    color: var(--primary-base);
+  }
+}
+
+// Popover content wrapper around the consumer's filter control + the Clear
+// button. Table owns this container (layout + a sane min-width); the control
+// itself is whatever the column's `filter.render` returned.
+@mixin table-filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--popconfirm-base-gap);
+  min-width: 12rem;
+}
+
+// Inner wrapper the consumer's `filter.render` output is mounted into (the
+// `filterPanel` slot). Kept minimal on purpose — the consumer's own components
+// bring their styling; this only guarantees the content stacks predictably.
+@mixin table-filter-panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--popconfirm-base-gap);
+}
+
+// ---------------------------------------------------------------------------
+// Pagination (composed Select + Buttons), empty + loading states
+// ---------------------------------------------------------------------------
+
+@mixin table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  gap: var(--pagination-base-container-gap);
+  font-size: var(--desktop-body-xs-size);
+  color: var(--icon-base);
+
+  .tk-table-pagination-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tk-table-pagination-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--pagination-base-arrow-gap);
+
+    > .tk-button {
+      min-width: 32px;
+      min-height: 32px;
+    }
+
+    > span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+    }
+  }
+
+  .tk-table-pagination-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--pagination-base-right-gap);
+  }
+
+  .tk-table-pagination-size {
+    display: flex;
+    align-items: center;
+    min-width: 52px;
+  }
+
+  .tk-table-pagination-go-to-page {
+    display: flex;
+    align-items: center;
+    min-width: 72px;
+  }
+}
+
+@mixin table-empty {
+  padding: 2rem 1rem;
+  border: 0;
+  text-align: center;
+  color: var(--text-sub-base);
+}
+
+@mixin table-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // The scrim is the translucent layer — NOT the overlay box. Putting
+  // `opacity` on the container would fade the Spinner along with it, leaving a
+  // washed-out indicator. A semi-transparent background dims the table beneath
+  // while the Spinner stays fully opaque. `color-mix` keeps it theme-driven
+  // (dark mode gets a dark scrim) with an rgba fallback for old engines.
+  background-color: rgba(255, 255, 255, 0.6);
+  background-color: color-mix(in srgb, var(--static-light) 60%, transparent);
+  z-index: 4;
+}

@@ -10,9 +10,16 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Foundations',
+      collapsed: false,
+      items: ['foundations/theming', 'foundations/composition-styling'],
+    },
+    {
+      type: 'category',
       label: 'Components',
       collapsed: false,
       items: [
+        'components/index',
         'components/accordion',
         'components/alert',
         'components/badge',
@@ -30,6 +37,7 @@ const sidebars: SidebarsConfig = {
         'components/spinner',
         'components/switch',
         'components/radio',
+        'components/table',
         'components/tabs',
         'components/toast',
         'components/tooltip',

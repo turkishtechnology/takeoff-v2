@@ -91,6 +91,11 @@ export default {
         children: childrenOverride(
           'Trigger content. Defaults to the selected item label or `placeholder`; supply children to override the rendering, or pass a render function for full layout control.',
         ),
+        indicator: {
+          type: 'boolean | React.ReactNode | ((state: SelectIndicatorRenderState) => React.ReactNode)',
+          description:
+            'Disclosure indicator after the value. Defaults to a chevron that flips with the open state. Pass `false` to hide it, a node for a custom static icon, or a render function `({ isOpen }) => …` to swap icons by open state.',
+        },
         className: classNameOverride,
       },
       dataAttributes: [
@@ -104,6 +109,24 @@ export default {
           purpose: 'Theme hook to style the placeholder color.',
         },
       ],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectIndicatorProps',
+      displayName: 'Select.Indicator',
+      headingBase: 'select-indicator',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride(
+          'Override the default chevron. A node renders in every state; a render function `({ isOpen }) => …` swaps icons by open state. Standalone part — drop it into the trigger’s render-prop `children` for full layout control.',
+        ),
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlotRoot],
     },
     {
       sourceFile: selectTypesFile,

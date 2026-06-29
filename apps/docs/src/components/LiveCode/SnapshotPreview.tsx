@@ -2,26 +2,20 @@ import { type ComponentType, type PropsWithChildren, useContext, useEffect, useR
 import { LiveContext, LivePreview, LiveProvider } from 'react-live';
 
 interface SnapshotPreviewProps {
-  onHasRendered: () => void;
   previewWrapper?: ComponentType<PropsWithChildren>;
   scope: Record<string, unknown>;
   noInline?: boolean;
 }
 
-export const SnapshotPreview = ({ onHasRendered, previewWrapper: PreviewWrapper, scope, noInline = false }: SnapshotPreviewProps) => {
+export const SnapshotPreview = ({ previewWrapper: PreviewWrapper, scope, noInline = false }: SnapshotPreviewProps) => {
   const { error, code } = useContext(LiveContext);
   const lastGoodCodeRef = useRef<string>('');
-  const hasCalledRenderedRef = useRef(false);
 
   useEffect(() => {
     if (!error && code) {
       lastGoodCodeRef.current = code;
-      if (!hasCalledRenderedRef.current) {
-        hasCalledRenderedRef.current = true;
-        onHasRendered();
-      }
     }
-  }, [error, code, onHasRendered]);
+  }, [error, code]);
 
   const showSnapshot = !!error && !!lastGoodCodeRef.current;
 
