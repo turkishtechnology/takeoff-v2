@@ -56,11 +56,10 @@
   }
 
   &[data-header-type='dark'] {
-    background: var(--background-darkest);
+    background: var(--neutral-800);
 
-    .tk-card-title,
-    .tk-card-description {
-      color: var(--text-lightest);
+    .tk-card-title {
+      color: var(--static-white);
     }
   }
 
@@ -68,10 +67,7 @@
     background: var(--primary-base);
 
     .tk-card-title {
-      color: var(--text-lightest);
-    }
-    .tk-card-description {
-      color: var(--primary-lightest);
+      color: var(--static-white);
     }
   }
 }
