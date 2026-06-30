@@ -111,7 +111,7 @@
 }
 
 /* --- Dark mode token overrides ------------------------------------------ */
-[data-theme='dark'] {
+:root[data-theme='dark'] {
   --ifm-color-primary: #ff4a5f;
   --ifm-color-primary-dark: #ff3050;
   --ifm-color-primary-darker: #ff1736;
