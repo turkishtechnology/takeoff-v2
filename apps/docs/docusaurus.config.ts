@@ -95,7 +95,7 @@ const config: Config = {
       darkTheme: prismThemes.vsDark,
     },
     colorMode: {
-      defaultMode: 'dark',
+      defaultMode: 'light',
       respectPrefersColorScheme: false,
     },
     navbar: {
