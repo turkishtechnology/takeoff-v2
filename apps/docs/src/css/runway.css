@@ -306,6 +306,21 @@ html[data-runway-landing='true'] .main-wrapper {
   background: var(--runway-black);
 }
 
+/* --- Inline <code> on the marketing surface ------------------------------
+   Docusaurus' Infima ships a default `code { background: var(--ifm-code-background) }`
+   that is a light off-white in light mode. On the runway surface (changelog,
+   landing) that light chip stays white in DARK mode too — Infima only flips
+   --ifm-code-background under [data-theme='dark'], but the runway surface paints
+   its own dark backdrop independent of the toggle, so unscoped/late-hydrating
+   <code> reads as an unreadable white block. Pin every inline <code> on the
+   surface to the theme-aware runway tokens so it tracks the surface, not Infima.
+   Scoped to [data-runway-landing] → never leaks into /docs/** content. */
+[data-runway-landing='true'] :not(pre) > code {
+  background: var(--runway-surface-dark);
+  border: 1px solid var(--runway-surface-dark-border);
+  color: var(--runway-ink);
+}
+
 /* --- Global subtle film-grain overlay on landing surface ---------------- */
 [data-runway-landing='true']::before {
   content: '';
