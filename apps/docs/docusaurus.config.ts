@@ -155,9 +155,9 @@ const config: Config = {
       ],
     },
     algolia: {
-      appId: process.env.ALGOLIA_APP_ID || 'X1Z85QJPUV',
-      apiKey: process.env.ALGOLIA_SEARCH_API_KEY || 'bf7211c161e8205da2f933a02534105a',
-      indexName: process.env.ALGOLIA_INDEX_NAME || 'docusaurus-2',
+      appId: process.env.ALGOLIA_APP_ID || 'UG7TKIU7YU',
+      apiKey: process.env.ALGOLIA_SEARCH_API_KEY || '57d4437ab8aaa188d5706d43c06d8183',
+      indexName: process.env.ALGOLIA_INDEX_NAME || 'takeoff_v2_docs',
       contextualSearch: true,
       searchPagePath: 'search',
       insights: false,
