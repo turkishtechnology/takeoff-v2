@@ -57,7 +57,7 @@
    * cardinal-red accents. Every component, sidebar, TOC, and doc page
    * already theme from these tokens.
    *
-   * DARK MODE (below, [data-theme='dark']) — pinned to the reference
+   * DARK MODE (below, :root[data-theme='dark']) — pinned to the reference
    * Takeoff UI landing palette (exact hex values) so dark mode gets the
    * deep, engineered look we want for the marketing surface.
    *
@@ -114,7 +114,7 @@
  * Every token below is the reference's *exact* value so our landing
  * is pixel-accurate against the mock when the user is on dark mode.
  * ──────────────────────────────────────────────────────────────── */
-[data-theme='dark'] {
+:root[data-theme='dark'] {
   /* Reference landing palette */
   --runway-black: #0a0a0d;
   --runway-bg-1: #111116;
