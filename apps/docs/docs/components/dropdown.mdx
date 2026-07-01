@@ -1,0 +1,564 @@
+---
+title: Dropdown
+description:
+  A keyboard-accessible action menu built on Spar's headless DropdownMenu
+  primitive.
+sidebar_label: Dropdown
+sidebar_position: 5
+slug: /components/dropdown
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Button,
+  Dropdown,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
+
+export const dropdownScope = { Button, Dropdown, CheckIconOutlinedRounded };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  return (
+    <Dropdown>
+      <Dropdown.Trigger as={Button}>Actions</Dropdown.Trigger>
+      <Dropdown.Content>
+        <Dropdown.Item onSelect={() => console.log('Edit')}>Edit</Dropdown.Item>
+        <Dropdown.Item onSelect={() => console.log('Duplicate')}>Duplicate</Dropdown.Item>
+        <Dropdown.Separator />
+        <Dropdown.Item onSelect={() => console.log('Archive')}>Archive</Dropdown.Item>
+      </Dropdown.Content>
+    </Dropdown>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const groupedDemo = String.raw`
+function GroupedDemo() {
+  return (
+    <Dropdown>
+      <Dropdown.Trigger as={Button}>Manage booking</Dropdown.Trigger>
+      <Dropdown.Content>
+        <Dropdown.Group>
+          <Dropdown.Label>Flight</Dropdown.Label>
+          <Dropdown.Item textValue="Change flight">Change flight</Dropdown.Item>
+          <Dropdown.Item textValue="Add baggage">Add baggage</Dropdown.Item>
+        </Dropdown.Group>
+        <Dropdown.Separator />
+        <Dropdown.Group>
+          <Dropdown.Label>Documents</Dropdown.Label>
+          <Dropdown.Item>Download invoice</Dropdown.Item>
+          <Dropdown.Item disabled>Refund receipt</Dropdown.Item>
+        </Dropdown.Group>
+      </Dropdown.Content>
+    </Dropdown>
+  );
+}
+
+render(<GroupedDemo />);
+`;
+
+export const arrowDemo = String.raw`
+function ArrowDemo() {
+  return (
+    <Dropdown>
+      <Dropdown.Trigger as={Button}>With arrow</Dropdown.Trigger>
+      <Dropdown.Content side="bottom" align="center">
+        <Dropdown.Arrow />
+        <Dropdown.Item>View details</Dropdown.Item>
+        <Dropdown.Item>Download boarding pass</Dropdown.Item>
+      </Dropdown.Content>
+    </Dropdown>
+  );
+}
+
+render(<ArrowDemo />);
+`;
+
+export const placementDemo = String.raw`
+function PlacementDemo() {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-3 py-8">
+      <Dropdown>
+        <Dropdown.Trigger as={Button}>Top start</Dropdown.Trigger>
+        <Dropdown.Content side="top" align="start">
+          <Dropdown.Item>Earlier flights</Dropdown.Item>
+          <Dropdown.Item>Later flights</Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown>
+      <Dropdown>
+        <Dropdown.Trigger as={Button}>Bottom end</Dropdown.Trigger>
+        <Dropdown.Content side="bottom" align="end">
+          <Dropdown.Item>Print</Dropdown.Item>
+          <Dropdown.Item>Email</Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown>
+      <Dropdown>
+        <Dropdown.Trigger as={Button}>Right center</Dropdown.Trigger>
+        <Dropdown.Content side="right" align="center">
+          <Dropdown.Item>Open profile</Dropdown.Item>
+          <Dropdown.Item>Sign out</Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown>
+    </div>
+  );
+}
+
+render(<PlacementDemo />);
+`;
+
+export const sizeDemo = String.raw`
+function SizeDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      {['small', 'base', 'large'].map((size) => (
+        <Dropdown key={size} size={size}>
+          <Dropdown.Trigger as={Button} size={size}>{size}</Dropdown.Trigger>
+          <Dropdown.Content>
+            <Dropdown.Item>Check in</Dropdown.Item>
+            <Dropdown.Item>Seat selection</Dropdown.Item>
+          </Dropdown.Content>
+        </Dropdown>
+      ))}
+    </div>
+  );
+}
+
+render(<SizeDemo />);
+`;
+
+export const contentWidthDemo = String.raw`
+function ContentWidthDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Dropdown contentWidth="content">
+        <Dropdown.Trigger as={Button}>Content width</Dropdown.Trigger>
+        <Dropdown.Content>
+          <Dropdown.Item>Short action</Dropdown.Item>
+          <Dropdown.Item>Longer content defines the panel width</Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown>
+      <Dropdown contentWidth="trigger">
+        <Dropdown.Trigger as={Button} style={{ width: 220 }}>Trigger width</Dropdown.Trigger>
+        <Dropdown.Content>
+          <Dropdown.Item>Passenger details</Dropdown.Item>
+          <Dropdown.Item>Travel documents</Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown>
+      <Dropdown contentWidth={280}>
+        <Dropdown.Trigger as={Button}>Number width</Dropdown.Trigger>
+        <Dropdown.Content>
+          <Dropdown.Item>Download full itinerary PDF</Dropdown.Item>
+          <Dropdown.Item>Send all booking documents</Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown>
+      <Dropdown contentWidth="min(20rem, 90vw)">
+        <Dropdown.Trigger as={Button}>CSS width</Dropdown.Trigger>
+        <Dropdown.Content>
+          <Dropdown.Item>Width can be any CSS width value.</Dropdown.Item>
+          <Dropdown.Item>Useful for responsive menus.</Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown>
+    </div>
+  );
+}
+
+render(<ContentWidthDemo />);
+`;
+
+export const controlledDemo = String.raw`
+function ControlledDemo() {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div className="flex items-center gap-3">
+      <Dropdown open={open} onOpenChange={setOpen}>
+        <Dropdown.Trigger as={Button}>
+          {({ isOpen }) => (isOpen ? 'Close controlled menu' : 'Open controlled menu')}
+        </Dropdown.Trigger>
+        <Dropdown.Content>
+          <Dropdown.Item>Share</Dropdown.Item>
+          <Dropdown.Item>Copy link</Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown>
+      <span className="text-sm text-sub-base">Open: {String(open)}</span>
+    </div>
+  );
+}
+
+render(<ControlledDemo />);
+`;
+
+export const closeOnSelectDemo = String.raw`
+function CloseOnSelectDemo() {
+  const [selected, setSelected] = React.useState(['seat']);
+
+  const toggle = (value) => {
+    setSelected((current) =>
+      current.includes(value)
+        ? current.filter((item) => item !== value)
+        : [...current, value],
+    );
+  };
+
+  return (
+    <Dropdown closeOnSelect={false} contentWidth="trigger">
+      <Dropdown.Trigger as={Button}>Add-ons ({selected.length})</Dropdown.Trigger>
+      <Dropdown.Content>
+        {[
+          ['seat', 'Extra legroom seat'],
+          ['meal', 'Special meal'],
+          ['bag', 'Extra baggage'],
+        ].map(([value, label]) => (
+          <Dropdown.Item key={value} textValue={label} onSelect={() => toggle(value)}>
+            <span>{label}</span>
+            <span className="inline-flex w-4 justify-center">
+              {selected.includes(value) ? <CheckIconOutlinedRounded aria-hidden="true" width={16} height={16} /> : null}
+            </span>
+          </Dropdown.Item>
+        ))}
+      </Dropdown.Content>
+    </Dropdown>
+  );
+}
+
+render(<CloseOnSelectDemo />);
+`;
+
+export const richContentDemo = String.raw`
+function RichContentDemo() {
+  return (
+    <Dropdown contentWidth="min(22rem, 90vw)">
+      <Dropdown.Trigger as={Button}>Rich items</Dropdown.Trigger>
+      <Dropdown.Content>
+        <Dropdown.Item textValue="Upgrade cabin">
+          <span className="flex min-w-0 flex-col">
+            <strong className="font-medium text-darkest">Upgrade cabin</strong>
+            <span className="text-xs text-sub-base">Review paid upgrade options for this flight.</span>
+          </span>
+          <span className="ml-auto rounded border border-light px-1.5 py-0.5 text-xs">New</span>
+        </Dropdown.Item>
+        <Dropdown.Item textValue="Keyboard shortcut">
+          <span className="flex min-w-0 flex-col">
+            <strong className="font-medium text-darkest">Open command center</strong>
+            <span className="text-xs text-sub-base">Jump to operational shortcuts.</span>
+          </span>
+          <kbd className="ml-auto rounded bg-light px-1.5 py-0.5 text-xs">Ctrl K</kbd>
+        </Dropdown.Item>
+      </Dropdown.Content>
+    </Dropdown>
+  );
+}
+
+render(<RichContentDemo />);
+`;
+
+export const disabledDemo = String.raw`
+function DisabledDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Dropdown disabled>
+        <Dropdown.Trigger as={Button}>Disabled menu</Dropdown.Trigger>
+        <Dropdown.Content>
+          <Dropdown.Item>Unavailable action</Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown>
+      <Dropdown>
+        <Dropdown.Trigger as={Button}>Enabled menu</Dropdown.Trigger>
+        <Dropdown.Content>
+          <Dropdown.Item>Open booking</Dropdown.Item>
+          <Dropdown.Item disabled>Refund receipt</Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown>
+    </div>
+  );
+}
+
+render(<DisabledDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Dropdown
+
+`Dropdown` is an action menu for commands, secondary navigation, and compact
+grouped choices that should not write a selected value back into the trigger. It
+wraps Spar's headless `DropdownMenu` primitive and adds Takeoff slot classes,
+size styling, and compound anatomy.
+
+## Usage
+
+```tsx
+import { Dropdown } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Dropdown>
+  <Dropdown.Trigger />
+  <Dropdown.Content>
+    <Dropdown.Item />
+    <Dropdown.Separator />
+    <Dropdown.Group>
+      <Dropdown.Label />
+      <Dropdown.Item />
+    </Dropdown.Group>
+    <Dropdown.Arrow />
+  </Dropdown.Content>
+</Dropdown>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Groups
+
+<LiveCode
+  code={groupedDemo}
+  noInline
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Arrow
+
+<LiveCode
+  code={arrowDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Placement
+
+<LiveCode
+  code={placementDemo}
+  noInline
+  previewMinHeight={240}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Sizes
+
+<LiveCode
+  code={sizeDemo}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Content Width
+
+<LiveCode
+  code={contentWidthDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Controlled
+
+<LiveCode
+  code={controlledDemo}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Keep Open
+
+<LiveCode
+  code={closeOnSelectDemo}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Rich Content
+
+<LiveCode
+  code={richContentDemo}
+  noInline
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Disabled
+
+<LiveCode
+  code={disabledDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Accessibility & Keyboard
+
+- Trigger uses `aria-expanded`, `aria-haspopup="menu"`, and `aria-controls`.
+- Content renders as a menu and items render as menu items.
+- Disabled items remain visible but cannot be highlighted or selected.
+- Escape closes the menu and returns focus to the trigger.
+
+| Key                                 | Behavior                                        |
+| ----------------------------------- | ----------------------------------------------- |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Open the menu or activate the highlighted item. |
+| <kbd>↓</kbd> / <kbd>↑</kbd>         | Move highlight to the next or previous item.    |
+| <kbd>Home</kbd> / <kbd>End</kbd>    | Move highlight to the first or last item.       |
+| <kbd>Esc</kbd>                      | Close the menu without selecting an item.       |
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Dropdown {#dropdown}
+
+See
+[Spar DropdownMenu docs](https://spar.app.turkishtechlab.com/docs/Components/DropdownMenu)
+for primitive behavior.
+
+#### Props {#dropdown-props}
+
+| Name                               | Type                                                                              | Default   | Description                                                                                                                                                      |
+| ---------------------------------- | --------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />      | <code>React.React.ReactNode</code>                                                | -         | Component content                                                                                                                                                |
+| <ApiBadge label="size" />          | <code><a href="#dropdown-td-dropdownsize">DropdownSize</a></code>                 | 'base'    | Size scale for the menu content and items.                                                                                                                       |
+| <ApiBadge label="contentWidth" />  | <code><a href="#dropdown-td-dropdowncontentwidth">DropdownContentWidth</a></code> | 'content' | How the portalled Dropdown.Content panel computes its width. See `DropdownContentWidth`.                                                                         |
+| <ApiBadge label="id" />            | <code>string</code>                                                               | -         | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
+| <ApiBadge label="disabled" />      | <code>boolean</code>                                                              | false     | Disables all dropdown menu triggers (prevents opening)                                                                                                           |
+| <ApiBadge label="open" />          | <code>boolean</code>                                                              | -         | Controlled open state                                                                                                                                            |
+| <ApiBadge label="defaultOpen" />   | <code>boolean</code>                                                              | false     | Uncontrolled default open state                                                                                                                                  |
+| <ApiBadge label="modal" />         | <code>boolean</code>                                                              | true      | Whether menu is modal (focus trapped)                                                                                                                            |
+| <ApiBadge label="closeOnSelect" /> | <code>boolean</code>                                                              | true      | Whether to close the menu after an item is selected                                                                                                              |
+
+#### Events {#dropdown-events}
+
+| Name                              | Type                                    | Default | Description                      |
+| --------------------------------- | --------------------------------------- | ------- | -------------------------------- |
+| <ApiBadge label="onOpenChange" /> | <code>(open: boolean) =&gt; void</code> | -       | Callback when open state changes |
+
+### Dropdown.Trigger {#dropdown-trigger}
+
+#### Data attributes {#dropdown-trigger-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Dropdown.Content {#dropdown-content}
+
+#### Props {#dropdown-content-props}
+
+| Name                            | Type                                                                                      | Default       | Description                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.React.ReactNode</code>                                                        | -             |                                                                            |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -             | Per-slot class name overrides.                                             |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML attribute overrides.                                         |
+| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                      | document.body | Portal container element. Content is portaled to document.body by default. |
+| <ApiBadge label="side" />       | <code><a href="#dropdown-td-side">Side</a></code>                                         | 'bottom'      | Preferred placement side                                                   |
+| <ApiBadge label="align" />      | <code><a href="#dropdown-td-align">Align</a></code>                                       | 'start'       | Alignment on placement side                                                |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -             |                                                                            |
+
+#### Events {#dropdown-content-events}
+
+| Name                                      | Type                                           | Default | Description           |
+| ----------------------------------------- | ---------------------------------------------- | ------- | --------------------- |
+| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code> | -       | Escape key handler    |
+| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>  | -       | Outside click handler |
+| <ApiBadge label="onFocusOutside" />       | <code>(event: FocusEvent) =&gt; void</code>    | -       | Outside focus handler |
+
+#### Data attributes {#dropdown-content-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                                     |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.       |
+| <ApiBadge label="data-size" />                  | Always       | Reflects the resolved `Dropdown.size` for menu item sizing. |
+
+### Dropdown.Item {#dropdown-item}
+
+#### Props {#dropdown-item-props}
+
+| Name                            | Type                                                                                      | Default | Description                        |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ---------------------------------- |
+| <ApiBadge label="children" />   | <code>React.React.ReactNode</code>                                                        | -       |                                    |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides. |
+| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                      | false   | Whether item is disabled           |
+| <ApiBadge label="textValue" />  | <code>string</code>                                                                       | -       | Value for typeahead search         |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       |                                    |
+
+#### Events {#dropdown-item-events}
+
+| Name                          | Type                                                                     | Default | Description       |
+| ----------------------------- | ------------------------------------------------------------------------ | ------- | ----------------- |
+| <ApiBadge label="onSelect" /> | <code>(event: React.SyntheticEvent&lt;HTMLElement&gt;) =&gt; void</code> | -       | Selection handler |
+
+#### Data attributes {#dropdown-item-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Dropdown.Group {#dropdown-group}
+
+#### Data attributes {#dropdown-group-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Dropdown.Label {#dropdown-label}
+
+#### Data attributes {#dropdown-label-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Dropdown.Separator {#dropdown-separator}
+
+#### Data attributes {#dropdown-separator-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Dropdown.Arrow {#dropdown-arrow}
+
+#### Data attributes {#dropdown-arrow-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#dropdown-type-definitions}
+
+| Name                                                                                                             | Definition                                                                                                                      |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="dropdown-td-dropdownsize"><ApiBadge label="DropdownSize" /></span>                                     | <code>'small' &#124; 'base' &#124; 'large'</code>                                                                               |
+| <span id="dropdown-td-dropdowncontentwidth"><ApiBadge label="DropdownContentWidth" /></span>                     | <code>'content' &#124; 'trigger' &#124; number &#124; string</code>                                                             |
+| <span id="dropdown-td-dropdownmenutriggerrenderprops"><ApiBadge label="DropdownMenuTriggerRenderProps" /></span> | <code>&#123; isOpen: boolean; disabled: boolean; open: () =&gt; void; close: () =&gt; void; toggle: () =&gt; void &#125;</code> |
+| <span id="dropdown-td-side"><ApiBadge label="Side" /></span>                                                     | <code>'top' &#124; 'right' &#124; 'bottom' &#124; 'left'</code>                                                                 |
+| <span id="dropdown-td-align"><ApiBadge label="Align" /></span>                                                   | <code>'start' &#124; 'center' &#124; 'end'</code>                                                                               |
+
+{/* api-tables:end */}

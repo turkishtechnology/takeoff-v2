@@ -12,6 +12,7 @@
 @use 'recipes/chip';
 @use 'recipes/dialog';
 @use 'recipes/drawer';
+@use 'recipes/dropdown';
 @use 'recipes/field';
 @use 'recipes/input';
 @use 'recipes/label';
@@ -161,6 +162,34 @@
 
 .tk-drawer-close {
   @include drawer.drawer-close;
+}
+
+.tk-dropdown-trigger {
+  @include dropdown.dropdown-trigger;
+}
+
+.tk-dropdown-content {
+  @include dropdown.dropdown-content;
+}
+
+.tk-dropdown-item {
+  @include dropdown.dropdown-item;
+}
+
+.tk-dropdown-group {
+  @include dropdown.dropdown-group;
+}
+
+.tk-dropdown-label {
+  @include dropdown.dropdown-label;
+}
+
+.tk-dropdown-separator {
+  @include dropdown.dropdown-separator;
+}
+
+.tk-dropdown-arrow {
+  @include dropdown.dropdown-arrow;
 }
 
 .tk-field {

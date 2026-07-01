@@ -1,0 +1,128 @@
+@use '../abstracts/mixins' as mixins;
+
+// ---------------------------------------------------------------------------
+// Dropdown menu recipe
+// ---------------------------------------------------------------------------
+// Slot identity: class names (.tk-dropdown-*)
+// State flags: Spar data attributes ([data-state], [data-highlighted],
+// [data-disabled])
+// ---------------------------------------------------------------------------
+
+@mixin dropdown-trigger {
+  cursor: pointer;
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+@mixin dropdown-content {
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  z-index: 800;
+  display: flex;
+  flex-direction: column;
+  min-width: 8rem;
+  max-height: 18rem;
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-l-base, 1rem);
+  background-color: var(--static-light);
+  box-shadow:
+    0 2px 2px -1px var(--shadow-black-alpha-light, rgba(82, 88, 102, 0.04)),
+    0 6px 12px -2px var(--shadow-black-alpha-light, rgba(82, 88, 102, 0.04)),
+    0 8px 20px 0 var(--shadow-black-alpha-light, rgba(82, 88, 102, 0.04));
+  outline: none;
+
+  @include mixins.takeoff-scrollbar;
+
+  &[data-size='large'] {
+    font-size: var(--desktop-body-m-base-size);
+    line-height: var(--desktop-body-m-base-line-height);
+
+    .tk-dropdown-item {
+      padding: var(--dropdown-items-basic-large-v-padding) var(--dropdown-items-basic-large-h-padding);
+      gap: var(--dropdown-items-basic-large-gap);
+      border-radius: var(--dropdown-items-basic-large-radius);
+    }
+  }
+
+  &[data-size='base'] {
+    font-size: var(--desktop-body-s-size);
+    line-height: var(--desktop-body-s-line-height);
+  }
+
+  &[data-size='small'] {
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+
+    .tk-dropdown-item {
+      padding: var(--dropdown-items-basic-small-v-padding) var(--dropdown-items-basic-small-h-padding);
+      gap: var(--dropdown-items-basic-small-gap);
+      border-radius: var(--dropdown-items-basic-small-radius);
+    }
+  }
+}
+
+@mixin dropdown-item-size($h-padding, $v-padding, $gap, $radius) {
+  padding: $v-padding $h-padding;
+  gap: $gap;
+  border-radius: $radius;
+}
+
+@mixin dropdown-item {
+  display: flex;
+  align-items: center;
+  color: var(--text-darkest);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+
+  @include dropdown-item-size(
+    var(--dropdown-items-basic-base-h-padding),
+    var(--dropdown-items-basic-base-v-padding),
+    var(--dropdown-items-basic-base-gap),
+    var(--dropdown-items-basic-base-radius)
+  );
+
+  &[data-highlighted] {
+    background-color: var(--background-lightest);
+  }
+
+  &[data-disabled] {
+    color: var(--text-sub-base);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+@mixin dropdown-group {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin dropdown-label {
+  padding-inline: 0.5rem;
+  padding-block: 0.25rem;
+  font-size: var(--desktop-body-xs-size);
+  line-height: var(--desktop-body-xs-line-height);
+  font-weight: 500;
+  color: var(--text-sub-base);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+
+@mixin dropdown-separator {
+  flex-shrink: 0;
+  height: 1px;
+  margin: 0.25rem 0;
+  background-color: var(--background-light);
+}
+
+@mixin dropdown-arrow {
+  display: block;
+  color: var(--static-light);
+  pointer-events: none;
+}

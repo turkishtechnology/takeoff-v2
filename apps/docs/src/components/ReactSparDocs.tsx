@@ -18,6 +18,7 @@ export {
   Chip,
   Dialog,
   Drawer,
+  Dropdown,
   Field,
   Input,
   Label,

@@ -29,6 +29,15 @@ import {
   DrawerTitleBase,
   DrawerTriggerBase,
 } from './components/drawer/base';
+import {
+  DropdownArrowBase,
+  DropdownContentBase,
+  DropdownGroupBase,
+  DropdownItemBase,
+  DropdownLabelBase,
+  DropdownSeparatorBase,
+  DropdownTriggerBase,
+} from './components/dropdown/base';
 import { FieldBase, FieldDescriptionBase, FieldErrorMessageBase, FieldLabelBase } from './components/field/base';
 import {
   InputBase,
@@ -46,7 +55,16 @@ import {
   InputSuffixBase,
   InputTrailingIconBase,
 } from './components/input/base';
-import { SelectBase, SelectContentBase, SelectGroupBase, SelectIndicatorBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
+import {
+  SelectBase,
+  SelectContentBase,
+  SelectGroupBase,
+  SelectIndicatorBase,
+  SelectItemBase,
+  SelectLabelBase,
+  SelectSeparatorBase,
+  SelectTriggerBase,
+} from './components/select/base';
 import { SpinnerBase } from './components/spinner/base';
 import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
@@ -114,6 +132,13 @@ export const slotClassRegistry = {
   drawerFooter: { slots: DrawerFooterBase.classes },
   drawerClose: { slots: DrawerCloseBase.classes },
   drawerTrigger: { slots: DrawerTriggerBase.classes },
+  dropdownTrigger: { slots: DropdownTriggerBase.classes },
+  dropdownContent: { slots: DropdownContentBase.classes },
+  dropdownItem: { slots: DropdownItemBase.classes },
+  dropdownGroup: { slots: DropdownGroupBase.classes },
+  dropdownLabel: { slots: DropdownLabelBase.classes },
+  dropdownSeparator: { slots: DropdownSeparatorBase.classes },
+  dropdownArrow: { slots: DropdownArrowBase.classes },
   field: { slots: FieldBase.classes },
   fieldLabel: { slots: FieldLabelBase.classes },
   fieldDescription: { slots: FieldDescriptionBase.classes },

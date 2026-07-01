@@ -18,6 +18,7 @@ and accessibility guidance where the component owns interaction behavior.
 | ------------------------------------- | --------------------------------------------------------------------- |
 | [Button](/docs/components/button)     | Triggering actions with loading, toggle, and icon support.            |
 | [Checkbox](/docs/components/checkbox) | Selecting multiple options or representing a mixed state.             |
+| [Dropdown](/docs/components/dropdown) | Presenting contextual action menus from a trigger.                    |
 | [Input](/docs/components/input)       | Building text inputs with labels, affixes, icons, chips, and actions. |
 | [Label](/docs/components/label)       | Labeling controls, sections, and compact metadata.                    |
 | [Radio](/docs/components/radio)       | Choosing one option from a mutually exclusive set.                    |
@@ -40,6 +41,7 @@ and accessibility guidance where the component owns interaction behavior.
 | [Badge](/docs/components/badge)     | Displaying compact status, count, or category labels.                    |
 | [Chip](/docs/components/chip)       | Representing filters, selections, and removable values.                  |
 | [Spinner](/docs/components/spinner) | Communicating indeterminate loading work.                                |
+| [Toast](/docs/components/toast)     | Showing transient confirmations, alerts, and background task updates.    |
 | [Tooltip](/docs/components/tooltip) | Adding short contextual information on hover or focus.                   |
 
 ## Content & overlays
@@ -50,6 +52,7 @@ and accessibility guidance where the component owns interaction behavior.
 | [Dialog](/docs/components/dialog)   | Handling focused forms, confirmations, and blocking decisions. |
 | [Drawer](/docs/components/drawer)   | Showing navigation, filters, or details over the current page. |
 | [Popover](/docs/components/popover) | Displaying additional content or actions in a floating panel.  |
+| [Table](/docs/components/table)     | Scanning, sorting, filtering, and paginating structured data.  |
 
 Start with [Composition & styling](/docs/foundations/composition-styling) to
 learn the shared compound, slot, and customization model.
