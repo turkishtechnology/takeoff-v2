@@ -156,7 +156,7 @@ const config: Config = {
     },
     algolia: {
       appId: process.env.ALGOLIA_APP_ID || 'UG7TKIU7YU',
-      apiKey: process.env.ALGOLIA_SEARCH_API_KEY || '57d4437ab8aaa188d5706d43c06d8183',
+      apiKey: process.env.ALGOLIA_SEARCH_API_KEY || 'f1abf465a04595b184b1a733794c2553',
       indexName: process.env.ALGOLIA_INDEX_NAME || 'takeoff_v2_docs',
       contextualSearch: true,
       searchPagePath: 'search',
