@@ -66,6 +66,20 @@ describe('Divider', () => {
       expect(container.querySelector('.tk-divider-label')).not.toBeInTheDocument();
     });
 
+    it('skips the label slot when children is an array with no renderable items', () => {
+      const empty = render(<Divider>{[]}</Divider>);
+      expect(empty.container.querySelector('.tk-divider-label')).not.toBeInTheDocument();
+
+      const falsy = render(<Divider>{[false, null, '']}</Divider>);
+      expect(falsy.container.querySelector('.tk-divider-label')).not.toBeInTheDocument();
+    });
+
+    it('keeps the label slot when an array contains a renderable falsy item', () => {
+      const { container } = render(<Divider>{[0]}</Divider>);
+
+      expect(container.querySelector('.tk-divider-label')).toHaveTextContent('0');
+    });
+
     it('renders a label inside a vertical divider', () => {
       render(<Divider orientation="vertical">Devamı</Divider>);
 
