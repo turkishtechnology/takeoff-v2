@@ -28,12 +28,63 @@
 // regardless of the line color; restyle it via the `label` slot.
 //
 
+// Dash/dot patterns for one orientation. The gradient replaces the solid
+// border on both segments; forced-colors mode and print drop background
+// images, so those fall back to native border dashes (coarser, but visible).
+@mixin divider-line-pattern($axis) {
+  $size-prop: height;
+  $border-prop: border-block-start;
+  $gradient-direction: to right;
+  $dot-repeat: repeat-x;
+  $dot-tile: 5px 2px;
+
+  @if $axis == vertical {
+    $size-prop: width;
+    $border-prop: border-inline-start;
+    $gradient-direction: to bottom;
+    $dot-repeat: repeat-y;
+    $dot-tile: 2px 5px;
+  }
+
+  &[data-type='dashed']::before,
+  &[data-type='dashed']::after {
+    #{$size-prop}: 1px;
+    #{$border-prop}: 0;
+    background-image: repeating-linear-gradient(#{$gradient-direction}, currentColor 0 6px, transparent 6px 10px);
+  }
+
+  &[data-type='dotted']::before,
+  &[data-type='dotted']::after {
+    #{$size-prop}: 2px;
+    #{$border-prop}: 0;
+    background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+    background-repeat: $dot-repeat;
+    background-size: $dot-tile;
+  }
+
+  @media (forced-colors: active), print {
+    &[data-type='dashed']::before,
+    &[data-type='dashed']::after {
+      #{$size-prop}: auto;
+      background-image: none;
+      #{$border-prop}: 1px dashed currentColor;
+    }
+
+    &[data-type='dotted']::before,
+    &[data-type='dotted']::after {
+      #{$size-prop}: auto;
+      background-image: none;
+      #{$border-prop}: 1px dotted currentColor;
+    }
+  }
+}
+
 @mixin divider {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 
-  color: var(--background-light);
+  color: var(--border-light);
 
   &::before,
   &::after {
@@ -50,10 +101,10 @@
     white-space: nowrap;
 
     color: var(--text-base);
-    font-family: var(--family-body);
+    font-family: var(--family-body, 'tk-text', sans-serif);
     font-size: var(--desktop-body-2xs-size);
     font-weight: 400;
-    line-height: var(--line-height-xxs-normal);
+    line-height: var(--desktop-body-2xs-line-height);
   }
 
   // Label alignment — fix the short segment to a small inset -----------------
@@ -69,39 +120,7 @@
     width: 100%;
     margin-block: 16px;
 
-    &[data-type='dashed']::before,
-    &[data-type='dashed']::after {
-      height: 1px;
-      border-block-start: 0;
-      background-image: repeating-linear-gradient(to right, currentColor 0 6px, transparent 6px 10px);
-    }
-
-    &[data-type='dotted']::before,
-    &[data-type='dotted']::after {
-      height: 2px;
-      border-block-start: 0;
-      background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
-      background-repeat: repeat-x;
-      background-size: 5px 2px;
-    }
-
-    // Forced-colors mode and print drop background images — fall back to
-    // native border dashes there (coarser, but visible).
-    @media (forced-colors: active), print {
-      &[data-type='dashed']::before,
-      &[data-type='dashed']::after {
-        height: auto;
-        background-image: none;
-        border-block-start: 1px dashed currentColor;
-      }
-
-      &[data-type='dotted']::before,
-      &[data-type='dotted']::after {
-        height: auto;
-        background-image: none;
-        border-block-start: 1px dotted currentColor;
-      }
-    }
+    @include divider-line-pattern(horizontal);
   }
 
   &[data-orientation='vertical'] {
@@ -116,39 +135,7 @@
       border-inline-start: 1px solid currentColor;
     }
 
-    &[data-type='dashed']::before,
-    &[data-type='dashed']::after {
-      width: 1px;
-      border-inline-start: 0;
-      background-image: repeating-linear-gradient(to bottom, currentColor 0 6px, transparent 6px 10px);
-    }
-
-    &[data-type='dotted']::before,
-    &[data-type='dotted']::after {
-      width: 2px;
-      border-inline-start: 0;
-      background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
-      background-repeat: repeat-y;
-      background-size: 2px 5px;
-    }
-
-    // Forced-colors mode and print drop background images — fall back to
-    // native border dashes there (coarser, but visible).
-    @media (forced-colors: active), print {
-      &[data-type='dashed']::before,
-      &[data-type='dashed']::after {
-        width: auto;
-        background-image: none;
-        border-inline-start: 1px dashed currentColor;
-      }
-
-      &[data-type='dotted']::before,
-      &[data-type='dotted']::after {
-        width: auto;
-        background-image: none;
-        border-inline-start: 1px dotted currentColor;
-      }
-    }
+    @include divider-line-pattern(vertical);
 
     .tk-divider-label {
       padding-inline: 0;
