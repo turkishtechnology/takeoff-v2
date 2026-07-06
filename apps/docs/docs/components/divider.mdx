@@ -9,14 +9,10 @@ slug: /components/divider
 ---
 
 import LiveCode from '@site/src/components/LiveCode';
-import {
-  Badge,
-  Divider,
-  ReactSparDemoRoot,
-} from '@site/src/components/ReactSparDocs';
+import { Divider, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const dividerScope = { Badge, Divider };
+export const dividerScope = { Divider };
 
 {/* prettier-ignore-start */}
 
@@ -96,35 +92,18 @@ function CustomizationDemo() {
 render(<CustomizationDemo />);
 `;
 
-export const labelDemo = String.raw`
-function LabelDemo() {
+export const alignDemo = String.raw`
+function AlignDemo() {
   return (
     <div className="w-full max-w-md">
-      <Divider align="start">Start</Divider>
-      <Divider>Center</Divider>
-      <Divider align="end">End</Divider>
-      <Divider>
-        <Badge variant="info" appearance="filledLight" size="small">3 more results</Badge>
-      </Divider>
+      <Divider align="start">Section</Divider>
+      <Divider>Section</Divider>
+      <Divider align="end">Section</Divider>
     </div>
   );
 }
 
-render(<LabelDemo />);
-`;
-
-export const verticalLabelDemo = String.raw`
-function VerticalLabelDemo() {
-  return (
-    <div className="flex h-28 w-full max-w-md items-stretch justify-center text-sm">
-      <div className="flex flex-1 items-center justify-center">Outbound</div>
-      <Divider orientation="vertical">VS</Divider>
-      <div className="flex flex-1 items-center justify-center">Return</div>
-    </div>
-  );
-}
-
-render(<VerticalLabelDemo />);
+render(<AlignDemo />);
 `;
 
 {/* prettier-ignore-end */}
@@ -180,8 +159,6 @@ Vertical dividers stretch to the height of their flex container.
 
 ## Customization
 
-Beyond the props, three surfaces are open for styling:
-
 - **Line color** — the line follows `currentColor`; set `color` on the root via
   `style` or your own CSS. Dashed and dotted lines pick the color up too.
 - **Spacing** — outer margins default to `16px` (`margin-block` for horizontal,
@@ -200,29 +177,13 @@ Beyond the props, three surfaces are open for styling:
   scope={dividerScope}
 />
 
-## Label
+## Align
 
-Children render in a label between the line segments. Use `align` to position it
-along the line; any content works, not just text. Target the label slot with
-`classNames={{ label: … }}` / `slotProps={{ label: … }}`.
-
-Note that the ARIA `separator` role does not take its accessible name from
-content — a visible label is not announced as the separator's name. Pass
-`aria-label` when the separator needs one, or set `decorative` to remove purely
-visual dividers from the accessibility tree entirely.
+Use `align` to position the label along the line: `start`, `center` (the
+default), or `end`.
 
 <LiveCode
-  code={labelDemo}
-  noInline
-  previewMinHeight={180}
-  previewWrapper={ReactSparDemoRoot}
-  scope={dividerScope}
-/>
-
-Labels also work on vertical dividers:
-
-<LiveCode
-  code={verticalLabelDemo}
+  code={alignDemo}
   noInline
   previewMinHeight={140}
   previewWrapper={ReactSparDemoRoot}
