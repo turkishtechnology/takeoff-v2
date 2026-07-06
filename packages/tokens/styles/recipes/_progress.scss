@@ -1,0 +1,145 @@
+// Progress recipe — shared style contract for the takeoff-spar Progress
+// compound. Renders determinate progress as a linear bar or a circular ring:
+//
+//   .tk-progress            — root (role="progressbar", a11y owner); doubles
+//                             as the track
+//   .tk-progress-indicator  — filled portion, composed by the consumer
+//                             (linear fill <span> / circular ring <svg>:
+//                             rail circle + arc circle)
+//
+// State/variant attributes (root):
+//   data-type     — linear | circular
+//   data-size     — small | base | large
+//   data-variant  — primary | info | success | danger | warning (fill color)
+//   data-disabled — present when disabled (muted fill)
+//
+// The wrapper writes the progress inline: bar width (linear) or the arc
+// circle's stroke-dashoffset (circular — the arc carries pathLength="100").
+
+@mixin progress {
+  box-sizing: border-box;
+  --tk-progress-linear-size: 6px;
+  --tk-progress-circular-size: 96px;
+  --tk-progress-circular-stroke-width: 2.5;
+
+  &[data-size='small'] {
+    --tk-progress-linear-size: 4px;
+    --tk-progress-circular-size: 64px;
+  }
+
+  &[data-size='base'] {
+    --tk-progress-linear-size: 6px;
+    --tk-progress-circular-size: 96px;
+  }
+
+  &[data-size='large'] {
+    --tk-progress-linear-size: 8px;
+    --tk-progress-circular-size: 128px;
+  }
+
+  // ----- Linear -------------------------------------------------------------
+  // The root is the rail: it carries the height, radius, and track color; the
+  // indicator fills it to the width the wrapper writes inline.
+
+  &[data-type='linear'] {
+    display: block;
+    width: 100%;
+    height: var(--tk-progress-linear-size);
+    border-radius: var(--radius-full);
+    background-color: var(--background-light);
+    overflow: hidden;
+
+    .tk-progress-indicator {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background-color: var(--primary-base);
+      transition: width 0.3s ease-in-out;
+    }
+  }
+
+  // ----- Circular -----------------------------------------------------------
+  // The indicator is the ring <svg>: first circle is the rail, last circle is
+  // the filled arc.
+
+  &[data-type='circular'] {
+    display: inline-flex;
+    vertical-align: middle;
+
+    .tk-progress-indicator {
+      display: block;
+      width: var(--tk-progress-circular-size);
+      height: var(--tk-progress-circular-size);
+      transform: rotate(-90deg);
+
+      circle {
+        fill: none;
+        stroke: var(--background-light);
+        stroke-width: var(--tk-progress-circular-stroke-width);
+      }
+
+      circle:last-child {
+        stroke: var(--primary-base);
+        stroke-linecap: round;
+        stroke-dasharray: 100;
+        transition: stroke-dashoffset 0.3s ease-in-out;
+      }
+    }
+  }
+
+  // ----- Fill color variants ------------------------------------------------
+  // Primary is the default fill baked into the type blocks above.
+
+  &[data-variant='info'] {
+    &[data-type='linear'] .tk-progress-indicator {
+      background-color: var(--states-info-base);
+    }
+
+    &[data-type='circular'] .tk-progress-indicator circle:last-child {
+      stroke: var(--states-info-base);
+    }
+  }
+
+  &[data-variant='success'] {
+    &[data-type='linear'] .tk-progress-indicator {
+      background-color: var(--states-success-base);
+    }
+
+    &[data-type='circular'] .tk-progress-indicator circle:last-child {
+      stroke: var(--states-success-base);
+    }
+  }
+
+  &[data-variant='danger'] {
+    &[data-type='linear'] .tk-progress-indicator {
+      background-color: var(--states-danger-base);
+    }
+
+    &[data-type='circular'] .tk-progress-indicator circle:last-child {
+      stroke: var(--states-danger-base);
+    }
+  }
+
+  &[data-variant='warning'] {
+    &[data-type='linear'] .tk-progress-indicator {
+      background-color: var(--states-warning-base);
+    }
+
+    &[data-type='circular'] .tk-progress-indicator circle:last-child {
+      stroke: var(--states-warning-base);
+    }
+  }
+
+  // Declared after the variants so a disabled progress mutes every variant
+  // (equal specificity — source order decides).
+
+  &[data-disabled] {
+    &[data-type='linear'] .tk-progress-indicator {
+      background-color: var(--background-dark);
+    }
+
+    &[data-type='circular'] .tk-progress-indicator circle:last-child {
+      stroke: var(--background-dark);
+    }
+  }
+}

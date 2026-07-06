@@ -1,0 +1,446 @@
+---
+title: Progress
+description:
+  Shows how far a task has advanced as a linear bar or a circular ring, with
+  color variants and a disabled state.
+sidebar_label: Progress
+sidebar_position: 15
+slug: /components/progress
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import { Progress, Badge, Field, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
+
+export const progressScope = { Progress, Badge, CloseIconOutlinedRounded, Field };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  return (
+    <div className="mx-auto w-full max-w-120">
+      <Field>
+        <Field.Label>Uploading files</Field.Label>
+        <Progress value={40} />
+        <span aria-hidden="true" className="pl-1 text-sm font-normal uppercase leading-5 text-[color:var(--text-base)]">%40</span>
+      </Field>
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const layoutsDemo = String.raw`
+function LayoutsDemo() {
+  return (
+    <div className="mx-auto grid w-full max-w-120 gap-8">
+      <Field>
+        <Field.Label>Block progress</Field.Label>
+        <Progress value={40} />
+        <span aria-hidden="true" className="pl-1 text-sm font-normal uppercase leading-5 text-[color:var(--text-base)]">%40</span>
+      </Field>
+
+      <Field>
+        <Field.Label>Inline progress</Field.Label>
+        <div className="flex w-full items-center gap-2">
+          <Progress value={40} />
+          <span aria-hidden="true" className="w-10 shrink-0 text-sm font-normal uppercase leading-5 text-[color:var(--text-base)]">%40</span>
+        </div>
+      </Field>
+    </div>
+  );
+}
+
+render(<LayoutsDemo />);
+`;
+
+export const circularDemo = String.raw`
+function CircularLabel({ value }) {
+  return (
+    <span aria-hidden="true" className="pointer-events-none absolute inline-flex items-center justify-center gap-0 py-1.5">
+      <span className="flex self-stretch items-end">
+        <span className="w-[15px] text-center text-sm leading-5 text-[color:var(--text-light)]">%</span>
+      </span>
+      <span className="text-4xl font-normal leading-[54px] text-[color:var(--primary-base)]">{value}</span>
+    </span>
+  );
+}
+
+function CircularDemo() {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-10">
+      {[25, 50, 75].map(value => (
+        <div key={value} className="relative inline-grid place-items-center">
+          <Progress appearance="circular" size="large" value={value} aria-label={'Progress ' + value + '%'} />
+          <CircularLabel value={value} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+render(<CircularDemo />);
+`;
+
+export const sizesDemo = String.raw`
+function CircularSizeLabel({ size, value }) {
+  const numberClassNames = {
+    small: 'text-xl leading-7',
+    base: 'text-3xl leading-10',
+    large: 'text-4xl leading-[54px]',
+  };
+  const labelPaddingClassNames = {
+    small: 'py-1',
+    base: 'py-1.5',
+    large: 'py-1.5',
+  };
+  const percentClassNames = {
+    small: 'w-3 text-xs leading-4',
+    base: 'w-[15px] text-sm leading-5',
+    large: 'w-[15px] text-sm leading-5',
+  };
+
+  return (
+    <span aria-hidden="true" className={labelPaddingClassNames[size] + ' pointer-events-none absolute inline-flex items-center justify-center gap-0'}>
+      <span className="flex self-stretch items-end">
+        <span className={percentClassNames[size] + ' text-center text-[color:var(--text-light)]'}>%</span>
+      </span>
+      <span className={numberClassNames[size] + ' font-normal text-[color:var(--primary-base)]'}>{value}</span>
+    </span>
+  );
+}
+
+function SizesDemo() {
+  const sizes = ['small', 'base', 'large'];
+
+  return (
+    <div className="mx-auto grid w-full max-w-120 gap-8">
+      <div className="grid gap-4">
+        {sizes.map(size => (
+          <Field key={size}>
+            <div className="flex w-full items-center justify-between gap-4">
+              <Field.Label>{size}</Field.Label>
+              <span aria-hidden="true" className="text-sm font-normal uppercase leading-5 text-[color:var(--text-base)]">%60</span>
+            </div>
+            <Progress size={size} value={60} />
+          </Field>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-8">
+        {sizes.map(size => (
+          <div key={size} className="relative inline-grid place-items-center">
+            <Progress appearance="circular" size={size} value={60} aria-label={size + ' progress'} />
+            <CircularSizeLabel size={size} value={60} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+render(<SizesDemo />);
+`;
+
+export const variantsDemo = String.raw`
+function VariantsDemo() {
+  const variants = ['primary', 'info', 'success', 'danger', 'warning'];
+
+  return (
+    <div className="mx-auto flex w-full max-w-120 flex-col gap-5">
+      {variants.map(variant => (
+        <Field key={variant}>
+          <div className="flex w-full items-center justify-between gap-4">
+            <Field.Label>{variant}</Field.Label>
+            <span aria-hidden="true" className="text-sm font-normal uppercase leading-5 text-[color:var(--text-base)]">%60</span>
+          </div>
+          <Progress variant={variant} value={60} />
+        </Field>
+      ))}
+    </div>
+  );
+}
+
+render(<VariantsDemo />);
+`;
+
+export const disabledDemo = String.raw`
+function DisabledCircularLabel({ value }) {
+  return (
+    <span aria-hidden="true" className="pointer-events-none absolute inline-flex items-center justify-center gap-0 py-1.5">
+      <span className="flex self-stretch items-end">
+        <span className="w-[15px] text-center text-sm leading-5 text-[color:var(--text-light)]">%</span>
+      </span>
+      <span className="text-3xl font-normal leading-10 text-[color:var(--text-base)]">{value}</span>
+    </span>
+  );
+}
+
+function DisabledDemo() {
+  return (
+    <div className="mx-auto flex w-full max-w-120 flex-col items-center gap-8">
+      <Field disabled className="w-full">
+        <div className="flex w-full items-center justify-between gap-4">
+          <Field.Label>Paused upload</Field.Label>
+          <span aria-hidden="true" className="text-sm font-normal uppercase leading-5 text-[color:var(--text-base)]">%40</span>
+        </div>
+        <Progress value={40} />
+      </Field>
+      <div className="relative inline-grid place-items-center">
+        <Progress appearance="circular" value={40} disabled aria-label="Paused upload" />
+        <DisabledCircularLabel value={40} />
+      </div>
+    </div>
+  );
+}
+
+render(<DisabledDemo />);
+`;
+
+export const stateAndStatsDemo = String.raw`
+function LinearStateCard() {
+  return (
+    <div className="flex w-full items-center gap-2">
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-[color:var(--states-danger-base)] text-[color:var(--states-danger-base)]">
+        <CloseIconOutlinedRounded aria-hidden="true" width={22} height={22} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex flex-wrap items-center gap-2">
+          <span className="text-base font-medium text-[color:var(--text-darkest)]">%20</span>
+          <span className="inline-flex items-center gap-1 text-xs text-[color:var(--text-base)]">
+            <span className="inline-flex size-4 items-center justify-center rounded-full bg-[color:var(--states-danger-base)] text-white">
+              <CloseIconOutlinedRounded aria-hidden="true" width={10} height={10} />
+            </span>
+            Something went wrong
+          </span>
+        </div>
+        <Progress value={20} variant="danger" aria-label="Danger progress" />
+      </div>
+    </div>
+  );
+}
+
+function CircularStatsLabel() {
+  return (
+    <span aria-hidden="true" className="pointer-events-none absolute flex flex-col items-center justify-center text-center">
+      <span className="text-[11px] leading-4 text-[color:var(--text-light)]">status</span>
+      <span className="text-[11px] leading-4 text-[color:var(--text-darkest)]">
+        <span className="text-[color:var(--primary-base)]">1</span>
+        <span className="text-[color:var(--text-light)]"> / </span>
+        10
+      </span>
+    </span>
+  );
+}
+
+function CircularStatsCard() {
+  return (
+    <div className="flex w-full items-start gap-2 rounded-lg bg-[color:var(--static-light)]">
+      <div className="relative inline-grid size-16 shrink-0 place-items-center">
+        <Progress appearance="circular" size="small" value={10} aria-label="1 of 10 completed" />
+        <CircularStatsLabel />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-base font-medium leading-5 text-[color:var(--text-darkest)]">Progress label</span>
+          <Badge variant="info" appearance="filledLight">Badge</Badge>
+        </div>
+        <p className="m-0 text-xs leading-5 text-[color:var(--text-base)]">Lorem ipsum dolor sit amet consequences.</p>
+        <div className="mt-2 flex gap-3">
+          <a href="#" className="text-xs font-medium text-[color:var(--states-info-dark)] underline">Link Button</a>
+          <a href="#" className="text-xs font-medium text-[color:var(--states-info-dark)] underline">Link Button</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StateAndStatsDemo() {
+  return (
+    <div className="mx-auto grid w-full max-w-120 gap-8">
+      <LinearStateCard />
+      <CircularStatsCard />
+    </div>
+  );
+}
+
+render(<StateAndStatsDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Progress
+
+`Progress` shows how far a task has advanced. The root doubles as the track
+and renders the filled portion as a horizontal bar (`'linear'`) or a ring
+(`'circular'`).
+
+The root carries `role="progressbar"` with the full `aria-valuemin` /
+`aria-valuemax` / `aria-valuenow` surface, so assistive technology announces
+the value without extra wiring. Compose it inside a [`Field`](/docs/components/input#using-with-field)
+with `Field.Label` for a visible label — the accessible name and the field's
+disabled state wire up automatically.
+
+## Usage
+
+```tsx
+import { Field, Progress } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Progress value={33} />
+
+<Field>
+  <Field.Label>Upload progress</Field.Label>
+  <Progress size="large" value={66} />
+</Field>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={progressScope}
+/>
+
+## Block / Inline
+
+Linear progress can be composed as a block pattern with the percentage below
+the bar, or as an inline pattern with the percentage beside the bar.
+
+<LiveCode
+  code={layoutsDemo}
+  noInline
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={progressScope}
+/>
+
+## Circular
+
+`appearance="circular"` renders the indicator as a ring.
+
+<LiveCode
+  code={circularDemo}
+  noInline
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={progressScope}
+/>
+
+## Sizes
+
+`size` scales the linear track height and the circular ring diameter. Circular
+sizes are `64px`, `96px`, and `128px` for `small`, `base`, and `large`.
+
+<LiveCode
+  code={sizesDemo}
+  noInline
+  previewMinHeight={320}
+  previewWrapper={ReactSparDemoRoot}
+  scope={progressScope}
+/>
+
+## Variants
+
+`variant` recolors the filled portion of the track.
+
+<LiveCode
+  code={variantsDemo}
+  noInline
+  previewMinHeight={360}
+  previewWrapper={ReactSparDemoRoot}
+  scope={progressScope}
+/>
+
+## Disabled
+
+`disabled` mutes the fill and sets `aria-disabled`. Inside a disabled `Field`
+the state is inherited, so the label and the filled portion gray out together.
+
+<LiveCode
+  code={disabledDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={progressScope}
+/>
+
+## State And Stats Patterns
+
+Use `Progress` as the primitive inside richer compositions when the design
+needs state signs, status copy, badges, or circular stats.
+
+<LiveCode
+  code={stateAndStatsDemo}
+  noInline
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={progressScope}
+/>
+
+## Accessibility
+
+- The root exposes `role="progressbar"` with `aria-valuemin`, `aria-valuemax`,
+  and the clamped `aria-valuenow`.
+- Composing inside a `Field` with `Field.Label` wires `aria-labelledby` to the
+  label automatically. Outside a `Field`, pass `aria-label` or
+  `aria-labelledby`; without either, the root falls back to a default
+  `aria-label`.
+- The rendered indicator is decorative and hidden from assistive technology —
+  the value is announced through `aria-valuenow`.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Progress {#progress}
+
+#### Props {#progress-props}
+
+| Name                            | Type                                                                                | Default   | Description                                                                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                        | -         | Optional anatomy override. When omitted, the root renders the default `Progress.Indicator`.                                |
+| <ApiBadge label="value" />      | <code>number</code>                                                                 | 0         | Current progress value. Clamped to `[min, max]`; non-finite values resolve to `min`.                                       |
+| <ApiBadge label="min" />        | <code>number</code>                                                                 | 0         | Minimum value the progress starts from. Non-finite values fall back to the default.                                        |
+| <ApiBadge label="max" />        | <code>number</code>                                                                 | 100       | Maximum value the progress can reach. Values at or below `min` fall back to `min + 100`.                                   |
+| <ApiBadge label="appearance" /> | <code><a href="#progress-td-progressappearance">ProgressAppearance</a></code>       | 'linear'  | Shape of the progress indicator — a horizontal bar (`'linear'`) or a ring (`'circular'`).                                  |
+| <ApiBadge label="size" />       | <code><a href="#progress-td-progresssize">ProgressSize</a></code>                   | 'base'    | Visual scale. Linear progress changes track height; circular progress changes ring diameter.                               |
+| <ApiBadge label="variant" />    | <code><a href="#progress-td-progressvariant">ProgressVariant</a></code>             | 'primary' | Fill color variant.                                                                                                        |
+| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                | false     | Mutes the fill color and sets `aria-disabled`. Inherits the surrounding `Field`'s disabled state when composed inside one. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -         | Per-slot class name overrides.                                                                                             |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML attribute overrides.                                                                                         |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -         | Appends custom classes to the root slot of this part.                                                                      |
+
+#### Data attributes {#progress-data-attributes}
+
+| Attribute                                       | Applied when                                                | Purpose                                                                     |
+| ----------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                      | Stable selector for wrapper styling on the root slot.                       |
+| <ApiBadge label="data-type" />                  | Always                                                      | Reflects the resolved `appearance` prop (`linear` \| `circular`).           |
+| <ApiBadge label="data-size" />                  | Always                                                      | Reflects the resolved `size` prop so recipes can scale the bar or ring.     |
+| <ApiBadge label="data-variant" />               | Always                                                      | Reflects the resolved `variant` prop so theme recipes can recolor the fill. |
+| <ApiBadge label="data-disabled" />              | disabled (own prop or inherited from a surrounding `Field`) | Mutes the fill color through the recipe.                                    |
+
+### Progress.Indicator {#progress-indicator}
+
+#### Data attributes {#progress-indicator-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#progress-type-definitions}
+
+| Name                                                                                     | Definition                                                                             |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| <span id="progress-td-progressappearance"><ApiBadge label="ProgressAppearance" /></span> | <code>'linear' &#124; 'circular'</code>                                                |
+| <span id="progress-td-progresssize"><ApiBadge label="ProgressSize" /></span>             | <code>'small' &#124; 'base' &#124; 'large'</code>                                      |
+| <span id="progress-td-progressvariant"><ApiBadge label="ProgressVariant" /></span>       | <code>'primary' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning'</code> |
+
+{/* api-tables:end */}

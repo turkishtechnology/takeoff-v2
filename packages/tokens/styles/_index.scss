@@ -16,6 +16,7 @@
 @use 'recipes/input';
 @use 'recipes/label';
 @use 'recipes/popover';
+@use 'recipes/progress';
 @use 'recipes/radio';
 @use 'recipes/select';
 @use 'recipes/spinner';
@@ -230,6 +231,11 @@
 .tk-spinner {
   @include spinner.spinner;
 }
+
+.tk-progress {
+  @include progress.progress;
+}
+
 
 .tk-checkbox {
   @include checkbox.checkbox;

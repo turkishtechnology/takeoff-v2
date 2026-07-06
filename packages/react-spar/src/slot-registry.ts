@@ -46,6 +46,7 @@ import {
   InputSuffixBase,
   InputTrailingIconBase,
 } from './components/input/base';
+import { ProgressBase, ProgressIndicatorBase } from './components/progress/base';
 import { SelectBase, SelectContentBase, SelectGroupBase, SelectIndicatorBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
 import { SpinnerBase } from './components/spinner/base';
 import { SwitchBase } from './components/switch/base';
@@ -132,6 +133,8 @@ export const slotClassRegistry = {
   inputDecrement: { slots: InputDecrementBase.classes },
   inputIncrement: { slots: InputIncrementBase.classes },
   inputChips: { slots: InputChipsBase.classes },
+  progress: { slots: ProgressBase.classes },
+  progressIndicator: { slots: ProgressIndicatorBase.classes },
   select: { slots: SelectBase.classes },
   selectTrigger: { slots: SelectTriggerBase.classes },
   selectIndicator: { slots: SelectIndicatorBase.classes },

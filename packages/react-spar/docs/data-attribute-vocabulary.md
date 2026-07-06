@@ -89,7 +89,7 @@ table needs updating.
 | `data-variant` | Root             | `primary`, `danger`, `neutral`                     | Semantic color treatment                                              |
 | `data-size`    | Root, Item       | `base`, `large`, `small`                           | Duplicated to items by design where recipes need item-local selectors |
 | `data-mode`    | Root, Item       | `button`, `link`, `default`, `compact`             | Rendering or behavior mode                                            |
-| `data-type`    | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card` | Owner depends on component — see component decisions below            |
+| `data-type`    | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `linear`, `circular` | Owner depends on component — see component decisions below            |
 
 ### Semantic
 
@@ -119,6 +119,22 @@ These are emitted outside the component composition pipeline (`composeRootAttrs`
 
 This section records intentional deviations from the default rules. Each entry
 should explain **why** the deviation exists so reviewers do not "fix" it later.
+
+### Progress
+
+Progress is **v2-owned** with no upstream Spar primitive (Table precedent), so
+its attributes are wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the variants and state:** `data-type` (`linear` | `circular`
+  — shape, mapped from the `appearance` prop per the Spinner/Badge precedent),
+  `data-size` (`small` | `base` | `large` — visual scale), `data-variant`
+  (fill color), and `data-disabled` (presence — from the own `disabled` prop or
+  inherited through `useOptionalFieldContext` from a surrounding Field).
+- **The progress value is not a data attribute.** It is a continuous number,
+  not a finite state, so the rendered indicator writes it inline: the bar
+  `width` (linear) or the arc circle's `stroke-dashoffset` (circular).
+  `Progress` renders that indicator by default; `Progress.Indicator` remains
+  available when consumers need to pass slot overrides explicitly.
 
 ### Accordion
 
