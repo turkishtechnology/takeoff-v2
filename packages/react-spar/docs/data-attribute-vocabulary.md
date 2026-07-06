@@ -84,12 +84,13 @@ table needs updating.
 
 ### Variant
 
-| Attribute      | Scope            | Example values                                     | Notes                                                                 |
-| -------------- | ---------------- | -------------------------------------------------- | --------------------------------------------------------------------- |
-| `data-variant` | Root             | `primary`, `danger`, `neutral`                     | Semantic color treatment                                              |
-| `data-size`    | Root, Item       | `base`, `large`, `small`                           | Duplicated to items by design where recipes need item-local selectors |
-| `data-mode`    | Root, Item       | `button`, `link`, `default`, `compact`             | Rendering or behavior mode                                            |
-| `data-type`    | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card` | Owner depends on component — see component decisions below            |
+| Attribute          | Scope            | Example values                                     | Notes                                                                  |
+| ------------------ | ---------------- | -------------------------------------------------- | ---------------------------------------------------------------------- |
+| `data-variant`     | Root             | `primary`, `danger`, `neutral`                     | Semantic color treatment                                               |
+| `data-size`        | Root, Item       | `base`, `large`, `small`                           | Duplicated to items by design where recipes need item-local selectors  |
+| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`             | Rendering or behavior mode                                             |
+| `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card` | Owner depends on component — see component decisions below             |
+| `data-orientation` | Stepper root     | `horizontal`, `vertical`                           | Layout axis (wrapper-emitted; Spar emits its own on Spar-backed roots) |
 
 ### Semantic
 
@@ -104,6 +105,8 @@ table needs updating.
 | `data-position`       | Radio root/item        | Indicator placement (`left` / `right`)           |
 | `data-spread`         | Radio root             | Items share available space along the group axis |
 | `data-level`          | Input strength segment | Strength tier for filled password meter segments |
+| `data-linear`         | Stepper root           | Steps follow a linear progression                |
+| `data-reverse`        | Stepper root           | Signs and content flip along the cross axis      |
 
 ### Out-of-band attributes
 
@@ -170,6 +173,22 @@ should explain **why** the deviation exists so reviewers do not "fix" it later.
   `.tk-input-strength-segment` nodes use `weak`, `medium`, or `strong`; empty
   segments omit the attribute so the neutral segment style remains the base
   state.
+
+### Stepper
+
+Stepper is **v2-owned** with no upstream Spar primitive (Table precedent), so
+its state attributes are wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the variants:** `data-orientation`, `data-mode`, `data-size`,
+  plus the `data-linear` / `data-reverse` presence flags. Items are styled
+  through root-level descendant selectors — no per-item variant duplication.
+- **`data-state` (State, finite) lives on each item `<li>`:** `inactive` |
+  `active` | `completed` | `error` | `disabled` — the wrapper owns the status
+  derivation because no primitive backs it (rule 7 does not apply).
+- **`data-clickable` (State, presence) lives on each item `<li>`.** Present when
+  pressing the step may change the active step (respects `disabled`,
+  `isClickable`, and linear gating), consumed by the recipe for the cursor
+  affordance. Matches Chip's `data-clickable` vocabulary.
 
 ### Table
 

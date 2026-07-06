@@ -19,6 +19,7 @@
 @use 'recipes/radio';
 @use 'recipes/select';
 @use 'recipes/spinner';
+@use 'recipes/stepper';
 @use 'recipes/switch';
 @use 'recipes/table';
 @use 'recipes/tabs';
@@ -229,6 +230,10 @@
 
 .tk-spinner {
   @include spinner.spinner;
+}
+
+.tk-stepper {
+  @include stepper.stepper;
 }
 
 .tk-checkbox {

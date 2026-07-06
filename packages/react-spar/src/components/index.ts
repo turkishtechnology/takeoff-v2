@@ -15,6 +15,7 @@ export * from './radio';
 export * from './popover';
 export * from './select';
 export * from './spinner';
+export * from './stepper';
 export * from './switch';
 export * from './table';
 export * from './tabs';

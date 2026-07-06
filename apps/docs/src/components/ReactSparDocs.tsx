@@ -25,6 +25,7 @@ export {
   Radio,
   Select,
   Spinner,
+  Stepper,
   Switch,
   Table,
   Tabs,
