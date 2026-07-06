@@ -11,6 +11,7 @@
 @use 'recipes/checkbox';
 @use 'recipes/chip';
 @use 'recipes/dialog';
+@use 'recipes/divider';
 @use 'recipes/drawer';
 @use 'recipes/field';
 @use 'recipes/input';
@@ -129,6 +130,10 @@
 
 .tk-dialog-footer {
   @include dialog.dialog-footer;
+}
+
+.tk-divider {
+  @include divider.divider;
 }
 
 .tk-drawer-overlay {

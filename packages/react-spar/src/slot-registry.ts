@@ -17,6 +17,7 @@ import {
   DialogTitleBase,
   DialogTriggerBase,
 } from './components/dialog/base';
+import { DividerBase } from './components/divider/base';
 import {
   DrawerBase,
   DrawerBodyBase,
@@ -46,7 +47,16 @@ import {
   InputSuffixBase,
   InputTrailingIconBase,
 } from './components/input/base';
-import { SelectBase, SelectContentBase, SelectGroupBase, SelectIndicatorBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
+import {
+  SelectBase,
+  SelectContentBase,
+  SelectGroupBase,
+  SelectIndicatorBase,
+  SelectItemBase,
+  SelectLabelBase,
+  SelectSeparatorBase,
+  SelectTriggerBase,
+} from './components/select/base';
 import { SpinnerBase } from './components/spinner/base';
 import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
@@ -104,6 +114,7 @@ export const slotClassRegistry = {
   dialogBody: { slots: DialogBodyBase.classes },
   dialogFooter: { slots: DialogFooterBase.classes },
   dialogClose: { slots: DialogCloseBase.classes },
+  divider: { slots: DividerBase.classes },
   drawer: { slots: DrawerBase.classes },
   drawerOverlay: { slots: DrawerOverlayBase.classes },
   drawerPanel: { slots: DrawerPanelBase.classes },
