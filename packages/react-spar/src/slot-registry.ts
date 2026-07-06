@@ -46,7 +46,16 @@ import {
   InputSuffixBase,
   InputTrailingIconBase,
 } from './components/input/base';
-import { SelectBase, SelectContentBase, SelectGroupBase, SelectIndicatorBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
+import {
+  SelectBase,
+  SelectContentBase,
+  SelectGroupBase,
+  SelectIndicatorBase,
+  SelectItemBase,
+  SelectLabelBase,
+  SelectSeparatorBase,
+  SelectTriggerBase,
+} from './components/select/base';
 import { SpinnerBase } from './components/spinner/base';
 import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
@@ -54,6 +63,7 @@ import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './comp
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
+import { SkeletonBase } from './components/skeleton/base';
 
 /**
  * Inventory of every shipped component's slot-class map. The styling recipes
@@ -160,4 +170,5 @@ export const slotClassRegistry = {
   tooltipHeader: { slots: TooltipHeaderBase.classes },
   tooltipDescription: { slots: TooltipDescriptionBase.classes },
   tooltipArrow: { slots: TooltipArrowBase.classes },
+  skeleton: { slots: SkeletonBase.classes },
 } as const;

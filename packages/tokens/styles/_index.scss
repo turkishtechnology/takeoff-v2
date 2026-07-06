@@ -18,6 +18,7 @@
 @use 'recipes/popover';
 @use 'recipes/radio';
 @use 'recipes/select';
+@use 'recipes/skeleton';
 @use 'recipes/spinner';
 @use 'recipes/switch';
 @use 'recipes/table';
@@ -28,6 +29,7 @@
 @include button.button-keyframes;
 @include input.input-keyframes;
 @include popover.popover-keyframes;
+@include skeleton.skeleton-keyframes;
 @include spinner.spinner-keyframes;
 @include tooltip.tooltip-keyframes;
 
@@ -225,6 +227,10 @@
 
 .tk-select-separator {
   @include select.select-separator;
+}
+
+.tk-skeleton {
+  @include skeleton.skeleton;
 }
 
 .tk-spinner {

@@ -1,0 +1,82 @@
+// ---------------------------------------------------------------------------
+// Skeleton recipe — apply to `.tk-skeleton` root.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-skeleton         — root (the placeholder bar, owns the fill color)
+//   .tk-skeleton-shimmer — highlight strip sweeping across the bar
+//
+// State/variant attributes on root:
+//   data-type      — silhouette (rectangle | circle)
+//   data-animation — shimmer | none
+//
+// The wrapper publishes explicit dimensions through the
+// `--tk-skeleton-width` / `--tk-skeleton-height` custom properties.
+//
+// Recipe-owned knobs (override on `.tk-skeleton` to retheme):
+//   --tk-skeleton-color         — bar fill
+//   --tk-skeleton-radius        — bar corner radius
+//   --tk-skeleton-shimmer-width — highlight band width (48px per Figma spec)
+// ---------------------------------------------------------------------------
+
+@mixin skeleton-keyframes {
+  // Animates transform only (compositor-friendly): a page full of skeletons
+  // must not trigger layout on every frame. The strip spans the full root and
+  // paints the fixed-width highlight band at its leading edge, so the sweep
+  // runs from "band just off the left edge" to translateX(100%) — the strip's
+  // own width equals the bar width, putting the band just past the right edge
+  // (Figma spec: start −48px, end +100%).
+  @keyframes tk-skeleton-shimmer {
+    from {
+      transform: translateX(calc(-1 * var(--tk-skeleton-shimmer-width)));
+    }
+
+    to {
+      transform: translateX(100%);
+    }
+  }
+}
+
+@mixin skeleton {
+  --tk-skeleton-width: 100%;
+  --tk-skeleton-height: 24px;
+  --tk-skeleton-radius: var(--radius-m-base);
+  --tk-skeleton-color: var(--background-light);
+  --tk-skeleton-shimmer-width: 48px;
+
+  position: relative;
+  display: block;
+  overflow: hidden;
+  flex-shrink: 0;
+  width: var(--tk-skeleton-width);
+  height: var(--tk-skeleton-height);
+  border-radius: var(--tk-skeleton-radius);
+  background-color: var(--tk-skeleton-color);
+
+  // The disc diameter tracks the height; an explicit `width` prop still wins
+  // because the wrapper writes `--tk-skeleton-width` as an inline style.
+  &[data-type='circle'] {
+    --tk-skeleton-width: var(--tk-skeleton-height);
+    --tk-skeleton-radius: var(--radius-full);
+  }
+
+  .tk-skeleton-shimmer {
+    position: absolute;
+    inset: 0;
+    transform: translateX(calc(-1 * var(--tk-skeleton-shimmer-width)));
+    background: linear-gradient(90deg, var(--skeleton-skeleton-gradient-none) 20%, var(--skeleton-skeleton-gradient) 50%, var(--skeleton-skeleton-gradient-none) 80%);
+    background-repeat: no-repeat;
+    background-size: var(--tk-skeleton-shimmer-width) 100%;
+    animation: tk-skeleton-shimmer 1.2s ease-in-out infinite;
+  }
+
+  &[data-animation='none'] .tk-skeleton-shimmer {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tk-skeleton-shimmer {
+      display: none;
+    }
+  }
+}

@@ -24,6 +24,7 @@ export {
   Popover,
   Radio,
   Select,
+  Skeleton,
   Spinner,
   Switch,
   Table,
