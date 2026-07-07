@@ -29,6 +29,7 @@
 @include button.button-keyframes;
 @include input.input-keyframes;
 @include popover.popover-keyframes;
+@include progress.progress-keyframes;
 @include spinner.spinner-keyframes;
 @include tooltip.tooltip-keyframes;
 
@@ -236,6 +237,17 @@
   @include progress.progress;
 }
 
+.tk-progress-track {
+  @include progress.progress-track;
+}
+
+.tk-progress-indicator {
+  @include progress.progress-indicator;
+}
+
+.tk-progress-value {
+  @include progress.progress-value;
+}
 
 .tk-checkbox {
   @include checkbox.checkbox;

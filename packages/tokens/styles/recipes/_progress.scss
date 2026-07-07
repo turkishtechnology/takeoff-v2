@@ -1,145 +1,246 @@
 // Progress recipe — shared style contract for the takeoff-spar Progress
-// compound. Renders determinate progress as a linear bar or a circular ring:
+// compound. Renders determinate progress as a linear bar or a circular ring
+// with the Root/Track/Indicator/Value anatomy (as in Base UI / Chakra / Ark):
 //
-//   .tk-progress            — root (role="progressbar", a11y owner); doubles
-//                             as the track
+//   .tk-progress            — root (role="progressbar", a11y owner); layout
+//                             wrapper, not the track
+//   .tk-progress-track      — the rail the indicator fills (linear rail
+//                             <div> / circular ring <svg>)
+//   .tk-progress-rail       — the circular track's rail <circle> ('rail'
+//                             slot of Progress.Track)
 //   .tk-progress-indicator  — filled portion, composed by the consumer
-//                             (linear fill <span> / circular ring <svg>:
-//                             rail circle + arc circle)
+//                             (linear fill <span> / circular arc <circle>)
+//   .tk-progress-value      — decorative (aria-hidden) value/status text; in
+//                             flow next to the linear track, centered inside
+//                             the circular ring
 //
-// State/variant attributes (root):
-//   data-type     — linear | circular
-//   data-size     — small | base | large
-//   data-variant  — primary | info | success | danger | warning (fill color)
-//   data-disabled — present when disabled (muted fill)
+// State/variant attributes:
+//   data-type          — linear | circular (on the root and on every part,
+//                        so each part mixin styles itself without root
+//                        selectors)
+//   data-size          — small | base | large (root)
+//   data-variant       — primary | info | success | danger | warning (root)
+//   data-disabled      — present when disabled (root)
+//   data-indeterminate — present when the root is marked indeterminate
+//                        (root + indicator); the indicator loops a sweep
+//                        animation instead of rendering a written fill
+//   data-complete      — present when the clamped value reaches max on a
+//                        determinate root; styling hook for finished states
+//                        (flips instantly — the 0.3s fill transition may
+//                        still be catching up visually)
 //
-// The wrapper writes the progress inline: bar width (linear) or the arc
-// circle's stroke-dashoffset (circular — the arc carries pathLength="100").
+// The root maps size/variant/disabled state onto the --tk-progress-* custom
+// properties below; the part mixins only consume them. The wrapper writes
+// the progress inline: bar width (linear) or the arc circle's
+// stroke-dashoffset (circular — the arc carries pathLength="100" and inline
+// stroke-dasharray).
+
+// Keyframes for the indeterminate sweeps — include once at the stylesheet
+// root (same pattern as spinner-keyframes). The linear bar is 40% of the
+// track and translates by its own width, so -100% → 250% traverses the full
+// rail; the circular arc keeps a fixed quarter arc and spins around the
+// viewBox center.
+@mixin progress-keyframes {
+  @keyframes tk-progress-indeterminate-linear {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(250%);
+    }
+  }
+
+  @keyframes tk-progress-indeterminate-circular {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
 
 @mixin progress {
   box-sizing: border-box;
-  --tk-progress-linear-size: 6px;
-  --tk-progress-circular-size: 96px;
+
+  // ----- State → custom-property mapping ------------------------------------
+  // Sizes reference the spacing/dimension primitives instead of raw px so
+  // brand themes can retune them. The component token set (progress-bar.json)
+  // is Figma-synced and carries no size tokens, and no line-height token
+  // exists at 28/40px — the spacing primitives are the matching dimension
+  // tokens (4/6/8, 64/96/128, 28/40px).
+
+  --tk-progress-linear-size: var(--spacing-s);
+  --tk-progress-circular-size: var(--spacing-24xl);
   --tk-progress-circular-stroke-width: 2.5;
+  --tk-progress-circular-value-size: var(--size-3xl);
+  --tk-progress-circular-value-line-height: var(--spacing-10xl);
+  --tk-progress-fill: var(--primary-base);
+  --tk-progress-circular-value-color: var(--primary-base);
 
   &[data-size='small'] {
-    --tk-progress-linear-size: 4px;
-    --tk-progress-circular-size: 64px;
+    --tk-progress-linear-size: var(--spacing-xs);
+    --tk-progress-circular-size: var(--spacing-16xl);
+    --tk-progress-circular-value-size: var(--size-xl);
+    --tk-progress-circular-value-line-height: var(--spacing-7xl);
   }
 
   &[data-size='base'] {
-    --tk-progress-linear-size: 6px;
-    --tk-progress-circular-size: 96px;
+    --tk-progress-linear-size: var(--spacing-s);
+    --tk-progress-circular-size: var(--spacing-24xl);
+    --tk-progress-circular-value-size: var(--size-3xl);
+    --tk-progress-circular-value-line-height: var(--spacing-10xl);
   }
 
   &[data-size='large'] {
-    --tk-progress-linear-size: 8px;
-    --tk-progress-circular-size: 128px;
+    --tk-progress-linear-size: var(--spacing-m-base);
+    --tk-progress-circular-size: var(--spacing-32xl);
+    --tk-progress-circular-value-size: var(--size-4xl);
+    --tk-progress-circular-value-line-height: var(--line-height-4xl-normal);
   }
-
-  // ----- Linear -------------------------------------------------------------
-  // The root is the rail: it carries the height, radius, and track color; the
-  // indicator fills it to the width the wrapper writes inline.
-
-  &[data-type='linear'] {
-    display: block;
-    width: 100%;
-    height: var(--tk-progress-linear-size);
-    border-radius: var(--radius-full);
-    background-color: var(--background-light);
-    overflow: hidden;
-
-    .tk-progress-indicator {
-      display: block;
-      height: 100%;
-      border-radius: inherit;
-      background-color: var(--primary-base);
-      transition: width 0.3s ease-in-out;
-    }
-  }
-
-  // ----- Circular -----------------------------------------------------------
-  // The indicator is the ring <svg>: first circle is the rail, last circle is
-  // the filled arc.
-
-  &[data-type='circular'] {
-    display: inline-flex;
-    vertical-align: middle;
-
-    .tk-progress-indicator {
-      display: block;
-      width: var(--tk-progress-circular-size);
-      height: var(--tk-progress-circular-size);
-      transform: rotate(-90deg);
-
-      circle {
-        fill: none;
-        stroke: var(--background-light);
-        stroke-width: var(--tk-progress-circular-stroke-width);
-      }
-
-      circle:last-child {
-        stroke: var(--primary-base);
-        stroke-linecap: round;
-        stroke-dasharray: 100;
-        transition: stroke-dashoffset 0.3s ease-in-out;
-      }
-    }
-  }
-
-  // ----- Fill color variants ------------------------------------------------
-  // Primary is the default fill baked into the type blocks above.
 
   &[data-variant='info'] {
-    &[data-type='linear'] .tk-progress-indicator {
-      background-color: var(--states-info-base);
-    }
-
-    &[data-type='circular'] .tk-progress-indicator circle:last-child {
-      stroke: var(--states-info-base);
-    }
+    --tk-progress-fill: var(--states-info-base);
   }
 
   &[data-variant='success'] {
-    &[data-type='linear'] .tk-progress-indicator {
-      background-color: var(--states-success-base);
-    }
-
-    &[data-type='circular'] .tk-progress-indicator circle:last-child {
-      stroke: var(--states-success-base);
-    }
+    --tk-progress-fill: var(--states-success-base);
   }
 
   &[data-variant='danger'] {
-    &[data-type='linear'] .tk-progress-indicator {
-      background-color: var(--states-danger-base);
-    }
-
-    &[data-type='circular'] .tk-progress-indicator circle:last-child {
-      stroke: var(--states-danger-base);
-    }
+    --tk-progress-fill: var(--states-danger-base);
   }
 
   &[data-variant='warning'] {
-    &[data-type='linear'] .tk-progress-indicator {
-      background-color: var(--states-warning-base);
-    }
-
-    &[data-type='circular'] .tk-progress-indicator circle:last-child {
-      stroke: var(--states-warning-base);
-    }
+    --tk-progress-fill: var(--states-warning-base);
   }
 
   // Declared after the variants so a disabled progress mutes every variant
   // (equal specificity — source order decides).
 
   &[data-disabled] {
-    &[data-type='linear'] .tk-progress-indicator {
-      background-color: var(--background-dark);
+    --tk-progress-fill: var(--background-dark);
+    --tk-progress-circular-value-color: var(--text-base);
+  }
+
+  // ----- Layout ---------------------------------------------------------------
+  // Linear stacks the track and any composed value text with the design's
+  // sign gap; circular shrink-wraps the ring and anchors the value overlay.
+
+  &[data-type='linear'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--progress-bar-linear-sign-gap);
+    width: 100%;
+  }
+
+  &[data-type='circular'] {
+    position: relative;
+    display: inline-flex;
+    vertical-align: middle;
+  }
+}
+
+// The rail the indicator fills. Linear carries the height, radius, and rail
+// color itself; circular is the ring svg whose rail circle is the
+// .tk-progress-rail slot.
+@mixin progress-track {
+  box-sizing: border-box;
+
+  &[data-type='linear'] {
+    width: 100%;
+    height: var(--tk-progress-linear-size);
+    border-radius: var(--radius-full);
+    background-color: var(--background-light);
+    overflow: hidden;
+  }
+
+  &[data-type='circular'] {
+    display: block;
+    width: var(--tk-progress-circular-size);
+    height: var(--tk-progress-circular-size);
+    transform: rotate(-90deg);
+
+    .tk-progress-rail {
+      fill: none;
+      stroke: var(--background-light);
+      stroke-width: var(--tk-progress-circular-stroke-width);
+    }
+  }
+}
+
+// The filled portion; fill color comes from the root's variant/disabled
+// mapping via --tk-progress-fill.
+@mixin progress-indicator {
+  &[data-type='linear'] {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--tk-progress-fill);
+    transition: width 0.3s ease-in-out;
+
+    &[data-indeterminate] {
+      width: 40%;
+      animation: tk-progress-indeterminate-linear 1.5s ease-in-out infinite;
+    }
+  }
+
+  &[data-type='circular'] {
+    fill: none;
+    stroke: var(--tk-progress-fill);
+    stroke-width: var(--tk-progress-circular-stroke-width);
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    transition: stroke-dashoffset 0.3s ease-in-out;
+
+    &[data-indeterminate] {
+      stroke-dashoffset: 75;
+      transform-origin: center;
+      animation: tk-progress-indeterminate-circular 1s linear infinite;
+    }
+  }
+
+  // The determinate fill transition is purely decorative (the value itself
+  // moves the bar), so reduced motion drops it entirely. The indeterminate
+  // sweep conveys "still working" — slow it down instead of removing it
+  // (same policy as the spinner).
+
+  @media (prefers-reduced-motion: reduce) {
+    &[data-type='linear'],
+    &[data-type='circular'] {
+      transition: none;
     }
 
-    &[data-type='circular'] .tk-progress-indicator circle:last-child {
-      stroke: var(--background-dark);
+    &[data-type='linear'][data-indeterminate] {
+      animation-duration: 3s;
     }
+
+    &[data-type='circular'][data-indeterminate] {
+      animation-duration: 1.6s;
+    }
+  }
+}
+
+// Decorative value/status text. Linear renders the design's sign typography
+// in flow; circular centers it inside the ring and scales it with the ring
+// size. Consumers restyle via className or compose richer content.
+@mixin progress-value {
+  &[data-type='linear'] {
+    font-size: var(--desktop-body-s-size);
+    font-weight: var(--weight-regular);
+    line-height: var(--line-height-sm-normal);
+    color: var(--text-base);
+  }
+
+  &[data-type='circular'] {
+    position: absolute;
+    inset: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+    font-size: var(--tk-progress-circular-value-size);
+    font-weight: var(--weight-regular);
+    line-height: var(--tk-progress-circular-value-line-height);
+    color: var(--tk-progress-circular-value-color);
   }
 }

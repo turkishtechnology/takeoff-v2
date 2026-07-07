@@ -19,6 +19,12 @@ const dataSlotRoot = {
   purpose: 'Stable selector for wrapper styling on the root slot.',
 };
 
+const dataTypePart = {
+  attribute: 'data-type',
+  appliedWhen: 'Always',
+  purpose: 'Reflects the root’s resolved `appearance` so the part’s recipe styles itself without root selectors.',
+};
+
 export default {
   components: [
     {
@@ -32,7 +38,7 @@ export default {
       propOverrides: {
         children: {
           type: 'React.ReactNode',
-          description: 'Optional anatomy override. When omitted, the root renders the default `Progress.Indicator`.',
+          description: 'Optional anatomy override. When omitted, the root renders the default anatomy — `Progress.Track` wrapping `Progress.Indicator` — for both appearances.',
         },
         className: classNameOverride,
       },
@@ -58,6 +64,42 @@ export default {
           appliedWhen: 'disabled (own prop or inherited from a surrounding `Field`)',
           purpose: 'Mutes the fill color through the recipe.',
         },
+        {
+          attribute: 'data-indeterminate',
+          appliedWhen: '`indeterminate`',
+          purpose: 'Marks the indeterminate state; `aria-valuenow` is dropped alongside it.',
+        },
+        {
+          attribute: 'data-complete',
+          appliedWhen: 'Determinate and the clamped `value` reaches `max`',
+          purpose:
+            'Styling hook for finished states (e.g. a success fill at 100%). It flips the instant the value reaches `max` — the fill’s 0.3s transition may still be catching up visually, so completion styling leads the fill slightly.',
+        },
+      ],
+    },
+    {
+      sourceFile: progressTypesFile,
+      typeName: 'ProgressTrackProps',
+      displayName: 'Progress.Track',
+      headingBase: 'progress-track',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      propOverrides: {
+        children: {
+          type: 'React.ReactNode',
+          description: 'Track anatomy override. When omitted, `Progress.Track` renders the default `Progress.Indicator`.',
+        },
+        className: classNameOverride,
+      },
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-slot="rail"',
+          appliedWhen: 'appearance="circular"',
+          purpose: 'The rail `<circle>` the ring svg draws; style or override it via `classNames.rail` / `slotProps.rail`.',
+        },
+        dataTypePart,
       ],
     },
     {
@@ -70,7 +112,32 @@ export default {
       propOverrides: {
         className: classNameOverride,
       },
-      dataAttributes: [dataSlotRoot],
+      dataAttributes: [
+        dataSlotRoot,
+        dataTypePart,
+        {
+          attribute: 'data-indeterminate',
+          appliedWhen: '`indeterminate`',
+          purpose: 'Drives the looping sweep animation instead of a written fill.',
+        },
+      ],
+    },
+    {
+      sourceFile: progressTypesFile,
+      typeName: 'ProgressValueProps',
+      displayName: 'Progress.Value',
+      headingBase: 'progress-value',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      propOverrides: {
+        children: {
+          type: 'React.ReactNode',
+          description: 'Visible value content — typically the formatted value (e.g. `%60`) or a short status. No default content is rendered; formatting stays with the consumer.',
+        },
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlotRoot, dataTypePart],
     },
   ],
 };
