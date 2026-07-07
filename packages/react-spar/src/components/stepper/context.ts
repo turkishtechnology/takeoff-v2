@@ -15,15 +15,17 @@ export interface StepperStepMeta {
 
 export interface StepperStepStatusOptions {
   index: number;
-  error: boolean;
-  disabled: boolean;
 }
 
 export interface StepperContextValue {
   /** Resolved active step index. */
   active: number;
   mode: StepperMode;
-  /** Resolves a step's mutually exclusive visual/behavior status. */
+  /** Accessible status suffix for completed steps (root-localized). */
+  completedLabel: string;
+  /** Accessible status suffix for errored steps (root-localized). */
+  errorLabel: string;
+  /** Resolves a step's mutually exclusive progress status. */
   getStepStatus: (options: StepperStepStatusOptions) => StepperStepStatus;
   /**
    * Registers a step's behavior facts under its index. Returns the matching
@@ -54,3 +56,18 @@ export interface StepperItemIndexContextValue {
 }
 
 export const [StepperItemIndexProvider, useStepperItemIndex] = createSafeContext<StepperItemIndexContextValue>('StepperItemIndexProvider');
+
+/**
+ * Anatomy registrations provided by each `Stepper.Item` to the parts rendered
+ * inside it.
+ */
+export interface StepperItemContextValue {
+  /**
+   * Registers the step description's element id so the trigger can reference
+   * it through `aria-describedby`. Returns the matching unregister cleanup
+   * for effect use.
+   */
+  registerDescription: (id: string) => () => void;
+}
+
+export const [StepperItemProvider, useStepperItem] = createSafeContext<StepperItemContextValue>('Stepper.Item');

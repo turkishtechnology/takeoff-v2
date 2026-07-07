@@ -75,7 +75,8 @@ table needs updating.
 
 | Attribute             | Value        | Scope                       | Meaning                             |
 | --------------------- | ------------ | --------------------------- | ----------------------------------- |
-| `data-disabled`       | presence     | Root                        | Component is disabled               |
+| `data-disabled`       | presence     | Root or Stepper item        | Component or step is disabled       |
+| `data-error`          | presence     | Stepper item                | Step has an error treatment         |
 | `data-invalid`        | presence     | Root                        | Component is visually invalid       |
 | `data-loading`        | presence     | Root                        | Component is in loading state       |
 | `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state  |
@@ -183,12 +184,18 @@ its state attributes are wrapper-emitted. Recorded here per rule 10.
   plus the `data-linear` / `data-reverse` presence flags. Items are styled
   through root-level descendant selectors — no per-item variant duplication.
 - **`data-state` (State, finite) lives on each item `<li>`:** `inactive` |
-  `active` | `completed` | `error` | `disabled` — the wrapper owns the status
-  derivation because no primitive backs it (rule 7 does not apply).
+  `active` | `completed` — the wrapper owns the progress-state derivation
+  because no primitive backs it (rule 7 does not apply).
+- **`data-error` and `data-disabled` (State, presence) live on each item
+  `<li>`.** They are modifiers rather than progress states, so an active or
+  completed step can also carry the error/disabled treatment without losing its
+  progress status.
 - **`data-clickable` (State, presence) lives on each item `<li>`.** Present when
   pressing the step may change the active step (respects `disabled`,
-  `isClickable`, and linear gating), consumed by the recipe for the cursor
-  affordance. Matches Chip's `data-clickable` vocabulary.
+  `isClickable`, and linear gating; never on the active step — its press
+  re-emits `onStepClick` but cannot change the selection), consumed by the
+  recipe for the cursor and hover affordances. Matches Chip's `data-clickable`
+  vocabulary.
 
 ### Table
 

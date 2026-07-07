@@ -86,11 +86,21 @@ export default {
         {
           attribute: 'data-state',
           appliedWhen: 'Always',
-          purpose: 'Resolved step status: `inactive` | `active` | `completed` | `error` | `disabled`. Precedence is disabled > error > completed > active > inactive.',
+          purpose: 'Resolved progress status: `inactive` | `active` | `completed`.',
+        },
+        {
+          attribute: 'data-error',
+          appliedWhen: 'When `error` is true.',
+          purpose: 'Error treatment modifier; can coexist with any progress status.',
+        },
+        {
+          attribute: 'data-disabled',
+          appliedWhen: 'When `disabled` is true.',
+          purpose: 'Disabled treatment modifier; the trigger is natively disabled.',
         },
         {
           attribute: 'data-clickable',
-          appliedWhen: 'When pressing the step may change the active step.',
+          appliedWhen: 'When pressing the step may change the active step — never on the active step itself.',
           purpose: 'Cursor/hover affordance hook. Respects `disabled`, `isClickable`, and linear gating.',
         },
       ],

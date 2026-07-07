@@ -86,6 +86,44 @@ describe('Stepper (compound)', () => {
       expect(container.querySelector('.tk-stepper-rail')).toBeNull();
     });
 
+    it('renders items as custom elements through the item as prop', () => {
+      const { container } = render(
+        <Stepper as="div">
+          <Stepper.Item as="div">
+            <Stepper.Title>Only</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      const item = container.querySelector('.tk-stepper-item') as HTMLElement;
+      expect(item.tagName).toBe('DIV');
+    });
+
+    it('assigns one shared index to Fragment-wrapped items (documented pitfall)', () => {
+      const { container } = render(
+        <Stepper defaultActive={0}>
+          <>
+            <Stepper.Item>
+              <Stepper.Title>One</Stepper.Title>
+            </Stepper.Item>
+            <Stepper.Item>
+              <Stepper.Title>Two</Stepper.Title>
+            </Stepper.Item>
+          </>
+          <Stepper.Item>
+            <Stepper.Title>Three</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      const items = container.querySelectorAll('.tk-stepper-item');
+      // The Fragment consumes a single index: both wrapped items read 0, and
+      // the trailing item lands on 1 — render items directly or from arrays.
+      expect(items[0]).toHaveAttribute('data-state', 'active');
+      expect(items[1]).toHaveAttribute('data-state', 'active');
+      expect(items[2]).toHaveAttribute('data-state', 'inactive');
+    });
+
     it('does not let non-element children consume a step index', () => {
       const { container } = render(
         <Stepper defaultActive={0}>
@@ -115,7 +153,7 @@ describe('Stepper (compound)', () => {
       expect(items[2]).toHaveAttribute('data-state', 'inactive');
     });
 
-    it('lets error and disabled win over the derived status', () => {
+    it('exposes error and disabled as modifiers without overriding progress status', () => {
       const { container } = render(
         <Stepper defaultActive={2}>
           <Stepper.Item error>
@@ -131,8 +169,10 @@ describe('Stepper (compound)', () => {
       );
 
       const items = container.querySelectorAll('.tk-stepper-item');
-      expect(items[0]).toHaveAttribute('data-state', 'error');
-      expect(items[1]).toHaveAttribute('data-state', 'disabled');
+      expect(items[0]).toHaveAttribute('data-state', 'completed');
+      expect(items[0]).toHaveAttribute('data-error', '');
+      expect(items[1]).toHaveAttribute('data-state', 'completed');
+      expect(items[1]).toHaveAttribute('data-disabled', '');
       expect(items[2]).toHaveAttribute('data-state', 'active');
     });
 
@@ -151,6 +191,24 @@ describe('Stepper (compound)', () => {
       const active = screen.getByRole('button', { name: 'Payment' });
       expect(active).toHaveAttribute('aria-current', 'step');
       expect(active).not.toHaveAttribute('aria-disabled');
+    });
+
+    it('keeps an errored active step current without announcing it disabled', () => {
+      render(
+        <Stepper defaultActive={0} linear>
+          <Stepper.Item error>
+            <Stepper.Title>One</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item>
+            <Stepper.Title>Two</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      const active = screen.getByRole('button', { name: 'One, error' });
+      expect(active).toHaveAttribute('aria-current', 'step');
+      expect(active).not.toHaveAttribute('aria-disabled');
+      expect(screen.getByRole('button', { name: 'Two' })).toHaveAttribute('aria-disabled', 'true');
     });
 
     it('marks only the unreachable linear steps aria-disabled', () => {
@@ -181,6 +239,79 @@ describe('Stepper (compound)', () => {
       // Active and inactive steps keep their bare name — aria-current and the
       // default announcement already cover them.
       expect(screen.getByRole('button', { name: 'Current' })).toBeInTheDocument();
+    });
+
+    it('localizes the status suffixes through the root completedLabel/errorLabel props', () => {
+      const { container } = render(
+        <Stepper defaultActive={2} completedLabel="tamamlandı" errorLabel="hatalı">
+          <Stepper.Item>
+            <Stepper.Title>Uçuş</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item error>
+            <Stepper.Title>Yolcu</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item>
+            <Stepper.Title>Ödeme</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      expect(screen.getByRole('button', { name: 'Uçuş, tamamlandı' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Yolcu, hatalı' })).toBeInTheDocument();
+
+      // Consumed by the provider chain, not forwarded to the <ol>.
+      const root = container.querySelector('.tk-stepper') as HTMLElement;
+      expect(root).not.toHaveAttribute('completedlabel');
+      expect(root).not.toHaveAttribute('errorlabel');
+    });
+
+    it('drops the status suffix for an empty label', () => {
+      render(
+        <Stepper defaultActive={1} completedLabel="">
+          <Stepper.Item>
+            <Stepper.Title>Done</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item>
+            <Stepper.Title>Current</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      expect(screen.getByRole('button', { name: 'Done' })).toBeInTheDocument();
+    });
+  });
+
+  describe('accessible descriptions', () => {
+    it('links the description to the trigger via aria-describedby instead of the accessible name', () => {
+      const { container } = renderSteps();
+
+      // Name stays the bare title: the description is aria-hidden for name
+      // computation but reaches assistive technology as the description.
+      const trigger = screen.getByRole('button', { name: 'Shipping' });
+      const description = container.querySelector('.tk-stepper-description') as HTMLElement;
+
+      expect(description).toHaveAttribute('aria-hidden', 'true');
+      expect(description.id).not.toBe('');
+      expect(trigger).toHaveAttribute('aria-describedby', description.id);
+      expect(trigger).toHaveAccessibleDescription('Address details');
+    });
+
+    it('omits aria-describedby on steps without a description', () => {
+      renderSteps();
+      expect(screen.getByRole('button', { name: 'Payment' })).not.toHaveAttribute('aria-describedby');
+    });
+
+    it('adopts a consumer-provided description id', () => {
+      render(
+        <Stepper>
+          <Stepper.Item>
+            <Stepper.Title>Only</Stepper.Title>
+            <Stepper.Description id="custom-description">Details</Stepper.Description>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      expect(screen.getByRole('button', { name: 'Only' })).toHaveAttribute('aria-describedby', 'custom-description');
     });
   });
 
@@ -226,6 +357,29 @@ describe('Stepper (compound)', () => {
       expect(indicators[0].querySelector('[data-testid="custom-indicator"]')).not.toBeNull();
       expect(indicators[1]).toBeEmptyDOMElement();
       expect(indicators[2]).toBeEmptyDOMElement();
+    });
+
+    it('resolves an indicator render function with the step status and index', () => {
+      const numbered = vi.fn(({ status, index }: { status: string; index: number }) => (status === 'completed' ? undefined : String(index + 1)));
+      const { container } = render(
+        <Stepper defaultActive={1}>
+          <Stepper.Item indicator={numbered}>
+            <Stepper.Title>One</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item indicator={numbered}>
+            <Stepper.Title>Two</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      expect(numbered).toHaveBeenCalledWith({ status: 'completed', index: 0 });
+      expect(numbered).toHaveBeenCalledWith({ status: 'active', index: 1 });
+
+      const indicators = container.querySelectorAll('.tk-stepper-indicator');
+      // Returning undefined for the completed step falls back to the built-in
+      // check glyph; the active step keeps its rendered number.
+      expect(indicators[0].querySelector('svg')).not.toBeNull();
+      expect(indicators[1]).toHaveTextContent('2');
     });
   });
 
@@ -292,7 +446,36 @@ describe('Stepper (compound)', () => {
   });
 
   describe('selection gating', () => {
-    it('emits onStepClick for every non-disabled press with the step status', async () => {
+    it('does not advertise the active step as clickable — its press cannot change the selection', () => {
+      const { container } = renderSteps({ defaultActive: 1 });
+      const items = container.querySelectorAll('.tk-stepper-item');
+
+      expect(items[0]).toHaveAttribute('data-clickable');
+      expect(items[1]).not.toHaveAttribute('data-clickable');
+      expect(items[2]).toHaveAttribute('data-clickable');
+    });
+
+    it('keeps a non-clickable active step silent on press', async () => {
+      const user = userEvent.setup();
+      const onActiveChange = vi.fn();
+      const onStepClick = vi.fn();
+      render(
+        <Stepper defaultActive={0} onActiveChange={onActiveChange} onStepClick={onStepClick}>
+          <Stepper.Item isClickable={false}>
+            <Stepper.Title>One</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item>
+            <Stepper.Title>Two</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'One' }));
+      expect(onStepClick).not.toHaveBeenCalled();
+      expect(onActiveChange).not.toHaveBeenCalled();
+    });
+
+    it('emits onStepClick for selectable presses with the progress status', async () => {
       const user = userEvent.setup();
       const onStepClick = vi.fn();
       renderSteps({ defaultActive: 1, onStepClick });
@@ -347,7 +530,7 @@ describe('Stepper (compound)', () => {
       expect(container.querySelectorAll('.tk-stepper-item')[1]).not.toHaveAttribute('data-clickable');
 
       await user.click(trigger);
-      expect(onStepClick).toHaveBeenCalledExactlyOnceWith({ index: 1, status: 'inactive' });
+      expect(onStepClick).not.toHaveBeenCalled();
       expect(onActiveChange).not.toHaveBeenCalled();
     });
 
@@ -373,8 +556,9 @@ describe('Stepper (compound)', () => {
     it('blocks the next linear step while the current one is errored', async () => {
       const user = userEvent.setup();
       const onActiveChange = vi.fn();
+      const onStepClick = vi.fn();
       render(
-        <Stepper defaultActive={0} linear onActiveChange={onActiveChange}>
+        <Stepper defaultActive={0} linear onActiveChange={onActiveChange} onStepClick={onStepClick}>
           <Stepper.Item error>
             <Stepper.Title>One</Stepper.Title>
           </Stepper.Item>
@@ -385,6 +569,7 @@ describe('Stepper (compound)', () => {
       );
 
       await user.click(screen.getByRole('button', { name: 'Two' }));
+      expect(onStepClick).not.toHaveBeenCalled();
       expect(onActiveChange).not.toHaveBeenCalled();
     });
 
@@ -395,6 +580,109 @@ describe('Stepper (compound)', () => {
 
       await user.click(screen.getByRole('button', { name: 'Review' }));
       expect(onActiveChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('keyboard navigation', () => {
+    it('moves focus between triggers with arrow keys, skipping disabled and non-clickable steps', async () => {
+      const user = userEvent.setup();
+      render(
+        <Stepper>
+          <Stepper.Item>
+            <Stepper.Title>One</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item disabled>
+            <Stepper.Title>Two</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item isClickable={false}>
+            <Stepper.Title>Three</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item>
+            <Stepper.Title>Four</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      await user.tab();
+      expect(screen.getByRole('button', { name: 'One' })).toHaveFocus();
+
+      await user.keyboard('{ArrowRight}');
+      expect(screen.getByRole('button', { name: 'Four' })).toHaveFocus();
+
+      // No wrap: the edges hold focus.
+      await user.keyboard('{ArrowRight}');
+      expect(screen.getByRole('button', { name: 'Four' })).toHaveFocus();
+
+      await user.keyboard('{ArrowLeft}');
+      expect(screen.getByRole('button', { name: 'One' })).toHaveFocus();
+
+      await user.keyboard('{End}');
+      expect(screen.getByRole('button', { name: 'Four' })).toHaveFocus();
+
+      await user.keyboard('{Home}');
+      expect(screen.getByRole('button', { name: 'One' })).toHaveFocus();
+    });
+
+    it('follows the orientation for the arrow axis', async () => {
+      const user = userEvent.setup();
+      renderSteps({ orientation: 'vertical' });
+
+      await user.tab();
+      expect(screen.getByRole('button', { name: 'Shipping' })).toHaveFocus();
+
+      await user.keyboard('{ArrowDown}');
+      expect(screen.getByRole('button', { name: 'Payment' })).toHaveFocus();
+
+      // Cross-axis keys are left alone in vertical mode.
+      await user.keyboard('{ArrowRight}');
+      expect(screen.getByRole('button', { name: 'Payment' })).toHaveFocus();
+
+      await user.keyboard('{ArrowUp}');
+      expect(screen.getByRole('button', { name: 'Shipping' })).toHaveFocus();
+    });
+
+    it('consumes matched navigation keys even at the list edges instead of scrolling the page', async () => {
+      const user = userEvent.setup();
+      const onWrapperKeyDown = vi.fn();
+      render(
+        <div onKeyDown={event => onWrapperKeyDown(event.key, event.defaultPrevented)}>
+          <Stepper>
+            <Stepper.Item>
+              <Stepper.Title>One</Stepper.Title>
+            </Stepper.Item>
+            <Stepper.Item>
+              <Stepper.Title>Two</Stepper.Title>
+            </Stepper.Item>
+          </Stepper>
+        </div>,
+      );
+
+      await user.tab();
+      await user.keyboard('{ArrowLeft}');
+
+      expect(screen.getByRole('button', { name: 'One' })).toHaveFocus();
+      expect(onWrapperKeyDown).toHaveBeenCalledWith('ArrowLeft', true);
+    });
+
+    it('activates the focused step with Enter through the native button semantics', async () => {
+      const user = userEvent.setup();
+      const onActiveChange = vi.fn();
+      renderSteps({ defaultActive: 0, onActiveChange });
+
+      screen.getByRole('button', { name: 'Review' }).focus();
+      await user.keyboard('{Enter}');
+
+      expect(onActiveChange).toHaveBeenCalledExactlyOnceWith(2);
+    });
+
+    it('yields to a consumer onKeyDown that prevents default', async () => {
+      const user = userEvent.setup();
+      renderSteps({ onKeyDown: event => event.preventDefault() });
+
+      await user.tab();
+      await user.keyboard('{ArrowRight}');
+
+      expect(screen.getByRole('button', { name: 'Shipping' })).toHaveFocus();
     });
   });
 
@@ -448,6 +736,16 @@ describe('Stepper (compound)', () => {
     it('throws a descriptive error when Stepper.Title renders outside the root', () => {
       expect(() => render(<Stepper.Title>Loose</Stepper.Title>)).toThrow(/Stepper\.Title must be used within StepperProvider/);
     });
+
+    it('throws a descriptive error when Stepper.Description renders outside an item', () => {
+      expect(() =>
+        render(
+          <Stepper>
+            <Stepper.Description>Loose</Stepper.Description>
+          </Stepper>,
+        ),
+      ).toThrow(/Stepper\.Description must be used within Stepper\.Item/);
+    });
   });
 
   describe('server rendering', () => {
@@ -471,11 +769,33 @@ describe('Stepper (compound)', () => {
       const items = [...markup.matchAll(/<li[^>]*>/g)].map(match => match[0]);
       expect(items).toHaveLength(3);
       // Selectable steps are clickable and not aria-disabled before the
-      // effect-fed registry exists; the non-clickable one is gated already.
-      expect(items[0]).toContain('data-clickable');
+      // effect-fed registry exists; the active step (its press cannot change
+      // the selection) and the non-clickable one are gated already.
+      expect(items[0]).not.toContain('data-clickable');
       expect(items[2]).toContain('data-clickable');
       expect(items[1]).not.toContain('data-clickable');
       expect(markup.match(/aria-disabled/g)).toHaveLength(1);
+    });
+
+    it('blocks the next linear step from the active step props in the pre-hydration markup', () => {
+      const markup = renderToStaticMarkup(
+        <TakeoffSparProvider>
+          <Stepper defaultActive={0} linear>
+            <Stepper.Item error>
+              <Stepper.Title>One</Stepper.Title>
+            </Stepper.Item>
+            <Stepper.Item>
+              <Stepper.Title>Two</Stepper.Title>
+            </Stepper.Item>
+          </Stepper>
+        </TakeoffSparProvider>,
+      );
+
+      const items = [...markup.matchAll(/<li[^>]*>/g)].map(match => match[0]);
+      expect(items).toHaveLength(2);
+      expect(items[1]).not.toContain('data-clickable');
+      expect(markup).toContain('aria-current="step"');
+      expect(markup).toContain('aria-disabled="true"');
     });
   });
 

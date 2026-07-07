@@ -19,7 +19,9 @@
 //   data-reverse     — presence; flips indicators and content on the cross axis
 //
 // State attributes (item):
-//   data-state       — inactive | active | completed | error | disabled
+//   data-state       — inactive | active | completed
+//   data-error       — presence; step has an error treatment
+//   data-disabled    — presence; step is unavailable
 //   data-clickable   — presence; pressing the step may change the active step
 
 @use '../abstracts/mixins' as mixins;
@@ -73,7 +75,13 @@
     cursor: pointer;
   }
 
-  .tk-stepper-item[data-state='disabled'] .tk-stepper-trigger {
+  // Hover feedback for steps whose press can change the selection (mirrors the
+  // Tabs hover treatment). Errored titles keep their danger color.
+  .tk-stepper-item[data-clickable]:not([data-error]) .tk-stepper-trigger:hover .tk-stepper-title {
+    color: var(--text-darkest);
+  }
+
+  .tk-stepper-item[data-disabled] .tk-stepper-trigger {
     cursor: not-allowed;
   }
 
@@ -83,13 +91,19 @@
     align-items: center;
     flex-shrink: 0;
     border: 2px solid var(--border-light);
-    background-color: var(--static-white);
+    // Theme-adaptive surface (flips with [data-theme='dark']), matching the
+    // Checkbox surface/glyph convention — never the fixed --static-white.
+    background-color: var(--static-light);
     color: var(--border-light);
     border-radius: var(--radius-full);
     font-family: var(--family-body);
     text-align: center;
     margin-inline-end: 8px;
     box-sizing: border-box;
+    transition:
+      border-color 0.2s ease-in-out,
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out;
 
     // Basic-mode dot: an empty indicator paints a currentColor dot, covering the
     // active/inactive/disabled glyphs without shipping a dot glyph.
@@ -132,6 +146,7 @@
     color: var(--text-dark);
     font-family: var(--family-body);
     font-weight: var(--weight-medium);
+    transition: color 0.2s ease-in-out;
   }
 
   .tk-stepper-description {
@@ -146,14 +161,14 @@
   .tk-stepper-item[data-state='active'] .tk-stepper-indicator {
     border-color: var(--primary-base);
     background-color: var(--primary-base);
-    color: var(--static-white);
+    color: var(--static-light);
   }
 
   .tk-stepper-item[data-state='active'] .tk-stepper-title {
     color: var(--text-darkest);
   }
 
-  .tk-stepper-item[data-state='completed'] {
+  .tk-stepper-item[data-state='completed']:not([data-error]):not([data-disabled]) {
     .tk-stepper-indicator {
       border-color: var(--primary-base);
       color: var(--primary-base);
@@ -164,11 +179,11 @@
     }
   }
 
-  .tk-stepper-item[data-state='error'] {
+  .tk-stepper-item[data-error] {
     .tk-stepper-indicator {
       border-color: var(--states-danger-base);
       background-color: var(--states-danger-base);
-      color: var(--static-white);
+      color: var(--static-light);
     }
 
     .tk-stepper-title {
@@ -176,7 +191,7 @@
     }
   }
 
-  .tk-stepper-item[data-state='disabled'] {
+  .tk-stepper-item[data-disabled] {
     .tk-stepper-indicator {
       border-color: var(--background-light);
       background-color: var(--background-light);
@@ -270,7 +285,12 @@
   // ----- Sizes ------------------------------------------------------------
   // Indicator diameters, glyph/number scale, and rail geometry ported from
   // takeoff-ui/core per size. The rail offsets assume the horizontal indicator
-  // inset (margin-inline-start: 40px) above.
+  // inset (margin-inline-start: 40px) above; both rail endpoints keep a
+  // --stepper-items-rail-gap clearance from the adjacent indicators.
+  //
+  // Reverse geometry: the trigger's padding reserves exactly the absolute
+  // indicator's box; the content margin owns the indicator gap, mirroring the
+  // per-size margin-top of the default layout.
 
   &[data-size='xsmall'] {
     .tk-stepper-indicator {
@@ -286,8 +306,8 @@
 
       > svg,
       > img {
-        width: 10px;
-        height: 10px;
+        width: 16px;
+        height: 16px;
       }
     }
 
@@ -309,13 +329,13 @@
 
       .tk-stepper-rail {
         top: 7px;
-        width: calc(100% - 28px);
-        left: 64px;
+        width: calc(100% - 16px - 2 * var(--stepper-items-rail-gap));
+        left: calc(40px + 16px + var(--stepper-items-rail-gap));
       }
 
       &[data-reverse] {
         .tk-stepper-trigger {
-          padding-bottom: calc(16px + var(--stepper-items-content-gap));
+          padding-bottom: 16px;
         }
 
         .tk-stepper-rail {
@@ -331,8 +351,8 @@
       }
 
       .tk-stepper-rail {
-        height: calc(100% - 28px);
-        top: 24px;
+        height: calc(100% - 16px - 2 * var(--stepper-items-rail-gap));
+        top: calc(16px + var(--stepper-items-rail-gap));
         left: 7px;
       }
 
@@ -351,14 +371,14 @@
       line-height: var(--desktop-body-xs-line-height);
 
       &:empty::before {
-        width: 8px;
-        height: 8px;
+        width: 9px;
+        height: 9px;
       }
 
       > svg,
       > img {
-        width: 14px;
-        height: 14px;
+        width: 24px;
+        height: 24px;
       }
     }
 
@@ -380,13 +400,13 @@
 
       .tk-stepper-rail {
         top: 11px;
-        width: calc(100% - 36px);
-        left: 72px;
+        width: calc(100% - 24px - 2 * var(--stepper-items-rail-gap));
+        left: calc(40px + 24px + var(--stepper-items-rail-gap));
       }
 
       &[data-reverse] {
         .tk-stepper-trigger {
-          padding-bottom: calc(24px + var(--stepper-items-content-gap));
+          padding-bottom: 24px;
         }
 
         .tk-stepper-rail {
@@ -395,6 +415,7 @@
         }
 
         .tk-stepper-content {
+          margin-top: 0;
           margin-bottom: 2px;
         }
       }
@@ -406,8 +427,8 @@
       }
 
       .tk-stepper-rail {
-        height: calc(100% - 36px);
-        top: 32px;
+        height: calc(100% - 24px - 2 * var(--stepper-items-rail-gap));
+        top: calc(24px + var(--stepper-items-rail-gap));
         left: 11px;
       }
 
@@ -426,14 +447,14 @@
       line-height: var(--desktop-body-s-line-height);
 
       &:empty::before {
-        width: 10px;
-        height: 10px;
+        width: 12px;
+        height: 12px;
       }
 
       > svg,
       > img {
-        width: 20px;
-        height: 20px;
+        width: 32px;
+        height: 32px;
       }
     }
 
@@ -455,13 +476,13 @@
 
       .tk-stepper-rail {
         top: 15px;
-        left: 80px;
-        width: calc(100% - 44px);
+        left: calc(40px + 32px + var(--stepper-items-rail-gap));
+        width: calc(100% - 32px - 2 * var(--stepper-items-rail-gap));
       }
 
       &[data-reverse] {
         .tk-stepper-trigger {
-          padding-bottom: calc(32px + var(--stepper-items-content-gap));
+          padding-bottom: 32px;
         }
 
         .tk-stepper-rail {
@@ -470,6 +491,7 @@
         }
 
         .tk-stepper-content {
+          margin-top: 0;
           margin-bottom: 4px;
         }
       }
@@ -481,8 +503,8 @@
       }
 
       .tk-stepper-rail {
-        height: calc(100% - 44px);
-        top: 40px;
+        height: calc(100% - 32px - 2 * var(--stepper-items-rail-gap));
+        top: calc(32px + var(--stepper-items-rail-gap));
         left: 15px;
       }
 
@@ -501,14 +523,14 @@
       line-height: var(--desktop-body-m-base-line-height);
 
       &:empty::before {
-        width: 12px;
-        height: 12px;
+        width: 15px;
+        height: 15px;
       }
 
       > svg,
       > img {
-        width: 24px;
-        height: 24px;
+        width: 40px;
+        height: 40px;
       }
     }
 
@@ -530,13 +552,13 @@
 
       .tk-stepper-rail {
         top: 19px;
-        width: calc(100% - 52px);
-        left: 88px;
+        width: calc(100% - 40px - 2 * var(--stepper-items-rail-gap));
+        left: calc(40px + 40px + var(--stepper-items-rail-gap));
       }
 
       &[data-reverse] {
         .tk-stepper-trigger {
-          padding-bottom: calc(40px + var(--stepper-items-content-gap));
+          padding-bottom: 40px;
         }
 
         .tk-stepper-rail {
@@ -545,6 +567,7 @@
         }
 
         .tk-stepper-content {
+          margin-top: 0;
           margin-bottom: 6px;
         }
       }
@@ -556,8 +579,8 @@
       }
 
       .tk-stepper-rail {
-        height: calc(100% - 52px);
-        top: 48px;
+        height: calc(100% - 40px - 2 * var(--stepper-items-rail-gap));
+        top: calc(40px + var(--stepper-items-rail-gap));
         left: 19px;
       }
 
@@ -593,11 +616,11 @@
       }
 
       .tk-stepper-item[data-state='active'] .tk-stepper-trigger,
-      .tk-stepper-item[data-state='completed'] .tk-stepper-trigger {
+      .tk-stepper-item[data-state='completed']:not([data-error]):not([data-disabled]) .tk-stepper-trigger {
         border-top-color: var(--primary-base);
       }
 
-      .tk-stepper-item[data-state='error'] .tk-stepper-trigger {
+      .tk-stepper-item[data-error] .tk-stepper-trigger {
         border-top-color: var(--states-danger-base);
       }
 
@@ -622,11 +645,11 @@
         }
 
         .tk-stepper-item[data-state='active'] .tk-stepper-trigger,
-        .tk-stepper-item[data-state='completed'] .tk-stepper-trigger {
+        .tk-stepper-item[data-state='completed']:not([data-error]):not([data-disabled]) .tk-stepper-trigger {
           border-bottom-color: var(--primary-base);
         }
 
-        .tk-stepper-item[data-state='error'] .tk-stepper-trigger {
+        .tk-stepper-item[data-error] .tk-stepper-trigger {
           border-bottom-color: var(--states-danger-base);
         }
 
@@ -652,11 +675,11 @@
       }
 
       .tk-stepper-item[data-state='active'] .tk-stepper-trigger,
-      .tk-stepper-item[data-state='completed'] .tk-stepper-trigger {
+      .tk-stepper-item[data-state='completed']:not([data-error]):not([data-disabled]) .tk-stepper-trigger {
         border-left-color: var(--primary-base);
       }
 
-      .tk-stepper-item[data-state='error'] .tk-stepper-trigger {
+      .tk-stepper-item[data-error] .tk-stepper-trigger {
         border-left-color: var(--states-danger-base);
       }
 
@@ -677,11 +700,11 @@
         }
 
         .tk-stepper-item[data-state='active'] .tk-stepper-trigger,
-        .tk-stepper-item[data-state='completed'] .tk-stepper-trigger {
+        .tk-stepper-item[data-state='completed']:not([data-error]):not([data-disabled]) .tk-stepper-trigger {
           border-right-color: var(--primary-base);
         }
 
-        .tk-stepper-item[data-state='error'] .tk-stepper-trigger {
+        .tk-stepper-item[data-error] .tk-stepper-trigger {
           border-right-color: var(--states-danger-base);
         }
 

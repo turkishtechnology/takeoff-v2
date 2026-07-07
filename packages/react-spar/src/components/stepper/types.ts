@@ -16,10 +16,10 @@ export type StepperMode = 'default' | 'compact';
 export type StepperSize = 'large' | 'base' | 'small' | 'xsmall';
 
 /**
- * Resolved status of a step. Mutually exclusive; precedence is
- * `disabled` > `error` > `completed` > `active` > `inactive`.
+ * Resolved progress status of a step. Error and disabled are exposed as
+ * separate modifier states so an active/completed step can also be errored.
  */
-export type StepperStepStatus = 'inactive' | 'active' | 'completed' | 'error' | 'disabled';
+export type StepperStepStatus = 'inactive' | 'active' | 'completed';
 
 /** Payload of the root `onStepClick` callback. */
 export interface StepperStepClickDetail {
@@ -27,6 +27,14 @@ export interface StepperStepClickDetail {
   index: number;
   /** Status of the pressed step at press time. */
   status: StepperStepStatus;
+}
+
+/** State passed to a `Stepper.Item` `indicator` render function. */
+export interface StepperIndicatorState {
+  /** Resolved progress status of the step. */
+  status: StepperStepStatus;
+  /** Zero-based index of the step. */
+  index: number;
 }
 
 export type StepperSlot = 'root';
@@ -40,7 +48,10 @@ export type StepperDescriptionSlot = 'root';
  * rationale in `base.ts`).
  */
 export interface StepperOwnProps {
-  /** Currently active step index (controlled). */
+  /**
+   * Currently active step index (controlled). Not clamped: an out-of-range
+   * index renders every step completed (or inactive) with no active step.
+   */
   active?: number;
   /**
    * Initially active step index (uncontrolled).
@@ -50,9 +61,9 @@ export interface StepperOwnProps {
   /** Fires with the new step index when the active step changes. */
   onActiveChange?: (index: number) => void;
   /**
-   * Fires on every press of a non-disabled step with the step's index and
-   * status, even when the press does not change the active step. Disabled
-   * steps render a natively disabled button and emit nothing.
+   * Fires on selectable step presses, and on the active step when pressed again,
+   * with the step's index and progress status. Disabled, non-clickable, and
+   * linear-blocked steps emit nothing.
    */
   onStepClick?: (detail: StepperStepClickDetail) => void;
   /**
@@ -82,6 +93,20 @@ export interface StepperOwnProps {
    * @defaultValue false
    */
   reverse?: boolean;
+  /**
+   * Accessible status suffix appended to a completed step's name — the check
+   * glyph alone is invisible to assistive technology. Localize per stepper;
+   * an empty string drops the suffix.
+   * @defaultValue 'completed'
+   */
+  completedLabel?: string;
+  /**
+   * Accessible status suffix appended to an errored step's name — the error
+   * glyph alone is invisible to assistive technology. Localize per stepper;
+   * an empty string drops the suffix.
+   * @defaultValue 'error'
+   */
+  errorLabel?: string;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<StepperSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -95,13 +120,21 @@ export interface StepperOwnProps {
  * item, but Fragments do not: items wrapped in `<>…</>` share a single
  * index, so render items directly or from arrays.
  *
+ * Wrapping `Stepper.Item` in an intermediary component keeps click gating
+ * correct, but first-paint/SSR gating reads `error`/`disabled`/`isClickable`
+ * off each direct child's props — forward them on the wrapper (or accept a
+ * one-paint `data-clickable`/`aria-disabled` correction after hydration).
+ *
+ * Arrow keys (following `orientation`), Home, and End move focus between
+ * step triggers; Tab still reaches every clickable step.
+ *
  * Overriding `as` on the root leaves items rendering `<li>` — override the
  * item's `as` in tandem to keep the markup valid.
  */
 export type StepperProps<T extends ElementType = 'ol'> = PolymorphicProps<'ol', T, StepperOwnProps>;
 
 export interface StepperItemOwnProps {
-  /** Marks the step as errored. Wins over completed/active/inactive. */
+  /** Marks the step as errored without changing its progress status. */
   error?: boolean;
   /**
    * Disables the step. The trigger renders as a natively disabled button:
@@ -116,9 +149,11 @@ export interface StepperItemOwnProps {
   isClickable?: boolean;
   /**
    * Custom indicator content. Replaces the built-in status glyph (check,
-   * close, or dot) for every status except `disabled`.
+   * close, or dot) for every status except `disabled`. Pass a function to
+   * render by status — returning `undefined` falls back to the built-in
+   * glyphs, so numbered steps can surface the check once completed.
    */
-  indicator?: ReactNode;
+  indicator?: ReactNode | ((state: StepperIndicatorState) => ReactNode);
   /** Step content — typically `Stepper.Title` and `Stepper.Description`. */
   children?: ReactNode;
   /** Per-slot class name overrides. */

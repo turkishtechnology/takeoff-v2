@@ -89,7 +89,12 @@ function NumberedIndicatorsDemo() {
   return (
     <Stepper className="mx-auto max-w-160" defaultActive={1}>
       {steps.map((step, index) => (
-        <Stepper.Item key={step} indicator={<span className="text-xs font-semibold">{index + 1}</span>}>
+        <Stepper.Item
+          key={step}
+          indicator={({ status }) =>
+            status === 'completed' ? undefined : <span className="text-xs font-semibold">{index + 1}</span>
+          }
+        >
           <Stepper.Title>{step}</Stepper.Title>
         </Stepper.Item>
       ))}
@@ -250,7 +255,8 @@ a title with an optional description. The active step is index-based and can be
 controlled or uncontrolled.
 
 Steps are real `<button>` elements: keyboard users activate them with `Enter` or
-`Space`, and the active step is announced through `aria-current="step"`.
+`Space`, arrow keys (plus `Home`/`End`) move focus along the list, and the
+active step is announced through `aria-current="step"`.
 
 ## Usage
 
@@ -280,31 +286,29 @@ import { Stepper } from '@takeoff-ui/react-spar';
 ## Step status
 
 Steps before the active index show the completed treatment. Mark a step with
-`error` or `disabled`; both win over the derived status. Disabled steps are
-natively disabled buttons — they are unfocusable and unselectable.
+`error` or `disabled`; both apply as modifiers without replacing the derived
+progress status. Disabled steps are natively disabled buttons — they are
+unfocusable and unselectable.
 
 <LiveCode
   code={statusDemo}
 
-  noInline
-  previewMinHeight={120}
-  previewWrapper={ReactSparDemoRoot}
-  scope={stepperScope}
-/>
+noInline previewMinHeight={120} previewWrapper={ReactSparDemoRoot}
+scope={stepperScope} />
 
 ## Numbered indicators
 
 Pass a number through `Stepper.Item`'s `indicator` prop when the indicator
-should show step numbers instead of the default status glyphs.
+should show step numbers instead of the default status glyphs. `indicator` also
+accepts a render function receiving the step's `status` and `index` — returning
+`undefined` falls back to the built-in glyphs, so completed steps regain the
+check.
 
 <LiveCode
   code={numberedIndicatorsDemo}
 
-  noInline
-  previewMinHeight={120}
-  previewWrapper={ReactSparDemoRoot}
-  scope={stepperScope}
-/>
+noInline previewMinHeight={120} previewWrapper={ReactSparDemoRoot}
+scope={stepperScope} />
 
 ## Linear progression
 
@@ -315,11 +319,8 @@ disabled.
 <LiveCode
   code={linearDemo}
 
-  noInline
-  previewMinHeight={140}
-  previewWrapper={ReactSparDemoRoot}
-  scope={stepperScope}
-/>
+noInline previewMinHeight={140} previewWrapper={ReactSparDemoRoot}
+scope={stepperScope} />
 
 ## Clickability
 
@@ -329,11 +330,8 @@ change the active step on press.
 <LiveCode
   code={clickabilityDemo}
 
-  noInline
-  previewMinHeight={130}
-  previewWrapper={ReactSparDemoRoot}
-  scope={stepperScope}
-/>
+noInline previewMinHeight={130} previewWrapper={ReactSparDemoRoot}
+scope={stepperScope} />
 
 ## Reverse
 
@@ -343,22 +341,16 @@ changing the step order.
 <LiveCode
   code={reverseDemo}
 
-  noInline
-  previewMinHeight={160}
-  previewWrapper={ReactSparDemoRoot}
-  scope={stepperScope}
-/>
+noInline previewMinHeight={160} previewWrapper={ReactSparDemoRoot}
+scope={stepperScope} />
 
 ## Vertical
 
 <LiveCode
   code={verticalDemo}
 
-  noInline
-  previewMinHeight={260}
-  previewWrapper={ReactSparDemoRoot}
-  scope={stepperScope}
-/>
+noInline previewMinHeight={260} previewWrapper={ReactSparDemoRoot}
+scope={stepperScope} />
 
 ## Compact
 
@@ -368,22 +360,16 @@ recolors with its status.
 <LiveCode
   code={compactDemo}
 
-  noInline
-  previewMinHeight={100}
-  previewWrapper={ReactSparDemoRoot}
-  scope={stepperScope}
-/>
+noInline previewMinHeight={100} previewWrapper={ReactSparDemoRoot}
+scope={stepperScope} />
 
 ## Sizes
 
 <LiveCode
   code={sizesDemo}
 
-  noInline
-  previewMinHeight={360}
-  previewWrapper={ReactSparDemoRoot}
-  scope={stepperScope}
-/>
+noInline previewMinHeight={360} previewWrapper={ReactSparDemoRoot}
+scope={stepperScope} />
 
 ## Accessibility
 
@@ -395,7 +381,13 @@ recolors with its status.
   `linear`) expose `aria-disabled` and stay silent on press; `disabled` steps
   are natively disabled and removed from the tab order.
 - Indicators and rails are decorative and hidden from assistive technology; a
-  step's accessible name comes from its title and description text.
+  step's accessible name comes from its title text, extended with a visually
+  hidden status suffix on completed/errored steps — localize it through the
+  root's `completedLabel`/`errorLabel` props.
+- `Stepper.Description` is linked to the trigger through `aria-describedby`
+  instead of inflating the accessible name.
+- Arrow keys along the stepper's orientation move focus between step triggers;
+  `Home` and `End` jump to the first and last focusable step.
 
 ## API Reference
 
@@ -405,26 +397,28 @@ recolors with its status.
 
 #### Props {#stepper-props}
 
-| Name                               | Type                                                                                      | Default      | Description                                                                                                                             |
-| ---------------------------------- | ----------------------------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />      | <code>React.ReactNode</code>                                                              | -            | `Stepper.Item` elements. The root derives each step’s index from its position in `children`.                                            |
-| <ApiBadge label="active" />        | <code>number</code>                                                                       | -            | Currently active step index (controlled).                                                                                               |
-| <ApiBadge label="defaultActive" /> | <code>number</code>                                                                       | 0            | Initially active step index (uncontrolled).                                                                                             |
-| <ApiBadge label="orientation" />   | <code><a href="#stepper-td-stepperorientation">StepperOrientation</a></code>              | 'horizontal' | Layout axis of the step list.                                                                                                           |
-| <ApiBadge label="mode" />          | <code><a href="#stepper-td-steppermode">StepperMode</a></code>                            | 'default'    | Display mode — indicators with connecting rails (`'default'`) or a progress border per step without rails (`'compact'`).                |
-| <ApiBadge label="linear" />        | <code>boolean</code>                                                                      | false        | Restricts navigation to a linear progression: any previous step, or the next step when the current one is neither errored nor disabled. |
-| <ApiBadge label="size" />          | <code><a href="#stepper-td-steppersize">StepperSize</a></code>                            | 'base'       | Density scale for indicators and typography.                                                                                            |
-| <ApiBadge label="reverse" />       | <code>boolean</code>                                                                      | false        | Flips indicators and content along the cross axis.                                                                                      |
-| <ApiBadge label="classNames" />    | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -            | Per-slot class name overrides.                                                                                                          |
-| <ApiBadge label="slotProps" />     | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -            | Per-slot HTML attribute overrides.                                                                                                      |
-| <ApiBadge label="className" />     | <code>string</code>                                                                       | -            | Appends custom classes to the root slot of this part.                                                                                   |
+| Name                                | Type                                                                                      | Default      | Description                                                                                                                                                                        |
+| ----------------------------------- | ----------------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />       | <code>React.ReactNode</code>                                                              | -            | `Stepper.Item` elements. The root derives each step’s index from its position in `children`.                                                                                       |
+| <ApiBadge label="active" />         | <code>number</code>                                                                       | -            | Currently active step index (controlled). Not clamped: an out-of-range index renders every step completed (or inactive) with no active step.                                       |
+| <ApiBadge label="defaultActive" />  | <code>number</code>                                                                       | 0            | Initially active step index (uncontrolled).                                                                                                                                        |
+| <ApiBadge label="orientation" />    | <code><a href="#stepper-td-stepperorientation">StepperOrientation</a></code>              | 'horizontal' | Layout axis of the step list.                                                                                                                                                      |
+| <ApiBadge label="mode" />           | <code><a href="#stepper-td-steppermode">StepperMode</a></code>                            | 'default'    | Display mode — indicators with connecting rails (`'default'`) or a progress border per step without rails (`'compact'`).                                                           |
+| <ApiBadge label="linear" />         | <code>boolean</code>                                                                      | false        | Restricts navigation to a linear progression: any previous step, or the next step when the current one is neither errored nor disabled.                                            |
+| <ApiBadge label="size" />           | <code><a href="#stepper-td-steppersize">StepperSize</a></code>                            | 'base'       | Density scale for indicators and typography.                                                                                                                                       |
+| <ApiBadge label="reverse" />        | <code>boolean</code>                                                                      | false        | Flips indicators and content along the cross axis.                                                                                                                                 |
+| <ApiBadge label="completedLabel" /> | <code>string</code>                                                                       | 'completed'  | Accessible status suffix appended to a completed step's name — the check glyph alone is invisible to assistive technology. Localize per stepper; an empty string drops the suffix. |
+| <ApiBadge label="errorLabel" />     | <code>string</code>                                                                       | 'error'      | Accessible status suffix appended to an errored step's name — the error glyph alone is invisible to assistive technology. Localize per stepper; an empty string drops the suffix.  |
+| <ApiBadge label="classNames" />     | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -            | Per-slot class name overrides.                                                                                                                                                     |
+| <ApiBadge label="slotProps" />      | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -            | Per-slot HTML attribute overrides.                                                                                                                                                 |
+| <ApiBadge label="className" />      | <code>string</code>                                                                       | -            | Appends custom classes to the root slot of this part.                                                                                                                              |
 
 #### Events {#stepper-events}
 
-| Name                                | Type                                                                                                      | Default | Description                                                                                                                                                                                           |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="onActiveChange" /> | <code>(index: number) =&gt; void</code>                                                                   | -       | Fires with the new step index when the active step changes.                                                                                                                                           |
-| <ApiBadge label="onStepClick" />    | <code>(detail: <a href="#stepper-td-stepperstepclickdetail">StepperStepClickDetail</a>) =&gt; void</code> | -       | Fires on every press of a non-disabled step with the step's index and status, even when the press does not change the active step. Disabled steps render a natively disabled button and emit nothing. |
+| Name                                | Type                                                                                                      | Default | Description                                                                                                                                                                             |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onActiveChange" /> | <code>(index: number) =&gt; void</code>                                                                   | -       | Fires with the new step index when the active step changes.                                                                                                                             |
+| <ApiBadge label="onStepClick" />    | <code>(detail: <a href="#stepper-td-stepperstepclickdetail">StepperStepClickDetail</a>) =&gt; void</code> | -       | Fires on selectable step presses, and on the active step when pressed again, with the step's index and progress status. Disabled, non-clickable, and linear-blocked steps emit nothing. |
 
 #### Data attributes {#stepper-data-attributes}
 
@@ -441,24 +435,26 @@ recolors with its status.
 
 #### Props {#stepper-item-props}
 
-| Name                             | Type                                                                                                                                         | Default | Description                                                                                                                                        |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                                                                                 | -       | Step content — typically `Stepper.Title` and `Stepper.Description`. Renders inside the step’s `<button>` trigger and provides its accessible name. |
-| <ApiBadge label="error" />       | <code>boolean</code>                                                                                                                         | -       | Marks the step as errored. Wins over completed/active/inactive.                                                                                    |
-| <ApiBadge label="disabled" />    | <code>boolean</code>                                                                                                                         | -       | Disables the step. The trigger renders as a natively disabled button: unfocusable, unselectable, and silent.                                       |
-| <ApiBadge label="isClickable" /> | <code>boolean</code>                                                                                                                         | true    | Whether the step can be activated by pressing it. Non-clickable steps stay visible in the flow but are removed from the tab order.                 |
-| <ApiBadge label="indicator" />   | <code>React.ReactNode</code>                                                                                                                 | -       | Custom indicator content. Replaces the built-in status glyph (check, close, or dot) for every status except `disabled`.                            |
-| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;<a href="#stepper-td-stepperitemslot">StepperItemSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                     |
-| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;<a href="#stepper-td-stepperitemslot">StepperItemSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                 |
-| <ApiBadge label="className" />   | <code>string</code>                                                                                                                          | -       | Appends custom classes to the root slot of this part.                                                                                              |
+| Name                             | Type                                                                                                                                         | Default | Description                                                                                                                                                                                                                                                                    |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                                                                                 | -       | Step content — typically `Stepper.Title` and `Stepper.Description`. Renders inside the step’s `<button>` trigger and provides its accessible name.                                                                                                                             |
+| <ApiBadge label="error" />       | <code>boolean</code>                                                                                                                         | -       | Marks the step as errored without changing its progress status.                                                                                                                                                                                                                |
+| <ApiBadge label="disabled" />    | <code>boolean</code>                                                                                                                         | -       | Disables the step. The trigger renders as a natively disabled button: unfocusable, unselectable, and silent.                                                                                                                                                                   |
+| <ApiBadge label="isClickable" /> | <code>boolean</code>                                                                                                                         | true    | Whether the step can be activated by pressing it. Non-clickable steps stay visible in the flow but are removed from the tab order.                                                                                                                                             |
+| <ApiBadge label="indicator" />   | <code>React.ReactNode &#124; ((state: <a href="#stepper-td-stepperindicatorstate">StepperIndicatorState</a>) =&gt; React.ReactNode)</code>   | -       | Custom indicator content. Replaces the built-in status glyph (check, close, or dot) for every status except `disabled`. Pass a function to render by status — returning `undefined` falls back to the built-in glyphs, so numbered steps can surface the check once completed. |
+| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;<a href="#stepper-td-stepperitemslot">StepperItemSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                                                                                                                                 |
+| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;<a href="#stepper-td-stepperitemslot">StepperItemSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                             |
+| <ApiBadge label="className" />   | <code>string</code>                                                                                                                          | -       | Appends custom classes to the root slot of this part.                                                                                                                                                                                                                          |
 
 #### Data attributes {#stepper-item-data-attributes}
 
-| Attribute                                       | Applied when                                       | Purpose                                                                                                                                               |
-| ----------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                             | Stable selector for wrapper styling on the root slot.                                                                                                 |
-| <ApiBadge label="data-state" />                 | Always                                             | Resolved step status: `inactive` \| `active` \| `completed` \| `error` \| `disabled`. Precedence is disabled > error > completed > active > inactive. |
-| <ApiBadge label="data-clickable" />             | When pressing the step may change the active step. | Cursor/hover affordance hook. Respects `disabled`, `isClickable`, and linear gating.                                                                  |
+| Attribute                                       | Applied when                                                                         | Purpose                                                                              |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                                               | Stable selector for wrapper styling on the root slot.                                |
+| <ApiBadge label="data-state" />                 | Always                                                                               | Resolved progress status: `inactive` \| `active` \| `completed`.                     |
+| <ApiBadge label="data-error" />                 | When `error` is true.                                                                | Error treatment modifier; can coexist with any progress status.                      |
+| <ApiBadge label="data-disabled" />              | When `disabled` is true.                                                             | Disabled treatment modifier; the trigger is natively disabled.                       |
+| <ApiBadge label="data-clickable" />             | When pressing the step may change the active step — never on the active step itself. | Cursor/hover affordance hook. Respects `disabled`, `isClickable`, and linear gating. |
 
 ### Stepper.Title {#stepper-title}
 
@@ -484,6 +480,7 @@ recolors with its status.
 | <span id="stepper-td-steppermode"><ApiBadge label="StepperMode" /></span>                       | <code>'default' &#124; 'compact'</code>                                                |
 | <span id="stepper-td-steppersize"><ApiBadge label="StepperSize" /></span>                       | <code>'large' &#124; 'base' &#124; 'small' &#124; 'xsmall'</code>                      |
 | <span id="stepper-td-stepperstepclickdetail"><ApiBadge label="StepperStepClickDetail" /></span> | <code>&#123; index: number; status: StepperStepStatus &#125;</code>                    |
+| <span id="stepper-td-stepperindicatorstate"><ApiBadge label="StepperIndicatorState" /></span>   | <code>&#123; status: StepperStepStatus; index: number &#125;</code>                    |
 | <span id="stepper-td-stepperitemslot"><ApiBadge label="StepperItemSlot" /></span>               | <code>'root' &#124; 'trigger' &#124; 'rail' &#124; 'indicator' &#124; 'content'</code> |
 
 {/* api-tables:end */}

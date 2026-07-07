@@ -13,6 +13,7 @@ export { Stepper };
 
 export type {
   StepperTitleProps,
+  StepperIndicatorState,
   StepperItemProps,
   StepperMode,
   StepperOrientation,
