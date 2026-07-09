@@ -30,6 +30,27 @@ describe('Dropdown', () => {
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toHaveClass('tk-dropdown-item');
   });
 
+  it('wraps items in a viewport slot while preserving menu semantics', () => {
+    render(
+      <Dropdown defaultOpen>
+        <Dropdown.Trigger>Actions</Dropdown.Trigger>
+        <Dropdown.Content>
+          <Dropdown.Viewport data-testid="dropdown-viewport">
+            <Dropdown.Item>Edit</Dropdown.Item>
+            <Dropdown.Item>Duplicate</Dropdown.Item>
+          </Dropdown.Viewport>
+        </Dropdown.Content>
+      </Dropdown>,
+    );
+
+    const viewport = screen.getByTestId('dropdown-viewport');
+    expect(viewport).toHaveClass('tk-dropdown-viewport');
+    expect(viewport).toHaveAttribute('role', 'presentation');
+    // Items nested in the viewport stay menuitems owned by the menu.
+    expect(screen.getAllByRole('menuitem')).toHaveLength(2);
+    expect(viewport).toContainElement(screen.getByRole('menuitem', { name: 'Edit' }));
+  });
+
   it('applies explicit content width from the root', () => {
     render(
       <Dropdown defaultOpen contentWidth={280}>

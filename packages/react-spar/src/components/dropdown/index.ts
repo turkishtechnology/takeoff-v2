@@ -6,10 +6,12 @@ import { DropdownItem } from './DropdownItem';
 import { DropdownLabel } from './DropdownLabel';
 import { DropdownSeparator } from './DropdownSeparator';
 import { DropdownTrigger } from './DropdownTrigger';
+import { DropdownViewport } from './DropdownViewport';
 
 const Dropdown = Object.assign(DropdownRoot, {
   Trigger: DropdownTrigger,
   Content: DropdownContent,
+  Viewport: DropdownViewport,
   Item: DropdownItem,
   Group: DropdownGroup,
   Label: DropdownLabel,
@@ -30,4 +32,5 @@ export type {
   DropdownSeparatorProps,
   DropdownSize,
   DropdownTriggerProps,
+  DropdownViewportProps,
 } from './types';

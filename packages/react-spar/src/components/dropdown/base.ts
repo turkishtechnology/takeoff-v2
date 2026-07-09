@@ -1,6 +1,15 @@
 import { createComponentBase } from '../../core';
 
-import type { DropdownArrowProps, DropdownContentProps, DropdownGroupProps, DropdownItemProps, DropdownLabelProps, DropdownSeparatorProps, DropdownTriggerProps } from './types';
+import type {
+  DropdownArrowProps,
+  DropdownContentProps,
+  DropdownGroupProps,
+  DropdownItemProps,
+  DropdownLabelProps,
+  DropdownSeparatorProps,
+  DropdownTriggerProps,
+  DropdownViewportProps,
+} from './types';
 
 export const DropdownTriggerBase = createComponentBase<DropdownTriggerProps, 'root'>({
   name: 'DropdownTrigger',
@@ -12,6 +21,12 @@ export const DropdownContentBase = createComponentBase<DropdownContentProps, 'ro
   name: 'DropdownContent',
   slots: ['root'] as const,
   classes: { root: 'tk-dropdown-content' },
+});
+
+export const DropdownViewportBase = createComponentBase<DropdownViewportProps, 'root'>({
+  name: 'DropdownViewport',
+  slots: ['root'] as const,
+  classes: { root: 'tk-dropdown-viewport' },
 });
 
 export const DropdownItemBase = createComponentBase<DropdownItemProps, 'root'>({

@@ -22,20 +22,17 @@
   z-index: 800;
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-xs);
   min-width: 8rem;
-  max-height: 18rem;
-  overflow-y: auto;
   padding: 8px;
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-l-base, 1rem);
+  border-radius: var(--radius-xl);
   background-color: var(--static-light);
   box-shadow:
     0 2px 2px -1px var(--shadow-black-alpha-light, rgba(82, 88, 102, 0.04)),
     0 6px 12px -2px var(--shadow-black-alpha-light, rgba(82, 88, 102, 0.04)),
     0 8px 20px 0 var(--shadow-black-alpha-light, rgba(82, 88, 102, 0.04));
   outline: none;
-
-  @include mixins.takeoff-scrollbar;
 
   &[data-size='large'] {
     font-size: var(--desktop-body-m-base-size);
@@ -65,6 +62,18 @@
   }
 }
 
+// The Viewport is the panel's scroll container. Wrap long item lists in
+// `Dropdown.Viewport` to bound them — the content panel itself does not scroll.
+@mixin dropdown-viewport {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  max-height: 18rem;
+  overflow-y: auto;
+
+  @include mixins.takeoff-scrollbar;
+}
+
 @mixin dropdown-item-size($h-padding, $v-padding, $gap, $radius) {
   padding: $v-padding $h-padding;
   gap: $gap;
@@ -74,6 +83,7 @@
 @mixin dropdown-item {
   display: flex;
   align-items: center;
+  background-color: var(--static-light);
   color: var(--text-darkest);
   cursor: pointer;
   user-select: none;
@@ -100,6 +110,7 @@
 @mixin dropdown-group {
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-s);
 }
 
 @mixin dropdown-label {
@@ -117,7 +128,7 @@
 @mixin dropdown-separator {
   flex-shrink: 0;
   height: 1px;
-  margin: 0.25rem 0;
+  margin: 0;
   background-color: var(--background-light);
 }
 

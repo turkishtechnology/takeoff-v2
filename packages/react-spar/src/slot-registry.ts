@@ -37,6 +37,7 @@ import {
   DropdownLabelBase,
   DropdownSeparatorBase,
   DropdownTriggerBase,
+  DropdownViewportBase,
 } from './components/dropdown/base';
 import { FieldBase, FieldDescriptionBase, FieldErrorMessageBase, FieldLabelBase } from './components/field/base';
 import {
@@ -134,6 +135,7 @@ export const slotClassRegistry = {
   drawerTrigger: { slots: DrawerTriggerBase.classes },
   dropdownTrigger: { slots: DropdownTriggerBase.classes },
   dropdownContent: { slots: DropdownContentBase.classes },
+  dropdownViewport: { slots: DropdownViewportBase.classes },
   dropdownItem: { slots: DropdownItemBase.classes },
   dropdownGroup: { slots: DropdownGroupBase.classes },
   dropdownLabel: { slots: DropdownLabelBase.classes },

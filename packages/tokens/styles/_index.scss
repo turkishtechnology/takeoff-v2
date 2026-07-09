@@ -172,6 +172,10 @@
   @include dropdown.dropdown-content;
 }
 
+.tk-dropdown-viewport {
+  @include dropdown.dropdown-viewport;
+}
+
 .tk-dropdown-item {
   @include dropdown.dropdown-item;
 }

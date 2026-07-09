@@ -8,6 +8,7 @@ import type {
   DropdownMenuProps as SparDropdownMenuProps,
   DropdownMenuSeparatorProps as SparDropdownMenuSeparatorProps,
   DropdownMenuTriggerProps as SparDropdownMenuTriggerProps,
+  DropdownMenuViewportProps as SparDropdownMenuViewportProps,
   PolymorphicProps,
 } from '@turkish-technology/spar';
 
@@ -27,6 +28,7 @@ export type DropdownContentWidth = 'content' | 'trigger' | number | string;
 
 export type DropdownTriggerSlot = 'root';
 export type DropdownContentSlot = 'root';
+export type DropdownViewportSlot = 'root';
 export type DropdownItemSlot = 'root';
 export type DropdownGroupSlot = 'root';
 export type DropdownLabelSlot = 'root';
@@ -88,6 +90,22 @@ export type DropdownContentProps<T extends ElementType = 'div'> = PolymorphicPro
     Pick<SparDropdownMenuContentProps, 'side' | 'align' | 'container' | 'onEscapeKeyDown' | 'onPointerDownOutside' | 'onFocusOutside'>
 >;
 
+export interface DropdownViewportOwnProps {
+  /** Per-slot class name overrides. */
+  classNames?: ClassNamesMap<DropdownViewportSlot>;
+  /** Per-slot HTML attribute overrides. */
+  slotProps?: SlotPropsMap<DropdownViewportSlot>;
+}
+
+export type DropdownViewportProps<T extends ElementType = 'div'> = PolymorphicProps<
+  'div',
+  T,
+  DropdownViewportOwnProps &
+    // Scrollable region from Spar: wraps the items and keeps the highlighted one
+    // in view during keyboard navigation. It owns the panel's scroll bounds.
+    Pick<SparDropdownMenuViewportProps, 'children'>
+>;
+
 export interface DropdownItemOwnProps {
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<DropdownItemSlot>;
@@ -145,6 +163,7 @@ declare module '../../core/theme' {
     Dropdown: StateOnlyComponentThemeConfig<DropdownProps>;
     DropdownTrigger: import('../../core').ComponentThemeConfig<DropdownTriggerProps, DropdownTriggerSlot>;
     DropdownContent: import('../../core').ComponentThemeConfig<DropdownContentProps, DropdownContentSlot>;
+    DropdownViewport: import('../../core').ComponentThemeConfig<DropdownViewportProps, DropdownViewportSlot>;
     DropdownItem: import('../../core').ComponentThemeConfig<DropdownItemProps, DropdownItemSlot>;
     DropdownGroup: import('../../core').ComponentThemeConfig<DropdownGroupProps, DropdownGroupSlot>;
     DropdownLabel: import('../../core').ComponentThemeConfig<DropdownLabelProps, DropdownLabelSlot>;

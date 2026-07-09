@@ -11,13 +11,25 @@ slug: /components/dropdown
 import LiveCode from '@site/src/components/LiveCode';
 import {
   Button,
+  Checkbox,
   Dropdown,
   ReactSparDemoRoot,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
+import { StarIconOutlinedRounded } from '@takeoff-icons/react/star';
+import { WalletIconOutlinedRounded } from '@takeoff-icons/react/wallet';
+import { TakeoffRocketIconOutlinedRounded } from '@takeoff-icons/react/takeoff-rocket';
 
-export const dropdownScope = { Button, Dropdown, CheckIconOutlinedRounded };
+export const dropdownScope = {
+  Button,
+  Checkbox,
+  CheckIconOutlinedRounded,
+  Dropdown,
+  StarIconOutlinedRounded,
+  TakeoffRocketIconOutlinedRounded,
+  WalletIconOutlinedRounded,
+};
 
 {/* prettier-ignore-start */}
 
@@ -64,48 +76,21 @@ function GroupedDemo() {
 render(<GroupedDemo />);
 `;
 
-export const arrowDemo = String.raw`
-function ArrowDemo() {
-  return (
-    <Dropdown>
-      <Dropdown.Trigger as={Button}>With arrow</Dropdown.Trigger>
-      <Dropdown.Content side="bottom" align="center">
-        <Dropdown.Arrow />
-        <Dropdown.Item>View details</Dropdown.Item>
-        <Dropdown.Item>Download boarding pass</Dropdown.Item>
-      </Dropdown.Content>
-    </Dropdown>
-  );
-}
-
-render(<ArrowDemo />);
-`;
-
 export const placementDemo = String.raw`
 function PlacementDemo() {
+  const sides = ['top', 'bottom', 'right', 'left'];
+
   return (
     <div className="flex flex-wrap items-center justify-center gap-3 py-8">
-      <Dropdown>
-        <Dropdown.Trigger as={Button}>Top start</Dropdown.Trigger>
-        <Dropdown.Content side="top" align="start">
-          <Dropdown.Item>Earlier flights</Dropdown.Item>
-          <Dropdown.Item>Later flights</Dropdown.Item>
-        </Dropdown.Content>
-      </Dropdown>
-      <Dropdown>
-        <Dropdown.Trigger as={Button}>Bottom end</Dropdown.Trigger>
-        <Dropdown.Content side="bottom" align="end">
-          <Dropdown.Item>Print</Dropdown.Item>
-          <Dropdown.Item>Email</Dropdown.Item>
-        </Dropdown.Content>
-      </Dropdown>
-      <Dropdown>
-        <Dropdown.Trigger as={Button}>Right center</Dropdown.Trigger>
-        <Dropdown.Content side="right" align="center">
-          <Dropdown.Item>Open profile</Dropdown.Item>
-          <Dropdown.Item>Sign out</Dropdown.Item>
-        </Dropdown.Content>
-      </Dropdown>
+      {sides.map((side) => (
+        <Dropdown key={side}>
+          <Dropdown.Trigger as={Button}>{side}</Dropdown.Trigger>
+          <Dropdown.Content side={side}>
+            <Dropdown.Item>Earlier flights</Dropdown.Item>
+            <Dropdown.Item>Later flights</Dropdown.Item>
+          </Dropdown.Content>
+        </Dropdown>
+      ))}
     </div>
   );
 }
@@ -195,9 +180,9 @@ function ControlledDemo() {
 render(<ControlledDemo />);
 `;
 
-export const closeOnSelectDemo = String.raw`
-function CloseOnSelectDemo() {
-  const [selected, setSelected] = React.useState(['seat']);
+export const customContentDemo = String.raw`
+function CustomContentDemo() {
+  const [selected, setSelected] = React.useState(['upgrade']);
 
   const toggle = (value) => {
     setSelected((current) =>
@@ -207,20 +192,35 @@ function CloseOnSelectDemo() {
     );
   };
 
+  const items = [
+    {
+      value: 'upgrade',
+      title: 'Upgrade cabin',
+      description: 'Review paid upgrade options for this flight.',
+      accessory: <span className="rounded border border-light px-1.5 py-0.5 text-xs">New</span>,
+    },
+    {
+      value: 'command',
+      title: 'Open command center',
+      description: 'Jump to operational shortcuts.',
+      accessory: <kbd className="rounded bg-light px-1.5 py-0.5 text-xs">Ctrl K</kbd>,
+    },
+  ];
+
   return (
-    <Dropdown closeOnSelect={false} contentWidth="trigger">
-      <Dropdown.Trigger as={Button}>Add-ons ({selected.length})</Dropdown.Trigger>
+    <Dropdown closeOnSelect={false} contentWidth="min(22rem, 90vw)">
+      <Dropdown.Trigger as={Button}>Rich items ({selected.length})</Dropdown.Trigger>
       <Dropdown.Content>
-        {[
-          ['seat', 'Extra legroom seat'],
-          ['meal', 'Special meal'],
-          ['bag', 'Extra baggage'],
-        ].map(([value, label]) => (
-          <Dropdown.Item key={value} textValue={label} onSelect={() => toggle(value)}>
-            <span>{label}</span>
-            <span className="inline-flex w-4 justify-center">
-              {selected.includes(value) ? <CheckIconOutlinedRounded aria-hidden="true" width={16} height={16} /> : null}
+        {items.map((item) => (
+          <Dropdown.Item key={item.value} textValue={item.title} onSelect={() => toggle(item.value)}>
+            <Checkbox checked={selected.includes(item.value)} readOnly aria-hidden="true" tabIndex={-1}>
+              <Checkbox.Indicator />
+            </Checkbox>
+            <span className="flex min-w-0 flex-col">
+              <strong className="font-medium text-darkest">{item.title}</strong>
+              <span className="text-xs text-sub-base">{item.description}</span>
             </span>
+            <span className="ml-auto">{item.accessory}</span>
           </Dropdown.Item>
         ))}
       </Dropdown.Content>
@@ -228,35 +228,81 @@ function CloseOnSelectDemo() {
   );
 }
 
-render(<CloseOnSelectDemo />);
+render(<CustomContentDemo />);
 `;
 
-export const richContentDemo = String.raw`
-function RichContentDemo() {
+export const selectableDemo = String.raw`
+function SelectableDemo() {
+  const [sort, setSort] = React.useState('recommended');
+
+  const options = [
+    {
+      value: 'recommended',
+      label: 'Recommended',
+      description: 'Best mix of price, duration, and stops.',
+      Icon: StarIconOutlinedRounded,
+    },
+    {
+      value: 'cheapest',
+      label: 'Cheapest first',
+      description: 'Lowest fares at the top of the list.',
+      Icon: WalletIconOutlinedRounded,
+    },
+    {
+      value: 'fastest',
+      label: 'Fastest first',
+      description: 'Shortest total travel time.',
+      Icon: TakeoffRocketIconOutlinedRounded,
+    },
+  ];
+
+  const current = options.find((option) => option.value === sort);
+
   return (
-    <Dropdown contentWidth="min(22rem, 90vw)">
-      <Dropdown.Trigger as={Button}>Rich items</Dropdown.Trigger>
+    <Dropdown closeOnSelect={false} contentWidth="min(22rem, 90vw)">
+      <Dropdown.Trigger as={Button}>Sort by: {current.label}</Dropdown.Trigger>
       <Dropdown.Content>
-        <Dropdown.Item textValue="Upgrade cabin">
-          <span className="flex min-w-0 flex-col">
-            <strong className="font-medium text-darkest">Upgrade cabin</strong>
-            <span className="text-xs text-sub-base">Review paid upgrade options for this flight.</span>
-          </span>
-          <span className="ml-auto rounded border border-light px-1.5 py-0.5 text-xs">New</span>
-        </Dropdown.Item>
-        <Dropdown.Item textValue="Keyboard shortcut">
-          <span className="flex min-w-0 flex-col">
-            <strong className="font-medium text-darkest">Open command center</strong>
-            <span className="text-xs text-sub-base">Jump to operational shortcuts.</span>
-          </span>
-          <kbd className="ml-auto rounded bg-light px-1.5 py-0.5 text-xs">Ctrl K</kbd>
-        </Dropdown.Item>
+        {options.map(({ value, label, description, Icon }) => {
+          const isSelected = value === sort;
+          return (
+            <Dropdown.Item
+              key={value}
+              textValue={label}
+              onSelect={() => setSort(value)}
+              className={
+                'rounded-lg border ' +
+                (isSelected
+                  ? 'border-states-info-light bg-background-lightest'
+                  : 'border-transparent')
+              }
+            >
+              <Icon
+                width={20}
+                height={20}
+                className={isSelected ? 'text-states-info-base' : 'text-text-sub-base'}
+                aria-hidden="true"
+              />
+              <span className="flex min-w-0 flex-col">
+                <strong className="font-medium text-text-darkest">{label}</strong>
+                <span className="text-xs text-text-sub-base">{description}</span>
+              </span>
+              {isSelected && (
+                <CheckIconOutlinedRounded
+                  width={20}
+                  height={20}
+                  className="ml-auto text-states-info-base"
+                  aria-label="Selected"
+                />
+              )}
+            </Dropdown.Item>
+          );
+        })}
       </Dropdown.Content>
     </Dropdown>
   );
 }
 
-render(<RichContentDemo />);
+render(<SelectableDemo />);
 `;
 
 export const disabledDemo = String.raw`
@@ -283,6 +329,51 @@ function DisabledDemo() {
 render(<DisabledDemo />);
 `;
 
+export const arrowDemo = String.raw`
+function ArrowDemo() {
+  return (
+    <Dropdown>
+      <Dropdown.Trigger as={Button}>Options</Dropdown.Trigger>
+      <Dropdown.Content>
+        <Dropdown.Item>Edit</Dropdown.Item>
+        <Dropdown.Item>Duplicate</Dropdown.Item>
+        <Dropdown.Separator />
+        <Dropdown.Item>Delete</Dropdown.Item>
+        <Dropdown.Arrow />
+      </Dropdown.Content>
+    </Dropdown>
+  );
+}
+
+render(<ArrowDemo />);
+`;
+
+export const scrollingDemo = String.raw`
+function ScrollingDemo() {
+  const timezones = [
+    'UTC-08:00 Los Angeles', 'UTC-05:00 New York', 'UTC+00:00 London',
+    'UTC+01:00 Paris', 'UTC+02:00 Athens', 'UTC+03:00 Istanbul',
+    'UTC+04:00 Dubai', 'UTC+05:30 Mumbai', 'UTC+07:00 Bangkok',
+    'UTC+08:00 Singapore', 'UTC+09:00 Tokyo', 'UTC+10:00 Sydney',
+  ];
+
+  return (
+    <Dropdown>
+      <Dropdown.Trigger as={Button}>Select timezone</Dropdown.Trigger>
+      <Dropdown.Content>
+        <Dropdown.Viewport>
+          {timezones.map((zone) => (
+            <Dropdown.Item key={zone}>{zone}</Dropdown.Item>
+          ))}
+        </Dropdown.Viewport>
+      </Dropdown.Content>
+    </Dropdown>
+  );
+}
+
+render(<ScrollingDemo />);
+`;
+
 {/* prettier-ignore-end */}
 
 # Dropdown
@@ -302,16 +393,24 @@ import { Dropdown } from '@takeoff-ui/react-spar';
 <Dropdown>
   <Dropdown.Trigger />
   <Dropdown.Content>
-    <Dropdown.Item />
-    <Dropdown.Separator />
-    <Dropdown.Group>
-      <Dropdown.Label />
+    <Dropdown.Viewport>
       <Dropdown.Item />
-    </Dropdown.Group>
+      <Dropdown.Separator />
+      <Dropdown.Group>
+        <Dropdown.Label />
+        <Dropdown.Item />
+      </Dropdown.Group>
+    </Dropdown.Viewport>
     <Dropdown.Arrow />
   </Dropdown.Content>
 </Dropdown>
 ```
+
+`Dropdown.Viewport` is the panel's scroll container. Wrap the items in it
+whenever the list can grow long enough to need scrolling — it bounds the height
+and keeps the highlighted item in view during keyboard navigation. The content
+panel itself does not scroll, so a long menu without a viewport will overflow;
+omit it only for short menus that always fit.
 
 ## Playground
 
@@ -329,16 +428,6 @@ import { Dropdown } from '@takeoff-ui/react-spar';
   code={groupedDemo}
   noInline
   previewMinHeight={220}
-  previewWrapper={ReactSparDemoRoot}
-  scope={dropdownScope}
-/>
-
-## Arrow
-
-<LiveCode
-  code={arrowDemo}
-  noInline
-  previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
   scope={dropdownScope}
 />
@@ -383,20 +472,22 @@ import { Dropdown } from '@takeoff-ui/react-spar';
   scope={dropdownScope}
 />
 
-## Keep Open
+## Custom Content
 
 <LiveCode
-  code={closeOnSelectDemo}
+  code={customContentDemo}
   noInline
-  previewMinHeight={200}
+  previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
   scope={dropdownScope}
 />
 
-## Rich Content
+The same slot layout also carries a single-select menu. Keep it open with
+`closeOnSelect={false}`, then mark the active row with an info border, a tinted
+surface, and a trailing check so the current choice reads at a glance.
 
 <LiveCode
-  code={richContentDemo}
+  code={selectableDemo}
   noInline
   previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
@@ -409,6 +500,35 @@ import { Dropdown } from '@takeoff-ui/react-spar';
   code={disabledDemo}
   noInline
   previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Arrow
+
+Add `Dropdown.Arrow` as the last child of `Dropdown.Content` to render a pointer
+toward the trigger. It is automatically positioned by the underlying primitive
+and inherits the panel's surface color, so no extra styling is required.
+
+<LiveCode
+  code={arrowDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={dropdownScope}
+/>
+
+## Scrolling
+
+Wrap the items in `Dropdown.Viewport` to keep a long list within a bounded,
+scrollable area. The viewport owns the scroll bounds, and keyboard navigation
+and typeahead keep the highlighted item in view. The native scrollbar is hidden
+(as in Radix Select) — scroll with the wheel, trackpad, or keyboard.
+
+<LiveCode
+  code={scrollingDemo}
+  noInline
+  previewMinHeight={200}
   previewWrapper={ReactSparDemoRoot}
   scope={dropdownScope}
 />
@@ -493,6 +613,14 @@ for primitive behavior.
 | ----------------------------------------------- | ------------ | ----------------------------------------------------------- |
 | <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.       |
 | <ApiBadge label="data-size" />                  | Always       | Reflects the resolved `Dropdown.size` for menu item sizing. |
+
+### Dropdown.Viewport {#dropdown-viewport}
+
+#### Data attributes {#dropdown-viewport-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Dropdown.Item {#dropdown-item}
 

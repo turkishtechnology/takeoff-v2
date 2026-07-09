@@ -56,6 +56,16 @@ export default {
     },
     {
       sourceFile: dropdownTypesFile,
+      typeName: 'DropdownViewportProps',
+      displayName: 'Dropdown.Viewport',
+      headingBase: 'dropdown-viewport',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      dataAttributes: [rootDataAttribute],
+    },
+    {
+      sourceFile: dropdownTypesFile,
       typeName: 'DropdownItemProps',
       displayName: 'Dropdown.Item',
       headingBase: 'dropdown-item',
