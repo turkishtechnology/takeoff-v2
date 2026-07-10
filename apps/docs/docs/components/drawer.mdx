@@ -14,11 +14,12 @@ import {
   Badge,
   Button,
   Drawer,
+  Table,
   ReactSparDemoRoot,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const drawerScope = { Badge, Button, Drawer };
+export const drawerScope = { Badge, Button, Drawer, Table };
 
 {/* prettier-ignore-start */}
 
@@ -44,6 +45,46 @@ function PlaygroundDemo() {
 }
 
 render(<PlaygroundDemo />);
+`;
+
+export const filterInDrawerDemo = String.raw`
+function FilterInDrawerDemo() {
+  const data = [
+    { id: '1', name: 'Ada Lovelace', role: 'admin' },
+    { id: '2', name: 'Linus Torvalds', role: 'user' },
+    { id: '3', name: 'Grace Hopper', role: 'admin' },
+    { id: '4', name: 'Alan Turing', role: 'user' },
+  ];
+  const columns = [
+    { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+    {
+      id: 'role',
+      header: 'Role',
+      accessor: 'role',
+      filter: { type: 'checkbox', options: [
+        { label: 'Admin', value: 'admin' },
+        { label: 'User', value: 'user' },
+      ] },
+    },
+  ];
+  return (
+    <Drawer placement="right">
+      <Drawer.Trigger as={Button}>Open Drawer with Table</Drawer.Trigger>
+      <Drawer.Overlay />
+      <Drawer.Panel>
+        <Drawer.Header>
+          <Drawer.Title>Filterable table</Drawer.Title>
+          <Drawer.Close>✕</Drawer.Close>
+        </Drawer.Header>
+        <Drawer.Body>
+          <Table data={data} columns={columns} getRowId={(r) => r.id} />
+        </Drawer.Body>
+      </Drawer.Panel>
+    </Drawer>
+  );
+}
+
+render(<FilterInDrawerDemo />);
 `;
 
 export const placementDemo = String.raw`
@@ -261,6 +302,23 @@ import { Drawer } from '@takeoff-ui/react-spar';
   code={playgroundDemo}
   noInline
   previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={drawerScope}
+/>
+
+## Filter popover inside a drawer
+
+Popovers, selects and tooltips all portal to `document.body`, so their stacking
+against a drawer/dialog is decided by z-index, not DOM order. The token scale
+layers these floating surfaces **above** the modal band (drawer/dialog panel =
+`1501`): select & popover sit at `1600`, tooltip at `1700`. That means a column
+filter — or any popover — opened from inside a drawer renders in front of it, as
+expected. Open the drawer below and click a column's filter icon.
+
+<LiveCode
+  code={filterInDrawerDemo}
+  noInline
+  previewMinHeight={280}
   previewWrapper={ReactSparDemoRoot}
   scope={drawerScope}
 />
