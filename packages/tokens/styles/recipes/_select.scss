@@ -162,8 +162,9 @@
   display: flex;
   flex-direction: column;
   min-width: 8rem;
-  max-height: 18rem;
-  overflow-y: auto;
+  // Viewport-only scroll model: the panel itself no longer scrolls — the height
+  // bound + overflow live on `.tk-select-viewport`, so long lists must wrap
+  // their items in `Select.Viewport` (see `select-viewport` below).
   padding: 8px;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-l-base, 1rem);
@@ -201,6 +202,24 @@
       border-radius: var(--dropdown-items-basic-small-radius);
     }
   }
+}
+
+// ---------------------------------------------------------------------------
+// Viewport — sole scroll container for the options. Bounds the height and
+// scrolls internally with the shared takeoff scrollbar; the panel itself no
+// longer scrolls, so long lists must wrap their items in `Select.Viewport`.
+// Kept separate from the panel so its padding/border stay fixed while only the
+// option list scrolls. Mirrors the dropdown viewport.
+// ---------------------------------------------------------------------------
+
+@mixin select-viewport {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  max-height: 18rem;
+  overflow-y: auto;
+
+  @include mixins.takeoff-scrollbar;
 }
 
 // ---------------------------------------------------------------------------

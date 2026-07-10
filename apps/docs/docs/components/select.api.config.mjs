@@ -139,10 +139,26 @@ export default {
       sparDocsUrl: sparSelectDocsUrl,
       sparDocsLabel: 'Spar Select docs',
       propOverrides: {
-        children: childrenOverride('`Select.Item`, `Select.Group`, `Select.Separator`.'),
+        children: childrenOverride('`Select.Viewport` (recommended) wrapping `Select.Item`, `Select.Group`, `Select.Separator`.'),
         className: classNameOverride,
       },
       dataAttributes: [dataSlotRoot, dataSize],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectViewportProps',
+      displayName: 'Select.Viewport',
+      headingBase: 'select-viewport',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride('`Select.Item`, `Select.Group`, `Select.Separator`.'),
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlotRoot],
     },
     {
       sourceFile: selectTypesFile,

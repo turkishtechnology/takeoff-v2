@@ -207,6 +207,10 @@
   @include select.select-content;
 }
 
+.tk-select-viewport {
+  @include select.select-viewport;
+}
+
 .tk-select-item {
   @include select.select-item;
 }

@@ -3,6 +3,7 @@ import type {
   SelectProps as SparSelectProps,
   SelectTriggerProps as SparSelectTriggerProps,
   SelectContentProps as SparSelectContentProps,
+  SelectViewportProps as SparSelectViewportProps,
   SelectItemProps as SparSelectItemProps,
   SelectGroupProps as SparSelectGroupProps,
   SelectLabelProps as SparSelectLabelProps,
@@ -28,6 +29,7 @@ export type SelectSlot = 'root';
 export type SelectTriggerSlot = 'root' | 'value' | 'indicator';
 export type SelectIndicatorSlot = 'root';
 export type SelectContentSlot = 'root';
+export type SelectViewportSlot = 'root';
 export type SelectItemSlot = 'root';
 export type SelectGroupSlot = 'root';
 export type SelectLabelSlot = 'root';
@@ -157,6 +159,23 @@ export type SelectContentProps<T extends ElementType = 'div'> = PolymorphicProps
     Pick<SparSelectContentProps, 'side' | 'align' | 'container' | 'onEscapeKeyDown' | 'onPointerDownOutside' | 'onCloseAutoFocus'>
 >;
 
+export interface SelectViewportOwnProps {
+  /** Per-slot class name overrides. */
+  classNames?: ClassNamesMap<SelectViewportSlot>;
+  /** Per-slot HTML attribute overrides. */
+  slotProps?: SlotPropsMap<SelectViewportSlot>;
+}
+
+export type SelectViewportProps<T extends ElementType = 'div'> = PolymorphicProps<
+  'div',
+  T,
+  SelectViewportOwnProps &
+    // Inherit the scroll-region surface; the highlighted-item scroll-into-view is
+    // wired by Spar. Only `children` is surfaced — max-height/overflow live in the
+    // token recipe so the viewport-only scroll model stays consistent.
+    Pick<SparSelectViewportProps, 'children'>
+>;
+
 export interface SelectItemOwnProps {
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<SelectItemSlot>;
@@ -227,6 +246,7 @@ declare module '../../core/theme' {
     SelectTrigger: import('../../core').ComponentThemeConfig<SelectTriggerProps, SelectTriggerSlot>;
     SelectIndicator: import('../../core').ComponentThemeConfig<SelectIndicatorProps, SelectIndicatorSlot>;
     SelectContent: import('../../core').ComponentThemeConfig<SelectContentProps, SelectContentSlot>;
+    SelectViewport: import('../../core').ComponentThemeConfig<SelectViewportProps, SelectViewportSlot>;
     SelectItem: import('../../core').ComponentThemeConfig<SelectItemProps, SelectItemSlot>;
     SelectGroup: import('../../core').ComponentThemeConfig<SelectGroupProps, SelectGroupSlot>;
     SelectLabel: import('../../core').ComponentThemeConfig<SelectLabelProps, SelectLabelSlot>;
