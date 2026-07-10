@@ -195,6 +195,33 @@ function ControlledDemo() {
 render(<ControlledDemo />);
 `;
 
+export const scrollableDemo = String.raw`
+function ScrollableDemo() {
+  return (
+    <Popover>
+      <Popover.Trigger as={Button}>Release notes</Popover.Trigger>
+      <Popover.Content className="w-72">
+        {/* Arrow is a direct child of Content (overflow: visible) so it is never clipped */}
+        <Popover.Arrow />
+        <Popover.Header>Release notes</Popover.Header>
+        {/* Bound the scroll on an INNER wrapper — never on Content — or the arrow gets cut off */}
+        <div className="max-h-40 space-y-2 overflow-y-auto pr-2">
+          <Popover.Description>v2.4.0 — Scrollable content with the arrow kept outside the scroll region.</Popover.Description>
+          <Popover.Description>v2.3.0 — Dark, info, success, warning, and danger variants.</Popover.Description>
+          <Popover.Description>v2.2.0 — New Popover.Header and Popover.Description slots.</Popover.Description>
+          <Popover.Description>v2.1.0 — Placement controls: top, bottom, left, and right.</Popover.Description>
+          <Popover.Description>v2.0.0 — Rebuilt on Spar's headless Popover primitive.</Popover.Description>
+          <Popover.Description>v1.9.0 — Controlled open state via open / onOpenChange.</Popover.Description>
+          <Popover.Description>v1.8.0 — Focus trap and escape-to-dismiss.</Popover.Description>
+        </div>
+      </Popover.Content>
+    </Popover>
+  );
+}
+
+render(<ScrollableDemo />);
+`;
+
 {/* prettier-ignore-end */}
 
 # Popover
@@ -272,6 +299,21 @@ The `variant` prop controls the visual appearance of the popover content.
   code={arrowDemo}
   noInline
   previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={popoverScope}
+/>
+
+## Scrollable content
+
+For long content, put `max-height` and `overflow` on an **inner wrapper** and
+keep `Popover.Arrow` a direct child of `Popover.Content`. Applying `overflow`
+to `Popover.Content` itself would clip the arrow, because the arrow is
+positioned just outside the content box.
+
+<LiveCode
+  code={scrollableDemo}
+  noInline
+  previewMinHeight={240}
   previewWrapper={ReactSparDemoRoot}
   scope={popoverScope}
 />
