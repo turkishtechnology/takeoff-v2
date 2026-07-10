@@ -47,6 +47,7 @@ import {
   InputTrailingIconBase,
 } from './components/input/base';
 import {
+  SelectArrowBase,
   SelectBase,
   SelectContentBase,
   SelectGroupBase,
@@ -151,6 +152,7 @@ export const slotClassRegistry = {
   selectGroup: { slots: SelectGroupBase.classes },
   selectLabel: { slots: SelectLabelBase.classes },
   selectSeparator: { slots: SelectSeparatorBase.classes },
+  selectArrow: { slots: SelectArrowBase.classes },
   spinner: { slots: SpinnerBase.classes },
   switch: { slots: SwitchBase.classes },
   table: { slots: TableBase.classes },

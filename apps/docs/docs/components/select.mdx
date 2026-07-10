@@ -160,6 +160,26 @@ function ScrollableDemo() {
 render(<ScrollableDemo />);
 `;
 
+export const arrowDemo = String.raw`
+function ArrowDemo() {
+  return (
+    <Select className="max-w-90" defaultValue="ist">
+      <Select.Trigger placeholder="Choose a city" />
+      <Select.Content>
+        <Select.Viewport>
+          <Select.Item value="ist" label="Istanbul">Istanbul</Select.Item>
+          <Select.Item value="ank" label="Ankara">Ankara</Select.Item>
+          <Select.Item value="izm" label="Izmir">Izmir</Select.Item>
+        </Select.Viewport>
+        <Select.Arrow />
+      </Select.Content>
+    </Select>
+  );
+}
+
+render(<ArrowDemo />);
+`;
+
 export const indicatorDemo = String.raw`
 function IndicatorDemo() {
   const PlusMinus = ({ isOpen }) => (
@@ -411,6 +431,21 @@ highlighted option in view.
   code={scrollableDemo}
   noInline
   previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={selectScope}
+/>
+
+## Arrow
+
+Drop `Select.Arrow` inside `Select.Content` — as a sibling of `Select.Viewport`
+— to render a small pointer from the panel toward the trigger. Spar's Floating
+UI middleware positions and rotates it automatically, and its fill matches the
+panel surface. Keep it outside the viewport so the scroll region never clips it.
+
+<LiveCode
+  code={arrowDemo}
+  noInline
+  previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
   scope={selectScope}
 />
@@ -680,6 +715,19 @@ for primitive behavior.
 | Attribute                                       | Applied when | Purpose                                               |
 | ----------------------------------------------- | ------------ | ----------------------------------------------------- |
 | <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Select.Arrow {#select-arrow}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Data attributes {#select-arrow-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                                                                                                             |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.                                                                               |
+| <ApiBadge label="data-placement" />             | Always       | Computed placement (`top \| bottom \| left \| right`, optionally with an align suffix) so the arrow can rotate to face the trigger. |
 
 ### Type Definitions {#select-type-definitions}
 

@@ -34,6 +34,7 @@ export type SelectItemSlot = 'root';
 export type SelectGroupSlot = 'root';
 export type SelectLabelSlot = 'root';
 export type SelectSeparatorSlot = 'root';
+export type SelectArrowSlot = 'root';
 
 /**
  * Visual + slot props owned by takeoff-v2 for the Select root. `size` and
@@ -240,6 +241,21 @@ export type SelectSeparatorProps<T extends ElementType = 'div'> = PolymorphicPro
     Pick<SparSelectSeparatorProps, 'children'>
 >;
 
+export interface SelectArrowOwnProps {
+  /** Per-slot class name overrides. */
+  classNames?: ClassNamesMap<SelectArrowSlot>;
+  /** Per-slot HTML attribute overrides. */
+  slotProps?: SlotPropsMap<SelectArrowSlot>;
+}
+
+/**
+ * Optional decorative arrow pointing at the trigger. Positioned automatically by
+ * Spar's Floating UI middleware; renders a default triangle `<svg>` whose fill
+ * follows the recipe's `color`. No Spar props are surfaced — the polymorphic svg
+ * attributes (incl. `children` for a custom shape) come through directly.
+ */
+export type SelectArrowProps<T extends ElementType = 'svg'> = PolymorphicProps<'svg', T, SelectArrowOwnProps>;
+
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {
     Select: import('../../core').ComponentThemeConfig<SelectProps, SelectSlot>;
@@ -251,5 +267,6 @@ declare module '../../core/theme' {
     SelectGroup: import('../../core').ComponentThemeConfig<SelectGroupProps, SelectGroupSlot>;
     SelectLabel: import('../../core').ComponentThemeConfig<SelectLabelProps, SelectLabelSlot>;
     SelectSeparator: import('../../core').ComponentThemeConfig<SelectSeparatorProps, SelectSeparatorSlot>;
+    SelectArrow: import('../../core').ComponentThemeConfig<SelectArrowProps, SelectArrowSlot>;
   }
 }

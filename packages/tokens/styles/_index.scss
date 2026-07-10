@@ -231,6 +231,10 @@
   @include select.select-separator;
 }
 
+.tk-select-arrow {
+  @include select.select-arrow;
+}
+
 .tk-spinner {
   @include spinner.spinner;
 }

@@ -1,6 +1,7 @@
 import { createComponentBase } from '../../core';
 
 import type {
+  SelectArrowProps,
   SelectContentProps,
   SelectGroupProps,
   SelectIndicatorProps,
@@ -74,4 +75,10 @@ export const SelectSeparatorBase = createComponentBase<SelectSeparatorProps, 'ro
   name: 'SelectSeparator',
   slots: ['root'] as const,
   classes: { root: 'tk-select-separator' },
+});
+
+export const SelectArrowBase = createComponentBase<SelectArrowProps, 'root'>({
+  name: 'SelectArrow',
+  slots: ['root'] as const,
+  classes: { root: 'tk-select-arrow' },
 });

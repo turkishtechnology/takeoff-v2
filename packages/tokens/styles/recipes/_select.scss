@@ -305,3 +305,16 @@
   margin: 0.25rem 0;
   background-color: var(--background-light);
 }
+
+// ---------------------------------------------------------------------------
+// Arrow — optional pointer from the panel to the trigger. Spar's Floating UI
+// middleware positions it; we only set the fill (via `color`) to match the
+// panel surface so it reads as a continuation of the dropdown. Lives outside
+// the viewport (as a sibling), so the viewport's scroll never clips it.
+// ---------------------------------------------------------------------------
+
+@mixin select-arrow {
+  display: block;
+  pointer-events: none;
+  color: var(--static-light);
+}

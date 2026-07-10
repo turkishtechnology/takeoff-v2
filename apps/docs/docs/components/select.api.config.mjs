@@ -241,5 +241,28 @@ export default {
       },
       dataAttributes: [dataSlotRoot],
     },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectArrowProps',
+      displayName: 'Select.Arrow',
+      headingBase: 'select-arrow',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      propOverrides: {
+        children: childrenOverride('Custom arrow shape. Defaults to a triangle `<svg>` polygon; its fill follows the recipe `color`.'),
+        className: classNameOverride,
+      },
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-placement',
+          appliedWhen: 'Always',
+          purpose: 'Computed placement (`top | bottom | left | right`, optionally with an align suffix) so the arrow can rotate to face the trigger.',
+        },
+      ],
+    },
   ],
 };

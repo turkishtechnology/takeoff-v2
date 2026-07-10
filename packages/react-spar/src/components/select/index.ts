@@ -7,6 +7,7 @@ import { SelectItem } from './SelectItem';
 import { SelectGroup } from './SelectGroup';
 import { SelectLabel } from './SelectLabel';
 import { SelectSeparator } from './SelectSeparator';
+import { SelectArrow } from './SelectArrow';
 
 const Select = Object.assign(SelectRoot, {
   Trigger: SelectTrigger,
@@ -17,11 +18,13 @@ const Select = Object.assign(SelectRoot, {
   Group: SelectGroup,
   Label: SelectLabel,
   Separator: SelectSeparator,
+  Arrow: SelectArrow,
 });
 
 export { Select };
 
 export type {
+  SelectArrowProps,
   SelectContentProps,
   SelectGroupProps,
   SelectIndicatorProps,
