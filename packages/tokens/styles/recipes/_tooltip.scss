@@ -52,7 +52,12 @@
     }
 
     .tk-tooltip-arrow {
-      color: var(--background-darkest);
+      .tk-arrow-fill {
+        fill: var(--background-darkest);
+      }
+      .tk-arrow-border {
+        fill: var(--border-dark);
+      }
     }
   }
 
@@ -61,7 +66,12 @@
     border: 1px solid var(--border-light);
 
     .tk-tooltip-arrow {
-      color: var(--static-light);
+      .tk-arrow-fill {
+        fill: var(--static-light);
+      }
+      .tk-arrow-border {
+        fill: var(--border-light);
+      }
     }
   }
 
@@ -70,7 +80,12 @@
     border: 1px solid var(--states-info-sub-base);
 
     .tk-tooltip-arrow {
-      color: var(--states-info-light);
+      .tk-arrow-fill {
+        fill: var(--states-info-light);
+      }
+      .tk-arrow-border {
+        fill: var(--states-info-sub-base);
+      }
     }
   }
 
@@ -79,7 +94,12 @@
     border: 1px solid var(--states-success-sub-base);
 
     .tk-tooltip-arrow {
-      color: var(--states-success-light);
+      .tk-arrow-fill {
+        fill: var(--states-success-light);
+      }
+      .tk-arrow-border {
+        fill: var(--states-success-sub-base);
+      }
     }
   }
 
@@ -88,7 +108,12 @@
     border: 1px solid var(--states-warning-sub-base);
 
     .tk-tooltip-arrow {
-      color: var(--states-warning-light);
+      .tk-arrow-fill {
+        fill: var(--states-warning-light);
+      }
+      .tk-arrow-border {
+        fill: var(--states-warning-sub-base);
+      }
     }
   }
 
@@ -97,7 +122,12 @@
     border: 1px solid var(--states-danger-sub-base);
 
     .tk-tooltip-arrow {
-      color: var(--states-danger-light);
+      .tk-arrow-fill {
+        fill: var(--states-danger-light);
+      }
+      .tk-arrow-border {
+        fill: var(--states-danger-sub-base);
+      }
     }
   }
 
@@ -106,7 +136,12 @@
     border: 1px solid var(--border-sub-base);
 
     .tk-tooltip-arrow {
-      color: var(--background-light);
+      .tk-arrow-fill {
+        fill: var(--background-light);
+      }
+      .tk-arrow-border {
+        fill: var(--border-sub-base);
+      }
     }
   }
 }
@@ -130,7 +165,23 @@
 @mixin tooltip-arrow {
   display: block;
   pointer-events: none;
-  color: var(--background-darkest);
+  // react-spar's Tooltip.Arrow draws two `<polygon>`s in the 10×5 viewBox: a full
+  // `.tk-arrow-border` triangle behind an inset `.tk-arrow-fill` triangle. The fill
+  // is inset 1px from the two outer edges — so only a 1px border rim shows there —
+  // and extended past the base into the content, so the outline stays OPEN where
+  // the arrow meets the bubble (no seam line across the neck). `overflow: visible`
+  // lets the fill reach up past the SVG viewBox to cover the content's own border
+  // at that neck. Both layers are colored per variant off the `[data-variant]`
+  // cascade below; these are safe defaults (border folds into the fill = a plain
+  // solid triangle when no variant matches).
+  overflow: visible;
+
+  .tk-arrow-fill {
+    fill: currentColor;
+  }
+  .tk-arrow-border {
+    fill: currentColor;
+  }
 }
 
 // ---------------------------------------------------------------------------

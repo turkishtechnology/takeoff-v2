@@ -268,6 +268,12 @@ The `variant` prop controls the visual appearance of the popover content.
 
 ## Arrow
 
+Add `Popover.Arrow` as the last child of `Popover.Content` to point at the
+trigger. The arrow is bordered by default — its two outer edges continue the
+content's outline in the variant's border color, and the neck stays open where
+it joins the bubble. This is matched automatically for every variant and
+placement.
+
 <LiveCode
   code={arrowDemo}
   noInline
@@ -275,6 +281,10 @@ The `variant` prop controls the visual appearance of the popover content.
   previewWrapper={ReactSparDemoRoot}
   scope={popoverScope}
 />
+
+Pass your own `children` to `Popover.Arrow` to replace the default shape (and
+its border). The default draws its border with the `.tk-arrow-border` layer and
+its fill with `.tk-arrow-fill` — target those classes to restyle it.
 
 ## Close Button
 
