@@ -132,14 +132,14 @@ export const typeDemo = String.raw`
 </div>
 `;
 
-export const separatorVariantsDemo = String.raw`
+export const separatorChildrenDemo = String.raw`
 <div className="breadcrumb-demo-stack">
   <Breadcrumb>
     <Breadcrumb.List>
       <Breadcrumb.Item>
         <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
       </Breadcrumb.Item>
-      <Breadcrumb.Separator variant="dot" />
+      <Breadcrumb.Separator>•</Breadcrumb.Separator>
       <Breadcrumb.Item>
         <Breadcrumb.Page>Account</Breadcrumb.Page>
       </Breadcrumb.Item>
@@ -151,7 +151,7 @@ export const separatorVariantsDemo = String.raw`
       <Breadcrumb.Item>
         <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
       </Breadcrumb.Item>
-      <Breadcrumb.Separator variant="slash" />
+      <Breadcrumb.Separator>/</Breadcrumb.Separator>
       <Breadcrumb.Item>
         <Breadcrumb.Page>Account</Breadcrumb.Page>
       </Breadcrumb.Item>
@@ -163,35 +163,27 @@ export const separatorVariantsDemo = String.raw`
       <Breadcrumb.Item>
         <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
       </Breadcrumb.Item>
-      <Breadcrumb.Separator variant="vertical" />
+      <Breadcrumb.Separator>|</Breadcrumb.Separator>
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>Account</Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+
+  <Breadcrumb>
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator>
+        <ArrowRightIconOutlinedRounded />
+      </Breadcrumb.Separator>
       <Breadcrumb.Item>
         <Breadcrumb.Page>Account</Breadcrumb.Page>
       </Breadcrumb.Item>
     </Breadcrumb.List>
   </Breadcrumb>
 </div>
-`;
-
-export const customSeparatorDemo = String.raw`
-<Breadcrumb>
-  <Breadcrumb.List>
-    <Breadcrumb.Item>
-      <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
-    </Breadcrumb.Item>
-    <Breadcrumb.Separator>
-      <ArrowRightIconOutlinedRounded />
-    </Breadcrumb.Separator>
-    <Breadcrumb.Item>
-      <Breadcrumb.Link href="#loyalty">Loyalty</Breadcrumb.Link>
-    </Breadcrumb.Item>
-    <Breadcrumb.Separator>
-      <ArrowRightIconOutlinedRounded />
-    </Breadcrumb.Separator>
-    <Breadcrumb.Item>
-      <Breadcrumb.Page>Status & miles</Breadcrumb.Page>
-    </Breadcrumb.Item>
-  </Breadcrumb.List>
-</Breadcrumb>
 `;
 
 export const iconsDemo = String.raw`
@@ -413,25 +405,14 @@ compound API has no label prop to auto-detect it.
 
 ## Separators
 
-`Breadcrumb.Separator` defaults to a chevron. The `variant` prop switches to the
-dot, slash, or vertical glyph presets:
+`Breadcrumb.Separator` defaults to a chevron. Pass `children` to replace it with
+text or an icon while keeping the same `<li aria-hidden>` owner node:
 
 <LiveCode
-  code={separatorVariantsDemo}
+  code={separatorChildrenDemo}
   cssCode={breadcrumbDemoCss}
   editable={false}
   previewMinHeight={200}
-  previewWrapper={ReactSparDemoRoot}
-  scope={breadcrumbScope}
-/>
-
-Arbitrary content goes through `children`, which overrides the preset:
-
-<LiveCode
-  code={customSeparatorDemo}
-  cssCode={breadcrumbDemoCss}
-  editable={false}
-  previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={breadcrumbScope}
 />
@@ -638,29 +619,17 @@ See
 [Spar Breadcrumb docs](https://spar.app.turkishtechlab.com/docs/Components/Breadcrumb)
 for primitive behavior.
 
-#### Props {#breadcrumb-separator-props}
-
-| Name                            | Type                                                                                            | Default   | Description                                                                                                                 |
-| ------------------------------- | ----------------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                                    | -         | Override the separator glyph entirely; takes priority over `variant`. The owner `<li aria-hidden>` element stays invariant. |
-| <ApiBadge label="variant" />    | <code><a href="#breadcrumb-td-breadcrumbseparatorvariant">BreadcrumbSeparatorVariant</a></code> | 'chevron' | Glyph preset rendered when no `children` are given.                                                                         |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                        | -         | Per-slot class name overrides.                                                                                              |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>       | -         | Per-slot HTML attribute overrides.                                                                                          |
-| <ApiBadge label="className" />  | <code>string</code>                                                                             | -         | Appends custom classes to the root slot of this part.                                                                       |
-
 #### Data attributes {#breadcrumb-separator-data-attributes}
 
-| Attribute                                       | Applied when | Purpose                                                                                                                                                |
-| ----------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.                                                                                                  |
-| <ApiBadge label="data-variant" />               | Always       | Reflects the resolved `variant` preset (`chevron` \| `dot` \| `slash` \| `vertical`) so the recipe can paint glyph separators. Emitted by the wrapper. |
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Type Definitions {#breadcrumb-type-definitions}
 
-| Name                                                                                                       | Definition                                                           |
-| ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| <span id="breadcrumb-td-breadcrumbsize"><ApiBadge label="BreadcrumbSize" /></span>                         | <code>'base' &#124; 'large'</code>                                   |
-| <span id="breadcrumb-td-breadcrumbtype"><ApiBadge label="BreadcrumbType" /></span>                         | <code>'basic' &#124; 'outlined'</code>                               |
-| <span id="breadcrumb-td-breadcrumbseparatorvariant"><ApiBadge label="BreadcrumbSeparatorVariant" /></span> | <code>'chevron' &#124; 'dot' &#124; 'slash' &#124; 'vertical'</code> |
+| Name                                                                               | Definition                             |
+| ---------------------------------------------------------------------------------- | -------------------------------------- |
+| <span id="breadcrumb-td-breadcrumbsize"><ApiBadge label="BreadcrumbSize" /></span> | <code>'base' &#124; 'large'</code>     |
+| <span id="breadcrumb-td-breadcrumbtype"><ApiBadge label="BreadcrumbType" /></span> | <code>'basic' &#124; 'outlined'</code> |
 
 {/* api-tables:end */}
