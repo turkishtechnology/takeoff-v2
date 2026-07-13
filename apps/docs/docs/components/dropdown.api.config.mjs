@@ -45,12 +45,6 @@ export default {
       prependPropNames: ['children'],
       appendPropNames: ['className'],
       skipPropNames: ['ref'],
-      // Spar 0.2.0's `align` JSDoc is stale (`@defaultValue 'start'`); the real
-      // runtime default is `'center'`. Root fix lands in turkishtechnology/spar#188 —
-      // drop this override once the spar dep bumps and the JSDoc reads 'center'.
-      propOverrides: {
-        align: { default: "'center'" },
-      },
       dataAttributes: [
         rootDataAttribute,
         {
@@ -78,7 +72,19 @@ export default {
       prependPropNames: ['children'],
       appendPropNames: ['className'],
       skipPropNames: ['ref'],
-      dataAttributes: [rootDataAttribute],
+      dataAttributes: [
+        rootDataAttribute,
+        {
+          attribute: 'data-highlighted',
+          appliedWhen: 'Highlighted',
+          purpose: 'Present while the item is the active option (keyboard, pointer, or typeahead). Style hover/active affordances off this.',
+        },
+        {
+          attribute: 'data-disabled',
+          appliedWhen: 'Disabled',
+          purpose: 'Present when the item is disabled; the item stays visible but is not highlightable or selectable.',
+        },
+      ],
     },
     {
       sourceFile: dropdownTypesFile,

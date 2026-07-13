@@ -406,11 +406,13 @@ import { Dropdown } from '@takeoff-ui/react-spar';
 </Dropdown>
 ```
 
-`Dropdown.Viewport` is the panel's scroll container. Wrap the items in it
-whenever the list can grow long enough to need scrolling — it bounds the height
-and keeps the highlighted item in view during keyboard navigation. The content
-panel itself does not scroll, so a long menu without a viewport will overflow;
-omit it only for short menus that always fit.
+`Dropdown.Viewport` is the panel's scroll container — it bounds the height and
+provides the scrollable region. Wrap the items in it whenever the list can grow
+long enough to need scrolling. Keeping the highlighted item in view during
+keyboard navigation is handled by `Dropdown.Content` (it scrolls the item into
+the nearest scrollable region), so it works with or without a viewport. The
+content panel itself does not scroll, so a long menu without a viewport will
+overflow; omit the viewport only for short menus that always fit.
 
 ## Playground
 
@@ -596,7 +598,7 @@ for primitive behavior.
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML attribute overrides.                                         |
 | <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                      | document.body | Portal container element. Content is portaled to document.body by default. |
 | <ApiBadge label="side" />       | <code><a href="#dropdown-td-side">Side</a></code>                                         | 'bottom'      | Preferred placement side                                                   |
-| <ApiBadge label="align" />      | <code><a href="#dropdown-td-align">Align</a></code>                                       | 'center'      | Alignment on placement side                                                |
+| <ApiBadge label="align" />      | <code><a href="#dropdown-td-align">Align</a></code>                                       | 'start'       | Alignment on placement side                                                |
 | <ApiBadge label="className" />  | <code>string</code>                                                                       | -             |                                                                            |
 
 #### Events {#dropdown-content-events}
@@ -643,9 +645,11 @@ for primitive behavior.
 
 #### Data attributes {#dropdown-item-data-attributes}
 
-| Attribute                                       | Applied when | Purpose                                               |
-| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when | Purpose                                                                                                                 |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.                                                                   |
+| <ApiBadge label="data-highlighted" />           | Highlighted  | Present while the item is the active option (keyboard, pointer, or typeahead). Style hover/active affordances off this. |
+| <ApiBadge label="data-disabled" />              | Disabled     | Present when the item is disabled; the item stays visible but is not highlightable or selectable.                       |
 
 ### Dropdown.Group {#dropdown-group}
 
