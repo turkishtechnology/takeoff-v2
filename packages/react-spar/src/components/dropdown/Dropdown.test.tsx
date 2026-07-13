@@ -64,6 +64,20 @@ describe('Dropdown', () => {
     expect(screen.getByRole('menu')).toHaveStyle({ width: '280px' });
   });
 
+  it('merges the computed content width with a slotProps root style', () => {
+    render(
+      <Dropdown defaultOpen contentWidth={280}>
+        <Dropdown.Trigger>Actions</Dropdown.Trigger>
+        <Dropdown.Content slotProps={{ root: { style: { color: 'rgb(1, 2, 3)' } } }}>
+          <Dropdown.Item>Edit</Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown>,
+    );
+
+    // The computed width must not clobber (or be clobbered by) a slotProps style.
+    expect(screen.getByRole('menu')).toHaveStyle({ width: '280px', color: 'rgb(1, 2, 3)' });
+  });
+
   it('opens from the trigger and calls item selection handlers', async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();

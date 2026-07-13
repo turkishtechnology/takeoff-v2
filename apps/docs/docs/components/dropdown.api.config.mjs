@@ -45,6 +45,12 @@ export default {
       prependPropNames: ['children'],
       appendPropNames: ['className'],
       skipPropNames: ['ref'],
+      // Spar 0.2.0's `align` JSDoc is stale (`@defaultValue 'start'`); the real
+      // runtime default is `'center'`. Root fix lands in turkishtechnology/spar#188 —
+      // drop this override once the spar dep bumps and the JSDoc reads 'center'.
+      propOverrides: {
+        align: { default: "'center'" },
+      },
       dataAttributes: [
         rootDataAttribute,
         {

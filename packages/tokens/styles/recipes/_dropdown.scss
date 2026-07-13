@@ -19,7 +19,10 @@
 
 @mixin dropdown-content {
   font-family: var(--family-body, 'tk-text', sans-serif);
-  z-index: 800;
+  // The panel is portaled to document.body, so it must sit above the modal
+  // surfaces (Dialog / Drawer at 1500/1501) to stay visible when a menu is
+  // opened from inside one; kept below Toast (2000).
+  z-index: 1600;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);

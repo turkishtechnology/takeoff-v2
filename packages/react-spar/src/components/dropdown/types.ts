@@ -129,7 +129,14 @@ export interface DropdownGroupOwnProps {
   slotProps?: SlotPropsMap<DropdownGroupSlot>;
 }
 
-export type DropdownGroupProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DropdownGroupOwnProps & Pick<SparDropdownMenuGroupProps, 'children'>>;
+export type DropdownGroupProps<T extends ElementType = 'div'> = PolymorphicProps<
+  'div',
+  T,
+  DropdownGroupOwnProps &
+    // Semantic grouping container from Spar: only child composition (a label
+    // plus its items) is forwarded; the group owns no size, state, or events.
+    Pick<SparDropdownMenuGroupProps, 'children'>
+>;
 
 export interface DropdownLabelOwnProps {
   /** Per-slot class name overrides. */
@@ -138,7 +145,14 @@ export interface DropdownLabelOwnProps {
   slotProps?: SlotPropsMap<DropdownLabelSlot>;
 }
 
-export type DropdownLabelProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DropdownLabelOwnProps & Pick<SparDropdownMenuLabelProps, 'children'>>;
+export type DropdownLabelProps<T extends ElementType = 'div'> = PolymorphicProps<
+  'div',
+  T,
+  DropdownLabelOwnProps &
+    // Non-interactive group heading from Spar: only child composition (the label
+    // text) is forwarded; it exposes no interactive or positioning props.
+    Pick<SparDropdownMenuLabelProps, 'children'>
+>;
 
 export interface DropdownSeparatorOwnProps {
   /** Per-slot class name overrides. */
@@ -147,7 +161,14 @@ export interface DropdownSeparatorOwnProps {
   slotProps?: SlotPropsMap<DropdownSeparatorSlot>;
 }
 
-export type DropdownSeparatorProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DropdownSeparatorOwnProps & Pick<SparDropdownMenuSeparatorProps, 'children'>>;
+export type DropdownSeparatorProps<T extends ElementType = 'div'> = PolymorphicProps<
+  'div',
+  T,
+  DropdownSeparatorOwnProps &
+    // Visual separator from Spar: forwards only child composition — optional
+    // content for a labeled divider, mirroring Select.Separator.
+    Pick<SparDropdownMenuSeparatorProps, 'children'>
+>;
 
 export interface DropdownArrowOwnProps {
   /** Per-slot class name overrides. */
@@ -156,7 +177,14 @@ export interface DropdownArrowOwnProps {
   slotProps?: SlotPropsMap<DropdownArrowSlot>;
 }
 
-export type DropdownArrowProps<T extends ElementType = 'svg'> = PolymorphicProps<'svg', T, DropdownArrowOwnProps & Pick<SparDropdownMenuArrowProps, 'children'>>;
+export type DropdownArrowProps<T extends ElementType = 'svg'> = PolymorphicProps<
+  'svg',
+  T,
+  DropdownArrowOwnProps &
+    // Decorative pointer from Spar: forwards only `children`, which overrides the
+    // default arrow glyph for a custom shape; no positioning or state props.
+    Pick<SparDropdownMenuArrowProps, 'children'>
+>;
 
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {

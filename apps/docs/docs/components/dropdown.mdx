@@ -522,8 +522,8 @@ and inherits the panel's surface color, so no extra styling is required.
 
 Wrap the items in `Dropdown.Viewport` to keep a long list within a bounded,
 scrollable area. The viewport owns the scroll bounds, and keyboard navigation
-and typeahead keep the highlighted item in view. The native scrollbar is hidden
-(as in Radix Select) — scroll with the wheel, trackpad, or keyboard.
+and typeahead keep the highlighted item in view. It renders a slim branded
+scrollbar; you can also scroll with the wheel, trackpad, or keyboard.
 
 <LiveCode
   code={scrollingDemo}
@@ -561,7 +561,7 @@ for primitive behavior.
 
 | Name                               | Type                                                                              | Default   | Description                                                                                                                                                      |
 | ---------------------------------- | --------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />      | <code>React.React.ReactNode</code>                                                | -         | Component content                                                                                                                                                |
+| <ApiBadge label="children" />      | <code>React.ReactNode</code>                                                      | -         | Component content                                                                                                                                                |
 | <ApiBadge label="size" />          | <code><a href="#dropdown-td-dropdownsize">DropdownSize</a></code>                 | 'base'    | Size scale for the menu content and items.                                                                                                                       |
 | <ApiBadge label="contentWidth" />  | <code><a href="#dropdown-td-dropdowncontentwidth">DropdownContentWidth</a></code> | 'content' | How the portalled Dropdown.Content panel computes its width. See `DropdownContentWidth`.                                                                         |
 | <ApiBadge label="id" />            | <code>string</code>                                                               | -         | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
@@ -591,12 +591,12 @@ for primitive behavior.
 
 | Name                            | Type                                                                                      | Default       | Description                                                                |
 | ------------------------------- | ----------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.React.ReactNode</code>                                                        | -             |                                                                            |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -             |                                                                            |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -             | Per-slot class name overrides.                                             |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML attribute overrides.                                         |
 | <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                      | document.body | Portal container element. Content is portaled to document.body by default. |
 | <ApiBadge label="side" />       | <code><a href="#dropdown-td-side">Side</a></code>                                         | 'bottom'      | Preferred placement side                                                   |
-| <ApiBadge label="align" />      | <code><a href="#dropdown-td-align">Align</a></code>                                       | 'start'       | Alignment on placement side                                                |
+| <ApiBadge label="align" />      | <code><a href="#dropdown-td-align">Align</a></code>                                       | 'center'      | Alignment on placement side                                                |
 | <ApiBadge label="className" />  | <code>string</code>                                                                       | -             |                                                                            |
 
 #### Events {#dropdown-content-events}
@@ -628,7 +628,7 @@ for primitive behavior.
 
 | Name                            | Type                                                                                      | Default | Description                        |
 | ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ---------------------------------- |
-| <ApiBadge label="children" />   | <code>React.React.ReactNode</code>                                                        | -       |                                    |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -       |                                    |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.     |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides. |
 | <ApiBadge label="disabled" />   | <code>boolean</code>                                                                      | false   | Whether item is disabled           |
