@@ -142,6 +142,16 @@ describe('Progress (compound)', () => {
       expect(indicator().style.width).toBe('0%');
     });
 
+    it('clamps a float-imprecise percentage back into range', () => {
+      // 0.3 - 0.1 divides to 100.00000000000001 in IEEE-754; without the clamp
+      // the linear width overshoots 100% and the circular offset goes negative.
+      const { container } = render(<Progress min={0.1} max={0.3} value={0.3} />);
+      expect((container.querySelector('.tk-progress-indicator') as HTMLElement).style.width).toBe('100%');
+
+      const { container: circular } = render(<Progress appearance="circular" min={0.1} max={0.3} value={0.3} />);
+      expect((circular.querySelector('circle.tk-progress-indicator') as SVGCircleElement).style.strokeDashoffset).toBe('0');
+    });
+
     it('supports a custom max', () => {
       const { container } = render(<Progress value={5} max={20} />);
       const root = container.querySelector('.tk-progress') as HTMLElement;
@@ -249,6 +259,32 @@ describe('Progress (compound)', () => {
       expect(arc).toHaveAttribute('pathLength', '100');
       expect(arc.style.strokeDasharray).toBe('100');
       expect(arc.style.strokeDashoffset).toBe('');
+    });
+
+    it('clears a leaked consumer width so the recipe animates the sweep (linear)', () => {
+      const { container } = render(
+        <Progress indeterminate>
+          <Progress.Track>
+            <Progress.Indicator style={{ width: '10%' }} />
+          </Progress.Track>
+        </Progress>,
+      );
+      // The consumer width would otherwise outrank the recipe's sweep rule
+      // (inline > stylesheet) and freeze the animation at 10%.
+      expect((container.querySelector('.tk-progress-indicator') as HTMLElement).style.width).toBe('');
+    });
+
+    it('clears a leaked consumer dash offset so the recipe animates the arc (circular)', () => {
+      const { container } = render(
+        <Progress appearance="circular" indeterminate>
+          <Progress.Track>
+            <Progress.Indicator style={{ strokeDashoffset: 10 } as never} />
+          </Progress.Track>
+        </Progress>,
+      );
+      const arc = container.querySelector('circle.tk-progress-indicator') as SVGCircleElement;
+      expect(arc.style.strokeDashoffset).toBe('');
+      expect(arc.style.strokeDasharray).toBe('100');
     });
 
     it('stays determinate when the value is merely omitted', () => {
@@ -421,8 +457,32 @@ describe('Progress (compound)', () => {
 
       expect(label.id).not.toBe('');
       expect(root).toHaveAttribute('aria-labelledby', label.id);
-      expect(root).not.toHaveAttribute('aria-label');
+      // The default aria-label stays on as a fallback (the Field always exposes
+      // a labelId even without a label), but the composed label resolves and
+      // wins the accessible name.
+      expect(root).toHaveAttribute('aria-label', 'Progress');
       expect(screen.getByRole('progressbar')).toHaveAccessibleName('Upload progress');
+    });
+
+    it('keeps an accessible name inside a Field that renders no Field.Label', () => {
+      // Spar's FieldRoot exposes a labelId even here, so aria-labelledby points
+      // at an element that never renders. The default aria-label must keep the
+      // progressbar named rather than letting the dangling reference blank it.
+      render(
+        <Field disabled>
+          <Progress value={40} />
+        </Field>,
+      );
+
+      expect(screen.getByRole('progressbar')).toHaveAccessibleName('Progress');
+    });
+
+    it('drops aria-valuetext alongside aria-valuenow while indeterminate', () => {
+      render(<Progress indeterminate aria-valuetext="Loading…" />);
+
+      const progressbar = screen.getByRole('progressbar');
+      expect(progressbar).not.toHaveAttribute('aria-valuenow');
+      expect(progressbar).not.toHaveAttribute('aria-valuetext');
     });
 
     it('has no a11y violations for linear and circular', async () => {

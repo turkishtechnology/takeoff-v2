@@ -47,26 +47,11 @@ export const Progress = <T extends ElementType = 'div'>(props: ProgressProps<T>)
     disabled = field?.disabled ?? false,
   }: Pick<ProgressProps<'div'>, 'indeterminate' | 'appearance' | 'size' | 'variant' | 'disabled'>) => ({ indeterminate, appearance, size, variant, disabled });
 
-  const { rootAttrs, rest } = composeRootAttrs(ProgressBase, props as ProgressProps<'div'>, theme, {
-    stateAttrs: merged => {
-      const { indeterminate, appearance, size, variant, disabled } = resolveState(merged);
-      const { max, value } = resolveRange(merged);
-      return {
-        'data-type': appearance,
-        'data-size': size,
-        'data-variant': variant,
-        'data-disabled': disabled ? '' : undefined,
-        'data-indeterminate': indeterminate ? '' : undefined,
-        // Styling hook for the finished state (e.g. a success fill at 100%);
-        // meaningless while indeterminate, so dropped alongside the value.
-        'data-complete': !indeterminate && value === max ? '' : undefined,
-      };
-    },
-  });
+  const { rootAttrs, rest } = composeRootAttrs(ProgressBase, props as ProgressProps<'div'>, theme);
 
   const {
-    // Consumed through resolveState/resolveRange (and as root data-* hooks
-    // above); destructured so the <div> doesn't receive unknown DOM
+    // Consumed through resolveState/resolveRange (and as the root data-* hooks
+    // below); destructured so the <div> doesn't receive unknown DOM
     // attributes.
     value: _value,
     min: _min,
@@ -82,8 +67,26 @@ export const Progress = <T extends ElementType = 'div'>(props: ProgressProps<T>)
     ...nativeProps
   } = rest;
 
-  const { indeterminate, appearance, disabled } = resolveState(rest);
+  // Resolve the enumerable state and numeric range exactly once; the root
+  // data-* hooks, the ARIA surface, and the context below all read these same
+  // objects so the styling hooks and the value surface can never drift apart.
+  const { indeterminate, appearance, size, variant, disabled } = resolveState(rest);
   const { min, max, value } = resolveRange(rest);
+
+  // Canonical state-driven styling hooks. Layered after `rootAttrs` at the
+  // render site (like `composeRootAttrs`' `stateAttrs`) so consumer `slotProps`
+  // cannot override these design-system invariants; `undefined` entries are
+  // dropped by JSX, matching the boolean-presence convention.
+  const dataAttrs = {
+    'data-type': appearance,
+    'data-size': size,
+    'data-variant': variant,
+    'data-disabled': disabled ? '' : undefined,
+    'data-indeterminate': indeterminate ? '' : undefined,
+    // Styling hook for the finished state (e.g. a success fill at 100%);
+    // meaningless while indeterminate, so dropped alongside the value.
+    'data-complete': !indeterminate && value === max ? '' : undefined,
+  };
 
   if (isDevelopment() && typeof rawMax === 'number' && Number.isFinite(rawMax) && rawMax <= min) {
     const message = `[Progress] \`max\` (${rawMax}) must be greater than \`min\` (${min}); falling back to ${max}.`;
@@ -94,7 +97,15 @@ export const Progress = <T extends ElementType = 'div'>(props: ProgressProps<T>)
     }
   }
 
-  const effectiveLabelledBy = nativeProps['aria-labelledby'] ?? field?.labelId;
+  // A consumer `aria-labelledby` is an explicit commitment to that element, so
+  // it drops the default aria-label. The Field's labelId is different: Spar's
+  // FieldRoot always exposes `${id}-label` even when no <Field.Label> is
+  // rendered, so pointing at it can dangle. We keep it (it resolves and wins
+  // when a Field.Label *is* present) but leave the default aria-label on as a
+  // fallback — per the accessible-name algorithm, an aria-labelledby with no
+  // resolvable IDREF is skipped and the name falls back to aria-label instead
+  // of leaving the progressbar nameless.
+  const consumerLabelledBy = nativeProps['aria-labelledby'];
   const accessibilityAttrs = {
     'role': nativeProps.role ?? 'progressbar',
     'aria-valuemin': min,
@@ -103,8 +114,11 @@ export const Progress = <T extends ElementType = 'div'>(props: ProgressProps<T>)
     // aria-valuenow — assistive tech then announces it as busy rather than
     // stuck at a bogus percentage.
     'aria-valuenow': indeterminate ? undefined : value,
-    'aria-labelledby': effectiveLabelledBy,
-    'aria-label': nativeProps['aria-label'] ?? (effectiveLabelledBy ? undefined : DEFAULT_ARIA_LABEL),
+    // aria-valuetext accompanies aria-valuenow; drop it while indeterminate so
+    // a consumer-formatted value can't linger next to a busy bar.
+    'aria-valuetext': indeterminate ? undefined : nativeProps['aria-valuetext'],
+    'aria-labelledby': consumerLabelledBy ?? field?.labelId,
+    'aria-label': nativeProps['aria-label'] ?? (consumerLabelledBy ? undefined : DEFAULT_ARIA_LABEL),
     'aria-disabled': disabled || undefined,
   };
 
@@ -112,7 +126,7 @@ export const Progress = <T extends ElementType = 'div'>(props: ProgressProps<T>)
 
   return (
     <ProgressProvider value={{ value, min, max, appearance, indeterminate }}>
-      <Component {...nativeProps} {...accessibilityAttrs} {...rootAttrs} ref={ref}>
+      <Component {...nativeProps} {...accessibilityAttrs} {...rootAttrs} {...dataAttrs} ref={ref}>
         {/* Same default anatomy for both appearances; the track renders the
             rail its appearance calls for and fills itself with the default
             indicator. */}

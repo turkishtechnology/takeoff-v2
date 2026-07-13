@@ -12,8 +12,12 @@ export const ProgressIndicator = (props: ProgressIndicatorProps) => {
   const theme = useComponentTheme('ProgressIndicator');
   const { value, min, max, appearance, indeterminate } = useProgressContext('Progress.Indicator');
   // `(… * 100) / range` rather than a pre-divided fraction keeps round
-  // percentages exact (0.3 * 100 floats to 30.000000000000004).
-  const percent = ((value - min) * 100) / (max - min);
+  // percentages exact (0.3 * 100 floats to 30.000000000000004). The clamp
+  // re-tightens the result to [0, 100]: `value` is already clamped into
+  // [min, max], but IEEE-754 division can still nudge a boundary case just
+  // past 100 (e.g. min 0.1 / max 0.3 / value 0.3 → 100.00000000000001), which
+  // would leak an out-of-range width / a negative dash offset.
+  const percent = Math.min(100, Math.max(0, ((value - min) * 100) / (max - min)));
 
   const { rootAttrs, rest } = composeRootAttrs(ProgressIndicatorBase, props, theme, {
     stateAttrs: () => ({
@@ -29,8 +33,10 @@ export const ProgressIndicator = (props: ProgressIndicatorProps) => {
   // Track svg draws), the linear one a fill <span> carrying the width.
   //
   // When indeterminate there is no progress to write — the recipe animates
-  // the looping sweep off data-indeterminate instead, so the inline offset /
-  // width below is skipped (the normalized dash geometry still applies).
+  // the looping sweep off data-indeterminate instead. The offset / width is
+  // then set to `undefined` (not merely skipped) so a consumer style /
+  // slotProps value can't leak through and pin the sweep to a fixed frame;
+  // JSX omits the undefined property and the recipe's animated rule applies.
   if (appearance === 'circular') {
     return (
       <circle
@@ -46,7 +52,7 @@ export const ProgressIndicator = (props: ProgressIndicatorProps) => {
         // because any stylesheet rule outranks a presentation attribute —
         // only inline style keeps the invariant safe from CSS too.
         pathLength="100"
-        style={{ ...style, ...slotStyle, strokeDasharray: 100, ...(indeterminate ? null : { strokeDashoffset: 100 - percent }) }}
+        style={{ ...style, ...slotStyle, strokeDasharray: 100, strokeDashoffset: indeterminate ? undefined : 100 - percent }}
         ref={ref as never}
       />
     );
@@ -54,8 +60,10 @@ export const ProgressIndicator = (props: ProgressIndicatorProps) => {
 
   // The decorative role and the width are the design-system invariants the
   // recipe relies on; both are layered after the spreads so neither instance
-  // nor slot props can override them.
-  return <span {...nativeProps} {...slotAttrs} aria-hidden="true" style={{ ...style, ...slotStyle, ...(indeterminate ? null : { width: `${percent}%` }) }} ref={ref as never} />;
+  // nor slot props can override them — including the indeterminate branch,
+  // where `width: undefined` clears any leaked consumer width so the recipe's
+  // animated sweep width takes over.
+  return <span {...nativeProps} {...slotAttrs} aria-hidden="true" style={{ ...style, ...slotStyle, width: indeterminate ? undefined : `${percent}%` }} ref={ref as never} />;
 };
 
 ProgressIndicator.displayName = 'Progress.Indicator';
