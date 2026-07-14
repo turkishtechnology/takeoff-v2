@@ -21,7 +21,13 @@
   font-size: var(--desktop-body-xs-size);
   font-weight: 300;
   line-height: var(--desktop-body-xs-line-height);
-  z-index: 1300;
+  // Layer above the modal band (dialog/drawer panel = 1501) so a popover
+  // triggered from inside a drawer/dialog is not painted behind it. Both portal
+  // to <body>, so the explicit z-index — not DOM order — decides. Shares the
+  // 1600 tier with Select (a Select opened inside a Popover then wins on DOM
+  // order, since it portals later). Ordering: overlay 1500 < modal 1501 <
+  // select/popover 1600 < toast 2000 < tooltip 2100.
+  z-index: 1600;
   display: flex;
   flex-direction: column;
   gap: 8px;
