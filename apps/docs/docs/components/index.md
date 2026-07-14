@@ -50,6 +50,7 @@ and accessibility guidance where the component owns interaction behavior.
 | ----------------------------------- | -------------------------------------------------------------- |
 | [Card](/docs/components/card)       | Grouping related content, summaries, and actions.              |
 | [Dialog](/docs/components/dialog)   | Handling focused forms, confirmations, and blocking decisions. |
+| [Divider](/docs/components/divider) | Separating content sections with an optional aligned label.    |
 | [Drawer](/docs/components/drawer)   | Showing navigation, filters, or details over the current page. |
 | [Popover](/docs/components/popover) | Displaying additional content or actions in a floating panel.  |
 | [Table](/docs/components/table)     | Scanning, sorting, filtering, and paginating structured data.  |

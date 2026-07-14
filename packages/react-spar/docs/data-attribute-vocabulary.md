@@ -86,12 +86,13 @@ table needs updating.
 
 ### Variant
 
-| Attribute      | Scope            | Example values                                                           | Notes                                                                 |
-| -------------- | ---------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| `data-variant` | Root             | `primary`, `danger`, `neutral`                                           | Semantic color treatment                                              |
-| `data-size`    | Root, Item       | `base`, `large`, `small`                                                 | Duplicated to items by design where recipes need item-local selectors |
-| `data-mode`    | Root, Item       | `button`, `link`, `default`, `compact`                                   | Rendering or behavior mode                                            |
-| `data-type`    | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `linear`, `circular` | Owner depends on component — see component decisions below            |
+| Attribute          | Scope            | Example values                                                           | Notes                                                                 |
+| ------------------ | ---------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| `data-variant`     | Root             | `primary`, `danger`, `neutral`                                           | Semantic color treatment                                              |
+| `data-size`        | Root, Item       | `base`, `large`, `small`                                                 | Duplicated to items by design where recipes need item-local selectors |
+| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`                                   | Rendering or behavior mode                                            |
+| `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `linear`, `circular` | Owner depends on component — see component decisions below            |
+| `data-orientation` | Root             | `horizontal`, `vertical`                                                 | Axis of the component's layout or line                                |
 
 ### Semantic
 
@@ -193,6 +194,29 @@ its attributes are wrapper-emitted. Recorded here per rule 10.
 - **Checked/unchecked state stays Spar-owned.** `Radio.Item` exposes Spar's
   `data-state="checked" | "unchecked"`; the wrapper recipe consumes that state
   for the indicator fill instead of mirroring selection in React.
+
+### Divider
+
+Divider is **v2-owned** (no upstream Spar primitive), so the wrapper emits its
+own vocabulary. All attributes live on the root.
+
+- **`data-orientation`** (`horizontal` | `vertical`) mirrors the `orientation`
+  prop and the `aria-orientation` the wrapper renders for non-decorative
+  separators. The recipe draws the line on the matching axis.
+- **`data-type` carries the line style** (`solid` | `dashed` | `dotted`) —
+  reusing the `appearance` → `data-type` mapping established by Badge instead of
+  inventing a `data-line` attribute. Dashed/dotted render via CSS gradients
+  (repeating-linear for dashes, tiled radial for dots), not `border-style`, so
+  the pattern stays legible at 1px thickness.
+- **`data-align`** (`start` | `center` | `end`) positions the optional label
+  along the line. It extends Table's `data-align` values with a root-scoped
+  owner.
+- **The label is a wrapper-owned slot, not a compound part.** Children render
+  inside `.tk-divider-label` (`data-slot="label"`) — the same leaf-with-slots
+  shape as Spinner's `indicator`.
+- **There is intentionally no `data-has-label` attribute.** Both line segments
+  are root pseudo-elements that flex-grow, so a label-less divider renders one
+  continuous line purely in CSS — no runtime detection exists to mirror.
 
 ### Input
 

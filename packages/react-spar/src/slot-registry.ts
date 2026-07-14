@@ -17,6 +17,7 @@ import {
   DialogTitleBase,
   DialogTriggerBase,
 } from './components/dialog/base';
+import { DividerBase } from './components/divider/base';
 import {
   DrawerBase,
   DrawerBodyBase,
@@ -58,6 +59,7 @@ import {
 } from './components/input/base';
 import { ProgressBase, ProgressIndicatorBase, ProgressTrackBase, ProgressValueBase } from './components/progress/base';
 import {
+  SelectArrowBase,
   SelectBase,
   SelectContentBase,
   SelectGroupBase,
@@ -66,6 +68,7 @@ import {
   SelectLabelBase,
   SelectSeparatorBase,
   SelectTriggerBase,
+  SelectViewportBase,
 } from './components/select/base';
 import { SpinnerBase } from './components/spinner/base';
 import { SwitchBase } from './components/switch/base';
@@ -124,6 +127,7 @@ export const slotClassRegistry = {
   dialogBody: { slots: DialogBodyBase.classes },
   dialogFooter: { slots: DialogFooterBase.classes },
   dialogClose: { slots: DialogCloseBase.classes },
+  divider: { slots: DividerBase.classes },
   drawer: { slots: DrawerBase.classes },
   drawerOverlay: { slots: DrawerOverlayBase.classes },
   drawerPanel: { slots: DrawerPanelBase.classes },
@@ -168,10 +172,12 @@ export const slotClassRegistry = {
   selectTrigger: { slots: SelectTriggerBase.classes },
   selectIndicator: { slots: SelectIndicatorBase.classes },
   selectContent: { slots: SelectContentBase.classes },
+  selectViewport: { slots: SelectViewportBase.classes },
   selectItem: { slots: SelectItemBase.classes },
   selectGroup: { slots: SelectGroupBase.classes },
   selectLabel: { slots: SelectLabelBase.classes },
   selectSeparator: { slots: SelectSeparatorBase.classes },
+  selectArrow: { slots: SelectArrowBase.classes },
   spinner: { slots: SpinnerBase.classes },
   switch: { slots: SwitchBase.classes },
   table: { slots: TableBase.classes },

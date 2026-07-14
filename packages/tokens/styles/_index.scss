@@ -11,6 +11,7 @@
 @use 'recipes/checkbox';
 @use 'recipes/chip';
 @use 'recipes/dialog';
+@use 'recipes/divider';
 @use 'recipes/drawer';
 @use 'recipes/dropdown';
 @use 'recipes/field';
@@ -134,6 +135,10 @@
   @include dialog.dialog-footer;
 }
 
+.tk-divider {
+  @include divider.divider;
+}
+
 .tk-drawer-overlay {
   @include drawer.drawer-overlay;
 }
@@ -242,6 +247,10 @@
   @include select.select-content;
 }
 
+.tk-select-viewport {
+  @include select.select-viewport;
+}
+
 .tk-select-item {
   @include select.select-item;
 }
@@ -260,6 +269,10 @@
 
 .tk-select-separator {
   @include select.select-separator;
+}
+
+.tk-select-arrow {
+  @include select.select-arrow;
 }
 
 .tk-spinner {

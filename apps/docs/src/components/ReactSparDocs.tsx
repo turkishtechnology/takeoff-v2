@@ -17,6 +17,7 @@ export {
   Checkbox,
   Chip,
   Dialog,
+  Divider,
   Drawer,
   Dropdown,
   Field,

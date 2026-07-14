@@ -282,6 +282,12 @@ To share delay configuration across a group of tooltips, wrap them in
 
 ## Arrow
 
+Add `Tooltip.Arrow` as the last child of `Tooltip.Content` to point at the
+trigger. The arrow is bordered by default — its two outer edges continue the
+content's outline in the variant's border color, and the neck stays open where
+it joins the bubble. This is matched automatically for every variant and
+placement.
+
 <LiveCode
   code={arrowDemo}
   noInline
@@ -289,6 +295,10 @@ To share delay configuration across a group of tooltips, wrap them in
   previewWrapper={ReactSparDemoRoot}
   scope={tooltipScope}
 />
+
+Pass your own `children` to `Tooltip.Arrow` to replace the default shape (and
+its border). The default draws its border with the `.tk-arrow-border` layer and
+its fill with `.tk-arrow-fill` — target those classes to restyle it.
 
 ## Provider
 
