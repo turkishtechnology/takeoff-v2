@@ -23,6 +23,7 @@ export {
   Input,
   Label,
   Popover,
+  Progress,
   Radio,
   Select,
   Spinner,

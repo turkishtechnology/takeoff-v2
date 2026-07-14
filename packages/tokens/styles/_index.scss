@@ -17,6 +17,7 @@
 @use 'recipes/input';
 @use 'recipes/label';
 @use 'recipes/popover';
+@use 'recipes/progress';
 @use 'recipes/radio';
 @use 'recipes/select';
 @use 'recipes/spinner';
@@ -29,6 +30,7 @@
 @include button.button-keyframes;
 @include input.input-keyframes;
 @include popover.popover-keyframes;
+@include progress.progress-keyframes;
 @include spinner.spinner-keyframes;
 @include tooltip.tooltip-keyframes;
 
@@ -234,6 +236,22 @@
 
 .tk-spinner {
   @include spinner.spinner;
+}
+
+.tk-progress {
+  @include progress.progress;
+}
+
+.tk-progress-track {
+  @include progress.progress-track;
+}
+
+.tk-progress-indicator {
+  @include progress.progress-indicator;
+}
+
+.tk-progress-value {
+  @include progress.progress-value;
 }
 
 .tk-checkbox {
