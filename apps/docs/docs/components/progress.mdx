@@ -21,17 +21,6 @@ export const progressScope = { Progress, Field };
 {/* prettier-ignore-start */}
 
 export const playgroundDemo = String.raw`
-function CircularPercent({ value }) {
-  return (
-    <span className="inline-flex items-center py-1.5">
-      <span className="flex self-stretch items-end">
-        <span className="w-[15px] text-center text-sm leading-5 text-[color:var(--text-light)]">%</span>
-      </span>
-      {value}
-    </span>
-  );
-}
-
 function PlaygroundDemo() {
   const [value, setValue] = React.useState(0);
 
@@ -53,9 +42,7 @@ function PlaygroundDemo() {
       </Field>
       <Progress appearance="circular" value={value} aria-label={'Uploading ' + value + '%'}>
         <Progress.Track />
-        <Progress.Value>
-          <CircularPercent value={value} />
-        </Progress.Value>
+        <Progress.Value>%{value}</Progress.Value>
       </Progress>
     </div>
   );
@@ -87,26 +74,13 @@ render(<VariantsDemo />);
 `;
 
 export const circularDemo = String.raw`
-function CircularPercent({ value }) {
-  return (
-    <span className="inline-flex items-center py-1.5">
-      <span className="flex self-stretch items-end">
-        <span className="w-[15px] text-center text-sm leading-5 text-[color:var(--text-light)]">%</span>
-      </span>
-      {value}
-    </span>
-  );
-}
-
 function CircularDemo() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-10">
       {[25, 50, 75].map(value => (
         <Progress key={value} appearance="circular" size="large" value={value} aria-label={'Progress ' + value + '%'}>
           <Progress.Track />
-          <Progress.Value>
-            <CircularPercent value={value} />
-          </Progress.Value>
+          <Progress.Value>%{value}</Progress.Value>
         </Progress>
       ))}
     </div>
@@ -200,7 +174,7 @@ function LayoutsDemo() {
 
       <Field>
         <Field.Label>Inline progress</Field.Label>
-        <Progress value={40} style={{ flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+        <Progress value={40} style={{ flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
           <Progress.Track />
           <Progress.Value className="shrink-0">%40</Progress.Value>
         </Progress>
@@ -343,9 +317,10 @@ the accessible name on the root via `aria-label` or a `Field.Label`.
 
 ## Sizes
 
-`size` scales the linear track height and the circular ring diameter. Circular
-sizes are `64px`, `96px`, and `128px` for `small`, `base`, and `large` — the
-centered `Progress.Value` typography scales with the ring automatically.
+`size` scales the linear track height and the composed linear `Progress.Value`
+typography, plus the circular ring diameter. Circular sizes are `64px`, `96px`,
+and `128px` for `small`, `base`, and `large` — the centered `Progress.Value`
+typography scales with the ring automatically.
 
 <LiveCode
   code={sizesDemo}

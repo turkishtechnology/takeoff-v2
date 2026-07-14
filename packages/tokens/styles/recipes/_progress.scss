@@ -62,36 +62,42 @@
   box-sizing: border-box;
 
   // ----- State → custom-property mapping ------------------------------------
-  // Sizes reference the spacing/dimension primitives instead of raw px so
-  // brand themes can retune them. The component token set (progress-bar.json)
-  // is Figma-synced and carries no size tokens, and no line-height token
-  // exists at 28/40px — the spacing primitives are the matching dimension
-  // tokens (4/6/8, 64/96/128, 28/40px).
+  // Sizes reference spacing/dimension and typography primitives instead of
+  // raw px so brand themes can retune them. The component token set
+  // (progress-bar.json) is Figma-synced and carries no dedicated size tokens.
 
   --tk-progress-linear-size: var(--spacing-s);
+  --tk-progress-linear-value-size: var(--size-xxs);
+  --tk-progress-linear-value-line-height: var(--line-height-xxs-normal);
   --tk-progress-circular-size: var(--spacing-24xl);
   --tk-progress-circular-stroke-width: 2.5;
   --tk-progress-circular-value-size: var(--size-3xl);
-  --tk-progress-circular-value-line-height: var(--spacing-10xl);
+  --tk-progress-circular-value-line-height: var(--line-height-2xl-normal);
   --tk-progress-fill: var(--primary-base);
   --tk-progress-circular-value-color: var(--primary-base);
 
   &[data-size='small'] {
     --tk-progress-linear-size: var(--spacing-xs);
+    --tk-progress-linear-value-size: var(--size-xxs);
+    --tk-progress-linear-value-line-height: var(--line-height-xxs-normal);
     --tk-progress-circular-size: var(--spacing-16xl);
-    --tk-progress-circular-value-size: var(--size-xl);
-    --tk-progress-circular-value-line-height: var(--spacing-7xl);
+    --tk-progress-circular-value-size: var(--size-base);
+    --tk-progress-circular-value-line-height: var(--line-height-base-normal);
   }
 
   &[data-size='base'] {
     --tk-progress-linear-size: var(--spacing-s);
+    --tk-progress-linear-value-size: var(--size-xs);
+    --tk-progress-linear-value-line-height: var(--line-height-xs-normal);
     --tk-progress-circular-size: var(--spacing-24xl);
-    --tk-progress-circular-value-size: var(--size-3xl);
-    --tk-progress-circular-value-line-height: var(--spacing-10xl);
+    --tk-progress-circular-value-size: var(--size-2xl);
+    --tk-progress-circular-value-line-height: var(--line-height-2xl-normal);
   }
 
   &[data-size='large'] {
     --tk-progress-linear-size: var(--spacing-m-base);
+    --tk-progress-linear-value-size: var(--size-sm);
+    --tk-progress-linear-value-line-height: var(--line-height-sm-normal);
     --tk-progress-circular-size: var(--spacing-32xl);
     --tk-progress-circular-value-size: var(--size-4xl);
     --tk-progress-circular-value-line-height: var(--line-height-4xl-normal);
@@ -128,7 +134,7 @@
   &[data-type='linear'] {
     display: flex;
     flex-direction: column;
-    gap: var(--progress-bar-linear-sign-gap);
+    row-gap: 6px;
     width: 100%;
   }
 
@@ -224,9 +230,9 @@
 // size. Consumers restyle via className or compose richer content.
 @mixin progress-value {
   &[data-type='linear'] {
-    font-size: var(--desktop-body-s-size);
+    font-size: var(--tk-progress-linear-value-size);
     font-weight: var(--weight-regular);
-    line-height: var(--line-height-sm-normal);
+    line-height: var(--tk-progress-linear-value-line-height);
     color: var(--text-base);
   }
 
