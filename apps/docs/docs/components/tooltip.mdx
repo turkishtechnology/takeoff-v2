@@ -350,15 +350,15 @@ for primitive behavior.
 
 #### Props {#tooltip-props}
 
-| Name                             | Type                               | Default | Description                                                                                                                                                      |
-| -------------------------------- | ---------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />    | <code>React.React.ReactNode</code> | -       | Tooltip trigger and content components                                                                                                                           |
-| <ApiBadge label="id" />          | <code>string</code>                | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
-| <ApiBadge label="disabled" />    | <code>boolean</code>               | false   | Whether tooltip is disabled                                                                                                                                      |
-| <ApiBadge label="open" />        | <code>boolean</code>               | -       | Controlled state for tooltip visibility                                                                                                                          |
-| <ApiBadge label="defaultOpen" /> | <code>boolean</code>               | false   | Default open state for uncontrolled tooltip                                                                                                                      |
-| <ApiBadge label="delay" />       | <code>number</code>                | -       | Override provider delay for this tooltip                                                                                                                         |
-| <ApiBadge label="hideDelay" />   | <code>number</code>                | 0       | Override provider hide delay for this tooltip                                                                                                                    |
+| Name                             | Type                         | Default | Description                                                                                                                                                      |
+| -------------------------------- | ---------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code> | -       | Tooltip trigger and content components                                                                                                                           |
+| <ApiBadge label="id" />          | <code>string</code>          | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
+| <ApiBadge label="disabled" />    | <code>boolean</code>         | false   | Whether tooltip is disabled                                                                                                                                      |
+| <ApiBadge label="open" />        | <code>boolean</code>         | -       | Controlled state for tooltip visibility                                                                                                                          |
+| <ApiBadge label="defaultOpen" /> | <code>boolean</code>         | false   | Default open state for uncontrolled tooltip                                                                                                                      |
+| <ApiBadge label="delay" />       | <code>number</code>          | -       | Override provider delay for this tooltip                                                                                                                         |
+| <ApiBadge label="hideDelay" />   | <code>number</code>          | 0       | Override provider hide delay for this tooltip                                                                                                                    |
 
 #### Events {#tooltip-events}
 
@@ -372,7 +372,7 @@ for primitive behavior.
 
 | Name                            | Type                                                                                      | Default       | Description                                                                |
 | ------------------------------- | ----------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.React.ReactNode</code>                                                        | -             |                                                                            |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -             |                                                                            |
 | <ApiBadge label="variant" />    | <code><a href="#tooltip-td-tooltipvariant">TooltipVariant</a></code>                      | 'white'       | Color variant.                                                             |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -             | Per-slot extra classes.                                                    |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |

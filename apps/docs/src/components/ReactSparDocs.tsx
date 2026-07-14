@@ -19,6 +19,7 @@ export {
   Dialog,
   Divider,
   Drawer,
+  Dropdown,
   Field,
   Input,
   Label,
