@@ -8,6 +8,7 @@ export * from './checkbox';
 export * from './chip';
 export * from './drawer';
 export * from './dialog';
+export * from './divider';
 export * from './field';
 export * from './input';
 export * from './label';

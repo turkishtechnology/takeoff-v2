@@ -17,6 +17,7 @@ import {
   DialogTitleBase,
   DialogTriggerBase,
 } from './components/dialog/base';
+import { DividerBase } from './components/divider/base';
 import {
   DrawerBase,
   DrawerBodyBase,
@@ -114,6 +115,7 @@ export const slotClassRegistry = {
   dialogBody: { slots: DialogBodyBase.classes },
   dialogFooter: { slots: DialogFooterBase.classes },
   dialogClose: { slots: DialogCloseBase.classes },
+  divider: { slots: DividerBase.classes },
   drawer: { slots: DrawerBase.classes },
   drawerOverlay: { slots: DrawerOverlayBase.classes },
   drawerPanel: { slots: DrawerPanelBase.classes },
