@@ -48,6 +48,7 @@ import {
 } from './components/input/base';
 import { ProgressBase, ProgressIndicatorBase, ProgressTrackBase, ProgressValueBase } from './components/progress/base';
 import {
+  SelectArrowBase,
   SelectBase,
   SelectContentBase,
   SelectGroupBase,
@@ -56,6 +57,7 @@ import {
   SelectLabelBase,
   SelectSeparatorBase,
   SelectTriggerBase,
+  SelectViewportBase,
 } from './components/select/base';
 import { SpinnerBase } from './components/spinner/base';
 import { SwitchBase } from './components/switch/base';
