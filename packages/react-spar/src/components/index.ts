@@ -13,6 +13,7 @@ export * from './input';
 export * from './label';
 export * from './radio';
 export * from './popover';
+export * from './progress';
 export * from './select';
 export * from './spinner';
 export * from './switch';

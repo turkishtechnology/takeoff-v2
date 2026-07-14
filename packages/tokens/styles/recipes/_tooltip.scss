@@ -8,7 +8,14 @@
   font-size: var(--desktop-body-xs-size);
   font-weight: 300;
   line-height: var(--desktop-body-xs-line-height);
-  z-index: 1300;
+  // Topmost floating layer — above the modal band (1501), select/popover (1600)
+  // and even Toast (2000). A tooltip is non-interactive (pointer-events: none)
+  // and ephemeral, and can be attached to a control INSIDE a toast (its action /
+  // close button), so it must never be occluded by the surface that triggered
+  // it — the reverse (a toast briefly covering a tooltip) is harmless. Matches
+  // Chakra/MUI, which also make tooltip the ceiling. Ordering: overlay 1500 <
+  // modal 1501 < select/popover 1600 < toast 2000 < tooltip 2100.
+  z-index: 2100;
   display: flex;
   flex-direction: column;
   gap: 8px;
