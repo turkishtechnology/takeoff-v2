@@ -110,6 +110,14 @@ describe('Divider', () => {
       expect(screen.getByRole('separator')).toBeInTheDocument();
     });
 
+    it('strips aria-orientation from decorative mode even if consumer sets it', () => {
+      const { container } = render(<Divider decorative slotProps={{ root: { 'aria-orientation': 'vertical' } as HTMLAttributes<HTMLElement> }} />);
+
+      const divider = container.querySelector('.tk-divider');
+      expect(divider).toHaveAttribute('role', 'none');
+      expect(divider).not.toHaveAttribute('aria-orientation');
+    });
+
     it('merges classNames and slotProps on the label slot', () => {
       render(
         <Divider classNames={{ label: 'label-extra' }} slotProps={{ label: { id: 'divider-label' } }}>

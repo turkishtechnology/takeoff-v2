@@ -211,13 +211,15 @@ default), or `end`.
 
 #### Data attributes {#divider-data-attributes}
 
-| Attribute                                        | Applied when                 | Purpose                                                                     |
-| ------------------------------------------------ | ---------------------------- | --------------------------------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" />  | Always                       | Stable selector for wrapper styling on the root slot.                       |
-| <ApiBadge label="data-slot=&quot;label&quot;" /> | When children are renderable | Stable selector for the wrapper-owned label slot.                           |
-| <ApiBadge label="data-orientation" />            | Always                       | Reflects the resolved `orientation` prop for theme recipe scoping.          |
-| <ApiBadge label="data-type" />                   | Always                       | Reflects the resolved `appearance` prop for theme recipe scoping.           |
-| <ApiBadge label="data-align" />                  | Always                       | Reflects the resolved `align` prop that positions the label along the line. |
+| Attribute                                        | Applied when                 | Purpose                                                                                                                                                    |
+| ------------------------------------------------ | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />  | Always                       | Stable selector for wrapper styling on the root slot.                                                                                                      |
+| <ApiBadge label="data-slot=&quot;label&quot;" /> | When children are renderable | Stable selector for the wrapper-owned label slot.                                                                                                          |
+| <ApiBadge label="data-orientation" />            | Always                       | Reflects the resolved `orientation` prop for theme recipe scoping.                                                                                         |
+| <ApiBadge label="data-type" />                   | Always                       | Reflects the resolved `appearance` prop for theme recipe scoping.                                                                                          |
+| <ApiBadge label="data-align" />                  | Always                       | Reflects the resolved `align` prop that positions the label along the line.                                                                                |
+| <ApiBadge label="role" />                        | Always                       | `separator` when the divider carries semantic meaning; `none` when `decorative` is true (removes the element from the accessibility tree).                 |
+| <ApiBadge label="aria-orientation" />            | When `decorative` is false   | Tells assistive technology the axis of the separator (`horizontal` \| `vertical`). Absent on decorative dividers to avoid ARIA on a `role="none"` element. |
 
 ### Type Definitions {#divider-type-definitions}
 

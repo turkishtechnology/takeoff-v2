@@ -1,9 +1,13 @@
+import type { ReactNode } from 'react';
+
 import { buildSlotAttrs, composeRootAttrs, isRenderableNode } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { DividerBase } from './base';
 import { DEFAULT_ALIGN, DEFAULT_APPEARANCE, DEFAULT_ORIENTATION } from './defaults';
 import type { DividerProps, DividerSlot } from './types';
+
+const hasRenderableDividerLabel = (node: ReactNode): boolean => (Array.isArray(node) ? node.some(hasRenderableDividerLabel) : isRenderableNode(node));
 
 export const Divider = (props: DividerProps) => {
   const theme = useComponentTheme('Divider');
@@ -13,14 +17,13 @@ export const Divider = (props: DividerProps) => {
     // slotProps cannot silently strip the separator semantics.
     stateAttrs: ({ orientation = DEFAULT_ORIENTATION, appearance = DEFAULT_APPEARANCE, align = DEFAULT_ALIGN, decorative = false }) => ({
       'role': decorative ? 'none' : 'separator',
-      'aria-orientation': decorative ? undefined : orientation,
       'data-orientation': orientation,
       'data-type': appearance,
       'data-align': align,
     }),
   });
 
-  const { orientation: _orientation, appearance: _appearance, align: _align, decorative: _decorative, children, ref, ...nativeProps } = rest;
+  const { orientation = DEFAULT_ORIENTATION, appearance: _appearance, align: _align, decorative = false, children, ref, ...nativeProps } = rest;
 
   const labelSlotAttrs = buildSlotAttrs(DividerBase.getSlotProps('label'), 'label' as DividerSlot, {
     themeSlotProps: theme?.slotProps,
@@ -30,8 +33,8 @@ export const Divider = (props: DividerProps) => {
   });
 
   return (
-    <div {...nativeProps} {...rootAttrs} ref={ref}>
-      {isRenderableNode(children) && <span {...labelSlotAttrs}>{children}</span>}
+    <div {...nativeProps} {...rootAttrs} aria-orientation={decorative ? undefined : orientation} ref={ref}>
+      {hasRenderableDividerLabel(children) && <span {...labelSlotAttrs}>{children}</span>}
     </div>
   );
 };

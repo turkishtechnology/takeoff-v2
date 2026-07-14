@@ -18,8 +18,9 @@
 // gap 4px); dotted uses a tiled radial-gradient (2px round dots / gap 3px).
 //
 // The line is drawn entirely in CSS: both pseudo-elements grow to fill the
-// available space, so a divider without a label still renders one continuous
-// line — the wrapper needs no "has label" detection.
+// available space, so a label-less divider renders one continuous line purely
+// in CSS. The wrapper still guards label rendering in JS — an empty .tk-divider-label
+// span sitting between the two flex: 1 1 0% segments would break that continuity.
 //
 // Coloring: the line follows `currentColor`, and the root's `color` defaults
 // to the token line color. Recoloring the line is therefore a plain

@@ -58,6 +58,16 @@ export default {
           appliedWhen: 'Always',
           purpose: 'Reflects the resolved `align` prop that positions the label along the line.',
         },
+        {
+          attribute: 'role',
+          appliedWhen: 'Always',
+          purpose: '`separator` when the divider carries semantic meaning; `none` when `decorative` is true (removes the element from the accessibility tree).',
+        },
+        {
+          attribute: 'aria-orientation',
+          appliedWhen: 'When `decorative` is false',
+          purpose: 'Tells assistive technology the axis of the separator (`horizontal` | `vertical`). Absent on decorative dividers to avoid ARIA on a `role="none"` element.',
+        },
       ],
     },
   ],
