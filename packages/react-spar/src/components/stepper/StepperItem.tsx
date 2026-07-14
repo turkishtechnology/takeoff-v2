@@ -84,12 +84,14 @@ export const StepperItem = <T extends ElementType = 'li'>(props: StepperItemProp
   // Default indicator glyph, mirroring Core's precedence: a disabled step
   // always shows the neutral dot (recipe-painted on the empty indicator), then
   // consumer content, error/complete glyphs, and finally the basic dot. An
-  // indicator render function that returns `undefined` opts back into the
-  // built-in glyphs for that status.
+  // indicator render function that returns `undefined` OR `null` opts back
+  // into the built-in glyphs for that status — `status === 'completed' ? null
+  // : n` ("hide my own content once completed") is the natural way to write
+  // that opt-out, so `null` can't be treated as "render nothing".
   const resolvedIndicator = typeof indicator === 'function' ? indicator({ status, index }) : indicator;
   let indicatorContent: ReactNode = null;
   if (!disabled) {
-    if (resolvedIndicator !== undefined) {
+    if (resolvedIndicator != null) {
       indicatorContent = resolvedIndicator;
     } else if (error) {
       indicatorContent = <CloseIconOutlinedRounded />;
@@ -115,16 +117,18 @@ export const StepperItem = <T extends ElementType = 'li'>(props: StepperItemProp
       <Component {...nativeProps} {...rootAttrs} ref={ref}>
         {mode !== 'compact' && <span aria-hidden="true" {...railAttrs} />}
         <button
+          {...triggerAttrs}
+          // Locked after the spread (like Chip's remove button): a slotProps
+          // override must not be able to turn the trigger into a form
+          // submitter, silently drop it from the tab/arrow-key order, or
+          // sever its link to the active state / registered description.
+          type="button"
+          disabled={disabled}
+          onClick={handleTriggerClick}
           aria-current={isActive ? 'step' : undefined}
           aria-disabled={ariaDisabled}
           aria-describedby={descriptionId}
           tabIndex={isClickable ? undefined : -1}
-          {...triggerAttrs}
-          // Locked after the spread (like Chip's remove button): a slotProps
-          // `type` override could turn the trigger into a form submitter.
-          type="button"
-          disabled={disabled}
-          onClick={handleTriggerClick}
         >
           <span aria-hidden="true" {...indicatorAttrs}>
             {indicatorContent}

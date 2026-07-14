@@ -150,8 +150,8 @@ export interface StepperItemOwnProps {
   /**
    * Custom indicator content. Replaces the built-in status glyph (check,
    * close, or dot) for every status except `disabled`. Pass a function to
-   * render by status — returning `undefined` falls back to the built-in
-   * glyphs, so numbered steps can surface the check once completed.
+   * render by status — returning `undefined` or `null` falls back to the
+   * built-in glyphs, so numbered steps can surface the check once completed.
    */
   indicator?: ReactNode | ((state: StepperIndicatorState) => ReactNode);
   /** Step content — typically `Stepper.Title` and `Stepper.Description`. */

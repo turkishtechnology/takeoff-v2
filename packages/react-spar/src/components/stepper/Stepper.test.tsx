@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { TakeoffSparProvider } from '../../provider';
 import { renderWithProvider as render, screen } from '../../test-utils';
 
+import { useStepperContext } from './context';
 import { Stepper } from './index';
 
 const renderSteps = (rootProps: Parameters<typeof Stepper>[0] = {}) =>
@@ -381,6 +382,31 @@ describe('Stepper (compound)', () => {
       expect(indicators[0].querySelector('svg')).not.toBeNull();
       expect(indicators[1]).toHaveTextContent('2');
     });
+
+    it('treats a `null` indicator the same as `undefined`, falling back to the built-in glyph', () => {
+      const numbered = vi.fn(({ status, index }: { status: string; index: number }) => (status === 'completed' ? null : String(index + 1)));
+      const { container } = render(
+        <Stepper defaultActive={2}>
+          <Stepper.Item indicator={numbered}>
+            <Stepper.Title>One</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item indicator={null}>
+            <Stepper.Title>Two</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item>
+            <Stepper.Title>Three</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      const indicators = container.querySelectorAll('.tk-stepper-indicator');
+      // The natural "hide my own content once completed" pattern returns
+      // `null`, not `undefined` — it must still surface the check glyph.
+      expect(indicators[0].querySelector('svg')).not.toBeNull();
+      // A static `indicator={null}` on a completed step falls back to the
+      // built-in check glyph rather than rendering an empty indicator.
+      expect(indicators[1].querySelector('svg')).not.toBeNull();
+    });
   });
 
   describe('uncontrolled behavior', () => {
@@ -442,6 +468,54 @@ describe('Stepper (compound)', () => {
       );
 
       expect(container.querySelectorAll('.tk-stepper-item')[1]).toHaveAttribute('data-state', 'active');
+    });
+  });
+
+  describe('context value stability', () => {
+    it('keeps the provider value referentially stable across renders even with inline onActiveChange/onStepClick props', () => {
+      const seenContextValues: unknown[] = [];
+      function ContextSpy() {
+        seenContextValues.push(useStepperContext('spy'));
+        return null;
+      }
+
+      // Hoisted so `Stepper`'s `children` prop keeps its reference across
+      // Harness re-renders — isolates the one thing under test (inline
+      // onActiveChange/onStepClick identity) from `renderStepsMeta`/`items`
+      // recomputation, which already legitimately depends on `children`.
+      const stepChildren = (
+        <Stepper.Item>
+          <ContextSpy />
+          <Stepper.Title>One</Stepper.Title>
+        </Stepper.Item>
+      );
+
+      // `tick` forces the Harness (and therefore Stepper) to re-render with a
+      // brand-new inline `onActiveChange`/`onStepClick` each time — the
+      // idiomatic way consumers pass these props. Neither identity should
+      // reach the memoized context value.
+      function Harness({ tick: _tick }: { tick: number }) {
+        return (
+          <Stepper onActiveChange={() => {}} onStepClick={() => {}}>
+            {stepChildren}
+          </Stepper>
+        );
+      }
+
+      const { rerender } = render(<Harness tick={0} />);
+      rerender(<Harness tick={1} />);
+      rerender(<Harness tick={2} />);
+
+      // Mount commits twice: the initial render, then the update from the
+      // item's registerStep effect populating `stepsMeta` (a legitimate
+      // dependency of the memo). With `children` held stable, a stable
+      // `contextValue` lets React fully bail out of the two later
+      // tick-driven re-renders — ContextSpy (a context consumer) isn't
+      // invoked again. Before the fix, the fresh `onActiveChange`/
+      // `onStepClick` identity on each render invalidated the memo, forcing
+      // ContextSpy to re-render anyway (4 entries instead of 2).
+      expect(seenContextValues).toHaveLength(2);
+      expect(seenContextValues[0]).not.toBe(seenContextValues[1]);
     });
   });
 
@@ -683,6 +757,39 @@ describe('Stepper (compound)', () => {
       await user.keyboard('{ArrowRight}');
 
       expect(screen.getByRole('button', { name: 'Shipping' })).toHaveFocus();
+    });
+
+    it('scopes arrow-key navigation to the nearest Stepper, ignoring a nested Stepper rendered inside a step', async () => {
+      const user = userEvent.setup();
+      render(
+        <Stepper>
+          <Stepper.Item>
+            <Stepper.Title>Outer One</Stepper.Title>
+            <Stepper>
+              <Stepper.Item>
+                <Stepper.Title>Inner One</Stepper.Title>
+              </Stepper.Item>
+              <Stepper.Item>
+                <Stepper.Title>Inner Two</Stepper.Title>
+              </Stepper.Item>
+            </Stepper>
+          </Stepper.Item>
+          <Stepper.Item>
+            <Stepper.Title>Outer Two</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      screen.getByRole('button', { name: 'Inner One' }).focus();
+      await user.keyboard('{ArrowRight}');
+
+      // Moves within the inner Stepper only — the outer list's "Outer Two"
+      // trigger must not join the inner list's navigation sequence.
+      expect(screen.getByRole('button', { name: 'Inner Two' })).toHaveFocus();
+
+      await user.keyboard('{ArrowRight}');
+      // No wrap into the outer stepper's triggers at the inner list's edge.
+      expect(screen.getByRole('button', { name: 'Inner Two' })).toHaveFocus();
     });
   });
 

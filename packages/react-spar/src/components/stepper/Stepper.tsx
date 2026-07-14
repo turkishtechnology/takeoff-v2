@@ -1,4 +1,4 @@
-import { Children, isValidElement, useCallback, useMemo, useState, type ElementType, type KeyboardEvent, type KeyboardEventHandler } from 'react';
+import { Children, isValidElement, useCallback, useMemo, useRef, useState, type ElementType, type KeyboardEvent, type KeyboardEventHandler } from 'react';
 
 import { composeRootAttrs } from '../../core';
 import { useControllableState } from '../../hooks';
@@ -7,7 +7,7 @@ import { useComponentTheme } from '../../provider';
 import { StepperBase } from './base';
 import { StepperItemIndexProvider, StepperProvider, type StepperContextValue, type StepperStepMeta, type StepperStepStatusOptions } from './context';
 import { DEFAULT_ACTIVE, DEFAULT_COMPLETED_LABEL, DEFAULT_ERROR_LABEL, DEFAULT_MODE, DEFAULT_ORIENTATION, DEFAULT_SIZE } from './defaults';
-import type { StepperProps, StepperStepStatus } from './types';
+import type { StepperProps, StepperStepClickDetail, StepperStepStatus } from './types';
 
 // Focus-movement candidates for arrow-key navigation: skips natively disabled
 // triggers and non-clickable ones (tabindex -1), matching the tab order.
@@ -47,7 +47,25 @@ export const Stepper = <T extends ElementType = 'ol'>(props: StepperProps<T>) =>
     ...nativeProps
   } = rest;
 
-  const [activeValue, setActive] = useControllableState(controlledActive, defaultActive, onActiveChange);
+  // Idiomatic usage passes `onActiveChange`/`onStepClick` as inline functions,
+  // which get a new identity every render. Read them through refs kept fresh
+  // on every render, and expose stable (empty-deps) wrappers instead — so
+  // neither identity leaks into `setActive` (via `useControllableState`'s
+  // `onChange` dep) or the `contextValue` memo below, which is the whole
+  // point of memoizing it.
+  const onActiveChangeRef = useRef(onActiveChange);
+  onActiveChangeRef.current = onActiveChange;
+  const stableOnActiveChange = useCallback((index: number) => {
+    onActiveChangeRef.current?.(index);
+  }, []);
+
+  const onStepClickRef = useRef(onStepClick);
+  onStepClickRef.current = onStepClick;
+  const stableOnStepClick = useCallback((detail: StepperStepClickDetail) => {
+    onStepClickRef.current?.(detail);
+  }, []);
+
+  const [activeValue, setActive] = useControllableState(controlledActive, defaultActive, stableOnActiveChange);
   const active = activeValue ?? DEFAULT_ACTIVE;
 
   const [stepsMeta, setStepsMeta] = useState<ReadonlyMap<number, StepperStepMeta>>(new Map());
@@ -88,7 +106,9 @@ export const Stepper = <T extends ElementType = 'ol'>(props: StepperProps<T>) =>
   // Memoized so parent-driven root re-renders keep referential identity and
   // skip re-rendering every item; invalidates only with selection state.
   // `registerStep` stays outside — its stability keeps item register effects
-  // from cycling on every active-step change.
+  // from cycling on every active-step change. `setActive` and
+  // `stableOnStepClick` are likewise stable across renders (see above), so an
+  // inline `onActiveChange`/`onStepClick` prop can't defeat this memo either.
   const contextValue = useMemo<StepperContextValue>(() => {
     // Mirrors Takeoff Core's canStepBeSelected: the target must be clickable
     // and enabled; under linear progression only previous steps, or the next
@@ -130,10 +150,10 @@ export const Stepper = <T extends ElementType = 'ol'>(props: StepperProps<T>) =>
         }
       },
       emitStepClick: detail => {
-        onStepClick?.(detail);
+        stableOnStepClick(detail);
       },
     };
-  }, [active, mode, completedLabel, errorLabel, linear, stepsMeta, renderStepsMeta, registerStep, setActive, onStepClick]);
+  }, [active, mode, completedLabel, errorLabel, linear, stepsMeta, renderStepsMeta, registerStep, setActive, stableOnStepClick]);
 
   // Root slotProps take the same precedence over the prop-level handler they
   // already had via spread order; the composed handler then adds arrow-key
@@ -149,14 +169,23 @@ export const Stepper = <T extends ElementType = 'ol'>(props: StepperProps<T>) =>
     const backwardKey = orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
     if (event.key !== forwardKey && event.key !== backwardKey && event.key !== 'Home' && event.key !== 'End') return;
     const pressedTrigger = event.target instanceof HTMLElement ? event.target.closest('.tk-stepper-trigger') : null;
-    if (!pressedTrigger) return;
+    // A step's children can render an arbitrarily nested Stepper of its own;
+    // only react when the pressed trigger's nearest `.tk-stepper` ancestor is
+    // this list, so a descendant stepper's keydown (bubbling up) doesn't get
+    // mistaken for one of this list's own triggers.
+    if (!pressedTrigger || pressedTrigger.closest('.tk-stepper') !== event.currentTarget) return;
 
     // Consumed even when focus cannot move (list edges, focus on a
     // non-clickable trigger): a matched navigation key falling through to
     // page scroll mid-interaction would feel broken.
     event.preventDefault();
 
-    const triggers = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>(FOCUSABLE_TRIGGER_SELECTOR));
+    // Scoped to triggers whose nearest `.tk-stepper` ancestor is this list,
+    // so a nested Stepper's own triggers never join this list's tab/arrow-key
+    // sequence.
+    const triggers = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>(FOCUSABLE_TRIGGER_SELECTOR)).filter(
+      trigger => trigger.closest('.tk-stepper') === event.currentTarget,
+    );
     const currentIndex = triggers.indexOf(pressedTrigger as HTMLButtonElement);
     if (triggers.length === 0 || (currentIndex === -1 && event.key !== 'Home' && event.key !== 'End')) return;
 
