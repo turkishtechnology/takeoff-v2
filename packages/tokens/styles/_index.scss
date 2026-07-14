@@ -214,6 +214,10 @@
   @include select.select-content;
 }
 
+.tk-select-viewport {
+  @include select.select-viewport;
+}
+
 .tk-select-item {
   @include select.select-item;
 }
@@ -232,6 +236,10 @@
 
 .tk-select-separator {
   @include select.select-separator;
+}
+
+.tk-select-arrow {
+  @include select.select-arrow;
 }
 
 .tk-spinner {
