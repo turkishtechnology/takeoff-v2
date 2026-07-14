@@ -46,6 +46,7 @@ import {
   InputSuffixBase,
   InputTrailingIconBase,
 } from './components/input/base';
+import { ProgressBase, ProgressIndicatorBase, ProgressTrackBase, ProgressValueBase } from './components/progress/base';
 import {
   SelectBase,
   SelectContentBase,
@@ -142,6 +143,10 @@ export const slotClassRegistry = {
   inputDecrement: { slots: InputDecrementBase.classes },
   inputIncrement: { slots: InputIncrementBase.classes },
   inputChips: { slots: InputChipsBase.classes },
+  progress: { slots: ProgressBase.classes },
+  progressTrack: { slots: ProgressTrackBase.classes },
+  progressIndicator: { slots: ProgressIndicatorBase.classes },
+  progressValue: { slots: ProgressValueBase.classes },
   select: { slots: SelectBase.classes },
   selectTrigger: { slots: SelectTriggerBase.classes },
   selectIndicator: { slots: SelectIndicatorBase.classes },
