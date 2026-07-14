@@ -11,7 +11,6 @@
 // State/variant attributes:
 //   data-size      — density scale (base | large), on the root
 //   data-type      — visual style (basic | outlined), on the root
-//   data-variant   — separator glyph preset (chevron | dot | slash | vertical)
 //   data-disabled  — disabled trail (root, dims the whole trail) or link
 //   data-current   — current crumb (always on Breadcrumb.Page; at item level
 //                    only once the Spar context-registration release lands)
@@ -166,8 +165,8 @@
     width: var(--breadcrumb-symbol-size);
     height: var(--breadcrumb-symbol-size);
     color: var(--icon-sub-base);
-    // Text glyphs (preset variants below, or text children) follow crumb
-    // typography; svg/img children are sized explicitly.
+    // Text children follow crumb typography; svg/img children are sized
+    // explicitly.
     font-size: var(--desktop-body-s-size);
     line-height: 1;
 
@@ -175,21 +174,6 @@
     > img {
       width: 16px;
       height: 16px;
-    }
-
-    // Glyph presets — the wrapper emits `data-variant` and suppresses its
-    // default chevron for non-chevron values, so only the ::before paints
-    // (canonical tk-breadcrumb dot/slash/vertical separators).
-    &[data-variant='dot']::before {
-      content: '\2022';
-    }
-
-    &[data-variant='slash']::before {
-      content: '/';
-    }
-
-    &[data-variant='vertical']::before {
-      content: '|';
     }
   }
 

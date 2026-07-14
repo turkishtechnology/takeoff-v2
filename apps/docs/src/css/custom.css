@@ -43,16 +43,13 @@ h6 {
 }
 
 /*
- * Select dropdown stacking above dialog/drawer surfaces.
+ * (Removed) `.tk-select-content { z-index: 1600 }` docs override.
  *
- * `Select.Content` portals with `z-index: 800`, but the Dialog/Drawer
- * overlay+panel sit at 1500/1501. A Select dropdown should always float above
- * the surface that owns it; lift the portaled content above that layer so it is
- * visible whether it portals to <body> or into a panel that stacks its own
- * content. (See the icon gallery's usage dialog, which also portals the
- * dropdown INTO the panel so picking an option does not dismiss the dialog:
- * apps/docs/src/components/IconGallery/IconDetailDialog.tsx.)
+ * This used to compensate for `Select.Content` shipping at `z-index: 800`,
+ * below the Dialog/Drawer band (1500/1501). The floating-layer ordering now
+ * lives in the token recipes themselves (select/popover = 1600, tooltip = 1700,
+ * above the 1501 modal band — see _popover.scss for the full rationale), so the
+ * override is redundant. The icon gallery's usage dialog still portals its
+ * dropdown INTO the panel for a different reason — to keep picking an option
+ * from dismissing the dialog: apps/docs/src/components/IconGallery/IconDetailDialog.tsx.
  */
-.tk-select-content {
-  z-index: 1600;
-}
