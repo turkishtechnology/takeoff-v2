@@ -1,0 +1,722 @@
+// Stepper recipe — shared style contract for the takeoff-spar Stepper
+// compound. Ports the takeoff-ui/core tk-stepper visuals onto the v2 anatomy:
+//
+//   .tk-stepper            — root <ol>
+//   .tk-stepper-item       — <li>, rail position anchor
+//   .tk-stepper-rail       — connector line (absent in compact mode)
+//   .tk-stepper-trigger    — interactive <button> owning the whole step
+//   .tk-stepper-indicator       — status circle (custom content / number / recipe-painted dot)
+//   .tk-stepper-content    — text column
+//   .tk-stepper-title     — step title
+//   .tk-stepper-description  — step description
+//
+// State/variant attributes (root):
+//   data-orientation — horizontal | vertical
+//   data-mode        — default | compact (rails vs progress borders)
+//   data-size        — large | base | small | xsmall
+//   data-linear      — presence; linear progression (no visual treatment yet,
+//                      selection gating is wrapper-owned)
+//   data-reverse     — presence; flips indicators and content on the cross axis
+//
+// State attributes (item):
+//   data-state       — inactive | active | completed
+//   data-error       — presence; step has an error treatment
+//   data-disabled    — presence; step is unavailable
+//   data-clickable   — presence; pressing the step may change the active step
+
+@use '../abstracts/mixins' as mixins;
+
+@mixin stepper {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  box-sizing: border-box;
+  font-family: var(--family-body);
+  text-align: initial;
+
+  .tk-stepper-item {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    overflow: visible;
+    margin: 0;
+
+    &:last-child {
+      flex: none;
+
+      .tk-stepper-rail {
+        display: none;
+      }
+    }
+  }
+
+  .tk-stepper-trigger {
+    @include mixins.host-button-reset;
+    display: block;
+    padding: 0;
+    width: max-content;
+    max-width: 100%;
+    border-radius: var(--radius-xs);
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  .tk-stepper-trigger:focus-visible .tk-stepper-indicator {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: var(--primary-focus);
+  }
+
+  .tk-stepper-item[data-clickable] .tk-stepper-trigger {
+    cursor: pointer;
+  }
+
+  // Hover feedback for steps whose press can change the selection (mirrors the
+  // Tabs hover treatment). Errored titles keep their danger color.
+  .tk-stepper-item[data-clickable]:not([data-error]) .tk-stepper-trigger:hover .tk-stepper-title {
+    color: var(--text-darkest);
+  }
+
+  .tk-stepper-item[data-disabled] .tk-stepper-trigger {
+    cursor: not-allowed;
+  }
+
+  .tk-stepper-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    border: 2px solid var(--border-light);
+    // Theme-adaptive surface (flips with [data-theme='dark']), matching the
+    // Checkbox surface/glyph convention — never the fixed --static-white.
+    background-color: var(--static-light);
+    color: var(--border-light);
+    border-radius: var(--radius-full);
+    font-family: var(--family-body);
+    text-align: center;
+    margin-inline-end: 8px;
+    box-sizing: border-box;
+    transition:
+      border-color 0.2s ease-in-out,
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out;
+
+    // Basic-mode dot: an empty indicator paints a currentColor dot, covering the
+    // active/inactive/disabled glyphs without shipping a dot glyph.
+    &:empty::before {
+      content: '';
+      display: block;
+      border-radius: var(--radius-full);
+      background-color: currentColor;
+    }
+
+    > svg,
+    > img {
+      flex-shrink: 0;
+    }
+  }
+
+  // The rail box IS the 2px line: the ::after fills it exactly, so the
+  // per-size offsets below can center it on the indicator without baseline math.
+  .tk-stepper-rail {
+    position: absolute;
+
+    &::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 100%;
+      transition: background-color 0.2s ease-in-out;
+      background-color: var(--border-light);
+      border-radius: var(--radius-full);
+    }
+  }
+
+  .tk-stepper-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tk-stepper-title {
+    display: block;
+    color: var(--text-dark);
+    font-family: var(--family-body);
+    font-weight: var(--weight-medium);
+    transition: color 0.2s ease-in-out;
+  }
+
+  .tk-stepper-description {
+    display: block;
+    color: var(--text-base);
+    font-family: var(--family-body);
+    font-weight: var(--weight-regular);
+  }
+
+  // ----- Step status ------------------------------------------------------
+
+  .tk-stepper-item[data-state='active'] .tk-stepper-indicator {
+    border-color: var(--primary-base);
+    background-color: var(--primary-base);
+    color: var(--static-light);
+  }
+
+  .tk-stepper-item[data-state='active'] .tk-stepper-title {
+    color: var(--text-darkest);
+  }
+
+  .tk-stepper-item[data-state='completed']:not([data-error]):not([data-disabled]) {
+    .tk-stepper-indicator {
+      border-color: var(--primary-base);
+      color: var(--primary-base);
+    }
+
+    .tk-stepper-rail::after {
+      background-color: var(--primary-base);
+    }
+  }
+
+  .tk-stepper-item[data-error] {
+    .tk-stepper-indicator {
+      border-color: var(--states-danger-base);
+      background-color: var(--states-danger-base);
+      color: var(--static-light);
+    }
+
+    .tk-stepper-title {
+      color: var(--states-danger-base);
+    }
+  }
+
+  .tk-stepper-item[data-disabled] {
+    .tk-stepper-indicator {
+      border-color: var(--background-light);
+      background-color: var(--background-light);
+      color: var(--background-sub-base);
+    }
+
+    .tk-stepper-title,
+    .tk-stepper-description {
+      color: var(--text-sub-base);
+    }
+  }
+
+  // ----- Orientation ------------------------------------------------------
+
+  &[data-orientation='horizontal'] {
+    overflow-x: auto;
+    padding-block: 4px;
+    @include mixins.takeoff-scrollbar;
+
+    .tk-stepper-item {
+      flex: 1;
+    }
+
+    .tk-stepper-item:last-child {
+      flex: none;
+    }
+
+    .tk-stepper-indicator {
+      margin-inline-start: 40px;
+    }
+
+    .tk-stepper-rail {
+      height: 2px;
+    }
+
+    .tk-stepper-content {
+      text-align: center;
+      align-items: center;
+    }
+
+    &[data-reverse] {
+      align-items: flex-end;
+
+      .tk-stepper-trigger {
+        position: relative;
+      }
+
+      .tk-stepper-rail {
+        top: auto;
+      }
+
+      .tk-stepper-indicator {
+        position: absolute;
+        bottom: 0;
+      }
+    }
+  }
+
+  &[data-orientation='vertical'] {
+    flex-direction: column;
+
+    .tk-stepper-trigger {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .tk-stepper-rail {
+      top: 0;
+      width: 2px;
+    }
+
+    &[data-reverse] {
+      align-items: flex-end;
+
+      .tk-stepper-trigger {
+        flex-direction: row-reverse;
+      }
+
+      .tk-stepper-indicator {
+        margin-inline-end: 0;
+        margin-inline-start: 8px;
+      }
+
+      .tk-stepper-content {
+        text-align: right;
+        align-items: flex-end;
+      }
+    }
+  }
+
+  // ----- Sizes ------------------------------------------------------------
+  // Indicator diameters, glyph/number scale, and rail geometry ported from
+  // takeoff-ui/core per size. The rail offsets assume the horizontal indicator
+  // inset (margin-inline-start: 40px) above; both rail endpoints keep a
+  // --stepper-items-rail-gap clearance from the adjacent indicators.
+  //
+  // Reverse geometry: the trigger's padding reserves exactly the absolute
+  // indicator's box; the content margin owns the indicator gap, mirroring the
+  // per-size margin-top of the default layout.
+
+  &[data-size='xsmall'] {
+    .tk-stepper-indicator {
+      width: 16px;
+      height: 16px;
+      font-size: var(--desktop-body-2xs-size);
+      line-height: var(--desktop-body-2xs-line-height);
+
+      &:empty::before {
+        width: 6px;
+        height: 6px;
+      }
+
+      > svg,
+      > img {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .tk-stepper-title {
+      font-size: var(--desktop-body-2xs-size);
+      line-height: var(--desktop-body-2xs-line-height);
+    }
+
+    .tk-stepper-description {
+      font-size: 10px;
+      line-height: 14px;
+    }
+
+    &[data-orientation='horizontal'] {
+      .tk-stepper-content {
+        width: calc((16px / 2 + 40px) * 2);
+        margin-top: 0;
+      }
+
+      .tk-stepper-rail {
+        top: 7px;
+        width: calc(100% - 16px - 2 * var(--stepper-items-rail-gap));
+        left: calc(40px + 16px + var(--stepper-items-rail-gap));
+      }
+
+      &[data-reverse] {
+        .tk-stepper-trigger {
+          padding-bottom: 16px;
+        }
+
+        .tk-stepper-rail {
+          top: auto;
+          bottom: 7px;
+        }
+      }
+    }
+
+    &[data-orientation='vertical'] {
+      .tk-stepper-item {
+        min-height: calc(20px * 2.5);
+      }
+
+      .tk-stepper-rail {
+        height: calc(100% - 16px - 2 * var(--stepper-items-rail-gap));
+        top: calc(16px + var(--stepper-items-rail-gap));
+        left: 7px;
+      }
+
+      &[data-reverse] .tk-stepper-rail {
+        right: 7px;
+        left: unset;
+      }
+    }
+  }
+
+  &[data-size='small'] {
+    .tk-stepper-indicator {
+      width: 24px;
+      height: 24px;
+      font-size: var(--desktop-body-xs-size);
+      line-height: var(--desktop-body-xs-line-height);
+
+      &:empty::before {
+        width: 9px;
+        height: 9px;
+      }
+
+      > svg,
+      > img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    .tk-stepper-title {
+      font-size: var(--desktop-body-xs-size);
+      line-height: var(--desktop-body-xs-line-height);
+    }
+
+    .tk-stepper-description {
+      font-size: var(--desktop-body-2xs-size);
+      line-height: var(--desktop-body-2xs-line-height);
+    }
+
+    &[data-orientation='horizontal'] {
+      .tk-stepper-content {
+        width: calc((24px / 2 + 40px) * 2);
+        margin-top: 2px;
+      }
+
+      .tk-stepper-rail {
+        top: 11px;
+        width: calc(100% - 24px - 2 * var(--stepper-items-rail-gap));
+        left: calc(40px + 24px + var(--stepper-items-rail-gap));
+      }
+
+      &[data-reverse] {
+        .tk-stepper-trigger {
+          padding-bottom: 24px;
+        }
+
+        .tk-stepper-rail {
+          top: auto;
+          bottom: 11px;
+        }
+
+        .tk-stepper-content {
+          margin-top: 0;
+          margin-bottom: 2px;
+        }
+      }
+    }
+
+    &[data-orientation='vertical'] {
+      .tk-stepper-item {
+        min-height: calc(30px * 2.5);
+      }
+
+      .tk-stepper-rail {
+        height: calc(100% - 24px - 2 * var(--stepper-items-rail-gap));
+        top: calc(24px + var(--stepper-items-rail-gap));
+        left: 11px;
+      }
+
+      &[data-reverse] .tk-stepper-rail {
+        right: 11px;
+        left: unset;
+      }
+    }
+  }
+
+  &[data-size='base'] {
+    .tk-stepper-indicator {
+      width: 32px;
+      height: 32px;
+      font-size: var(--desktop-body-s-size);
+      line-height: var(--desktop-body-s-line-height);
+
+      &:empty::before {
+        width: 12px;
+        height: 12px;
+      }
+
+      > svg,
+      > img {
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    .tk-stepper-title {
+      font-size: var(--desktop-body-s-size);
+      line-height: var(--desktop-body-s-line-height);
+    }
+
+    .tk-stepper-description {
+      font-size: var(--desktop-body-xs-size);
+      line-height: var(--desktop-body-xs-line-height);
+    }
+
+    &[data-orientation='horizontal'] {
+      .tk-stepper-content {
+        width: calc((32px / 2 + 40px) * 2);
+        margin-top: 4px;
+      }
+
+      .tk-stepper-rail {
+        top: 15px;
+        left: calc(40px + 32px + var(--stepper-items-rail-gap));
+        width: calc(100% - 32px - 2 * var(--stepper-items-rail-gap));
+      }
+
+      &[data-reverse] {
+        .tk-stepper-trigger {
+          padding-bottom: 32px;
+        }
+
+        .tk-stepper-rail {
+          top: auto;
+          bottom: 15px;
+        }
+
+        .tk-stepper-content {
+          margin-top: 0;
+          margin-bottom: 4px;
+        }
+      }
+    }
+
+    &[data-orientation='vertical'] {
+      .tk-stepper-item {
+        min-height: calc(36px * 2.5);
+      }
+
+      .tk-stepper-rail {
+        height: calc(100% - 32px - 2 * var(--stepper-items-rail-gap));
+        top: calc(32px + var(--stepper-items-rail-gap));
+        left: 15px;
+      }
+
+      &[data-reverse] .tk-stepper-rail {
+        right: 15px;
+        left: unset;
+      }
+    }
+  }
+
+  &[data-size='large'] {
+    .tk-stepper-indicator {
+      width: 40px;
+      height: 40px;
+      font-size: var(--desktop-body-m-base-size);
+      line-height: var(--desktop-body-m-base-line-height);
+
+      &:empty::before {
+        width: 15px;
+        height: 15px;
+      }
+
+      > svg,
+      > img {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    .tk-stepper-title {
+      font-size: var(--desktop-body-m-base-size);
+      line-height: var(--desktop-body-m-base-line-height);
+    }
+
+    .tk-stepper-description {
+      font-size: var(--desktop-body-s-size);
+      line-height: var(--desktop-body-s-line-height);
+    }
+
+    &[data-orientation='horizontal'] {
+      .tk-stepper-content {
+        width: calc((40px / 2 + 40px) * 2);
+        margin-top: 6px;
+      }
+
+      .tk-stepper-rail {
+        top: 19px;
+        width: calc(100% - 40px - 2 * var(--stepper-items-rail-gap));
+        left: calc(40px + 40px + var(--stepper-items-rail-gap));
+      }
+
+      &[data-reverse] {
+        .tk-stepper-trigger {
+          padding-bottom: 40px;
+        }
+
+        .tk-stepper-rail {
+          top: auto;
+          bottom: 19px;
+        }
+
+        .tk-stepper-content {
+          margin-top: 0;
+          margin-bottom: 6px;
+        }
+      }
+    }
+
+    &[data-orientation='vertical'] {
+      .tk-stepper-item {
+        min-height: calc(44px * 2.5);
+      }
+
+      .tk-stepper-rail {
+        height: calc(100% - 40px - 2 * var(--stepper-items-rail-gap));
+        top: calc(40px + var(--stepper-items-rail-gap));
+        left: 19px;
+      }
+
+      &[data-reverse] .tk-stepper-rail {
+        right: 19px;
+        left: unset;
+      }
+    }
+  }
+
+  // ----- Compact mode -----------------------------------------------------
+  // No rails; each step carries a progress border that recolors with status.
+
+  &[data-mode='compact'] {
+    gap: var(--stepper-segment-gap);
+
+    .tk-stepper-trigger {
+      border-radius: 0;
+    }
+
+    &[data-orientation='horizontal'] {
+      .tk-stepper-item,
+      .tk-stepper-item:last-child {
+        flex: 1;
+      }
+
+      .tk-stepper-trigger {
+        display: flex;
+        width: 100%;
+        gap: var(--stepper-segment-gap);
+        border-top: 2px solid var(--border-light);
+        transition: border-top-color 0.2s ease-in-out;
+      }
+
+      .tk-stepper-item[data-state='active'] .tk-stepper-trigger,
+      .tk-stepper-item[data-state='completed']:not([data-error]):not([data-disabled]) .tk-stepper-trigger {
+        border-top-color: var(--primary-base);
+      }
+
+      .tk-stepper-item[data-error] .tk-stepper-trigger {
+        border-top-color: var(--states-danger-base);
+      }
+
+      .tk-stepper-indicator {
+        margin: 4px 0 0 0;
+      }
+
+      .tk-stepper-content {
+        align-items: flex-start;
+        text-align: start;
+        width: auto;
+        min-height: 0;
+        margin: 4px 0 0 0;
+      }
+
+      &[data-reverse] {
+        .tk-stepper-trigger {
+          border: 0;
+          border-bottom: 2px solid var(--border-light);
+          padding-bottom: 0;
+          transition: border-bottom-color 0.2s ease-in-out;
+        }
+
+        .tk-stepper-item[data-state='active'] .tk-stepper-trigger,
+        .tk-stepper-item[data-state='completed']:not([data-error]):not([data-disabled]) .tk-stepper-trigger {
+          border-bottom-color: var(--primary-base);
+        }
+
+        .tk-stepper-item[data-error] .tk-stepper-trigger {
+          border-bottom-color: var(--states-danger-base);
+        }
+
+        .tk-stepper-indicator {
+          margin: 0 0 4px 0;
+          position: static;
+          align-self: flex-end;
+        }
+
+        .tk-stepper-content {
+          margin: 0 0 4px 0;
+        }
+      }
+    }
+
+    &[data-orientation='vertical'] {
+      .tk-stepper-trigger {
+        display: flex;
+        width: 100%;
+        gap: var(--stepper-segment-gap);
+        border-left: 2px solid var(--border-light);
+        transition: border-left-color 0.2s ease-in-out;
+      }
+
+      .tk-stepper-item[data-state='active'] .tk-stepper-trigger,
+      .tk-stepper-item[data-state='completed']:not([data-error]):not([data-disabled]) .tk-stepper-trigger {
+        border-left-color: var(--primary-base);
+      }
+
+      .tk-stepper-item[data-error] .tk-stepper-trigger {
+        border-left-color: var(--states-danger-base);
+      }
+
+      .tk-stepper-indicator {
+        margin: 0 0 0 4px;
+      }
+
+      .tk-stepper-content {
+        margin-left: 4px;
+        min-height: 0;
+      }
+
+      &[data-reverse] {
+        .tk-stepper-trigger {
+          border: 0;
+          border-right: 2px solid var(--border-light);
+          transition: border-right-color 0.2s ease-in-out;
+        }
+
+        .tk-stepper-item[data-state='active'] .tk-stepper-trigger,
+        .tk-stepper-item[data-state='completed']:not([data-error]):not([data-disabled]) .tk-stepper-trigger {
+          border-right-color: var(--primary-base);
+        }
+
+        .tk-stepper-item[data-error] .tk-stepper-trigger {
+          border-right-color: var(--states-danger-base);
+        }
+
+        .tk-stepper-indicator {
+          margin: 0 4px 0 0;
+          align-self: flex-start;
+        }
+
+        .tk-stepper-content {
+          margin: 0;
+        }
+      }
+    }
+  }
+}

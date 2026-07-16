@@ -134,7 +134,10 @@ function normalizeType(value) {
     .replace(/\bundefined\s*\|\s*/gu, '')
     .replace(/\s*\|\s*undefined\b/gu, '')
     .replace(/import\(".*?"\)\./gu, '')
-    .replace(/\bReactNode\b/gu, 'React.ReactNode')
+    // Normalize both bare `ReactNode` and already-qualified `React.ReactNode`
+    // to a single `React.ReactNode`. The optional prefix keeps this idempotent
+    // so a type printed as `React.ReactNode` isn't doubled to `React.React.ReactNode`.
+    .replace(/\b(?:React\.)?ReactNode\b/gu, 'React.ReactNode')
     .replace(/\s+/gu, ' ')
     .trim();
   // Strip a single outer pair of parens (TS often wraps function types).

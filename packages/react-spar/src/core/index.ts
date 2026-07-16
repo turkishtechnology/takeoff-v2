@@ -8,5 +8,6 @@ export { createComponentBase } from './createComponentBase';
 export type { ComponentBase, CreateComponentBaseConfig, DataSlotName } from './createComponentBase';
 export { DEFAULT_DISCLOSURE_COLLAPSE_ICON, DEFAULT_DISCLOSURE_EXPAND_ICON, resolveDisclosureIndicator } from './disclosure';
 export type { DisclosureIndicatorRenderState } from './disclosure';
+export { renderPointerArrow } from './pointerArrow';
 export type { ComponentName, ComponentThemeConfig, ComponentThemeRegistry, ComponentsThemeMap, StateOnlyComponentThemeConfig } from './theme';
 export type { ClassNamesMap, SlotClassNames, SlotPropsMap, TakeoffHTMLProps, TakeoffSlotOverrides } from './types';
