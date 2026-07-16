@@ -75,7 +75,9 @@ table needs updating.
 
 | Attribute             | Value        | Scope                       | Meaning                             |
 | --------------------- | ------------ | --------------------------- | ----------------------------------- |
+| `data-complete`       | presence     | Root (Progress)             | Determinate value reached `max`     |
 | `data-disabled`       | presence     | Root                        | Component is disabled               |
+| `data-indeterminate`  | presence     | Root, Indicator (Progress)  | Indeterminate; indicator animates   |
 | `data-invalid`        | presence     | Root                        | Component is visually invalid       |
 | `data-loading`        | presence     | Root                        | Component is in loading state       |
 | `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state  |
@@ -84,13 +86,14 @@ table needs updating.
 
 ### Variant
 
-| Attribute        | Scope            | Example values                                                            | Notes                                                                 |
-| ---------------- | ---------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `data-variant`   | Root             | `primary`, `danger`, `neutral`                                            | Semantic color treatment                                              |
-| `data-size`      | Root, Item       | `base`, `large`, `small`                                                  | Duplicated to items by design where recipes need item-local selectors |
-| `data-mode`      | Root, Item       | `button`, `link`, `default`, `compact`                                    | Rendering or behavior mode                                            |
-| `data-type`      | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below            |
-| `data-animation` | Root             | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                     |
+| Attribute          | Scope            | Example values                                                            | Notes                                                                 |
+| ------------------ | ---------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `data-variant`     | Root             | `primary`, `danger`, `neutral`                                            | Semantic color treatment                                              |
+| `data-size`        | Root, Item       | `base`, `large`, `small`                                                  | Duplicated to items by design where recipes need item-local selectors |
+| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`                                    | Rendering or behavior mode                                            |
+| `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below            |
+| `data-animation`   | Root             | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                     |
+| `data-orientation` | Root             | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                |
 
 ### Semantic
 
@@ -120,6 +123,34 @@ These are emitted outside the component composition pipeline (`composeRootAttrs`
 
 This section records intentional deviations from the default rules. Each entry
 should explain **why** the deviation exists so reviewers do not "fix" it later.
+
+### Progress
+
+Progress is **v2-owned** with no upstream Spar primitive (Table precedent), so
+its attributes are wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the variants and state:** `data-type` (`linear` | `circular` —
+  shape, mapped from the `appearance` prop per the Spinner/Badge precedent),
+  `data-size` (`small` | `base` | `large` — visual scale), `data-variant` (fill
+  color), `data-disabled` (presence — from the own `disabled` prop or inherited
+  through `useOptionalFieldContext` from a surrounding Field),
+  `data-indeterminate` (presence — from the `indeterminate` prop, which takes
+  precedence over `value`; `aria-valuenow` is dropped alongside it), and
+  `data-complete` (presence — the clamped value reached `max` on a determinate
+  root; a styling hook for finished states, e.g. a success fill at 100%. It
+  flips the instant the value reaches `max`, while the recipe's 0.3s fill
+  transition may still be catching up — completion styling leads the fill
+  slightly).
+- **Parts re-emit what their recipes key off** (Tabs precedent): every part
+  stamps `data-type`, and the indicator also stamps `data-indeterminate` to
+  drive the looping sweep animation.
+- **The progress value is not a data attribute.** It is a continuous number, not
+  a finite state, so the rendered indicator writes it inline: the bar `width`
+  (linear) or the arc circle's `stroke-dashoffset` (circular) — both as inline
+  **style**, because a presentation attribute would lose to any stylesheet rule.
+  Skipped entirely while indeterminate, where the recipe animates instead.
+  `Progress` renders the default anatomy; `Progress.Track` and
+  `Progress.Indicator` remain available when consumers need slot overrides.
 
 ### Accordion
 
@@ -164,6 +195,29 @@ should explain **why** the deviation exists so reviewers do not "fix" it later.
 - **Checked/unchecked state stays Spar-owned.** `Radio.Item` exposes Spar's
   `data-state="checked" | "unchecked"`; the wrapper recipe consumes that state
   for the indicator fill instead of mirroring selection in React.
+
+### Divider
+
+Divider is **v2-owned** (no upstream Spar primitive), so the wrapper emits its
+own vocabulary. All attributes live on the root.
+
+- **`data-orientation`** (`horizontal` | `vertical`) mirrors the `orientation`
+  prop and the `aria-orientation` the wrapper renders for non-decorative
+  separators. The recipe draws the line on the matching axis.
+- **`data-type` carries the line style** (`solid` | `dashed` | `dotted`) —
+  reusing the `appearance` → `data-type` mapping established by Badge instead of
+  inventing a `data-line` attribute. Dashed/dotted render via CSS gradients
+  (repeating-linear for dashes, tiled radial for dots), not `border-style`, so
+  the pattern stays legible at 1px thickness.
+- **`data-align`** (`start` | `center` | `end`) positions the optional label
+  along the line. It extends Table's `data-align` values with a root-scoped
+  owner.
+- **The label is a wrapper-owned slot, not a compound part.** Children render
+  inside `.tk-divider-label` (`data-slot="label"`) — the same leaf-with-slots
+  shape as Spinner's `indicator`.
+- **There is intentionally no `data-has-label` attribute.** Both line segments
+  are root pseudo-elements that flex-grow, so a label-less divider renders one
+  continuous line purely in CSS — no runtime detection exists to mirror.
 
 ### Input
 

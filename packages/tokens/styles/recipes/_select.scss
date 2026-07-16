@@ -158,12 +158,18 @@
 
 @mixin select-content {
   font-family: var(--family-body, 'tk-text', sans-serif);
-  z-index: 800;
+  // Portalled to <body>, so it must clear the modal band (dialog/drawer panel =
+  // 1501) to stay visible when a Select lives inside a drawer/dialog — or inside
+  // a filter Popover (Table.ColumnFilter). Shares the 1600 tier with Popover;
+  // a Select opened inside a Popover portals later and wins on DOM order.
+  // Ordering: overlay 1500 < modal 1501 < select/popover 1600 < toast 2000 < tooltip 2100.
+  z-index: 1600;
   display: flex;
   flex-direction: column;
   min-width: 8rem;
-  max-height: 18rem;
-  overflow-y: auto;
+  // Viewport-only scroll model: the panel itself no longer scrolls — the height
+  // bound + overflow live on `.tk-select-viewport`, so long lists must wrap
+  // their items in `Select.Viewport` (see `select-viewport` below).
   padding: 8px;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-l-base, 1rem);
@@ -201,6 +207,24 @@
       border-radius: var(--dropdown-items-basic-small-radius);
     }
   }
+}
+
+// ---------------------------------------------------------------------------
+// Viewport — sole scroll container for the options. Bounds the height and
+// scrolls internally with the shared takeoff scrollbar; the panel itself no
+// longer scrolls, so long lists must wrap their items in `Select.Viewport`.
+// Kept separate from the panel so its padding/border stay fixed while only the
+// option list scrolls. Mirrors the dropdown viewport.
+// ---------------------------------------------------------------------------
+
+@mixin select-viewport {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  max-height: 18rem;
+  overflow-y: auto;
+
+  @include mixins.takeoff-scrollbar;
 }
 
 // ---------------------------------------------------------------------------
@@ -285,4 +309,17 @@
   height: 1px;
   margin: 0.25rem 0;
   background-color: var(--background-light);
+}
+
+// ---------------------------------------------------------------------------
+// Arrow — optional pointer from the panel to the trigger. Spar's Floating UI
+// middleware positions it; we only set the fill (via `color`) to match the
+// panel surface so it reads as a continuation of the dropdown. Lives outside
+// the viewport (as a sibling), so the viewport's scroll never clips it.
+// ---------------------------------------------------------------------------
+
+@mixin select-arrow {
+  display: block;
+  pointer-events: none;
+  color: var(--static-light);
 }
