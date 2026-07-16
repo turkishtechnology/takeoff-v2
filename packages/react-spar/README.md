@@ -24,6 +24,7 @@ The package currently exports these component roots:
 - `Chip`
 - `Dialog`
 - `Drawer`
+- `Dropdown`
 - `Field`
 - `Input`
 - `Label`

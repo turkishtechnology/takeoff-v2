@@ -295,6 +295,12 @@ The `variant` prop controls the visual appearance of the popover content.
 
 ## Arrow
 
+Add `Popover.Arrow` as the last child of `Popover.Content` to point at the
+trigger. The arrow is bordered by default — its two outer edges continue the
+content's outline in the variant's border color, and the neck stays open where
+it joins the bubble. This is matched automatically for every variant and
+placement.
+
 <LiveCode
   code={arrowDemo}
   noInline
@@ -302,6 +308,10 @@ The `variant` prop controls the visual appearance of the popover content.
   previewWrapper={ReactSparDemoRoot}
   scope={popoverScope}
 />
+
+Pass your own `children` to `Popover.Arrow` to replace the default shape (and
+its border). The default draws its border with the `.tk-arrow-border` layer and
+its fill with `.tk-arrow-fill` — target those classes to restyle it.
 
 ## Scrollable content
 
@@ -364,14 +374,14 @@ for primitive behavior.
 
 #### Props {#popover-props}
 
-| Name                             | Type                               | Default | Description                                                                                                                                                      |
-| -------------------------------- | ---------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />    | <code>React.React.ReactNode</code> | -       | PopoverTrigger and PopoverContent components                                                                                                                     |
-| <ApiBadge label="id" />          | <code>string</code>                | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
-| <ApiBadge label="disabled" />    | <code>boolean</code>               | false   | Disables all popover triggers (prevents opening)                                                                                                                 |
-| <ApiBadge label="open" />        | <code>boolean</code>               | -       | Controlled state for popover visibility                                                                                                                          |
-| <ApiBadge label="defaultOpen" /> | <code>boolean</code>               | false   | Initial open state for uncontrolled mode                                                                                                                         |
-| <ApiBadge label="modal" />       | <code>boolean</code>               | false   | Whether popover should behave modally (focus trap + backdrop)                                                                                                    |
+| Name                             | Type                         | Default | Description                                                                                                                                                      |
+| -------------------------------- | ---------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code> | -       | PopoverTrigger and PopoverContent components                                                                                                                     |
+| <ApiBadge label="id" />          | <code>string</code>          | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
+| <ApiBadge label="disabled" />    | <code>boolean</code>         | false   | Disables all popover triggers (prevents opening)                                                                                                                 |
+| <ApiBadge label="open" />        | <code>boolean</code>         | -       | Controlled state for popover visibility                                                                                                                          |
+| <ApiBadge label="defaultOpen" /> | <code>boolean</code>         | false   | Initial open state for uncontrolled mode                                                                                                                         |
+| <ApiBadge label="modal" />       | <code>boolean</code>         | false   | Whether popover should behave modally (focus trap + backdrop)                                                                                                    |
 
 #### Events {#popover-events}
 
@@ -385,7 +395,7 @@ for primitive behavior.
 
 | Name                            | Type                                                                                      | Default       | Description                                                                |
 | ------------------------------- | ----------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.React.ReactNode</code>                                                        | -             |                                                                            |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -             |                                                                            |
 | <ApiBadge label="variant" />    | <code><a href="#popover-td-popovervariant">PopoverVariant</a></code>                      | 'white'       | Color variant.                                                             |
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -             | Per-slot extra classes.                                                    |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |
