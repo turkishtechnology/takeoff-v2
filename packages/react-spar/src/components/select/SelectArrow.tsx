@@ -1,7 +1,7 @@
 import type { ElementType } from 'react';
 import { SelectArrow as SparSelectArrow } from '@turkish-technology/spar';
 
-import { composeRootAttrs } from '../../core';
+import { composeRootAttrs, renderPointerArrow } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { SelectArrowBase } from './base';
@@ -17,9 +17,13 @@ export const SelectArrow = <T extends ElementType = 'svg'>(props: SelectArrowPro
   const theme = useComponentTheme('SelectArrow');
 
   const { rootAttrs, rest } = composeRootAttrs<SelectArrowProps, SelectArrowSlot>(SelectArrowBase, props as SelectArrowProps<'svg'>, theme);
-  const { ref, ...sparProps } = rest;
+  const { children, ref, ...sparProps } = rest;
 
-  return <SparSelectArrow {...sparProps} {...rootAttrs} ref={ref} />;
+  return (
+    <SparSelectArrow {...sparProps} {...rootAttrs} ref={ref}>
+      {children ?? renderPointerArrow()}
+    </SparSelectArrow>
+  );
 };
 
 SelectArrow.displayName = 'Select.Arrow';

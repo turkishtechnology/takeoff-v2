@@ -139,4 +139,13 @@
   display: block;
   color: var(--static-light);
   pointer-events: none;
+  overflow: visible;
+
+  .tk-arrow-fill {
+    fill: var(--static-light);
+  }
+
+  .tk-arrow-border {
+    fill: var(--border-light);
+  }
 }
