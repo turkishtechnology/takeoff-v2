@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
 /**
- * Default content for the floating pointer arrow shared by `Tooltip.Arrow` and
- * `Popover.Arrow`. Spar renders the arrow as `<svg viewBox="0 0 10 5">` and uses
+ * Default content for the floating pointer arrow shared by the React Spar arrow
+ * components. Spar renders the arrow as `<svg viewBox="0 0 10 5">` and uses
  * whatever children we pass (falling back to a single filled `<polygon>` when we
  * pass none). We supply two polygons so the arrow gains a border on its two outer
  * edges while staying seamless where it joins the bubble:
