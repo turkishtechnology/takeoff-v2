@@ -1,7 +1,7 @@
 import type { ElementType } from 'react';
 import { DropdownMenuArrow as SparDropdownMenuArrow } from '@turkish-technology/spar';
 
-import { composeRootAttrs } from '../../core';
+import { composeRootAttrs, renderPointerArrow } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { DropdownArrowBase } from './base';
@@ -15,7 +15,7 @@ export const DropdownArrow = <T extends ElementType = 'svg'>(props: DropdownArro
 
   return (
     <SparDropdownMenuArrow {...sparProps} {...rootAttrs} ref={ref}>
-      {children}
+      {children ?? renderPointerArrow()}
     </SparDropdownMenuArrow>
   );
 };
