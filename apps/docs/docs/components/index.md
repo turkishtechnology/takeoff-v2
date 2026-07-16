@@ -35,14 +35,15 @@ and accessibility guidance where the component owns interaction behavior.
 
 ## Feedback & status
 
-| Component                           | Use it for                                                               |
-| ----------------------------------- | ------------------------------------------------------------------------ |
-| [Alert](/docs/components/alert)     | Presenting contextual success, warning, information, or danger messages. |
-| [Badge](/docs/components/badge)     | Displaying compact status, count, or category labels.                    |
-| [Chip](/docs/components/chip)       | Representing filters, selections, and removable values.                  |
-| [Spinner](/docs/components/spinner) | Communicating indeterminate loading work.                                |
-| [Toast](/docs/components/toast)     | Showing transient confirmations, alerts, and background task updates.    |
-| [Tooltip](/docs/components/tooltip) | Adding short contextual information on hover or focus.                   |
+| Component                             | Use it for                                                               |
+| ------------------------------------- | ------------------------------------------------------------------------ |
+| [Alert](/docs/components/alert)       | Presenting contextual success, warning, information, or danger messages. |
+| [Badge](/docs/components/badge)       | Displaying compact status, count, or category labels.                    |
+| [Chip](/docs/components/chip)         | Representing filters, selections, and removable values.                  |
+| [Skeleton](/docs/components/skeleton) | Reserving layout while content is loading.                               |
+| [Spinner](/docs/components/spinner)   | Communicating indeterminate loading work.                                |
+| [Toast](/docs/components/toast)       | Showing transient confirmations, alerts, and background task updates.    |
+| [Tooltip](/docs/components/tooltip)   | Adding short contextual information on hover or focus.                   |
 
 ## Content & overlays
 

@@ -37,6 +37,7 @@ const sidebars: SidebarsConfig = {
         'components/popover',
         'components/progress',
         'components/select',
+        'components/skeleton',
         'components/spinner',
         'components/switch',
         'components/radio',
