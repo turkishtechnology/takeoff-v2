@@ -78,8 +78,7 @@ export default {
         {
           attribute: 'data-layout="counter"',
           appliedWhen: 'When set by the consumer.',
-          purpose:
-            'Opts into the counter look (centered value, brand-coloured flanking `Input.Decrement` / `Input.Increment`). Replaces the former DOM-placement detection.',
+          purpose: 'Opts into the counter look (centered value, brand-coloured flanking `Input.Decrement` / `Input.Increment`). Replaces the former DOM-placement detection.',
         },
         ...formStateAttrs,
       ],
