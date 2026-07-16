@@ -27,6 +27,7 @@ export {
   Progress,
   Radio,
   Select,
+  Skeleton,
   Spinner,
   Stepper,
   Switch,

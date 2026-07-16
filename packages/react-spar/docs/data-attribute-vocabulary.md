@@ -87,13 +87,14 @@ table needs updating.
 
 ### Variant
 
-| Attribute          | Scope            | Example values                                                           | Notes                                                                 |
-| ------------------ | ---------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| `data-variant`     | Root             | `primary`, `danger`, `neutral`                                           | Semantic color treatment                                              |
-| `data-size`        | Root, Item       | `base`, `large`, `small`                                                 | Duplicated to items by design where recipes need item-local selectors |
-| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`                                   | Rendering or behavior mode                                            |
-| `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `linear`, `circular` | Owner depends on component — see component decisions below            |
-| `data-orientation` | Root             | `horizontal`, `vertical`                                                 | Axis of the component's layout or line                                |
+| Attribute          | Scope            | Example values                                                            | Notes                                                                 |
+| ------------------ | ---------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `data-variant`     | Root             | `primary`, `danger`, `neutral`                                            | Semantic color treatment                                              |
+| `data-size`        | Root, Item       | `base`, `large`, `small`                                                  | Duplicated to items by design where recipes need item-local selectors |
+| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`                                    | Rendering or behavior mode                                            |
+| `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below            |
+| `data-animation`   | Root             | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                     |
+| `data-orientation` | Root             | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                |
 
 ### Semantic
 
@@ -227,6 +228,19 @@ own vocabulary. All attributes live on the root.
   `.tk-input-strength-segment` nodes use `weak`, `medium`, or `strong`; empty
   segments omit the attribute so the neutral segment style remains the base
   state.
+
+### Skeleton
+
+Skeleton is **v2-owned** with no upstream Spar primitive (Spinner precedent), so
+its attributes are wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the variants only:** `data-type` (`rectangle` | `circle` —
+  silhouette, mapped from the `shape` prop per the Spinner precedent) and
+  `data-animation` (`shimmer` | `none` — the recipe hides the
+  `.tk-skeleton-shimmer` strip when `none`).
+- **Dimensions are not data attributes.** `width`/`height` are continuous
+  values, so the wrapper publishes them to the recipe through the
+  `--tk-skeleton-width` / `--tk-skeleton-height` custom properties on the root.
 
 ### Stepper
 

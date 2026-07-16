@@ -65,8 +65,10 @@ export type SwitchProps<T extends ElementType = 'button'> = PolymorphicProps<
   SwitchOwnProps &
     // Behavior surface owned by Spar. `invalid` is intentionally NOT picked
     // here — takeoff-spar exposes a plain `invalid` boolean (same name as
-    // Spar) declared in SwitchOwnProps and forwards it explicitly at the
-    // call site so the JSDoc stays under takeoff-spar's authorial control.
+    // Spar) declared in SwitchOwnProps so the JSDoc stays under takeoff-spar's
+    // authorial control. Like `disabled`/`readOnly`/`required`, it is passed
+    // through untouched via `...sparProps` (no eager default) so Spar's
+    // `invalid ?? fieldCtx?.invalid` Field inheritance stays intact.
     Pick<SparSwitchProps, 'checked' | 'defaultChecked' | 'onChange' | 'disabled' | 'readOnly' | 'required' | 'name' | 'value' | 'form' | 'autoFocus'>
 >;
 

@@ -38,20 +38,21 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
     // Visual props are consumed via `stateAttrs`; destructured to keep them
     // off the rendered DOM where they would leak as raw HTML attributes.
     size: _size,
-    // `invalid` is forwarded to Spar as `invalid` (same name).
-    invalid = false,
     // takeoff-spar tri-state vocabulary; mapped to Spar's `CheckedState` below.
     checked,
     defaultChecked,
     indeterminate = false,
     onChange,
-    // Behavior props owned by Spar — defaults are restated here so they also
-    // flow into the context for compound sub-components (asterisk on Label).
-    disabled = false,
-    readOnly = false,
-    required = false,
     children,
     ref,
+    // `invalid`, `disabled`, `readOnly` and `required` are intentionally NOT
+    // destructured (so no eager `= false` default is applied) — they flow to
+    // Spar via `...sparProps` untouched. Defaulting them here would turn an
+    // omitted prop into an explicit `false`, defeating Spar's
+    // `prop ?? fieldCtx?.x` inheritance and silently overriding a wrapping
+    // `<Field disabled>`. Their resolved values are read back off Spar's
+    // render-prop `state` below for the compound context. See Radio/Input/
+    // Select wrappers for the same pass-through pattern.
     ...sparProps
   } = rest;
 
@@ -67,25 +68,19 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
   const handleSparChange = onChange ? (next: CheckedState) => onChange(next === true) : undefined;
 
   return (
-    <SparCheckbox
-      {...(sparProps as unknown as SparCheckboxProps)}
-      checked={sparChecked}
-      defaultChecked={sparDefaultChecked}
-      onChange={handleSparChange}
-      disabled={disabled}
-      readOnly={readOnly}
-      required={required}
-      invalid={invalid}
-      ref={ref}
-      {...rootAttrs}
-    >
+    <SparCheckbox {...(sparProps as unknown as SparCheckboxProps)} checked={sparChecked} defaultChecked={sparDefaultChecked} onChange={handleSparChange} ref={ref} {...rootAttrs}>
       {(state: SparCheckboxRenderProps) => (
         <CheckboxProvider
           value={{
             classNames,
             slotProps,
-            required,
-            invalid,
+            // Read the *resolved* behavior state off Spar's render-prop so the
+            // compound context reflects Field-inherited values, not the raw
+            // props. `state.required` / `state.invalid` already fold in
+            // `fieldCtx`, so `<Field disabled>` / `<Field invalid>` reach the
+            // Label asterisk and slotted styling correctly.
+            required: state.required,
+            invalid: state.invalid,
             disabled: state.disabled,
             readOnly: state.readOnly,
             checked: state.checked === true,

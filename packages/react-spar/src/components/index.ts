@@ -24,3 +24,4 @@ export * from './table';
 export * from './tabs';
 export * from './tooltip';
 export * from './toast';
+export * from './skeleton';
