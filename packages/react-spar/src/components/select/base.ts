@@ -1,6 +1,7 @@
 import { createComponentBase } from '../../core';
 
 import type {
+  SelectArrowProps,
   SelectContentProps,
   SelectGroupProps,
   SelectIndicatorProps,
@@ -10,6 +11,7 @@ import type {
   SelectSeparatorProps,
   SelectTriggerProps,
   SelectTriggerSlot,
+  SelectViewportProps,
 } from './types';
 
 export const SelectBase = createComponentBase<SelectProps, 'root'>({
@@ -45,6 +47,12 @@ export const SelectContentBase = createComponentBase<SelectContentProps, 'root'>
   classes: { root: 'tk-select-content' },
 });
 
+export const SelectViewportBase = createComponentBase<SelectViewportProps, 'root'>({
+  name: 'SelectViewport',
+  slots: ['root'] as const,
+  classes: { root: 'tk-select-viewport' },
+});
+
 export const SelectItemBase = createComponentBase<SelectItemProps, 'root'>({
   name: 'SelectItem',
   slots: ['root'] as const,
@@ -67,4 +75,10 @@ export const SelectSeparatorBase = createComponentBase<SelectSeparatorProps, 'ro
   name: 'SelectSeparator',
   slots: ['root'] as const,
   classes: { root: 'tk-select-separator' },
+});
+
+export const SelectArrowBase = createComponentBase<SelectArrowProps, 'root'>({
+  name: 'SelectArrow',
+  slots: ['root'] as const,
+  classes: { root: 'tk-select-arrow' },
 });

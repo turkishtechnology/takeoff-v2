@@ -1,7 +1,7 @@
 import type { ElementType } from 'react';
 import { TooltipArrow as SparTooltipArrow } from '@turkish-technology/spar';
 
-import { composeRootAttrs } from '../../core';
+import { composeRootAttrs, renderPointerArrow } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { TooltipArrowBase } from './base';
@@ -11,9 +11,15 @@ export const TooltipArrow = <T extends ElementType = 'svg'>(props: TooltipArrowP
   const theme = useComponentTheme('TooltipArrow');
 
   const { rootAttrs, rest } = composeRootAttrs<TooltipArrowProps, TooltipArrowSlot>(TooltipArrowBase, props as TooltipArrowProps<'svg'>, theme);
-  const { ref, ...sparProps } = rest;
+  const { ref, children, ...sparProps } = rest;
 
-  return <SparTooltipArrow {...sparProps} {...rootAttrs} ref={ref} />;
+  // Default to the shared bordered pointer shape (border rim on the outer edges,
+  // open where it joins the bubble); an explicit `children` still wins.
+  return (
+    <SparTooltipArrow {...sparProps} {...rootAttrs} ref={ref}>
+      {children ?? renderPointerArrow()}
+    </SparTooltipArrow>
+  );
 };
 
 TooltipArrow.displayName = 'Tooltip.Arrow';
