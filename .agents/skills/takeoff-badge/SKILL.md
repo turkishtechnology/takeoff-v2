@@ -152,6 +152,18 @@ import { NotificationIconOutlinedRounded } from '@takeoff-icons/react/notificati
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
 
+## Accessibility
+
+- Badge renders a non-interactive `<span>` and adds no live-region role. Do not
+  use it as a button or rely on it to announce dynamic changes.
+- Do not communicate status by color alone; include visible text or an
+  accessible equivalent in the surrounding content.
+- A `dot` badge intentionally removes children and icon content. Treat it as
+  decorative unless its meaning is also conveyed elsewhere.
+- When a changing badge must be announced, put the appropriate live-region
+  semantics on a stable surrounding element rather than making every Badge a
+  global `role="status"`.
+
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`

@@ -166,6 +166,19 @@ function DismissibleAlert() {
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
 
+## Accessibility
+
+- The root defaults to `role="status"`, a polite live region suitable for most
+  informational messages. Use `role="alert"` only for urgent content inserted
+  dynamically that must interrupt assistive technology.
+- `Alert.Title` renders a semantic heading; choose `level` to fit the
+  surrounding document outline.
+- The icon-only default `Alert.Close` receives the accessible name `"Close"`.
+  Localize it with `aria-label`; custom close children must provide their own
+  accessible name.
+- `Alert.Close` does not remove the alert. The parent must update visibility in
+  `onClose`.
+
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`

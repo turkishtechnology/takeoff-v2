@@ -147,6 +147,18 @@ synchronized.
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
 
+## Accessibility
+
+- The default element is a native `<label>`; connect it to a native control with
+  `htmlFor` and the control's `id`.
+- When rendered polymorphically as `span`, a heading, or another element, Label
+  no longer provides native form-label association.
+- `required`, `optional`, `disabled`, `readOnly`, and `invalid` are styling
+  hooks only. Mirror meaningful state on the control or use `Field` to
+  synchronize it.
+- The required asterisk is decorative. Required semantics must come from the
+  associated control/Field state, not the glyph alone.
+
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`

@@ -156,6 +156,18 @@ import { Badge, Button } from '@takeoff-ui/react-spar';
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
 
+## Accessibility
+
+- Card renders a neutral `<div>` by default; it does not create an `article`,
+  `section`, landmark, or clickable surface automatically.
+- Use `Card.Title level={…}` to keep the document heading outline correct.
+- If the whole card represents a semantic article or section, use the
+  polymorphic `as` prop and provide an accessible label relationship where
+  appropriate.
+- Keep actions as real `Button` or link elements inside the card. Do not add a
+  click handler to the neutral card root as a substitute for keyboard-accessible
+  controls.
+
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`
