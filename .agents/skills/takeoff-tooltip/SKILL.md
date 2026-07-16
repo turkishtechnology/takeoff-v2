@@ -54,6 +54,9 @@ import { Tooltip, Button } from '@takeoff-ui/react-spar';
 </Tooltip>;
 ```
 
+The default arrow includes a border rim matching the content variant. Passing
+`children` to `Tooltip.Arrow` replaces the default pointer shape.
+
 ## Examples
 
 ### Variants

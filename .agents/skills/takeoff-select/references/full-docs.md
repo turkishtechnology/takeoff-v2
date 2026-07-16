@@ -18,19 +18,27 @@ import { Field, Select } from '@takeoff-ui/react-spar';
   <Select>
     <Select.Trigger placeholder="Choose..." />
     <Select.Content>
-      <Select.Group>
-        <Select.Label />
-        <Select.Item value="..." label="...">
-          ...
-        </Select.Item>
-      </Select.Group>
-      <Select.Separator />
+      <Select.Viewport>
+        <Select.Group>
+          <Select.Label />
+          <Select.Item value="..." label="...">
+            ...
+          </Select.Item>
+        </Select.Group>
+        <Select.Separator />
+      </Select.Viewport>
+      <Select.Arrow />
     </Select.Content>
   </Select>
   <Field.Description />
   <Field.ErrorMessage />
 </Field>
 ```
+
+> `Select.Viewport` is optional — short lists can render items directly in
+> `Select.Content`. Wrap the items in a viewport when the list can grow long
+> enough to need a bounded, scrollable area; the panel itself no longer scrolls,
+> so a long list without a viewport will overflow.
 
 ## Playground
 
@@ -187,6 +195,86 @@ function GroupsDemo() {
 }
 
 render(<GroupsDemo />);
+```
+
+## Scrollable options
+
+Wrap the items in `Select.Viewport` to cap a long list and scroll within it. The
+viewport is the sole scroll container — the panel itself no longer scrolls — and
+it renders a slim branded scrollbar. Scrolling also works via wheel, trackpad,
+and keyboard, and typeahead / arrow navigation keep the highlighted option in
+view.
+
+```tsx
+function ScrollableDemo() {
+  const cities = [
+    ['ist', 'Istanbul'],
+    ['ank', 'Ankara'],
+    ['izm', 'Izmir'],
+    ['ada', 'Adana'],
+    ['ant', 'Antalya'],
+    ['bur', 'Bursa'],
+    ['kon', 'Konya'],
+    ['gaz', 'Gaziantep'],
+    ['kay', 'Kayseri'],
+    ['tra', 'Trabzon'],
+    ['sam', 'Samsun'],
+    ['esk', 'Eskisehir'],
+    ['mer', 'Mersin'],
+    ['diy', 'Diyarbakir'],
+    ['erz', 'Erzurum'],
+  ];
+
+  return (
+    <Select className="max-w-90" defaultValue="ist">
+      <Select.Trigger placeholder="Choose a city" />
+      <Select.Content>
+        <Select.Viewport>
+          {cities.map(([value, label]) => (
+            <Select.Item key={value} value={value} label={label}>
+              {label}
+            </Select.Item>
+          ))}
+        </Select.Viewport>
+      </Select.Content>
+    </Select>
+  );
+}
+
+render(<ScrollableDemo />);
+```
+
+## Arrow
+
+Drop `Select.Arrow` inside `Select.Content` — as a sibling of `Select.Viewport`
+— to render a small pointer from the panel toward the trigger. Spar's Floating
+UI middleware positions and rotates it automatically, and its fill matches the
+panel surface. Keep it outside the viewport so the scroll region never clips it.
+
+```tsx
+function ArrowDemo() {
+  return (
+    <Select className="max-w-90" defaultValue="ist">
+      <Select.Trigger placeholder="Choose a city" />
+      <Select.Content>
+        <Select.Viewport>
+          <Select.Item value="ist" label="Istanbul">
+            Istanbul
+          </Select.Item>
+          <Select.Item value="ank" label="Ankara">
+            Ankara
+          </Select.Item>
+          <Select.Item value="izm" label="Izmir">
+            Izmir
+          </Select.Item>
+        </Select.Viewport>
+        <Select.Arrow />
+      </Select.Content>
+    </Select>
+  );
+}
+
+render(<ArrowDemo />);
 ```
 
 ## Indicator
@@ -483,15 +571,15 @@ for primitive behavior.
 
 #### Props {#select-content-props}
 
-| Name       | Type                                                         | Default       | Description                                                                |
-| ---------- | ------------------------------------------------------------ | ------------- | -------------------------------------------------------------------------- |
-| children   | `React.ReactNode`                                            | -             | `Select.Item`, `Select.Group`, `Select.Separator`.                         |
-| classNames | `Partial<Record<"root", string>>`                            | -             | Per-slot class name overrides.                                             |
-| slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -             | Per-slot HTML attribute overrides.                                         |
-| container  | `HTMLElement \| null`                                        | document.body | Portal container element. Content is portaled to document.body by default. |
-| side       | `Side`                                                       | 'bottom'      | Preferred side for positioning relative to trigger                         |
-| align      | `Align`                                                      | 'start'       | Alignment relative to trigger                                              |
-| className  | `string`                                                     | -             | Appends custom classes to the root slot of this part.                      |
+| Name       | Type                                                         | Default       | Description                                                                                 |
+| ---------- | ------------------------------------------------------------ | ------------- | ------------------------------------------------------------------------------------------- |
+| children   | `React.ReactNode`                                            | -             | `Select.Viewport` (recommended) wrapping `Select.Item`, `Select.Group`, `Select.Separator`. |
+| classNames | `Partial<Record<"root", string>>`                            | -             | Per-slot class name overrides.                                                              |
+| slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -             | Per-slot HTML attribute overrides.                                                          |
+| container  | `HTMLElement \| null`                                        | document.body | Portal container element. Content is portaled to document.body by default.                  |
+| side       | `Side`                                                       | 'bottom'      | Preferred side for positioning relative to trigger                                          |
+| align      | `Align`                                                      | 'center'      | Alignment relative to trigger                                                               |
+| className  | `string`                                                     | -             | Appends custom classes to the root slot of this part.                                       |
 
 #### Events {#select-content-events}
 
@@ -507,6 +595,18 @@ for primitive behavior.
 | ---------------- | ------------ | --------------------------------------------------------------------------- |
 | data-slot="root" | Always       | Stable selector for wrapper styling on the root slot.                       |
 | data-size        | Always       | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+
+### Select.Viewport {#select-viewport}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Data attributes {#select-viewport-data-attributes}
+
+| Attribute        | Applied when | Purpose                                               |
+| ---------------- | ------------ | ----------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Select.Item {#select-item}
 
@@ -570,6 +670,19 @@ for primitive behavior.
 | Attribute        | Applied when | Purpose                                               |
 | ---------------- | ------------ | ----------------------------------------------------- |
 | data-slot="root" | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Select.Arrow {#select-arrow}
+
+See
+[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+for primitive behavior.
+
+#### Data attributes {#select-arrow-data-attributes}
+
+| Attribute        | Applied when | Purpose                                                                                                                             |
+| ---------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot.                                                                               |
+| data-placement   | Always       | Computed placement (`top \| bottom \| left \| right`, optionally with an align suffix) so the arrow can rotate to face the trigger. |
 
 ### Type Definitions {#select-type-definitions}
 

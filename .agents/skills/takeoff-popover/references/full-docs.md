@@ -159,6 +159,12 @@ render(<PlacementDemo />);
 
 ## Arrow
 
+Add `Popover.Arrow` as the last child of `Popover.Content` to point at the
+trigger. The arrow is bordered by default — its two outer edges continue the
+content's outline in the variant's border color, and the neck stays open where
+it joins the bubble. This is matched automatically for every variant and
+placement.
+
 ```tsx
 function ArrowDemo() {
   return (
@@ -173,6 +179,59 @@ function ArrowDemo() {
 }
 
 render(<ArrowDemo />);
+```
+
+Pass your own `children` to `Popover.Arrow` to replace the default shape (and
+its border). The default draws its border with the `.tk-arrow-border` layer and
+its fill with `.tk-arrow-fill` — target those classes to restyle it.
+
+## Scrollable content
+
+For long content, put `max-height` and `overflow` on an **inner wrapper** and
+keep `Popover.Arrow` a direct child of `Popover.Content`. Applying `overflow` to
+`Popover.Content` itself would clip the arrow, because the arrow is positioned
+just outside the content box.
+
+```tsx
+function ScrollableDemo() {
+  return (
+    <Popover>
+      <Popover.Trigger as={Button}>Release notes</Popover.Trigger>
+      <Popover.Content className="w-72">
+        {/* Arrow is a direct child of Content (overflow: visible) so it is never clipped */}
+        <Popover.Arrow />
+        <Popover.Header>Release notes</Popover.Header>
+        {/* Bound the scroll on an INNER wrapper — never on Content — or the arrow gets cut off */}
+        <div className="max-h-40 space-y-2 overflow-y-auto pr-2">
+          <Popover.Description>
+            v2.4.0 — Scrollable content with the arrow kept outside the scroll
+            region.
+          </Popover.Description>
+          <Popover.Description>
+            v2.3.0 — Dark, info, success, warning, and danger variants.
+          </Popover.Description>
+          <Popover.Description>
+            v2.2.0 — New Popover.Header and Popover.Description slots.
+          </Popover.Description>
+          <Popover.Description>
+            v2.1.0 — Placement controls: top, bottom, left, and right.
+          </Popover.Description>
+          <Popover.Description>
+            v2.0.0 — Rebuilt on Spar's headless Popover primitive.
+          </Popover.Description>
+          <Popover.Description>
+            v1.9.0 — Controlled open state via open / onOpenChange.
+          </Popover.Description>
+          <Popover.Description>
+            v1.8.0 — Focus trap and escape-to-dismiss.
+          </Popover.Description>
+        </div>
+      </Popover.Content>
+    </Popover>
+  );
+}
+
+render(<ScrollableDemo />);
 ```
 
 ## Close Button
@@ -242,14 +301,14 @@ for primitive behavior.
 
 #### Props {#popover-props}
 
-| Name        | Type                    | Default | Description                                                                                                                                                      |
-| ----------- | ----------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| children    | `React.React.ReactNode` | -       | PopoverTrigger and PopoverContent components                                                                                                                     |
-| id          | `string`                | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
-| disabled    | `boolean`               | false   | Disables all popover triggers (prevents opening)                                                                                                                 |
-| open        | `boolean`               | -       | Controlled state for popover visibility                                                                                                                          |
-| defaultOpen | `boolean`               | false   | Initial open state for uncontrolled mode                                                                                                                         |
-| modal       | `boolean`               | false   | Whether popover should behave modally (focus trap + backdrop)                                                                                                    |
+| Name        | Type              | Default | Description                                                                                                                                                      |
+| ----------- | ----------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| children    | `React.ReactNode` | -       | PopoverTrigger and PopoverContent components                                                                                                                     |
+| id          | `string`          | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
+| disabled    | `boolean`         | false   | Disables all popover triggers (prevents opening)                                                                                                                 |
+| open        | `boolean`         | -       | Controlled state for popover visibility                                                                                                                          |
+| defaultOpen | `boolean`         | false   | Initial open state for uncontrolled mode                                                                                                                         |
+| modal       | `boolean`         | false   | Whether popover should behave modally (focus trap + backdrop)                                                                                                    |
 
 #### Events {#popover-events}
 
@@ -263,7 +322,7 @@ for primitive behavior.
 
 | Name       | Type                                                         | Default       | Description                                                                |
 | ---------- | ------------------------------------------------------------ | ------------- | -------------------------------------------------------------------------- |
-| children   | `React.React.ReactNode`                                      | -             |                                                                            |
+| children   | `React.ReactNode`                                            | -             |                                                                            |
 | variant    | `PopoverVariant`                                             | 'white'       | Color variant.                                                             |
 | classNames | `Partial<Record<"root", string>>`                            | -             | Per-slot extra classes.                                                    |
 | slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -             | Per-slot HTML-attribute overrides.                                         |

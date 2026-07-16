@@ -37,11 +37,13 @@ import { Field, Select } from '@takeoff-ui/react-spar';
   `label` or `placeholder`, plus a disclosure indicator.
 - `Select.Content` — the portalled `role="listbox"` dropdown panel (positioned
   with Floating UI).
+- `Select.Viewport` — optional bounded scroll container for long option lists.
 - `Select.Item` — a selectable option; needs a `value` and a `label` (text used
   for typeahead + trigger display).
 - `Select.Group` — groups related items under a label.
 - `Select.Label` — section heading inside a `Select.Group`.
 - `Select.Separator` — visual divider between groups/items.
+- `Select.Arrow` — optional pointer from the panel toward the trigger.
 - `Select.Indicator` — standalone disclosure glyph for full render-prop layouts.
 
 ## Basic usage
@@ -182,22 +184,22 @@ out of the built-in indicator/value wrapper) and place a standalone
 
 ## Key props
 
-| Prop                                 | Type                                                | Default                | Notes                                             |
-| ------------------------------------ | --------------------------------------------------- | ---------------------- | ------------------------------------------------- |
-| `value`                              | `string`                                            | -                      | Controlled selected value (pair with `onChange`). |
-| `defaultValue`                       | `string`                                            | -                      | Uncontrolled initial value.                       |
-| `onChange`                           | `(value: string) => void`                           | -                      | Fires when selection changes.                     |
-| `size`                               | `'small' \| 'base' \| 'large'`                      | `'base'`               | Size scale.                                       |
-| `invalid`                            | `boolean`                                           | `false`                | Danger-state styling for validation.              |
-| `disabled` / `required` / `readOnly` | `boolean`                                           | -                      | Form state; inherited from a wrapping `Field`.    |
-| `open` / `defaultOpen`               | `boolean`                                           | - / `false`            | Controlled / uncontrolled open state.             |
-| `onOpenChange`                       | `(open: boolean) => void`                           | -                      | Fires when the dropdown opens/closes.             |
-| `contentWidth`                       | `'trigger' \| 'content' \| number \| string`        | `'trigger'`            | How the panel computes its width.                 |
-| `Select.Trigger` `placeholder`       | `React.ReactNode`                                   | -                      | Shown when no value is selected.                  |
-| `Select.Trigger` `indicator`         | `boolean \| ReactNode \| ((s:{isOpen})=>ReactNode)` | `true`                 | Disclosure indicator; `false` hides it.           |
-| `Select.Content` `side` / `align`    | `Side` / `Align`                                    | `'bottom'` / `'start'` | Floating UI positioning.                          |
-| `Select.Item` `value` / `label`      | `string`                                            | -                      | Option value + display/typeahead text.            |
-| `Select.Item` `disabled`             | `boolean`                                           | `false`                | Disables the option.                              |
+| Prop                                 | Type                                                | Default                 | Notes                                             |
+| ------------------------------------ | --------------------------------------------------- | ----------------------- | ------------------------------------------------- |
+| `value`                              | `string`                                            | -                       | Controlled selected value (pair with `onChange`). |
+| `defaultValue`                       | `string`                                            | -                       | Uncontrolled initial value.                       |
+| `onChange`                           | `(value: string) => void`                           | -                       | Fires when selection changes.                     |
+| `size`                               | `'small' \| 'base' \| 'large'`                      | `'base'`                | Size scale.                                       |
+| `invalid`                            | `boolean`                                           | `false`                 | Danger-state styling for validation.              |
+| `disabled` / `required` / `readOnly` | `boolean`                                           | -                       | Form state; inherited from a wrapping `Field`.    |
+| `open` / `defaultOpen`               | `boolean`                                           | - / `false`             | Controlled / uncontrolled open state.             |
+| `onOpenChange`                       | `(open: boolean) => void`                           | -                       | Fires when the dropdown opens/closes.             |
+| `contentWidth`                       | `'trigger' \| 'content' \| number \| string`        | `'trigger'`             | How the panel computes its width.                 |
+| `Select.Trigger` `placeholder`       | `React.ReactNode`                                   | -                       | Shown when no value is selected.                  |
+| `Select.Trigger` `indicator`         | `boolean \| ReactNode \| ((s:{isOpen})=>ReactNode)` | `true`                  | Disclosure indicator; `false` hides it.           |
+| `Select.Content` `side` / `align`    | `Side` / `Align`                                    | `'bottom'` / `'center'` | Floating UI positioning.                          |
+| `Select.Item` `value` / `label`      | `string`                                            | -                       | Option value + display/typeahead text.            |
+| `Select.Item` `disabled`             | `boolean`                                           | `false`                 | Disables the option.                              |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
@@ -208,6 +210,8 @@ Full props, events, data attributes & type definitions: see
   `aria-haspopup="listbox"`, and `aria-expanded`.
 - `Select.Content` is a `role="listbox"` portalled to `document.body` and
   positioned with Floating UI.
+- Use `Select.Viewport` when options may overflow. Keep `Select.Arrow` outside
+  the viewport so scrolling does not clip it.
 - The trigger exposes the selected item's `label` (or `placeholder`) as its
   accessible name; inside a `Field` it also gets `aria-labelledby` from the
   Field label.

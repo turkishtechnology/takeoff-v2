@@ -161,6 +161,12 @@ render(<HeaderDemo />);
 
 ## Arrow
 
+Add `Tooltip.Arrow` as the last child of `Tooltip.Content` to point at the
+trigger. The arrow is bordered by default — its two outer edges continue the
+content's outline in the variant's border color, and the neck stays open where
+it joins the bubble. This is matched automatically for every variant and
+placement.
+
 ```tsx
 function ArrowDemo() {
   return (
@@ -176,6 +182,10 @@ function ArrowDemo() {
 
 render(<ArrowDemo />);
 ```
+
+Pass your own `children` to `Tooltip.Arrow` to replace the default shape (and
+its border). The default draws its border with the `.tk-arrow-border` layer and
+its fill with `.tk-arrow-fill` — target those classes to restyle it.
 
 ## Provider
 
@@ -264,15 +274,15 @@ for primitive behavior.
 
 #### Props {#tooltip-props}
 
-| Name        | Type                    | Default | Description                                                                                                                                                      |
-| ----------- | ----------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| children    | `React.React.ReactNode` | -       | Tooltip trigger and content components                                                                                                                           |
-| id          | `string`                | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
-| disabled    | `boolean`               | false   | Whether tooltip is disabled                                                                                                                                      |
-| open        | `boolean`               | -       | Controlled state for tooltip visibility                                                                                                                          |
-| defaultOpen | `boolean`               | false   | Default open state for uncontrolled tooltip                                                                                                                      |
-| delay       | `number`                | -       | Override provider delay for this tooltip                                                                                                                         |
-| hideDelay   | `number`                | 0       | Override provider hide delay for this tooltip                                                                                                                    |
+| Name        | Type              | Default | Description                                                                                                                                                      |
+| ----------- | ----------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| children    | `React.ReactNode` | -       | Tooltip trigger and content components                                                                                                                           |
+| id          | `string`          | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
+| disabled    | `boolean`         | false   | Whether tooltip is disabled                                                                                                                                      |
+| open        | `boolean`         | -       | Controlled state for tooltip visibility                                                                                                                          |
+| defaultOpen | `boolean`         | false   | Default open state for uncontrolled tooltip                                                                                                                      |
+| delay       | `number`          | -       | Override provider delay for this tooltip                                                                                                                         |
+| hideDelay   | `number`          | 0       | Override provider hide delay for this tooltip                                                                                                                    |
 
 #### Events {#tooltip-events}
 
@@ -286,7 +296,7 @@ for primitive behavior.
 
 | Name       | Type                                                         | Default       | Description                                                                |
 | ---------- | ------------------------------------------------------------ | ------------- | -------------------------------------------------------------------------- |
-| children   | `React.React.ReactNode`                                      | -             |                                                                            |
+| children   | `React.ReactNode`                                            | -             |                                                                            |
 | variant    | `TooltipVariant`                                             | 'white'       | Color variant.                                                             |
 | classNames | `Partial<Record<"root", string>>`                            | -             | Per-slot extra classes.                                                    |
 | slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -             | Per-slot HTML-attribute overrides.                                         |

@@ -73,6 +73,11 @@ import { Popover, Button } from '@takeoff-ui/react-spar';
 </Popover>
 ```
 
+The default arrow includes a border rim matching the content variant. Custom
+`children` replace the default arrow shape. For scrollable content, keep the
+arrow as a direct child of `Popover.Content` and put `max-height`/`overflow` on
+an inner wrapper so the arrow is not clipped.
+
 ### Placement
 
 `side` (`'top' | 'right' | 'bottom' | 'left'`) and `align`

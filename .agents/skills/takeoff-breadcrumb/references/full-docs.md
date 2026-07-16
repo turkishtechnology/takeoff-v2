@@ -48,25 +48,6 @@ import { Breadcrumb } from '@takeoff-ui/react-spar';
 </Breadcrumb>
 ```
 
-```css
-.breadcrumb-demo-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.breadcrumb-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-```
-
 ## Size
 
 ```tsx
@@ -95,25 +76,6 @@ import { Breadcrumb } from '@takeoff-ui/react-spar';
     </Breadcrumb.List>
   </Breadcrumb>
 </div>
-```
-
-```css
-.breadcrumb-demo-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.breadcrumb-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
 ```
 
 ## Variant
@@ -160,29 +122,10 @@ compound API has no label prop to auto-detect it.
 </div>
 ```
 
-```css
-.breadcrumb-demo-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.breadcrumb-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-```
-
 ## Separators
 
-`Breadcrumb.Separator` defaults to a chevron. The `variant` prop switches to the
-dot, slash, or vertical glyph presets:
+`Breadcrumb.Separator` defaults to a chevron. Pass `children` to replace it with
+text or an icon while keeping the same `<li aria-hidden>` owner node:
 
 ```tsx
 <div className="breadcrumb-demo-stack">
@@ -191,7 +134,7 @@ dot, slash, or vertical glyph presets:
       <Breadcrumb.Item>
         <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
       </Breadcrumb.Item>
-      <Breadcrumb.Separator variant="dot" />
+      <Breadcrumb.Separator>•</Breadcrumb.Separator>
       <Breadcrumb.Item>
         <Breadcrumb.Page>Account</Breadcrumb.Page>
       </Breadcrumb.Item>
@@ -203,7 +146,7 @@ dot, slash, or vertical glyph presets:
       <Breadcrumb.Item>
         <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
       </Breadcrumb.Item>
-      <Breadcrumb.Separator variant="slash" />
+      <Breadcrumb.Separator>/</Breadcrumb.Separator>
       <Breadcrumb.Item>
         <Breadcrumb.Page>Account</Breadcrumb.Page>
       </Breadcrumb.Item>
@@ -215,75 +158,27 @@ dot, slash, or vertical glyph presets:
       <Breadcrumb.Item>
         <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
       </Breadcrumb.Item>
-      <Breadcrumb.Separator variant="vertical" />
+      <Breadcrumb.Separator>|</Breadcrumb.Separator>
+      <Breadcrumb.Item>
+        <Breadcrumb.Page>Account</Breadcrumb.Page>
+      </Breadcrumb.Item>
+    </Breadcrumb.List>
+  </Breadcrumb>
+
+  <Breadcrumb>
+    <Breadcrumb.List>
+      <Breadcrumb.Item>
+        <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Separator>
+        <ArrowRightIconOutlinedRounded />
+      </Breadcrumb.Separator>
       <Breadcrumb.Item>
         <Breadcrumb.Page>Account</Breadcrumb.Page>
       </Breadcrumb.Item>
     </Breadcrumb.List>
   </Breadcrumb>
 </div>
-```
-
-```css
-.breadcrumb-demo-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.breadcrumb-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-```
-
-Arbitrary content goes through `children`, which overrides the preset:
-
-```tsx
-<Breadcrumb>
-  <Breadcrumb.List>
-    <Breadcrumb.Item>
-      <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
-    </Breadcrumb.Item>
-    <Breadcrumb.Separator>
-      <ArrowRightIconOutlinedRounded />
-    </Breadcrumb.Separator>
-    <Breadcrumb.Item>
-      <Breadcrumb.Link href="#loyalty">Loyalty</Breadcrumb.Link>
-    </Breadcrumb.Item>
-    <Breadcrumb.Separator>
-      <ArrowRightIconOutlinedRounded />
-    </Breadcrumb.Separator>
-    <Breadcrumb.Item>
-      <Breadcrumb.Page>Status & miles</Breadcrumb.Page>
-    </Breadcrumb.Item>
-  </Breadcrumb.List>
-</Breadcrumb>
-```
-
-```css
-.breadcrumb-demo-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.breadcrumb-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
 ```
 
 ## Icons
@@ -340,25 +235,6 @@ text color:
 </div>
 ```
 
-```css
-.breadcrumb-demo-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.breadcrumb-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-```
-
 ## External Link
 
 ```tsx
@@ -379,25 +255,6 @@ text color:
     </Breadcrumb.Item>
   </Breadcrumb.List>
 </Breadcrumb>
-```
-
-```css
-.breadcrumb-demo-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.breadcrumb-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
 ```
 
 ## Routing Integration
@@ -442,25 +299,6 @@ function NavigateBreadcrumbDemo() {
 }
 
 render(<NavigateBreadcrumbDemo />);
-```
-
-```css
-.breadcrumb-demo-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.breadcrumb-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
 ```
 
 ### Custom link components
@@ -508,25 +346,6 @@ drops the disabled links from the tab order (`tabindex="-1"`), and surfaces
 </Breadcrumb>
 ```
 
-```css
-.breadcrumb-demo-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.breadcrumb-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
-```
-
 ## Long Trails
 
 Crumbs never wrap: labels stay on a single line and the trail scrolls
@@ -562,25 +381,6 @@ while tabbing through an overflowing trail.
     </Breadcrumb.List>
   </Breadcrumb>
 </div>
-```
-
-```css
-.breadcrumb-demo-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.breadcrumb-demo-note {
-  width: fit-content;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--static-light);
-  color: var(--text-dark);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 8px 12px;
-}
 ```
 
 ## Accessibility & Keyboard
@@ -684,27 +484,15 @@ See
 [Spar Breadcrumb docs](https://spar.app.turkishtechlab.com/docs/Components/Breadcrumb)
 for primitive behavior.
 
-#### Props {#breadcrumb-separator-props}
-
-| Name       | Type                                                         | Default   | Description                                                                                                                 |
-| ---------- | ------------------------------------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------- |
-| children   | `React.ReactNode`                                            | -         | Override the separator glyph entirely; takes priority over `variant`. The owner `<li aria-hidden>` element stays invariant. |
-| variant    | `BreadcrumbSeparatorVariant`                                 | 'chevron' | Glyph preset rendered when no `children` are given.                                                                         |
-| classNames | `Partial<Record<"root", string>>`                            | -         | Per-slot class name overrides.                                                                                              |
-| slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -         | Per-slot HTML attribute overrides.                                                                                          |
-| className  | `string`                                                     | -         | Appends custom classes to the root slot of this part.                                                                       |
-
 #### Data attributes {#breadcrumb-separator-data-attributes}
 
-| Attribute        | Applied when | Purpose                                                                                                                                                |
-| ---------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot.                                                                                                  |
-| data-variant     | Always       | Reflects the resolved `variant` preset (`chevron` \| `dot` \| `slash` \| `vertical`) so the recipe can paint glyph separators. Emitted by the wrapper. |
+| Attribute        | Applied when | Purpose                                               |
+| ---------------- | ------------ | ----------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Type Definitions {#breadcrumb-type-definitions}
 
-| Name                       | Definition                                    |
-| -------------------------- | --------------------------------------------- |
-| BreadcrumbSize             | `'base' \| 'large'`                           |
-| BreadcrumbType             | `'basic' \| 'outlined'`                       |
-| BreadcrumbSeparatorVariant | `'chevron' \| 'dot' \| 'slash' \| 'vertical'` |
+| Name           | Definition              |
+| -------------- | ----------------------- |
+| BreadcrumbSize | `'base' \| 'large'`     |
+| BreadcrumbType | `'basic' \| 'outlined'` |

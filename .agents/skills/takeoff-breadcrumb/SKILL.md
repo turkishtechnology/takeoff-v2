@@ -39,8 +39,8 @@ import { Breadcrumb } from '@takeoff-ui/react-spar';
 - `Breadcrumb.Link` — an anchor crumb (ancestor link); `href`, `isExternal`,
   polymorphic `as`.
 - `Breadcrumb.Page` — the current (non-link) crumb; sets `aria-current="page"`.
-- `Breadcrumb.Separator` — the `<li aria-hidden>` glyph between crumbs;
-  `variant` or `children`.
+- `Breadcrumb.Separator` — the `<li aria-hidden>` glyph between crumbs; pass
+  `children` to replace the default chevron.
 
 ## Basic usage
 
@@ -81,22 +81,21 @@ import { Breadcrumb } from '@takeoff-ui/react-spar';
 </Breadcrumb>
 ```
 
-### Separator presets and custom glyph
+### Custom separator glyph
 
 ```tsx
 import { ArrowRightIconOutlinedRounded } from '@takeoff-icons/react/arrow-right';
 
-// variant: 'chevron' (default) | 'dot' | 'slash' | 'vertical'
 <Breadcrumb>
   <Breadcrumb.List>
     <Breadcrumb.Item>
       <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
     </Breadcrumb.Item>
-    <Breadcrumb.Separator variant="slash" />
+    <Breadcrumb.Separator>/</Breadcrumb.Separator>
     <Breadcrumb.Item>
       <Breadcrumb.Link href="#loyalty">Loyalty</Breadcrumb.Link>
     </Breadcrumb.Item>
-    {/* children override the preset glyph entirely */}
+    {/* children replace the default chevron */}
     <Breadcrumb.Separator>
       <ArrowRightIconOutlinedRounded />
     </Breadcrumb.Separator>
@@ -177,19 +176,18 @@ Setting `disabled` on the root cascades to every `Breadcrumb.Link`: drops the
 
 ## Key props
 
-| Prop                   | Type                                          | Default        | Notes                                                                 |
-| ---------------------- | --------------------------------------------- | -------------- | --------------------------------------------------------------------- |
-| `size`                 | `'base' \| 'large'`                           | `'base'`       | Density scale, cascaded to every part via context (on root).          |
-| `type`                 | `'basic' \| 'outlined'`                       | `'basic'`      | Visual style; `outlined` wraps crumbs in bordered chips (on root).    |
-| `disabled`             | `boolean`                                     | `false`        | Cascades to every `Breadcrumb.Link` (on root).                        |
-| `onNavigate`           | `(href: string) => void`                      | -              | Fires on any link activation; Spar blocks native nav first (on root). |
-| `aria-label`           | `string`                                      | `'Breadcrumb'` | Labels the `<nav>` landmark (on root).                                |
-| `href`                 | `string`                                      | -              | Destination for `Breadcrumb.Link`.                                    |
-| `isExternal`           | `boolean`                                     | `false`        | External-link treatment on `Breadcrumb.Link`; sets `data-external`.   |
-| `onPress`              | `(e) => void`                                 | -              | Link-level handler; takes priority over `onNavigate`.                 |
-| `as`                   | `ElementType`                                 | -              | Polymorphic element/component override on any part.                   |
-| `variant`              | `'chevron' \| 'dot' \| 'slash' \| 'vertical'` | `'chevron'`    | Separator glyph preset (on `Breadcrumb.Separator`).                   |
-| `children` (Separator) | `React.ReactNode`                             | -              | Custom glyph; overrides `variant`.                                    |
+| Prop                   | Type                     | Default        | Notes                                                                 |
+| ---------------------- | ------------------------ | -------------- | --------------------------------------------------------------------- |
+| `size`                 | `'base' \| 'large'`      | `'base'`       | Density scale, cascaded to every part via context (on root).          |
+| `type`                 | `'basic' \| 'outlined'`  | `'basic'`      | Visual style; `outlined` wraps crumbs in bordered chips (on root).    |
+| `disabled`             | `boolean`                | `false`        | Cascades to every `Breadcrumb.Link` (on root).                        |
+| `onNavigate`           | `(href: string) => void` | -              | Fires on any link activation; Spar blocks native nav first (on root). |
+| `aria-label`           | `string`                 | `'Breadcrumb'` | Labels the `<nav>` landmark (on root).                                |
+| `href`                 | `string`                 | -              | Destination for `Breadcrumb.Link`.                                    |
+| `isExternal`           | `boolean`                | `false`        | External-link treatment on `Breadcrumb.Link`; sets `data-external`.   |
+| `onPress`              | `(e) => void`            | -              | Link-level handler; takes priority over `onNavigate`.                 |
+| `as`                   | `ElementType`            | -              | Polymorphic element/component override on any part.                   |
+| `children` (Separator) | `React.ReactNode`        | -              | Custom glyph replacing the default chevron.                           |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
