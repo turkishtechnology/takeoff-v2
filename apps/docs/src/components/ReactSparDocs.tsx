@@ -29,6 +29,7 @@ export {
   Select,
   Skeleton,
   Spinner,
+  Stepper,
   Switch,
   Table,
   Tabs,

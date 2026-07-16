@@ -71,6 +71,7 @@ import {
   SelectViewportBase,
 } from './components/select/base';
 import { SpinnerBase } from './components/spinner/base';
+import { StepperBase, StepperDescriptionBase, StepperItemBase, StepperTitleBase } from './components/stepper/base';
 import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
 import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
@@ -180,6 +181,10 @@ export const slotClassRegistry = {
   selectSeparator: { slots: SelectSeparatorBase.classes },
   selectArrow: { slots: SelectArrowBase.classes },
   spinner: { slots: SpinnerBase.classes },
+  stepper: { slots: StepperBase.classes },
+  stepperItem: { slots: StepperItemBase.classes },
+  stepperTitle: { slots: StepperTitleBase.classes },
+  stepperDescription: { slots: StepperDescriptionBase.classes },
   switch: { slots: SwitchBase.classes },
   table: { slots: TableBase.classes },
   tabs: { slots: TabsBase.classes },

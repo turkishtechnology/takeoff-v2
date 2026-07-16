@@ -39,6 +39,7 @@ const sidebars: SidebarsConfig = {
         'components/select',
         'components/skeleton',
         'components/spinner',
+        'components/stepper',
         'components/switch',
         'components/radio',
         'components/table',

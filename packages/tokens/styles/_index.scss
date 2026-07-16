@@ -23,6 +23,7 @@
 @use 'recipes/select';
 @use 'recipes/skeleton';
 @use 'recipes/spinner';
+@use 'recipes/stepper';
 @use 'recipes/switch';
 @use 'recipes/table';
 @use 'recipes/tabs';
@@ -299,6 +300,10 @@
 
 .tk-progress-value {
   @include progress.progress-value;
+}
+
+.tk-stepper {
+  @include stepper.stepper;
 }
 
 .tk-checkbox {

@@ -76,7 +76,8 @@ table needs updating.
 | Attribute             | Value        | Scope                       | Meaning                             |
 | --------------------- | ------------ | --------------------------- | ----------------------------------- |
 | `data-complete`       | presence     | Root (Progress)             | Determinate value reached `max`     |
-| `data-disabled`       | presence     | Root                        | Component is disabled               |
+| `data-disabled`       | presence     | Root or Stepper item        | Component or step is disabled       |
+| `data-error`          | presence     | Stepper item                | Step has an error treatment         |
 | `data-indeterminate`  | presence     | Root, Indicator (Progress)  | Indeterminate; indicator animates   |
 | `data-invalid`        | presence     | Root                        | Component is visually invalid       |
 | `data-loading`        | presence     | Root                        | Component is in loading state       |
@@ -108,6 +109,8 @@ table needs updating.
 | `data-position`       | Radio root/item        | Indicator placement (`left` / `right`)           |
 | `data-spread`         | Radio root             | Items share available space along the group axis |
 | `data-level`          | Input strength segment | Strength tier for filled password meter segments |
+| `data-linear`         | Stepper root           | Steps follow a linear progression                |
+| `data-reverse`        | Stepper root           | Signs and content flip along the cross axis      |
 
 ### Out-of-band attributes
 
@@ -238,6 +241,28 @@ its attributes are wrapper-emitted. Recorded here per rule 10.
 - **Dimensions are not data attributes.** `width`/`height` are continuous
   values, so the wrapper publishes them to the recipe through the
   `--tk-skeleton-width` / `--tk-skeleton-height` custom properties on the root.
+
+### Stepper
+
+Stepper is **v2-owned** with no upstream Spar primitive (Table precedent), so
+its state attributes are wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the variants:** `data-orientation`, `data-mode`, `data-size`,
+  plus the `data-linear` / `data-reverse` presence flags. Items are styled
+  through root-level descendant selectors — no per-item variant duplication.
+- **`data-state` (State, finite) lives on each item `<li>`:** `inactive` |
+  `active` | `completed` — the wrapper owns the progress-state derivation
+  because no primitive backs it (rule 7 does not apply).
+- **`data-error` and `data-disabled` (State, presence) live on each item
+  `<li>`.** They are modifiers rather than progress states, so an active or
+  completed step can also carry the error/disabled treatment without losing its
+  progress status.
+- **`data-clickable` (State, presence) lives on each item `<li>`.** Present when
+  pressing the step may change the active step (respects `disabled`,
+  `isClickable`, and linear gating; never on the active step — its press
+  re-emits `onStepClick` but cannot change the selection), consumed by the
+  recipe for the cursor and hover affordances. Matches Chip's `data-clickable`
+  vocabulary.
 
 ### Table
 

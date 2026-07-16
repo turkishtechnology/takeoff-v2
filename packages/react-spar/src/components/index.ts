@@ -18,6 +18,7 @@ export * from './popover';
 export * from './progress';
 export * from './select';
 export * from './spinner';
+export * from './stepper';
 export * from './switch';
 export * from './table';
 export * from './tabs';
