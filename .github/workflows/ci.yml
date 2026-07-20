@@ -20,7 +20,7 @@ jobs:
 
       - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           # Single source of truth for Node — matches the release workflow so a
           # green CI can't hide a publish-time Node mismatch.
