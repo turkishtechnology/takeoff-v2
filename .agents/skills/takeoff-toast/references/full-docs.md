@@ -1,0 +1,685 @@
+# Toast
+
+`Toast` displays transient feedback without interrupting the current workflow.
+The queue, timers, pause/resume behavior, hotkey focus, and live-region
+semantics come from Spar's headless toast controller; React Spar renders each
+item with Takeoff Alert anatomy by default.
+
+Use variants to show the visual tone of the toast.
+
+## Usage
+
+```tsx
+import { Toaster, createToaster } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+const toaster = createToaster({ placement: 'bottom-end' });
+
+function App() {
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          toaster.success({
+            title: 'Booking saved',
+            description: 'Passenger details were updated successfully.',
+          })
+        }
+      >
+        Save
+      </button>
+      <Toaster toaster={toaster} />
+    </>
+  );
+}
+```
+
+## Playground
+
+```tsx
+const toaster = createToaster({ duration: 6000, placement: 'top-end' });
+
+function PlaygroundDemo() {
+  const [count, setCount] = React.useState(0);
+
+  const notify = () => {
+    const nextCount = count + 1;
+
+    toaster.success({
+      title: 'Booking saved #' + nextCount,
+      description:
+        'Passenger details update #' + nextCount + ' completed successfully.',
+      action: {
+        label: 'Undo',
+        altText: 'Undo booking update',
+      },
+    });
+
+    setCount(nextCount);
+  };
+
+  return (
+    <div>
+      <Button onClick={notify}>Save booking</Button>
+      <Toaster toaster={toaster} />
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
+```
+
+## Type/Variants
+
+Toast uses `type` for semantic intent. React Spar maps that intent to the Alert
+variant internally, so consumers do not pass a separate `variant` prop.
+
+```tsx
+const toaster = createToaster({ placement: 'top-end' });
+
+function TypeVariantDemo() {
+  const notify = (type, title) => {
+    toaster.create({
+      type,
+      title,
+      description: 'Toast variant preview.',
+    });
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      <Button onClick={() => notify('default', 'Neutral')} variant="neutral">
+        Neutral
+      </Button>
+      <Button onClick={() => notify('success', 'Success')} variant="success">
+        Success
+      </Button>
+      <Button onClick={() => notify('info', 'Info')} variant="info">
+        Info
+      </Button>
+      <Button onClick={() => notify('warning', 'Warning')} variant="warning">
+        Warning
+      </Button>
+      <Button onClick={() => notify('error', 'Danger')} variant="danger">
+        Danger
+      </Button>
+      <Toaster toaster={toaster} />
+    </div>
+  );
+}
+
+render(<TypeVariantDemo />);
+```
+
+## Appearance
+
+```tsx
+const filled = createToaster({ placement: 'top-end' });
+const filledLight = createToaster({ placement: 'top-end' });
+const outlined = createToaster({ placement: 'top-end' });
+const gradient = createToaster({ placement: 'top-end' });
+
+function AppearanceDemo() {
+  const notify = (controller, label) => {
+    controller.success({
+      title: label,
+      description: 'Toast appearance preview.',
+    });
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      <Button onClick={() => notify(filled, 'Filled')}>Filled</Button>
+      <Button onClick={() => notify(filledLight, 'Filled light')}>
+        Filled light
+      </Button>
+      <Button onClick={() => notify(outlined, 'Outlined')}>Outlined</Button>
+      <Button onClick={() => notify(gradient, 'Gradient')}>Gradient</Button>
+
+      <Toaster toaster={filled} appearance="filled" />
+      <Toaster toaster={filledLight} appearance="filledLight" />
+      <Toaster toaster={outlined} appearance="outlined" />
+      <Toaster toaster={gradient} appearance="gradient" />
+    </div>
+  );
+}
+
+render(<AppearanceDemo />);
+```
+
+## Positions
+
+```tsx
+const topStart = createToaster({ placement: 'top-start' });
+const top = createToaster({ placement: 'top' });
+const topEnd = createToaster({ placement: 'top-end' });
+const bottomStart = createToaster({ placement: 'bottom-start' });
+const bottom = createToaster({ placement: 'bottom' });
+const bottomEnd = createToaster({ placement: 'bottom-end' });
+
+const placements = [
+  ['top-start', topStart],
+  ['top', top],
+  ['top-end', topEnd],
+  ['bottom-start', bottomStart],
+  ['bottom', bottom],
+  ['bottom-end', bottomEnd],
+];
+
+function PositionDemo() {
+  const showToast = (placement, controller) => {
+    controller.info({
+      title: placement,
+      description: 'Rendered by the toaster with this placement.',
+    });
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      {placements.map(([placement, controller]) => (
+        <Button
+          key={placement}
+          onClick={() => showToast(placement, controller)}
+        >
+          {placement}
+        </Button>
+      ))}
+
+      {placements.map(([placement, controller]) => (
+        <Toaster key={placement} toaster={controller} />
+      ))}
+    </div>
+  );
+}
+
+render(<PositionDemo />);
+```
+
+## Persistent Toast
+
+```tsx
+const toaster = createToaster({ placement: 'top-end' });
+
+function PersistentDemo() {
+  const showToast = () => {
+    toaster.info({
+      title: 'Persistent toast',
+      description: 'This toast stays visible until it is dismissed.',
+      duration: null,
+    });
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      <Button onClick={showToast}>Show persistent</Button>
+      <Button onClick={() => toaster.dismiss()}>Dismiss all</Button>
+      <Toaster toaster={toaster} />
+    </div>
+  );
+}
+
+render(<PersistentDemo />);
+```
+
+## Update Toast
+
+```tsx
+const toaster = createToaster({ placement: 'top-end' });
+
+function UpdateDemo() {
+  const [toastId, setToastId] = React.useState(null);
+
+  const createToast = () => {
+    const id = toaster.loading({
+      title: 'Draft created',
+      description: 'Waiting for the next update.',
+    });
+
+    setToastId(id);
+  };
+
+  const updateToast = () => {
+    if (!toastId) return;
+    toaster.update(toastId, {
+      title: 'Draft saved',
+      description: 'The existing toast was updated.',
+      type: 'success',
+      duration: 3000,
+    });
+    setToastId(null);
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      <Button onClick={createToast}>Create</Button>
+      <Button disabled={!toastId} onClick={updateToast}>
+        Update
+      </Button>
+      <Toaster toaster={toaster} />
+    </div>
+  );
+}
+
+render(<UpdateDemo />);
+```
+
+## Promise Toasts
+
+```tsx
+const toaster = createToaster({ placement: 'top-end' });
+
+function PromiseDemo() {
+  const notify = () => {
+    const request = new Promise(resolve => {
+      window.setTimeout(() => resolve({ pnr: 'TK42X7' }), 1200);
+    });
+
+    toaster.promise(request, {
+      loading: {
+        title: 'Saving booking',
+        description: 'Passenger details are being updated.',
+      },
+      success: booking => ({
+        title: 'Booking saved',
+        description: 'PNR ' + booking.pnr + ' is ready.',
+      }),
+      error: {
+        title: 'Booking could not be saved',
+        description: 'Please try again.',
+      },
+    });
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      <Button onClick={notify}>Save async</Button>
+      <Toaster toaster={toaster} />
+    </div>
+  );
+}
+
+render(<PromiseDemo />);
+```
+
+## Overlap
+
+```tsx
+const toaster = createToaster({ placement: 'top-end', duration: 5000 });
+
+function OverlapDemo() {
+  const [count, setCount] = React.useState(0);
+
+  const showToast = () => {
+    const number = count + 1;
+    toaster.info({
+      title: 'Stacked toast ' + number,
+      description: 'The viewport is styled to overlap visible items.',
+    });
+
+    setCount(number);
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      <Button onClick={showToast}>Show toast</Button>
+      <Toaster toaster={toaster} overlap />
+    </div>
+  );
+}
+
+render(<OverlapDemo />);
+```
+
+## Max Visible
+
+```tsx
+const oneToaster = createToaster({
+  placement: 'top-start',
+  duration: 5000,
+  maxVisibleToasts: 1,
+});
+const fiveToaster = createToaster({
+  placement: 'top',
+  duration: 5000,
+  maxVisibleToasts: 5,
+});
+const eightToaster = createToaster({
+  placement: 'top-end',
+  duration: 5000,
+  maxVisibleToasts: 8,
+});
+
+function MaxVisibleDemo() {
+  const showToast = (label, controller) => {
+    for (let index = 1; index <= 10; index += 1) {
+      controller.info({
+        title: label + ' / Toast ' + index,
+        description: 'Queued items wait until a visible slot opens.',
+      });
+    }
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      <Button onClick={() => showToast('Max 1', oneToaster)}>Max 1</Button>
+      <Button onClick={() => showToast('Max 5', fiveToaster)}>Max 5</Button>
+      <Button onClick={() => showToast('Max 8', eightToaster)}>Max 8</Button>
+      <Toaster toaster={oneToaster} />
+      <Toaster toaster={fiveToaster} />
+      <Toaster toaster={eightToaster} />
+    </div>
+  );
+}
+
+render(<MaxVisibleDemo />);
+```
+
+## Duration
+
+```tsx
+const threeSecondToaster = createToaster({
+  placement: 'top-start',
+  duration: 3000,
+});
+const fiveSecondToaster = createToaster({ placement: 'top', duration: 5000 });
+const eightSecondToaster = createToaster({
+  placement: 'top-end',
+  duration: 8000,
+});
+
+function DurationDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      <Button
+        onClick={() =>
+          threeSecondToaster.info({
+            title: '3 seconds',
+            description: 'This toast closes first.',
+          })
+        }
+      >
+        3s
+      </Button>
+      <Button
+        onClick={() =>
+          fiveSecondToaster.info({
+            title: '5 seconds',
+            description: 'This toast stays a bit longer.',
+          })
+        }
+      >
+        5s
+      </Button>
+      <Button
+        onClick={() =>
+          eightSecondToaster.info({
+            title: '8 seconds',
+            description: 'This toast stays visible the longest.',
+          })
+        }
+      >
+        8s
+      </Button>
+      <Toaster toaster={threeSecondToaster} />
+      <Toaster toaster={fiveSecondToaster} />
+      <Toaster toaster={eightSecondToaster} />
+    </div>
+  );
+}
+
+render(<DurationDemo />);
+```
+
+## Page Idle
+
+```tsx
+const toaster = createToaster({
+  duration: 8000,
+  pauseOnPageIdle: true,
+  placement: 'top-end',
+});
+
+function PageIdleDemo() {
+  const [seconds, setSeconds] = React.useState(0);
+  const [running, setRunning] = React.useState(false);
+
+  const showToast = () => {
+    setSeconds(8);
+    setRunning(true);
+    toaster.info({
+      title: 'Timer pauses while the page is idle',
+      description: 'Switch tabs and return before the countdown finishes.',
+    });
+  };
+
+  React.useEffect(() => {
+    if (!running || seconds <= 0) return;
+    const interval = window.setInterval(() => {
+      setSeconds(value => Math.max(0, value - 1));
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, [running, seconds]);
+
+  React.useEffect(() => {
+    const handleVisibilityChange = () => {
+      setRunning(document.visibilityState === 'visible' && seconds > 0);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () =>
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [seconds]);
+
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-2">
+      <Button onClick={showToast}>Show timed toast</Button>
+      <span className="min-w-12 rounded-md border px-3 py-2 text-center font-mono text-lg font-semibold">
+        {seconds}s
+      </span>
+      <Toaster toaster={toaster} />
+    </div>
+  );
+}
+
+render(<PageIdleDemo />);
+```
+
+## External Close
+
+```tsx
+const toaster = createToaster({ placement: 'top-end' });
+
+function ExternalCloseDemo() {
+  const [toastId, setToastId] = React.useState(null);
+
+  const showToast = () => {
+    const id = toaster.info({
+      title: 'Manual review required',
+      description: 'This notification stays visible until it is dismissed.',
+      duration: null,
+    });
+
+    setToastId(id);
+  };
+
+  const closeToast = () => {
+    if (!toastId) return;
+    toaster.dismiss(toastId);
+    setToastId(null);
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      <Button onClick={showToast}>Show toast</Button>
+      <Button disabled={!toastId} onClick={closeToast}>
+        Close from outside
+      </Button>
+      <Toaster toaster={toaster} />
+    </div>
+  );
+}
+
+render(<ExternalCloseDemo />);
+```
+
+## Custom Rendering
+
+```tsx
+const toaster = createToaster({ placement: 'bottom' });
+
+function CustomRenderDemo() {
+  const showBoardingToast = () => {
+    toaster.clear();
+    toaster.info({
+      title: 'TK 1845',
+      description: 'Boarding starts at Gate A12.',
+      duration: null,
+      data: {
+        gate: 'A12',
+        group: 'Group 2',
+        time: '18:45',
+      },
+    });
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      <Button onClick={showBoardingToast}>Show custom toast</Button>
+      <Toaster toaster={toaster}>
+        {toast => {
+          const details = toast.data || {};
+
+          return (
+            <Toast
+              toast={toast}
+              toaster={toaster}
+              className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-4 text-slate-900 shadow-lg dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+            >
+              <div className="grid gap-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="block text-xs font-medium uppercase text-slate-500 dark:text-slate-400">
+                      Boarding pass
+                    </span>
+                    <strong className="mt-1 block text-base">
+                      {toast.title}
+                    </strong>
+                    <span className="mt-1 block text-sm text-slate-600 dark:text-slate-300">
+                      {toast.description}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="shrink-0 rounded-md border border-slate-200 px-2 py-1 text-xs dark:border-slate-700"
+                    onClick={() => toaster.dismiss(toast.id)}
+                  >
+                    Dismiss
+                  </button>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div className="rounded-md bg-slate-100 p-2 dark:bg-slate-800">
+                    <span className="block text-slate-500 dark:text-slate-400">
+                      Gate
+                    </span>
+                    <strong>{details.gate}</strong>
+                  </div>
+                  <div className="rounded-md bg-slate-100 p-2 dark:bg-slate-800">
+                    <span className="block text-slate-500 dark:text-slate-400">
+                      Group
+                    </span>
+                    <strong>{details.group}</strong>
+                  </div>
+                  <div className="rounded-md bg-slate-100 p-2 dark:bg-slate-800">
+                    <span className="block text-slate-500 dark:text-slate-400">
+                      Time
+                    </span>
+                    <strong>{details.time}</strong>
+                  </div>
+                </div>
+                <div className="h-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                  <div className="h-full w-2/3 rounded-full bg-sky-500" />
+                </div>
+              </div>
+            </Toast>
+          );
+        }}
+      </Toaster>
+    </div>
+  );
+}
+
+render(<CustomRenderDemo />);
+```
+
+## API Reference
+
+### Toaster {#toaster}
+
+#### Props {#toaster-props}
+
+| Name       | Type                                                         | Default                | Description                                                    |
+| ---------- | ------------------------------------------------------------ | ---------------------- | -------------------------------------------------------------- |
+| toaster    | `ToasterController`                                          | -                      | Toast controller returned by `createToaster`.                  |
+| children   | `React.ReactNode`                                            | -                      | Optional render function for custom toast item rendering.      |
+| appearance | `ToastAppearance`                                            | 'filled'               | Alert appearance used by the default toast renderer.           |
+| closeLabel | `string`                                                     | 'Dismiss notification' | Accessible label for the default close control.                |
+| overlap    | `boolean`                                                    | false                  | Stacks visible toasts and expands the stack on hover or focus. |
+| classNames | `Partial<Record<"root", string>>`                            | -                      |                                                                |
+| slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -                      |                                                                |
+| label      | `string`                                                     | 'Notifications (F8)'   | Accessible label for the toast viewport region.                |
+| hotkey     | `string[]`                                                   | ['F8']                 | Keyboard shortcut that focuses the toast viewport.             |
+| className  | `string`                                                     | -                      | Appends custom classes to the root slot of this part.          |
+
+#### Data attributes {#toaster-data-attributes}
+
+| Attribute        | Applied when                                      | Purpose                                                          |
+| ---------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
+| data-slot="root" | Always                                            | Stable selector for wrapper styling on the root slot.            |
+| data-placement   | Always                                            | Reflects the toaster placement for viewport positioning.         |
+| data-overlap     | When `overlap` is true                            | Enables the overlapped visual stack recipe.                      |
+| data-expanded    | When an overlapping toaster is hovered or focused | Indicates that the overlapped stack is expanded for interaction. |
+
+### Toast {#toast}
+
+#### Props {#toast-props}
+
+| Name       | Type                                                         | Default                | Description                                                                           |
+| ---------- | ------------------------------------------------------------ | ---------------------- | ------------------------------------------------------------------------------------- |
+| toast      | `ToastData`                                                  | -                      | Toast item supplied by the headless toaster controller.                               |
+| children   | `React.ReactNode`                                            | -                      | Optional custom toast content. When omitted, Toast renders the Takeoff Alert anatomy. |
+| toaster    | `ToasterController`                                          | -                      | Controller used to pause, resume, and dismiss the toast.                              |
+| appearance | `ToastAppearance`                                            | 'filled'               | Alert appearance used by the default toast renderer.                                  |
+| closeLabel | `string`                                                     | 'Dismiss notification' | Accessible label for the default close control.                                       |
+| classNames | `Partial<Record<"root", string>>`                            | -                      |                                                                                       |
+| slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -                      |                                                                                       |
+| className  | `string`                                                     | -                      | Appends custom classes to the root slot of this part.                                 |
+
+#### Data attributes {#toast-data-attributes}
+
+| Attribute        | Applied when | Purpose                                                  |
+| ---------------- | ------------ | -------------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot.    |
+| data-toast-id    | Always       | Stable toast item identifier used for layout motion.     |
+| data-status      | Always       | Reflects the toast lifecycle status.                     |
+| data-type        | Always       | Reflects the headless toast type used for styling hooks. |
+
+### Type Definitions {#toaster-type-definitions}
+
+| Name              | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ToasterController | `{ placement: ToastPlacement; maxVisibleToasts: number; create: (options: ToastOptions) => string; success: (options: ToastOptions) => string; error: (options: ToastOptions) => string; warning: (options: ToastOptions) => string; info: (options: ToastOptions) => string; loading: (options: ToastOptions) => string; update: (id: string, options: ToastUpdateOptions) => void; dismiss: (id?: string) => void; pause: (id?: string) => void; resume: (id?: string) => void; clear: () => void; destroy: () => void; promise: <TData>(promise: Promise<TData>, options: ToastPromiseOptions<TData>) => Promise<TData>; subscribe: (listener: () => void) => () => void; getSnapshot: () => ToastData[] }` |
+| ToastAppearance   | `'filled' \| 'filledLight' \| 'outlined' \| 'gradient'`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ToastData         | `{ id: string; title?: ReactNode; description?: ReactNode; type: ToastType; duration: number \| null; createdAt: number; remaining: number \| null; status: ToastStatus; announcement: ToastAnnouncement; action?: ToastActionOptions \| undefined; dismissible: boolean; data?: unknown }`                                                                                                                                                                                                                                                                                                                                                                                                                    |
+
+### Controller Values
+
+| Option             | Default        | Behavior                                                                                                     |
+| ------------------ | -------------- | ------------------------------------------------------------------------------------------------------------ |
+| `placement`        | `'bottom-end'` | Reflected on `data-placement` for viewport positioning.                                                      |
+| `duration`         | `5000`         | Auto-dismiss duration for ordinary toasts.                                                                   |
+| `maxVisibleToasts` | `24`           | Maximum number of toasts to display at once. Extra items stay queued; lower this for denser product screens. |
+| `removeDelay`      | `200`          | Time a dismissing toast remains mounted for exit motion.                                                     |
+| `pauseOnPageIdle`  | `false`        | Timers continue unless this option is enabled.                                                               |
