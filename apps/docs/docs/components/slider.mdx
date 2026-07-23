@@ -1,0 +1,794 @@
+---
+title: Slider
+description:
+  A draggable control for picking a number or a range from a continuous scale.
+  Supports single and two-thumb modes, full keyboard control, and opt-in tick
+  marks.
+sidebar_label: Slider
+sidebar_position: 16
+slug: /components/slider
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Field,
+  Input,
+  ReactSparDemoRoot,
+  Slider,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const sliderScope = { Slider, Field, Input };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  const [value, setValue] = React.useState(22);
+
+  return (
+    <div className="w-full max-w-md">
+      <Field>
+        <Field.Label>Cabin temperature</Field.Label>
+
+        <Slider
+          value={value}
+          onValueChange={setValue}
+          min={16}
+          max={28}
+          step={0.5}
+          formatValue={(v) => v + '°C'}
+        >
+          {/* The root stacks its children; this row puts the readout
+              beside the rail, with the scale bounds under it. */}
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <Slider.Track>
+                <Slider.Range />
+                <Slider.Thumb />
+              </Slider.Track>
+            </div>
+            <Slider.Value className="min-w-16" />
+          </div>
+        </Slider>
+      </Field>
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const rangeDemo = String.raw`
+function RangeDemo() {
+  const [price, setPrice] = React.useState([250, 900]);
+
+  return (
+    <div className="w-full max-w-md">
+      <Field>
+        <Field.Label>Price range</Field.Label>
+        <Slider
+          range
+          value={price}
+          onValueChange={setPrice}
+          min={0}
+          max={1200}
+          step={50}
+          formatValue={(v) => '$' + v}
+        />
+      </Field>
+    </div>
+  );
+}
+
+render(<RangeDemo />);
+`;
+
+export const multiThumbDemo = String.raw`
+function MultiThumbDemo() {
+  const [stops, setStops] = React.useState([20, 50, 80]);
+
+  return (
+    <div className="w-full max-w-md">
+      <Field>
+        <Field.Label>Gradient stops</Field.Label>
+        <Slider
+          range
+          value={stops}
+          onValueChange={setStops}
+          min={0}
+          max={100}
+          step={5}
+          formatValue={(v) => v + '%'}
+        />
+        <Field.Description>Committed: {stops.join(' · ')}</Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<MultiThumbDemo />);
+`;
+
+export const inputDemo = String.raw`
+function InputDemo() {
+  const [value, setValue] = React.useState(40);
+  const clamp = (n) => Math.min(100, Math.max(0, Number.isFinite(n) ? n : 0));
+
+  return (
+    <div className="w-full max-w-md">
+      <Field>
+        <div className="mb-2 flex items-center justify-between gap-4">
+          <Field.Label>Quantity</Field.Label>
+          {/* Input and slider share one state: typing or stepping moves the
+              thumb, and dragging updates the field. The stepper dispatches a
+              native input event, so the controlled onChange picks it up too.
+              Sized with a wrapper because .tk-input is width:100%. */}
+          <div className="w-28">
+            <Input size="small">
+              <Input.Field
+                type="number"
+                min={0}
+                max={100}
+                inputMode="numeric"
+                value={value}
+                onChange={(e) => setValue(clamp(Number(e.target.value)))}
+              />
+              <Input.Stepper>
+                <Input.Decrement />
+                <Input.Increment />
+              </Input.Stepper>
+            </Input>
+          </div>
+        </div>
+        <Slider value={value} onValueChange={setValue} min={0} max={100} />
+      </Field>
+    </div>
+  );
+}
+
+render(<InputDemo />);
+`;
+
+export const tooltipDemo = String.raw`
+function TooltipDemo() {
+  return (
+    <div className="flex w-full max-w-md flex-col gap-12">
+      {/* Pinned open — the bubble stays visible without interaction. */}
+      <Field>
+        <Field.Label>Always visible</Field.Label>
+        <Slider defaultValue={40} tooltip="always" formatValue={(v) => v + '%'} />
+      </Field>
+
+      {/* Hidden even on drag/focus — Slider.Value carries the number instead.
+          Field.Label and Slider.Value sit inside <Slider> so the readout reads
+          the live value from context and can share a row with the label. */}
+      <Field>
+        <Slider tooltip="never" defaultValue={70} min={0} max={100} formatValue={(v) => v + '%'}>
+          <div className="mb-2 flex items-baseline justify-between">
+            <Field.Label>Muted bubble</Field.Label>
+            <Slider.Value className="text-sm font-semibold" />
+          </div>
+          <Slider.Track>
+            <Slider.Range />
+            <Slider.Thumb />
+          </Slider.Track>
+        </Slider>
+      </Field>
+    </div>
+  );
+}
+
+render(<TooltipDemo />);
+`;
+
+export const eventsDemo = String.raw`
+function EventsDemo() {
+  const [live, setLive] = React.useState(40);
+  const [committed, setCommitted] = React.useState(40);
+
+  return (
+    <div className="w-full max-w-md">
+      <Field>
+        <Field.Label>Brightness</Field.Label>
+        {/* onValueChange streams every frame; onValueChangeEnd fires once the
+            drag (or keypress) settles — drag the handle to see them diverge. */}
+        <Slider
+          defaultValue={40}
+          min={0}
+          max={100}
+          onValueChange={setLive}
+          onValueChangeEnd={setCommitted}
+        />
+        <Field.Description>Live: {live} · Committed on release: {committed}</Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<EventsDemo />);
+`;
+
+export const minDistanceDemo = String.raw`
+function MinDistanceDemo() {
+  const [range, setRange] = React.useState([30, 70]);
+
+  return (
+    <div className="w-full max-w-md">
+      <Field>
+        <Field.Label>Allowed window</Field.Label>
+        {/* minDistance keeps the handles at least 20 apart — they clamp against
+            each other instead of crossing. */}
+        <Slider
+          range
+          value={range}
+          onValueChange={setRange}
+          min={0}
+          max={100}
+          minDistance={20}
+          formatValue={(v) => v + '%'}
+        />
+        <Field.Description>{range[0]}% – {range[1]}% (gap {range[1] - range[0]})</Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<MinDistanceDemo />);
+`;
+
+export const trackDemo = String.raw`
+function TrackDemo() {
+  return (
+    <div className="flex w-full max-w-md flex-col gap-8">
+      {/* inverted (single) — the complement fills: from the thumb to the end. */}
+      <Field>
+        <Field.Label>Inverted fill</Field.Label>
+        <Slider defaultValue={35} track="inverted" formatValue={(v) => v + '%'} />
+      </Field>
+      {/* inverted (range) — the fill sits outside the two handles. */}
+      <Field>
+        <Field.Label>Inverted range</Field.Label>
+        <Slider range defaultValue={[30, 70]} track="inverted" formatValue={(v) => v + '%'} />
+      </Field>
+      {/* none — the fill is dropped; the rail and thumb stay. */}
+      <Field>
+        <Field.Label>No fill</Field.Label>
+        <Slider defaultValue={60} track="none" />
+      </Field>
+    </div>
+  );
+}
+
+render(<TrackDemo />);
+`;
+
+export const typesDemo = String.raw`
+function TypesDemo() {
+  return (
+    <div className="flex w-full max-w-md flex-col gap-8">
+      <Slider defaultValue={60} min={0} max={100} step={20}>
+        <Slider.Track>
+          <Slider.Range />
+          <Slider.Thumb />
+        </Slider.Track>
+        <Slider.Ticks />
+      </Slider>
+    </div>
+  );
+}
+
+render(<TypesDemo />);
+`;
+
+export const orientationDemo = String.raw`
+function OrientationDemo() {
+  const [level, setLevel] = React.useState(60);
+
+  return (
+    <div className="flex items-end gap-10">
+      <Field>
+        <Field.Label>Altitude</Field.Label>
+        <Slider
+          orientation="vertical"
+          style={{ height: 220 }}
+          value={level}
+          onValueChange={setLevel}
+          formatValue={(v) => v + '%'}
+        />
+      </Field>
+
+      <Field>
+        <Field.Label>With ticks</Field.Label>
+        <Slider orientation="vertical" style={{ height: 220 }} defaultValue={40} min={0} max={100} step={25}>
+          <Slider.Track>
+            <Slider.Range />
+            <Slider.Thumb />
+          </Slider.Track>
+          <Slider.Ticks />
+        </Slider>
+      </Field>
+    </div>
+  );
+}
+
+render(<OrientationDemo />);
+`;
+
+export const sizesDemo = String.raw`
+function SizesDemo() {
+  return (
+    <div className="flex w-full max-w-md flex-col gap-8">
+      <Slider defaultValue={40} size="small" />
+      <Slider defaultValue={60} size="base" />
+      <Slider defaultValue={80} size="large" />
+    </div>
+  );
+}
+
+render(<SizesDemo />);
+`;
+
+export const variantsDemo = String.raw`
+function VariantsDemo() {
+  return (
+    <div className="flex w-full max-w-md flex-col gap-8">
+      <Slider defaultValue={70} variant="primary" />
+      <Slider defaultValue={70} variant="info" />
+      <Slider defaultValue={70} variant="success" />
+      <Slider defaultValue={70} variant="warning" />
+      <Slider defaultValue={70} variant="danger" />
+    </div>
+  );
+}
+
+render(<VariantsDemo />);
+`;
+
+export const statesDemo = String.raw`
+function StatesDemo() {
+  const [level, setLevel] = React.useState(75);
+  // The invalid treatment is driven by the value: at or above 50 it fails,
+  // below 50 the danger fill and the error message both clear.
+  const invalid = level >= 50;
+
+  return (
+    <div className="flex w-full max-w-md flex-col gap-8">
+      <Field disabled>
+        <Field.Label>Disabled</Field.Label>
+        <Slider defaultValue={35} />
+      </Field>
+      <Field readOnly>
+        <Field.Label>Read-only</Field.Label>
+        <Slider defaultValue={55} />
+      </Field>
+      <Field invalid={invalid}>
+        <Field.Label>Invalid</Field.Label>
+        <Slider value={level} onValueChange={setLevel} />
+        {invalid && (
+          <Field.ErrorMessage>Pick a value under 50.</Field.ErrorMessage>
+        )}
+      </Field>
+      <Field>
+        <Field.Label>Individual thumb disabled</Field.Label>
+        {/* Only the lower handle is pinned; the upper one stays interactive. */}
+        <Slider range defaultValue={[30, 70]}>
+          <Slider.Track>
+            <Slider.Range />
+            <Slider.Thumb index={0} disabled />
+            <Slider.Thumb index={1} />
+          </Slider.Track>
+        </Slider>
+      </Field>
+    </div>
+  );
+}
+
+render(<StatesDemo />);
+`;
+
+export const customStyledDemo = String.raw`
+function CustomStyledDemo() {
+  const [warmth, setWarmth] = React.useState(60);
+
+  // Zone colour off the absolute value, reused by the fill dot in the bubble.
+  const zone = (v) => (v < 40 ? '#38bdf8' : v < 70 ? '#fbbf24' : '#ef4444');
+
+  return (
+    <div className="w-full max-w-md">
+      <Field>
+        <Field.Label>Warmth</Field.Label>
+        <Slider
+          value={warmth}
+          onValueChange={setWarmth}
+          min={0}
+          max={100}
+          formatValue={(v) => v + '°'}
+        >
+          {/* Every part takes style / slotProps, so the whole slider is yours
+              to re-skin: a taller rail, a gradient fill, a ringed handle, and
+              a custom tooltip (shown on drag or focus). */}
+          <Slider.Track
+            style={{ height: '12px', background: 'var(--background-dark)' }}
+          >
+            {/* Pin the gradient to the full track width (448px = the max-w-md
+                container) so it maps to the absolute scale instead of stretching
+                across the current fill — a low value then stays blue. */}
+            <Slider.Range
+              style={{
+                backgroundImage:
+                  'linear-gradient(90deg, #38bdf8, #22c55e, #fbbf24, #ef4444)',
+                backgroundSize: '448px 100%',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'left center',
+              }}
+            />
+            <Slider.Thumb
+              style={{
+                '--tk-slider-thumb-size': '26px',
+                background: 'var(--static-light)',
+                border: '2px solid #475569',
+              }}
+              slotProps={{
+                tooltip: {
+                  // One override recolours the bubble AND its pointer — they
+                  // share the --tk-slider-tooltip-bg custom property.
+                  style: {
+                    '--tk-slider-tooltip-bg': '#1e3a8a',
+                    borderRadius: 'var(--radius-full)',
+                    fontWeight: 600,
+                  },
+                },
+                arrow: {
+                  // The pointer is a real slot now, so resize it like any element.
+                  style: {
+                    '--tk-slider-arrow-width': '7px',
+                    '--tk-slider-arrow-height': '9px',
+                  },
+                },
+              }}
+            >
+              {({ value, formatted }) => (
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <span
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: 'var(--radius-full)',
+                      background: zone(value),
+                    }}
+                  />
+                  {formatted}
+                </span>
+              )}
+            </Slider.Thumb>
+          </Slider.Track>
+        </Slider>
+      </Field>
+    </div>
+  );
+}
+
+render(<CustomStyledDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Slider
+
+`Slider` picks a number — or a `[min, max]` range — from a continuous scale. It
+is a standalone component (no upstream Spar primitive), so the wrapper owns the
+value math, the pointer dragging, and the full keyboard and ARIA surface. Each
+thumb is its own `role="slider"` element, which is what assistive technology
+reads and what the arrow keys drive.
+
+## Usage
+
+```tsx
+import { Slider } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Slider defaultValue={40} />
+```
+
+Compose it inside a `Field` to wire the visible label, the description, and the
+shared `disabled` / `readOnly` / `invalid` / `required` state automatically.
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={140}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Range
+
+Set `range` to render two thumbs. The value becomes a `[min, max]` tuple, and
+`onValueChange` reports it in the same shape. Dragging one handle past the other
+swaps them, so the committed tuple always stays ascending.
+
+<LiveCode
+  code={rangeDemo}
+  noInline
+  previewMinHeight={140}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Multiple handles
+
+The number of thumbs is decided by the value array, not by a separate prop: pass
+three entries and three handles render, each bounded by its neighbours.
+`onValueChange` reports the whole array, ordered ascending.
+
+The outer handles keep the `data-thumb="min"` / `"max"` styling hooks; a handle
+in between is neither, so it carries no `data-thumb` at all. Accessible names
+follow the same logic — a two-handle range reads as _Minimum_ / _Maximum_, while
+three or more fall back to _Value 1_, _Value 2_, … which consumers can override
+per thumb with `aria-label`.
+
+<LiveCode
+  code={multiThumbDemo}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Minimum distance
+
+Set `minDistance` to keep a gap between adjacent range handles. With a positive
+gap the handles can no longer cross — dragging one into another stops it against
+its neighbour instead of swapping. Seed the initial values at least this far
+apart; they are not reshaped.
+
+<LiveCode
+  code={minDistanceDemo}
+  noInline
+  previewMinHeight={130}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Sync with an input
+
+The slider is controlled like any input — bind `value` / `onValueChange` to
+state and pair it with a number field for exact entry. Typing moves the thumb;
+dragging updates the field.
+
+<LiveCode
+  code={inputDemo}
+  noInline
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Change events
+
+`onValueChange` fires on every committed change while interacting — each drag
+frame, keystroke, or track press. `onValueChangeEnd` fires once when the
+interaction settles (pointer release, or a single keystroke), with the final
+value — use it when only the settled value matters, e.g. to persist or refetch.
+
+<LiveCode
+  code={eventsDemo}
+  noInline
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Value tooltip
+
+The value bubble follows the handle on drag or keyboard focus by default
+(`tooltip="auto"`). Set `tooltip="always"` to pin it open, or `tooltip="never"`
+to hide it entirely — useful when a `Slider.Value` already surfaces the number.
+A disabled slider hides the bubble either way.
+
+<LiveCode
+  code={tooltipDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Ticks
+
+The default anatomy is the track alone. To mark the step grid below it, compose
+`Slider.Ticks` after `Slider.Track` — an indicator is anatomy, so it is added by
+composition rather than switched on by a prop.
+
+<LiveCode
+  code={typesDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Track fill
+
+`track` sets how the rail fills. `normal` (default) fills from the start to the
+thumb (or between a range's handles); `inverted` fills the complement — from the
+thumb to the end for a single slider, and outside the two handles for a range;
+`none` drops the fill entirely, leaving just the rail and the thumbs.
+
+<LiveCode
+  code={trackDemo}
+  noInline
+  previewMinHeight={140}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Orientation
+
+Set `orientation="vertical"` to run the rail bottom-to-top: the bottom edge is
+`min`, dragging upward increases the value, and the keyboard behaves the same
+(Up/Right increase, Down/Left decrease). Every thumb reports the axis through
+`aria-orientation`.
+
+A vertical rail has **no intrinsic length** — a horizontal one takes its width
+from the parent, but nothing gives a vertical one a height. It fills its
+container, so give the slider (or a wrapping element) a height:
+
+```css
+.tk-slider[data-orientation='vertical'] {
+  height: 240px;
+}
+```
+
+<LiveCode
+  code={orientationDemo}
+  noInline
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Sizes
+
+<LiveCode
+  code={sizesDemo}
+  noInline
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Variants
+
+<LiveCode
+  code={variantsDemo}
+  noInline
+  previewMinHeight={320}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## States
+
+<LiveCode
+  code={statesDemo}
+  noInline
+  previewMinHeight={320}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Custom styling
+
+Every part accepts `className`, `classNames`, `style`, and `slotProps`, so the
+whole slider is yours to re-skin without leaving the composition — the rail
+(`Slider.Track`), the fill (`Slider.Range`), and the handle (`Slider.Thumb`,
+whose slots are the `root` handle, the `tooltip` bubble, and the `arrow`
+pointer), plus the bubble's content through a `Slider.Thumb` child. The bubble
+and its arrow share the `--tk-slider-tooltip-bg` custom property, so one
+override recolours both, while the arrow keeps its own `--tk-slider-arrow-width`
+/ `-height`. The fill gradient is pinned to the full track width with
+`background-size` so it maps to the absolute scale rather than stretching across
+the current fill — a low value stays blue instead of squeezing the whole
+spectrum into a sliver. The tooltip is revealed on drag or keyboard focus, so
+grab the handle to see it.
+
+<LiveCode
+  code={customStyledDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={sliderScope}
+/>
+
+## Keyboard
+
+| Key                       | Action                                       |
+| ------------------------- | -------------------------------------------- |
+| <kbd>←</kbd> <kbd>↓</kbd> | Decrease the focused thumb by one `step`     |
+| <kbd>→</kbd> <kbd>↑</kbd> | Increase the focused thumb by one `step`     |
+| <kbd>Page Down</kbd>      | Decrease by ten steps                        |
+| <kbd>Page Up</kbd>        | Increase by ten steps                        |
+| <kbd>Home</kbd>           | Jump to the lowest value the thumb may take  |
+| <kbd>End</kbd>            | Jump to the highest value the thumb may take |
+
+In a range slider each thumb is bounded by its neighbour, so the keyboard can
+never push one handle past the other.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Slider {#slider}
+
+#### Props {#slider-props}
+
+| Name                              | Type                                                                                | Default      | Description                                                                                                                                                                                                                                                                                                                  |
+| --------------------------------- | ----------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="range" />        | <code>boolean</code>                                                                | false        | Renders a multi-handle slider: the value becomes an array and one thumb renders per entry (two by default). Dragging one handle past another swaps them, so the committed array stays ascending.                                                                                                                             |
+| <ApiBadge label="value" />        | <code>number &#124; number[]</code>                                                 | -            | Controlled value — a `number` by default, an array when `range` is set (one thumb per entry; fewer than two entries fall back to `[min, max]`). Each entry is clamped into `[min, max]`, snapped to `step`, and the array is ordered ascending. Takes precedence over `defaultValue`, which is ignored when both are passed. |
+| <ApiBadge label="defaultValue" /> | <code>number &#124; number[]</code>                                                 | `min`        | Initial value for uncontrolled usage — a `number` by default, an array when `range` is set (one thumb per entry). Defaults to `min` for a single slider and `[min, max]` for a range. Controlled/uncontrolled mode is latched on the first render.                                                                           |
+| <ApiBadge label="min" />          | <code>number</code>                                                                 | 0            | Lowest selectable value. Non-finite values fall back to the default.                                                                                                                                                                                                                                                         |
+| <ApiBadge label="max" />          | <code>number</code>                                                                 | 100          | Highest selectable value. Non-finite values and values at or below `min` fall back to `min + 100` (with a dev-only console warning, since an inverted range is a consumer bug).                                                                                                                                              |
+| <ApiBadge label="step" />         | <code>number</code>                                                                 | 1            | Granularity the value snaps to, counted from `min`. Non-finite and non-positive values fall back to the default.                                                                                                                                                                                                             |
+| <ApiBadge label="minDistance" />  | <code>number</code>                                                                 | 0            | Minimum gap kept between adjacent thumbs of a range, in value units. With a positive gap the handles can no longer cross — dragging one into another stops it against its neighbour instead of swapping. Ignored by a single slider; initial values are not reshaped, so seed them at least this far apart.                  |
+| <ApiBadge label="disabled" />     | <code>boolean</code>                                                                | false        | Blocks interaction and mutes the fill. Inherits the surrounding `Field`'s disabled state when composed inside one.                                                                                                                                                                                                           |
+| <ApiBadge label="readOnly" />     | <code>boolean</code>                                                                | false        | Renders the value but blocks every value-changing interaction. Inherits the surrounding `Field`'s read-only state when composed inside one.                                                                                                                                                                                  |
+| <ApiBadge label="required" />     | <code>boolean</code>                                                                | false        | Marks the slider as required for form validation. Inherits the surrounding `Field`'s required state when composed inside one.                                                                                                                                                                                                |
+| <ApiBadge label="invalid" />      | <code>boolean</code>                                                                | false        | Applies the invalid treatment and sets `aria-invalid` on every thumb. Inherits the surrounding `Field`'s invalid state when composed inside one.                                                                                                                                                                             |
+| <ApiBadge label="orientation" />  | <code><a href="#slider-td-sliderorientation">SliderOrientation</a></code>           | 'horizontal' | Axis the rail runs along. A vertical rail runs bottom-to-top and fills its container's height (as a horizontal rail fills its width), so give the parent a height.                                                                                                                                                           |
+| <ApiBadge label="size" />         | <code><a href="#slider-td-slidersize">SliderSize</a></code>                         | 'base'       | Visual scale — changes track thickness and thumb diameter.                                                                                                                                                                                                                                                                   |
+| <ApiBadge label="variant" />      | <code><a href="#slider-td-slidervariant">SliderVariant</a></code>                   | 'primary'    | Fill color variant.                                                                                                                                                                                                                                                                                                          |
+| <ApiBadge label="track" />        | <code><a href="#slider-td-slidertrackmode">SliderTrackMode</a></code>               | 'normal'     | How the rail fill renders. `normal` fills from the start to the thumb (or between a range's thumbs); `inverted` fills the _complement_ instead — from the thumb to the end for a single slider, and outside the two handles for a range; `none` drops the fill entirely, leaving just the rail and the thumbs.               |
+| <ApiBadge label="tooltip" />      | <code><a href="#slider-td-slidertooltip">SliderTooltip</a></code>                   | 'auto'       | When the drag value bubble is shown. `auto` reveals it while the handle is dragged or keyboard-focused; `always` pins it open; `never` hides it entirely — handy when a `Slider.Value` already surfaces the number. A disabled slider hides the bubble regardless.                                                           |
+| <ApiBadge label="formatValue" />  | <code>(value: number) =&gt; string</code>                                           | -            | Formats a value for every readout — the drag tooltip, `Slider.Value`, and `aria-valuetext`. Returns a string, so it formats the value rather than overriding the rendered node; use `Slider.Thumb` / `Slider.Value` children for richer content. When omitted, the raw number is shown and `aria-valuetext` is dropped.      |
+| <ApiBadge label="name" />         | <code>string</code>                                                                 | -            | Name submitted with the form. A single slider submits one entry under this exact name; a two-handle range submits `-min` / `-max`, and a range with more handles submits each value under a 1-based `-1`, `-2`, … suffix so no handle is dropped.                                                                            |
+| <ApiBadge label="form" />         | <code>string</code>                                                                 | -            | `id` of the form the hidden inputs belong to.                                                                                                                                                                                                                                                                                |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                        | -            | Optional anatomy override. When omitted, `Slider` renders `Slider.Track` wrapping `Slider.Range` and one thumb per value.                                                                                                                                                                                                    |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -            | Per-slot class name overrides.                                                                                                                                                                                                                                                                                               |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -            | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                                                                           |
+| <ApiBadge label="className" />    | <code>string</code>                                                                 | -            | Appends custom classes to the root slot.                                                                                                                                                                                                                                                                                     |
+
+#### Events {#slider-events}
+
+| Name                                  | Type                                                    | Default | Description                                                                                                                                                                                                                               |
+| ------------------------------------- | ------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onValueChange" />    | <code>(value: number &#124; number[]) =&gt; void</code> | -       | Fired on every committed value change while interacting — each drag frame, keystroke, or track press. Receives a `number` by default and the full ascending array when `range` is set.                                                    |
+| <ApiBadge label="onValueChangeEnd" /> | <code>(value: number &#124; number[]) =&gt; void</code> | -       | Fired once at the end of an interaction with the final value: on pointer release after a drag or track press, and once per committed keystroke. Use it when only the settled value matters, while `onValueChange` streams the live value. |
+
+#### Data attributes {#slider-data-attributes}
+
+| Attribute                                       | Applied when                                                      | Purpose                                                                                                                                                                                         |
+| ----------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                            | Stable selector for wrapper styling on the root slot.                                                                                                                                           |
+| <ApiBadge label="data-size" />                  | Always                                                            | Reflects the resolved `size` prop for theme recipe scoping (rail thickness and thumb diameter).                                                                                                 |
+| <ApiBadge label="data-variant" />               | Always                                                            | Reflects the resolved `variant` prop that drives the fill color.                                                                                                                                |
+| <ApiBadge label="data-orientation" />           | Always                                                            | Reflects the resolved `orientation` prop. A vertical rail runs bottom-to-top and takes its height from its container, as a horizontal rail takes its width.                                     |
+| <ApiBadge label="data-tooltip" />               | Always                                                            | Reflects the resolved `tooltip` prop (`auto` \| `always` \| `never`) that controls when the value bubble shows.                                                                                 |
+| <ApiBadge label="data-track" />                 | Always                                                            | Reflects the resolved `track` prop (`normal` \| `inverted` \| `none`) that sets the rail fill mode; `inverted` fills the complement of the selection, `none` drops the fill but keeps the rail. |
+| <ApiBadge label="data-range" />                 | When `range` is set                                               | Marks a multi-thumb slider (two or more handles) so the recipe can style the fill as a band between the outermost handles.                                                                      |
+| <ApiBadge label="data-disabled" />              | When disabled (own prop or inherited from a surrounding `Field`)  | Mutes the fill and blocks every interaction.                                                                                                                                                    |
+| <ApiBadge label="data-readonly" />              | When read-only (own prop or inherited from a surrounding `Field`) | Renders the value while blocking value-changing interaction.                                                                                                                                    |
+| <ApiBadge label="data-invalid" />               | When invalid (own prop or inherited from a surrounding `Field`)   | Applies the invalid treatment; each thumb also exposes `aria-invalid`.                                                                                                                          |
+| <ApiBadge label="data-required" />              | When required (own prop or inherited from a surrounding `Field`)  | Marks the control as required; each thumb also exposes `aria-required`.                                                                                                                         |
+| <ApiBadge label="data-thumb" />                 | On each thumb of a range slider                                   | `min` on the first handle and `max` on the last. A handle between them is neither end, so it carries no `data-thumb` rather than a misleading one.                                              |
+| <ApiBadge label="data-dragging" />              | On the thumb the pointer currently controls                       | Reveals the value tooltip and suppresses the position transition so the handle tracks the pointer exactly.                                                                                      |
+| <ApiBadge label="data-focus" />                 | On the focused thumb                                              | Draws the focus ring and reveals the value tooltip for keyboard users.                                                                                                                          |
+| <ApiBadge label="role=&quot;slider&quot;" />    | On every thumb                                                    | The thumb is the accessibility owner: it carries `aria-valuenow` / `aria-valuemin` / `aria-valuemax` and the keyboard surface.                                                                  |
+| <ApiBadge label="role=&quot;group&quot;" />     | When `range` is set                                               | Ties the two `role="slider"` thumbs together under the surrounding `Field` label.                                                                                                               |
+
+### Type Definitions {#slider-type-definitions}
+
+| Name                                                                                 | Definition                                                                             |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| <span id="slider-td-sliderorientation"><ApiBadge label="SliderOrientation" /></span> | <code>'horizontal' &#124; 'vertical'</code>                                            |
+| <span id="slider-td-slidersize"><ApiBadge label="SliderSize" /></span>               | <code>'small' &#124; 'base' &#124; 'large'</code>                                      |
+| <span id="slider-td-slidervariant"><ApiBadge label="SliderVariant" /></span>         | <code>'primary' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning'</code> |
+| <span id="slider-td-slidertrackmode"><ApiBadge label="SliderTrackMode" /></span>     | <code>'normal' &#124; 'inverted' &#124; 'none'</code>                                  |
+| <span id="slider-td-slidertooltip"><ApiBadge label="SliderTooltip" /></span>         | <code>'auto' &#124; 'always' &#124; 'never'</code>                                     |
+
+{/* api-tables:end */}
