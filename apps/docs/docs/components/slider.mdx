@@ -590,6 +590,12 @@ The value bubble follows the handle on drag or keyboard focus by default
 to hide it entirely — useful when a `Slider.Value` already surfaces the number.
 A disabled slider hides the bubble either way.
 
+The bubble is a CSS node parented to the handle rather than a portaled overlay,
+so an ancestor with `overflow: hidden` or `overflow: auto` clips it — for
+example a slider near the top of a scrollable dialog body or inside a table
+cell. In an overflow container, prefer `Slider.Value` (which stays in flow) or
+leave `tooltip="auto"` so the bubble only appears transiently on drag/focus.
+
 <LiveCode
   code={tooltipDemo}
   noInline
@@ -781,14 +787,79 @@ never push one handle past the other.
 | <ApiBadge label="role=&quot;slider&quot;" />    | On every thumb                                                    | The thumb is the accessibility owner: it carries `aria-valuenow` / `aria-valuemin` / `aria-valuemax` and the keyboard surface.                                                                  |
 | <ApiBadge label="role=&quot;group&quot;" />     | When `range` is set                                               | Ties the two `role="slider"` thumbs together under the surrounding `Field` label.                                                                                                               |
 
+### Slider.Track {#slider-track}
+
+#### Data attributes {#slider-track-data-attributes}
+
+| Attribute                                       | Applied when                                  | Purpose                                                                                                          |
+| ----------------------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                        | Stable selector for wrapper styling on the root slot.                                                            |
+| <ApiBadge label="data-orientation" />           | Inherited from the root (descendant selector) | A vertical rail flips its long axis; the track reads the root’s `data-orientation` rather than carrying its own. |
+
+### Slider.Range {#slider-range}
+
+#### Data attributes {#slider-range-data-attributes}
+
+| Attribute                                       | Applied when                                  | Purpose                                                                                                                                                                                                       |
+| ----------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                        | Stable selector for wrapper styling on the root slot.                                                                                                                                                         |
+| <ApiBadge label="data-track" />                 | Inherited from the root (descendant selector) | The `inverted` / `none` fill mode is read from the root’s `data-track`; the band recolours or hides itself accordingly. Its offset and length are written inline (a continuous value is not a `data-*` hook). |
+
+### Slider.Thumb {#slider-thumb}
+
+#### Props {#slider-thumb-props}
+
+| Name                            | Type                                                                                                                                        | Default | Description                                                                                                                                                                                                                                                                                                        |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="index" />      | <code>number</code>                                                                                                                         | 0       | Which value this thumb controls. The default anatomy renders index `0` (and `1` for a range); pass it explicitly only when composing the thumbs by hand.                                                                                                                                                           |
+| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                                                                        | false   | Disables just this handle — it cannot be moved and is skipped as a drag target, while the other thumbs stay interactive. A neighbour dragged into a disabled handle stops against it. The slider’s own `disabled` still disables every thumb.                                                                      |
+| <ApiBadge label="children" />   | <code>React.ReactNode &#124; ((state: <a href="#slider-td-sliderthumbrenderprops">SliderThumbRenderProps</a>) =&gt; React.ReactNode)</code> | -       | Content of the value bubble. When omitted, the formatted value renders. A plain node replaces it with static content; a function receives this thumb’s `value` / `formatted` / `index` / `isDragging` / `isFocused`. Either form swaps only what the bubble shows — the handle and bubble chrome stay the thumb’s. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;<a href="#slider-td-sliderthumbslot">SliderThumbSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                                                                                                                                                                     |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;<a href="#slider-td-sliderthumbslot">SliderThumbSlot</a>, HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>       | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                                                                 |
+| <ApiBadge label="className" />  | <code>string</code>                                                                                                                         | -       | Appends custom classes to the root slot of this part.                                                                                                                                                                                                                                                              |
+
+#### Data attributes {#slider-thumb-data-attributes}
+
+| Attribute                                          | Applied when                                                | Purpose                                                                                                                          |
+| -------------------------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />    | Always                                                      | Stable selector for wrapper styling on the root slot.                                                                            |
+| <ApiBadge label="data-slot=&quot;tooltip&quot;" /> | Always                                                      | The value bubble parented to the handle; style or override it via `classNames.tooltip` / `slotProps.tooltip`.                    |
+| <ApiBadge label="data-slot=&quot;arrow&quot;" />   | Always                                                      | The bubble’s pointer, a real element (not a pseudo-element) so `classNames.arrow` / `slotProps.arrow` can resize or recolour it. |
+| <ApiBadge label="data-thumb" />                    | On the first / last handle of a range                       | `min` on the first handle and `max` on the last; a middle handle carries none.                                                   |
+| <ApiBadge label="data-dragging" />                 | While the pointer controls this handle                      | Reveals the value bubble and suppresses the position transition so the handle tracks the pointer exactly.                        |
+| <ApiBadge label="data-focus" />                    | While this handle holds keyboard focus                      | Draws the focus ring and reveals the value bubble for keyboard users.                                                            |
+| <ApiBadge label="data-disabled" />                 | When this handle is disabled (own prop or the whole slider) | Mutes just this handle and hides its value bubble.                                                                               |
+| <ApiBadge label="role=&quot;slider&quot;" />       | Always                                                      | The handle is the accessibility owner: it carries `aria-valuenow` / `aria-valuemin` / `aria-valuemax` and the keyboard surface.  |
+
+### Slider.Ticks {#slider-ticks}
+
+#### Data attributes {#slider-ticks-data-attributes}
+
+| Attribute                                       | Applied when      | Purpose                                                                                                                                                 |
+| ----------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always            | Stable selector for wrapper styling on the root slot.                                                                                                   |
+| <ApiBadge label="data-slot=&quot;tick&quot;" /> | On each step mark | One mark of the grid; style or override it via `classNames.tick` / `slotProps.tick`. Positions are written inline. Rendered `aria-hidden` (decorative). |
+
+### Slider.Value {#slider-value}
+
+#### Data attributes {#slider-value-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
 ### Type Definitions {#slider-type-definitions}
 
-| Name                                                                                 | Definition                                                                             |
-| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| <span id="slider-td-sliderorientation"><ApiBadge label="SliderOrientation" /></span> | <code>'horizontal' &#124; 'vertical'</code>                                            |
-| <span id="slider-td-slidersize"><ApiBadge label="SliderSize" /></span>               | <code>'small' &#124; 'base' &#124; 'large'</code>                                      |
-| <span id="slider-td-slidervariant"><ApiBadge label="SliderVariant" /></span>         | <code>'primary' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning'</code> |
-| <span id="slider-td-slidertrackmode"><ApiBadge label="SliderTrackMode" /></span>     | <code>'normal' &#124; 'inverted' &#124; 'none'</code>                                  |
-| <span id="slider-td-slidertooltip"><ApiBadge label="SliderTooltip" /></span>         | <code>'auto' &#124; 'always' &#124; 'never'</code>                                     |
+| Name                                                                                           | Definition                                                                                                          |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| <span id="slider-td-sliderorientation"><ApiBadge label="SliderOrientation" /></span>           | <code>'horizontal' &#124; 'vertical'</code>                                                                         |
+| <span id="slider-td-slidersize"><ApiBadge label="SliderSize" /></span>                         | <code>'small' &#124; 'base' &#124; 'large'</code>                                                                   |
+| <span id="slider-td-slidervariant"><ApiBadge label="SliderVariant" /></span>                   | <code>'primary' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning'</code>                              |
+| <span id="slider-td-slidertrackmode"><ApiBadge label="SliderTrackMode" /></span>               | <code>'normal' &#124; 'inverted' &#124; 'none'</code>                                                               |
+| <span id="slider-td-slidertooltip"><ApiBadge label="SliderTooltip" /></span>                   | <code>'auto' &#124; 'always' &#124; 'never'</code>                                                                  |
+| <span id="slider-td-sliderthumbrenderprops"><ApiBadge label="SliderThumbRenderProps" /></span> | <code>&#123; value: number; formatted: string; index: number; isDragging: boolean; isFocused: boolean &#125;</code> |
+| <span id="slider-td-sliderthumbslot"><ApiBadge label="SliderThumbSlot" /></span>               | <code>'root' &#124; 'tooltip' &#124; 'arrow'</code>                                                                 |
+| <span id="slider-td-sliderticksslot"><ApiBadge label="SliderTicksSlot" /></span>               | <code>'root' &#124; 'tick'</code>                                                                                   |
+| <span id="slider-td-slidervaluerenderprops"><ApiBadge label="SliderValueRenderProps" /></span> | <code>&#123; values: number[]; formatted: string[]; range: boolean &#125;</code>                                    |
 
 {/* api-tables:end */}

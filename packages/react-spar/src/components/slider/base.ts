@@ -19,6 +19,11 @@ import type { SliderProps, SliderRangeProps, SliderThumbProps, SliderTicksProps,
 // renders the default anatomy — Track wrapping Range and the thumbs — and
 // consumers can still compose the parts explicitly for slot overrides or to
 // add an indicator such as `Slider.Ticks` below the rail.
+// The root emits the size/variant/state hooks plus two wrapper-owned config
+// attributes — `data-track` (normal | inverted | none — rail fill mode) and
+// `data-tooltip` (auto | always | never — when the value bubble shows). Both
+// are v2-owned with no upstream primitive; their rule-10 justification lives in
+// the Slider section of `docs/data-attribute-vocabulary.md`.
 export const SliderBase = createComponentBase<SliderProps, 'root'>({
   name: 'Slider',
   slots: ['root'] as const,
@@ -47,7 +52,12 @@ export const SliderRangeBase = createComponentBase<SliderRangeProps, 'root'>({
 // CSS-positioned node parented to the handle (NOT the Tooltip component — a
 // floating overlay would observe the moving/resizing bubble with a
 // ResizeObserver, lagging the drag and tripping the browser's benign
-// "ResizeObserver loop" warning). A `Slider.Thumb` child — a plain node or a
+// "ResizeObserver loop" warning). The tradeoff of the parented (non-portaled)
+// bubble is that an ancestor with `overflow: hidden`/`auto` clips it — a slider
+// near the top of a scrollable `Dialog.Body`, or in a table cell, has its
+// readout cut off. Prefer `Slider.Value` (always in flow) in overflow
+// containers, or leave `tooltip` at its default `auto` so it only shows
+// transiently on drag/focus. A `Slider.Thumb` child — a plain node or a
 // render function of the thumb state — swaps only the bubble's *content*; the
 // handle and the aria-hidden bubble chrome stay the thumb's, so a child cannot
 // surface a real Tooltip to assistive tech (it would render inside the

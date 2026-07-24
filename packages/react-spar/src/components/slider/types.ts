@@ -39,6 +39,10 @@ export type SliderValueSlot = 'root';
 export interface SliderSingleValueProps {
   /**
    * Renders a multi-handle slider that commits an array instead of a number.
+   * `range` is a discriminated union (`false` vs `true`), not a plain
+   * `boolean`, so a value typed `boolean` matches neither arm — to toggle mode
+   * at runtime, branch on the flag and render the single vs range `<Slider>`
+   * explicitly rather than passing `range={isRange}`.
    * @defaultValue false
    */
   range?: false;

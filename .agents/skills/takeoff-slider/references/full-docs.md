@@ -674,10 +674,12 @@ never push one handle past the other.
 
 ### Compound parts
 
-`Slider.Track`, `Slider.Range`, `Slider.Thumb`, `Slider.Ticks`, and
-`Slider.Value` expose only the shared customization plumbing — `children` (where
-allowed), `className`, `classNames`, `slotProps`, and native HTML attributes —
-so they have no bespoke props table. Their slots and per-part behavior:
+`Slider.Track`, `Slider.Range`, `Slider.Ticks`, and `Slider.Value` expose only
+the shared customization plumbing — `children` (where allowed), `className`,
+`classNames`, `slotProps`, and native HTML attributes. `Slider.Thumb` adds two
+bespoke props of its own — `index` (which value the handle controls) and
+`disabled` (pins just this handle) — documented in the generated API reference
+alongside the parts. Their slots and per-part behavior:
 
 | Part           | Slots                      | Notes                                                                                                                                                                                                                                                      |
 | -------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

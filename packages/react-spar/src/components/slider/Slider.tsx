@@ -13,9 +13,15 @@ import { normalizeValues, pointerCoord, rangeInputName, resolveBounds, toCommitt
 import { SliderTrack } from './SliderTrack';
 import type { SliderOwnProps, SliderProps, SliderValue } from './types';
 
-// Dev-only: dedupes the inverted-range warning per distinct message so a
-// slider whose bounds are re-derived every render can't flood the console.
+// Dev-only: dedupes the inverted-range warning by a *stable* key (not the
+// interpolated message) so a slider whose bounds are re-derived every render
+// neither floods the console nor grows this set with each distinct config.
 const warnedRanges = new Set<string>();
+
+// Test-only: the dedup set is module-level, so without a reset one suite's
+// cases leak into the next (a later render with the same warning would silently
+// no-op). Cleared in the test `beforeEach`; not re-exported from the barrel.
+export const resetSliderDevWarnings = (): void => warnedRanges.clear();
 
 // The public props are a discriminated union (`range` decides whether the
 // value is a number or a tuple), which is the right surface for consumers but
@@ -110,8 +116,8 @@ export const Slider = <T extends ElementType = 'div'>(props: SliderProps<T>) => 
 
   if (isDevelopment() && typeof rawMax === 'number' && Number.isFinite(rawMax) && rawMax <= bounds.min) {
     const message = `[Slider] \`max\` (${rawMax}) must be greater than \`min\` (${bounds.min}); falling back to ${bounds.max}.`;
-    if (!warnedRanges.has(message)) {
-      warnedRanges.add(message);
+    if (!warnedRanges.has('inverted-range')) {
+      warnedRanges.add('inverted-range');
       // eslint-disable-next-line no-console
       console.warn(message);
     }
@@ -143,6 +149,10 @@ export const Slider = <T extends ElementType = 'div'>(props: SliderProps<T>) => 
   const onValueChangeEndRef = useRef(onValueChangeEnd);
   onValueChangeEndRef.current = onValueChangeEnd;
   const emitChangeEnd = useCallback((vals: number[]) => onValueChangeEndRef.current?.(toCommittedValue(vals, range)), [range]);
+  // Latest settle emitter, read from the unmount cleanup below — an `[]`-deps
+  // effect would otherwise close over the first render's `range`.
+  const emitChangeEndRef = useRef(emitChangeEnd);
+  emitChangeEndRef.current = emitChangeEnd;
 
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -157,6 +167,11 @@ export const Slider = <T extends ElementType = 'div'>(props: SliderProps<T>) => 
   // The committed values when a pointer gesture began; compared on release so
   // `onValueChangeEnd` fires only when the drag actually moved the value.
   const gestureStartRef = useRef<number[] | null>(null);
+  // The `pointerId` that owns the active drag. The document listeners below
+  // check every event against it so a second finger's `pointermove` can't
+  // hijack the grabbed thumb, and a stray pointer's `pointerup` can't end a
+  // drag it never started.
+  const dragPointerRef = useRef<number | null>(null);
 
   // The pointer handlers are bound once per drag, so they read the live values
   // from a ref instead of closing over the render they were created in.
@@ -205,9 +220,10 @@ export const Slider = <T extends ElementType = 'div'>(props: SliderProps<T>) => 
   // sticking, so the pointer keeps controlling the handle it grabbed — unless a
   // `minDistance` gap or a disabled neighbour turns crossing off.
   const startDrag = useCallback(
-    (index: number, point: number, seek: boolean) => {
+    (index: number, point: number, seek: boolean, pointerId: number) => {
       if (disabled || readOnly || thumbDisabledRef.current[index]) return;
       gestureStartRef.current = valuesRef.current;
+      dragPointerRef.current = pointerId;
       // A thumb grab starts the drag in place: it must not jump the value, so
       // nothing is committed here — the value only moves once the pointer does
       // (the drag effect below). A track press instead seeks the grabbed handle
@@ -229,8 +245,30 @@ export const Slider = <T extends ElementType = 'div'>(props: SliderProps<T>) => 
 
   useEffect(() => {
     if (draggingIndex === null) return;
+    // The pointer that owns this gesture, captured when the drag started. A swap
+    // re-runs this effect but keeps `dragPointerRef` set, so the same pointer
+    // stays in control across the rebind.
+    const ownerId = dragPointerRef.current;
+    const isOwner = (event: PointerEvent) => ownerId === null || event.pointerId === ownerId;
+
+    const settle = () => {
+      setDraggingIndex(null);
+      // Report the settled value once, but only if the gesture moved it.
+      if (gestureStartRef.current && !valuesEqual(valuesRef.current, gestureStartRef.current)) emitChangeEnd(valuesRef.current);
+      gestureStartRef.current = null;
+      dragPointerRef.current = null;
+    };
 
     const handleMove = (event: PointerEvent) => {
+      // A second finger's move (or any other pointer's) must not drive the
+      // thumb the first one grabbed.
+      if (!isOwner(event)) return;
+      // No button is held — a `pointerup` was missed (released outside the
+      // window), so the drag would otherwise stick to the bare cursor. Settle it.
+      if (event.buttons === 0) {
+        settle();
+        return;
+      }
       const { values: next, index: active } = withThumbSwapped(
         valuesRef.current,
         draggingIndex,
@@ -247,11 +285,11 @@ export const Slider = <T extends ElementType = 'div'>(props: SliderProps<T>) => 
       }
       commit(next);
     };
-    const handleEnd = () => {
-      setDraggingIndex(null);
-      // Report the settled value once, but only if the gesture moved it.
-      if (gestureStartRef.current && !valuesEqual(valuesRef.current, gestureStartRef.current)) emitChangeEnd(valuesRef.current);
-      gestureStartRef.current = null;
+    const handleEnd = (event: PointerEvent) => {
+      // Ignore a stray pointer's release (e.g. a second finger lifting) so it
+      // can't end the drag the owning pointer is still running.
+      if (!isOwner(event)) return;
+      settle();
     };
 
     document.addEventListener('pointermove', handleMove);
@@ -264,12 +302,25 @@ export const Slider = <T extends ElementType = 'div'>(props: SliderProps<T>) => 
     };
   }, [draggingIndex, valueFromPoint, commit, emitChangeEnd, minDistance, orientation, bounds.min, bounds.max, bounds.step]);
 
+  // A slider unmounted mid-drag (a popover that closes on release, say) never
+  // sees the `pointerup` that settles the value, so `onValueChangeEnd` would be
+  // dropped. Emit it once here — scoped to a genuine unmount with `[]` deps so a
+  // thumb-swap re-run of the drag effect above can't fire it spuriously. Reads
+  // live values / emitter through refs since the closure is fixed at mount.
+  useEffect(
+    () => () => {
+      if (gestureStartRef.current && !valuesEqual(valuesRef.current, gestureStartRef.current)) emitChangeEndRef.current(valuesRef.current);
+      gestureStartRef.current = null;
+    },
+    [],
+  );
+
   const Component = (as ?? 'div') as ElementType;
 
   // `nativeProps` is the leftover HTML surface; the resolved shape above only
-  // models the component's own props, so the two attributes read back here
-  // are typed at the point of use.
-  const htmlProps = nativeProps as { 'role'?: string; 'aria-labelledby'?: string };
+  // models the component's own props, so the attributes read back here are
+  // typed at the point of use.
+  const htmlProps = nativeProps as { 'role'?: string; 'aria-label'?: string; 'aria-labelledby'?: string };
 
   // Each thumb owns `role="slider"`, so a range root groups the pair; a single
   // slider needs no extra role above its one thumb.
@@ -279,6 +330,16 @@ export const Slider = <T extends ElementType = 'div'>(props: SliderProps<T>) => 
         'aria-labelledby': htmlProps['aria-labelledby'] ?? field?.labelId,
       }
     : {};
+
+  // A single slider's accessible name belongs on the thumb (the role="slider"
+  // element), not the roleless wrapper: an `aria-label` / `aria-labelledby` on a
+  // bare `<Slider>` would otherwise sit on a generic <div> — where assistive
+  // tech ignores it — and never name the control. Forward them through context
+  // to the thumb and strip them from the wrapper. A range names its role="group"
+  // wrapper instead (each thumb keeps its own Minimum/Maximum name), so it
+  // leaves them in place.
+  const { 'aria-label': rootAriaLabel, 'aria-labelledby': rootAriaLabelledby, ...singleWrapperProps } = htmlProps;
+  const wrapperProps = range ? nativeProps : (singleWrapperProps as typeof nativeProps);
 
   return (
     <SliderProvider
@@ -303,9 +364,13 @@ export const Slider = <T extends ElementType = 'div'>(props: SliderProps<T>) => 
         fieldId: field?.fieldId,
         labelId: field?.labelId,
         describedBy: invalid ? field?.errorId : field?.descriptionId,
+        // Only a single slider forwards the root name to its thumb; a range
+        // carries it on the group wrapper above.
+        rootAriaLabel: range ? undefined : rootAriaLabel,
+        rootAriaLabelledby: range ? undefined : rootAriaLabelledby,
       }}
     >
-      <Component {...nativeProps} {...groupAttrs} {...rootAttrs} ref={ref}>
+      <Component {...wrapperProps} {...groupAttrs} {...rootAttrs} ref={ref}>
         {/* The track is the whole default anatomy. Any indicator below it
             (e.g. `Slider.Ticks`) is anatomy, so it is added by composition
             rather than selected by a content prop — see the

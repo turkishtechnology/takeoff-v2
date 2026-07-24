@@ -175,6 +175,27 @@ export const closestThumbIndex = (values: number[], target: number, disabled: bo
 };
 
 /**
+ * The `[min, max]` value slot a thumb may occupy: bounded by its neighbours,
+ * pulled in by `minDistance` so adjacent thumbs keep a gap (0 = touching
+ * allowed). The keyboard clamp, the drag clamp, and each thumb's
+ * `aria-valuemin` / `aria-valuemax` all read from here so they can never
+ * disagree.
+ *
+ * When two neighbours sit closer than `2 × minDistance` the gap cannot be
+ * honoured and the gapped bounds invert (`lower > upper`); an unguarded clamp
+ * then collapses the value below its left neighbour — a non-ascending array and
+ * an inverted ARIA range. The gap is simply unsatisfiable there, so we fall
+ * back to the hard neighbour bounds and let the thumbs touch.
+ */
+export const thumbBounds = (values: number[], index: number, bounds: SliderBounds, minDistance = 0): { min: number; max: number } => {
+  const hardLower = index > 0 ? values[index - 1] : bounds.min;
+  const hardUpper = index < values.length - 1 ? values[index + 1] : bounds.max;
+  const lower = index > 0 ? hardLower + minDistance : bounds.min;
+  const upper = index < values.length - 1 ? hardUpper - minDistance : bounds.max;
+  return lower <= upper ? { min: lower, max: upper } : { min: hardLower, max: hardUpper };
+};
+
+/**
  * Writes `next` into `index`, keeping the array ascending by clamping against
  * the neighbouring thumb. Used by the keyboard surface, where a thumb must
  * never jump past its neighbour. `minDistance` widens that clamp so adjacent
@@ -182,8 +203,7 @@ export const closestThumbIndex = (values: number[], target: number, disabled: bo
  * wall here, since the clamp stops at its value.
  */
 export const withThumbClamped = (values: number[], index: number, next: number, bounds: SliderBounds, minDistance = 0): number[] => {
-  const lower = index > 0 ? values[index - 1] + minDistance : bounds.min;
-  const upper = index < values.length - 1 ? values[index + 1] - minDistance : bounds.max;
+  const { min: lower, max: upper } = thumbBounds(values, index, bounds, minDistance);
   const updated = [...values];
   updated[index] = clamp(snap(next, bounds), lower, upper);
   return updated;
@@ -211,8 +231,7 @@ export const withThumbSwapped = (
   const upperBlocked = index < values.length - 1 && disabled[index + 1];
 
   if (minDistance > 0 || lowerBlocked || upperBlocked) {
-    const lower = index > 0 ? values[index - 1] + minDistance : bounds.min;
-    const upper = index < values.length - 1 ? values[index + 1] - minDistance : bounds.max;
+    const { min: lower, max: upper } = thumbBounds(values, index, bounds, minDistance);
     const updated = [...values];
     updated[index] = clamp(snap(next, bounds), lower, upper);
     return { values: updated, index };

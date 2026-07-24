@@ -43,6 +43,16 @@
 
 @mixin slider {
   box-sizing: border-box;
+  // On the root so it covers the rail and every thumb uniformly (a touch's
+  // effective touch-action intersects the hit element with its ancestors):
+  // a rail press-to-seek starts a document-level drag, and without this a
+  // touch drag on the rail — a vertical rail especially — is stolen by page
+  // scroll, which fires `pointercancel` and aborts the gesture. Matches
+  // Radix/Base UI, which pin it on the slider root.
+  touch-action: none;
+  // A drag can otherwise select surrounding text; house convention on the
+  // interactive siblings (_switch.scss, _input.scss).
+  user-select: none;
 
   --tk-slider-rail-size: var(--spacing-s); // 6px
   --tk-slider-thumb-size: var(--spacing-4xl); // 16px
@@ -134,6 +144,12 @@
 
   [data-disabled] & {
     cursor: inherit;
+  }
+
+  // Read-only rail ignores the press, so it shouldn't invite one with a
+  // pointer cursor (the thumb already resets its own).
+  [data-readonly] & {
+    cursor: default;
   }
 
   // track="inverted": the rail carries the fill colour; the band (recoloured to
@@ -273,7 +289,9 @@
   // recolouring the bubble recolours the arrow with it.
   --tk-slider-tooltip-bg: var(--background-darkest);
   background: var(--tk-slider-tooltip-bg);
-  color: var(--text-lightest);
+  // Mirrors the Tooltip `dark` variant, which pairs --background-darkest with
+  // --text-light (_tooltip.scss).
+  color: var(--text-light);
   border: 1px solid var(--border-dark);
   border-radius: var(--tooltips-base-radius, 8px);
   font-family: var(--family-body, 'tk-text', sans-serif);

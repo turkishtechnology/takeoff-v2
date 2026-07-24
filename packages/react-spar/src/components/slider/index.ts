@@ -18,6 +18,7 @@ const Slider = Object.assign(SliderRoot, {
 export { Slider };
 
 export type {
+  SliderOrientation,
   SliderProps,
   SliderRangeProps,
   SliderRangeValueProps,

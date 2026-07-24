@@ -29,7 +29,7 @@ export const SliderTrack = (props: SliderTrackProps) => {
     const point = pointerCoord(event, orientation);
     // A rail press seeks the grabbed thumb to the pressed point (seek = true),
     // unlike a thumb grab which starts in place.
-    startDrag(closestThumbIndex(values, valueFromPoint(point), thumbDisabledRef.current), point, true);
+    startDrag(closestThumbIndex(values, valueFromPoint(point), thumbDisabledRef.current), point, true, event.pointerId);
   };
 
   return (

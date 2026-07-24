@@ -1,13 +1,24 @@
+import type { KeyboardEvent, PointerEvent } from 'react';
 import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { renderWithProvider as render, screen } from '../../test-utils';
 
 import { Field } from '../field';
 
 import { Slider } from './index';
+import { resetSliderDevWarnings } from './Slider';
+import { resetSliderTicksDevWarnings } from './SliderTicks';
+
+// The two dev warnings dedupe through module-level sets, so a warning fired in
+// one case would otherwise silently no-op in the next. Reset before each case
+// so the console-warn assertions stay independent of test order.
+beforeEach(() => {
+  resetSliderDevWarnings();
+  resetSliderTicksDevWarnings();
+});
 
 // jsdom gives every element a zero-sized box, so the pointer path needs a
 // measurable rail before a clientX can map onto the value scale.
@@ -417,6 +428,62 @@ describe('Slider (compound)', () => {
       expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '30');
       expect(onChange).not.toHaveBeenCalled();
     });
+
+    it('moves with ArrowUp / ArrowDown on a horizontal slider', async () => {
+      const user = userEvent.setup();
+      render(<Slider min={0} max={100} step={5} defaultValue={50} />);
+
+      const thumb = screen.getByRole('slider');
+      thumb.focus();
+
+      await user.keyboard('{ArrowUp}');
+      expect(thumb).toHaveAttribute('aria-valuenow', '55');
+
+      await user.keyboard('{ArrowDown}{ArrowDown}');
+      expect(thumb).toHaveAttribute('aria-valuenow', '45');
+    });
+
+    it('runs a consumer onKeyDown and honours its preventDefault', async () => {
+      const user = userEvent.setup();
+      const onKeyDown = vi.fn((event: KeyboardEvent) => event.preventDefault());
+      render(
+        <Slider min={0} max={100} step={10} defaultValue={30}>
+          <Slider.Track>
+            <Slider.Range />
+            <Slider.Thumb onKeyDown={onKeyDown} />
+          </Slider.Track>
+        </Slider>,
+      );
+
+      const thumb = screen.getByRole('slider');
+      thumb.focus();
+      await user.keyboard('{ArrowRight}');
+
+      // The consumer handler ran, and because it preventDefault-ed, the slider's
+      // own key handling bailed and the value never moved.
+      expect(onKeyDown).toHaveBeenCalled();
+      expect(thumb).toHaveAttribute('aria-valuenow', '30');
+    });
+
+    it('chains a consumer onKeyDown without swallowing the default move', async () => {
+      const user = userEvent.setup();
+      const onKeyDown = vi.fn();
+      render(
+        <Slider min={0} max={100} step={10} defaultValue={30}>
+          <Slider.Track>
+            <Slider.Range />
+            <Slider.Thumb onKeyDown={onKeyDown} />
+          </Slider.Track>
+        </Slider>,
+      );
+
+      const thumb = screen.getByRole('slider');
+      thumb.focus();
+      await user.keyboard('{ArrowRight}');
+
+      expect(onKeyDown).toHaveBeenCalled();
+      expect(thumb).toHaveAttribute('aria-valuenow', '40');
+    });
   });
 
   describe('controlled and uncontrolled', () => {
@@ -488,7 +555,7 @@ describe('Slider (compound)', () => {
       fireEvent.pointerDown(thumb, { clientX: 20, button: 0 });
       expect(thumb).toHaveAttribute('data-dragging', '');
 
-      fireEvent.pointerMove(document, { clientX: 120 });
+      fireEvent.pointerMove(document, { clientX: 120, buttons: 1 });
       expect(thumb).toHaveAttribute('aria-valuenow', '60');
 
       fireEvent.pointerUp(document);
@@ -510,7 +577,7 @@ describe('Slider (compound)', () => {
       expect(onChange).not.toHaveBeenCalled();
 
       // Only pointer movement moves it.
-      fireEvent.pointerMove(document, { clientX: 120 });
+      fireEvent.pointerMove(document, { clientX: 120, buttons: 1 });
       expect(thumb).toHaveAttribute('aria-valuenow', '60');
       fireEvent.pointerUp(document);
     });
@@ -534,7 +601,7 @@ describe('Slider (compound)', () => {
 
       const [first] = screen.getAllByRole('slider');
       fireEvent.pointerDown(first, { clientX: 40, button: 0 });
-      fireEvent.pointerMove(document, { clientX: 190 });
+      fireEvent.pointerMove(document, { clientX: 190, buttons: 1 });
 
       // The dragged handle passed its partner, so the committed tuple stays
       // ascending with the partner now holding the lower value.
@@ -545,6 +612,83 @@ describe('Slider (compound)', () => {
     it('ignores pointer interaction while disabled', () => {
       const onChange = vi.fn();
       const { container } = render(<Slider defaultValue={10} disabled onValueChange={onChange} />);
+      const track = measureTrack(container);
+
+      fireEvent.pointerDown(track, { clientX: 150, button: 0 });
+
+      expect(onChange).not.toHaveBeenCalled();
+      expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '10');
+    });
+
+    it('runs a consumer onPointerDown and honours its preventDefault', () => {
+      const onChange = vi.fn();
+      const onPointerDown = vi.fn((event: PointerEvent) => event.preventDefault());
+      const { container } = render(
+        <Slider min={0} max={100} step={1} defaultValue={50} onValueChange={onChange}>
+          <Slider.Track onPointerDown={onPointerDown}>
+            <Slider.Range />
+            <Slider.Thumb />
+          </Slider.Track>
+        </Slider>,
+      );
+      const track = measureTrack(container);
+
+      fireEvent.pointerDown(track, { clientX: 150, button: 0 });
+
+      // The handler ran; its preventDefault stopped the press-to-seek.
+      expect(onPointerDown).toHaveBeenCalled();
+      expect(onChange).not.toHaveBeenCalled();
+      expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '50');
+    });
+
+    it('recovers a stuck drag when a move arrives with no button held', () => {
+      const { container } = render(<Slider min={0} max={100} step={1} defaultValue={10} />);
+      measureTrack(container);
+
+      const thumb = screen.getByRole('slider');
+      fireEvent.pointerDown(thumb, { clientX: 20, button: 0, pointerId: 1 });
+      expect(thumb).toHaveAttribute('data-dragging', '');
+
+      // A pointerup released outside the window is never delivered; the next move
+      // reports no button held, so the drag settles instead of following the
+      // bare cursor.
+      fireEvent.pointerMove(document, { clientX: 120, buttons: 0, pointerId: 1 });
+      expect(thumb).not.toHaveAttribute('data-dragging');
+      // The value stays where it was before the button-less move.
+      expect(thumb).toHaveAttribute('aria-valuenow', '10');
+    });
+
+    it('ignores a second pointer while one already owns the drag', () => {
+      const { container } = render(<Slider min={0} max={100} step={1} defaultValue={10} />);
+      measureTrack(container);
+
+      const thumb = screen.getByRole('slider');
+      fireEvent.pointerDown(thumb, { clientX: 20, button: 0, pointerId: 1 });
+
+      // A second finger's move (different pointerId) must not drive the handle.
+      fireEvent.pointerMove(document, { clientX: 180, buttons: 1, pointerId: 2 });
+      expect(thumb).toHaveAttribute('aria-valuenow', '10');
+
+      // The owning pointer still controls it.
+      fireEvent.pointerMove(document, { clientX: 120, buttons: 1, pointerId: 1 });
+      expect(thumb).toHaveAttribute('aria-valuenow', '60');
+      fireEvent.pointerUp(document, { pointerId: 1 });
+    });
+
+    it('ignores a non-primary (right-click) rail press', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Slider min={0} max={100} step={1} defaultValue={10} onValueChange={onChange} />);
+      const track = measureTrack(container);
+
+      fireEvent.pointerDown(track, { clientX: 150, button: 2 });
+
+      expect(onChange).not.toHaveBeenCalled();
+      expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '10');
+    });
+
+    it('blocks the pointer path while read-only', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Slider min={0} max={100} step={1} defaultValue={10} readOnly onValueChange={onChange} />);
       const track = measureTrack(container);
 
       fireEvent.pointerDown(track, { clientX: 150, button: 0 });
@@ -726,6 +870,20 @@ describe('Slider (compound)', () => {
       expect(screen.getAllByRole('slider')[0].style.insetBlockEnd).toBe('25%');
     });
 
+    it('moves with ArrowUp / ArrowDown — the primary keys for a vertical slider', async () => {
+      const user = userEvent.setup();
+      render(<Slider orientation="vertical" min={0} max={100} step={5} defaultValue={50} />);
+
+      const thumb = screen.getByRole('slider');
+      thumb.focus();
+
+      await user.keyboard('{ArrowUp}');
+      expect(thumb).toHaveAttribute('aria-valuenow', '55');
+
+      await user.keyboard('{ArrowDown}{ArrowDown}');
+      expect(thumb).toHaveAttribute('aria-valuenow', '45');
+    });
+
     it('drags upward from the bottom edge', () => {
       const { container } = render(<Slider orientation="vertical" min={0} max={100} step={1} defaultValue={0} />);
       measureVerticalTrack(container);
@@ -735,7 +893,7 @@ describe('Slider (compound)', () => {
       fireEvent.pointerDown(thumb, { clientY: 200, button: 0 });
       expect(thumb).toHaveAttribute('aria-valuenow', '0');
 
-      fireEvent.pointerMove(document, { clientY: 50 });
+      fireEvent.pointerMove(document, { clientY: 50, buttons: 1 });
       expect(thumb).toHaveAttribute('aria-valuenow', '75');
 
       fireEvent.pointerUp(document);
@@ -829,6 +987,30 @@ describe('Slider (compound)', () => {
       );
       expect(await axe(container)).toHaveNoViolations();
     });
+
+    it('names a bare single thumb from the root aria-label', () => {
+      const { container } = render(<Slider aria-label="Volume" defaultValue={40} />);
+
+      // The name reaches the role="slider" thumb, not the roleless wrapper.
+      expect(screen.getByRole('slider', { name: 'Volume' })).toBeInTheDocument();
+      expect(container.querySelector('.tk-slider')).not.toHaveAttribute('aria-label');
+    });
+
+    it('names the single thumb from a root aria-labelledby', () => {
+      render(
+        <>
+          <span id="vol-label">Volume</span>
+          <Slider aria-labelledby="vol-label" defaultValue={40} />
+        </>,
+      );
+
+      expect(screen.getByRole('slider', { name: 'Volume' })).toBeInTheDocument();
+    });
+
+    it('has no violations for a bare single slider named by aria-label', async () => {
+      const { container } = render(<Slider aria-label="Brightness" defaultValue={40} />);
+      expect(await axe(container)).toHaveNoViolations();
+    });
   });
 
   describe('track fill mode', () => {
@@ -900,8 +1082,8 @@ describe('Slider (compound)', () => {
 
       const thumb = screen.getByRole('slider');
       fireEvent.pointerDown(thumb, { clientX: 20, button: 0 });
-      fireEvent.pointerMove(document, { clientX: 80 });
-      fireEvent.pointerMove(document, { clientX: 120 });
+      fireEvent.pointerMove(document, { clientX: 80, buttons: 1 });
+      fireEvent.pointerMove(document, { clientX: 120, buttons: 1 });
       expect(onValueChange.mock.calls.length).toBeGreaterThan(1);
       expect(onValueChangeEnd).not.toHaveBeenCalled();
 
@@ -951,13 +1133,34 @@ describe('Slider (compound)', () => {
 
       const [first] = screen.getAllByRole('slider');
       fireEvent.pointerDown(first, { clientX: 40, button: 0 });
-      fireEvent.pointerMove(document, { clientX: 190 });
+      fireEvent.pointerMove(document, { clientX: 190, buttons: 1 });
 
       const [a, b] = screen.getAllByRole('slider');
       // Stops 10 below the upper thumb rather than crossing it.
       expect(a).toHaveAttribute('aria-valuenow', '70');
       expect(b).toHaveAttribute('aria-valuenow', '80');
       fireEvent.pointerUp(document);
+    });
+
+    it('keeps the value ascending when minDistance exceeds the neighbour gap', async () => {
+      const user = userEvent.setup();
+      render(<Slider range min={0} max={10} step={1} minDistance={10} defaultValue={[2, 5, 8]} />);
+
+      const middle = screen.getAllByRole('slider')[1];
+
+      // The 10-unit gap can't be honoured between neighbours only 3 apart, so the
+      // ARIA bounds fall back to the hard neighbour range [2, 8] instead of
+      // inverting to an unreachable min 12 / max -2.
+      expect(middle).toHaveAttribute('aria-valuemin', '2');
+      expect(middle).toHaveAttribute('aria-valuemax', '8');
+
+      // A keyboard nudge stays inside [2, 8] and keeps the array ascending —
+      // never the [2, -2, 8] the unguarded clamp produced.
+      middle.focus();
+      await user.keyboard('{ArrowRight}');
+      expect(middle).toHaveAttribute('aria-valuenow', '6');
+      const values = screen.getAllByRole('slider').map(thumb => Number(thumb.getAttribute('aria-valuenow')));
+      expect(values).toEqual([...values].sort((x, y) => x - y));
     });
   });
 
@@ -1004,7 +1207,7 @@ describe('Slider (compound)', () => {
 
       const [first] = screen.getAllByRole('slider');
       fireEvent.pointerDown(first, { clientX: 40, button: 0 });
-      fireEvent.pointerMove(document, { clientX: 190 });
+      fireEvent.pointerMove(document, { clientX: 190, buttons: 1 });
 
       const [a, b] = screen.getAllByRole('slider');
       expect(a).toHaveAttribute('aria-valuenow', '80');

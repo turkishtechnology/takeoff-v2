@@ -36,8 +36,8 @@ export interface SliderContextValue {
   formatValue?: (value: number) => string;
   /** Moves a thumb from the keyboard, clamping it against its neighbour. */
   setThumbValue: (index: number, next: number) => void;
-  /** Starts a drag on `index`. `seek` moves the thumb to `point` along the active axis — a track press seeks, a thumb grab does not, so grabbing a handle never jumps its value. */
-  startDrag: (index: number, point: number, seek: boolean) => void;
+  /** Starts a drag on `index`. `seek` moves the thumb to `point` along the active axis — a track press seeks, a thumb grab does not, so grabbing a handle never jumps its value. `pointerId` identifies the pointer that owns the gesture so a second pointer can't hijack or end it. */
+  startDrag: (index: number, point: number, seek: boolean, pointerId: number) => void;
   /** Maps a viewport coordinate along the active axis onto the value scale, using the measured track. */
   valueFromPoint: (point: number) => number;
   /** `id` a surrounding `Field.Label` points its `htmlFor` at; taken by the first thumb so the label focuses a real control. */
@@ -46,6 +46,10 @@ export interface SliderContextValue {
   labelId?: string;
   /** `id` of the surrounding Field's description, or its error message while invalid. */
   describedBy?: string;
+  /** Root `aria-label`, forwarded to the single thumb (the `role="slider"` element) so a bare slider outside a Field still has an accessible name. A range names its `role="group"` wrapper instead, so this stays `undefined` there. */
+  rootAriaLabel?: string;
+  /** Root `aria-labelledby`, forwarded to the single thumb for the same reason; `undefined` for a range. */
+  rootAriaLabelledby?: string;
 }
 
 export const [SliderProvider, useSliderContext] = createSafeContext<SliderContextValue>('SliderProvider');

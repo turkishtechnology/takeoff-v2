@@ -6,7 +6,7 @@ import { useComponentTheme } from '../../provider';
 import { SliderThumbBase } from './base';
 import { useSliderContext } from './context';
 import { PAGE_STEP_MULTIPLIER } from './defaults';
-import { formatValueText, offsetStyle, pointerCoord, thumbLabel, toPercent } from './helpers';
+import { formatValueText, offsetStyle, pointerCoord, thumbBounds, thumbLabel, toPercent } from './helpers';
 import type { SliderThumbProps } from './types';
 
 export const SliderThumb = (props: SliderThumbProps) => {
@@ -30,6 +30,8 @@ export const SliderThumb = (props: SliderThumbProps) => {
     fieldId,
     labelId,
     describedBy,
+    rootAriaLabel,
+    rootAriaLabelledby,
   } = useSliderContext('Slider.Thumb');
 
   const [isFocused, setIsFocused] = useState(false);
@@ -47,9 +49,9 @@ export const SliderThumb = (props: SliderThumbProps) => {
 
   // A thumb may never announce a range it cannot reach: in a range slider each
   // handle is bounded by its neighbour — offset by `minDistance` so the ARIA
-  // surface matches the keyboard/drag clamp (which keeps that same gap).
-  const lowerBound = index > 0 ? values[index - 1] + minDistance : bounds.min;
-  const upperBound = index < values.length - 1 ? values[index + 1] - minDistance : bounds.max;
+  // surface matches the keyboard/drag clamp (which reads the same `thumbBounds`,
+  // including its fall-back when `minDistance` over-constrains the gap).
+  const { min: lowerBound, max: upperBound } = thumbBounds(values, index, bounds, minDistance);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLSpanElement>) => {
     onKeyDown?.(event);
@@ -85,7 +87,7 @@ export const SliderThumb = (props: SliderThumbProps) => {
     // moves it. `startDrag` also lands focus on the handle.
     event.preventDefault();
     event.stopPropagation();
-    startDrag(index, pointerCoord(event, orientation), false);
+    startDrag(index, pointerCoord(event, orientation), false, event.pointerId);
   };
 
   // Canonical attrs for the DEFAULT bubble node (`data-slot="tooltip"` +
@@ -146,15 +148,18 @@ export const SliderThumb = (props: SliderThumbProps) => {
       aria-readonly={readOnly || undefined}
       aria-invalid={invalid || undefined}
       aria-required={required || undefined}
-      // Every handle of a range needs a distinguishable name; a single slider
-      // takes its name from the surrounding Field (or the consumer).
-      aria-label={nativeProps['aria-label'] ?? thumbLabel(index, values.length)}
-      // A range groups its thumbs under a role="group" that carries the Field
-      // label, so each thumb keeps its own aria-label (Minimum/Maximum/Value N);
-      // pointing aria-labelledby at the same label here would override that and
-      // make every handle announce one identical name. A single slider has no
-      // group, so its thumb takes the Field label directly.
-      aria-labelledby={nativeProps['aria-labelledby'] ?? (range ? undefined : labelId)}
+      // Every handle of a range needs a distinguishable name (thumbLabel gives
+      // Minimum/Maximum/Value N); a single slider (thumbLabel → undefined) takes
+      // its name from the surrounding Field, a root `aria-label`, or the
+      // consumer's own `Slider.Thumb aria-label`.
+      aria-label={nativeProps['aria-label'] ?? thumbLabel(index, values.length) ?? rootAriaLabel}
+      // A range groups its thumbs under a role="group" that carries the Field /
+      // root label, so each thumb keeps its own aria-label (Minimum/Maximum/
+      // Value N); pointing aria-labelledby at the same label here would override
+      // that and make every handle announce one identical name. A single slider
+      // has no group, so its thumb takes the root aria-labelledby or the Field
+      // label directly.
+      aria-labelledby={nativeProps['aria-labelledby'] ?? (range ? undefined : (rootAriaLabelledby ?? labelId))}
       // Keeps the Field description/error: the value is already announced
       // through aria-valuenow / aria-valuetext, so the bubble adds nothing here.
       aria-describedby={nativeProps['aria-describedby'] ?? describedBy}

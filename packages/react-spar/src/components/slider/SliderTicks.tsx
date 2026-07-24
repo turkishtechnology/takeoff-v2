@@ -8,9 +8,14 @@ import { MAX_TICKS } from './defaults';
 import { offsetStyle, tickPercents } from './helpers';
 import type { SliderTicksProps } from './types';
 
-// Dev-only: dedupes the too-dense warning per distinct message so a slider
-// re-rendering on every drag frame can't flood the console.
+// Dev-only: dedupes the too-dense warning by a *stable* key (not the
+// interpolated message) so a slider re-rendering on every drag frame neither
+// floods the console nor grows this set with each distinct grid.
 const warnedGrids = new Set<string>();
+
+// Test-only: clears the module-level dedup set so suites stay isolated across
+// cases. Cleared in the test `beforeEach`; not re-exported from the barrel.
+export const resetSliderTicksDevWarnings = (): void => warnedGrids.clear();
 
 export const SliderTicks = (props: SliderTicksProps) => {
   const theme = useComponentTheme('SliderTicks');
@@ -27,8 +32,8 @@ export const SliderTicks = (props: SliderTicksProps) => {
   if (percents === null) {
     if (isDevelopment()) {
       const message = `[Slider.Ticks] needs at most ${MAX_TICKS} marks, but min ${bounds.min} / max ${bounds.max} / step ${bounds.step} produces more; the ticks are not rendered.`;
-      if (!warnedGrids.has(message)) {
-        warnedGrids.add(message);
+      if (!warnedGrids.has('ticks-too-dense')) {
+        warnedGrids.add('ticks-too-dense');
         // eslint-disable-next-line no-console
         console.warn(message);
       }

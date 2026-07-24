@@ -91,15 +91,17 @@ table needs updating.
 
 ### Variant
 
-| Attribute          | Scope            | Example values                                                            | Notes                                                                 |
-| ------------------ | ---------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `data-variant`     | Root             | `primary`, `danger`, `neutral`                                            | Semantic color treatment                                              |
-| `data-size`        | Root, Item       | `base`, `large`, `small`                                                  | Duplicated to items by design where recipes need item-local selectors |
-| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`                                    | Rendering or behavior mode                                            |
-| `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below            |
-| `data-animation`   | Root             | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                     |
-| `data-orientation` | Root             | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                |
-| `data-thumb`       | Slider thumb     | `min`, `max`                                                              | First / last handle of a range; middle handles carry none             |
+| Attribute          | Scope            | Example values                                                            | Notes                                                                     |
+| ------------------ | ---------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `data-variant`     | Root             | `primary`, `danger`, `neutral`                                            | Semantic color treatment                                                  |
+| `data-size`        | Root, Item       | `base`, `large`, `small`                                                  | Duplicated to items by design where recipes need item-local selectors     |
+| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`                                    | Rendering or behavior mode                                                |
+| `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below                |
+| `data-animation`   | Root             | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                         |
+| `data-orientation` | Root             | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                    |
+| `data-thumb`       | Slider thumb     | `min`, `max`                                                              | First / last handle of a range; middle handles carry none                 |
+| `data-track`       | Slider root      | `normal`, `inverted`, `none`                                              | Rail fill mode: `inverted` swaps rail/fill colours, `none` drops the fill |
+| `data-tooltip`     | Slider root      | `auto`, `always`, `never`                                                 | When the value bubble is shown (`auto` = on drag/focus)                   |
 
 ### Semantic
 
@@ -260,9 +262,13 @@ ARIA surfaces are authored in the wrapper rather than ported.
   color), `data-orientation` (`horizontal` | `vertical` — a vertical rail runs
   bottom-to-top and takes its height from its container, since it has no
   intrinsic one), `data-range` (presence — the root renders more than one
-  thumb), plus `data-disabled` / `data-readonly` / `data-invalid` /
-  `data-required`, each resolved from the own prop or inherited through
-  `useOptionalFieldContext` from a surrounding Field.
+  thumb), `data-track` (`normal` | `inverted` | `none` — the rail fill mode:
+  `inverted` recolours the rail and band so the complement reads as filled,
+  `none` drops the fill but keeps the rail), `data-tooltip` (`auto` | `always` |
+  `never` — when the value bubble shows; `auto` reveals it on drag/focus), plus
+  `data-disabled` / `data-readonly` / `data-invalid` / `data-required`, each
+  resolved from the own prop or inherited through `useOptionalFieldContext` from
+  a surrounding Field.
 - **State that belongs to one handle lives on the thumb.** `data-thumb` (`min` |
   `max`) marks the **first and last** handles of a range so the recipe can style
   the ends independently. A range may carry more than two handles; a middle one

@@ -13,10 +13,21 @@ const classNameOverride = {
   description: 'Appends custom classes to the root slot.',
 };
 
+const classNamePartOverride = {
+  type: 'string',
+  description: 'Appends custom classes to the root slot of this part.',
+};
+
 const childrenOverride = description => ({
   type: 'React.ReactNode',
   description,
 });
+
+const dataSlotRoot = {
+  attribute: 'data-slot="root"',
+  appliedWhen: 'Always',
+  purpose: 'Stable selector for wrapper styling on the root slot.',
+};
 
 export default {
   components: [
@@ -146,6 +157,150 @@ export default {
           purpose: 'Ties the two `role="slider"` thumbs together under the surrounding `Field` label.',
         },
       ],
+    },
+    {
+      sourceFile: sliderTypesFile,
+      typeName: 'SliderTrackProps',
+      displayName: 'Slider.Track',
+      headingBase: 'slider-track',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      propOverrides: {
+        children: childrenOverride('Track anatomy override. When omitted, `Slider.Track` renders `Slider.Range` plus one `Slider.Thumb` per value.'),
+        className: classNamePartOverride,
+      },
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-orientation',
+          appliedWhen: 'Inherited from the root (descendant selector)',
+          purpose: 'A vertical rail flips its long axis; the track reads the root’s `data-orientation` rather than carrying its own.',
+        },
+      ],
+    },
+    {
+      sourceFile: sliderTypesFile,
+      typeName: 'SliderRangeProps',
+      displayName: 'Slider.Range',
+      headingBase: 'slider-range',
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      propOverrides: {
+        className: classNamePartOverride,
+      },
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-track',
+          appliedWhen: 'Inherited from the root (descendant selector)',
+          purpose:
+            'The `inverted` / `none` fill mode is read from the root’s `data-track`; the band recolours or hides itself accordingly. Its offset and length are written inline (a continuous value is not a `data-*` hook).',
+        },
+      ],
+    },
+    {
+      sourceFile: sliderTypesFile,
+      typeName: 'SliderThumbProps',
+      displayName: 'Slider.Thumb',
+      headingBase: 'slider-thumb',
+      prependPropNames: ['index', 'disabled', 'children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      propOverrides: {
+        index: {
+          type: 'number',
+          default: '0',
+          description: 'Which value this thumb controls. The default anatomy renders index `0` (and `1` for a range); pass it explicitly only when composing the thumbs by hand.',
+        },
+        disabled: {
+          type: 'boolean',
+          default: 'false',
+          description:
+            'Disables just this handle — it cannot be moved and is skipped as a drag target, while the other thumbs stay interactive. A neighbour dragged into a disabled handle stops against it. The slider’s own `disabled` still disables every thumb.',
+        },
+        children: {
+          type: 'React.ReactNode | ((state: SliderThumbRenderProps) => React.ReactNode)',
+          description:
+            'Content of the value bubble. When omitted, the formatted value renders. A plain node replaces it with static content; a function receives this thumb’s `value` / `formatted` / `index` / `isDragging` / `isFocused`. Either form swaps only what the bubble shows — the handle and bubble chrome stay the thumb’s.',
+        },
+        className: classNamePartOverride,
+      },
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-slot="tooltip"',
+          appliedWhen: 'Always',
+          purpose: 'The value bubble parented to the handle; style or override it via `classNames.tooltip` / `slotProps.tooltip`.',
+        },
+        {
+          attribute: 'data-slot="arrow"',
+          appliedWhen: 'Always',
+          purpose: 'The bubble’s pointer, a real element (not a pseudo-element) so `classNames.arrow` / `slotProps.arrow` can resize or recolour it.',
+        },
+        {
+          attribute: 'data-thumb',
+          appliedWhen: 'On the first / last handle of a range',
+          purpose: '`min` on the first handle and `max` on the last; a middle handle carries none.',
+        },
+        {
+          attribute: 'data-dragging',
+          appliedWhen: 'While the pointer controls this handle',
+          purpose: 'Reveals the value bubble and suppresses the position transition so the handle tracks the pointer exactly.',
+        },
+        {
+          attribute: 'data-focus',
+          appliedWhen: 'While this handle holds keyboard focus',
+          purpose: 'Draws the focus ring and reveals the value bubble for keyboard users.',
+        },
+        {
+          attribute: 'data-disabled',
+          appliedWhen: 'When this handle is disabled (own prop or the whole slider)',
+          purpose: 'Mutes just this handle and hides its value bubble.',
+        },
+        {
+          attribute: 'role="slider"',
+          appliedWhen: 'Always',
+          purpose: 'The handle is the accessibility owner: it carries `aria-valuenow` / `aria-valuemin` / `aria-valuemax` and the keyboard surface.',
+        },
+      ],
+    },
+    {
+      sourceFile: sliderTypesFile,
+      typeName: 'SliderTicksProps',
+      displayName: 'Slider.Ticks',
+      headingBase: 'slider-ticks',
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      propOverrides: {
+        className: classNamePartOverride,
+      },
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-slot="tick"',
+          appliedWhen: 'On each step mark',
+          purpose: 'One mark of the grid; style or override it via `classNames.tick` / `slotProps.tick`. Positions are written inline. Rendered `aria-hidden` (decorative).',
+        },
+      ],
+    },
+    {
+      sourceFile: sliderTypesFile,
+      typeName: 'SliderValueProps',
+      displayName: 'Slider.Value',
+      headingBase: 'slider-value',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      propOverrides: {
+        children: {
+          type: 'React.ReactNode | ((state: SliderValueRenderProps) => React.ReactNode)',
+          description:
+            'Readout content. When omitted, the formatted value renders (both entries joined by an en dash for a range). A function receives the committed `values` / `formatted` / `range` — the only way to read an **uncontrolled** slider’s value without lifting state out. Rendered `aria-hidden` (the value is announced through each thumb).',
+        },
+        className: classNamePartOverride,
+      },
+      dataAttributes: [dataSlotRoot],
     },
   ],
 };
