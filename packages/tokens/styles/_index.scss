@@ -22,6 +22,7 @@
 @use 'recipes/radio';
 @use 'recipes/select';
 @use 'recipes/skeleton';
+@use 'recipes/slider';
 @use 'recipes/spinner';
 @use 'recipes/stepper';
 @use 'recipes/switch';
@@ -280,6 +281,42 @@
 
 .tk-skeleton {
   @include skeleton.skeleton;
+}
+
+.tk-slider {
+  @include slider.slider;
+}
+
+.tk-slider-track {
+  @include slider.slider-track;
+}
+
+.tk-slider-range {
+  @include slider.slider-range;
+}
+
+.tk-slider-thumb {
+  @include slider.slider-thumb;
+}
+
+.tk-slider-tooltip {
+  @include slider.slider-tooltip;
+}
+
+.tk-slider-arrow {
+  @include slider.slider-arrow;
+}
+
+.tk-slider-ticks {
+  @include slider.slider-ticks;
+}
+
+.tk-slider-tick {
+  @include slider.slider-tick;
+}
+
+.tk-slider-value {
+  @include slider.slider-value;
 }
 
 .tk-spinner {

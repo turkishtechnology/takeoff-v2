@@ -28,6 +28,7 @@ export {
   Radio,
   Select,
   Skeleton,
+  Slider,
   Spinner,
   Stepper,
   Switch,

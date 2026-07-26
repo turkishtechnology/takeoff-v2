@@ -1,0 +1,454 @@
+// Slider recipe — shared style contract for the takeoff-spar Slider compound.
+// Renders a single-value or two-thumb range slider with the
+// Root/Track/Range/Thumb anatomy (as in Base UI / Radix / Ark):
+//
+//   .tk-slider          — root; layout wrapper and state owner (role="group"
+//                         only when range), not the rail
+//   .tk-slider-track    — the rail the thumbs travel along; owns the
+//                         press-to-seek hit area
+//   .tk-slider-range    — filled portion; offset/length written inline from
+//                         the committed values
+//   .tk-slider-thumb    — draggable handle and the role="slider" a11y owner;
+//                         position written inline
+//   .tk-slider-tooltip  — the default value bubble ('tooltip' slot of
+//                         Slider.Thumb). A CSS-positioned node parented to the
+//                         thumb (no floating-ui), revealed on drag/focus. A
+//                         thumb child swaps only its content, not the chrome.
+//   .tk-slider-ticks    — decorative step marks (opt-in via Slider.Ticks)
+//   .tk-slider-tick     — one mark ('tick' slot of Slider.Ticks)
+//   .tk-slider-value    — decorative value readout (opt-in via Slider.Value)
+//
+// State/variant attributes:
+//   data-size        — small | base | large (root); rail thickness + thumb
+//                      diameter
+//   data-variant     — primary | info | success | danger | warning (root);
+//                      fill color
+//   data-orientation — horizontal | vertical (root). A vertical rail runs
+//                      bottom-to-top and fills its container's height, as a
+//                      horizontal rail fills its width
+//   data-range       — present when the root renders two thumbs
+//   data-tooltip     — auto | always | never (root); when the value bubble shows
+//   data-track       — normal | inverted | none (root); rail fill mode. `none`
+//                      drops the fill but keeps the rail
+//   data-disabled / data-readonly / data-invalid / data-required — root state
+//   data-thumb       — min | max on each thumb of a range slider
+//   data-dragging    — present on the thumb the pointer currently controls
+//   data-focus       — present on the focused thumb
+//   data-disabled    — also on a single thumb disabled via `Slider.Thumb disabled`
+//
+// The root maps size/variant/state onto the --tk-slider-* custom properties
+// below; the part rules only consume them. The wrapper writes the geometry
+// inline (thumb offset, range inset/width) because a continuous value is not
+// a data-* hook.
+
+@mixin slider {
+  box-sizing: border-box;
+  // On the root so it covers the rail and every thumb uniformly (a touch's
+  // effective touch-action intersects the hit element with its ancestors):
+  // a rail press-to-seek starts a document-level drag, and without this a
+  // touch drag on the rail — a vertical rail especially — is stolen by page
+  // scroll, which fires `pointercancel` and aborts the gesture. Matches
+  // Radix/Base UI, which pin it on the slider root.
+  touch-action: none;
+  // A drag can otherwise select surrounding text; house convention on the
+  // interactive siblings (_switch.scss, _input.scss).
+  user-select: none;
+
+  --tk-slider-rail-size: var(--spacing-s); // 6px
+  --tk-slider-thumb-size: var(--spacing-4xl); // 16px
+  --tk-slider-tick-length: var(--spacing-m-base); // 8px
+  --tk-slider-gap: var(--spacing-m-base); // 8px
+  --tk-slider-fill: var(--primary-base);
+  --tk-slider-rail: var(--background-light);
+  --tk-slider-value-size: var(--size-xs);
+  --tk-slider-value-line-height: var(--line-height-xs-normal);
+  --tk-slider-value-color: var(--text-base);
+
+  &[data-size='small'] {
+    --tk-slider-rail-size: var(--spacing-xs); // 4px
+    --tk-slider-thumb-size: var(--spacing-xl); // 12px
+    --tk-slider-tick-length: var(--spacing-s); // 6px
+    --tk-slider-gap: var(--spacing-s); // 6px
+    --tk-slider-value-size: var(--size-xxs);
+    --tk-slider-value-line-height: var(--line-height-xxs-normal);
+  }
+
+  &[data-size='large'] {
+    --tk-slider-rail-size: var(--spacing-m-base); // 8px
+    --tk-slider-thumb-size: var(--spacing-5xl); // 20px
+    --tk-slider-tick-length: var(--spacing-l); // 10px
+    --tk-slider-gap: var(--spacing-l); // 10px
+    --tk-slider-value-size: var(--size-sm);
+    --tk-slider-value-line-height: var(--line-height-sm-normal);
+  }
+
+  &[data-variant='info'] {
+    --tk-slider-fill: var(--states-info-base);
+  }
+
+  &[data-variant='success'] {
+    --tk-slider-fill: var(--states-success-base);
+  }
+
+  &[data-variant='danger'] {
+    --tk-slider-fill: var(--states-danger-base);
+  }
+
+  &[data-variant='warning'] {
+    --tk-slider-fill: var(--states-warning-base);
+  }
+
+  // After the variants so invalid/disabled win on source order.
+  &[data-invalid] {
+    --tk-slider-fill: var(--states-danger-base);
+  }
+
+  &[data-disabled] {
+    --tk-slider-fill: var(--background-sub-base);
+    --tk-slider-value-color: var(--text-light);
+
+    cursor: not-allowed;
+  }
+
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--tk-slider-gap);
+  width: 100%;
+
+  &[data-orientation='vertical'] {
+    flex-direction: row;
+    column-gap: var(--tk-slider-gap);
+    width: auto;
+    // No intrinsic height — the parent must supply one.
+    height: 100%;
+  }
+}
+
+@mixin slider-track {
+  position: relative;
+  // Lifts the rail assembly (thumbs + their value bubbles) above the ticks: the
+  // thumb's transform traps the bubble's own z-index, so it can't clear the
+  // later-painted ticks on its own.
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--tk-slider-rail-size);
+  background: var(--tk-slider-rail);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+
+  [data-orientation='vertical'] & {
+    width: var(--tk-slider-rail-size);
+    height: 100%;
+  }
+
+  [data-disabled] & {
+    cursor: inherit;
+  }
+
+  // Read-only rail ignores the press, so it shouldn't invite one with a
+  // pointer cursor (the thumb already resets its own).
+  [data-readonly] & {
+    cursor: default;
+  }
+
+  // track="inverted": the rail carries the fill colour; the band (recoloured to
+  // the rail — see slider-range) then reads as the unfilled gap, so the
+  // complement of the selection looks filled. Works for any thumb count.
+  // (track="none" leaves the rail as-is here — only the fill is dropped, in
+  // slider-range.)
+  [data-track='inverted'] & {
+    background: var(--tk-slider-fill);
+  }
+}
+
+@mixin slider-range {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: var(--tk-slider-fill);
+  border-radius: inherit;
+
+  // Vertical offsets from the bottom inline, so release the horizontal top.
+  [data-orientation='vertical'] & {
+    top: auto;
+    left: 0;
+    width: 100%;
+  }
+
+  // Suppressed while dragging so the fill tracks the pointer exactly. Both axes
+  // are listed so the vertical rail (inset-block-end / height) animates like the
+  // horizontal one (inset-inline-start / width) rather than snapping.
+  transition:
+    inset-inline-start 0.15s ease-in-out,
+    inset-block-end 0.15s ease-in-out,
+    width 0.15s ease-in-out,
+    height 0.15s ease-in-out;
+
+  [data-dragging] ~ &,
+  &:has(~ [data-dragging]) {
+    transition: none;
+  }
+
+  // track="none": drop the fill only — the rail stays (see slider-track).
+  [data-track='none'] & {
+    display: none;
+  }
+
+  // track="inverted": recolour the band to the rail so it reads as the unfilled
+  // gap (the rail carries the fill colour — see slider-track).
+  [data-track='inverted'] & {
+    background: var(--tk-slider-rail);
+  }
+}
+
+@mixin slider-thumb {
+  position: absolute;
+  top: 50%;
+  box-sizing: border-box;
+  width: var(--tk-slider-thumb-size);
+  height: var(--tk-slider-thumb-size);
+  transform: translate(-50%, -50%);
+  // Target thumb — along the diameter: 1px white ring / fill / 8px white core.
+  background: var(--tk-slider-fill);
+  border: 1px solid var(--static-light);
+  border-radius: var(--radius-full);
+  box-shadow: var(--effect-1-default-base);
+  cursor: grab;
+  touch-action: none;
+
+  // White core at half the thumb diameter.
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(var(--tk-slider-thumb-size) / 2);
+    height: calc(var(--tk-slider-thumb-size) / 2);
+    transform: translate(-50%, -50%);
+    background: var(--static-light);
+    border-radius: var(--radius-full);
+  }
+
+  [data-orientation='vertical'] & {
+    top: auto;
+    left: 50%;
+    // Offset from the bottom edge, so the pull-back flips to +50%.
+    transform: translate(-50%, 50%);
+  }
+  // Both axes listed so the vertical handle (inset-block-end) animates like the
+  // horizontal one (inset-inline-start) instead of jumping.
+  transition:
+    inset-inline-start 0.15s ease-in-out,
+    inset-block-end 0.15s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+
+  &[data-dragging] {
+    cursor: grabbing;
+    transition: box-shadow 0.2s ease-in-out;
+  }
+
+  // Visible primary focus ring on the handle itself (independent of the value
+  // bubble), layered over the resting shadow. The transparent outline is the
+  // forced-colors fallback.
+  &[data-focus] {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: var(--effect-1-default-base), var(--primary-focus);
+  }
+
+  [data-disabled] & {
+    cursor: inherit;
+    box-shadow: none;
+  }
+
+  [data-readonly] & {
+    cursor: default;
+  }
+
+  // A disabled handle — muted with a solid fill, never `opacity` (a translucent
+  // handle would let the rail show through it). Covers a single Slider.Thumb
+  // disabled as well as every thumb of a fully disabled slider; its value bubble
+  // is hidden by the shared [data-disabled] rule in @mixin slider-tooltip.
+  &[data-disabled] {
+    cursor: not-allowed;
+    background: var(--background-sub-base);
+    box-shadow: none;
+  }
+}
+
+// Value bubble parented to the thumb (no floating-ui, so no ResizeObserver lag
+// as the value updates each frame). Mirrors the Tooltip `dark` variant.
+@mixin slider-tooltip {
+  position: absolute;
+  bottom: calc(100% + var(--spacing-l));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--tooltips-base-v-padding, 8px) var(--tooltips-base-h-padding, 12px);
+  // Shared with the pointer: --tk-slider-arrow-color defaults to this, so
+  // recolouring the bubble recolours the arrow with it.
+  --tk-slider-tooltip-bg: var(--background-darkest);
+  background: var(--tk-slider-tooltip-bg);
+  // Mirrors the Tooltip `dark` variant, which pairs --background-darkest with
+  // --text-light (_tooltip.scss).
+  color: var(--text-light);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--tooltips-base-radius, 8px);
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  font-size: var(--desktop-body-s-size);
+  font-weight: var(--weight-regular);
+  line-height: var(--desktop-body-s-line-height);
+  white-space: nowrap;
+  pointer-events: none;
+  // Matches the Tooltip layer so the bubble clears sibling parts (the range
+  // fill, the other thumb) and adjacent content it would otherwise sit under.
+  z-index: 2100;
+  box-shadow:
+    0 2px 2px -1px var(--shadow-black-alpha-light),
+    0 6px 12px -2px var(--shadow-black-alpha-light),
+    0 8px 20px 0 var(--shadow-black-alpha-light);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.15s ease-in-out,
+    visibility 0.15s ease-in-out;
+
+  // The pointer is a real element now — the `arrow` slot; see @mixin slider-arrow.
+
+  // Vertical rail: the bubble goes to the handle's side.
+  [data-orientation='vertical'] & {
+    bottom: auto;
+    top: 50%;
+    left: calc(100% + var(--spacing-l));
+    transform: translateY(-50%);
+  }
+
+  // auto (default): revealed while the handle is dragged or keyboard-focused.
+  [data-dragging] > &,
+  [data-focus] > & {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  // tooltip="always": pinned open regardless of interaction.
+  [data-tooltip='always'] & {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  // tooltip="never": suppressed even while dragging/focused. After the reveal
+  // rules so it wins on source order at equal specificity.
+  [data-tooltip='never'] & {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  [data-disabled] & {
+    display: none;
+  }
+}
+
+// The tooltip's pointer — the `arrow` slot of Slider.Thumb, rendered as a real
+// element inside the bubble (not a pseudo-element) so consumers can resize or
+// recolour it through classNames/slotProps, the same way Tooltip/Popover/
+// Dropdown/Select expose their arrows. It stays a CSS border triangle because
+// the bubble carries no floating-ui to place an SVG. Size and colour are custom
+// props, so one override retunes them; the colour tracks the bubble by default.
+@mixin slider-arrow {
+  --tk-slider-arrow-width: 4px; // half the visible base (the base is twice this)
+  --tk-slider-arrow-height: 6px;
+  --tk-slider-arrow-color: var(--tk-slider-tooltip-bg, var(--background-darkest));
+  --tk-slider-arrow-border-color: var(--border-dark);
+
+  position: absolute;
+  // Overlaps 1px so the pointer sits flush with the bubble's edge.
+  top: 100%;
+  left: 50%;
+  margin-top: -1px;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  // The element is the border triangle (1px larger); ::before draws the fill on
+  // top, leaving the border as a 1px rim on the slanted edges — the same 1px
+  // border the bubble carries.
+  border-left: calc(var(--tk-slider-arrow-width) + 1px) solid transparent;
+  border-right: calc(var(--tk-slider-arrow-width) + 1px) solid transparent;
+  border-top: calc(var(--tk-slider-arrow-height) + 1px) solid var(--tk-slider-arrow-border-color);
+  transform: translateX(-50%);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: calc(-1 * (var(--tk-slider-arrow-height) + 1px));
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-left: var(--tk-slider-arrow-width) solid transparent;
+    border-right: var(--tk-slider-arrow-width) solid transparent;
+    border-top: var(--tk-slider-arrow-height) solid var(--tk-slider-arrow-color);
+    transform: translateX(-50%);
+  }
+
+  // Vertical rail: the bubble is beside the handle, so the pointer aims left.
+  [data-orientation='vertical'] & {
+    top: 50%;
+    left: auto;
+    right: 100%;
+    margin-top: 0;
+    margin-right: -1px;
+    border-top: calc(var(--tk-slider-arrow-width) + 1px) solid transparent;
+    border-bottom: calc(var(--tk-slider-arrow-width) + 1px) solid transparent;
+    border-right: calc(var(--tk-slider-arrow-height) + 1px) solid var(--tk-slider-arrow-border-color);
+    border-left: 0;
+    transform: translateY(-50%);
+
+    &::before {
+      top: 50%;
+      left: 1px;
+      right: auto;
+      border-top: var(--tk-slider-arrow-width) solid transparent;
+      border-bottom: var(--tk-slider-arrow-width) solid transparent;
+      border-right: var(--tk-slider-arrow-height) solid var(--tk-slider-arrow-color);
+      border-left: 0;
+      transform: translateY(-50%);
+    }
+  }
+}
+
+@mixin slider-ticks {
+  position: relative;
+  width: 100%;
+  height: var(--tk-slider-tick-length);
+
+  [data-orientation='vertical'] & {
+    width: var(--tk-slider-tick-length);
+    height: 100%;
+  }
+}
+
+@mixin slider-tick {
+  position: absolute;
+  top: 0;
+  // 2px thick along the rail; length across it scales with size (6/8/10) via
+  // --tk-slider-tick-length (flipped when vertical).
+  width: var(--spacing-xxs);
+  height: 100%;
+  transform: translateX(-50%);
+  background: var(--background-sub-base);
+
+  [data-orientation='vertical'] & {
+    top: auto;
+    left: 0;
+    width: 100%;
+    height: var(--spacing-xxs);
+    transform: translateY(50%);
+  }
+}
+
+@mixin slider-value {
+  color: var(--tk-slider-value-color);
+  font-size: var(--tk-slider-value-size);
+  font-weight: var(--weight-regular);
+  line-height: var(--tk-slider-value-line-height);
+  font-variant-numeric: tabular-nums;
+}
