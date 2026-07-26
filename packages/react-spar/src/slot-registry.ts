@@ -6,6 +6,7 @@ import { ButtonBase } from './components/button/base';
 import { CardBase, CardBodyBase, CardDescriptionBase, CardFooterBase, CardHeaderBase, CardTitleBase } from './components/card/base';
 import { CheckboxBase } from './components/checkbox/base';
 import { ChipBase } from './components/chip/base';
+import { CurrencyInputBase, CurrencyInputCurrencySelectBase, CurrencyInputFieldBase } from './components/currency-input/base';
 import {
   DialogBodyBase,
   DialogCloseBase,
@@ -120,6 +121,9 @@ export const slotClassRegistry = {
   cardFooter: { slots: CardFooterBase.classes },
   checkbox: { slots: CheckboxBase.classes },
   chip: { slots: ChipBase.classes },
+  currencyInput: { slots: CurrencyInputBase.classes },
+  currencyInputField: { slots: CurrencyInputFieldBase.classes },
+  currencyInputCurrencySelect: { slots: CurrencyInputCurrencySelectBase.classes },
   dialogTrigger: { slots: DialogTriggerBase.classes },
   dialogOverlay: { slots: DialogOverlayBase.classes },
   dialogPanel: { slots: DialogPanelBase.classes },

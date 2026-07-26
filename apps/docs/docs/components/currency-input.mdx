@@ -1,0 +1,441 @@
+---
+title: Currency Input
+description:
+  Amount field with a currency selector. Locale-aware formatting via
+  Intl.NumberFormat, with the raw number kept as the source of truth.
+sidebar_label: Currency Input
+sidebar_position: 5
+slug: /components/currency-input
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  CurrencyInput,
+  Field,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+
+export const CURRENCIES = [
+  { code: 'TRY', label: 'Türk Lirası', symbol: '₺' },
+  { code: 'USD', label: 'US Dollar', symbol: '$' },
+  { code: 'EUR', label: 'Euro', symbol: '€' },
+  { code: 'GBP', label: 'British Pound', symbol: '£' },
+  { code: 'JPY', label: 'Japanese Yen', symbol: '¥' },
+];
+
+export const currencyInputScope = { CurrencyInput, Field, CURRENCIES };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  const [amount, setAmount] = useState(1234.56);
+
+  return (
+    <Field className="w-full max-w-90">
+      <Field.Label>Ticket price</Field.Label>
+      <CurrencyInput
+        value={amount}
+        onValueChange={setAmount}
+        defaultCurrency="TRY"
+      >
+        <CurrencyInput.Field placeholder="0,00" />
+        <CurrencyInput.Suffix>
+          <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+        </CurrencyInput.Suffix>
+      </CurrencyInput>
+      <Field.Description>
+        Committed value: {amount === undefined ? 'undefined' : JSON.stringify(amount)}
+      </Field.Description>
+    </Field>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const placementDemo = String.raw`
+function PlacementDemo() {
+  return (
+    <div className="grid w-full max-w-90 gap-4">
+      <Field>
+        <Field.Label>Suffix — tr-TR convention</Field.Label>
+        <CurrencyInput defaultValue={1234.56} defaultCurrency="TRY" locale="tr-TR">
+          <CurrencyInput.Field />
+          <CurrencyInput.Suffix>
+            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+          </CurrencyInput.Suffix>
+        </CurrencyInput>
+      </Field>
+
+      <Field>
+        <Field.Label>Prefix — en-US convention</Field.Label>
+        <CurrencyInput defaultValue={1234.56} defaultCurrency="USD" locale="en-US">
+          <CurrencyInput.Prefix>
+            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+          </CurrencyInput.Prefix>
+          <CurrencyInput.Field />
+        </CurrencyInput>
+      </Field>
+    </div>
+  );
+}
+
+render(<PlacementDemo />);
+`;
+
+export const localesDemo = String.raw`
+function LocalesDemo() {
+  const samples = [
+    { locale: 'tr-TR', currency: 'TRY', note: "'.' groups, ',' decimal, trailing ₺" },
+    { locale: 'en-US', currency: 'USD', note: "',' groups, '.' decimal, leading $" },
+    { locale: 'de-DE', currency: 'EUR', note: "'.' groups, ',' decimal, trailing €" },
+    { locale: 'ja-JP', currency: 'JPY', note: 'no fraction digits' },
+  ];
+
+  return (
+    <div className="grid w-full max-w-110 gap-4">
+      {samples.map((sample) => (
+        <Field key={sample.locale}>
+          <Field.Label>{sample.locale} · {sample.currency}</Field.Label>
+          <CurrencyInput
+            defaultValue={1234.56}
+            defaultCurrency={sample.currency}
+            locale={sample.locale}
+          >
+            <CurrencyInput.Field />
+          </CurrencyInput>
+          <Field.Description>{sample.note}</Field.Description>
+        </Field>
+      ))}
+    </div>
+  );
+}
+
+render(<LocalesDemo />);
+`;
+
+export const sizesDemo = String.raw`
+function SizesDemo() {
+  return (
+    <div className="grid w-full max-w-90 gap-3">
+      {['small', 'base', 'large'].map((size) => (
+        <CurrencyInput
+          key={size}
+          size={size}
+          defaultValue={1234.56}
+          defaultCurrency="TRY"
+        >
+          <CurrencyInput.Field />
+          <CurrencyInput.Suffix>
+            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+          </CurrencyInput.Suffix>
+        </CurrencyInput>
+      ))}
+    </div>
+  );
+}
+
+render(<SizesDemo />);
+`;
+
+export const fieldStatesDemo = String.raw`
+function FieldStatesDemo() {
+  return (
+    <div className="grid w-full max-w-90 gap-3">
+      <Field required>
+        <Field.Label>Budget</Field.Label>
+        <CurrencyInput defaultCurrency="TRY">
+          <CurrencyInput.Field placeholder="0,00" />
+          <CurrencyInput.Suffix>
+            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+          </CurrencyInput.Suffix>
+        </CurrencyInput>
+        <Field.Description>Excluding taxes.</Field.Description>
+      </Field>
+
+      <Field invalid>
+        <Field.Label>Refund</Field.Label>
+        <CurrencyInput defaultValue={-50} defaultCurrency="TRY">
+          <CurrencyInput.Field />
+          <CurrencyInput.Suffix>
+            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+          </CurrencyInput.Suffix>
+        </CurrencyInput>
+        <Field.ErrorMessage>Refund cannot be negative.</Field.ErrorMessage>
+      </Field>
+
+      <Field disabled>
+        <Field.Label>Locked total</Field.Label>
+        <CurrencyInput defaultValue={9999} defaultCurrency="TRY">
+          <CurrencyInput.Field />
+          <CurrencyInput.Suffix>
+            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+          </CurrencyInput.Suffix>
+        </CurrencyInput>
+      </Field>
+    </div>
+  );
+}
+
+render(<FieldStatesDemo />);
+`;
+
+export const controlledDemo = String.raw`
+function ControlledDemo() {
+  const [amount, setAmount] = useState(2500);
+  const [currency, setCurrency] = useState('EUR');
+
+  return (
+    <div className="grid w-full max-w-90 gap-3">
+      <CurrencyInput
+        value={amount}
+        onValueChange={setAmount}
+        currency={currency}
+        onCurrencyChange={setCurrency}
+        locale="de-DE"
+      >
+        <CurrencyInput.Field />
+        <CurrencyInput.ClearButton />
+        <CurrencyInput.Suffix>
+          <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+        </CurrencyInput.Suffix>
+      </CurrencyInput>
+
+      <pre className="rounded bg-black/5 p-3 text-xs dark:bg-white/10">
+        {JSON.stringify({ amount, currency }, null, 2)}
+      </pre>
+
+      <div className="flex gap-2">
+        <button
+          type="button"
+          className="rounded border px-2 py-1 text-sm"
+          onClick={() => setAmount(1000)}
+        >
+          Set 1000
+        </button>
+        <button
+          type="button"
+          className="rounded border px-2 py-1 text-sm"
+          onClick={() => setAmount(undefined)}
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+  );
+}
+
+render(<ControlledDemo />);
+`;
+
+export const customPickerDemo = String.raw`
+function CustomPickerDemo() {
+  return (
+    <Field className="w-full max-w-90">
+      <Field.Label>Custom trigger &amp; panel</Field.Label>
+      <CurrencyInput defaultValue={1234.56} defaultCurrency="TRY">
+        <CurrencyInput.Field />
+        <CurrencyInput.Suffix>
+          <CurrencyInput.CurrencySelect
+            currencies={CURRENCIES}
+            aria-label="Select currency"
+            trigger={(currency) => (
+              <span className="font-semibold">
+                {currency ? currency.code : '—'}
+              </span>
+            )}
+          >
+            {(currency) => (
+              <span className="flex items-center gap-2">
+                <span aria-hidden="true" className="w-4 text-center">
+                  {currency.symbol}
+                </span>
+                <span className="font-medium">{currency.code}</span>
+                <span className="opacity-60">{currency.label}</span>
+              </span>
+            )}
+          </CurrencyInput.CurrencySelect>
+        </CurrencyInput.Suffix>
+      </CurrencyInput>
+      <Field.Description>
+        Both the trigger and the panel items are render props.
+      </Field.Description>
+    </Field>
+  );
+}
+
+render(<CustomPickerDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+`CurrencyInput` is an amount field paired with a currency selector. It renders
+the styled [`Input`](./input) for its chrome — border, sizing, focus ring,
+disabled/invalid state, clear button — and layers the amount and currency state
+on top, so everything you know about `Input` still applies.
+
+Formatting is done entirely with the platform's `Intl.NumberFormat`. There is no
+locale table and no formatting dependency: separators, fraction digits, and
+symbol placement all come from the runtime, which is why `tr-TR` renders
+`1.234,56 ₺` correctly out of the box.
+
+## Usage
+
+```tsx
+import { CurrencyInput, Field } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Field>
+  <Field.Label />
+  <CurrencyInput>
+    <CurrencyInput.Prefix />
+    <CurrencyInput.Field />
+    <CurrencyInput.ClearButton />
+    <CurrencyInput.Suffix>
+      <CurrencyInput.CurrencySelect />
+    </CurrencyInput.Suffix>
+  </CurrencyInput>
+  <Field.Description />
+  <Field.ErrorMessage />
+</Field>
+```
+
+The anatomy is explicit: the root renders no field of its own, exactly like
+`Input`. `CurrencyInput.Prefix`, `Suffix`, `ClearButton`, and `Spinner` are the
+same components `Input` exposes, re-published here so a currency input is
+composed from a single namespace.
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={currencyInputScope}
+/>
+
+## The value is a number
+
+The committed value is a plain `number` — never the formatted string. An empty
+field commits `undefined` rather than `0`, so "no amount entered" stays
+distinguishable from a real zero.
+
+## Formatting happens on blur
+
+While the field has focus you edit a plain, ungrouped string (`1234,56`); on
+blur it settles into the full display form (`1.234,56 ₺`). Reformatting on every
+keystroke is what makes masked inputs jump the caret, so it is deliberately not
+done here. Pasting a fully formatted value still parses — stray symbols,
+grouping separators, and non-breaking spaces are all tolerated.
+
+## Symbol placement
+
+Where the selector goes is a composition decision, not a prop: put it in
+`Suffix` for the Turkish trailing-symbol convention, or in `Prefix` for the
+leading-symbol one.
+
+<LiveCode
+  code={placementDemo}
+  noInline
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={currencyInputScope}
+/>
+
+## Locales and currencies
+
+`locale` drives grouping, decimals, and symbol placement; `currency` (ISO 4217)
+drives the symbol and the natural fraction digits. Pass `locale` explicitly —
+leaving it to the runtime lets the server and the browser disagree and produces
+a hydration mismatch.
+
+<LiveCode
+  code={localesDemo}
+  noInline
+  previewMinHeight={460}
+  previewWrapper={ReactSparDemoRoot}
+  scope={currencyInputScope}
+/>
+
+## Sizes
+
+<LiveCode
+  code={sizesDemo}
+  noInline
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={currencyInputScope}
+/>
+
+## Using with `Field`
+
+`invalid`, `disabled`, `required`, and `readOnly` cascade from `Field` into the
+nested input, and label/description/error messaging is wired through shared IDs.
+
+<LiveCode
+  code={fieldStatesDemo}
+  noInline
+  previewMinHeight={420}
+  previewWrapper={ReactSparDemoRoot}
+  scope={currencyInputScope}
+/>
+
+## Controlled
+
+The amount and the currency are controlled independently. Pair `value` with
+`onValueChange`, and `currency` with `onCurrencyChange` — a controlled
+`currency` without its handler leaves the selector unable to commit.
+
+<LiveCode
+  code={controlledDemo}
+  noInline
+  previewMinHeight={420}
+  previewWrapper={ReactSparDemoRoot}
+  scope={currencyInputScope}
+/>
+
+## Customizing the picker
+
+`CurrencyInput.CurrencySelect` takes render props for both the trigger and the
+panel items, so symbol/name/code ordering and localized names need no new part.
+
+<LiveCode
+  code={customPickerDemo}
+  noInline
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={currencyInputScope}
+/>
+
+If you outgrow it entirely, `useCurrencyInputContext()` exposes the amount and
+currency state so you can build a bespoke picker and bind it to the same input:
+
+```tsx
+import { useCurrencyInputContext } from '@takeoff-ui/react-spar';
+
+function MyCurrencyPicker() {
+  const { currency, setCurrency } = useCurrencyInputContext('MyCurrencyPicker');
+  // …render anything, then call setCurrency(code)
+}
+```
+
+Because the selector reads from context rather than from its position in the
+DOM, it behaves identically wherever you place it.
+
+## Accessibility
+
+- The selector trigger collapses to a bare symbol, so it carries an explicit
+  accessible name. Override it with `aria-label` when the default
+  (`"Para birimi"`) does not fit your product's language.
+- Each panel item sets `label`, which is both the trigger's text representation
+  and the typeahead search key — start typing a currency name to jump to it.
+- The amount field uses `inputMode="decimal"` so touch keyboards open on digits,
+  and disables autocomplete.
+
+## Related
+
+- [`Input`](./input) — the underlying field and its shared parts
+- [`Select`](./select) — the picker used for the currency list

@@ -6,6 +6,7 @@ export * from './button';
 export * from './card';
 export * from './checkbox';
 export * from './chip';
+export * from './currency-input';
 export * from './drawer';
 export * from './dialog';
 export * from './divider';

@@ -28,6 +28,7 @@ const sidebars: SidebarsConfig = {
         'components/card',
         'components/checkbox',
         'components/chip',
+        'components/currency-input',
         'components/drawer',
         'components/dialog',
         'components/divider',

@@ -16,6 +16,7 @@ export {
   Card,
   Checkbox,
   Chip,
+  CurrencyInput,
   Dialog,
   Divider,
   Drawer,
