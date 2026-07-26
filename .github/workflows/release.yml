@@ -64,10 +64,17 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Ensure npm CLI floor for OIDC trusted publishing
+        # Pinned to 11.5.1 (the first npm to support OIDC trusted publishing)
+        # rather than @latest. `pnpm changeset publish` routes through npm for
+        # OIDC but still passes pnpm's `--no-git-checks`; newer npm hard-rejects
+        # unknown flags (EUNKNOWNCONFIG "--git-checks"), which broke the release.
+        # 11.5.1 supports OIDC and tolerates the stray flag. Bump only after
+        # verifying the newer npm no longer errors on it.
+        #
         # --force bypasses the "Cannot find module 'promise-retry'" bug that
         # can surface when the bundled npm tries to update itself from a
         # half-resolved global tree.
-        run: npm install -g npm@latest --force
+        run: npm install -g npm@11.5.1 --force
 
       - run: pnpm install --frozen-lockfile
 
