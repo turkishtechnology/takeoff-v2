@@ -1,5 +1,22 @@
 # @takeoff-design/tailwind
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  [[`1c08ee7`](https://github.com/turkishtechnology/takeoff-v2/commit/1c08ee748f491159fdf6da715d8673a845fa58d9),
+  [`369209d`](https://github.com/turkishtechnology/takeoff-v2/commit/369209db4a071d53e6230b20342c82f123688b74),
+  [`8614c56`](https://github.com/turkishtechnology/takeoff-v2/commit/8614c564504577e22c330c89df27d23cf8ddbd57),
+  [`2c740ee`](https://github.com/turkishtechnology/takeoff-v2/commit/2c740ee4247be57aeedad51fc5d7690963b3bb13),
+  [`0259edf`](https://github.com/turkishtechnology/takeoff-v2/commit/0259edf676b85e8600baecf66684b760b548af83),
+  [`a944956`](https://github.com/turkishtechnology/takeoff-v2/commit/a944956633b37949432b7c339b6788bb319674a4),
+  [`2a38d63`](https://github.com/turkishtechnology/takeoff-v2/commit/2a38d6375a26756ba49e70faa8da77aa007bc252),
+  [`c51d4e5`](https://github.com/turkishtechnology/takeoff-v2/commit/c51d4e563f9900f9e5bc450133d76f6038477072),
+  [`b12d164`](https://github.com/turkishtechnology/takeoff-v2/commit/b12d1641b1930b25decc4b0dee1505f483678e4b),
+  [`945c496`](https://github.com/turkishtechnology/takeoff-v2/commit/945c4967cc773fde11def7936abbe41ad635c7d1)]:
+  - @takeoff-design/tokens@0.3.0
+
 ## 0.1.1
 
 ### Patch Changes
