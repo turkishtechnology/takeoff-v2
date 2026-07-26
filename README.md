@@ -62,6 +62,14 @@ pnpm --filter @takeoff-ui/react-spar test
 pnpm --filter @takeoff-ui/react-spar build
 ```
 
+### Cleaning
+
+```bash
+pnpm clean            # build outputs + caches (dist, build, .docusaurus, .turbo, .vite, docs webpack cache)
+pnpm clean:modules    # every node_modules (run pnpm install after)
+pnpm clean:all        # clean + clean:modules + delete pnpm-lock.yaml — full reset
+```
+
 ## Validation workflow
 
 The workspace is split into **pure validation boundaries** and **prep / build
