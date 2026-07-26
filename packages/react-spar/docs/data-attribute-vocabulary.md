@@ -77,24 +77,31 @@ table needs updating.
 | --------------------- | ------------ | --------------------------- | ----------------------------------- |
 | `data-complete`       | presence     | Root (Progress)             | Determinate value reached `max`     |
 | `data-disabled`       | presence     | Root or Stepper item        | Component or step is disabled       |
+| `data-dragging`       | presence     | Slider thumb                | Pointer currently controls it       |
 | `data-error`          | presence     | Stepper item                | Step has an error treatment         |
+| `data-focus`          | presence     | Slider thumb                | Handle holds keyboard focus         |
 | `data-indeterminate`  | presence     | Root, Indicator (Progress)  | Indeterminate; indicator animates   |
 | `data-invalid`        | presence     | Root                        | Component is visually invalid       |
 | `data-loading`        | presence     | Root                        | Component is in loading state       |
+| `data-readonly`       | presence     | Root (Slider)               | Value renders, interaction blocked  |
+| `data-required`       | presence     | Root (Slider)               | Control is required                 |
 | `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state  |
 | `data-state="open"`   | presence-str | Spar Accordion item/trigger | Disclosure is open (Spar-emitted)   |
 | `data-state="closed"` | presence-str | Spar Accordion item/trigger | Disclosure is closed (Spar-emitted) |
 
 ### Variant
 
-| Attribute          | Scope            | Example values                                                            | Notes                                                                 |
-| ------------------ | ---------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `data-variant`     | Root             | `primary`, `danger`, `neutral`                                            | Semantic color treatment                                              |
-| `data-size`        | Root, Item       | `base`, `large`, `small`                                                  | Duplicated to items by design where recipes need item-local selectors |
-| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`                                    | Rendering or behavior mode                                            |
-| `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below            |
-| `data-animation`   | Root             | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                     |
-| `data-orientation` | Root             | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                |
+| Attribute          | Scope            | Example values                                                            | Notes                                                                     |
+| ------------------ | ---------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `data-variant`     | Root             | `primary`, `danger`, `neutral`                                            | Semantic color treatment                                                  |
+| `data-size`        | Root, Item       | `base`, `large`, `small`                                                  | Duplicated to items by design where recipes need item-local selectors     |
+| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`                                    | Rendering or behavior mode                                                |
+| `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below                |
+| `data-animation`   | Root             | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                         |
+| `data-orientation` | Root             | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                    |
+| `data-thumb`       | Slider thumb     | `min`, `max`                                                              | First / last handle of a range; middle handles carry none                 |
+| `data-track`       | Slider root      | `normal`, `inverted`, `none`                                              | Rail fill mode: `inverted` swaps rail/fill colours, `none` drops the fill |
+| `data-tooltip`     | Slider root      | `auto`, `always`, `never`                                                 | When the value bubble is shown (`auto` = on drag/focus)                   |
 
 ### Semantic
 
@@ -107,6 +114,7 @@ table needs updating.
 | `data-hide-arrows`    | Accordion root         | Auto-rendered arrows are hidden                  |
 | `data-arrow-position` | Accordion root         | Layout intent for trigger arrows                 |
 | `data-position`       | Radio root/item        | Indicator placement (`left` / `right`)           |
+| `data-range`          | Slider root            | Root renders more than one thumb                 |
 | `data-spread`         | Radio root             | Items share available space along the group axis |
 | `data-level`          | Input strength segment | Strength tier for filled password meter segments |
 | `data-linear`         | Stepper root           | Steps follow a linear progression                |
@@ -241,6 +249,58 @@ its attributes are wrapper-emitted. Recorded here per rule 10.
 - **Dimensions are not data attributes.** `width`/`height` are continuous
   values, so the wrapper publishes them to the recipe through the
   `--tk-skeleton-width` / `--tk-skeleton-height` custom properties on the root.
+
+### Slider
+
+Slider is **v2-owned** with no upstream Spar primitive (Progress/Table
+precedent), so its attributes are wrapper-emitted. Recorded here per rule 10.
+Takeoff Core's `tk-slider` implements only pointer dragging, so the keyboard and
+ARIA surfaces are authored in the wrapper rather than ported.
+
+- **Root carries the variants and the shared state:** `data-size` (`small` |
+  `base` | `large` — rail thickness and thumb diameter), `data-variant` (fill
+  color), `data-orientation` (`horizontal` | `vertical` — a vertical rail runs
+  bottom-to-top and takes its height from its container, since it has no
+  intrinsic one), `data-range` (presence — the root renders more than one
+  thumb), `data-track` (`normal` | `inverted` | `none` — the rail fill mode:
+  `inverted` recolours the rail and band so the complement reads as filled,
+  `none` drops the fill but keeps the rail), `data-tooltip` (`auto` | `always` |
+  `never` — when the value bubble shows; `auto` reveals it on drag/focus), plus
+  `data-disabled` / `data-readonly` / `data-invalid` / `data-required`, each
+  resolved from the own prop or inherited through `useOptionalFieldContext` from
+  a surrounding Field.
+- **State that belongs to one handle lives on the thumb.** `data-thumb` (`min` |
+  `max`) marks the **first and last** handles of a range so the recipe can style
+  the ends independently. A range may carry more than two handles; a middle one
+  is neither end, so it is left without the attribute rather than given a
+  misleading value. `data-dragging` / `data-focus` (presence) reveal the value
+  bubble and draw the focus ring. Rule 7 does not apply — no primitive backs
+  this state, and a root-level mirror could not say _which_ handle is active.
+- **The value is not a data attribute.** Thumb offsets and the filled band are
+  continuous values, so the wrapper writes them as inline **style**
+  (`inset-inline-start` on each thumb, `inset-inline-start` + `width` on
+  `.tk-slider-range`) — a presentation attribute would lose to any stylesheet
+  rule. Same rationale as Progress's fill width.
+- **There is intentionally no root-level `data-dragging` mirror.** The recipe
+  suppresses the position transition through the thumb's own attribute and a
+  sibling selector, so duplicating it on the root would add a hook with no
+  distinct consumer (rule 9).
+- **The value bubble (`tooltip` slot) is a CSS-positioned node, not the Tooltip
+  component.** `Slider.Thumb` renders `.tk-slider-tooltip` as a child of the
+  handle, anchored in CSS and revealed by `[data-dragging]` / `[data-focus]`. It
+  is deliberately not a floating `Tooltip`: an overlay would observe the moving,
+  continuously-resizing bubble with a ResizeObserver, lagging the drag and
+  tripping the browser's benign "ResizeObserver loop" warning. The bubble is
+  `aria-hidden` — the value is announced once, through the thumb's
+  `aria-valuenow` / `aria-valuetext`, and the thumb's `aria-describedby` stays
+  pointed at the surrounding Field's description/error. `classNames` /
+  `slotProps.tooltip` land on it, and `Slider.Thumb` children (a node, or a
+  function of the thumb state) replace its content.
+- **There is intentionally no `data-type` hook.** Takeoff Core's `tk-slider`
+  picks its bottom indicator with a `type` prop, but an indicator is anatomy,
+  not a variant — so `Slider.Ticks` is composed in instead, following the
+  Input-modes-as-composition exception in the authoring contract. It styles
+  itself by class; no root attribute mediates the choice.
 
 ### Stepper
 

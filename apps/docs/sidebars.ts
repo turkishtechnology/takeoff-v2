@@ -38,6 +38,7 @@ const sidebars: SidebarsConfig = {
         'components/progress',
         'components/select',
         'components/skeleton',
+        'components/slider',
         'components/spinner',
         'components/stepper',
         'components/switch',
