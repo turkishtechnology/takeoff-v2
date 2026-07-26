@@ -1,0 +1,69 @@
+// ---------------------------------------------------------------------------
+// Currency input
+//
+// The component renders the styled Input for its chrome (border, sizing, focus
+// ring, disabled/invalid state), so this recipe only covers what is specific to
+// currency:
+//   1. aligning the amount, and
+//   2. making the embedded currency Select read as an in-input adornment rather
+//      than a second form control nested inside the first.
+//
+// `.tk-currency-input` is composed onto the same element as `.tk-input`, so
+// every rule here is scoped under it and inherits the input row's layout.
+// ---------------------------------------------------------------------------
+
+.tk-currency-input {
+  // ---- Amount ----
+
+  .tk-currency-input-field {
+    // Money reads right-aligned, and tabular figures stop the digits shifting
+    // as the value changes.
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ---- Embedded currency selector ----
+
+  .tk-currency-input-currency-select {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  // `.tk-input-prefix` / `.tk-input-suffix` already own the affix padding and
+  // the hairline divider (see `_input.scss`). Without this reset the nested
+  // trigger would stack its own form-control box on top of them — doubled
+  // padding, a border inside a border, and a second background.
+  .tk-input-prefix,
+  .tk-input-suffix {
+    .tk-select-trigger {
+      height: auto;
+      min-height: 0;
+      min-width: 0;
+      gap: var(--spacing-1);
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      // Inherit the affix typography so the symbol matches a static text affix.
+      color: inherit;
+      font: inherit;
+
+      // The outer input row already renders the focus treatment for the field.
+      // The trigger is independently focusable, so it still needs a visible
+      // focus state — but as a ring on the glyph, not a border on a box that
+      // no longer exists.
+      &:focus-visible {
+        outline: var(--spacing-px) solid var(--states-info-base);
+        outline-offset: var(--spacing-1);
+        border-color: transparent;
+      }
+    }
+
+    // The trigger is a symbol, not a truncating label region.
+    .tk-select-value {
+      overflow: visible;
+    }
+  }
+}
