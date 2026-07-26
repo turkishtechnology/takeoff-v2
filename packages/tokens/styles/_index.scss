@@ -11,14 +11,20 @@
 @use 'recipes/checkbox';
 @use 'recipes/chip';
 @use 'recipes/dialog';
+@use 'recipes/divider';
 @use 'recipes/drawer';
+@use 'recipes/dropdown';
 @use 'recipes/field';
 @use 'recipes/input';
 @use 'recipes/label';
 @use 'recipes/popover';
+@use 'recipes/progress';
 @use 'recipes/radio';
 @use 'recipes/select';
+@use 'recipes/skeleton';
+@use 'recipes/slider';
 @use 'recipes/spinner';
+@use 'recipes/stepper';
 @use 'recipes/switch';
 @use 'recipes/table';
 @use 'recipes/tabs';
@@ -28,6 +34,8 @@
 @include button.button-keyframes;
 @include input.input-keyframes;
 @include popover.popover-keyframes;
+@include progress.progress-keyframes;
+@include skeleton.skeleton-keyframes;
 @include spinner.spinner-keyframes;
 @include tooltip.tooltip-keyframes;
 
@@ -131,6 +139,10 @@
   @include dialog.dialog-footer;
 }
 
+.tk-divider {
+  @include divider.divider;
+}
+
 .tk-drawer-overlay {
   @include drawer.drawer-overlay;
 }
@@ -161,6 +173,38 @@
 
 .tk-drawer-close {
   @include drawer.drawer-close;
+}
+
+.tk-dropdown-trigger {
+  @include dropdown.dropdown-trigger;
+}
+
+.tk-dropdown-content {
+  @include dropdown.dropdown-content;
+}
+
+.tk-dropdown-viewport {
+  @include dropdown.dropdown-viewport;
+}
+
+.tk-dropdown-item {
+  @include dropdown.dropdown-item;
+}
+
+.tk-dropdown-group {
+  @include dropdown.dropdown-group;
+}
+
+.tk-dropdown-label {
+  @include dropdown.dropdown-label;
+}
+
+.tk-dropdown-separator {
+  @include dropdown.dropdown-separator;
+}
+
+.tk-dropdown-arrow {
+  @include dropdown.dropdown-arrow;
 }
 
 .tk-field {
@@ -207,6 +251,10 @@
   @include select.select-content;
 }
 
+.tk-select-viewport {
+  @include select.select-viewport;
+}
+
 .tk-select-item {
   @include select.select-item;
 }
@@ -227,8 +275,72 @@
   @include select.select-separator;
 }
 
+.tk-select-arrow {
+  @include select.select-arrow;
+}
+
+.tk-skeleton {
+  @include skeleton.skeleton;
+}
+
+.tk-slider {
+  @include slider.slider;
+}
+
+.tk-slider-track {
+  @include slider.slider-track;
+}
+
+.tk-slider-range {
+  @include slider.slider-range;
+}
+
+.tk-slider-thumb {
+  @include slider.slider-thumb;
+}
+
+.tk-slider-tooltip {
+  @include slider.slider-tooltip;
+}
+
+.tk-slider-arrow {
+  @include slider.slider-arrow;
+}
+
+.tk-slider-ticks {
+  @include slider.slider-ticks;
+}
+
+.tk-slider-tick {
+  @include slider.slider-tick;
+}
+
+.tk-slider-value {
+  @include slider.slider-value;
+}
+
 .tk-spinner {
   @include spinner.spinner;
+}
+
+.tk-progress {
+  @include progress.progress;
+}
+
+.tk-progress-track {
+  @include progress.progress-track;
+}
+
+.tk-progress-indicator {
+  @include progress.progress-indicator;
+}
+
+.tk-progress-value {
+  @include progress.progress-value;
+}
+
+.tk-stepper {
+  @include stepper.stepper;
 }
 
 .tk-checkbox {

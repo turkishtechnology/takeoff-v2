@@ -1,6 +1,6 @@
 {
   "name": "@takeoff-design/tailwind",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Tailwind CSS theme package for Takeoff Design",
   "author": "Turkish Technology Frontend Infrastructure Team <takeoffui@thy.com>",
   "homepage": "https://takeoffui.com",
@@ -34,12 +34,12 @@
     "tailwindcss": ">=3.0.0"
   },
   "devDependencies": {
-    "prettier": "^3.9.3",
-    "tailwindcss": "^4.0.0"
+    "prettier": "^3.9.5",
+    "tailwindcss": "^4.3.3"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/turkishtechnology/takeoff-design.git",
+    "url": "https://github.com/turkishtechnology/takeoff-v2.git",
     "directory": "packages/tailwind"
   },
   "publishConfig": {

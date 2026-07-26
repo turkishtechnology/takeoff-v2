@@ -176,17 +176,10 @@ export default {
       sparDocsUrl: sparBreadcrumbDocsUrl,
       sparDocsLabel: 'Spar Breadcrumb docs',
       propOverrides: {
-        children: childrenOverride('Override the separator glyph entirely; takes priority over `variant`. The owner `<li aria-hidden>` element stays invariant.'),
+        children: childrenOverride('Override the default chevron separator. The owner `<li aria-hidden>` element stays invariant.'),
         className: classNameOverride,
       },
-      dataAttributes: [
-        dataSlotRoot,
-        {
-          attribute: 'data-variant',
-          appliedWhen: 'Always',
-          purpose: 'Reflects the resolved `variant` preset (`chevron` | `dot` | `slash` | `vertical`) so the recipe can paint glyph separators. Emitted by the wrapper.',
-        },
-      ],
+      dataAttributes: [dataSlotRoot],
     },
   ],
 };

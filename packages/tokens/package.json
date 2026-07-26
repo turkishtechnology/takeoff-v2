@@ -1,6 +1,6 @@
 {
   "name": "@takeoff-design/tokens",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Design tokens, CSS variables, SCSS, JS exports, and component recipe styles for Takeoff Design.",
   "type": "module",
   "author": "Turkish Technology Frontend Infrastructure Team <takeoffui@thy.com>",
@@ -8,7 +8,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/turkishtechnology/takeoff-design.git",
+    "url": "https://github.com/turkishtechnology/takeoff-v2.git",
     "directory": "packages/tokens"
   },
   "files": [
@@ -49,6 +49,6 @@
   "devDependencies": {
     "sass": "^1.98.0",
     "style-dictionary": "5",
-    "vitest": "^4.1.2"
+    "vitest": "^4.1.10"
   }
 }

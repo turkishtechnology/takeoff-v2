@@ -35,15 +35,19 @@ export const Switch = <T extends ElementType = 'button'>(props: SwitchProps<T>) 
     // off the rendered DOM where they would leak as raw HTML attributes.
     size: _size,
     variant: _variant,
-    // `invalid` is forwarded to Spar as `invalid` (same name).
-    invalid = false,
     children,
     ref,
+    // `invalid`, `disabled`, `readOnly` and `required` are intentionally NOT
+    // destructured (so no eager `= false` default is applied) — they flow to
+    // Spar via `...sparProps` untouched. Defaulting `invalid` here would turn
+    // an omitted prop into an explicit `false`, defeating Spar's
+    // `invalid ?? fieldCtx?.invalid` inheritance and silently overriding a
+    // wrapping `<Field invalid>`. Mirrors the Radio/Input/Select pass-through.
     ...sparProps
   } = rest;
 
   return (
-    <SparSwitch {...(sparProps as unknown as SparSwitchProps)} invalid={invalid} ref={ref} {...rootAttrs}>
+    <SparSwitch {...(sparProps as unknown as SparSwitchProps)} ref={ref} {...rootAttrs}>
       {(state: SparSwitchRenderProps) => (
         <SwitchProvider
           value={{

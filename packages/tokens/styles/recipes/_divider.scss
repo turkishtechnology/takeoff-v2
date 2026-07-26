@@ -1,0 +1,146 @@
+// ---------------------------------------------------------------------------
+// Divider recipe — apply to `.tk-divider` root.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-divider       — root (div, flex container; the line is drawn by the
+//                       root's ::before / ::after pseudo-elements)
+//   .tk-divider-label — wrapper-owned label slot rendered between the segments
+//
+// State/variant attributes on root:
+//   data-orientation — horizontal | vertical
+//   data-type        — line style (solid | dashed | dotted)
+//   data-align       — label placement along the line (start | center | end)
+//
+// Dashed/dotted are drawn with gradients instead of border-style: browsers
+// scale the native dash pattern with border width, so at 1px the dashes are
+// ~2px and read as solid. Dashed uses a repeating-linear-gradient (dash 6px /
+// gap 4px); dotted uses a tiled radial-gradient (2px round dots / gap 3px).
+//
+// The line is drawn entirely in CSS: both pseudo-elements grow to fill the
+// available space, so a label-less divider renders one continuous line purely
+// in CSS. The wrapper still guards label rendering in JS — an empty .tk-divider-label
+// span sitting between the two flex: 1 1 0% segments would break that continuity.
+//
+// Coloring: the line follows `currentColor`, and the root's `color` defaults
+// to the token line color. Recoloring the line is therefore a plain
+// `className` / `style` color change on the root — no props or custom
+// properties needed. The label sets its own text color, so it stays readable
+// regardless of the line color; restyle it via the `label` slot.
+//
+
+// Dash/dot patterns for one orientation. The gradient replaces the solid
+// border on both segments; forced-colors mode and print drop background
+// images, so those fall back to native border dashes (coarser, but visible).
+@mixin divider-line-pattern($axis) {
+  $size-prop: height;
+  $border-prop: border-block-start;
+  $gradient-direction: to right;
+  $dot-repeat: repeat-x;
+  $dot-tile: 5px 2px;
+
+  @if $axis == vertical {
+    $size-prop: width;
+    $border-prop: border-inline-start;
+    $gradient-direction: to bottom;
+    $dot-repeat: repeat-y;
+    $dot-tile: 2px 5px;
+  }
+
+  &[data-type='dashed']::before,
+  &[data-type='dashed']::after {
+    #{$size-prop}: 1px;
+    #{$border-prop}: 0;
+    background-image: repeating-linear-gradient(#{$gradient-direction}, currentColor 0 6px, transparent 6px 10px);
+  }
+
+  &[data-type='dotted']::before,
+  &[data-type='dotted']::after {
+    #{$size-prop}: 2px;
+    #{$border-prop}: 0;
+    background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+    background-repeat: $dot-repeat;
+    background-size: $dot-tile;
+  }
+
+  @media (forced-colors: active), print {
+    &[data-type='dashed']::before,
+    &[data-type='dashed']::after {
+      #{$size-prop}: auto;
+      background-image: none;
+      #{$border-prop}: 1px dashed currentColor;
+    }
+
+    &[data-type='dotted']::before,
+    &[data-type='dotted']::after {
+      #{$size-prop}: auto;
+      background-image: none;
+      #{$border-prop}: 1px dotted currentColor;
+    }
+  }
+}
+
+@mixin divider {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  color: var(--border-light);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1 1 0%;
+    border-block-start: 1px solid currentColor;
+  }
+
+  .tk-divider-label {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding-inline: 8px;
+    white-space: nowrap;
+
+    color: var(--text-base);
+    font-family: var(--family-body, 'tk-text', sans-serif);
+    font-size: var(--desktop-body-2xs-size);
+    font-weight: 400;
+    line-height: var(--desktop-body-2xs-line-height);
+  }
+
+  // Label alignment — fix the short segment to a small inset -----------------
+
+  &[data-align='start']::before,
+  &[data-align='end']::after {
+    flex: 0 0 16px;
+  }
+
+  // Orientation ---------------------------------------------------------------
+
+  &[data-orientation='horizontal'] {
+    width: 100%;
+    margin-block: 16px;
+
+    @include divider-line-pattern(horizontal);
+  }
+
+  &[data-orientation='vertical'] {
+    flex-direction: column;
+    align-self: stretch;
+    min-height: 100%;
+    margin-inline: 16px;
+
+    &::before,
+    &::after {
+      border-block-start: 0;
+      border-inline-start: 1px solid currentColor;
+    }
+
+    @include divider-line-pattern(vertical);
+
+    .tk-divider-label {
+      padding-inline: 0;
+      padding-block: 8px;
+    }
+  }
+}

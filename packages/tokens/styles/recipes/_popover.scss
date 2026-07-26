@@ -21,7 +21,13 @@
   font-size: var(--desktop-body-xs-size);
   font-weight: 300;
   line-height: var(--desktop-body-xs-line-height);
-  z-index: 1300;
+  // Layer above the modal band (dialog/drawer panel = 1501) so a popover
+  // triggered from inside a drawer/dialog is not painted behind it. Both portal
+  // to <body>, so the explicit z-index — not DOM order — decides. Shares the
+  // 1600 tier with Select (a Select opened inside a Popover then wins on DOM
+  // order, since it portals later). Ordering: overlay 1500 < modal 1501 <
+  // select/popover 1600 < toast 2000 < tooltip 2100.
+  z-index: 1600;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -68,7 +74,12 @@
       color: var(--text-lightest);
     }
     .tk-popover-arrow {
-      color: var(--background-darkest);
+      .tk-arrow-fill {
+        fill: var(--background-darkest);
+      }
+      .tk-arrow-border {
+        fill: var(--border-dark);
+      }
     }
   }
 
@@ -77,7 +88,12 @@
     border: 1px solid var(--border-light);
 
     .tk-popover-arrow {
-      color: var(--static-light);
+      .tk-arrow-fill {
+        fill: var(--static-light);
+      }
+      .tk-arrow-border {
+        fill: var(--border-light);
+      }
     }
   }
 
@@ -86,7 +102,12 @@
     border: 1px solid var(--states-info-sub-base);
 
     .tk-popover-arrow {
-      color: var(--states-info-light);
+      .tk-arrow-fill {
+        fill: var(--states-info-light);
+      }
+      .tk-arrow-border {
+        fill: var(--states-info-sub-base);
+      }
     }
   }
 
@@ -95,7 +116,12 @@
     border: 1px solid var(--states-success-sub-base);
 
     .tk-popover-arrow {
-      color: var(--states-success-light);
+      .tk-arrow-fill {
+        fill: var(--states-success-light);
+      }
+      .tk-arrow-border {
+        fill: var(--states-success-sub-base);
+      }
     }
   }
 
@@ -104,7 +130,12 @@
     border: 1px solid var(--states-warning-sub-base);
 
     .tk-popover-arrow {
-      color: var(--states-warning-light);
+      .tk-arrow-fill {
+        fill: var(--states-warning-light);
+      }
+      .tk-arrow-border {
+        fill: var(--states-warning-sub-base);
+      }
     }
   }
 
@@ -113,7 +144,12 @@
     border: 1px solid var(--states-danger-sub-base);
 
     .tk-popover-arrow {
-      color: var(--states-danger-light);
+      .tk-arrow-fill {
+        fill: var(--states-danger-light);
+      }
+      .tk-arrow-border {
+        fill: var(--states-danger-sub-base);
+      }
     }
   }
 
@@ -122,7 +158,12 @@
     border: 1px solid var(--border-sub-base);
 
     .tk-popover-arrow {
-      color: var(--background-light);
+      .tk-arrow-fill {
+        fill: var(--background-light);
+      }
+      .tk-arrow-border {
+        fill: var(--border-sub-base);
+      }
     }
   }
 }
@@ -146,6 +187,23 @@
 @mixin popover-arrow {
   display: block;
   pointer-events: none;
+  // react-spar's Popover.Arrow draws two `<polygon>`s in the 10×5 viewBox: a full
+  // `.tk-arrow-border` triangle behind an inset `.tk-arrow-fill` triangle. The fill
+  // is inset 1px from the two outer edges — so only a 1px border rim shows there —
+  // and extended past the base into the content, so the outline stays OPEN where
+  // the arrow meets the bubble (no seam line across the neck). `overflow: visible`
+  // lets the fill reach up past the SVG viewBox to cover the content's own border
+  // at that neck. Both layers are colored per variant off the `[data-variant]`
+  // cascade below; these are safe defaults (border folds into the fill = a plain
+  // solid triangle when no variant matches).
+  overflow: visible;
+
+  .tk-arrow-fill {
+    fill: currentColor;
+  }
+  .tk-arrow-border {
+    fill: currentColor;
+  }
 }
 
 @mixin popover-close {

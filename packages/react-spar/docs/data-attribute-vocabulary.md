@@ -75,21 +75,33 @@ table needs updating.
 
 | Attribute             | Value        | Scope                       | Meaning                             |
 | --------------------- | ------------ | --------------------------- | ----------------------------------- |
-| `data-disabled`       | presence     | Root                        | Component is disabled               |
+| `data-complete`       | presence     | Root (Progress)             | Determinate value reached `max`     |
+| `data-disabled`       | presence     | Root or Stepper item        | Component or step is disabled       |
+| `data-dragging`       | presence     | Slider thumb                | Pointer currently controls it       |
+| `data-error`          | presence     | Stepper item                | Step has an error treatment         |
+| `data-focus`          | presence     | Slider thumb                | Handle holds keyboard focus         |
+| `data-indeterminate`  | presence     | Root, Indicator (Progress)  | Indeterminate; indicator animates   |
 | `data-invalid`        | presence     | Root                        | Component is visually invalid       |
 | `data-loading`        | presence     | Root                        | Component is in loading state       |
+| `data-readonly`       | presence     | Root (Slider)               | Value renders, interaction blocked  |
+| `data-required`       | presence     | Root (Slider)               | Control is required                 |
 | `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state  |
 | `data-state="open"`   | presence-str | Spar Accordion item/trigger | Disclosure is open (Spar-emitted)   |
 | `data-state="closed"` | presence-str | Spar Accordion item/trigger | Disclosure is closed (Spar-emitted) |
 
 ### Variant
 
-| Attribute      | Scope            | Example values                                     | Notes                                                                 |
-| -------------- | ---------------- | -------------------------------------------------- | --------------------------------------------------------------------- |
-| `data-variant` | Root             | `primary`, `danger`, `neutral`                     | Semantic color treatment                                              |
-| `data-size`    | Root, Item       | `base`, `large`, `small`                           | Duplicated to items by design where recipes need item-local selectors |
-| `data-mode`    | Root, Item       | `button`, `link`, `default`, `compact`             | Rendering or behavior mode                                            |
-| `data-type`    | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card` | Owner depends on component — see component decisions below            |
+| Attribute          | Scope            | Example values                                                            | Notes                                                                     |
+| ------------------ | ---------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `data-variant`     | Root             | `primary`, `danger`, `neutral`                                            | Semantic color treatment                                                  |
+| `data-size`        | Root, Item       | `base`, `large`, `small`                                                  | Duplicated to items by design where recipes need item-local selectors     |
+| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`                                    | Rendering or behavior mode                                                |
+| `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below                |
+| `data-animation`   | Root             | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                         |
+| `data-orientation` | Root             | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                    |
+| `data-thumb`       | Slider thumb     | `min`, `max`                                                              | First / last handle of a range; middle handles carry none                 |
+| `data-track`       | Slider root      | `normal`, `inverted`, `none`                                              | Rail fill mode: `inverted` swaps rail/fill colours, `none` drops the fill |
+| `data-tooltip`     | Slider root      | `auto`, `always`, `never`                                                 | When the value bubble is shown (`auto` = on drag/focus)                   |
 
 ### Semantic
 
@@ -102,8 +114,11 @@ table needs updating.
 | `data-hide-arrows`    | Accordion root         | Auto-rendered arrows are hidden                  |
 | `data-arrow-position` | Accordion root         | Layout intent for trigger arrows                 |
 | `data-position`       | Radio root/item        | Indicator placement (`left` / `right`)           |
+| `data-range`          | Slider root            | Root renders more than one thumb                 |
 | `data-spread`         | Radio root             | Items share available space along the group axis |
 | `data-level`          | Input strength segment | Strength tier for filled password meter segments |
+| `data-linear`         | Stepper root           | Steps follow a linear progression                |
+| `data-reverse`        | Stepper root           | Signs and content flip along the cross axis      |
 
 ### Out-of-band attributes
 
@@ -119,6 +134,34 @@ These are emitted outside the component composition pipeline (`composeRootAttrs`
 
 This section records intentional deviations from the default rules. Each entry
 should explain **why** the deviation exists so reviewers do not "fix" it later.
+
+### Progress
+
+Progress is **v2-owned** with no upstream Spar primitive (Table precedent), so
+its attributes are wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the variants and state:** `data-type` (`linear` | `circular` —
+  shape, mapped from the `appearance` prop per the Spinner/Badge precedent),
+  `data-size` (`small` | `base` | `large` — visual scale), `data-variant` (fill
+  color), `data-disabled` (presence — from the own `disabled` prop or inherited
+  through `useOptionalFieldContext` from a surrounding Field),
+  `data-indeterminate` (presence — from the `indeterminate` prop, which takes
+  precedence over `value`; `aria-valuenow` is dropped alongside it), and
+  `data-complete` (presence — the clamped value reached `max` on a determinate
+  root; a styling hook for finished states, e.g. a success fill at 100%. It
+  flips the instant the value reaches `max`, while the recipe's 0.3s fill
+  transition may still be catching up — completion styling leads the fill
+  slightly).
+- **Parts re-emit what their recipes key off** (Tabs precedent): every part
+  stamps `data-type`, and the indicator also stamps `data-indeterminate` to
+  drive the looping sweep animation.
+- **The progress value is not a data attribute.** It is a continuous number, not
+  a finite state, so the rendered indicator writes it inline: the bar `width`
+  (linear) or the arc circle's `stroke-dashoffset` (circular) — both as inline
+  **style**, because a presentation attribute would lose to any stylesheet rule.
+  Skipped entirely while indeterminate, where the recipe animates instead.
+  `Progress` renders the default anatomy; `Progress.Track` and
+  `Progress.Indicator` remain available when consumers need slot overrides.
 
 ### Accordion
 
@@ -164,12 +207,122 @@ should explain **why** the deviation exists so reviewers do not "fix" it later.
   `data-state="checked" | "unchecked"`; the wrapper recipe consumes that state
   for the indicator fill instead of mirroring selection in React.
 
+### Divider
+
+Divider is **v2-owned** (no upstream Spar primitive), so the wrapper emits its
+own vocabulary. All attributes live on the root.
+
+- **`data-orientation`** (`horizontal` | `vertical`) mirrors the `orientation`
+  prop and the `aria-orientation` the wrapper renders for non-decorative
+  separators. The recipe draws the line on the matching axis.
+- **`data-type` carries the line style** (`solid` | `dashed` | `dotted`) —
+  reusing the `appearance` → `data-type` mapping established by Badge instead of
+  inventing a `data-line` attribute. Dashed/dotted render via CSS gradients
+  (repeating-linear for dashes, tiled radial for dots), not `border-style`, so
+  the pattern stays legible at 1px thickness.
+- **`data-align`** (`start` | `center` | `end`) positions the optional label
+  along the line. It extends Table's `data-align` values with a root-scoped
+  owner.
+- **The label is a wrapper-owned slot, not a compound part.** Children render
+  inside `.tk-divider-label` (`data-slot="label"`) — the same leaf-with-slots
+  shape as Spinner's `indicator`.
+- **There is intentionally no `data-has-label` attribute.** Both line segments
+  are root pseudo-elements that flex-grow, so a label-less divider renders one
+  continuous line purely in CSS — no runtime detection exists to mirror.
+
 ### Input
 
 - **`data-level` lives on strength segments, not on the Input root.** Filled
   `.tk-input-strength-segment` nodes use `weak`, `medium`, or `strong`; empty
   segments omit the attribute so the neutral segment style remains the base
   state.
+
+### Skeleton
+
+Skeleton is **v2-owned** with no upstream Spar primitive (Spinner precedent), so
+its attributes are wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the variants only:** `data-type` (`rectangle` | `circle` —
+  silhouette, mapped from the `shape` prop per the Spinner precedent) and
+  `data-animation` (`shimmer` | `none` — the recipe hides the
+  `.tk-skeleton-shimmer` strip when `none`).
+- **Dimensions are not data attributes.** `width`/`height` are continuous
+  values, so the wrapper publishes them to the recipe through the
+  `--tk-skeleton-width` / `--tk-skeleton-height` custom properties on the root.
+
+### Slider
+
+Slider is **v2-owned** with no upstream Spar primitive (Progress/Table
+precedent), so its attributes are wrapper-emitted. Recorded here per rule 10.
+Takeoff Core's `tk-slider` implements only pointer dragging, so the keyboard and
+ARIA surfaces are authored in the wrapper rather than ported.
+
+- **Root carries the variants and the shared state:** `data-size` (`small` |
+  `base` | `large` — rail thickness and thumb diameter), `data-variant` (fill
+  color), `data-orientation` (`horizontal` | `vertical` — a vertical rail runs
+  bottom-to-top and takes its height from its container, since it has no
+  intrinsic one), `data-range` (presence — the root renders more than one
+  thumb), `data-track` (`normal` | `inverted` | `none` — the rail fill mode:
+  `inverted` recolours the rail and band so the complement reads as filled,
+  `none` drops the fill but keeps the rail), `data-tooltip` (`auto` | `always` |
+  `never` — when the value bubble shows; `auto` reveals it on drag/focus), plus
+  `data-disabled` / `data-readonly` / `data-invalid` / `data-required`, each
+  resolved from the own prop or inherited through `useOptionalFieldContext` from
+  a surrounding Field.
+- **State that belongs to one handle lives on the thumb.** `data-thumb` (`min` |
+  `max`) marks the **first and last** handles of a range so the recipe can style
+  the ends independently. A range may carry more than two handles; a middle one
+  is neither end, so it is left without the attribute rather than given a
+  misleading value. `data-dragging` / `data-focus` (presence) reveal the value
+  bubble and draw the focus ring. Rule 7 does not apply — no primitive backs
+  this state, and a root-level mirror could not say _which_ handle is active.
+- **The value is not a data attribute.** Thumb offsets and the filled band are
+  continuous values, so the wrapper writes them as inline **style**
+  (`inset-inline-start` on each thumb, `inset-inline-start` + `width` on
+  `.tk-slider-range`) — a presentation attribute would lose to any stylesheet
+  rule. Same rationale as Progress's fill width.
+- **There is intentionally no root-level `data-dragging` mirror.** The recipe
+  suppresses the position transition through the thumb's own attribute and a
+  sibling selector, so duplicating it on the root would add a hook with no
+  distinct consumer (rule 9).
+- **The value bubble (`tooltip` slot) is a CSS-positioned node, not the Tooltip
+  component.** `Slider.Thumb` renders `.tk-slider-tooltip` as a child of the
+  handle, anchored in CSS and revealed by `[data-dragging]` / `[data-focus]`. It
+  is deliberately not a floating `Tooltip`: an overlay would observe the moving,
+  continuously-resizing bubble with a ResizeObserver, lagging the drag and
+  tripping the browser's benign "ResizeObserver loop" warning. The bubble is
+  `aria-hidden` — the value is announced once, through the thumb's
+  `aria-valuenow` / `aria-valuetext`, and the thumb's `aria-describedby` stays
+  pointed at the surrounding Field's description/error. `classNames` /
+  `slotProps.tooltip` land on it, and `Slider.Thumb` children (a node, or a
+  function of the thumb state) replace its content.
+- **There is intentionally no `data-type` hook.** Takeoff Core's `tk-slider`
+  picks its bottom indicator with a `type` prop, but an indicator is anatomy,
+  not a variant — so `Slider.Ticks` is composed in instead, following the
+  Input-modes-as-composition exception in the authoring contract. It styles
+  itself by class; no root attribute mediates the choice.
+
+### Stepper
+
+Stepper is **v2-owned** with no upstream Spar primitive (Table precedent), so
+its state attributes are wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the variants:** `data-orientation`, `data-mode`, `data-size`,
+  plus the `data-linear` / `data-reverse` presence flags. Items are styled
+  through root-level descendant selectors — no per-item variant duplication.
+- **`data-state` (State, finite) lives on each item `<li>`:** `inactive` |
+  `active` | `completed` — the wrapper owns the progress-state derivation
+  because no primitive backs it (rule 7 does not apply).
+- **`data-error` and `data-disabled` (State, presence) live on each item
+  `<li>`.** They are modifiers rather than progress states, so an active or
+  completed step can also carry the error/disabled treatment without losing its
+  progress status.
+- **`data-clickable` (State, presence) lives on each item `<li>`.** Present when
+  pressing the step may change the active step (respects `disabled`,
+  `isClickable`, and linear gating; never on the active step — its press
+  re-emits `onStepClick` but cannot change the selection), consumed by the
+  recipe for the cursor and hover affordances. Matches Chip's `data-clickable`
+  vocabulary.
 
 ### Table
 

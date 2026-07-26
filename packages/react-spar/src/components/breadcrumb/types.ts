@@ -23,13 +23,6 @@ export type BreadcrumbSize = 'base' | 'large';
  */
 export type BreadcrumbType = 'basic' | 'outlined';
 
-/**
- * Separator glyph preset. `'chevron'` renders the default chevron icon;
- * `'dot'`, `'slash'`, and `'vertical'` paint the canonical text glyphs from
- * the recipe. Custom `children` override the preset.
- */
-export type BreadcrumbSeparatorVariant = 'chevron' | 'dot' | 'slash' | 'vertical';
-
 export type { BreadcrumbPosition, BreadcrumbItemRenderProps };
 export type BreadcrumbNavigationHandler = NavigationHandler;
 export type BreadcrumbPressEvent = PressEvent;
@@ -125,15 +118,10 @@ export type BreadcrumbPageProps<T extends ElementType = 'span'> = PolymorphicPro
 
 export interface BreadcrumbSeparatorOwnProps {
   /**
-   * Override the default separator glyph. Plain content renders inside the
-   * canonical `<li aria-hidden>` owner node and takes priority over `variant`.
+   * Override the default chevron separator. Plain content renders inside the
+   * canonical `<li aria-hidden>` owner node.
    */
   children?: ReactNode;
-  /**
-   * Glyph preset rendered when no `children` are given.
-   * @defaultValue 'chevron'
-   */
-  variant?: BreadcrumbSeparatorVariant;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<BreadcrumbSeparatorSlot>;
   /** Per-slot HTML attribute overrides. */

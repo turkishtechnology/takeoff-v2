@@ -33,7 +33,7 @@
  * Generated output is not committed — see apps/docs/.gitignore.
  */
 
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -240,6 +240,10 @@ function main() {
   const siteUrl = readSiteUrl();
   const files = listDocs(DOCS_DIR).sort();
   const pages = [];
+
+  // Remove outputs for docs pages that no longer exist. Without this cleanup,
+  // a persistent build workspace can keep serving deleted pages indefinitely.
+  rmSync(join(STATIC_DIR, 'docs'), { recursive: true, force: true });
 
   for (const file of files) {
     const relPath = relative(DOCS_DIR, file).split('\\').join('/');

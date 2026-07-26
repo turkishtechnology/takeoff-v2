@@ -1,0 +1,411 @@
+# Radio
+
+`Radio` lets users pick a single option from a small, mutually exclusive set.
+The root owns the group state (`value`, `defaultValue`, `onChange`) and cascades
+visual props (`size`, `position`, `invalid`) to every item.
+
+## Usage
+
+```tsx
+import { Radio } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Radio>
+  <Radio.Item value="...">
+    <Radio.Indicator />
+    <Radio.Label>
+      Label
+      {/* Optional helper text — compose any markup you want here */}
+      <span>Helper text</span>
+    </Radio.Label>
+  </Radio.Item>
+</Radio>
+```
+
+## Playground
+
+```tsx
+function PlaygroundDemo() {
+  return (
+    <Radio aria-label="Cabin class" defaultValue="economy">
+      <Radio.Item value="economy">
+        <Radio.Indicator />
+        <Radio.Label>
+          Economy
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            Standard fare with carry-on baggage.
+          </span>
+        </Radio.Label>
+      </Radio.Item>
+      <Radio.Item value="business">
+        <Radio.Indicator />
+        <Radio.Label>
+          Business
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            Lie-flat seat, lounge access, priority boarding.
+          </span>
+        </Radio.Label>
+      </Radio.Item>
+      <Radio.Item value="first">
+        <Radio.Indicator />
+        <Radio.Label>
+          First
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            Private suite and chef-curated dining.
+          </span>
+        </Radio.Label>
+      </Radio.Item>
+    </Radio>
+  );
+}
+
+render(<PlaygroundDemo />);
+```
+
+## Sizes
+
+```tsx
+function SizesDemo() {
+  return (
+    <div className="grid gap-6">
+      <Radio aria-label="Small" size="small" defaultValue="aisle">
+        <Radio.Item value="aisle">
+          <Radio.Indicator />
+          <Radio.Label>Aisle</Radio.Label>
+        </Radio.Item>
+        <Radio.Item value="window">
+          <Radio.Indicator />
+          <Radio.Label>Window</Radio.Label>
+        </Radio.Item>
+      </Radio>
+      <Radio aria-label="Base" defaultValue="aisle">
+        <Radio.Item value="aisle">
+          <Radio.Indicator />
+          <Radio.Label>Aisle</Radio.Label>
+        </Radio.Item>
+        <Radio.Item value="window">
+          <Radio.Indicator />
+          <Radio.Label>Window</Radio.Label>
+        </Radio.Item>
+      </Radio>
+      <Radio aria-label="Large" size="large" defaultValue="aisle">
+        <Radio.Item value="aisle">
+          <Radio.Indicator />
+          <Radio.Label>Aisle</Radio.Label>
+        </Radio.Item>
+        <Radio.Item value="window">
+          <Radio.Indicator />
+          <Radio.Label>Window</Radio.Label>
+        </Radio.Item>
+      </Radio>
+    </div>
+  );
+}
+
+render(<SizesDemo />);
+```
+
+## Layout
+
+Switch the group to `orientation="horizontal"` for inline choices, opt into
+`spread` to stretch items along the axis, or flip the indicator to the trailing
+edge with `position="right"`. Per-item `position` overrides the group default.
+
+```tsx
+function LayoutDemo() {
+  return (
+    <div className="grid gap-6">
+      <Radio
+        aria-label="Trip type"
+        orientation="horizontal"
+        spread
+        defaultValue="round"
+      >
+        <Radio.Item value="one">
+          <Radio.Indicator />
+          <Radio.Label>One-way</Radio.Label>
+        </Radio.Item>
+        <Radio.Item value="round">
+          <Radio.Indicator />
+          <Radio.Label>Round trip</Radio.Label>
+        </Radio.Item>
+        <Radio.Item value="multi">
+          <Radio.Indicator />
+          <Radio.Label>Multi-city</Radio.Label>
+        </Radio.Item>
+      </Radio>
+
+      <Radio
+        aria-label="Indicator on the trailing edge"
+        position="right"
+        defaultValue="email"
+      >
+        <Radio.Item value="email">
+          <Radio.Indicator />
+          <Radio.Label>
+            Email
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+              Booking confirmations and itinerary changes.
+            </span>
+          </Radio.Label>
+        </Radio.Item>
+        <Radio.Item value="sms">
+          <Radio.Indicator />
+          <Radio.Label>
+            SMS
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+              Gate changes and boarding reminders.
+            </span>
+          </Radio.Label>
+        </Radio.Item>
+      </Radio>
+    </div>
+  );
+}
+
+render(<LayoutDemo />);
+```
+
+## Controlled
+
+```tsx
+function ControlledRadioDemo() {
+  const [value, setValue] = useState('return');
+
+  return (
+    <div className="grid gap-3">
+      <Badge className="w-fit" variant="neutral" appearance="outlined">
+        Selected: {value}
+      </Badge>
+      <Radio aria-label="Refund preference" value={value} onChange={setValue}>
+        <Radio.Item value="return">
+          <Radio.Indicator />
+          <Radio.Label>
+            Refund to original payment
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+              Settles in 5–10 business days.
+            </span>
+          </Radio.Label>
+        </Radio.Item>
+        <Radio.Item value="voucher">
+          <Radio.Indicator />
+          <Radio.Label>
+            Travel voucher
+            <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+              Includes a 10% bonus, valid for 12 months.
+            </span>
+          </Radio.Label>
+        </Radio.Item>
+      </Radio>
+    </div>
+  );
+}
+
+render(<ControlledRadioDemo />);
+```
+
+## Disabled Item
+
+```tsx
+function DisabledDemo() {
+  return (
+    <Radio aria-label="Ancillary services" defaultValue="lounge">
+      <Radio.Item value="lounge">
+        <Radio.Indicator />
+        <Radio.Label>
+          Lounge access
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            Available at IST and select hubs.
+          </span>
+        </Radio.Label>
+      </Radio.Item>
+      <Radio.Item value="upgrade" disabled>
+        <Radio.Indicator />
+        <Radio.Label>
+          Upgrade to Business (sold out)
+          <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+            No seats available on this flight.
+          </span>
+        </Radio.Label>
+      </Radio.Item>
+    </Radio>
+  );
+}
+
+render(<DisabledDemo />);
+```
+
+## Invalid
+
+```tsx
+function InvalidDemo() {
+  return (
+    <Radio aria-label="Passport type" invalid required>
+      <Radio.Item value="standard">
+        <Radio.Indicator />
+        <Radio.Label>Standard passport</Radio.Label>
+      </Radio.Item>
+      <Radio.Item value="diplomatic">
+        <Radio.Indicator />
+        <Radio.Label>Diplomatic passport</Radio.Label>
+      </Radio.Item>
+    </Radio>
+  );
+}
+
+render(<InvalidDemo />);
+```
+
+## Item Render-Prop
+
+`Radio.Item` accepts a function child that receives the per-item state from Spar
+(`isChecked`, `disabled`, `isFocused`, `select`), so each item can react to its
+own selection without reading context manually.
+
+```tsx
+function RenderPropDemo() {
+  return (
+    <Radio aria-label="Seat row preference" defaultValue="exit">
+      <Radio.Item value="front">
+        {({ isChecked }) => (
+          <>
+            <Radio.Indicator />
+            <Radio.Label>
+              Front of cabin
+              <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+                {isChecked
+                  ? 'Selected — boards first.'
+                  : 'Quieter, near the galley.'}
+              </span>
+            </Radio.Label>
+          </>
+        )}
+      </Radio.Item>
+      <Radio.Item value="exit">
+        {({ isChecked }) => (
+          <>
+            <Radio.Indicator />
+            <Radio.Label>
+              Exit row
+              <span className="text-text-base text-(length:--desktop-body-xs-size) leading-(--desktop-body-xs-line-height) font-normal">
+                {isChecked
+                  ? 'Selected — extra legroom, eligibility required.'
+                  : 'Extra legroom, eligibility required.'}
+              </span>
+            </Radio.Label>
+          </>
+        )}
+      </Radio.Item>
+    </Radio>
+  );
+}
+
+render(<RenderPropDemo />);
+```
+
+## Accessibility & Keyboard
+
+- The root renders `role="radiogroup"`; each `Radio.Item` is a
+  `<label role="radio">` wrapping a hidden `<input type="radio">` so the group
+  participates in native form submission.
+- Provide a group label via `aria-label` or `aria-labelledby`. `Radio.Label`
+  labels the individual item — compose helper text or richer markup directly
+  inside it.
+- `Radio.Indicator` is decorative (`aria-hidden`); the checked state is surfaced
+  to assistive tech via `aria-checked` on the item.
+
+| Key   | Behavior                                                             |
+| ----- | -------------------------------------------------------------------- |
+| Tab   | Move focus into the group (lands on the checked item, or the first). |
+| ↓ / → | Move focus to the next item and select it.                           |
+| ↑ / ← | Move focus to the previous item and select it.                       |
+| Space | Select the focused item.                                             |
+
+Disabled items skip both pointer and keyboard activation. Set `selectOnFocus` to
+`false` if you want focus and selection to decouple, and `autoFocus` to move
+focus into the group on mount.
+
+## API Reference
+
+### Radio {#radio}
+
+See [Spar Radio docs](https://spar.app.turkishtechlab.com/docs/Components/Radio)
+for primitive behavior.
+
+#### Props {#radio-props}
+
+| Name       | Type                                                         | Default | Description                                                                                                                                                                                                                                                   |
+| ---------- | ------------------------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| children   | `React.ReactNode`                                            | -       | `Radio.Item` elements rendered inside the radiogroup container.                                                                                                                                                                                               |
+| size       | `RadioSize`                                                  | 'base'  | Size scale. Cascades to descendant `Radio.Item`s via context.                                                                                                                                                                                                 |
+| invalid    | `boolean`                                                    | false   | Marks the group as visually invalid. Cascades to descendant `Radio.Item`s. When nested inside a `<Field>` with `invalid`, this is inherited automatically; a direct prop on `<Radio>` always wins. Maps to Spar's `invalid` for ARIA wiring (`aria-invalid`). |
+| spread     | `boolean`                                                    | false   | Stretches each item to share the group axis equally. Layout intent only — styling is recipe-side via `[data-spread] > [data-slot="root"]`.                                                                                                                    |
+| position   | `RadioPosition`                                              | 'left'  | Default placement of an item's indicator relative to its label. Cascades to descendant `Radio.Item`s; per-item `position` overrides the group value.                                                                                                          |
+| classNames | `Partial<Record<"root", string>>`                            | -       | Per-slot class name overrides.                                                                                                                                                                                                                                |
+| slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                                                            |
+| className  | `string`                                                     | -       | Appends custom classes to the root slot of this part.                                                                                                                                                                                                         |
+
+#### Data attributes {#radio-data-attributes}
+
+| Attribute        | Applied when                                                          | Purpose                                                                                                                                                                       |
+| ---------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| data-slot="root" | Always                                                                | Stable selector for wrapper styling on the root slot.                                                                                                                         |
+| data-size        | Always                                                                | Reflects the resolved `size` prop so theme recipes can scope size variants.                                                                                                   |
+| data-position    | Always                                                                | Reflects the resolved indicator `position` (`left` / `right`).                                                                                                                |
+| data-invalid     | When `invalid` is true, or inherited from a parent `<Field invalid>`. | Theme hook for the invalid state. Emitted by Spar on the radiogroup root only; items style themselves through the ancestor selector `.tk-radio[data-invalid] .tk-radio-item`. |
+| data-spread      | When `spread` is true.                                                | Layout hook used by recipes to stretch each item along the group axis.                                                                                                        |
+| data-orientation | Always                                                                | Reflects the resolved `orientation` (`vertical` / `horizontal`). Emitted by Spar.                                                                                             |
+| data-disabled    | When `disabled` is true.                                              | Theme hook for the disabled group. Emitted by Spar.                                                                                                                           |
+| data-required    | When `required` is true.                                              | Theme hook surfacing the required state. Emitted by Spar.                                                                                                                     |
+
+### Radio.Item {#radio-item}
+
+See [Spar Radio docs](https://spar.app.turkishtechlab.com/docs/Components/Radio)
+for primitive behavior.
+
+#### Props {#radio-item-props}
+
+| Name       | Type                                                         | Default              | Description                                                                                                                                     |
+| ---------- | ------------------------------------------------------------ | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| children   | `React.ReactNode`                                            | -                    | `Radio.Indicator` and `Radio.Label` (compose helper text or richer markup inside the label), or a render function exposing per-item Spar state. |
+| position   | `RadioPosition`                                              | inherited from group | Override the group-level `position` for this item only.                                                                                         |
+| classNames | `Partial<Record<"root", string>>`                            | -                    | Per-slot class name overrides.                                                                                                                  |
+| slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -                    | Per-slot HTML attribute overrides.                                                                                                              |
+| className  | `string`                                                     | -                    | Appends custom classes to the root slot of this part.                                                                                           |
+
+#### Data attributes {#radio-item-data-attributes}
+
+| Attribute              | Applied when                                                | Purpose                                                                     |
+| ---------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------- |
+| data-slot="root"       | Always                                                      | Stable selector for wrapper styling on the root slot.                       |
+| data-size              | Always                                                      | Reflects the resolved `size` prop so theme recipes can scope size variants. |
+| data-position          | Always                                                      | Reflects the resolved indicator `position` (`left` / `right`).              |
+| data-state="checked"   | When the item matches the group value.                      | Spar checked-state hook. Drives the indicator fill.                         |
+| data-state="unchecked" | When the item does not match the group value.               | Spar unchecked-state hook.                                                  |
+| data-disabled          | When the item `disabled` is true, or the group is disabled. | Theme hook for the disabled item state. Emitted by Spar.                    |
+
+### Radio.Indicator {#radio-indicator}
+
+#### Data attributes {#radio-indicator-data-attributes}
+
+| Attribute        | Applied when | Purpose                                                                               |
+| ---------------- | ------------ | ------------------------------------------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot.                                 |
+| data-slot="icon" | Always       | Internal decorative fill element. Customize via `slotProps.icon` / `classNames.icon`. |
+
+### Radio.Label {#radio-label}
+
+#### Data attributes {#radio-label-data-attributes}
+
+| Attribute        | Applied when | Purpose                                               |
+| ---------------- | ------------ | ----------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#radio-type-definitions}
+
+| Name               | Definition                     |
+| ------------------ | ------------------------------ |
+| RadioSize          | `'small' \| 'base' \| 'large'` |
+| RadioPosition      | `'left' \| 'right'`            |
+| RadioIndicatorSlot | `'root' \| 'icon'`             |

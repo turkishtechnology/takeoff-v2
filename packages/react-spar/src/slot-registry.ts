@@ -17,6 +17,7 @@ import {
   DialogTitleBase,
   DialogTriggerBase,
 } from './components/dialog/base';
+import { DividerBase } from './components/divider/base';
 import {
   DrawerBase,
   DrawerBodyBase,
@@ -29,6 +30,16 @@ import {
   DrawerTitleBase,
   DrawerTriggerBase,
 } from './components/drawer/base';
+import {
+  DropdownArrowBase,
+  DropdownContentBase,
+  DropdownGroupBase,
+  DropdownItemBase,
+  DropdownLabelBase,
+  DropdownSeparatorBase,
+  DropdownTriggerBase,
+  DropdownViewportBase,
+} from './components/dropdown/base';
 import { FieldBase, FieldDescriptionBase, FieldErrorMessageBase, FieldLabelBase } from './components/field/base';
 import {
   InputBase,
@@ -46,14 +57,29 @@ import {
   InputSuffixBase,
   InputTrailingIconBase,
 } from './components/input/base';
-import { SelectBase, SelectContentBase, SelectGroupBase, SelectIndicatorBase, SelectItemBase, SelectLabelBase, SelectSeparatorBase, SelectTriggerBase } from './components/select/base';
+import { ProgressBase, ProgressIndicatorBase, ProgressTrackBase, ProgressValueBase } from './components/progress/base';
+import {
+  SelectArrowBase,
+  SelectBase,
+  SelectContentBase,
+  SelectGroupBase,
+  SelectIndicatorBase,
+  SelectItemBase,
+  SelectLabelBase,
+  SelectSeparatorBase,
+  SelectTriggerBase,
+  SelectViewportBase,
+} from './components/select/base';
+import { SliderBase, SliderRangeBase, SliderThumbBase, SliderTicksBase, SliderTrackBase, SliderValueBase } from './components/slider/base';
 import { SpinnerBase } from './components/spinner/base';
+import { StepperBase, StepperDescriptionBase, StepperItemBase, StepperTitleBase } from './components/stepper/base';
 import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
 import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
+import { SkeletonBase } from './components/skeleton/base';
 
 /**
  * Inventory of every shipped component's slot-class map. The styling recipes
@@ -104,6 +130,7 @@ export const slotClassRegistry = {
   dialogBody: { slots: DialogBodyBase.classes },
   dialogFooter: { slots: DialogFooterBase.classes },
   dialogClose: { slots: DialogCloseBase.classes },
+  divider: { slots: DividerBase.classes },
   drawer: { slots: DrawerBase.classes },
   drawerOverlay: { slots: DrawerOverlayBase.classes },
   drawerPanel: { slots: DrawerPanelBase.classes },
@@ -114,6 +141,14 @@ export const slotClassRegistry = {
   drawerFooter: { slots: DrawerFooterBase.classes },
   drawerClose: { slots: DrawerCloseBase.classes },
   drawerTrigger: { slots: DrawerTriggerBase.classes },
+  dropdownTrigger: { slots: DropdownTriggerBase.classes },
+  dropdownContent: { slots: DropdownContentBase.classes },
+  dropdownViewport: { slots: DropdownViewportBase.classes },
+  dropdownItem: { slots: DropdownItemBase.classes },
+  dropdownGroup: { slots: DropdownGroupBase.classes },
+  dropdownLabel: { slots: DropdownLabelBase.classes },
+  dropdownSeparator: { slots: DropdownSeparatorBase.classes },
+  dropdownArrow: { slots: DropdownArrowBase.classes },
   field: { slots: FieldBase.classes },
   fieldLabel: { slots: FieldLabelBase.classes },
   fieldDescription: { slots: FieldDescriptionBase.classes },
@@ -132,15 +167,31 @@ export const slotClassRegistry = {
   inputDecrement: { slots: InputDecrementBase.classes },
   inputIncrement: { slots: InputIncrementBase.classes },
   inputChips: { slots: InputChipsBase.classes },
+  progress: { slots: ProgressBase.classes },
+  progressTrack: { slots: ProgressTrackBase.classes },
+  progressIndicator: { slots: ProgressIndicatorBase.classes },
+  progressValue: { slots: ProgressValueBase.classes },
   select: { slots: SelectBase.classes },
   selectTrigger: { slots: SelectTriggerBase.classes },
   selectIndicator: { slots: SelectIndicatorBase.classes },
   selectContent: { slots: SelectContentBase.classes },
+  selectViewport: { slots: SelectViewportBase.classes },
   selectItem: { slots: SelectItemBase.classes },
   selectGroup: { slots: SelectGroupBase.classes },
   selectLabel: { slots: SelectLabelBase.classes },
   selectSeparator: { slots: SelectSeparatorBase.classes },
+  selectArrow: { slots: SelectArrowBase.classes },
+  slider: { slots: SliderBase.classes },
+  sliderTrack: { slots: SliderTrackBase.classes },
+  sliderRange: { slots: SliderRangeBase.classes },
+  sliderThumb: { slots: SliderThumbBase.classes },
+  sliderTicks: { slots: SliderTicksBase.classes },
+  sliderValue: { slots: SliderValueBase.classes },
   spinner: { slots: SpinnerBase.classes },
+  stepper: { slots: StepperBase.classes },
+  stepperItem: { slots: StepperItemBase.classes },
+  stepperTitle: { slots: StepperTitleBase.classes },
+  stepperDescription: { slots: StepperDescriptionBase.classes },
   switch: { slots: SwitchBase.classes },
   table: { slots: TableBase.classes },
   tabs: { slots: TabsBase.classes },
@@ -160,4 +211,5 @@ export const slotClassRegistry = {
   tooltipHeader: { slots: TooltipHeaderBase.classes },
   tooltipDescription: { slots: TooltipDescriptionBase.classes },
   tooltipArrow: { slots: TooltipArrowBase.classes },
+  skeleton: { slots: SkeletonBase.classes },
 } as const;
