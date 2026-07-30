@@ -47,6 +47,7 @@ const sidebars: SidebarsConfig = {
         'components/tabs',
         'components/toast',
         'components/tooltip',
+        'components/upload',
       ],
     },
     {

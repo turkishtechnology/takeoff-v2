@@ -30,6 +30,7 @@
 @use 'recipes/tabs';
 @use 'recipes/tooltip';
 @use 'recipes/toast';
+@use 'recipes/upload';
 
 @include button.button-keyframes;
 @include input.input-keyframes;
@@ -513,4 +514,40 @@
 
 .tk-table-loading {
   @include table.table-loading;
+}
+
+.tk-upload {
+  @include upload.upload;
+}
+
+.tk-upload-dropzone {
+  @include upload.upload-dropzone;
+}
+
+.tk-upload-dropzone-actions {
+  @include upload.upload-dropzone-actions;
+}
+
+.tk-upload-list {
+  @include upload.upload-list;
+}
+
+.tk-upload-item {
+  @include upload.upload-item;
+}
+
+.tk-upload-item-content {
+  @include upload.upload-item-content;
+}
+
+.tk-upload-item-preview {
+  @include upload.upload-item-preview;
+}
+
+.tk-upload-item-actions {
+  @include upload.upload-item-actions;
+}
+
+.tk-upload-item-action {
+  @include upload.upload-item-action;
 }
