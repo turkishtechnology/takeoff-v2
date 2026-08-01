@@ -9,6 +9,7 @@
     "dev:figma": "node tools/figma-token-exporter/server.mjs",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
+    "lint:skills": "node ./tools/check-skill-coverage.mjs",
     "check-types": "turbo run check-types",
     "clean": "rm -rf .turbo packages/*/dist packages/*/.turbo packages/*/node_modules/.vite apps/*/build apps/*/.docusaurus apps/*/.turbo apps/*/node_modules/.cache",
     "clean:modules": "rm -rf node_modules packages/*/node_modules apps/*/node_modules",

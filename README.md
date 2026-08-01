@@ -33,7 +33,8 @@ Monorepo for `@takeoff-ui/react-spar` — a React 19 component library that wrap
 
 - `packages/react-spar` — `@takeoff-ui/react-spar`, the published package
 - `apps/docs` — Docusaurus site for public docs and component demos
-- `.agents/skills` — repo-local skills (component workflow, changelog)
+- `.agents/skills` — repo-local skills (per-component usage skills, component
+  workflow, changelog)
 - `docs/` — component authoring contract
 - `.changeset` — changesets-driven release automation
 
@@ -45,11 +46,23 @@ Monorepo for `@takeoff-ui/react-spar` — a React 19 component library that wrap
 - [Coding standards](./packages/react-spar/docs/coding-standards.md)
 - [Data attribute vocabulary](./packages/react-spar/docs/data-attribute-vocabulary.md)
 
-AI workflows:
+AI skills — consuming the library:
+
+- [`.agents/skills/takeoff-ui`](./.agents/skills/takeoff-ui/SKILL.md) — the
+  entry point: install, provider, theming, the slot/customization model, and the
+  component map that routes to the per-component skills
+- `.agents/skills/takeoff-<component>` — one skill per shipped component (28 in
+  total, `takeoff-accordion` … `takeoff-tooltip`), each with import, examples,
+  key props, accessibility notes, and a verbatim Copy-page doc under
+  `references/`
+
+AI workflows — building the library:
 
 - [`.agents/skills/takeoff-component-workflow`](./.agents/skills/takeoff-component-workflow/SKILL.md)
   — contract / implement / review / fix-blockers / final-verify modes for
   component work
+- [`.agents/skills/generate-component-docs`](./.agents/skills/generate-component-docs/SKILL.md)
+  — generate a component's Docusaurus documentation page
 - [`.agents/skills/generate-changelog`](./.agents/skills/generate-changelog/SKILL.md)
   — append a release entry to the docs changelog
 

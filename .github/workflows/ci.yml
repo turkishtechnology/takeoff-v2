@@ -39,6 +39,12 @@ jobs:
       - name: Validate Spar prop Pick<> discipline
         run: pnpm --filter @takeoff-ui/react-spar lint:spar-pick
 
+      # Every shipped component needs a `takeoff-<name>` usage skill, and the
+      # `takeoff-ui` component map must route to it — otherwise the skill is
+      # authored but unreachable, and agents hand-roll markup instead.
+      - name: Validate agent skill coverage
+        run: pnpm lint:skills
+
       # Regenerates the docs API tables from the component `types.ts` and fails
       # if that produces a diff — i.e. someone changed a type without re-running
       # `gen:api`, leaving the published API reference stale. Pure codegen +
