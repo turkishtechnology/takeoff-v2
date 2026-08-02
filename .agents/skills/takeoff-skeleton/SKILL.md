@@ -13,6 +13,13 @@ description:
 Use `Skeleton` to preserve the shape of pending content and reduce layout shift.
 It is a visual placeholder, not a status announcement or progress indicator.
 
+**When to use:** First-load placeholders for content whose layout you already
+know — cards, list rows, avatars, text lines, table cells. Reach for it when
+leaving the space blank would make the page jump once data arrives. Not this —
+use `takeoff-spinner` for short, indeterminate waits with no known shape (a
+saving button, an inline refresh), and `takeoff-progress` when completion is
+measurable.
+
 ## Quick start
 
 ```tsx

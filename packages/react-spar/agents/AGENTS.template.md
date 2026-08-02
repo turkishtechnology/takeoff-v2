@@ -25,36 +25,36 @@ on headless Spar primitives and styled with Takeoff design tokens.
 
 ## Components
 
-| Component    | Use it for                                                                                                                                                           |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Accordion`  | Grouped collapsible sections (FAQs, settings panels, itinerary details) where open/closed state is owned by Spar.                                                    |
-| `Alert`      | Inline, page-level feedback (gate changes, billing warnings, status notices).                                                                                        |
-| `Badge`      | Inline status pills, category tags, count bubbles, notification dots, and overlay indicators on icons/avatars.                                                       |
-| `Breadcrumb` | Render a hierarchical "where am I" trail of ancestor links ending in the current page.                                                                               |
-| `Button`     | Any clickable action — submit, CTA, toolbar action, icon-only action, or a two-state toggle (via `pressed`/`onPressedChange`).                                       |
-| `Card`       | You need a bordered surface that bundles a heading, body content, and an optional action footer.                                                                     |
-| `Checkbox`   | Boolean opt-in/opt-out controls, accept-terms gates, multi-select lists, and tri-state "select all" parents.                                                         |
-| `Chip`       | Filter tags, entered/selected values, and short status metadata.                                                                                                     |
-| `Dialog`     | A modal layer that interrupts the flow for content, forms, or confirmations.                                                                                         |
-| `Divider`    | Create semantic or decorative boundaries between related content.                                                                                                    |
-| `Drawer`     | Content that slides in from an edge and overlays the page.                                                                                                           |
-| `Dropdown`   | A trigger that opens a keyboard-accessible list of actions.                                                                                                          |
-| `Field`      | Wrap one form control to attach a visible label, helper text, and a validation error message that are correctly associated for screen readers.                       |
-| `Input`      | Any single-line (or `as="textarea"`) text entry — search boxes, email/password fields, numeric steppers/counters, tag/chips fields.                                  |
-| `Label`      | You only need the label primitive — a section title, a caption, or a manual `htmlFor` association to a native control.                                               |
-| `Popover`    | Anchored, dismissible panels tied to a trigger (settings, quick forms, contextual info).                                                                             |
-| `Progress`   | Work has measurable completion or when an ongoing process needs an indeterminate progress treatment.                                                                 |
-| `Radio`      | Any single-choice form control: cabin/seat/plan/payment pickers, exclusive option lists.                                                                             |
-| `Select`     | Single-choice dropdown pickers where you want a styled, portalled listbox instead of a native `<select>`.                                                            |
-| `Skeleton`   | Preserve the shape of pending content and reduce layout shift.                                                                                                       |
-| `Slider`     | Any bounded numeric selection where dragging beats typing — volume, brightness, temperature, zoom, a price/date range filter, gradient stops.                        |
-| `Spinner`    | Show ongoing, indeterminate activity (fetching, saving, processing) where progress is unknown.                                                                       |
-| `Stepper`    | Show progress through an ordered workflow and optionally let users navigate between eligible steps.                                                                  |
-| `Switch`     | Any boolean toggle that applies immediately.                                                                                                                         |
-| `Table`      | Rendering tabular data with any of sorting, filtering, pagination, row selection, expandable/tree rows, sticky columns, loading/empty states, or server-side paging. |
-| `Tabs`       | A UI needs a tablist that swaps panels — settings sections, detail views, segmented controls.                                                                        |
-| `Toast`      | Any ephemeral, auto-dismissing notification fired imperatively (success/error/info/warning/loading, promise results, undo actions).                                  |
-| `Tooltip`    | Brief, non-interactive hints attached to a trigger element (button, icon).                                                                                           |
+| Component    | Use it for                                                                                                                                                               |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Accordion`  | Grouped collapsible sections (FAQs, settings panels, itinerary details) where open/closed state is owned by Spar.                                                        |
+| `Alert`      | Inline, page-level feedback (gate changes, billing warnings, status notices).                                                                                            |
+| `Badge`      | Inline status pills, category tags, count bubbles, notification dots, and overlay indicators on icons/avatars.                                                           |
+| `Breadcrumb` | Render a hierarchical "where am I" trail of ancestor links ending in the current page.                                                                                   |
+| `Button`     | Any clickable action — submit, CTA, toolbar action, icon-only action, or a two-state toggle (via `pressed`/`onPressedChange`).                                           |
+| `Card`       | You need a bordered surface that bundles a heading, body content, and an optional action footer.                                                                         |
+| `Checkbox`   | Boolean opt-in/opt-out controls, accept-terms gates, multi-select lists, and tri-state "select all" parents.                                                             |
+| `Chip`       | Filter tags, entered/selected values, and short status metadata.                                                                                                         |
+| `Dialog`     | A modal layer that interrupts the flow for content, forms, or confirmations.                                                                                             |
+| `Divider`    | Separating sections of a page, groups in a list or menu, or items in a horizontal toolbar — optionally with a label ("OR") in the middle.                                |
+| `Drawer`     | Content that slides in from an edge and overlays the page.                                                                                                               |
+| `Dropdown`   | A trigger that opens a menu of _commands_ — row actions, overflow ("⋯") menus, toolbar menus, account menus.                                                             |
+| `Field`      | Wrap one form control to attach a visible label, helper text, and a validation error message that are correctly associated for screen readers.                           |
+| `Input`      | Any single-line (or `as="textarea"`) text entry — search boxes, email/password fields, numeric steppers/counters, tag/chips fields.                                      |
+| `Label`      | You only need the label primitive — a section title, a caption, or a manual `htmlFor` association to a native control.                                                   |
+| `Popover`    | Anchored, dismissible panels tied to a trigger (settings, quick forms, contextual info).                                                                                 |
+| `Progress`   | Work with a known percentage — file uploads, imports, quota and storage meters, multi-item batch jobs — or a bar-shaped indeterminate treatment for a long-running task. |
+| `Radio`      | Any single-choice form control: cabin/seat/plan/payment pickers, exclusive option lists.                                                                                 |
+| `Select`     | Single-choice dropdown pickers where you want a styled, portalled listbox instead of a native `<select>`.                                                                |
+| `Skeleton`   | First-load placeholders for content whose layout you already know — cards, list rows, avatars, text lines, table cells.                                                  |
+| `Slider`     | Any bounded numeric selection where dragging beats typing — volume, brightness, temperature, zoom, a price/date range filter, gradient stops.                            |
+| `Spinner`    | Show ongoing, indeterminate activity (fetching, saving, processing) where progress is unknown.                                                                           |
+| `Stepper`    | Multi-step flows where the sequence itself is meaningful and the user should see where they are and what remains — checkout, booking, onboarding, multi-page forms.      |
+| `Switch`     | Any boolean toggle that applies immediately.                                                                                                                             |
+| `Table`      | Rendering tabular data with any of sorting, filtering, pagination, row selection, expandable/tree rows, sticky columns, loading/empty states, or server-side paging.     |
+| `Tabs`       | A UI needs a tablist that swaps panels — settings sections, detail views, segmented controls.                                                                            |
+| `Toast`      | Any ephemeral, auto-dismissing notification fired imperatively (success/error/info/warning/loading, promise results, undo actions).                                      |
+| `Tooltip`    | Brief, non-interactive hints attached to a trigger element (button, icon).                                                                                               |
 
 ## Getting the full API
 

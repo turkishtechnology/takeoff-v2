@@ -13,6 +13,12 @@ description:
 Use `Progress` when work has measurable completion or when an ongoing process
 needs an indeterminate progress treatment.
 
+**When to use:** Work with a known percentage — file uploads, imports, quota and
+storage meters, multi-item batch jobs — or a bar-shaped indeterminate treatment
+for a long-running task. Not this — use `takeoff-spinner` for short waits where
+a bar would be visual noise, and `takeoff-skeleton` when you are holding the
+shape of content that is still loading.
+
 ## Quick start
 
 ```tsx
