@@ -8,91 +8,119 @@ sidebar_position: 3
 slug: /ai-editor-setup
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # AI & Editor Setup
 
-Coding assistants do not know this library. Left alone they invent props, reach
-for raw `<div>`s instead of components, or copy patterns from a different design
-system.
+Coding assistants don't know this library. Left alone they invent props, reach
+for a raw `<div>` instead of a component, or copy patterns from a different
+design system.
 
-Two things fix that, and both work with **any** assistant — GitHub Copilot,
-Cursor, Claude, or a model you paste context into by hand.
+One file fixes that. Find your tool below — each one is the complete setup.
 
-## 1. Add an `AGENTS.md` to your project
+<Tabs groupId="assistant" queryString>
+<TabItem value="copilot" label="GitHub Copilot" default>
 
-`AGENTS.md` at your repository root is the de-facto standard instructions file.
-Copilot, Cursor, and Claude all read it automatically, with no configuration.
+Copilot reads `.github/copilot-instructions.md` automatically, for everyone on
+the repository — no per-developer setup.
 
-The package ships one, already filled in with the component list and the rules
-that matter:
+```bash
+mkdir -p .github
+cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md \
+   .github/copilot-instructions.md
+```
+
+Commit it. That's the whole setup.
+
+**Check it worked:** open Copilot Chat and ask it to _"add a primary button that
+shows a loading spinner"_. You should get `Button` from `@takeoff-ui/react-spar`
+with a `loading` prop — not a hand-rolled `<button>`.
+
+</TabItem>
+<TabItem value="cursor" label="Cursor">
+
+Cursor reads `AGENTS.md` at the repository root automatically.
 
 ```bash
 cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
 ```
 
-Then add your own project conventions underneath — the file is yours to edit.
+Commit it. That's the whole setup.
+
+**Optional —** to scope the rules to your UI code instead of the whole
+repository, use a rule file at `.cursor/rules/takeoff.mdc` with the same
+content, prefixed with:
+
+```md
+---
+globs: ['src/**/*.tsx']
+---
+```
+
+**Check it worked:** ask Cursor for _"a primary button that shows a loading
+spinner"_. You should get `Button` from `@takeoff-ui/react-spar` with a
+`loading` prop — not a hand-rolled `<button>`.
+
+</TabItem>
+<TabItem value="claude" label="Claude Code">
+
+Claude Code reads `AGENTS.md` (or `CLAUDE.md`) at the repository root
+automatically.
+
+```bash
+cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
+```
+
+Commit it. That's the whole setup.
+
+**Check it worked:** ask for _"a primary button that shows a loading spinner"_.
+You should get `Button` from `@takeoff-ui/react-spar` with a `loading` prop —
+not a hand-rolled `<button>`.
+
+</TabItem>
+<TabItem value="other" label="Anything else">
+
+For ChatGPT, Gemini, a self-hosted model, or any chat window you paste into:
+give it the whole library once, at the start of the session.
+
+    https://takeoff-v2.app.turkishtechlab.com/llms-full.txt
+
+That single file contains every component's API and usage guidance. For a
+smaller payload, paste just the component you're working on — append `.md` to
+any docs URL:
+
+    https://takeoff-v2.app.turkishtechlab.com/docs/components/button.md
+
+</TabItem>
+</Tabs>
 
 :::note
 
-**Requires 0.4.0 or newer.** If `agents/` isn't there, you're on an older
-version — upgrade, or copy from the
+**Requires 0.4.0 or newer.** If the `agents/` directory isn't in your
+`node_modules`, you're on an older version — upgrade, or copy from the
 [template on GitHub](https://github.com/turkishtechnology/takeoff-v2/blob/develop/packages/react-spar/agents/AGENTS.template.md).
 
-**Already have an `AGENTS.md`?** Don't overwrite it — copy the **Rules** and
-**Components** sections out of the template and paste them into what you have.
+**Already have that file?** Don't overwrite it — paste the **Rules** and
+**Components** sections from the template into what you have.
 
 :::
 
-### Tool-specific paths
+## Giving it the full API
 
-`AGENTS.md` is enough for most setups. Use these when a tool expects its own
-location, or when you want the rules to apply to a whole repository regardless
-of each developer's editor:
+The file you just copied is an index: every component, what it's for, and the
+house rules. It deliberately doesn't include full prop tables — that would be
+too large to keep in context.
 
-| Tool               | File                              | Notes                                                         |
-| ------------------ | --------------------------------- | ------------------------------------------------------------- |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | Repo-wide. Applies to everyone, no per-developer setup.       |
-| **Cursor**         | `.cursor/rules/takeoff.mdc`       | Also reads `AGENTS.md`. Use a rule file to scope it to globs. |
-| **Claude Code**    | `CLAUDE.md` or `AGENTS.md`        | Either works.                                                 |
+When an assistant needs the complete API for a component, point it at the
+Markdown docs. Every page is available by appending `.md` to its URL:
 
-The same template content works in all of them — copy it across.
+| URL                                                                         | Use it for                                    |
+| --------------------------------------------------------------------------- | --------------------------------------------- |
+| `/docs/components/<name>.md`                                                | One component. Start here — smallest payload. |
+| [`/llms-full.txt`](https://takeoff-v2.app.turkishtechlab.com/llms-full.txt) | The entire library, in one file.              |
+| [`/llms.txt`](https://takeoff-v2.app.turkishtechlab.com/llms.txt)           | An index of every page, for tools that crawl. |
 
-## 2. Point the assistant at the docs
-
-The instructions file is an index, not the full API. When the assistant needs a
-component's complete props, slots, and examples, give it one of these URLs:
-
-| URL                                                                         | Use it for                                   |
-| --------------------------------------------------------------------------- | -------------------------------------------- |
-| [`/llms.txt`](https://takeoff-v2.app.turkishtechlab.com/llms.txt)           | Index of every page, for tools that crawl.   |
-| [`/llms-full.txt`](https://takeoff-v2.app.turkishtechlab.com/llms-full.txt) | The entire library in one file, to paste in. |
-| `/docs/components/<name>.md`                                                | A single component, when context is tight.   |
-
-Every documentation page is available as clean Markdown by appending `.md` to
-its URL. For example
-[`/docs/components/button.md`](https://takeoff-v2.app.turkishtechlab.com/docs/components/button.md).
-
-These files include guidance the API tables alone don't carry: when to reach for
-a component, and which neighbouring component to use instead when it isn't the
+These include guidance the API tables alone don't carry: when to reach for a
+component, and which neighbouring component to use instead when it isn't the
 right fit.
-
-### Practical usage
-
-- **Copilot / Cursor chat** — paste the component URL into the conversation when
-  you start work on a new component.
-- **A model with a large context window** — paste `llms-full.txt` once at the
-  start of the session and it covers the whole library.
-- **Anything with web access** — give it the `llms.txt` URL and let it fetch the
-  pages it needs.
-
-## Verifying it worked
-
-Ask your assistant to build something small and specific, and check the output:
-
-> Build a form with a labelled email input and a submit button that shows a
-> loading spinner while submitting.
-
-You should get `Field`, `Input`, and `Button` imported from
-`@takeoff-ui/react-spar`, with `loading` on the button — not a hand-rolled
-`<form>` with raw `<input>` and `<button>` elements. If you see the latter, the
-instructions file isn't being picked up: confirm it is at the repository root
-and that you have reloaded the editor window.

@@ -193,11 +193,20 @@ function mdxToMarkdown(rawBody) {
     return blocks.join('\n\n');
   });
 
-  // 5. Flatten the table JSX + decode entities on everything that is NOT a
+  // 5. Unwrap <Tabs>/<TabItem> containers. Tabs are a reading affordance for
+  //    the site; in a flat Markdown file every branch is simply present, so
+  //    keep the content and turn each tab's label into a heading that says
+  //    which branch it belongs to.
+  body = body.replace(/<TabItem\b[^>]*\blabel=(["'])([\s\S]*?)\1[^>]*>/gu, (_, __, label) => `\n### ${label}\n`);
+  body = body.replace(/<\/TabItem>/gu, '');
+  body = body.replace(/<Tabs\b[^>]*>/gu, '');
+  body = body.replace(/<\/Tabs>/gu, '');
+
+  // 6. Flatten the table JSX + decode entities on everything that is NOT a
   //    fenced code block.
   body = decodeEntities(flattenInline(body));
 
-  // 6. Restore fences and tidy whitespace.
+  // 7. Restore fences and tidy whitespace.
   body = body.replace(/%%FENCE(\d+)%%/gu, (_, i) => fences[Number(i)]);
   return body.replace(/\n{3,}/gu, '\n\n').trim() + '\n';
 }
