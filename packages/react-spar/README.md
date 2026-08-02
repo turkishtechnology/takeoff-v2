@@ -99,7 +99,7 @@ available by appending `.md` to its URL, and the whole library is at
 [`/llms-full.txt`](https://takeoff-v2.app.turkishtechlab.com/llms-full.txt).
 
 Full guide, including tool-specific paths:
-https://takeoff-v2.app.turkishtechlab.com/docs/ai-editor-setup
+https://takeoff-v2.app.turkishtechlab.com/docs/ai-assistants
 
 ## Usage
 

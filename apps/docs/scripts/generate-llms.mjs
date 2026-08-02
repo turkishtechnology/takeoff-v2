@@ -51,7 +51,7 @@ const ROUTE_BASE = '/docs';
 // Section grouping for llms.txt, in display order. First matching prefix wins;
 // anything unmatched falls through to "Guides".
 const SECTIONS = [
-  { title: 'Getting Started', match: p => p === 'intro.md' || p === 'installation.mdx' || p === 'ai-editor-setup.mdx' },
+  { title: 'Getting Started', match: p => p === 'intro.md' || p === 'installation.mdx' || p === 'ai-assistants.mdx' },
   { title: 'Foundations', match: p => p.startsWith('foundations/') },
   { title: 'Components', match: p => p.startsWith('components/') },
   { title: 'Forms', match: p => p.startsWith('forms/') },

@@ -134,10 +134,10 @@ const config: Config = {
           activeBaseRegex: '^/changelog',
         },
         {
-          to: '/docs/ai-editor-setup',
-          label: 'AI setup',
+          to: '/docs/ai-assistants',
+          label: 'AI assistants',
           position: 'left',
-          activeBaseRegex: '^/docs/ai-editor-setup',
+          activeBaseRegex: '^/docs/ai-assistants',
         },
         {
           type: 'search',

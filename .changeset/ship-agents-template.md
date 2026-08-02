@@ -19,7 +19,7 @@ cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
 
 Full guide, including tool-specific paths and how to give an assistant the
 complete component API:
-https://takeoff-v2.app.turkishtechlab.com/docs/ai-editor-setup
+https://takeoff-v2.app.turkishtechlab.com/docs/ai-assistants
 
 Nothing else changes — no runtime, type, or API changes. `files` now includes
 `agents`, so this is the first release where that path exists.
