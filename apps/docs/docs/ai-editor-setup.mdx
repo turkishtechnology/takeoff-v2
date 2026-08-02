@@ -1,0 +1,94 @@
+---
+title: AI & Editor Setup
+description:
+  Teach Copilot, Cursor, Claude, or any LLM to write correct
+  @takeoff-ui/react-spar code.
+sidebar_label: AI & Editor Setup
+sidebar_position: 3
+slug: /ai-editor-setup
+---
+
+# AI & Editor Setup
+
+Coding assistants do not know this library. Left alone they invent props, reach
+for raw `<div>`s instead of components, or copy patterns from a different design
+system.
+
+Two things fix that, and both work with **any** assistant — GitHub Copilot,
+Cursor, Claude, or a model you paste context into by hand.
+
+## 1. Add an `AGENTS.md` to your project
+
+`AGENTS.md` at your repository root is the de-facto standard instructions file.
+Copilot, Cursor, and Claude all read it automatically, with no configuration.
+
+The package ships one, already filled in with the component list and the rules
+that matter:
+
+```bash
+cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
+```
+
+Then add your own project conventions underneath — the file is yours to edit.
+
+:::tip Already have an `AGENTS.md`?
+
+Don't overwrite it. Copy the **Rules** and **Components** sections out of the
+template and paste them into what you have.
+
+:::
+
+### Tool-specific paths
+
+`AGENTS.md` is enough for most setups. Use these when a tool expects its own
+location, or when you want the rules to apply to a whole repository regardless
+of each developer's editor:
+
+| Tool               | File                              | Notes                                                         |
+| ------------------ | --------------------------------- | ------------------------------------------------------------- |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | Repo-wide. Applies to everyone, no per-developer setup.       |
+| **Cursor**         | `.cursor/rules/takeoff.mdc`       | Also reads `AGENTS.md`. Use a rule file to scope it to globs. |
+| **Claude Code**    | `CLAUDE.md` or `AGENTS.md`        | Either works.                                                 |
+
+The same template content works in all of them — copy it across.
+
+## 2. Point the assistant at the docs
+
+The instructions file is an index, not the full API. When the assistant needs a
+component's complete props, slots, and examples, give it one of these URLs:
+
+| URL                                                                         | Use it for                                   |
+| --------------------------------------------------------------------------- | -------------------------------------------- |
+| [`/llms.txt`](https://takeoff-v2.app.turkishtechlab.com/llms.txt)           | Index of every page, for tools that crawl.   |
+| [`/llms-full.txt`](https://takeoff-v2.app.turkishtechlab.com/llms-full.txt) | The entire library in one file, to paste in. |
+| `/docs/components/<name>.md`                                                | A single component, when context is tight.   |
+
+Every documentation page is available as clean Markdown by appending `.md` to
+its URL. For example
+[`/docs/components/button.md`](https://takeoff-v2.app.turkishtechlab.com/docs/components/button.md).
+
+These files include guidance the API tables alone don't carry: when to reach for
+a component, and which neighbouring component to use instead when it isn't the
+right fit.
+
+### Practical usage
+
+- **Copilot / Cursor chat** — paste the component URL into the conversation when
+  you start work on a new component.
+- **A model with a large context window** — paste `llms-full.txt` once at the
+  start of the session and it covers the whole library.
+- **Anything with web access** — give it the `llms.txt` URL and let it fetch the
+  pages it needs.
+
+## Verifying it worked
+
+Ask your assistant to build something small and specific, and check the output:
+
+> Build a form with a labelled email input and a submit button that shows a
+> loading spinner while submitting.
+
+You should get `Field`, `Input`, and `Button` imported from
+`@takeoff-ui/react-spar`, with `loading` on the button — not a hand-rolled
+`<form>` with raw `<input>` and `<button>` elements. If you see the latter, the
+instructions file isn't being picked up: confirm it is at the repository root
+and that you have reloaded the editor window.

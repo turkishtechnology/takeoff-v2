@@ -78,6 +78,27 @@ stylesheet once at the app shell or entrypoint:
 import '@takeoff-design/tokens/css/default/theme.css';
 ```
 
+## AI & editor setup
+
+Coding assistants don't know this library and will invent props or hand-roll
+markup unless you tell them about it. This package ships an instructions file
+you can drop into your repository:
+
+```bash
+cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
+```
+
+`AGENTS.md` at the repository root is read automatically by GitHub Copilot,
+Cursor, and Claude. It lists every component with what it's for, plus the rules
+that matter (React 19 only, provider + token CSS, the slot/customization model).
+
+For full API context, point the assistant at the Markdown docs — every page is
+available by appending `.md` to its URL, and the whole library is at
+[`/llms-full.txt`](https://takeoff-v2.app.turkishtechlab.com/llms-full.txt).
+
+Full guide, including tool-specific paths:
+https://takeoff-v2.app.turkishtechlab.com/docs/ai-editor-setup
+
 ## Usage
 
 ```tsx
