@@ -234,7 +234,7 @@ function readSkill(componentSlug) {
     return null; // No skill for this page (foundations, guides, …).
   }
 
-  const { data, body } = parseFrontmatter(raw);
+  const { body } = parseFrontmatter(raw);
 
   // "When to use" is a bolded lead-in paragraph, not a heading. Capture until
   // the blank line that ends the paragraph. Five skills use a "Quick start"
@@ -245,10 +245,20 @@ function readSkill(componentSlug) {
     .trim();
 
   // The Accessibility section is a bullet list under a `## Accessibility`
-  // heading; keep it verbatim up to the next heading.
-  const accessibility = body.match(/^## Accessibility\s*\n([\s\S]*?)(?=\n## |\n?$)/mu)?.[1]?.trim();
+  // heading; keep it verbatim up to the next heading. Anchoring the heading
+  // needs the `m` flag, but the end-of-input alternative must NOT use `$` under
+  // it — `$` would match at the first line ending and the lazy quantifier would
+  // stop there, capturing only the first bullet. Split the two concerns: `m`
+  // for the start anchor, an explicit end-of-input lookahead for the stop.
+  const accessibilityStart = body.match(/^## Accessibility[ \t]*\n/mu);
+  const accessibility = accessibilityStart
+    ? body
+        .slice(accessibilityStart.index + accessibilityStart[0].length)
+        .split(/\n## /u)[0]
+        .trim()
+    : undefined;
 
-  return { whenToUse, accessibility, description: data.description ?? '' };
+  return { whenToUse, accessibility };
 }
 
 /**
@@ -260,9 +270,18 @@ function withSkillGuidance(markdown, componentSlug) {
   const skill = readSkill(componentSlug);
   if (!skill) return { markdown, applied: false };
 
+  // Only append a section the page doesn't already author — 20 component pages
+  // write their own `## Accessibility`, and appending the skill's copy on top
+  // would leave the reader (and the model) with two of the same heading.
+  const hasHeading = heading => new RegExp(`^## ${heading}\\b`, 'mu').test(markdown);
+
   const blocks = [];
-  if (skill.whenToUse) blocks.push('## When to use', '', skill.whenToUse, '');
-  if (skill.accessibility) blocks.push('## Accessibility', '', skill.accessibility, '');
+  if (skill.whenToUse && !hasHeading('When to use')) {
+    blocks.push('## When to use', '', skill.whenToUse, '');
+  }
+  if (skill.accessibility && !hasHeading('Accessibility')) {
+    blocks.push('## Accessibility', '', skill.accessibility, '');
+  }
   if (blocks.length === 0) return { markdown, applied: false };
 
   return { markdown: `${markdown.trim()}\n\n${blocks.join('\n').trim()}\n`, applied: true };
@@ -327,8 +346,10 @@ function main() {
     const mdPath = mdPathFor(permalink);
     let markdown = mdxToMarkdown(body);
 
-    // Fold in the agent-skill guidance for component pages.
-    const componentSlug = relPath.startsWith('components/') ? relPath.replace(/^components\//u, '').replace(/\.mdx?$/u, '') : null;
+    // Fold in the agent-skill guidance for component pages. `components/index`
+    // is the section landing page, not a component — it has no skill by design,
+    // so exclude it rather than reporting it as missing on every run.
+    const componentSlug = relPath.startsWith('components/') && !/^components\/index\.mdx?$/u.test(relPath) ? relPath.replace(/^components\//u, '').replace(/\.mdx?$/u, '') : null;
     if (componentSlug) {
       const enriched = withSkillGuidance(markdown, componentSlug);
       markdown = enriched.markdown;
