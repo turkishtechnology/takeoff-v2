@@ -10,6 +10,7 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "lint:skills": "node ./tools/check-skill-coverage.mjs",
+    "lint:skill-props": "node ./tools/check-skill-props.mjs",
     "gen:agent-instructions": "node ./tools/generate-agent-instructions.mjs",
     "gen:agent-instructions:check": "node ./tools/generate-agent-instructions.mjs --check",
     "check-types": "turbo run check-types",

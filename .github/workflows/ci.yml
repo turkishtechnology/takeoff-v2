@@ -45,6 +45,12 @@ jobs:
       - name: Validate agent skill coverage
         run: pnpm lint:skills
 
+      # A prop added to types.ts has to reach the skill too — the skills feed
+      # llms.txt, AGENTS.md, and the Copilot instructions, so a stale one
+      # misinforms every assistant, not just Claude Code.
+      - name: Validate skills document every prop
+        run: pnpm lint:skill-props
+
       # The Copilot instructions and the consumer AGENTS.md template are
       # generated from the same skills; regenerate and fail if that produces a
       # diff, so the non-Claude assistants never drift from the skill content.

@@ -92,6 +92,32 @@ if (!existsSync(routerSkill)) {
   }
 }
 
+// --- soft signal: docs demos far ahead of the skill's examples ---------------
+//
+// Skills are a distillation of the docs, not a mirror — a 1:1 example count is
+// not the goal, and forcing one would bloat every skill and the llms.txt corpus
+// built from them. But a page that has grown several demos past its skill is
+// usually one where a capability was added and the skill was never revisited.
+// Reported as a warning only: it never fails the build.
+const DEMO_GAP_THRESHOLD = 3;
+const demoGaps = [];
+
+for (const component of components) {
+  const page = resolve(repoRoot, 'apps/docs/docs/components', `${component}.mdx`);
+  if (!existsSync(page)) continue;
+  const demos = (readFileSync(page, 'utf8').match(/^export const \w*Demo = String\.raw/gmu) ?? []).length;
+  const examples = (readFileSync(resolve(skillsDir, `takeoff-${component}`, 'SKILL.md'), 'utf8').match(/^```tsx/gmu) ?? []).length;
+  if (demos - examples >= DEMO_GAP_THRESHOLD) {
+    demoGaps.push(`takeoff-${component}: ${demos} docs demos vs ${examples} skill examples`);
+  }
+}
+
+if (demoGaps.length) {
+  console.warn('Skills trailing their docs page — check whether a new capability needs an example:');
+  for (const gap of demoGaps) console.warn(`  - ${gap}`);
+  console.warn('');
+}
+
 if (errors.length) {
   console.error('Skill coverage check failed:');
   for (const error of errors) console.error(`  - ${error}`);
