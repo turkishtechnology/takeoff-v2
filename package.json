@@ -10,6 +10,8 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "lint:skills": "node ./tools/check-skill-coverage.mjs",
+    "gen:agent-instructions": "node ./tools/generate-agent-instructions.mjs",
+    "gen:agent-instructions:check": "node ./tools/generate-agent-instructions.mjs --check",
     "check-types": "turbo run check-types",
     "clean": "rm -rf .turbo packages/*/dist packages/*/.turbo packages/*/node_modules/.vite apps/*/build apps/*/.docusaurus apps/*/.turbo apps/*/node_modules/.cache",
     "clean:modules": "rm -rf node_modules packages/*/node_modules apps/*/node_modules",

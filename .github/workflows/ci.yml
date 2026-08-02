@@ -45,6 +45,12 @@ jobs:
       - name: Validate agent skill coverage
         run: pnpm lint:skills
 
+      # The Copilot instructions and the consumer AGENTS.md template are
+      # generated from the same skills; regenerate and fail if that produces a
+      # diff, so the non-Claude assistants never drift from the skill content.
+      - name: Validate agent instructions are in sync
+        run: pnpm gen:agent-instructions:check
+
       # Regenerates the docs API tables from the component `types.ts` and fails
       # if that produces a diff — i.e. someone changed a type without re-running
       # `gen:api`, leaving the published API reference stale. Pure codegen +

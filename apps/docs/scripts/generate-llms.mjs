@@ -42,6 +42,7 @@ const DOCS_APP_DIR = resolve(SCRIPT_DIR, '..');
 const DOCS_DIR = join(DOCS_APP_DIR, 'docs');
 const STATIC_DIR = join(DOCS_APP_DIR, 'static');
 const CONFIG_FILE = join(DOCS_APP_DIR, 'docusaurus.config.ts');
+const SKILLS_DIR = resolve(DOCS_APP_DIR, '../../.agents/skills');
 
 // Docs live under this route base (classic preset default). Keep in sync with
 // the docs plugin if `routeBasePath` is ever set explicitly.
@@ -201,6 +202,63 @@ function mdxToMarkdown(rawBody) {
   return body.replace(/\n{3,}/gu, '\n\n').trim() + '\n';
 }
 
+// --- agent skills ------------------------------------------------------------
+
+/**
+ * The per-component skills in `.agents/skills/takeoff-<name>/SKILL.md` carry
+ * selection guidance the MDX pages deliberately don't: when to reach for a
+ * component (and when NOT to), plus the natural-language phrasings that should
+ * trigger it. That is exactly what an LLM needs and cannot infer from an API
+ * table, so we fold it into the generated Markdown.
+ *
+ * Only the two blocks below are lifted. Everything else in a skill (examples,
+ * prop tables) already exists in the docs page in a richer form, and the two
+ * repo-workflow skills are excluded entirely — they hard-require files that
+ * only exist inside this monorepo.
+ */
+function readSkill(componentSlug) {
+  const file = join(SKILLS_DIR, `takeoff-${componentSlug}`, 'SKILL.md');
+  let raw;
+  try {
+    raw = readFileSync(file, 'utf8');
+  } catch {
+    return null; // No skill for this page (foundations, guides, …).
+  }
+
+  const { data, body } = parseFrontmatter(raw);
+
+  // "When to use" is a bolded lead-in paragraph, not a heading. Capture until
+  // the blank line that ends the paragraph. Five skills use a "Quick start"
+  // layout with no such block — those simply contribute nothing here.
+  const whenToUse = body
+    .match(/^\*\*When to use:\*\*\s*([\s\S]*?)(?=\n\s*\n)/mu)?.[1]
+    ?.replace(/\s+/gu, ' ')
+    .trim();
+
+  // The Accessibility section is a bullet list under a `## Accessibility`
+  // heading; keep it verbatim up to the next heading.
+  const accessibility = body.match(/^## Accessibility\s*\n([\s\S]*?)(?=\n## |\n?$)/mu)?.[1]?.trim();
+
+  return { whenToUse, accessibility, description: data.description ?? '' };
+}
+
+/**
+ * Appends the skill blocks to a component page's Markdown. Returns the page
+ * unchanged when there is no skill or nothing worth adding, so pages without a
+ * matching skill are never padded with empty headings.
+ */
+function withSkillGuidance(markdown, componentSlug) {
+  const skill = readSkill(componentSlug);
+  if (!skill) return { markdown, applied: false };
+
+  const blocks = [];
+  if (skill.whenToUse) blocks.push('## When to use', '', skill.whenToUse, '');
+  if (skill.accessibility) blocks.push('## Accessibility', '', skill.accessibility, '');
+  if (blocks.length === 0) return { markdown, applied: false };
+
+  return { markdown: `${markdown.trim()}\n\n${blocks.join('\n').trim()}\n`, applied: true };
+}
+
 // --- routing -----------------------------------------------------------------
 
 function permalinkFor(slug) {
@@ -240,6 +298,8 @@ function main() {
   const siteUrl = readSiteUrl();
   const files = listDocs(DOCS_DIR).sort();
   const pages = [];
+  let skillsApplied = 0;
+  const missingSkillGuidance = [];
 
   // Remove outputs for docs pages that no longer exist. Without this cleanup,
   // a persistent build workspace can keep serving deleted pages indefinitely.
@@ -256,7 +316,16 @@ function main() {
 
     const permalink = permalinkFor(data.slug);
     const mdPath = mdPathFor(permalink);
-    const markdown = mdxToMarkdown(body);
+    let markdown = mdxToMarkdown(body);
+
+    // Fold in the agent-skill guidance for component pages.
+    const componentSlug = relPath.startsWith('components/') ? relPath.replace(/^components\//u, '').replace(/\.mdx?$/u, '') : null;
+    if (componentSlug) {
+      const enriched = withSkillGuidance(markdown, componentSlug);
+      markdown = enriched.markdown;
+      if (enriched.applied) skillsApplied++;
+      else missingSkillGuidance.push(componentSlug);
+    }
 
     pages.push({
       relPath,
@@ -311,6 +380,12 @@ function main() {
   writeFileSync(join(STATIC_DIR, 'llms-full.txt'), `${fullParts.join('\n').trim()}\n`);
 
   console.log(`gen:llms — wrote ${pages.length} page(s) to static/docs, plus llms.txt and llms-full.txt`);
+  console.log(`gen:llms — folded agent-skill guidance into ${skillsApplied} component page(s)`);
+  // Surfaced rather than silently skipped: a component page with no skill
+  // guidance means the skill is missing the block, not that none was wanted.
+  if (missingSkillGuidance.length > 0) {
+    console.warn(`gen:llms — no skill guidance for: ${missingSkillGuidance.join(', ')}`);
+  }
 }
 
 main();
