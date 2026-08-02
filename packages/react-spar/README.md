@@ -88,6 +88,8 @@ you can drop into your repository:
 cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
 ```
 
+> The `agents/` directory ships from 0.4.0 onward.
+
 `AGENTS.md` at the repository root is read automatically by GitHub Copilot,
 Cursor, and Claude. It lists every component with what it's for, plus the rules
 that matter (React 19 only, provider + token CSS, the slot/customization model).
