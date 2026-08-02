@@ -32,6 +32,7 @@ const sidebars: SidebarsConfig = {
         'components/dialog',
         'components/divider',
         'components/dropdown',
+        'components/field',
         'components/input',
         'components/label',
         'components/popover',
