@@ -64,7 +64,7 @@ function PlacementDemo() {
 
   return (
     <div className="flex flex-wrap justify-center gap-3">
-      {['left', 'right', 'top', 'bottom', 'full-screen'].map(p => (
+      {['left', 'right', 'top', 'bottom'].map(p => (
         <Drawer key={p} placement={p}>
           <Drawer.Trigger as={Button}>{p}</Drawer.Trigger>
           <Drawer.Overlay />
@@ -84,6 +84,51 @@ function PlacementDemo() {
 }
 
 render(<PlacementDemo />);
+```
+
+## Full Screen
+
+Stretch `Drawer.Panel` to the viewport with a style override to fill the whole
+screen. `placement` still decides which edge the panel slides in from.
+
+```tsx
+function FullScreenDemo() {
+  const fullScreen = {
+    inset: 0,
+    width: '100%',
+    height: '100%',
+    border: 'none',
+    borderRadius: 0,
+  };
+
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      {['right', 'bottom'].map(p => (
+        <Drawer key={p} placement={p}>
+          <Drawer.Trigger as={Button}>Full screen from {p}</Drawer.Trigger>
+          <Drawer.Overlay />
+          <Drawer.Panel style={fullScreen}>
+            <Drawer.Header headerType="divided">
+              <Drawer.Title>Full-screen drawer</Drawer.Title>
+              <Drawer.Close>✕</Drawer.Close>
+            </Drawer.Header>
+            <Drawer.Body>
+              The panel is stretched to the viewport by the style override and
+              still slides in from the <strong>{p}</strong> edge.
+            </Drawer.Body>
+            <Drawer.Footer footerType="divided">
+              <Drawer.Close as={Button} variant="secondary">
+                Close
+              </Drawer.Close>
+            </Drawer.Footer>
+          </Drawer.Panel>
+        </Drawer>
+      ))}
+    </div>
+  );
+}
+
+render(<FullScreenDemo />);
 ```
 
 ## Footer Types
@@ -287,7 +332,6 @@ animation library is required.
 
 - **Panel:** `transform` 0.3s with `cubic-bezier(0.4, 0, 0.2, 1)`
 - **Overlay:** `opacity` 0.3s with `ease-in-out`
-- **Full-screen:** Scale + opacity transition instead of slide.
 
 ## API Reference
 
@@ -451,9 +495,9 @@ animation library is required.
 
 ### Type Definitions {#drawer-type-definitions}
 
-| Name                   | Definition                                                |
-| ---------------------- | --------------------------------------------------------- |
-| DrawerPlacement        | `'left' \| 'right' \| 'top' \| 'bottom' \| 'full-screen'` |
-| DrawerOverlayIntensity | `'lightest' \| 'light' \| 'base' \| 'dark' \| 'darkest'`  |
-| DrawerHeaderType       | `'basic' \| 'divided' \| 'light' \| 'dark' \| 'primary'`  |
-| DrawerFooterType       | `'basic' \| 'divided' \| 'light'`                         |
+| Name                   | Definition                                               |
+| ---------------------- | -------------------------------------------------------- |
+| DrawerPlacement        | `'left' \| 'right' \| 'top' \| 'bottom'`                 |
+| DrawerOverlayIntensity | `'lightest' \| 'light' \| 'base' \| 'dark' \| 'darkest'` |
+| DrawerHeaderType       | `'basic' \| 'divided' \| 'light' \| 'dark' \| 'primary'` |
+| DrawerFooterType       | `'basic' \| 'divided' \| 'light'`                        |
