@@ -16,7 +16,8 @@ description:
 `Upload` is a compound, composition-first file control. The root owns the value
 and the validation; the dropzone, trigger, list, and per-file actions are parts
 you compose — **the parts you place are the parts you get**. There is no
-`dropzone` prop: no `Upload.Dropzone`, no drag-and-drop.
+`dropzone` boolean to switch on: place `Upload.Dropzone` and you have
+drag-and-drop, leave it out and there is none.
 
 **It never uploads.** No part of it does, `Upload.Submit` included. The transfer
 is yours: start it from `onFileAccept` as files are accepted, or from
@@ -82,7 +83,9 @@ share a row. Nothing is inferred — a lone Trigger needs no wrapper.
   <span>Attach what you need — nothing is sent until you say so.</span>
   <Upload.Actions>
     <Upload.Trigger>Choose Files</Upload.Trigger>
-    <Upload.Submit disabled={inFlight} onClick={send}>
+    {/* No disabled={inFlight} — Submit already takes itself down while a
+        batch is going. Only the label is yours. */}
+    <Upload.Submit onClick={send}>
       {inFlight ? 'Sending…' : 'Send'}
     </Upload.Submit>
   </Upload.Actions>
@@ -169,8 +172,53 @@ setFiles(prev =>
 | `action`        | `'download' \| 'remove' \| string`        | -       | Built-in behavior for the first two. On `Upload.ItemAction`.              |
 | `label`         | `string`                                  | -       | `{name}` template for the accessible name. On `Upload.ItemAction`.        |
 
+The three button parts (`Upload.Trigger`, `Upload.Submit`, `Upload.ItemAction`)
+forward `Button`'s look as defaults you can re-point:
+
+| Prop         | Type               | Default                          | Notes                                                          |
+| ------------ | ------------------ | -------------------------------- | -------------------------------------------------------------- |
+| `appearance` | `ButtonAppearance` | `'outlined'`                     | Trigger and Submit match deliberately, so they read as a pair. |
+| `variant`    | `ButtonVariant`    | `'neutral'`                      | Go `filled` / `primary` where sending is the page's action.    |
+| `size`       | `ButtonSize`       | `'small'` on `Upload.ItemAction` | Row actions are small icon buttons.                            |
+
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
+
+## Localization
+
+Every string the component renders on its own is a root prop, so a localized app
+sets them once through the provider's `components` map:
+
+| Prop              | Default                    | Notes                                         |
+| ----------------- | -------------------------- | --------------------------------------------- |
+| `uploadingLabel`  | `'Uploading…'`             | Visible status text. Emptying it silences it. |
+| `processingLabel` | `'Processing…'`            | Same.                                         |
+| `completedLabel`  | `'Completed'`              | Same.                                         |
+| `errorLabel`      | `'Failed'`                 | Same.                                         |
+| `progressLabel`   | `'{name} upload progress'` | Accessible name — cannot be silenced.         |
+| `downloadLabel`   | `'Download {name}'`        | Same.                                         |
+| `removeLabel`     | `'Remove {name}'`          | Same.                                         |
+
+The last three name icon-only controls, so an emptied override falls back to the
+shipped default rather than leaving an unnamed button. `{name}` is a placeholder
+rather than a suffix — that is what lets a translation put the file name where
+its grammar needs it.
+
+File size is not a label: it is a number, so `Intl` writes it — unit and decimal
+mark both — rather than a translator.
+
+## Styling escape hatch
+
+`classNames` / `slotProps` reach every slot. `Upload.ItemPreview` is the one
+with a non-trivial slot map: its `image` slot takes real `ImgHTMLAttributes`,
+which is how you set `loading`, `decoding`, or a `referrerPolicy` on the
+thumbnail.
+
+```tsx
+<Upload.ItemPreview
+  slotProps={{ image: { loading: 'lazy', decoding: 'async' } }}
+/>
+```
 
 ## Gotchas
 
