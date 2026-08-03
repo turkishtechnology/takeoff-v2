@@ -145,12 +145,13 @@ function SubmitDemo() {
       <Upload.Dropzone>
         <span>Attach what you need — nothing is sent until you say so.</span>
 
-        {/* Empty is Submit's own business — it disables itself while the value
-            has nothing in it, so there is no guard here for that. In flight is
-            yours. */}
+        {/* No disabled guard here: Submit takes itself down while the value is
+            empty and again while a batch is in flight. The label is the part
+            that is yours — the component knows when sending is off, not what to
+            call it. */}
         <Upload.Actions>
           <Upload.Trigger>Choose Files</Upload.Trigger>
-          <Upload.Submit disabled={inFlight} onClick={send}>
+          <Upload.Submit onClick={send}>
             {inFlight ? 'Sending…' : 'Send'}
           </Upload.Submit>
         </Upload.Actions>
@@ -418,10 +419,14 @@ a file already held fires neither — it is discarded before the limits are
 checked, so re-offering a file a full upload already has is a no-op rather than
 a `too-many-files` rejection.
 
-`Upload.Dropzone` commits what was dropped after your own `onDrop` runs, unless
-you `preventDefault()` it — the same veto `Upload.Trigger` and
-`Upload.ItemAction` honour, and how you route a drop through your own uploader
-instead of the component's value.
+`Upload.Dropzone` commits what was dropped after your own `onDrop` runs, and
+does so unconditionally. It is the one part that does **not** read
+`preventDefault()` as a veto: on a click, preventing the default is a deliberate
+act, but on a drop it is the boilerplate that stops the browser navigating to
+the dropped file, and most `onDrop` handlers write it by reflex — so honouring
+it would turn that reflex into a zone that silently accepts nothing. To route a
+drop through your own uploader, control the value: `onValueChange` (with
+`value`) sees the batch before it is kept.
 
 ## Folders
 
@@ -553,8 +558,13 @@ runtime's locale — the unit and the decimal mark both (`1.5 MB` in English,
 `onFileAccept` sends each file the moment it is accepted. `Upload.Submit` is the
 other model: the value fills up, the user reads the list back, and one press
 sends what is in it. Nothing about the part performs the upload — it is a
-`Button` that knows when there is something to send, and disables itself while
-the value is empty.
+`Button` that knows when sending makes sense, and disables itself when it does
+not: while the value is empty, and while a batch is already going (any file
+`uploading` or `processing`). The second is the double-submit the status
+vocabulary makes visible — press again mid-transfer and the same files go twice
+— so the part reads the status rather than asking you to wire
+`disabled={inFlight}` yourself. The transfer is still yours; only the guard is
+not.
 
 Its place is beside the Trigger, in the zone: browse and send are one decision,
 so they belong on one line. The zone stacks its children, so wrap the two in
@@ -712,6 +722,13 @@ Paint your own dropzone content with `--tk-upload-dropzone-mark` and
   `Field.Label` and described by `Field.Description` / `Field.ErrorMessage`.
   Your own ARIA always wins.
 - The native file input is visually hidden but reachable through the trigger.
+- Removing a row moves focus before the row unmounts: to the next row's matching
+  action, or to the row above when the last one goes, or to `Upload.Trigger`
+  when the list empties. An unmounted control would otherwise hand focus back to
+  the document body, restarting every subsequent `Tab` from the top of the page.
+- Parts rendered through `as` stay operable from the keyboard — `Enter` and
+  `Space` run the same built-in behavior a click does — and an `as="a"` trigger
+  or action is announced as a link while it has an `href` to follow.
 
 ## API Reference
 
@@ -812,9 +829,10 @@ Paint your own dropzone content with `--tk-upload-dropzone-mark` and
 
 #### Data attributes {#upload-submit-data-attributes}
 
-| Attribute                                       | Applied when | Purpose                                               |
-| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when                                                                                                        | Purpose                                                                                                                                                                                                            |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                                                                              | Stable selector for wrapper styling on the root slot.                                                                                                                                                              |
+| <ApiBadge label="data-disabled" />              | While the value is empty, while any file is `uploading` or `processing`, or when the root (or the part) is disabled | Emitted by the underlying Button. The in-flight case is the double-submit guard — pressing again mid-transfer would send the same files twice — so it is the part's own, not something to wire through `disabled`. |
 
 ### Upload.List {#upload-list}
 

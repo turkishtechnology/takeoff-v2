@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from 'react';
+import { useState, type HTMLAttributes } from 'react';
 import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
@@ -110,6 +110,39 @@ describe('Upload (compound)', () => {
       expect(row?.lastElementChild).toHaveClass('tk-upload-submit');
     });
 
+    it('lands data-slot, classNames and slotProps on the Actions row', () => {
+      // Its whole published surface: the part has no behavior, so the styling
+      // hooks are the entire contract a consumer can hold it to.
+      const { container } = render(
+        <Upload value={[uf('a.txt')]}>
+          <Upload.Dropzone>
+            <Upload.Actions className="own-actions" classNames={{ root: 'from-classnames' }} slotProps={{ root: { 'data-testid': 'actions-row' } as HTMLAttributes<HTMLElement> }}>
+              <Upload.Trigger>Choose file</Upload.Trigger>
+            </Upload.Actions>
+          </Upload.Dropzone>
+        </Upload>,
+      );
+
+      const row = container.querySelector('.tk-upload-actions') as HTMLElement;
+      expect(row).toHaveAttribute('data-slot', 'root');
+      expect(row).toHaveClass('own-actions');
+      expect(row).toHaveClass('from-classnames');
+      expect(row).toHaveAttribute('data-testid', 'actions-row');
+    });
+
+    it('renders the Actions row as the element `as` names', () => {
+      const { container } = render(
+        <Upload>
+          <Upload.Dropzone>
+            <Upload.Actions as="section">
+              <Upload.Trigger>Choose file</Upload.Trigger>
+            </Upload.Actions>
+          </Upload.Dropzone>
+        </Upload>,
+      );
+      expect(container.querySelector('section.tk-upload-actions')).toBeInTheDocument();
+    });
+
     it('leaves a Trigger written straight into the zone where it stands', () => {
       // The row is composed, never inferred: nothing wraps a lone Trigger behind
       // the consumer's back.
@@ -181,6 +214,41 @@ describe('Upload (compound)', () => {
       const clickSpy = vi.spyOn(fileInput(container), 'click');
       await user.click(screen.getByRole('button', { name: 'Choose file' }));
       expect(clickSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('opens the picker from the keyboard on a polymorphic Trigger', () => {
+      // Spar's Button has no native Enter/Space click to let through on a
+      // non-native element, so it synthesizes one: it preventDefaults the keydown
+      // and hands *that* event to `onClick`. Reading `defaultPrevented` raw took
+      // Button's own bookkeeping for a consumer veto, which left every
+      // `as`-rendered Trigger working under the mouse and inert under the
+      // keyboard — focusable, labelled and doing nothing.
+      const { container } = render(
+        <Upload>
+          <Upload.Trigger as="div">Choose file</Upload.Trigger>
+        </Upload>,
+      );
+      const clickSpy = vi.spyOn(fileInput(container), 'click');
+      const trigger = screen.getByText('Choose file').closest('.tk-upload-trigger') as HTMLElement;
+
+      fireEvent.keyDown(trigger, { key: 'Enter' });
+      expect(clickSpy).toHaveBeenCalledTimes(1);
+
+      fireEvent.keyDown(trigger, { key: ' ' });
+      expect(clickSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('still honours a real onClick veto on the Trigger', () => {
+      // The other half of the same rule: a *transition* to prevented across the
+      // consumer's handler is still the veto it always was.
+      const { container } = render(
+        <Upload>
+          <Upload.Trigger onClick={event => event.preventDefault()}>Choose file</Upload.Trigger>
+        </Upload>,
+      );
+      const clickSpy = vi.spyOn(fileInput(container), 'click');
+      fireEvent.click(screen.getByRole('button', { name: 'Choose file' }));
+      expect(clickSpy).not.toHaveBeenCalled();
     });
 
     it('keeps a decorative slotProps.root onClick on both buttons', async () => {
@@ -648,6 +716,62 @@ describe('Upload (compound)', () => {
     it('renders items from a controlled value', () => {
       render(<Anatomy value={[uf('fixed.txt')]} />);
       expect(screen.getByText('fixed.txt')).toBeInTheDocument();
+    });
+
+    it('does not carry a declined addition into the next one', async () => {
+      // The add half of the same desync, against a parent that publishes nothing
+      // back: the second pick must derive from the value the parent actually
+      // holds, not from the array the first pick proposed and it refused.
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      const { container } = render(<Anatomy value={[uf('existing.txt')]} multiple onValueChange={onValueChange} />);
+
+      await user.upload(fileInput(container), makeFile('one.txt'));
+      expect((onValueChange.mock.calls[0][0] as UploadFile[]).map(f => f.name)).toEqual(['existing.txt', 'one.txt']);
+
+      await user.upload(fileInput(container), makeFile('two.txt'));
+      // Not ['existing.txt', 'one.txt', 'two.txt'] — `one.txt` was never kept.
+      expect((onValueChange.mock.calls[1][0] as UploadFile[]).map(f => f.name)).toEqual(['existing.txt', 'two.txt']);
+    });
+
+    it('does not desync its batching ref when a controlled parent declines a change', async () => {
+      // The ref that lets two writes in one tick build on each other is only
+      // allowed to run ahead of the value when the commit is guaranteed to come
+      // back — the uncontrolled case. A controlled parent that vetoes the change
+      // never re-renders, so a ref written anyway would hold an array the value
+      // never took, and the *next* commit would derive from that phantom and drop
+      // rows nobody removed.
+      const user = userEvent.setup();
+      const Guarded = () => {
+        const [files, setFiles] = useState([uf('a.txt'), uf('b.txt')]);
+        // Refuses to go empty — a "you must attach at least one file" rule.
+        return (
+          <Upload value={files} multiple onValueChange={next => next.length > 0 && setFiles(next)}>
+            <Upload.List>
+              {list =>
+                list.map(file => (
+                  <Upload.Item key={file.id} file={file}>
+                    <Upload.ItemAction action="remove" />
+                  </Upload.Item>
+                ))
+              }
+            </Upload.List>
+          </Upload>
+        );
+      };
+      render(<Guarded />);
+
+      await user.click(screen.getByRole('button', { name: 'Remove a.txt' }));
+      expect(screen.queryByText('a.txt')).not.toBeInTheDocument();
+
+      // The veto: removing the last one is declined, so b.txt stays.
+      await user.click(screen.getByRole('button', { name: 'Remove b.txt' }));
+      expect(screen.getByText('b.txt')).toBeInTheDocument();
+
+      // …and the declined write left nothing behind. Removing again still sees
+      // the real value rather than the empty array the veto refused.
+      await user.click(screen.getByRole('button', { name: 'Remove b.txt' }));
+      expect(screen.getByText('b.txt')).toBeInTheDocument();
     });
   });
 
@@ -1437,6 +1561,90 @@ describe('Upload (compound)', () => {
       expect(onClick).not.toHaveBeenCalled();
     });
 
+    it('runs a polymorphic action from the keyboard', () => {
+      // The Trigger's rule, in the row: Button preventDefaults its own synthesized
+      // Enter/Space activation, so reading `defaultPrevented` raw left every
+      // `as`-rendered action mouse-only.
+      const onValueChange = vi.fn();
+      const { container } = render(
+        <Upload value={[uf('a.txt')]} onValueChange={onValueChange}>
+          <Upload.List>
+            {files =>
+              files.map(file => (
+                <Upload.Item key={file.id} file={file}>
+                  <Upload.ItemAction as="div" action="remove" />
+                </Upload.Item>
+              ))
+            }
+          </Upload.List>
+        </Upload>,
+      );
+
+      fireEvent.keyDown(container.querySelector('.tk-upload-item-action') as HTMLElement, { key: 'Enter' });
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange.mock.calls[0][0]).toHaveLength(0);
+    });
+
+    it('moves focus to the next row before a remove unmounts its own', async () => {
+      // An element that goes away holding focus hands it to `<body>`, and the
+      // next Tab then restarts from the top of the document — so clearing a list
+      // one row at a time meant re-traversing the page between rows.
+      const user = userEvent.setup();
+      const Controlled = () => {
+        const [files, setFiles] = useState([uf('a.txt'), uf('b.txt'), uf('c.txt')]);
+        return (
+          <Upload value={files} onValueChange={setFiles}>
+            <Upload.List>
+              {list =>
+                list.map(file => (
+                  <Upload.Item key={file.id} file={file}>
+                    <Upload.ItemAction action="remove" />
+                  </Upload.Item>
+                ))
+              }
+            </Upload.List>
+          </Upload>
+        );
+      };
+      const { container } = render(<Controlled />);
+
+      const removeIn = (name: string) =>
+        (container.querySelector(`.tk-upload-item:has([aria-label="Remove ${name}"])`) as HTMLElement).querySelector('[data-action="remove"]') as HTMLElement;
+
+      // Middle row: focus lands on the row below it.
+      await user.click(removeIn('b.txt'));
+      expect(removeIn('c.txt')).toHaveFocus();
+
+      // Last row standing: there is no row below, so it falls back to the one above.
+      await user.click(removeIn('c.txt'));
+      expect(removeIn('a.txt')).toHaveFocus();
+    });
+
+    it('falls back to the Trigger when the last row is removed', async () => {
+      const user = userEvent.setup();
+      const Controlled = () => {
+        const [files, setFiles] = useState([uf('only.txt')]);
+        return (
+          <Upload value={files} onValueChange={setFiles}>
+            <Upload.Trigger>Choose file</Upload.Trigger>
+            <Upload.List>
+              {list =>
+                list.map(file => (
+                  <Upload.Item key={file.id} file={file}>
+                    <Upload.ItemAction action="remove" />
+                  </Upload.Item>
+                ))
+              }
+            </Upload.List>
+          </Upload>
+        );
+      };
+      const { container } = render(<Controlled />);
+
+      await user.click(container.querySelector('[data-action="remove"]') as HTMLElement);
+      expect(screen.getByRole('button', { name: 'Choose file' })).toHaveFocus();
+    });
+
     it('lets a consumer handler cancel the built-in remove', async () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn();
@@ -1701,9 +1909,11 @@ describe('Upload (compound)', () => {
       expect(dropzone).not.toHaveAttribute('data-drag-state');
     });
 
-    it('lets a consumer cancel the built-in commit from onDrop', () => {
-      // The same veto the Trigger and ItemAction honour — how a consumer routes
-      // a drop through their own uploader instead of the component's value.
+    it('still commits when the consumer preventDefaults their own onDrop', () => {
+      // Unlike the Trigger and the ItemAction, the zone does not read
+      // `preventDefault()` as a veto: on a drop it is the boilerplate every
+      // drag-and-drop tutorial opens with, so honouring it turned a reflex into
+      // a zone that silently accepted nothing.
       const onValueChange = vi.fn();
       const onDrop = vi.fn((event: { preventDefault: () => void }) => event.preventDefault());
       render(
@@ -1717,7 +1927,29 @@ describe('Upload (compound)', () => {
       });
 
       expect(onDrop).toHaveBeenCalledTimes(1);
-      expect(onValueChange).not.toHaveBeenCalled();
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange.mock.calls[0][0]).toHaveLength(1);
+    });
+
+    it('composes a slotProps.root drag handler instead of dropping it', () => {
+      // The four explicit handlers are spread after `rootAttrs`, so without the
+      // composition they overwrite whatever `slotProps.root` put there — the
+      // hazard the Trigger, Submit and ItemAction each already guard against.
+      const onDrop = vi.fn();
+      const onDragEnter = vi.fn();
+      render(
+        <Upload>
+          <Upload.Dropzone data-testid="dropzone" slotProps={{ root: { onDrop, onDragEnter } }} />
+        </Upload>,
+      );
+
+      const dropzone = screen.getByTestId('dropzone');
+      const payload = { dataTransfer: { files: [makeFile('a.txt')], items: [{ kind: 'file', type: 'text/plain' }], types: ['Files'] } };
+      fireEvent.dragEnter(dropzone, payload);
+      fireEvent.drop(dropzone, payload);
+
+      expect(onDragEnter).toHaveBeenCalledTimes(1);
+      expect(onDrop).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -1779,6 +2011,24 @@ describe('Upload (compound)', () => {
 
       rerender(<Anatomy disabled value={[uf('a.txt')]} />);
       expect(screen.getByRole('button', { name: 'Upload' })).toBeDisabled();
+    });
+
+    it('takes Submit down while a batch is in flight', () => {
+      // The double-submit the status vocabulary makes visible: sending again
+      // while the transfer is running sends the same files twice.
+      const { rerender } = render(<Anatomy value={[uf('a.txt', { status: 'uploading', progress: 40 })]} />);
+      expect(screen.getByRole('button', { name: 'Upload' })).toBeDisabled();
+
+      rerender(<Anatomy value={[uf('a.txt', { status: 'processing' })]} />);
+      expect(screen.getByRole('button', { name: 'Upload' })).toBeDisabled();
+
+      // One file still going is enough to hold the whole batch back.
+      rerender(<Anatomy value={[uf('a.txt', { status: 'completed' }), uf('b.txt', { status: 'uploading' })]} />);
+      expect(screen.getByRole('button', { name: 'Upload' })).toBeDisabled();
+
+      // Settled — sending a retry of the failed one is the point of the state.
+      rerender(<Anatomy value={[uf('a.txt', { status: 'completed' }), uf('b.txt', { status: 'error' })]} />);
+      expect(screen.getByRole('button', { name: 'Upload' })).toBeEnabled();
     });
 
     it('drops the link target of a disabled Submit and Trigger', () => {
@@ -1870,6 +2120,20 @@ describe('Upload (compound)', () => {
     it('throws when a part is used outside Upload', () => {
       expect(() => render(<Upload.Trigger>x</Upload.Trigger>)).toThrow();
       expect(() => render(<Upload.ItemAction action="remove" />)).toThrow();
+    });
+
+    it('throws when Upload.Actions is used outside Upload', () => {
+      // It holds no behavior, so it has no other reason to read the context —
+      // but it is the outermost part of the group, so its message is the one
+      // that names the actual mistake. Without the guard it would render and the
+      // Trigger inside it would throw, pointing at the wrong part.
+      expect(() =>
+        render(
+          <Upload.Actions>
+            <span>x</span>
+          </Upload.Actions>,
+        ),
+      ).toThrow();
     });
 
     it('throws when an action is used outside an Upload.Item', () => {

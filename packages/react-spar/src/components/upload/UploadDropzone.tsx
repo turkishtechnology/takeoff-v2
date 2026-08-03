@@ -34,6 +34,23 @@ export const UploadDropzone = <T extends ElementType = 'div'>(props: UploadDropz
   const { disabled, readOnly, accept, processFiles } = useUploadContext('Upload.Dropzone');
 
   const { rootAttrs, rest } = composeRootAttrs(UploadDropzoneBase, props as UploadDropzoneProps<'div'>, theme);
+  // Compose `slotProps.root`'s drag handlers rather than letting the four
+  // explicit ones below (spread last) silently drop them — the Trigger/Submit/
+  // ItemAction rule, which the zone was the one part left out of. Each runs
+  // right after the prop-level handler of the same name, so the two override
+  // routes agree: both see the event before this part acts on it.
+  const {
+    onDragEnter: slotOnDragEnter,
+    onDragOver: slotOnDragOver,
+    onDragLeave: slotOnDragLeave,
+    onDrop: slotOnDrop,
+    ...dropzoneRootAttrs
+  } = rootAttrs as typeof rootAttrs & {
+    onDragEnter?: (event: DragEvent<HTMLElement>) => void;
+    onDragOver?: (event: DragEvent<HTMLElement>) => void;
+    onDragLeave?: (event: DragEvent<HTMLElement>) => void;
+    onDrop?: (event: DragEvent<HTMLElement>) => void;
+  };
   const { as, children, ref, onDragEnter, onDragOver, onDragLeave, onDrop, ...nativeProps } = rest as UploadDropzoneResolvedProps;
 
   const [dragState, setDragState] = useState<DragState | null>(null);
@@ -51,6 +68,7 @@ export const UploadDropzone = <T extends ElementType = 'div'>(props: UploadDropz
   // payload; what it stops doing is committing it (the guards below).
   const handleDragEnter = (event: DragEvent<HTMLElement>) => {
     onDragEnter?.(event);
+    slotOnDragEnter?.(event);
     event.preventDefault();
     if (!active) return;
     depth.current += 1;
@@ -59,6 +77,7 @@ export const UploadDropzone = <T extends ElementType = 'div'>(props: UploadDropz
 
   const handleDragOver = (event: DragEvent<HTMLElement>) => {
     onDragOver?.(event);
+    slotOnDragOver?.(event);
     // Required for the element to become a valid drop target.
     event.preventDefault();
     if (!active) return;
@@ -71,29 +90,33 @@ export const UploadDropzone = <T extends ElementType = 'div'>(props: UploadDropz
 
   const handleDragLeave = (event: DragEvent<HTMLElement>) => {
     onDragLeave?.(event);
+    slotOnDragLeave?.(event);
     // The reset is unconditional: a control that goes disabled or read-only
     // mid-drag still has to let go of `data-drag-state`, or the zone keeps its
-    // accept/reject border painted on for good. Only what acts on the payload
-    // is gated on `active`.
+    // accept/reject border painted on for good. There is nothing to gate on
+    // `active` beside it — `dragleave` has no cancelable default to claim (the
+    // enter/over/drop trio is where the target is claimed and the payload acted
+    // on), so letting go of the hint is all this handler does.
     depth.current = Math.max(0, depth.current - 1);
     if (depth.current === 0) setDragState(null);
-    if (!active) return;
-    event.preventDefault();
   };
 
   const handleDrop = (event: DragEvent<HTMLElement>) => {
     onDrop?.(event);
-    // Read before this part's own `preventDefault` below, or the veto would
-    // always look set.
-    const cancelled = event.defaultPrevented;
+    slotOnDrop?.(event);
     event.preventDefault();
     depth.current = 0;
     setDragState(null);
     if (!active) return;
-    // The built-in commit runs after the consumer's handler unless they
-    // cancelled it — the same veto the Trigger and ItemAction honour, which is
-    // how a consumer routes a drop through their own uploader instead.
-    if (cancelled) return;
+    // No `preventDefault()` veto here, unlike the Trigger and the ItemAction.
+    // On a click, preventing the default is a deliberate act and reads as one;
+    // on a drop it is the boilerplate every drag-and-drop tutorial opens with —
+    // it is how you stop the browser from navigating to the dropped file, and
+    // most consumers write it by reflex. Honouring it as a veto turned that
+    // reflex into a zone that silently accepts nothing, with no error and the
+    // accept state still painting. The commit is unconditional, and control
+    // over what lands stays where the rest of the value contract lives: the
+    // root's `onValueChange` (and `value`) sees the batch before it is kept.
     if (event.dataTransfer?.files?.length) processFiles(event.dataTransfer.files);
   };
 
@@ -102,7 +125,7 @@ export const UploadDropzone = <T extends ElementType = 'div'>(props: UploadDropz
   return (
     <Component
       {...nativeProps}
-      {...rootAttrs}
+      {...dropzoneRootAttrs}
       data-drag-state={dragState ?? undefined}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}

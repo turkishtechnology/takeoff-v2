@@ -4,6 +4,7 @@ import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { UploadActionsBase } from './base';
+import { useUploadContext } from './context';
 import type { UploadActionsOwnProps, UploadActionsProps } from './types';
 
 type UploadActionsResolvedProps = Omit<UploadActionsOwnProps, 'classNames' | 'slotProps'> & {
@@ -14,6 +15,12 @@ type UploadActionsResolvedProps = Omit<UploadActionsOwnProps, 'classNames' | 'sl
 
 export const UploadActions = <T extends ElementType = 'div'>(props: UploadActionsProps<T>) => {
   const theme = useComponentTheme('UploadActions');
+  // Read for the guard alone — the part has no behavior to draw from the root.
+  // Every other part throws when it is written outside an `Upload`, and this one
+  // is the outermost of the group it holds, so its message is the one that names
+  // the actual mistake; without it a misplaced Actions renders and the Trigger
+  // inside it throws, pointing at the wrong part.
+  useUploadContext('Upload.Actions');
 
   const { rootAttrs, rest } = composeRootAttrs(UploadActionsBase, props as UploadActionsProps<'div'>, theme);
   const { as, children, ref, ...nativeProps } = rest as UploadActionsResolvedProps;

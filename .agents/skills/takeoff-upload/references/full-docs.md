@@ -1,0 +1,940 @@
+# Upload
+
+`Upload` is a compound, composition-first file control. The root owns the value
+and validation; the dropzone, trigger, list, and per-file actions are parts you
+compose — the parts you place are the parts you get.
+
+It never uploads — no part of it does, `Upload.Submit` included. The transfer is
+yours: start it from `onFileAccept` as files are accepted, or from
+`Upload.Submit`'s `onClick` when the user sends the batch.
+
+## Playground
+
+```tsx
+function PlaygroundDemo() {
+  const [files, setFiles] = React.useState([]);
+  const [error, setError] = React.useState('');
+
+  return (
+    <Field className="w-full max-w-md" invalid={Boolean(error)}>
+      <Field.Label>Attachments</Field.Label>
+
+      <Upload
+        multiple
+        accept="image/*,application/pdf"
+        maxFileSize={5 * 1024 * 1024}
+        value={files}
+        onValueChange={next => {
+          setFiles(next);
+          setError('');
+        }}
+        onFilesReject={rejections =>
+          setError(rejections[0].file.name + ' was not accepted.')
+        }
+      >
+        <Upload.Dropzone>
+          <UploadIconOutlinedRounded
+            width={32}
+            height={32}
+            className="text-(--tk-upload-dropzone-mark)"
+            aria-hidden="true"
+            focusable="false"
+          />
+          <span>Choose a file or drag &amp; drop it here.</span>
+          <Upload.Trigger>Choose File</Upload.Trigger>
+        </Upload.Dropzone>
+
+        <Upload.List />
+      </Upload>
+
+      {error ? (
+        <Field.ErrorMessage>{error}</Field.ErrorMessage>
+      ) : (
+        <Field.Description>Images or PDF, up to 5 MB each.</Field.Description>
+      )}
+    </Field>
+  );
+}
+
+render(<PlaygroundDemo />);
+```
+
+## The value
+
+An `UploadFile` points at a `File` rather than being one. `Upload` builds them
+for picked and dropped files; for attachments already on the server, you build
+them:
+
+```tsx
+const files = attachments.map(a => ({
+  id: a.id,
+  name: a.fileName,
+  size: a.bytes,
+  type: a.mimeType,
+  url: a.href,
+  thumbUrl: a.previewHref,
+}));
+```
+
+| Field                  | Notes                                                                       |
+| ---------------------- | --------------------------------------------------------------------------- |
+| `name`, `size`, `type` | The entry's own value wins; its `File` is the fallback                      |
+| `file`, `url`          | The two ways an entry can have content. With neither, `download` is dropped |
+| `thumbUrl`             | A picture _of_ the file, for the preview. Never downloaded                  |
+| `status`               | Omitted means `idle`                                                        |
+
+## Validation
+
+`accept`, `maxFileSize` (bytes), `maxFileCount`, and `multiple` go on the root.
+Rejected files never enter `value` — `onFilesReject` reports them, carrying the
+limit that broke rather than a message:
+
+| `code`              | Also carries                          |
+| ------------------- | ------------------------------------- |
+| `file-too-large`    | `maxFileSize`                         |
+| `file-invalid-type` | `accept`                              |
+| `too-many-files`    | `maxFileCount` (1 without `multiple`) |
+
+`onFileAccept` reports only the entries that just entered the value;
+`onValueChange` reports the whole next array, removals included. A duplicate of
+a file already held fires neither — it is discarded before the limits are
+checked, so re-offering a file a full upload already has is a no-op rather than
+a `too-many-files` rejection.
+
+`Upload.Dropzone` commits what was dropped after your own `onDrop` runs, and
+does so unconditionally. It is the one part that does **not** read
+`preventDefault()` as a veto: on a click, preventing the default is a deliberate
+act, but on a drop it is the boilerplate that stops the browser navigating to
+the dropped file, and most `onDrop` handlers write it by reflex — so honouring
+it would turn that reflex into a zone that silently accepts nothing. To route a
+drop through your own uploader, control the value: `onValueChange` (with
+`value`) sees the batch before it is kept.
+
+## Folders
+
+`directory` turns the picker into a folder picker: choosing one takes every file
+inside it, recursively. It implies `multiple` — a folder is a batch by
+definition — and each `File` keeps its `webkitRelativePath`, which is where in
+the tree it came from:
+
+```tsx
+function DirectoryDemo() {
+  const [files, setFiles] = React.useState([]);
+
+  return (
+    <Upload
+      directory
+      className="w-full max-w-md"
+      value={files}
+      onValueChange={setFiles}
+    >
+      <Upload.Dropzone>
+        <span>Choose a folder — every file inside it comes along.</span>
+        <Upload.Trigger>Choose Folder</Upload.Trigger>
+      </Upload.Dropzone>
+
+      <Upload.List className="max-h-64 overflow-y-auto">
+        {items =>
+          items.map(item => (
+            <Upload.Item key={item.id} file={item}>
+              <Upload.ItemContent>
+                <span className="min-w-0 flex-1 truncate">
+                  {item.file?.webkitRelativePath || item.name}
+                </span>
+              </Upload.ItemContent>
+              <Upload.ItemAction action="remove" />
+            </Upload.Item>
+          ))
+        }
+      </Upload.List>
+    </Upload>
+  );
+}
+
+render(<DirectoryDemo />);
+```
+
+Only the picker changes: `Upload.Dropzone` does not expand a dropped folder, so
+a folder-first upload should say so in the zone's own copy rather than promise a
+drop that never lands. Validation is unchanged — `accept` and `maxFileSize` run
+per file, and `maxFileCount` counts the flattened batch rather than the folders
+it arrived in.
+
+## Status & progress
+
+`status` and `progress` are consumer-owned — the component only displays them,
+in `Upload.ItemContent`'s support line under the file name:
+
+| `status`     | Shows                                                             |
+| ------------ | ----------------------------------------------------------------- |
+| `idle`       | nothing                                                           |
+| `uploading`  | spinner + `Uploading…`, plus the bar while `progress` is a number |
+| `processing` | spinner + `Processing…`, never a bar                              |
+| `completed`  | check + `Completed`                                               |
+| `error`      | warning + the entry's `error`                                     |
+
+```tsx
+function StatusDemo() {
+  const [files, setFiles] = React.useState([
+    {
+      id: '1',
+      name: 'annual-report.pdf',
+      size: 2400000,
+      type: 'application/pdf',
+      status: 'completed',
+    },
+    {
+      id: '2',
+      name: 'cover-image.png',
+      size: 640000,
+      type: 'image/png',
+      status: 'uploading',
+      progress: 45,
+    },
+    { id: '3', name: 'keynote-deck.key', size: 12000000, status: 'processing' },
+    {
+      id: '4',
+      name: 'raw-footage.mov',
+      size: 88000000,
+      type: 'video/quicktime',
+      status: 'error',
+      error: 'File too large for the server',
+    },
+  ]);
+
+  return (
+    <Upload
+      multiple
+      className="w-full max-w-md"
+      value={files}
+      onValueChange={setFiles}
+    >
+      <Upload.List />
+    </Upload>
+  );
+}
+
+render(<StatusDemo />);
+```
+
+Driving them is your job, and the two in-flight statuses split it: `uploading`
+is the transfer, which knows its own percentage, and `processing` is whatever
+the server does once the bytes have landed — a virus scan, a transcode, a parse
+— which reports only that it is running. The demo below mocks that scan and
+hands its verdict to a `Toaster` rather than to the row, because a result the
+user may have to act on outlives the row it came from. Anything ending in `.zip`
+or `.exe` comes back quarantined, so both outcomes are reachable:
+
+```tsx
+const toaster = createToaster({ placement: 'top-end' });
+
+function ScanDemo() {
+  const [files, setFiles] = React.useState([]);
+
+  // Every step is a patch to one entry, so a second file scanning at the same
+  // time keeps its own status.
+  const patch = (id, next) =>
+    setFiles(current =>
+      current.map(entry => (entry.id === id ? { ...entry, ...next } : entry)),
+    );
+
+  const upload = entries =>
+    entries.forEach(entry => {
+      // The transfer: the one status that draws a bar, because it is the one that
+      // knows how far along it is.
+      let percent = 0;
+      const transfer = window.setInterval(() => {
+        percent += 20;
+        if (percent < 100)
+          return patch(entry.id, { status: 'uploading', progress: percent });
+
+        window.clearInterval(transfer);
+        // The bytes have landed and the server takes over. A virus scan reports
+        // that it is running, not how far it has got — so the bar goes away and
+        // 'processing' says what is happening instead.
+        patch(entry.id, { status: 'processing', progress: undefined });
+
+        window.setTimeout(() => {
+          const quarantined = /\.(zip|exe)$/i.test(entry.name);
+
+          if (quarantined) {
+            patch(entry.id, {
+              status: 'error',
+              error: 'Quarantined by the virus scan',
+            });
+            toaster.error({
+              title: 'Threat found in ' + entry.name,
+              description: 'The file was quarantined and never stored.',
+            });
+            return;
+          }
+
+          patch(entry.id, { status: 'completed' });
+          toaster.success({
+            title: entry.name + ' is clean',
+            description: 'Virus scan passed — the file is stored.',
+          });
+        }, 2400);
+      }, 400);
+    });
+
+  return (
+    <div className="w-full max-w-md">
+      <Upload
+        multiple
+        value={files}
+        onValueChange={setFiles}
+        onFileAccept={upload}
+      >
+        <Upload.Dropzone>
+          <span>Choose a file to upload and scan it.</span>
+          <Upload.Trigger>Choose File</Upload.Trigger>
+        </Upload.Dropzone>
+
+        <Upload.List />
+      </Upload>
+
+      <Toaster toaster={toaster} />
+    </div>
+  );
+}
+
+render(<ScanDemo />);
+```
+
+Recovery is composition: replace the row's `Upload.ItemContent` and put the
+entry back to `uploading`.
+
+```tsx
+<Upload.Item file={file}>
+  <Upload.ItemContent>
+    {file.name} — {file.error}
+    <button type="button" onClick={() => retry(file)}>
+      Try again
+    </button>
+  </Upload.ItemContent>
+</Upload.Item>
+```
+
+Every word the component renders on its own comes from a root prop, one per
+string — the same shape as `Stepper`'s `completedLabel` / `errorLabel` or
+`Alert`'s `closeLabel`:
+
+| Prop              | Default                  | Where it shows                                      |
+| ----------------- | ------------------------ | --------------------------------------------------- |
+| `uploadingLabel`  | `Uploading…`             | row support text while `uploading`                  |
+| `processingLabel` | `Processing…`            | row support text while `processing`                 |
+| `completedLabel`  | `Completed`              | row support text on `completed`                     |
+| `errorLabel`      | `Failed`                 | row support text on `error` with no `error` message |
+| `progressLabel`   | `{name} upload progress` | the progress bar's accessible name                  |
+| `downloadLabel`   | `Download {name}`        | `action="download"` accessible name                 |
+| `removeLabel`     | `Remove {name}`          | `action="remove"` accessible name                   |
+
+The first four name the state alone — the row already shows the file and that it
+is an upload. The last three take a `{name}` placeholder so a translation can
+move the file name inside the sentence
+(`removeLabel="{name} dosyasını kaldır"`), which concatenating a verb and a name
+cannot do. An entry's own `error` beats `errorLabel`; an action's own `label`
+beats `downloadLabel` / `removeLabel`.
+
+A label that resolves to nothing (`''`, or an `undefined` out of a partial
+dictionary) is read differently by half: a blank status label drops the support
+line, glyph included, while a blank `progressLabel` / `downloadLabel` /
+`removeLabel` is ignored and the default stands — those exist only as accessible
+names, and an icon-only control cannot go unnamed.
+
+A localized app sets them once through the provider's `components` map rather
+than at every call site:
+
+```tsx
+<TakeoffSparProvider
+  locale="tr"
+  components={{
+    Upload: {
+      defaultProps: {
+        uploadingLabel: 'Yükleniyor…',
+        processingLabel: 'İşleniyor…',
+        completedLabel: 'Tamamlandı',
+        errorLabel: 'Başarısız',
+        progressLabel: '{name} yükleme ilerlemesi',
+        downloadLabel: '{name} dosyasını indir',
+        removeLabel: '{name} dosyasını kaldır',
+      },
+    },
+  }}
+>
+```
+
+The file size is not in here. It is a number, so `Intl` writes it in the
+runtime's locale — the unit and the decimal mark both (`1.5 MB` in English,
+`1,5 MB` in Turkish).
+
+## Sending the batch
+
+`onFileAccept` sends each file the moment it is accepted. `Upload.Submit` is the
+other model: the value fills up, the user reads the list back, and one press
+sends what is in it. Nothing about the part performs the upload — it is a
+`Button` that knows when sending makes sense, and disables itself when it does
+not: while the value is empty, and while a batch is already going (any file
+`uploading` or `processing`). The second is the double-submit the status
+vocabulary makes visible — press again mid-transfer and the same files go twice
+— so the part reads the status rather than asking you to wire
+`disabled={inFlight}` yourself. The transfer is still yours; only the guard is
+not.
+
+Its place is beside the Trigger, in the zone: browse and send are one decision,
+so they belong on one line. The zone stacks its children, so wrap the two in
+`Upload.Actions` — a row that holds whatever you put in it, `8px` apart rather
+than on the zone's own looser rhythm. It is a layout box and nothing else, so a
+third control or a file count goes in it just as well, and a zone holding only a
+Trigger needs none of it.
+
+```tsx
+function SubmitDemo() {
+  const [files, setFiles] = React.useState([]);
+
+  const patch = (id, next) =>
+    setFiles(current =>
+      current.map(entry => (entry.id === id ? { ...entry, ...next } : entry)),
+    );
+
+  // Nothing has moved before this runs — which is the whole difference from the
+  // onFileAccept demo above, where choosing a file was the same as sending it.
+  const send = () =>
+    files.forEach(entry => {
+      let percent = 0;
+      const transfer = window.setInterval(() => {
+        percent += 25;
+        if (percent < 100)
+          return patch(entry.id, { status: 'uploading', progress: percent });
+
+        window.clearInterval(transfer);
+        patch(entry.id, { status: 'completed', progress: undefined });
+      }, 300);
+    });
+
+  const inFlight = files.some(entry => entry.status === 'uploading');
+
+  return (
+    <Upload
+      multiple
+      className="w-full max-w-md"
+      value={files}
+      onValueChange={setFiles}
+    >
+      <Upload.Dropzone>
+        <span>Attach what you need — nothing is sent until you say so.</span>
+
+        <Upload.Actions>
+          <Upload.Trigger>Choose Files</Upload.Trigger>
+          <Upload.Submit onClick={send}>
+            {inFlight ? 'Sending…' : 'Send'}
+          </Upload.Submit>
+        </Upload.Actions>
+      </Upload.Dropzone>
+
+      <Upload.List />
+    </Upload>
+  );
+}
+
+render(<SubmitDemo />);
+```
+
+Which model to pick is a question about the value, not about the API: an
+attachment that is only useful once the rest of a form is filled in belongs to a
+batch, while a picture that has to appear in the row before anything else
+happens does not. They compose — an `onFileAccept` that uploads to scratch
+storage and a Submit that commits the batch is one flow, not two.
+
+This is also the part `readOnly` treats differently from the others. It freezes
+the trigger and drops the remove action, but Submit stays live, because a review
+step that shows what is attached and lets you send it is the whole point of the
+state. Only `disabled` — the inert root — takes it down.
+
+## Per-file actions
+
+Each control in `Upload.ItemActions` is an `Upload.ItemAction` — an icon
+`Button` whose `action` names it and is mirrored as `data-action`. Two arrive
+wired:
+
+| `action`       | Does                                                                               | In read-only    |
+| -------------- | ---------------------------------------------------------------------------------- | --------------- |
+| `"download"`   | Saves the file — its `File` through an object URL, a preloaded entry via its `url` | Stays available |
+| `"remove"`     | Drops the file from `value`                                                        | Not rendered    |
+| any other name | Whatever your `onClick` does — `"preview"`, `"retry"`, …                           | Stays available |
+
+Each action reads the file from its `Upload.Item`. `label` sets your own
+`{name}` template, an explicit `aria-label` wins over both, and a built-in
+behavior runs after your `onClick` unless you `preventDefault()` it.
+
+Children are the override: on `Upload.ItemActions` they replace the default
+download + remove pair, on an `Upload.ItemAction` they replace its glyph. Bare
+actions on an `Upload.Item` are the shorthand for the first:
+
+```tsx
+<Upload.Item file={file}>
+  <Upload.ItemAction action="remove" />
+</Upload.Item>
+```
+
+All three kinds in one row below — a `"preview"` of your own beside the two that
+arrive wired, and a remove that asks first. The veto is what makes that last one
+possible, and it is synchronous: the built-in reads `defaultPrevented` as soon
+as your handler returns, so a confirmation that resolves later has already
+missed its chance to stop the removal.
+
+```tsx
+function ActionsDemo() {
+  const [files, setFiles] = React.useState([
+    {
+      id: '1',
+      name: 'cover-photo.jpg',
+      size: 840000,
+      type: 'image/jpeg',
+      url: '/img/takeoff-og.jpg',
+    },
+    {
+      id: '2',
+      name: 'brand-mark.svg',
+      size: 12000,
+      type: 'image/svg+xml',
+      url: '/img/brand-mark.svg',
+    },
+  ]);
+
+  return (
+    <Upload
+      multiple
+      className="w-full max-w-md"
+      value={files}
+      onValueChange={setFiles}
+    >
+      <Upload.List>
+        {items =>
+          items.map(item => (
+            // Bare actions: the shorthand, so the three below replace the default
+            // download + remove pair — order included.
+            <Upload.Item key={item.id} file={item}>
+              <Upload.ItemAction
+                action="preview"
+                label="Preview {name}"
+                onClick={() => window.open(item.url, '_blank', 'noopener')}
+              >
+                <OpenIconOutlinedRounded aria-hidden="true" focusable="false" />
+              </Upload.ItemAction>
+
+              <Upload.ItemAction action="download" />
+
+              <Upload.ItemAction
+                action="remove"
+                onClick={event => {
+                  if (!window.confirm('Remove ' + item.name + '?'))
+                    event.preventDefault();
+                }}
+              />
+            </Upload.Item>
+          ))
+        }
+      </Upload.List>
+    </Upload>
+  );
+}
+
+render(<ActionsDemo />);
+```
+
+The part is polymorphic, and the built-in save steps aside for an `href` on the
+link form. It takes `as="a"` to do that — a plain button has nowhere to put the
+attribute, so an `href` without it is ignored and the built-in save still runs.
+`download` is only honoured same-origin, so a cross-origin link opens the file:
+
+```tsx
+<Upload.ItemAction
+  action="download"
+  as="a"
+  href={file.url}
+  download={file.name}
+/>
+```
+
+## The preview
+
+`Upload.Item` renders `Upload.ItemPreview` for you, in three branches per file:
+
+| Branch          | When                                                                   | Renders                                                         |
+| --------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Image thumbnail | The entry has a `thumbUrl`, or is itself an image (picked, or a `url`) | `<img>`: that URL directly, or an object URL revoked on unmount |
+| File-type icon  | PDF, Word, Excel, PowerPoint, JPG, PNG, MP4, TXT, ZIP                  | The shipped Takeoff icon for that format                        |
+| Extension badge | Anything else                                                          | The uppercased extension (`RTF`), or `FILE`                     |
+
+Matched on extension first, MIME type second. `thumbUrl` outranks both other
+branches and takes no MIME check; an image whose URL fails to load falls back to
+the icon.
+
+One entry per branch below — the two PDFs are the same format and differ only in
+whether they carry a `thumbUrl`:
+
+```tsx
+function PreviewDemo() {
+  const [files, setFiles] = React.useState([
+    // Its own url is an image, so the row previews the file itself.
+    {
+      id: '1',
+      name: 'cover-photo.jpg',
+      size: 840000,
+      type: 'image/jpeg',
+      url: '/img/takeoff-og.jpg',
+    },
+    // A picture of the file rather than the file: thumbUrl takes no MIME check,
+    // which is what puts a PDF on the image branch at all.
+    {
+      id: '2',
+      name: 'quarterly-report.pdf',
+      size: 2400000,
+      type: 'application/pdf',
+      thumbUrl: '/img/brand-mark.svg',
+    },
+    // Same format, no thumb — the shipped icon for PDF.
+    {
+      id: '3',
+      name: 'terms-and-conditions.pdf',
+      size: 180000,
+      type: 'application/pdf',
+    },
+    // A format the icon set does not cover — the uppercased extension.
+    {
+      id: '4',
+      name: 'meeting-notes.rtf',
+      size: 24000,
+      type: 'application/rtf',
+    },
+  ]);
+
+  return (
+    <Upload
+      multiple
+      className="w-full max-w-md"
+      value={files}
+      onValueChange={setFiles}
+    >
+      <Upload.List />
+    </Upload>
+  );
+}
+
+render(<PreviewDemo />);
+```
+
+`thumbUrl` is a picture _of_ the file, so it is the only way a format the
+browser cannot draw — a PDF's first page, a video's poster frame — reaches the
+image branch. The download ignores it and still saves the file itself. The last
+two rows carry neither a `file` nor a `url`, which is also why they have nothing
+to download.
+
+Compose the part to replace the default outright, or use `classNames` /
+`slotProps` / `style` to keep it and restyle the box (`image`, `icon`,
+`extension` are its slots).
+
+## States
+
+| Prop       | Effect                                                                                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `readOnly` | Files stay downloadable; adding and removing are blocked. The remove action is not rendered at all, `Upload.Trigger` is frozen in place, `Upload.Submit` stays live |
+| `disabled` | Same anatomy, every control inert under `data-disabled`. The dropzone is recoloured, not faded                                                                      |
+| `invalid`  | Danger treatment, usually inherited from `Field`                                                                                                                    |
+
+All three resolve as `own prop ?? Field ?? false`. There is no `required` — a
+hidden file input cannot carry it, so `<Field required>` is the whole story.
+
+The demo sets them on the `Field` rather than on the `Upload`, which is how a
+form usually reaches them:
+
+```tsx
+const STATES = ['default', 'disabled', 'readOnly', 'invalid'];
+
+function StatesDemo() {
+  const [state, setState] = React.useState('default');
+  const [files, setFiles] = React.useState([
+    // Both preloaded and both downloadable, so the only thing that changes
+    // between the states below is the state itself.
+    {
+      id: '1',
+      name: 'cover-photo.jpg',
+      size: 840000,
+      type: 'image/jpeg',
+      url: '/img/takeoff-og.jpg',
+    },
+    {
+      id: '2',
+      name: 'brand-mark.svg',
+      size: 12000,
+      type: 'image/svg+xml',
+      url: '/img/brand-mark.svg',
+    },
+  ]);
+
+  return (
+    <div className="flex w-full max-w-md flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        {STATES.map(name => (
+          <Button
+            key={name}
+            size="small"
+            variant="neutral"
+            appearance={state === name ? 'filled' : 'outlined'}
+            onClick={() => setState(name)}
+          >
+            {name}
+          </Button>
+        ))}
+      </div>
+
+      <Field
+        disabled={state === 'disabled'}
+        readOnly={state === 'readOnly'}
+        invalid={state === 'invalid'}
+      >
+        <Field.Label>Attachments</Field.Label>
+
+        <Upload multiple value={files} onValueChange={setFiles}>
+          <Upload.Dropzone>
+            <span>Choose a file or drop it here.</span>
+            <Upload.Trigger>Choose File</Upload.Trigger>
+          </Upload.Dropzone>
+
+          <Upload.List />
+        </Upload>
+
+        {state === 'invalid' ? (
+          <Field.ErrorMessage>
+            At least one attachment has to be a PDF.
+          </Field.ErrorMessage>
+        ) : (
+          <Field.Description>
+            Watch the trigger, the remove action, and the zone.
+          </Field.Description>
+        )}
+      </Field>
+    </div>
+  );
+}
+
+render(<StatesDemo />);
+```
+
+`readOnly` and `disabled` differ in shape, not just in weight: read-only takes
+the remove action out of every row while leaving download and the files
+themselves, because a view mode with a dead remove button is worse than one
+without it — and it freezes the trigger in place rather than dropping it, since
+a zone with no browse button is a dashed box promising a drop that never lands.
+`disabled` changes nothing about the anatomy; every control in it just goes
+inert.
+
+Paint your own dropzone content with `--tk-upload-dropzone-mark` and
+`--tk-upload-dropzone-support`, or it stays lit while the zone goes quiet.
+
+## Accessibility
+
+- The trigger and the per-file actions are real, focusable `<button>`s.
+  Icon-only actions carry a file-specific `aria-label` ("Remove report.pdf").
+- Inside a `Field`, the root is the labelled region (`role="group"`), named by
+  `Field.Label` and described by `Field.Description` / `Field.ErrorMessage`.
+  Your own ARIA always wins.
+- The native file input is visually hidden but reachable through the trigger.
+- Removing a row moves focus before the row unmounts: to the next row's matching
+  action, or to the row above when the last one goes, or to `Upload.Trigger`
+  when the list empties. An unmounted control would otherwise hand focus back to
+  the document body, restarting every subsequent `Tab` from the top of the page.
+- Parts rendered through `as` stay operable from the keyboard — `Enter` and
+  `Space` run the same built-in behavior a click does — and an `as="a"` trigger
+  or action is announced as a link while it has an `href` to follow.
+
+## API Reference
+
+### Upload {#upload}
+
+#### Props {#upload-props}
+
+| Name            | Type                                                         | Default                            | Description                                                                                                                                                                                                                                                                                                       |
+| --------------- | ------------------------------------------------------------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| value           | `UploadFile[]`                                               | -                                  | Committed files (controlled). Pair with `onValueChange`.                                                                                                                                                                                                                                                          |
+| defaultValue    | `UploadFile[]`                                               | -                                  | Initial files for uncontrolled usage.                                                                                                                                                                                                                                                                             |
+| accept          | `string`                                                     | -                                  | Acceptable file types — comma-separated MIME types (`image/*`) and/or extensions (`.pdf`).                                                                                                                                                                                                                        |
+| multiple        | `boolean`                                                    | false                              | Allow selecting/holding more than one file. When `false`, a new selection replaces the current file.                                                                                                                                                                                                              |
+| directory       | `boolean`                                                    | false                              | Browse folders instead of single files: the picker takes a directory and every file inside it (recursively), each keeping its `webkitRelativePath` (e.g. `reports/2024/q1.pdf`) for rebuilding the tree. Implies `multiple`. Only affects the picker — dropping a folder on `Upload.Dropzone` does not expand it. |
+| maxFileSize     | `number`                                                     | -                                  | Maximum size per file, in bytes. Larger files are rejected.                                                                                                                                                                                                                                                       |
+| maxFileCount    | `number`                                                     | -                                  | Maximum number of files (only meaningful with `multiple`). Extra files are rejected.                                                                                                                                                                                                                              |
+| uploadingLabel  | `string`                                                     | 'Uploading…'                       | Row support text while a file transfers. Localize per upload; an empty string drops the status line, glyph included.                                                                                                                                                                                              |
+| processingLabel | `string`                                                     | 'Processing…'                      | Row support text while the server works on a file that has landed. Localize per upload; an empty string drops the status line, glyph included.                                                                                                                                                                    |
+| completedLabel  | `string`                                                     | 'Completed'                        | Row support text once a file is done. Localize per upload; an empty string drops the status line, glyph included.                                                                                                                                                                                                 |
+| errorLabel      | `string`                                                     | 'Failed'                           | Row support text for a failure that reports no `error` message of its own — an entry's own `error` always wins. Localize per upload; an empty string drops the status line, glyph included.                                                                                                                       |
+| progressLabel   | `string`                                                     | '&#123;name&#125; upload progress' | Accessible name for a row's progress bar, as a template: `{name}` stands for the file's name, so several bars uploading at once stay distinguishable. An empty string counts as unset — the bar cannot go unnamed.                                                                                                |
+| downloadLabel   | `string`                                                     | 'Download &#123;name&#125;'        | Accessible name for the built-in `action="download"`, as a `{name}` template. An `Upload.ItemAction`'s own `label` wins over it, and an empty string counts as unset — an icon-only button cannot go unnamed.                                                                                                     |
+| removeLabel     | `string`                                                     | 'Remove &#123;name&#125;'          | Accessible name for the built-in `action="remove"`, as a `{name}` template. An `Upload.ItemAction`'s own `label` wins over it, and an empty string counts as unset — an icon-only button cannot go unnamed.                                                                                                       |
+| disabled        | `boolean`                                                    | -                                  | Disables the whole control. Also inherited from a surrounding `Field`.                                                                                                                                                                                                                                            |
+| readOnly        | `boolean`                                                    | -                                  | Read-only: files render and remain downloadable, but adding/removing is blocked. Also inherited from `Field`.                                                                                                                                                                                                     |
+| invalid         | `boolean`                                                    | -                                  | Marks the control invalid — mirrored as `data-invalid` for the recipe's danger styling. Also inherited from `Field`.                                                                                                                                                                                              |
+| classNames      | `Partial<Record<"root", string>>`                            | -                                  | Per-slot class name overrides.                                                                                                                                                                                                                                                                                    |
+| slotProps       | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -                                  | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                                                                |
+| className       | `string`                                                     | -                                  | Appends custom classes to the root slot.                                                                                                                                                                                                                                                                          |
+
+#### Events {#upload-events}
+
+| Name          | Type                                      | Default | Description                                                                                                                                                                                                                             |
+| ------------- | ----------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| onValueChange | `(files: UploadFile[]) => void`           | -       | Called with the next file array after a selection, drop, or removal.                                                                                                                                                                    |
+| onFileAccept  | `(files: UploadFile[]) => void`           | -       | Called with the entries that just entered the value — the files wrapped this batch rather than the whole array, which is what a consumer starts its own upload from. Files dropped as duplicates of ones already held are not reported. |
+| onFilesReject | `(rejections: UploadRejection[]) => void` | -       | Called with every file rejected by validation (type, size, or count).                                                                                                                                                                   |
+
+#### Data attributes {#upload-data-attributes}
+
+| Attribute        | Applied when                                                     | Purpose                                                                     |
+| ---------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| data-slot="root" | Always                                                           | Stable selector for wrapper styling on the root slot.                       |
+| data-disabled    | When disabled (own prop or inherited from a surrounding `Field`) | Styling hook for the disabled state.                                        |
+| data-readonly    | When read-only (own prop or `Field`)                             | Styling hook for the read-only state — takes the zone out of the drag flow. |
+| data-invalid     | When invalid (own prop or `Field`)                               | Styling hook for the invalid state (danger treatment).                      |
+
+### Upload.Dropzone {#upload-dropzone}
+
+#### Data attributes {#upload-dropzone-data-attributes}
+
+| Attribute        | Applied when                                                                                          | Purpose                                                                                                                   |
+| ---------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| data-slot="root" | Always                                                                                                | Stable selector for wrapper styling on the root slot.                                                                     |
+| data-drag-state  | While a payload is dragged over (`accept` \| `reject`, by matching the dragged type against `accept`) | Styling hook distinguishing an acceptable from a rejected drag. Unstyled by default — the recipe ships no drag treatment. |
+
+### Upload.Actions {#upload-actions}
+
+#### Data attributes {#upload-actions-data-attributes}
+
+| Attribute        | Applied when | Purpose                                               |
+| ---------------- | ------------ | ----------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Upload.Trigger {#upload-trigger}
+
+#### Props {#upload-trigger-props}
+
+| Name       | Type                                                         | Default    | Description                                                                                                                                                                                                            |
+| ---------- | ------------------------------------------------------------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| children   | `React.ReactNode`                                            | -          | Trigger label (e.g. "Choose file").                                                                                                                                                                                    |
+| appearance | `ButtonAppearance`                                           | 'outlined' | Button appearance. Quieter than Button's own default, and the treatment `Upload.Submit` takes too — the two stand beside each other in the zone, so they read as one pair. Re-point it on a Trigger that stands alone. |
+| variant    | `ButtonVariant`                                              | 'neutral'  | Button color variant.                                                                                                                                                                                                  |
+| classNames | `Partial<Record<"root", string>>`                            | -          |                                                                                                                                                                                                                        |
+| slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -          |                                                                                                                                                                                                                        |
+| className  | `string`                                                     | -          | Appends custom classes to the root slot.                                                                                                                                                                               |
+
+#### Data attributes {#upload-trigger-data-attributes}
+
+| Attribute        | Applied when | Purpose                                               |
+| ---------------- | ------------ | ----------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Upload.Submit {#upload-submit}
+
+#### Props {#upload-submit-props}
+
+| Name       | Type                                                         | Default    | Description                                                                                                                                                                                                    |
+| ---------- | ------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| children   | `React.ReactNode`                                            | -          | Submit label (e.g. "Upload"). Wire the actual upload through `onClick`.                                                                                                                                        |
+| appearance | `ButtonAppearance`                                           | 'outlined' | Button appearance. The Trigger's, not Button's own: the two stand beside each other in the zone, so they read as one pair rather than as two weights. Re-point it where the send is the page's primary action. |
+| variant    | `ButtonVariant`                                              | 'neutral'  | Button color variant.                                                                                                                                                                                          |
+| classNames | `Partial<Record<"root", string>>`                            | -          |                                                                                                                                                                                                                |
+| slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -          |                                                                                                                                                                                                                |
+| className  | `string`                                                     | -          | Appends custom classes to the root slot.                                                                                                                                                                       |
+
+#### Data attributes {#upload-submit-data-attributes}
+
+| Attribute        | Applied when                                                                                                        | Purpose                                                                                                                                                                                                            |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| data-slot="root" | Always                                                                                                              | Stable selector for wrapper styling on the root slot.                                                                                                                                                              |
+| data-disabled    | While the value is empty, while any file is `uploading` or `processing`, or when the root (or the part) is disabled | Emitted by the underlying Button. The in-flight case is the double-submit guard — pressing again mid-transfer would send the same files twice — so it is the part's own, not something to wire through `disabled`. |
+
+### Upload.List {#upload-list}
+
+#### Data attributes {#upload-list-data-attributes}
+
+| Attribute        | Applied when | Purpose                                               |
+| ---------------- | ------------ | ----------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Upload.Item {#upload-item}
+
+#### Props {#upload-item-props}
+
+| Name       | Type                                                         | Default | Description                                                                                                                                                                                                                                                                                                            |
+| ---------- | ------------------------------------------------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| file       | `UploadFile`                                                 | -       | The file this row renders. Also what its `Upload.ItemAction` children read.                                                                                                                                                                                                                                            |
+| children   | `React.ReactNode`                                            | -       | Per-file action controls (`Upload.ItemAction`), wrapped in a default `Upload.ItemActions` — and replacing its default download + remove pair rather than joining it. A composed `Upload.ItemPreview`, `Upload.ItemContent`, or `Upload.ItemActions` among them is hoisted into its own region, replacing that default. |
+| classNames | `Partial<Record<"root", string>>`                            | -       |                                                                                                                                                                                                                                                                                                                        |
+| slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -       |                                                                                                                                                                                                                                                                                                                        |
+| className  | `string`                                                     | -       | Appends custom classes to the root slot.                                                                                                                                                                                                                                                                               |
+
+#### Data attributes {#upload-item-data-attributes}
+
+| Attribute        | Applied when                                                             | Purpose                                                             |
+| ---------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| data-slot="root" | Always                                                                   | Stable selector for wrapper styling on the root slot.               |
+| data-status      | Always (`idle` \| `uploading` \| `processing` \| `completed` \| `error`) | Per-file status styling hook (consumer-driven `UploadFile.status`). |
+
+### Upload.ItemContent {#upload-item-content}
+
+#### Data attributes {#upload-item-content-data-attributes}
+
+| Attribute        | Applied when | Purpose                                               |
+| ---------------- | ------------ | ----------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Upload.ItemPreview {#upload-item-preview}
+
+#### Data attributes {#upload-item-preview-data-attributes}
+
+| Attribute        | Applied when | Purpose                                               |
+| ---------------- | ------------ | ----------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Upload.ItemActions {#upload-item-actions}
+
+#### Data attributes {#upload-item-actions-data-attributes}
+
+| Attribute        | Applied when | Purpose                                               |
+| ---------------- | ------------ | ----------------------------------------------------- |
+| data-slot="root" | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Upload.ItemAction {#upload-item-action}
+
+#### Props {#upload-item-action-props}
+
+| Name       | Type                                                         | Default                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| action     | `"download" \| "remove" \| (string & {})`                    | -                                                                  | Names the action, mirrored as `data-action` whatever the name is. Two names arrive wired, each with its own icon and label: `'download'` saves the row's file (its `File` through an object URL, a preloaded entry through its `url`) and stays available in read-only; `'remove'` drops the file from `value` and is not rendered at all in read-only. Any other name — `'preview'`, `'retry'`, `'share'` — is yours: the behavior comes from `onClick`, the glyph from `children`, the wording from `label`. |
+| label      | `string`                                                     | the root's copy for the `action` (`downloadLabel` / `removeLabel`) | Accessible name for the action, as a template: `{name}` stands for the file's name, so `"Preview {name}"` gives `aria-label="Preview report.pdf"` and icon-only actions stay labelled per file. An explicit `aria-label` wins over it, and an empty one counts as unset, so a built-in action falls back to the root's copy rather than losing its name.                                                                                                                                                       |
+| children   | `React.ReactNode`                                            | -                                                                  | Action content — typically an icon. Defaults to the `action`'s own glyph.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| appearance | `ButtonAppearance`                                           | 'outlined'                                                         | Button appearance. Defaults to the row's shape — a small, quiet icon button beside the file's details — rather than Button's own default, so a text-only remove or a danger-coloured one is a re-point, not a rebuild.                                                                                                                                                                                                                                                                                         |
+| variant    | `ButtonVariant`                                              | 'neutral'                                                          | Button color variant.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| size       | `ButtonSize`                                                 | 'small'                                                            | Button size scale.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| classNames | `Partial<Record<"root", string>>`                            | -                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| slotProps  | `Partial<Record<"root", React.HTMLAttributes<HTMLElement>>>` | -                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| className  | `string`                                                     | -                                                                  | Appends custom classes to the root slot.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+
+#### Data attributes {#upload-item-action-data-attributes}
+
+| Attribute        | Applied when                                                               | Purpose                                                |
+| ---------------- | -------------------------------------------------------------------------- | ------------------------------------------------------ |
+| data-slot="root" | Always                                                                     | Stable selector for wrapper styling on the root slot.  |
+| data-action      | When `action` is set (any name; `download` \| `remove` are the wired pair) | Names the action, for styling one action out of a row. |
+
+### Type Definitions {#upload-type-definitions}
+
+| Name                       | Definition                                                                                                                                                                                                                                                                                                                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| UploadFile                 | `{ id: string; file?: File; name?: string; size?: number; type?: string; url?: string; thumbUrl?: string; status?: UploadFileStatus; progress?: number; error?: string }`                                                                                                                                                                                                            |
+| UploadRejection            | `\| { file: File; code: 'file-invalid-type'; /** The `accept`list the file failed to match. \*/ accept: string; } \| { file: File; code: 'file-too-large'; /** The`maxFileSize`(bytes) the file exceeded. _/ maxFileSize: number; } \| { file: File; code: 'too-many-files'; /\*\* How many files were allowed —`maxFileCount`, or 1 without `multiple`. _/ maxFileCount: number; }` |
+| ButtonAppearance           | `'filled' \| 'filledLight' \| 'outlined' \| 'text'`                                                                                                                                                                                                                                                                                                                                  |
+| ButtonVariant              | `'primary' \| 'secondary' \| 'neutral' \| 'info' \| 'success' \| 'danger' \| 'warning' \| 'white' \| 'black'`                                                                                                                                                                                                                                                                        |
+| UploadItemContentSlot      | `'root' \| 'name' \| 'size' \| 'status' \| 'progress'`                                                                                                                                                                                                                                                                                                                               |
+| UploadItemPreviewSlot      | `'root' \| 'image' \| 'icon' \| 'extension'`                                                                                                                                                                                                                                                                                                                                         |
+| UploadItemPreviewSlotProps | `SlotPropsMap<UploadItemPreviewSlot> & { image?: ImgHTMLAttributes<HTMLImageElement>; }`                                                                                                                                                                                                                                                                                             |
+| ButtonSize                 | `'small' \| 'base' \| 'large'`                                                                                                                                                                                                                                                                                                                                                       |

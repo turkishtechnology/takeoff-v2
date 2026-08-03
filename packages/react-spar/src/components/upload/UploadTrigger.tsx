@@ -6,6 +6,7 @@ import { Button, type ButtonAppearance, type ButtonVariant } from '../button';
 
 import { UploadTriggerBase } from './base';
 import { useUploadContext } from './context';
+import { isConsumerVeto } from './helpers';
 import type { UploadTriggerOwnProps, UploadTriggerProps } from './types';
 
 type UploadTriggerResolvedProps = Omit<UploadTriggerOwnProps, 'classNames' | 'slotProps'> & {
@@ -55,9 +56,14 @@ export const UploadTrigger = <T extends ElementType = 'button'>(props: UploadTri
   const linkProps = isButton ? undefined : ({ href: isDisabled ? undefined : href } as { href?: string });
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    // Sampled before the consumer's handlers, not read raw after them: on an
+    // `as`-rendered Trigger the event arrives already prevented by Button's own
+    // keyboard synthesis, and taking that for a veto left the browse button
+    // mouse-only (see `isConsumerVeto`).
+    const preventedOnEntry = event.defaultPrevented;
     onClick?.(event);
     slotOnClick?.(event);
-    if (event.defaultPrevented) return;
+    if (isConsumerVeto(event, preventedOnEntry)) return;
     openFileDialog();
   };
 

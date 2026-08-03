@@ -8,6 +8,16 @@ import type { UploadFile, UploadFileStatus, UploadRejection } from './types';
  * are treated as the same file. A directory pick supplies `webkitRelativePath`
  * (empty for ordinary picks), which keeps two identical files sitting in
  * different folders apart. The UploadFile `id` is separate and stable.
+ *
+ * Two *ordinary* picks matching on all three collapse into one even when they
+ * came from different folders, and that is the intended trade. An ordinary pick
+ * carries no path — the browser withholds it, so there is nothing to tell the
+ * two apart by — which leaves guessing from name/size/mtime either way. Treating
+ * a match as the same file makes re-picking a file already held a no-op, the
+ * case that actually happens; treating it as distinct would instead put two
+ * identical rows in the list every time someone re-opened the picker, which is
+ * both more common and harder to explain. A consumer who needs the other rule
+ * has the whole value: dedupe by their own key in `onValueChange`.
  */
 export const fileKey = (file: File): string => `${file.webkitRelativePath || file.name}:${file.size}:${file.lastModified}`;
 
@@ -66,6 +76,26 @@ export const fileStatus = (item: UploadFile): UploadFileStatus => item.status ??
  * name only ever produces one word order, and it is English's.
  */
 export const formatFileLabel = (template: string, name: string): string => template.split('{name}').join(name);
+
+/**
+ * Whether the consumer's handlers vetoed the built-in behavior, given whether
+ * the event was already prevented when the handler was entered.
+ *
+ * The baseline is the whole point. Spar's Button has no native Enter/Space
+ * click to let through on a non-native element, so it synthesizes one: it
+ * calls `preventDefault()` on the keydown and hands *that* event to `onClick`
+ * (spar Button.tsx, `handleKeyDown`). Reading `defaultPrevented` raw therefore
+ * takes Button's own bookkeeping for a consumer veto, and every part rendered
+ * through `as` goes inert under the keyboard while still working under the
+ * mouse — a focusable, labelled, correctly-roled control that does nothing.
+ * Only a *transition* to prevented across the consumer's handlers is a veto.
+ *
+ * The one case this cannot see is a consumer preventing a keyboard activation
+ * that Button had already prevented: the flag is one bit and it is spent. That
+ * is the narrow end of the trade — a veto missed on one path, against the
+ * built-in behavior missed on every path.
+ */
+export const isConsumerVeto = (event: { defaultPrevented: boolean }, preventedOnEntry: boolean): boolean => event.defaultPrevented && !preventedOnEntry;
 
 // The size is the one thing the row renders that no label prop can reach: it is
 // a number, and both halves of writing it down — which unit, and where the

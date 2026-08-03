@@ -9,7 +9,7 @@ import { Button, type ButtonAppearance, type ButtonSize, type ButtonVariant } fr
 
 import { UploadItemActionBase } from './base';
 import { useUploadContext, useUploadItemContext } from './context';
-import { canSaveUploadFile, fileName, formatFileLabel, saveUploadFile } from './helpers';
+import { canSaveUploadFile, fileName, formatFileLabel, isConsumerVeto, saveUploadFile } from './helpers';
 import type { UploadItemActionOwnProps, UploadItemActionProps } from './types';
 
 type UploadItemActionResolvedProps = Omit<UploadItemActionOwnProps, 'classNames' | 'slotProps'> & {
@@ -37,6 +37,37 @@ const ACTION_ICON: Record<'download' | 'remove', ReactNode> = {
 };
 
 const isBuiltInAction = (action: string | undefined): action is 'download' | 'remove' => action === 'download' || action === 'remove';
+
+const siblingRow = (row: Element): Element | null => {
+  const next = row.nextElementSibling;
+  if (next?.matches('.tk-upload-item')) return next;
+  const previous = row.previousElementSibling;
+  return previous?.matches('.tk-upload-item') ? previous : null;
+};
+
+// Removing a row unmounts the control the user is standing on, and an element
+// that goes away holding focus hands it back to `<body>` — the next Tab then
+// restarts from the top of the document, so clearing a list one row at a time
+// means re-traversing the whole page between rows. A `readOnly` flip that
+// unmounts a focused remove does the same thing.
+//
+// Focus moves *before* the removal rather than being restored after it: the
+// neighbouring row is already mounted and React keeps its DOM node across the
+// re-render (rows are keyed by file id), so there is no commit to wait on and
+// no frame to schedule against.
+const moveFocusOffRow = (button: HTMLElement): void => {
+  const row = button.closest('.tk-upload-item');
+  const neighbour = row ? siblingRow(row) : null;
+  // The same action one row down, so a run of removes stays under one finger;
+  // any control in that row when its action set differs; the browse button when
+  // the last row is going and there is nowhere left in the list to stand.
+  const target =
+    neighbour?.querySelector<HTMLElement>('[data-action="remove"]') ??
+    neighbour?.querySelector<HTMLElement>('button, [role="button"], a[href]') ??
+    button.closest('.tk-upload')?.querySelector<HTMLElement>('.tk-upload-trigger') ??
+    null;
+  target?.focus();
+};
 
 // The row's action shape: a small, quiet icon button beside the file's details.
 // Defaults rather than constants at the call to Button, so a theme or a call site
@@ -118,17 +149,26 @@ export const UploadItemAction = <T extends ElementType = 'button'>(props: Upload
   const nameTemplate = label || (action === 'download' ? downloadLabel : action === 'remove' ? removeLabel : undefined);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    // Rendered as anything but a button, the platform does not block the click
-    // itself, so disabled is enforced here too.
-    if (isDisabled) return;
+    // No `isDisabled` guard: Spar's Button refuses to activate at all while
+    // disabled, on every element type and on both the mouse and the keyboard
+    // path (`handleActivation` returns on `!isInteractive`), so `onClick` never
+    // runs to be guarded.
+    const button = event.currentTarget;
+    // Sampled before the consumer's handlers rather than read raw after them —
+    // on an `as`-rendered action the event arrives already prevented by Button's
+    // own keyboard synthesis, and taking that for a veto left every polymorphic
+    // action mouse-only (see `isConsumerVeto`).
+    const preventedOnEntry = event.defaultPrevented;
     onClick?.(event);
     slotOnClick?.(event);
     // The built-in behavior runs after the consumer's handler, unless they
     // cancelled it. An `href` means the platform is already doing the download
     // (the `as="a"` form), so the built-in save stays out of its way.
-    if (event.defaultPrevented) return;
-    if (action === 'remove') removeFile(item.id);
-    else if (action === 'download' && !hasHref) saveUploadFile(item);
+    if (isConsumerVeto(event, preventedOnEntry)) return;
+    if (action === 'remove') {
+      moveFocusOffRow(button);
+      removeFile(item.id);
+    } else if (action === 'download' && !hasHref) saveUploadFile(item);
   };
 
   // Spar's Button already marks a disabled non-button (`aria-disabled`,

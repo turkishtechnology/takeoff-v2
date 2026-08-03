@@ -23,11 +23,13 @@ same reason. The component only displays them (`idle` / `uploading` /
 `processing` / `completed` / `error`), and the progress bar draws only while
 `uploading` with a numeric `progress`.
 
-`Upload.Submit` is a `Button` that disables itself while the value is empty, and
-it takes `Upload.Trigger`'s `outlined` / `neutral` treatment rather than
-Button's own. Its place is beside the Trigger, in the zone — browse and send are
-one decision — and since the zone stacks its children, the two go in an
-`Upload.Actions`: a layout row that holds whatever is put in it,
+`Upload.Submit` is a `Button` that disables itself whenever sending makes no
+sense — while the value is empty, and while a batch is already going (any file
+`uploading` or `processing`), which is the double-submit guard the status
+vocabulary makes cheap. It takes `Upload.Trigger`'s `outlined` / `neutral`
+treatment rather than Button's own. Its place is beside the Trigger, in the zone
+— browse and send are one decision — and since the zone stacks its children, the
+two go in an `Upload.Actions`: a layout row that holds whatever is put in it,
 `--spacing-m-base` apart, so a third control or a file count sits on the same
 line just as well. `readOnly` leaves Submit live, since handing a fixed list
 upstream does not change it.
@@ -45,8 +47,10 @@ mirrored as `data-action`, `'download'` and `'remove'` arrive wired, and any
 other name — `'preview'`, `'retry'` — takes its behavior from `onClick`, its
 glyph from `children`, and its wording from `label`. Built-in behavior runs
 after `onClick` unless it is `preventDefault()`ed — the same veto
-`Upload.Dropzone` and `Upload.Trigger` honour — and the part is polymorphic, so
-`as="a"` with an `href` hands the download to the platform.
+`Upload.Trigger` honours, and one `Upload.Dropzone` deliberately does not, since
+on a drop `preventDefault()` is required boilerplate rather than an intent. The
+part is polymorphic, so `as="a"` with an `href` hands the download to the
+platform, and an `as`-rendered control stays activatable from the keyboard.
 
 `Upload.ItemPreview` draws an image thumbnail (`thumbUrl`, or the file itself
 through an object URL revoked on unmount), a shipped Takeoff icon for the known
@@ -68,3 +72,10 @@ entirely and freezes `Upload.Trigger` in place; `disabled` changes no shape and
 goes inert under the root's `data-disabled`; `invalid` is the danger treatment.
 All three resolve as `own prop ?? Field ?? false`, and composing inside a
 `Field` wires the label and helper/error text to the root's `role="group"`.
+
+The docs API generator changed with it: `escapeMarkdownCell` now writes `{` and
+`}` as entities outside inline code spans, because a JSDoc `@defaultValue`
+carrying a `{name}` placeholder reached the mdx unescaped and MDX parsed it as a
+JSX expression, failing SSG. It is shared infrastructure rather than an Upload
+detail — every generated API table goes through it, so re-running `gen:api` can
+reflow cells on component pages that have nothing to do with this change.

@@ -81,7 +81,7 @@ export const Upload = <T extends ElementType = 'div'>(props: UploadProps<T>) => 
   const readOnly = ownReadOnly ?? field?.readOnly ?? false;
   const invalid = ownInvalid ?? field?.invalid ?? false;
 
-  const [files = [], setFiles] = useControllableState<UploadFile[]>(value, defaultValue ?? [], onValueChange);
+  const [files = [], setFiles, isControlled] = useControllableState<UploadFile[]>(value, defaultValue ?? [], onValueChange);
 
   // The array the next write builds on, rather than the one this render closed
   // over. Both writes below derive a whole new array from the current one, and
@@ -97,10 +97,19 @@ export const Upload = <T extends ElementType = 'div'>(props: UploadProps<T>) => 
 
   const commitFiles = useCallback(
     (next: UploadFile[]) => {
-      latestFiles.current = next;
+      // Moved forward only when the commit is guaranteed to come back as the
+      // next render's value, which is the uncontrolled case. A controlled parent
+      // may decline the change — veto it outright, or set state React bails out
+      // of — and then no re-render arrives to re-sync line 96, leaving the ref
+      // holding an array the value never took. The next commit would derive from
+      // that phantom and silently drop rows nobody removed. Controlled mode
+      // re-reads `files` on the render the parent does accept, so skipping the
+      // write here costs nothing and the batching the ref exists for still holds
+      // wherever the ref is the source of truth.
+      if (!isControlled) latestFiles.current = next;
       setFiles(next);
     },
-    [setFiles],
+    [isControlled, setFiles],
   );
 
   const processFiles = useCallback(

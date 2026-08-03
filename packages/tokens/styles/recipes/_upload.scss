@@ -347,6 +347,11 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
+  // Declared with the rest of the block rather than after the nested rule below:
+  // Sass emits declarations that trail a nested rule as a second copy of the
+  // selector, so leaving it there shipped `.tk-upload-item-actions` twice and put
+  // the file one Sass version away from the mixed-declarations deprecation.
+  flex-shrink: 0;
 
   // A row's actions can all take themselves away — read-only unmounts the
   // remove, and a download with nothing to save unmounts too — and the part
@@ -357,7 +362,6 @@
   &:empty {
     display: none;
   }
-  flex-shrink: 0;
 }
 
 // Everything visual comes from the Button recipe; only the row-layout delta

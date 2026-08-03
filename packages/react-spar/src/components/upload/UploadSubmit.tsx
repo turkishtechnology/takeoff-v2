@@ -6,6 +6,7 @@ import { Button, type ButtonAppearance, type ButtonVariant } from '../button';
 
 import { UploadSubmitBase } from './base';
 import { useUploadContext } from './context';
+import { fileStatus } from './helpers';
 import type { UploadSubmitOwnProps, UploadSubmitProps } from './types';
 
 type UploadSubmitResolvedProps = Omit<UploadSubmitOwnProps, 'classNames' | 'slotProps'> & {
@@ -51,13 +52,23 @@ export const UploadSubmit = <T extends ElementType = 'button'>(props: UploadSubm
   };
 
   // The component does not perform the upload (out of scope) — the consumer's
-  // `onClick` does. Nothing to submit while empty, so it disables itself.
+  // `onClick` does. What it does own is when sending makes sense at all, and
+  // there are two states where it does not: nothing to send, and a batch already
+  // going. The second is the double-submit the status vocabulary makes visible —
+  // `uploading` and `processing` both mean the transfer this button starts is
+  // still running, so offering it again sends the same files twice. Reading the
+  // status rather than asking the consumer to wire `disabled={inFlight}` keeps
+  // the guard where the state already is; the transfer itself stays theirs.
   //
   // `readOnly` is deliberately not in that list, unlike the Trigger's: view mode
   // fixes the file list, and handing a fixed list upstream does not change it.
   // A review step that shows what is attached and lets you send it is the whole
   // point of the state, so only `disabled` — the inert root — takes Submit down.
-  const isDisabled = disabled || ownDisabled || files.length === 0;
+  const inFlight = files.some(entry => {
+    const status = fileStatus(entry);
+    return status === 'uploading' || status === 'processing';
+  });
+  const isDisabled = disabled || ownDisabled || files.length === 0 || inFlight;
 
   // Spar's Button marks a disabled non-button (`aria-disabled`, `tabindex="-1"`,
   // `data-disabled`) but leaves its `href` navigable, so the link form drops the

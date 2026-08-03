@@ -117,7 +117,15 @@ export default {
         children: childrenOverride('Submit label (e.g. "Upload"). Wire the actual upload through `onClick`.'),
         className: classNameOverride,
       },
-      dataAttributes: [dataSlotRoot],
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-disabled',
+          appliedWhen: 'While the value is empty, while any file is `uploading` or `processing`, or when the root (or the part) is disabled',
+          purpose:
+            "Emitted by the underlying Button. The in-flight case is the double-submit guard — pressing again mid-transfer would send the same files twice — so it is the part's own, not something to wire through `disabled`.",
+        },
+      ],
     },
     {
       sourceFile: uploadTypesFile,
