@@ -524,8 +524,8 @@
   @include upload.upload-dropzone;
 }
 
-.tk-upload-dropzone-actions {
-  @include upload.upload-dropzone-actions;
+.tk-upload-actions {
+  @include upload.upload-actions;
 }
 
 .tk-upload-list {

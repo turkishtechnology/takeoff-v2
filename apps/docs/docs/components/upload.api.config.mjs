@@ -71,17 +71,25 @@ export default {
       dataAttributes: [
         dataSlotRoot,
         {
-          attribute: 'data-slot="actions"',
-          appliedWhen: 'On the row an `Upload.Trigger` written immediately before an `Upload.Submit` is grouped into',
-          purpose:
-            'Stable selector for the button pair. The zone stacks its children, so the two are wrapped to share one line — style it through `classNames.actions` / `slotProps.actions`.',
-        },
-        {
           attribute: 'data-drag-state',
           appliedWhen: 'While a payload is dragged over (`accept` | `reject`, by matching the dragged type against `accept`)',
           purpose: 'Styling hook distinguishing an acceptable from a rejected drag. Unstyled by default — the recipe ships no drag treatment.',
         },
       ],
+    },
+    {
+      sourceFile: uploadTypesFile,
+      typeName: 'UploadActionsProps',
+      displayName: 'Upload.Actions',
+      headingBase: 'upload-actions',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      propOverrides: {
+        children: childrenOverride('The controls to put on one line — typically `Upload.Trigger` and `Upload.Submit`.'),
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlotRoot],
     },
     {
       sourceFile: uploadTypesFile,

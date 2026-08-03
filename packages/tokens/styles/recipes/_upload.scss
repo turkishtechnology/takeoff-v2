@@ -5,8 +5,8 @@
 //
 //   .tk-upload                 — root (state owner)
 //   .tk-upload-dropzone        — drag-and-drop target
-//     .tk-upload-dropzone-actions — the row a Trigger + Submit pair written in
-//                                the zone is grouped into (internal slot)
+//   .tk-upload-actions         — a row for controls that share a line (its own
+//                                part, so it can be placed anywhere)
 //   .tk-upload-trigger         — browse button (opens the native picker)
 //   .tk-upload-submit          — optional upload button
 //     Both compose Button, so they land as `.tk-button .tk-upload-*` and
@@ -147,10 +147,11 @@
     background-color 160ms ease;
 }
 
-// Browse and send, side by side. The zone stacks its children, so the pair needs
-// a box of its own to sit on one line — the part groups them into this one. A
-// step tighter than the zone's own gap, because the two buttons are one group.
-@mixin upload-dropzone-actions {
+// Browse and send, side by side. The zone stacks its children, so controls that
+// belong on one line need a box of their own — the consumer wraps them in this
+// part. A step tighter than the zone's own gap, because what it holds is one
+// group rather than another of the zone's stacked lines.
+@mixin upload-actions {
   display: flex;
   align-items: center;
   gap: var(--spacing-m-base);

@@ -31,8 +31,10 @@ const uploadRoot = (container: HTMLElement): HTMLElement => container.querySelec
 const Anatomy = (props: Parameters<typeof Upload>[0]) => (
   <Upload {...props}>
     <Upload.Dropzone data-testid="dropzone">
-      <Upload.Trigger>Choose file</Upload.Trigger>
-      <Upload.Submit>Upload</Upload.Submit>
+      <Upload.Actions>
+        <Upload.Trigger>Choose file</Upload.Trigger>
+        <Upload.Submit>Upload</Upload.Submit>
+      </Upload.Actions>
     </Upload.Dropzone>
     <Upload.List>
       {files =>
@@ -97,43 +99,55 @@ describe('Upload (compound)', () => {
       expect(submit).toHaveAttribute('data-size', trigger.getAttribute('data-size'));
     });
 
-    it('groups a Trigger + Submit pair into one row', () => {
+    it('puts what Upload.Actions holds on one row', () => {
       const { container } = render(<Anatomy value={[uf('a.txt')]} />);
-      const row = container.querySelector('.tk-upload-dropzone-actions');
+      const row = container.querySelector('.tk-upload-actions');
 
-      // The zone stacks its children, so the pair needs this box to share a line.
+      // The zone stacks its children, so controls that share a line need this box.
       expect(row).toBeInTheDocument();
       expect(row?.children).toHaveLength(2);
       expect(row?.firstElementChild).toHaveClass('tk-upload-trigger');
       expect(row?.lastElementChild).toHaveClass('tk-upload-submit');
     });
 
-    it('leaves a Trigger standing alone in the zone ungrouped', () => {
-      const { container } = render(
+    it('leaves a Trigger written straight into the zone where it stands', () => {
+      // The row is composed, never inferred: nothing wraps a lone Trigger behind
+      // the consumer's back.
+      render(
         <Upload>
           <Upload.Dropzone>
             <Upload.Trigger>Choose file</Upload.Trigger>
           </Upload.Dropzone>
         </Upload>,
       );
-      expect(container.querySelector('.tk-upload-dropzone-actions')).toBeNull();
       expect(screen.getByRole('button', { name: 'Choose file' }).parentElement).toHaveClass('tk-upload-dropzone');
     });
 
-    it('still pairs across a conditional that renders nothing', () => {
-      // `Children.toArray` drops the `false`, so the two stay adjacent — the case
-      // a raw children walk would silently stop grouping.
-      const show = false;
-      const { container } = render(
-        <Upload value={[uf('a.txt')]}>
+    it('keeps the Trigger mounted when a conditional Submit joins it', () => {
+      // The zone renders its children as authored, so a Submit appearing beside
+      // the Trigger adds a sibling rather than re-parenting the row: the button
+      // the user just activated keeps its DOM node, and with it its focus.
+      const Conditional = ({ files }: { files: UploadFile[] }) => (
+        <Upload value={files}>
           <Upload.Dropzone>
-            <Upload.Trigger>Choose file</Upload.Trigger>
-            {show && <span>never</span>}
-            <Upload.Submit>Upload</Upload.Submit>
+            <span>Drop files here</span>
+            <Upload.Actions>
+              <Upload.Trigger>Choose file</Upload.Trigger>
+              {files.length > 0 && <Upload.Submit>Upload</Upload.Submit>}
+            </Upload.Actions>
           </Upload.Dropzone>
-        </Upload>,
+        </Upload>
       );
-      expect(container.querySelector('.tk-upload-dropzone-actions')?.children).toHaveLength(2);
+
+      const { rerender } = render(<Conditional files={[]} />);
+      const trigger = screen.getByRole('button', { name: 'Choose file' });
+      trigger.focus();
+
+      rerender(<Conditional files={[uf('a.txt')]} />);
+
+      expect(screen.getByRole('button', { name: 'Choose file' })).toBe(trigger);
+      expect(trigger).toHaveFocus();
+      expect(screen.getByRole('button', { name: 'Upload' })).toBeInTheDocument();
     });
 
     it('lets a call site re-point the Submit off the pair', () => {

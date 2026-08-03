@@ -81,6 +81,7 @@ import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 import { SkeletonBase } from './components/skeleton/base';
 import {
+  UploadActionsBase,
   UploadBase,
   UploadDropzoneBase,
   UploadItemActionBase,
@@ -226,6 +227,7 @@ export const slotClassRegistry = {
   skeleton: { slots: SkeletonBase.classes },
   upload: { slots: UploadBase.classes },
   uploadDropzone: { slots: UploadDropzoneBase.classes },
+  uploadActions: { slots: UploadActionsBase.classes },
   uploadTrigger: { slots: UploadTriggerBase.classes },
   uploadSubmit: { slots: UploadSubmitBase.classes },
   uploadList: { slots: UploadListBase.classes },

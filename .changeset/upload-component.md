@@ -10,9 +10,10 @@ view mode — plus the matching `tk-upload` recipes in the tokens package.
 `Upload` is composition-first: the root owns the value and the validation, and
 every capability comes from placing the matching part rather than toggling a
 prop — no `Upload.Dropzone`, no drag-and-drop. The anatomy is `Upload.Dropzone`,
-`Upload.Trigger`, `Upload.Submit`, and `Upload.List` with an `Upload.Item` per
-file, whose `Upload.ItemPreview` / `Upload.ItemContent` / `Upload.ItemActions`
-regions render by default and are replaced by composing that part in the row.
+`Upload.Actions`, `Upload.Trigger`, `Upload.Submit`, and `Upload.List` with an
+`Upload.Item` per file, whose `Upload.ItemPreview` / `Upload.ItemContent` /
+`Upload.ItemActions` regions render by default and are replaced by composing
+that part in the row.
 
 It owns selection, validation, and drag-and-drop only — no part performs the
 network upload, `Upload.Submit` included. That stays the consumer's: started
@@ -24,10 +25,12 @@ same reason. The component only displays them (`idle` / `uploading` /
 
 `Upload.Submit` is a `Button` that disables itself while the value is empty, and
 it takes `Upload.Trigger`'s `outlined` / `neutral` treatment rather than
-Button's own: written immediately beside the Trigger in the zone, the two are
-grouped into one row (`data-slot="actions"`, `--spacing-m-base` apart) so browse
-and send read as one pair. `readOnly` leaves Submit live, since handing a fixed
-list upstream does not change it.
+Button's own. Its place is beside the Trigger, in the zone — browse and send are
+one decision — and since the zone stacks its children, the two go in an
+`Upload.Actions`: a layout row that holds whatever is put in it,
+`--spacing-m-base` apart, so a third control or a file count sits on the same
+line just as well. `readOnly` leaves Submit live, since handing a fixed list
+upstream does not change it.
 
 The value is an `UploadFile` that points at a `File` rather than being one — a
 plain object with no constructor to import, so an attachment that already lives

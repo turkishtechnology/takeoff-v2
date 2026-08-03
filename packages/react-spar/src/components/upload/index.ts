@@ -1,4 +1,5 @@
 import { Upload as UploadRoot } from './Upload';
+import { UploadActions } from './UploadActions';
 import { UploadDropzone } from './UploadDropzone';
 import { UploadItem } from './UploadItem';
 import { UploadItemAction } from './UploadItemAction';
@@ -11,6 +12,7 @@ import { UploadTrigger } from './UploadTrigger';
 
 const Upload = Object.assign(UploadRoot, {
   Dropzone: UploadDropzone,
+  Actions: UploadActions,
   Trigger: UploadTrigger,
   Submit: UploadSubmit,
   List: UploadList,
@@ -29,6 +31,8 @@ export { Upload };
 export type {
   UploadFile,
   UploadFileStatus,
+  UploadActionsProps,
+  UploadActionsSlot,
   UploadDropzoneProps,
   UploadDropzoneSlot,
   UploadItemActionProps,

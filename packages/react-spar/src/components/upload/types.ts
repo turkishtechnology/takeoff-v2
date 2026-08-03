@@ -6,7 +6,8 @@ import type { ButtonAppearance, ButtonSize, ButtonVariant } from '../button';
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
 export type UploadSlot = 'root';
-export type UploadDropzoneSlot = 'root' | 'actions';
+export type UploadDropzoneSlot = 'root';
+export type UploadActionsSlot = 'root';
 export type UploadTriggerSlot = 'root';
 export type UploadSubmitSlot = 'root';
 export type UploadListSlot = 'root';
@@ -207,6 +208,22 @@ export interface UploadDropzoneOwnProps {
  * `data-drag-state` (`accept` | `reject`) styling hook while a payload hovers.
  */
 export type UploadDropzoneProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, UploadDropzoneOwnProps>;
+
+export interface UploadActionsOwnProps {
+  /** The controls to put on one line — typically `Upload.Trigger` and `Upload.Submit`. */
+  children?: ReactNode;
+  classNames?: ClassNamesMap<UploadActionsSlot>;
+  slotProps?: SlotPropsMap<UploadActionsSlot>;
+}
+
+/**
+ * A row for controls that belong together. `Upload.Dropzone` stacks its
+ * children, so a Browse button and a Send button written as bare siblings each
+ * take a line of their own; wrapping them in this part puts them side by side.
+ * It holds no behavior — anywhere a set of controls should share a line, this is
+ * the box for it.
+ */
+export type UploadActionsProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, UploadActionsOwnProps>;
 
 export interface UploadTriggerOwnProps {
   /** Trigger label (e.g. `"Choose file"`). */
@@ -425,6 +442,7 @@ declare module '../../core/theme' {
   interface ComponentThemeRegistry {
     Upload: import('../../core').ComponentThemeConfig<UploadProps, UploadSlot>;
     UploadDropzone: import('../../core').ComponentThemeConfig<UploadDropzoneProps, UploadDropzoneSlot>;
+    UploadActions: import('../../core').ComponentThemeConfig<UploadActionsProps, UploadActionsSlot>;
     UploadTrigger: import('../../core').ComponentThemeConfig<UploadTriggerProps, UploadTriggerSlot>;
     UploadSubmit: import('../../core').ComponentThemeConfig<UploadSubmitProps, UploadSubmitSlot>;
     UploadList: import('../../core').ComponentThemeConfig<UploadListProps, UploadListSlot>;

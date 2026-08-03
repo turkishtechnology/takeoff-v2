@@ -148,10 +148,12 @@ function SubmitDemo() {
         {/* Empty is Submit's own business — it disables itself while the value
             has nothing in it, so there is no guard here for that. In flight is
             yours. */}
-        <Upload.Trigger>Choose Files</Upload.Trigger>
-        <Upload.Submit disabled={inFlight} onClick={send}>
-          {inFlight ? 'Sending…' : 'Send'}
-        </Upload.Submit>
+        <Upload.Actions>
+          <Upload.Trigger>Choose Files</Upload.Trigger>
+          <Upload.Submit disabled={inFlight} onClick={send}>
+            {inFlight ? 'Sending…' : 'Send'}
+          </Upload.Submit>
+        </Upload.Actions>
       </Upload.Dropzone>
 
       <Upload.List />
@@ -555,9 +557,11 @@ sends what is in it. Nothing about the part performs the upload — it is a
 the value is empty.
 
 Its place is beside the Trigger, in the zone: browse and send are one decision,
-so written as a pair they share the zone's last line, `8px` apart rather than on
-the zone's own looser rhythm. Elsewhere in the anatomy it is just another root
-child, and a zone holding only a Trigger keeps the column it has always had.
+so they belong on one line. The zone stacks its children, so wrap the two in
+`Upload.Actions` — a row that holds whatever you put in it, `8px` apart rather
+than on the zone's own looser rhythm. It is a layout box and nothing else, so a
+third control or a file count goes in it just as well, and a zone holding only a
+Trigger needs none of it.
 
 <LiveCode
   code={submitDemo}
@@ -761,11 +765,18 @@ Paint your own dropzone content with `--tk-upload-dropzone-mark` and
 
 #### Data attributes {#upload-dropzone-data-attributes}
 
-| Attribute                                          | Applied when                                                                                          | Purpose                                                                                                                                                                    |
-| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" />    | Always                                                                                                | Stable selector for wrapper styling on the root slot.                                                                                                                      |
-| <ApiBadge label="data-slot=&quot;actions&quot;" /> | On the row an `Upload.Trigger` written immediately before an `Upload.Submit` is grouped into          | Stable selector for the button pair. The zone stacks its children, so the two are wrapped to share one line — style it through `classNames.actions` / `slotProps.actions`. |
-| <ApiBadge label="data-drag-state" />               | While a payload is dragged over (`accept` \| `reject`, by matching the dragged type against `accept`) | Styling hook distinguishing an acceptable from a rejected drag. Unstyled by default — the recipe ships no drag treatment.                                                  |
+| Attribute                                       | Applied when                                                                                          | Purpose                                                                                                                   |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                                                                | Stable selector for wrapper styling on the root slot.                                                                     |
+| <ApiBadge label="data-drag-state" />            | While a payload is dragged over (`accept` \| `reject`, by matching the dragged type against `accept`) | Styling hook distinguishing an acceptable from a rejected drag. Unstyled by default — the recipe ships no drag treatment. |
+
+### Upload.Actions {#upload-actions}
+
+#### Data attributes {#upload-actions-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
 
 ### Upload.Trigger {#upload-trigger}
 
@@ -885,7 +896,6 @@ Paint your own dropzone content with `--tk-upload-dropzone-mark` and
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <span id="upload-td-uploadfile"><ApiBadge label="UploadFile" /></span>                                 | <code>&#123; id: string; file?: File; name?: string; size?: number; type?: string; url?: string; thumbUrl?: string; status?: UploadFileStatus; progress?: number; error?: string &#125;</code>                                                                                                                                                                                                                                                |
 | <span id="upload-td-uploadrejection"><ApiBadge label="UploadRejection" /></span>                       | <code>&#124; &#123; file: File; code: 'file-invalid-type'; /** The `accept` list the file failed to match. \*/ accept: string; &#125; &#124; &#123; file: File; code: 'file-too-large'; /** The `maxFileSize` (bytes) the file exceeded. _/ maxFileSize: number; &#125; &#124; &#123; file: File; code: 'too-many-files'; /\*\* How many files were allowed — `maxFileCount`, or 1 without `multiple`. _/ maxFileCount: number; &#125;</code> |
-| <span id="upload-td-uploaddropzoneslot"><ApiBadge label="UploadDropzoneSlot" /></span>                 | <code>'root' &#124; 'actions'</code>                                                                                                                                                                                                                                                                                                                                                                                                          |
 | <span id="upload-td-buttonappearance"><ApiBadge label="ButtonAppearance" /></span>                     | <code>'filled' &#124; 'filledLight' &#124; 'outlined' &#124; 'text'</code>                                                                                                                                                                                                                                                                                                                                                                    |
 | <span id="upload-td-buttonvariant"><ApiBadge label="ButtonVariant" /></span>                           | <code>'primary' &#124; 'secondary' &#124; 'neutral' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning' &#124; 'white' &#124; 'black'</code>                                                                                                                                                                                                                                                                                      |
 | <span id="upload-td-uploaditemcontentslot"><ApiBadge label="UploadItemContentSlot" /></span>           | <code>'root' &#124; 'name' &#124; 'size' &#124; 'status' &#124; 'progress'</code>                                                                                                                                                                                                                                                                                                                                                             |

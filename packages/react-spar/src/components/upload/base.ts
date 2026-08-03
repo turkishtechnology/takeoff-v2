@@ -1,6 +1,7 @@
 import { createComponentBase } from '../../core';
 
 import type {
+  UploadActionsProps,
   UploadDropzoneProps,
   UploadItemActionProps,
   UploadItemActionsProps,
@@ -27,13 +28,22 @@ export const UploadBase = createComponentBase<UploadProps, 'root'>({
 });
 
 // @archetype react-enhancement — no upstream part; the drop target + drag-state
-// owner (`data-drag-state`). `actions` is the row a Trigger + Submit pair is
-// grouped into — a decorative inline slot, not a part: it holds no behavior and
-// a consumer never composes it, they just write the two buttons side by side.
-export const UploadDropzoneBase = createComponentBase<UploadDropzoneProps, 'root' | 'actions'>({
+// owner (`data-drag-state`).
+export const UploadDropzoneBase = createComponentBase<UploadDropzoneProps, 'root'>({
   name: 'UploadDropzone',
-  slots: ['root', 'actions'] as const,
-  classes: { root: 'tk-upload-dropzone', actions: 'tk-upload-dropzone-actions' },
+  slots: ['root'] as const,
+  classes: { root: 'tk-upload-dropzone' },
+});
+
+// @archetype react-enhancement — no upstream part; a row for the controls that
+// belong together. Public (contract criterion 5) rather than something the zone
+// infers from its children: the layout is the consumer's to state, and a part
+// they place holds whatever they put in it, wherever they put it — a Trigger
+// beside a Submit, a third button, a count — instead of one recognised pair.
+export const UploadActionsBase = createComponentBase<UploadActionsProps, 'root'>({
+  name: 'UploadActions',
+  slots: ['root'] as const,
+  classes: { root: 'tk-upload-actions' },
 });
 
 // @archetype react-enhancement — no upstream part; opens the native picker.

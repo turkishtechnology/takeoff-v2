@@ -1,13 +1,11 @@
-import { Children, isValidElement, useRef, useState, type DragEvent, type ElementType, type ReactNode, type Ref } from 'react';
+import { useRef, useState, type DragEvent, type ElementType, type ReactNode, type Ref } from 'react';
 
-import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { UploadDropzoneBase } from './base';
 import { useUploadContext } from './context';
 import { acceptMatchesType } from './helpers';
-import { UploadSubmit } from './UploadSubmit';
-import { UploadTrigger } from './UploadTrigger';
 import type { UploadDropzoneOwnProps, UploadDropzoneProps } from './types';
 
 type UploadDropzoneResolvedProps = Omit<UploadDropzoneOwnProps, 'classNames' | 'slotProps'> & {
@@ -21,32 +19,6 @@ type UploadDropzoneResolvedProps = Omit<UploadDropzoneOwnProps, 'classNames' | '
 };
 
 type DragState = 'accept' | 'reject';
-
-// A Trigger written immediately before a Submit is grouped into a row of its own:
-// the zone stacks its children, and two bare siblings in a column have no way to
-// share a line. Matched by component reference, not displayName, so a minified
-// build still detects it (the UploadItem rule). `Children.toArray` drops the nulls
-// a `{cond && …}` between them leaves behind, which would otherwise break the
-// adjacency.
-const groupTriggerSubmitPair = (children: ReactNode, actionsAttrs: Record<string, unknown>): ReactNode => {
-  const flat = Children.toArray(children);
-  const at = (index: number, part: unknown) => {
-    const child = flat[index];
-    return isValidElement(child) && child.type === part;
-  };
-
-  const paired = flat.findIndex((_, index) => at(index, UploadTrigger) && at(index + 1, UploadSubmit));
-  if (paired === -1) return children;
-
-  return [
-    ...flat.slice(0, paired),
-    <div key="tk-upload-dropzone-actions" {...actionsAttrs}>
-      {flat[paired]}
-      {flat[paired + 1]}
-    </div>,
-    ...flat.slice(paired + 2),
-  ];
-};
 
 const dragStateFor = (event: DragEvent<HTMLElement>, accept: string | undefined): DragState => {
   const items = event.dataTransfer?.items;
@@ -127,13 +99,6 @@ export const UploadDropzone = <T extends ElementType = 'div'>(props: UploadDropz
 
   const Component = (as ?? 'div') as ElementType;
 
-  const actionsAttrs = buildSlotAttrs(UploadDropzoneBase.getSlotProps('actions'), 'actions', {
-    themeSlotProps: theme?.slotProps,
-    themeClassNames: theme?.classNames,
-    instanceSlotProps: props.slotProps,
-    instanceClassNames: props.classNames,
-  });
-
   return (
     <Component
       {...nativeProps}
@@ -145,7 +110,7 @@ export const UploadDropzone = <T extends ElementType = 'div'>(props: UploadDropz
       onDrop={handleDrop}
       ref={ref}
     >
-      {groupTriggerSubmitPair(children, actionsAttrs)}
+      {children}
     </Component>
   );
 };
