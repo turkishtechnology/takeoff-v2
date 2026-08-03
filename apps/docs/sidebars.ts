@@ -6,7 +6,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Getting started',
       collapsed: false,
-      items: ['intro', 'installation'],
+      items: ['intro', 'installation', 'ai-assistants'],
     },
     {
       type: 'category',
@@ -32,6 +32,7 @@ const sidebars: SidebarsConfig = {
         'components/dialog',
         'components/divider',
         'components/dropdown',
+        'components/field',
         'components/input',
         'components/label',
         'components/popover',

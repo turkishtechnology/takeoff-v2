@@ -1,0 +1,142 @@
+---
+title: Using AI assistants
+description:
+  Teach Copilot, Cursor, Claude, or any LLM to write correct
+  @takeoff-ui/react-spar code.
+sidebar_label: Using AI assistants
+sidebar_position: 3
+slug: /ai-assistants
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Using AI assistants
+
+Coding assistants don't know this library. Left alone they invent props, reach
+for a raw `<div>` instead of a component, or copy patterns from a different
+design system.
+
+One file fixes that. Find your tool below — each one is the complete setup.
+
+<Tabs groupId="assistant" queryString>
+<TabItem value="copilot" label="GitHub Copilot" default>
+
+Copilot reads `.github/copilot-instructions.md` automatically, for everyone on
+the repository — no per-developer setup.
+
+```bash
+mkdir -p .github
+cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md \
+   .github/copilot-instructions.md
+```
+
+Commit it. That's the whole setup.
+
+Copilot's agent mode also reads `AGENTS.md` at the repository root, so if you
+already have one you can point at it instead of duplicating the content. Inline
+completions read neither — they only see the open file.
+
+**Check it worked:** open Copilot Chat and ask it to _"add a primary button that
+shows a loading spinner"_. You should get `Button` from `@takeoff-ui/react-spar`
+with a `loading` prop — not a hand-rolled `<button>`.
+
+</TabItem>
+<TabItem value="cursor" label="Cursor">
+
+Cursor reads `AGENTS.md` at the repository root automatically.
+
+```bash
+cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
+```
+
+Commit it. That's the whole setup.
+
+**Optional —** to scope the rules to your UI code instead of the whole
+repository, use a rule file at `.cursor/rules/takeoff.mdc` with the same
+content, prefixed with:
+
+```md
+---
+globs: ['src/**/*.tsx']
+---
+```
+
+**Check it worked:** ask Cursor for _"a primary button that shows a loading
+spinner"_. You should get `Button` from `@takeoff-ui/react-spar` with a
+`loading` prop — not a hand-rolled `<button>`.
+
+</TabItem>
+<TabItem value="claude" label="Claude Code">
+
+Claude Code reads `AGENTS.md` (or `CLAUDE.md`) at the repository root
+automatically.
+
+```bash
+cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
+```
+
+Commit it. That's the whole setup.
+
+**Check it worked:** ask for _"a primary button that shows a loading spinner"_.
+You should get `Button` from `@takeoff-ui/react-spar` with a `loading` prop —
+not a hand-rolled `<button>`.
+
+</TabItem>
+<TabItem value="other" label="Anything else">
+
+**Another editor or CLI agent?** `AGENTS.md` is an open standard — Windsurf,
+Zed, Codex, Gemini CLI, Aider, JetBrains Junie, Devin, Warp, and others read it
+from the repository root. Copy it there and you're done:
+
+```bash
+cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
+```
+
+A few tools need to be pointed at it — Aider via `.aider.conf.yml`, Gemini CLI
+via `.gemini/settings.json`. Check your tool's docs if it doesn't pick the file
+up on its own.
+
+**A chat window instead?** For ChatGPT, Gemini, or a self-hosted model, give it
+the whole library once at the start of the session:
+
+    https://takeoff-v2.app.turkishtechlab.com/llms-full.txt
+
+That single file contains every component's API and usage guidance. For a
+smaller payload, paste just the component you're working on — append `.md` to
+any docs URL:
+
+    https://takeoff-v2.app.turkishtechlab.com/docs/components/button.md
+
+</TabItem>
+</Tabs>
+
+:::note
+
+**Requires 0.4.0 or newer.** If the `agents/` directory isn't in your
+`node_modules`, you're on an older version — upgrade, or copy from the
+[template on GitHub](https://github.com/turkishtechnology/takeoff-v2/blob/develop/packages/react-spar/agents/AGENTS.template.md).
+
+**Already have that file?** Don't overwrite it — paste the **Rules** and
+**Components** sections from the template into what you have.
+
+:::
+
+## Giving it the full API
+
+The file you just copied is an index: every component, what it's for, and the
+house rules. It deliberately doesn't include full prop tables — that would be
+too large to keep in context.
+
+When an assistant needs the complete API for a component, point it at the
+Markdown docs. Every page is available by appending `.md` to its URL:
+
+| URL                                                                         | Use it for                                    |
+| --------------------------------------------------------------------------- | --------------------------------------------- |
+| `/docs/components/<name>.md`                                                | One component. Start here — smallest payload. |
+| [`/llms-full.txt`](https://takeoff-v2.app.turkishtechlab.com/llms-full.txt) | The entire library, in one file.              |
+| [`/llms.txt`](https://takeoff-v2.app.turkishtechlab.com/llms.txt)           | An index of every page, for tools that crawl. |
+
+These include guidance the API tables alone don't carry: when to reach for a
+component, and which neighbouring component to use instead when it isn't the
+right fit.

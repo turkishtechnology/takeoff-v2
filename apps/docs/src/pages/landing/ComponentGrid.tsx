@@ -1,7 +1,7 @@
 import type { JSX } from 'react';
 import Link from '@docusaurus/Link';
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import { Alert, Badge, Button, Field, Input, Switch, Table } from '@takeoff-ui/react-spar';
+import { Badge, Button, Field, Input, Switch, Table } from '@takeoff-ui/react-spar';
 import { ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
 import { ArrowRightIconOutlinedRounded } from '@takeoff-icons/react/arrow-right';
 import { ShoppingBagIconOutlinedRounded } from '@takeoff-icons/react/shopping-bag';
@@ -112,19 +112,6 @@ function SwitchCardDemo(): JSX.Element {
   );
 }
 
-function AlertCardDemo(): JSX.Element {
-  return (
-    <div className={styles.demo} style={{ padding: '18px 14px', alignItems: 'stretch' }}>
-      <Alert variant="info" appearance="outlined">
-        <Alert.Content>
-          <Alert.Title>Gate changed</Alert.Title>
-          <Alert.Description>Flight TK1983 now departs from gate A8.</Alert.Description>
-        </Alert.Content>
-      </Alert>
-    </div>
-  );
-}
-
 const TABLE_DEMO_DATA = [
   { id: '1', flight: 'TK1980', from: 'IST', to: 'LHR' },
   { id: '2', flight: 'TK1', from: 'IST', to: 'JFK' },
@@ -218,20 +205,6 @@ export default function ComponentGrid(): JSX.Element {
               {() => (
                 <ReactSparDemoRoot>
                   <SwitchCardDemo />
-                </ReactSparDemoRoot>
-              )}
-            </BrowserOnly>
-          </Link>
-
-          <Link to="/docs/components/alert" className={styles.card}>
-            <div className={styles.cardTitle}>
-              <h4>Alert</h4>
-              <span className={styles.cardMono}>Alert</span>
-            </div>
-            <BrowserOnly fallback={<div className={styles.demo} />}>
-              {() => (
-                <ReactSparDemoRoot>
-                  <AlertCardDemo />
                 </ReactSparDemoRoot>
               )}
             </BrowserOnly>

@@ -23,6 +23,22 @@ Before component work, read:
 docs/component-authoring-contract.md
 ```
 
+## Using the components
+
+The workflow above is for _building_ this library. When _consuming_
+`@takeoff-ui/react-spar` — adding a button, wiring a form, styling a table —
+start from the usage skills instead:
+
+```txt
+.agents/skills/takeoff-ui/SKILL.md
+```
+
+It covers install, provider, theming, and the slot/customization model, and its
+component map routes to a per-component skill for each of the 28 shipped
+components (`.agents/skills/takeoff-<component>/SKILL.md`, e.g.
+`takeoff-button`, `takeoff-slider`, `takeoff-table`). Prefer these over
+hand-rolling markup — every shipped component has one.
+
 ## Supported AI commands
 
 ```txt

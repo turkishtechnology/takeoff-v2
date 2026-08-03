@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ElementType, type ReactNode } from 'react';
-import { useOptionalFieldContext } from '@turkish-technology/spar';
+import { InputField as SparInputField, useOptionalFieldContext } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
 import { useControllableState } from '../../hooks';
@@ -379,15 +379,22 @@ export const Slider = <T extends ElementType = 'div'>(props: SliderProps<T>) => 
         {/* Submitted alongside the form rather than through a focusable
             control: the thumb is the interactive element, so a paired input
             would double the tab stops. A disabled slider submits nothing,
-            matching a disabled native control. */}
+            matching a disabled native control. Rendered through Spar's
+            `InputField` rather than a bare `<input>` so every form field in the
+            library goes through the same primitive; `type="hidden"` keeps it
+            out of the tab order and unstyled (no `.tk-input` class), and the
+            primitive adds nothing of its own here — it is used outside an
+            `Input` root, so there is no context to inherit id / aria / state
+            from, and its `data-*` hooks stay off for a field that never
+            focuses. */}
         {name &&
           !disabled &&
           (range ? (
             // One input per handle so a 3+ thumb range submits every value; a
             // two-handle range keeps the conventional `-min` / `-max` pair.
-            values.map((entry, index) => <input key={index} type="hidden" name={rangeInputName(name, index, values.length)} value={entry} form={form} />)
+            values.map((entry, index) => <SparInputField key={index} type="hidden" name={rangeInputName(name, index, values.length)} value={entry} form={form} />)
           ) : (
-            <input type="hidden" name={name} value={values[0]} form={form} />
+            <SparInputField type="hidden" name={name} value={values[0]} form={form} />
           ))}
       </Component>
     </SliderProvider>

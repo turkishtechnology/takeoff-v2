@@ -42,6 +42,7 @@ const DOCS_APP_DIR = resolve(SCRIPT_DIR, '..');
 const DOCS_DIR = join(DOCS_APP_DIR, 'docs');
 const STATIC_DIR = join(DOCS_APP_DIR, 'static');
 const CONFIG_FILE = join(DOCS_APP_DIR, 'docusaurus.config.ts');
+const SKILLS_DIR = resolve(DOCS_APP_DIR, '../../.agents/skills');
 
 // Docs live under this route base (classic preset default). Keep in sync with
 // the docs plugin if `routeBasePath` is ever set explicitly.
@@ -50,7 +51,7 @@ const ROUTE_BASE = '/docs';
 // Section grouping for llms.txt, in display order. First matching prefix wins;
 // anything unmatched falls through to "Guides".
 const SECTIONS = [
-  { title: 'Getting Started', match: p => p === 'intro.md' || p === 'installation.mdx' },
+  { title: 'Getting Started', match: p => p === 'intro.md' || p === 'installation.mdx' || p === 'ai-assistants.mdx' },
   { title: 'Foundations', match: p => p.startsWith('foundations/') },
   { title: 'Components', match: p => p.startsWith('components/') },
   { title: 'Forms', match: p => p.startsWith('forms/') },
@@ -192,13 +193,98 @@ function mdxToMarkdown(rawBody) {
     return blocks.join('\n\n');
   });
 
-  // 5. Flatten the table JSX + decode entities on everything that is NOT a
+  // 5. Unwrap <Tabs>/<TabItem> containers. Tabs are a reading affordance for
+  //    the site; in a flat Markdown file every branch is simply present, so
+  //    keep the content and turn each tab's label into a heading that says
+  //    which branch it belongs to.
+  body = body.replace(/<TabItem\b[^>]*\blabel=(["'])([\s\S]*?)\1[^>]*>/gu, (_, __, label) => `\n### ${label}\n`);
+  body = body.replace(/<\/TabItem>/gu, '');
+  body = body.replace(/<Tabs\b[^>]*>/gu, '');
+  body = body.replace(/<\/Tabs>/gu, '');
+
+  // 6. Flatten the table JSX + decode entities on everything that is NOT a
   //    fenced code block.
   body = decodeEntities(flattenInline(body));
 
-  // 6. Restore fences and tidy whitespace.
+  // 7. Restore fences and tidy whitespace.
   body = body.replace(/%%FENCE(\d+)%%/gu, (_, i) => fences[Number(i)]);
   return body.replace(/\n{3,}/gu, '\n\n').trim() + '\n';
+}
+
+// --- agent skills ------------------------------------------------------------
+
+/**
+ * The per-component skills in `.agents/skills/takeoff-<name>/SKILL.md` carry
+ * selection guidance the MDX pages deliberately don't: when to reach for a
+ * component (and when NOT to), plus the natural-language phrasings that should
+ * trigger it. That is exactly what an LLM needs and cannot infer from an API
+ * table, so we fold it into the generated Markdown.
+ *
+ * Only the two blocks below are lifted. Everything else in a skill (examples,
+ * prop tables) already exists in the docs page in a richer form, and the two
+ * repo-workflow skills are excluded entirely — they hard-require files that
+ * only exist inside this monorepo.
+ */
+function readSkill(componentSlug) {
+  const file = join(SKILLS_DIR, `takeoff-${componentSlug}`, 'SKILL.md');
+  let raw;
+  try {
+    raw = readFileSync(file, 'utf8');
+  } catch {
+    return null; // No skill for this page (foundations, guides, …).
+  }
+
+  const { body } = parseFrontmatter(raw);
+
+  // "When to use" is a bolded lead-in paragraph, not a heading. Capture until
+  // the blank line that ends the paragraph. Five skills use a "Quick start"
+  // layout with no such block — those simply contribute nothing here.
+  const whenToUse = body
+    .match(/^\*\*When to use:\*\*\s*([\s\S]*?)(?=\n\s*\n)/mu)?.[1]
+    ?.replace(/\s+/gu, ' ')
+    .trim();
+
+  // The Accessibility section is a bullet list under a `## Accessibility`
+  // heading; keep it verbatim up to the next heading. Anchoring the heading
+  // needs the `m` flag, but the end-of-input alternative must NOT use `$` under
+  // it — `$` would match at the first line ending and the lazy quantifier would
+  // stop there, capturing only the first bullet. Split the two concerns: `m`
+  // for the start anchor, an explicit end-of-input lookahead for the stop.
+  const accessibilityStart = body.match(/^## Accessibility[ \t]*\n/mu);
+  const accessibility = accessibilityStart
+    ? body
+        .slice(accessibilityStart.index + accessibilityStart[0].length)
+        .split(/\n## /u)[0]
+        .trim()
+    : undefined;
+
+  return { whenToUse, accessibility };
+}
+
+/**
+ * Appends the skill blocks to a component page's Markdown. Returns the page
+ * unchanged when there is no skill or nothing worth adding, so pages without a
+ * matching skill are never padded with empty headings.
+ */
+function withSkillGuidance(markdown, componentSlug) {
+  const skill = readSkill(componentSlug);
+  if (!skill) return { markdown, applied: false };
+
+  // Only append a section the page doesn't already author — 20 component pages
+  // write their own `## Accessibility`, and appending the skill's copy on top
+  // would leave the reader (and the model) with two of the same heading.
+  const hasHeading = heading => new RegExp(`^## ${heading}\\b`, 'mu').test(markdown);
+
+  const blocks = [];
+  if (skill.whenToUse && !hasHeading('When to use')) {
+    blocks.push('## When to use', '', skill.whenToUse, '');
+  }
+  if (skill.accessibility && !hasHeading('Accessibility')) {
+    blocks.push('## Accessibility', '', skill.accessibility, '');
+  }
+  if (blocks.length === 0) return { markdown, applied: false };
+
+  return { markdown: `${markdown.trim()}\n\n${blocks.join('\n').trim()}\n`, applied: true };
 }
 
 // --- routing -----------------------------------------------------------------
@@ -240,6 +326,8 @@ function main() {
   const siteUrl = readSiteUrl();
   const files = listDocs(DOCS_DIR).sort();
   const pages = [];
+  let skillsApplied = 0;
+  const missingSkillGuidance = [];
 
   // Remove outputs for docs pages that no longer exist. Without this cleanup,
   // a persistent build workspace can keep serving deleted pages indefinitely.
@@ -256,7 +344,18 @@ function main() {
 
     const permalink = permalinkFor(data.slug);
     const mdPath = mdPathFor(permalink);
-    const markdown = mdxToMarkdown(body);
+    let markdown = mdxToMarkdown(body);
+
+    // Fold in the agent-skill guidance for component pages. `components/index`
+    // is the section landing page, not a component — it has no skill by design,
+    // so exclude it rather than reporting it as missing on every run.
+    const componentSlug = relPath.startsWith('components/') && !/^components\/index\.mdx?$/u.test(relPath) ? relPath.replace(/^components\//u, '').replace(/\.mdx?$/u, '') : null;
+    if (componentSlug) {
+      const enriched = withSkillGuidance(markdown, componentSlug);
+      markdown = enriched.markdown;
+      if (enriched.applied) skillsApplied++;
+      else missingSkillGuidance.push(componentSlug);
+    }
 
     pages.push({
       relPath,
@@ -311,6 +410,12 @@ function main() {
   writeFileSync(join(STATIC_DIR, 'llms-full.txt'), `${fullParts.join('\n').trim()}\n`);
 
   console.log(`gen:llms — wrote ${pages.length} page(s) to static/docs, plus llms.txt and llms-full.txt`);
+  console.log(`gen:llms — folded agent-skill guidance into ${skillsApplied} component page(s)`);
+  // Surfaced rather than silently skipped: a component page with no skill
+  // guidance means the skill is missing the block, not that none was wanted.
+  if (missingSkillGuidance.length > 0) {
+    console.warn(`gen:llms — no skill guidance for: ${missingSkillGuidance.join(', ')}`);
+  }
 }
 
 main();

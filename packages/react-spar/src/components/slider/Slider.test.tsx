@@ -749,6 +749,11 @@ describe('Slider (compound)', () => {
       const { container: single } = render(<Slider name="volume" defaultValue={30} />);
       const input = single.querySelector('input[name="volume"]') as HTMLInputElement;
       expect(input.value).toBe('30');
+      // The field renders through Spar's `InputField`, which resolves `type`
+      // itself — pin `hidden` so it can never fall back to a focusable text
+      // input and double the slider's tab stops.
+      expect(input).toHaveAttribute('type', 'hidden');
+      expect(input.className).toBe('');
 
       const { container: ranged } = render(<Slider range name="price" defaultValue={[10, 90]} />);
       expect((ranged.querySelector('input[name="price-min"]') as HTMLInputElement).value).toBe('10');

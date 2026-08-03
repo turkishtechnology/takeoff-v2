@@ -93,5 +93,17 @@ components are plain React.
 Visual customization is handled entirely through the Takeoff design tokens
 imported above — override CSS custom properties at the app root to rebrand.
 
+## One more step, if you use an AI assistant
+
+Copilot, Cursor, and Claude don't know this library and will invent props unless
+you tell them about it. Copying one file into your repository root fixes that:
+
+```bash
+cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
+```
+
+See [Using AI assistants](./ai-assistants) for tool-specific paths and how to
+give an assistant the full component API.
+
 Continue with [Theming & tokens](./foundations/theming) for color mode, branded
 theme bundles, and shared component defaults.
