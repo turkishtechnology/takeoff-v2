@@ -17,6 +17,7 @@
   line-height: var(--desktop-label-m-base-line-height);
   cursor: default;
   margin: 0;
+  padding: var(--input-external-label-large-label-v-padding) var(--input-external-label-large-label-h-padding);
 
   &[for] {
     cursor: pointer;
@@ -28,7 +29,6 @@
     font-size: var(--desktop-label-s-size);
     font-weight: 300;
     line-height: var(--desktop-label-s-line-height);
-    margin-inline-start: 0.125rem;
   }
 
   &[data-disabled],
