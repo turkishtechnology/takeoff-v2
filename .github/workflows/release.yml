@@ -82,7 +82,7 @@ jobs:
 
       # Either opens the Version Packages PR or publishes when that PR merges.
       - id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
           publish: pnpm release
           version: pnpm changeset version
