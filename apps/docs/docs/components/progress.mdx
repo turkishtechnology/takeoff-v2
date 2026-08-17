@@ -186,50 +186,6 @@ function LayoutsDemo() {
 render(<LayoutsDemo />);
 `;
 
-export const sectionsDemo = String.raw`
-function SectionsDemo() {
-  const sections = [
-    { label: 'Documents', value: 35, color: 'var(--states-info-base)' },
-    { label: 'Media', value: 25, color: 'var(--states-success-base)' },
-    { label: 'Other', value: 15, color: 'var(--states-warning-base)' },
-  ];
-  const used = sections.reduce((total, section) => total + section.value, 0);
-
-  return (
-    <div className="mx-auto w-full max-w-120">
-      <Field>
-        <Field.Label>Storage</Field.Label>
-        <Progress value={used} aria-valuetext={used + '% of storage used'}>
-          <Progress.Track style={{ height: '20px', display: 'flex' }}>
-            {sections.map(section => (
-              <span
-                key={section.label}
-                aria-hidden="true"
-                className="inline-flex items-center justify-center text-xs font-medium text-[color:var(--text-lightest)]"
-                style={{ width: section.value + '%', backgroundColor: section.color }}
-              >
-                %{section.value}
-              </span>
-            ))}
-          </Progress.Track>
-          <Progress.Value>%{used} used</Progress.Value>
-        </Progress>
-        <div className="mt-1 flex flex-wrap gap-4 text-xs text-[color:var(--text-base)]">
-          {sections.map(section => (
-            <span key={section.label} className="inline-flex items-center gap-1.5">
-              <span aria-hidden="true" className="size-2 rounded-full" style={{ backgroundColor: section.color }} />
-              {section.label}
-            </span>
-          ))}
-        </div>
-      </Field>
-    </div>
-  );
-}
-
-render(<SectionsDemo />);
-`;
-
 {/* prettier-ignore-end */}
 
 # Progress
@@ -369,23 +325,6 @@ recipe's layout styles take precedence over utility classes).
   code={layoutsDemo}
   noInline
   previewMinHeight={220}
-  previewWrapper={ReactSparDemoRoot}
-  scope={progressScope}
-/>
-
-## Sections
-
-`Progress.Track` accepts custom children, so a stacked breakdown composes as
-plain segments inside the rail — the track's radius and `overflow: hidden` clip
-them into the bar shape. Give the track a taller inline height to fit
-per-segment value text (the design rail is 4–8px). Keep the aggregate on the
-root's `value` and pass `aria-valuetext` so assistive technology announces the
-total meaningfully; the in-segment texts stay `aria-hidden`.
-
-<LiveCode
-  code={sectionsDemo}
-  noInline
-  previewMinHeight={180}
   previewWrapper={ReactSparDemoRoot}
   scope={progressScope}
 />

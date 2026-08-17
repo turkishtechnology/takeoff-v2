@@ -1,26 +1,12 @@
-// TODO(takeoff-icons): These inline SVGs are temporary placeholders sourced
-// from Lucide (MIT). Replace every usage with the official Takeoff icon set
-// before the first public release of @takeoff-ui/react-spar.
+// TODO(takeoff-icons): The three glyphs below are the ones the official Takeoff
+// icon set (`@takeoff-icons/react`) does not ship — as of 0.2.0 it has no info
+// and no eye / eye-off icon. Every other placeholder has been replaced with its
+// official counterpart; retire these as soon as the icon set covers them.
 import type { SVGProps } from 'react';
 
-const baseSvgProps: SVGProps<SVGSVGElement> = {
-  'xmlns': 'http://www.w3.org/2000/svg',
-  'width': '1em',
-  'height': '1em',
-  'viewBox': '0 0 24 24',
-  'fill': 'none',
-  'stroke': 'currentColor',
-  'strokeWidth': 2,
-  'strokeLinecap': 'round',
-  'strokeLinejoin': 'round',
-  'focusable': false,
-  'aria-hidden': true,
-};
-
 // Filled Material-Symbols-style icons. These mirror the Takeoff Design System's
-// glyphs (lock / visibility / visibility_off / info), exported from Figma and
-// re-centred on a 24×24 grid via a per-icon transform so they share the same
-// optical box as the stroked Lucide placeholders above.
+// glyphs (info / visibility / visibility_off), exported from Figma and
+// re-centred on a 24×24 grid via a per-icon transform.
 const filledSvgProps: SVGProps<SVGSVGElement> = {
   'xmlns': 'http://www.w3.org/2000/svg',
   'width': '1em',
@@ -31,78 +17,10 @@ const filledSvgProps: SVGProps<SVGSVGElement> = {
   'aria-hidden': true,
 };
 
-export const PlaceholderChevronDown = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...baseSvgProps} data-placeholder-icon="chevron-down" {...props}>
-    <path d="m6 9 6 6 6-6" />
-  </svg>
-);
-
-export const PlaceholderChevronUp = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...baseSvgProps} data-placeholder-icon="chevron-up" {...props}>
-    <path d="m18 15-6-6-6 6" />
-  </svg>
-);
-
-export const PlaceholderClose = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...baseSvgProps} data-placeholder-icon="close" {...props}>
-    <path d="M18 6 6 18" />
-    <path d="m6 6 12 12" />
-  </svg>
-);
-
 export const PlaceholderInfo = (props: SVGProps<SVGSVGElement>) => (
   <svg {...filledSvgProps} data-placeholder-icon="info" {...props}>
     <g transform="translate(2 2) scale(1.714)">
       <path d="M5.83333 0C2.61333 0 0 2.61333 0 5.83333C0 9.05333 2.61333 11.6667 5.83333 11.6667C9.05333 11.6667 11.6667 9.05333 11.6667 5.83333C11.6667 2.61333 9.05333 0 5.83333 0ZM5.83333 8.75C5.5125 8.75 5.25 8.4875 5.25 8.16667V5.83333C5.25 5.5125 5.5125 5.25 5.83333 5.25C6.15417 5.25 6.41667 5.5125 6.41667 5.83333V8.16667C6.41667 8.4875 6.15417 8.75 5.83333 8.75ZM6.41667 4.08333H5.25V2.91667H6.41667V4.08333Z" />
-    </g>
-  </svg>
-);
-
-export const PlaceholderSuccess = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...baseSvgProps} data-placeholder-icon="success" {...props}>
-    <circle cx="12" cy="12" r="10" />
-    <path d="m9 12 2 2 4-4" />
-  </svg>
-);
-
-export const PlaceholderWarning = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...baseSvgProps} data-placeholder-icon="warning" {...props}>
-    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-    <path d="M12 9v4" />
-    <path d="M12 17h.01" />
-  </svg>
-);
-
-export const PlaceholderError = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...filledSvgProps} data-placeholder-icon="error" {...props}>
-    <g transform="translate(2 2) scale(1.714)" fillRule="evenodd" clipRule="evenodd">
-      <path d="M5.83333 0C2.61333 0 0 2.61333 0 5.83333C0 9.05333 2.61333 11.6667 5.83333 11.6667C9.05333 11.6667 11.6667 9.05333 11.6667 5.83333C11.6667 2.61333 9.05333 0 5.83333 0ZM5.83333 2.91667C6.15417 2.91667 6.41667 3.17917 6.41667 3.5V5.83333C6.41667 6.15417 6.15417 6.41667 5.83333 6.41667C5.5125 6.41667 5.25 6.15417 5.25 5.83333V3.5C5.25 3.17917 5.5125 2.91667 5.83333 2.91667ZM5.25 7.58333H6.41667V8.75H5.25V7.58333Z" />
-    </g>
-  </svg>
-);
-
-export const PlaceholderCheck = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...baseSvgProps} data-placeholder-icon="check" {...props}>
-    <path d="M5 12l5 5L20 7" />
-  </svg>
-);
-
-export const PlaceholderRemove = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...baseSvgProps} data-placeholder-icon="remove" {...props}>
-    <path d="M5 12h14" />
-  </svg>
-);
-
-export const PlaceholderAdd = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...baseSvgProps} data-placeholder-icon="add" {...props}>
-    <path d="M5 12h14M12 5v14" />
-  </svg>
-);
-
-export const PlaceholderLock = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...filledSvgProps} data-placeholder-icon="lock" {...props}>
-    <g transform="translate(4 1.5) scale(1.2)" fillRule="evenodd" clipRule="evenodd">
-      <path d="M11.6667 5.83333H10.8333V4.16667C10.8333 1.86667 8.96667 0 6.66667 0C4.36667 0 2.5 1.86667 2.5 4.16667V5.83333H1.66667C0.75 5.83333 0 6.58333 0 7.5V15.8333C0 16.75 0.75 17.5 1.66667 17.5H11.6667C12.5833 17.5 13.3333 16.75 13.3333 15.8333V7.5C13.3333 6.58333 12.5833 5.83333 11.6667 5.83333ZM4.16667 4.16667C4.16667 2.78333 5.28333 1.66667 6.66667 1.66667C8.05 1.66667 9.16667 2.78333 9.16667 4.16667V5.83333H4.16667V4.16667ZM11.6667 15.8333H1.66667V7.5H11.6667V15.8333ZM6.66667 13.3333C7.58333 13.3333 8.33333 12.5833 8.33333 11.6667C8.33333 10.75 7.58333 10 6.66667 10C5.75 10 5 10.75 5 11.6667C5 12.5833 5.75 13.3333 6.66667 13.3333Z" />
     </g>
   </svg>
 );

@@ -53,7 +53,7 @@
 }
 
 @mixin chip-size($height, $font-size, $line-height, $radius, $v-padding, $h-padding, $gap, $icon-size) {
-  min-height: $height;
+  height: $height;
   font-size: $font-size;
   line-height: $line-height;
   border-radius: $radius;

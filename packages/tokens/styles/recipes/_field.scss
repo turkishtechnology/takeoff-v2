@@ -79,6 +79,17 @@
     color: var(--states-danger-base);
   }
 
+  // Error only, for now: its glyph comes from the official Takeoff set, which
+  // draws edge to edge on the 24×24 grid, so at the shared 0.875rem it reads
+  // bigger and sits lower than the inset placeholder the description still
+  // renders. Trim it to the helper text size and lift it onto the text's
+  // optical centre. Fold this back into the shared rule once the description
+  // icon is an official glyph too.
+  .tk-field-error-message-icon {
+    font-size: var(--desktop-body-xs-size);
+    transform: translateY(-1px);
+  }
+
   // ---- Checkbox layout ----
   // When Field wraps a Checkbox the label sits beside the indicator
   // (inline, not stacked above). A 2-column grid reorders the DOM so the

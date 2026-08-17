@@ -1,8 +1,8 @@
 import type { ElementType, MouseEvent } from 'react';
+import { ChevronTopIconOutlinedRounded } from '@takeoff-icons/react/chevron-top';
 import { useInputContext } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
-import { PlaceholderChevronUp } from '../../icons';
 import { useComponentTheme } from '../../provider';
 import { Button } from '../button';
 
@@ -44,7 +44,7 @@ export const InputIncrement = <T extends ElementType = 'button'>(props: InputInc
       disabled={disabled || readOnly}
       aria-label={ariaLabel}
       onClick={handleClick}
-      startContent={children ?? <PlaceholderChevronUp />}
+      startContent={children ?? <ChevronTopIconOutlinedRounded />}
     />
   );
 };

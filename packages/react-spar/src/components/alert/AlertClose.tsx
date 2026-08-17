@@ -1,7 +1,7 @@
 import type { ElementType, MouseEvent } from 'react';
+import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
 
 import { composeRootAttrs, isRenderableNode } from '../../core';
-import { PlaceholderClose } from '../../icons';
 import { useComponentTheme } from '../../provider';
 
 import { AlertCloseBase } from './base';
@@ -46,7 +46,7 @@ export const AlertClose = <T extends ElementType = 'button'>(props: AlertClosePr
       onClick={handleClick}
       {...closeRootAttrs}
     >
-      {hasCustomChildren ? children : <PlaceholderClose />}
+      {hasCustomChildren ? children : <CloseIconOutlinedRounded />}
     </Component>
   );
 };

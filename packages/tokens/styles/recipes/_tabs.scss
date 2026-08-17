@@ -64,6 +64,18 @@
     border-inline-end: 1px solid var(--background-light);
   }
 
+  // `divided` lets the active tab merge into the panel below, which means a
+  // trigger has to paint over the strip's rule. It cannot do that with the rule
+  // in `border-bottom`: this list is a scroll container (`overflow-x: auto`),
+  // and a scroll container clips its children at the PADDING box — the border
+  // area is out of reach. So the rule moves inside the padding box as a 1px
+  // background line, and the padding reserves the row it lives on.
+  &[data-type='divided']:not([data-orientation='vertical']) {
+    border-bottom: 0;
+    padding-block-end: 1px;
+    background-image: linear-gradient(to top, var(--border-light) 1px, transparent 1px);
+  }
+
   &[data-type='compact'] {
     gap: 0;
     border-bottom: 0;
@@ -226,6 +238,21 @@
       &:not([data-orientation='vertical']) {
         box-shadow: var(--effect-1-default-base);
       }
+    }
+
+    // Every horizontal divided tab carries the same bottom-border box, pulled
+    // down over the row the strip's rule sits on. Only the COLOR flips on
+    // selection: growing the border from `border: 0` instead would both jump
+    // the tab 1px taller and animate the new edge out of `currentColor`,
+    // flashing a grey line under the tab for the length of the transition.
+    // Vertical divided tabs merge on the inline edge via their own margin.
+    &:not([data-orientation='vertical']) {
+      border-bottom: 1px solid var(--border-light);
+      margin-block-end: -1px;
+    }
+
+    &[data-state='active']:not([data-orientation='vertical']) {
+      border-bottom-color: var(--static-light);
     }
 
     &::after {
