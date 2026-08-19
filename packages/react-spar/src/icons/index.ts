@@ -1,3 +1,4 @@
+export { FILE_ICONS, type FileIconName } from './fileIcons';
 export { renderIconSymbol } from './renderIconSymbol';
 export {
   PlaceholderAdd,

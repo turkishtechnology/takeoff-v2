@@ -14,16 +14,17 @@ and accessibility guidance where the component owns interaction behavior.
 
 ## Actions & form controls
 
-| Component                             | Use it for                                                            |
-| ------------------------------------- | --------------------------------------------------------------------- |
-| [Button](/docs/components/button)     | Triggering actions with loading, toggle, and icon support.            |
-| [Checkbox](/docs/components/checkbox) | Selecting multiple options or representing a mixed state.             |
-| [Dropdown](/docs/components/dropdown) | Presenting contextual action menus from a trigger.                    |
-| [Input](/docs/components/input)       | Building text inputs with labels, affixes, icons, chips, and actions. |
-| [Label](/docs/components/label)       | Labeling controls, sections, and compact metadata.                    |
-| [Radio](/docs/components/radio)       | Choosing one option from a mutually exclusive set.                    |
-| [Select](/docs/components/select)     | Choosing from a keyboard-accessible list with typeahead.              |
-| [Switch](/docs/components/switch)     | Turning a single setting on or off.                                   |
+| Component                             | Use it for                                                             |
+| ------------------------------------- | ---------------------------------------------------------------------- |
+| [Button](/docs/components/button)     | Triggering actions with loading, toggle, and icon support.             |
+| [Checkbox](/docs/components/checkbox) | Selecting multiple options or representing a mixed state.              |
+| [Dropdown](/docs/components/dropdown) | Presenting contextual action menus from a trigger.                     |
+| [Input](/docs/components/input)       | Building text inputs with labels, affixes, icons, chips, and actions.  |
+| [Label](/docs/components/label)       | Labeling controls, sections, and compact metadata.                     |
+| [Radio](/docs/components/radio)       | Choosing one option from a mutually exclusive set.                     |
+| [Select](/docs/components/select)     | Choosing from a keyboard-accessible list with typeahead.               |
+| [Switch](/docs/components/switch)     | Turning a single setting on or off.                                    |
+| [Upload](/docs/components/upload)     | Selecting and validating files with browse, drag-and-drop, and a list. |
 
 ## Navigation & disclosure
 

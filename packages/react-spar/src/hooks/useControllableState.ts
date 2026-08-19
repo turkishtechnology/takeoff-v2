@@ -11,12 +11,17 @@ import { useCallback, useRef, useState } from 'react';
  * that mounts controlled stays controlled for its lifetime, and one that mounts
  * uncontrolled stays uncontrolled, so a `controlledValue` that later flips
  * between `undefined` and a real value never silently drops the internal state.
+ *
+ * Returns `[value, setValue, isControlled]`. The third element is the latched
+ * mode, for the callers whose behavior depends on whether a commit is
+ * guaranteed to come back as the next render's value (it is only in
+ * uncontrolled mode — a controlled parent may decline the change).
  */
 export function useControllableState<T>(
   controlledValue: T | undefined,
   defaultValue: T | undefined,
   onChange: ((value: T) => void) | undefined,
-): [T | undefined, (value: T) => void] {
+): [T | undefined, (value: T) => void, boolean] {
   const [uncontrolledValue, setUncontrolledValue] = useState<T | undefined>(defaultValue);
   const { current: isControlled } = useRef(controlledValue !== undefined);
   const value = isControlled ? controlledValue : uncontrolledValue;
@@ -31,5 +36,5 @@ export function useControllableState<T>(
     [isControlled, onChange],
   );
 
-  return [value, setValue];
+  return [value, setValue, isControlled];
 }

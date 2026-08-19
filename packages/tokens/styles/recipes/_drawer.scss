@@ -168,21 +168,6 @@
   &[data-placement='bottom'][data-state='closed'] {
     transform: translateY(100%);
   }
-
-  // ─── Placement: full-screen ──────────────────────────────────────
-  &[data-placement='full-screen'] {
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
-    transition: none;
-    transform: none;
-  }
-
-  &[data-placement='full-screen'][data-state='closed'] {
-    transform: scale(0.95);
-    opacity: 0;
-  }
 }
 
 @mixin drawer-header {

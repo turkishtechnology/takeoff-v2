@@ -15,7 +15,7 @@ import type { ClassNamesMap, SlotPropsMap, StateOnlyComponentThemeConfig } from 
  * Side from which the drawer slides in.
  * @defaultValue 'right'
  */
-export type DrawerPlacement = 'left' | 'right' | 'top' | 'bottom' | 'full-screen';
+export type DrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
 
 export type DrawerOverlaySlot = 'root';
 export type DrawerPanelSlot = 'root';
