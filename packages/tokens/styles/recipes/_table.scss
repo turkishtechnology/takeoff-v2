@@ -273,8 +273,10 @@
 }
 
 // Sort affordance icon — hosts an inline SVG (icon set, not a Unicode glyph).
-// The neutral up-down chevron is dimmed until the column is actually sorted, at
-// which point the directional chevron goes full-strength.
+// The neutral up-down swap glyph is dimmed until the column is actually sorted,
+// at which point the directional arrow goes full-strength. Arrows rather than
+// chevrons: chevrons already mean disclosure elsewhere in the table (row expand)
+// and across the library.
 @mixin table-sort-icon {
   display: inline-flex;
   flex: 0 0 auto;

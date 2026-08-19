@@ -85,7 +85,7 @@ export default {
         {
           attribute: 'aria-sort',
           appliedWhen: 'On sortable header cells.',
-          purpose: 'A11y sort state (`ascending` | `descending` | `none`); the sort chevron mirrors it via `data-direction`.',
+          purpose: 'A11y sort state (`ascending` | `descending` | `none`); the sort arrow mirrors it via `data-direction`.',
         },
         {
           attribute: 'data-selected',

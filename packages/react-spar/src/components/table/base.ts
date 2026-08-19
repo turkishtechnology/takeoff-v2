@@ -20,7 +20,7 @@ import type { TableProps, TableSlot } from './types';
  *   Viewport:    data-scrolled (presence while scrollTop > 0)
  *   Header/cell: data-align (start|center|end), data-sticky (left|right),
  *                data-sortable (presence) + aria-sort (a11y source of truth)
- *   Sort icon:   data-direction (asc|desc|none) — node-local chevron hook, NOT
+ *   Sort icon:   data-direction (asc|desc|none) — node-local styling hook, NOT
  *                a duplicate of the <th>'s aria-sort
  *   Row:         data-selected (presence)
  *   Utility:     data-selection-mode (single|multiple) on the selection cell

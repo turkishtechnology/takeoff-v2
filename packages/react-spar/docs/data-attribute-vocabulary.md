@@ -110,7 +110,6 @@ table needs updating.
 | `data-icon-only`      | Button                 | No label content, only icon                      |
 | `data-rounded`        | Button                 | Circular icon-only shape                         |
 | `data-underline`      | Button                 | Label is underlined                              |
-| `data-icon-kind`      | Button, AccordionItem  | Distinguishes string icons from ReactNode icons  |
 | `data-hide-arrows`    | Accordion root         | Auto-rendered arrows are hidden                  |
 | `data-arrow-position` | Accordion root         | Layout intent for trigger arrows                 |
 | `data-position`       | Radio root/item        | Indicator placement (`left` / `right`)           |
@@ -125,10 +124,9 @@ table needs updating.
 These are emitted outside the component composition pipeline (`composeRootAttrs`
 / `buildSlotAttrs`). They follow the same rules but live at different layers.
 
-| Attribute               | Layer                                                                 | Purpose                                          |
-| ----------------------- | --------------------------------------------------------------------- | ------------------------------------------------ |
-| `data-theme`            | [`<TakeoffSparProvider>`](../src/provider.tsx) — written to `<html>`  | Active theme name (consumed by token CSS)        |
-| `data-placeholder-icon` | [`src/icons/placeholderIcons.tsx`](../src/icons/placeholderIcons.tsx) | Marks default decorative SVGs for swap targeting |
+| Attribute    | Layer                                                                | Purpose                                   |
+| ------------ | -------------------------------------------------------------------- | ----------------------------------------- |
+| `data-theme` | [`<TakeoffSparProvider>`](../src/provider.tsx) — written to `<html>` | Active theme name (consumed by token CSS) |
 
 ## Component-specific decisions
 
