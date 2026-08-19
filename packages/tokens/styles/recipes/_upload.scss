@@ -1,0 +1,371 @@
+// ---------------------------------------------------------------------------
+// Upload recipe — file upload control.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-upload                 — root (state owner)
+//   .tk-upload-dropzone        — drag-and-drop target
+//   .tk-upload-actions         — a row for controls that share a line (its own
+//                                part, so it can be placed anywhere)
+//   .tk-upload-trigger         — browse button (opens the native picker)
+//   .tk-upload-submit          — optional upload button
+//     Both compose Button, so they land as `.tk-button .tk-upload-*` and
+//     inherit the Button recipe whole — no rules of their own here, which is
+//     why neither has a mixin below. The design's "Choose File" is Button's
+//     own base size in outlined/neutral; a rule here would only fight it.
+//     Their one layout delta is the pair's, so it belongs to the box above
+//     rather than to either button.
+//   .tk-upload-list            — file list region
+//   .tk-upload-item            — per-file row (lays out its three regions)
+//   .tk-upload-item-content    — the row's details region (its own part)
+//     .tk-upload-item-name     — file name (internal slot)
+//     .tk-upload-item-size     — file size (internal slot)
+//     .tk-upload-item-status   — status support text: glyph + label
+//                                (uploading / processing / completed / error)
+//     .tk-upload-item-progress — progress bar (determinate uploads)
+//   .tk-upload-item-actions    — trailing action area (holds the actions)
+//   .tk-upload-item-preview    — the row's thumbnail (its own part, so its
+//                                classes sit here rather than nested in the row)
+//     .tk-upload-item-preview-image     — the default image thumbnail
+//     .tk-upload-item-preview-icon      — the shipped file-type icon
+//     .tk-upload-item-preview-extension — the extension badge (unmapped formats)
+//   .tk-upload-item-action     — per-file action control (download, remove, …)
+//     Composes Button as a small icon button, so it lands as
+//     `.tk-button .tk-upload-item-action` and inherits the Button recipe.
+//     `data-action` names the built-in action for consumer styling.
+//
+// State attributes (each has a consumer below — rule 9):
+//   .tk-upload[data-disabled] / [data-readonly] / [data-invalid]
+//   .tk-upload-item[data-status='idle' | 'uploading' | 'processing' |
+//                               'completed' | 'error']
+//
+// Custom properties published for consumer content:
+//   --tk-upload-dropzone-mark    — the glyph the zone centers
+//   --tk-upload-dropzone-support — the quieter line under the primary copy
+//   Both are set on .tk-upload-dropzone and re-pointed by its states, so the
+//   content a consumer puts in the zone flattens with it under [data-disabled].
+// ---------------------------------------------------------------------------
+
+@use '../abstracts/mixins' as mixins;
+
+@mixin upload {
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  display: flex;
+  flex-direction: column;
+  // The dropzone and the list segment under it sit one card gap apart — the
+  // same gap the list paces its own rows with, so the whole stack reads on one
+  // rhythm however the anatomy is composed.
+  gap: var(--upload-card-gap);
+  width: 100%;
+  box-sizing: border-box;
+
+  // Cross-slot state cascades. Every state the wrapper emits is consumed here
+  // (data-attribute-vocabulary rule 9).
+  //
+  // Hovering the zone fills it — the design's cue that the whole box is the drop
+  // target, not just the button standing in it; nothing else moves, so the fill
+  // is the only thing that says it. Gated from the root because live-ness is the
+  // root's to know: a frozen or view-only zone takes no payload.
+  &:not([data-disabled]):not([data-readonly]) .tk-upload-dropzone:hover {
+    background: var(--background-lightest);
+  }
+
+  // The rows answer the pointer the same way, on the same fill: a list of files
+  // is a set of objects with controls on them, and the row under the cursor is
+  // the one those controls belong to. Only `[data-disabled]` takes it back —
+  // read-only is not inert here the way it is for the zone above, since every
+  // row keeps its download.
+  &:not([data-disabled]) .tk-upload-item:hover {
+    background: var(--background-lightest);
+  }
+
+  // Disabled is a recolor, not a dim: the design fills the zone rather than
+  // fading it, so the border drops a step to `--border-light`, the surface takes
+  // the lightest background, and every line of copy — the zone's own and the
+  // support line the consumer marks down — flattens to `--text-sub-base`. An
+  // `opacity` here would gray the fill along with the text and lose that.
+  &[data-disabled] .tk-upload-dropzone {
+    --tk-upload-dropzone-mark: var(--icon-sub-base);
+    --tk-upload-dropzone-support: var(--text-sub-base);
+
+    border-color: var(--border-light);
+    background: var(--background-lightest);
+    color: var(--text-sub-base);
+    cursor: not-allowed;
+  }
+
+  // Invalid (inherited from a surrounding Field): danger treatment on the
+  // dropzone and the file rows.
+  &[data-invalid] {
+    .tk-upload-dropzone {
+      border-color: var(--states-danger-base);
+    }
+
+    .tk-upload-item {
+      border-color: var(--states-danger-sub-base);
+    }
+  }
+}
+
+// The drop target, on the design's `upload/basic` scale. At rest it carries no
+// surface — the dashed rule is the whole affordance — and both fills it ever
+// takes, hover and disabled, are the root's from above. A drag in progress
+// paints nothing of its own: `data-drag-state` is emitted for a consumer to
+// style, not for a shipped accept/reject treatment.
+@mixin upload-dropzone {
+  // What the zone centers is the consumer's — a mark and a support line under
+  // the primary copy — but their color belongs to the zone's state, so it hands
+  // both down as custom properties. Painting with these instead of the
+  // primitives is what makes a consumer's own content flatten with the rest of
+  // the zone under `[data-disabled]`, which no descendant rule could do against
+  // an inline `color`.
+  --tk-upload-dropzone-mark: var(--primary-base);
+  --tk-upload-dropzone-support: var(--text-base);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--upload-basic-gap);
+  padding: var(--upload-basic-v-padding) var(--upload-basic-h-padding);
+  text-align: center;
+  border: 1px dashed var(--border-sub-base);
+  border-radius: var(--radius-m-base);
+  background: transparent;
+  // The zone's own copy is the design's primary line; the quieter line under it
+  // is the consumer's, marked down with `--tk-upload-dropzone-support`.
+  color: var(--text-darkest);
+  font-size: var(--desktop-body-s-size);
+  line-height: var(--desktop-body-s-line-height);
+  box-sizing: border-box;
+  // The zone takes a payload but not a click — browsing is the Trigger's job —
+  // so the pointer stays an arrow. Without this the copy the zone centers hands
+  // out an I-beam, which reads as selectable text sitting in a live drop target.
+  cursor: default;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+// Browse and send, side by side. The zone stacks its children, so controls that
+// belong on one line need a box of their own — the consumer wraps them in this
+// part. A step tighter than the zone's own gap, because what it holds is one
+// group rather than another of the zone's stacked lines.
+@mixin upload-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-m-base);
+}
+
+// The file list segment. Its rows sit a card gap apart, the same gap the root
+// puts between the dropzone and this region.
+@mixin upload-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--upload-card-gap);
+
+  // How tall the list may grow is the consumer's — a picker for two files and
+  // one for a whole folder want different bounds — so no `max-height`/`overflow`
+  // is imposed here. But when a consumer does bound it, the bar it scrolls with
+  // is the brand's, the same one the Select and Dropdown viewports draw.
+  @include mixins.takeoff-scrollbar;
+}
+
+// Three regions in a row — thumbnail, what the row says about the file, and
+// the actions. Everything the row *says* belongs to the content region below, so
+// this box only places the three.
+@mixin upload-item {
+  display: flex;
+  // The three regions hang from the row's top edge rather than its middle: a
+  // content region that grows — a wrapped failure message, a progress bar —
+  // must push down past the thumbnail and the actions instead of dragging them
+  // off the line the file name sits on.
+  align-items: flex-start;
+  align-self: stretch;
+  gap: var(--upload-card-gap);
+  padding: var(--upload-card-v-padding) var(--upload-card-h-padding);
+  border: 1px solid var(--border-sub-base);
+  border-radius: var(--radius-m-base);
+  background: var(--static-light);
+  box-sizing: border-box;
+  // The hover fill the root hands the row eases in on the dropzone's timing, so
+  // moving down the stack from the zone to a row is one behavior, not two.
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+
+  // Per-file status treatments (consumer-driven UploadFile.status). The row owns
+  // the state, so the colors cascade from here into the status line; only the
+  // glyph takes the state color — its label stays neutral support text.
+  &[data-status='completed'] .tk-upload-item-status svg {
+    color: var(--states-success-base);
+  }
+
+  &[data-status='error'] .tk-upload-item-status svg {
+    color: var(--states-danger-base);
+  }
+}
+
+// The row's middle region: the file's details, stacked. The name owns the first
+// line — it is what identifies the row, so it gets the full width to ellipsize
+// into. The size and the status support text share the line under it, and the
+// progress bar takes one of its own by claiming the full basis.
+@mixin upload-item-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  // Wrapping is what stacks the lines: the name claims a full basis, so the
+  // details fall to a line of their own without a wrapper element per line.
+  flex-wrap: wrap;
+  align-items: center;
+  // Row gap paces the three lines; column gap separates the size from the
+  // status where they share one.
+  gap: var(--upload-card-content-gap) var(--spacing-m-base);
+
+  .tk-upload-item-name {
+    // Full basis, so the details below never pull up beside the name.
+    flex: 1 1 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--desktop-body-s-size);
+    line-height: var(--desktop-body-s-line-height);
+    color: var(--text-darkest);
+  }
+
+  // The size and the status share the second line, so they share a scale:
+  // `body-xs` and `label-s` resolve to the same size and line height, which is
+  // what keeps that line even. Retuning one without the other ragged it.
+  .tk-upload-item-size {
+    font-size: var(--desktop-body-xs-size);
+    font-weight: 300;
+    line-height: var(--desktop-body-xs-line-height);
+    color: var(--text-base);
+  }
+
+  // Support text: a glyph and the state it names, sharing the second line with
+  // the size (and wrapping below it when a failure message is too long for
+  // what's left). The label is what carries the meaning, so it keeps the
+  // neutral text color in every state and only the glyph takes the state's own.
+  .tk-upload-item-status {
+    flex: 0 1 auto;
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--desktop-body-xs-size);
+    font-weight: 300;
+    line-height: var(--desktop-body-xs-line-height);
+    color: var(--text-base);
+
+    // Never squeezed: a failure message long enough to wrap must not eat into
+    // the glyph that names the state.
+    svg {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+    }
+
+    // The spinner of the uploading state sits on the same 16px optical line as
+    // the two icons it alternates with.
+    .tk-spinner {
+      flex-shrink: 0;
+      --tk-spinner-size: 16px;
+    }
+  }
+
+  // Progress row: renders the shared Progress component full-width under the
+  // file info. Progress owns the track and the fill — no bespoke bar here.
+  .tk-upload-item-progress {
+    flex-basis: 100%;
+
+    .tk-progress {
+      inline-size: 100%;
+    }
+  }
+}
+
+// The row's thumbnail box. Sized and clipped here so whatever it holds — the
+// default image, the extension badge, or a consumer's own preview content —
+// keeps the same 40px square footprint in the row. That 40px is the shipped
+// file-type icon's own artboard, so the icon branch lands at native size rather
+// than scaled down into the box.
+@mixin upload-item-preview {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: var(--radius-s);
+  color: var(--text-sub-base);
+  box-sizing: border-box;
+
+  // Each default branch carries its own surface, so the box stays transparent
+  // for the file-type icon (a full illustration of its own) and for whatever a
+  // consumer passes as children.
+
+  // The image branch, plus any `<img>` a consumer drops in as children. The
+  // tint shows through until the thumbnail decodes.
+  .tk-upload-item-preview-image,
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: var(--background-light);
+  }
+
+  // The shipped file-type icon, filling the box at its own 40px artboard size.
+  .tk-upload-item-preview-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  // Extension badge for a format the icon set does not cover.
+  .tk-upload-item-preview-extension {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--background-light);
+    font-size: var(--desktop-body-xs-size);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+}
+
+// The action area trails the row: pushed to the end, never squeezed, and the
+// anchor a picture-card layout re-positions.
+@mixin upload-item-actions {
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  // Declared with the rest of the block rather than after the nested rule below:
+  // Sass emits declarations that trail a nested rule as a second copy of the
+  // selector, so leaving it there shipped `.tk-upload-item-actions` twice and put
+  // the file one Sass version away from the mixed-declarations deprecation.
+  flex-shrink: 0;
+
+  // A row's actions can all take themselves away — read-only unmounts the
+  // remove, and a download with nothing to save unmounts too — and the part
+  // drops the container with them when it owns the pair. A *composed* set is
+  // the consumer's, and no one can tell from the outside whether its children
+  // will render anything, so the box stops claiming the row's trailing space
+  // the moment it turns out to hold nothing.
+  &:empty {
+    display: none;
+  }
+}
+
+// Everything visual comes from the Button recipe; only the row-layout delta
+// belongs here, so the actions never squeeze when a file name is long.
+@mixin upload-item-action {
+  flex-shrink: 0;
+}

@@ -122,7 +122,16 @@ async function collectConfigPaths(dir, found = []) {
 }
 
 function escapeMarkdownCell(value) {
-  return String(value).replaceAll('|', '\\|').replaceAll('\n', ' ').replaceAll('\r', ' ').trim();
+  const cell = String(value).replaceAll('|', '\\|').replaceAll('\n', ' ').replaceAll('\r', ' ').trim();
+  // MDX reads a bare `{` as the start of a JSX expression, so a default or
+  // description carrying a `{name}` placeholder blows the build up at SSG time.
+  // Entities match what escapeHtml() writes elsewhere in the table, and
+  // generate-llms.mjs decodes them back. Inline code spans render braces
+  // literally already and would show the entity verbatim, so they are skipped.
+  return cell
+    .split(/(`[^`]*`)/gu)
+    .map((part, index) => (index % 2 === 1 ? part : part.replaceAll('{', '&#123;').replaceAll('}', '&#125;')))
+    .join('');
 }
 
 function escapeHtml(value) {

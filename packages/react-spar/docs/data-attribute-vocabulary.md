@@ -367,3 +367,16 @@ follow the standard conventions (presence = `''`, finite = string).
   `Popover.Trigger` owner node (which emits its own `data-slot="root"`), so the
   filter button/panel are styled by class (`.tk-table-filter-button` /
   `.tk-table-filter-panel`) rather than a Table `data-slot` anchor.
+
+### Upload
+
+Upload is **v2-owned** with no upstream Spar primitive, so its vocabulary is
+wrapper-emitted. Recorded here per rule 10.
+
+- **`data-status` (State) lives on the item, not the root.** Status is per-file
+  and consumer-driven (`UploadFile.status`), so each `.tk-upload-item` carries
+  its own — there is no meaningful root-level upload status to mirror.
+- **The dropzone owns `data-drag-state`** (`accept` | `reject`), resolved by
+  matching the dragged payload against `accept`. It sits on the drop target
+  rather than the root because the affordance it drives is the dropzone's
+  border, and only a composed dropzone can be dragged over at all.
