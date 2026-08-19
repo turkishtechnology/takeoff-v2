@@ -1,8 +1,8 @@
 import type { ElementType, MouseEvent } from 'react';
+import { ChevronBottomIconOutlinedRounded } from '@takeoff-icons/react/chevron-bottom';
 import { useInputContext } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
-import { PlaceholderChevronDown } from '../../icons';
 import { useComponentTheme } from '../../provider';
 import { Button } from '../button';
 
@@ -44,7 +44,7 @@ export const InputDecrement = <T extends ElementType = 'button'>(props: InputDec
       disabled={disabled || readOnly}
       aria-label={ariaLabel}
       onClick={handleClick}
-      startContent={children ?? <PlaceholderChevronDown />}
+      startContent={children ?? <ChevronBottomIconOutlinedRounded />}
     />
   );
 };

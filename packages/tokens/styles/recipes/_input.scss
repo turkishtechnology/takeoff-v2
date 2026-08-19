@@ -28,6 +28,14 @@
     height: auto;
   }
 
+  // Chips mode is auto-height, so a tag taller than the caret's line box would
+  // push the row open the moment the first chip is committed. Pin the tag to
+  // the native field's line box: a committed chip then occupies exactly the
+  // space the text already did and the row keeps its height, full or empty.
+  &:has(.tk-input-chips) .tk-chip {
+    height: $field-line-height;
+  }
+
   .tk-input-field {
     font-size: $field-size;
     line-height: $field-line-height;

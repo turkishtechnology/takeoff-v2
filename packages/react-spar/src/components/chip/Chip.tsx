@@ -1,7 +1,7 @@
 import { useState, type KeyboardEvent, type MouseEvent } from 'react';
+import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
 
 import { buildSlotAttrs, composeRootAttrs, isRenderableNode } from '../../core';
-import { PlaceholderClose } from '../../icons';
 import { useComponentTheme } from '../../provider';
 
 import { ChipBase } from './base';
@@ -144,7 +144,7 @@ export const Chip = (props: ChipProps) => {
         // The icon-only remove control needs an accessible name. Default it,
         // but let `slotProps.remove` (spread after) override via `aria-label`.
         <button aria-label={DEFAULT_REMOVE_LABEL} {...removeButtonAttrs} disabled={disabled} onClick={handleRemoveClick} type="button">
-          <PlaceholderClose />
+          <CloseIconOutlinedRounded />
         </button>
       )}
     </span>

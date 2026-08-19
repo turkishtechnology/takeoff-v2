@@ -17,7 +17,16 @@
 
 @use '../abstracts/mixins' as mixins;
 
-@mixin alert-variant($base-color, $sub-color, $light-color, $lightest-color, $gradient, $filled-text: var(--text-lightest), $outlined-border-color: $base-color) {
+@mixin alert-variant(
+  $base-color,
+  $sub-color,
+  $light-color,
+  $lightest-color,
+  $gradient,
+  $filled-text: var(--text-lightest),
+  $outlined-border-color: $base-color,
+  $gradient-border-color: $base-color
+) {
   border-color: $sub-color;
 
   &[data-type='filled'] {
@@ -40,6 +49,7 @@
   &[data-type='gradient'] {
     color: var(--text-darkest);
     background: $gradient;
+    border-color: $gradient-border-color;
   }
 }
 
@@ -114,6 +124,10 @@
       color: var(--text-lightest);
     }
 
+    .tk-alert-action.tk-button {
+      color: var(--text-lightest);
+    }
+
     .tk-alert-action:hover,
     .tk-alert-close:hover {
       background-color: var(--overlay-white-light);
@@ -161,6 +175,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  align-self: flex-start;
+  margin-inline-start: auto;
   border: 0;
   border-radius: var(--radius-m-base);
   background: transparent;

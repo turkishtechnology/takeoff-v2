@@ -56,6 +56,7 @@
   --ifm-font-size-base: 16px;
   --ifm-line-height-base: 1.6;
   --ifm-color-content: var(--text-base, #717784);
+  --ifm-table-head-background: var(--background-lightest, #f9fafc);
 
   /* TOC (light mode — dark values overridden below) */
   --ifm-toc-border-color: var(--border-light, #e1e4ea);
@@ -176,7 +177,7 @@
 
   /* Tables */
   --ifm-table-border-color: #24242e;
-  --ifm-table-head-background: #17171d;
+  --ifm-table-head-background: var(--background-lightest, #181b25);
   --ifm-table-stripe-background: #111116;
 
   /* Blockquote */

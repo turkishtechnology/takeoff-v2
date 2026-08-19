@@ -171,6 +171,18 @@
     }
   }
 
+  // ---- Glyph scale ----
+  // The mark comes from the official Takeoff set, whose check and remove are
+  // drawn well inside the 24×24 grid (the check spans ~9.3 units, the remove
+  // ~13) — much smaller than the stroked placeholders they replaced (17 and 16
+  // units). Sizing the svg to the icon box would therefore shrink the visible
+  // mark, so the box is scaled per size and per state to keep the painted mark
+  // the same width it has always been. `flex: none` stops the icon box from
+  // squashing the (deliberately larger) svg back down.
+  .tk-checkbox-icon svg {
+    flex: none;
+  }
+
   // ---- Sizes ----
 
   &[data-size='base'] {
@@ -184,6 +196,16 @@
     .tk-checkbox-icon {
       width: 12px;
       height: 12px;
+
+      svg {
+        width: 22px;
+        height: 22px;
+      }
+    }
+
+    &[data-indeterminate] .tk-checkbox-icon svg {
+      width: 14px;
+      height: 14px;
     }
   }
 
@@ -198,6 +220,16 @@
     .tk-checkbox-icon {
       width: 10px;
       height: 10px;
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    &[data-indeterminate] .tk-checkbox-icon svg {
+      width: 12px;
+      height: 12px;
     }
   }
 }
