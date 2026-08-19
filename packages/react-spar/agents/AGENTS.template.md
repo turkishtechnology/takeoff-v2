@@ -55,6 +55,7 @@ on headless Spar primitives and styled with Takeoff design tokens.
 | `Tabs`       | A UI needs a tablist that swaps panels — settings sections, detail views, segmented controls.                                                                            |
 | `Toast`      | Any ephemeral, auto-dismissing notification fired imperatively (success/error/info/warning/loading, promise results, undo actions).                                      |
 | `Tooltip`    | Brief, non-interactive hints attached to a trigger element (button, icon).                                                                                               |
+| `Upload`     | Attaching files to a form, a review-then-send batch, an avatar/image picker.                                                                                             |
 
 ## Getting the full API
 
