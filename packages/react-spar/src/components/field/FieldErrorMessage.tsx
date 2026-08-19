@@ -1,8 +1,8 @@
 import type { ElementType } from 'react';
+import { AlertCircleIconFilledRounded } from '@takeoff-icons/react/alert-circle';
 import { FieldErrorMessage as SparFieldErrorMessage } from '@turkish-technology/spar';
 
 import { buildSlotAttrs, composeRootAttrs } from '../../core';
-import { PlaceholderError } from '../../icons';
 import { useComponentTheme } from '../../provider';
 
 import { FieldErrorMessageBase } from './base';
@@ -31,7 +31,7 @@ export const FieldErrorMessage = <T extends ElementType = 'div'>(props: FieldErr
     <SparFieldErrorMessage {...spar} ref={ref} {...rootAttrs}>
       {hasContent && (
         <span {...iconAttrs} aria-hidden="true">
-          <PlaceholderError />
+          <AlertCircleIconFilledRounded />
         </span>
       )}
       {children}

@@ -46,6 +46,13 @@
       gap: var(--dropdown-items-basic-large-gap);
       border-radius: var(--dropdown-items-basic-large-radius);
     }
+
+    // One step under the panel's own body-m items, mirroring how the base size
+    // pairs body-s items with a body-xs heading.
+    .tk-dropdown-label {
+      font-size: var(--desktop-body-s-size);
+      line-height: var(--desktop-body-s-line-height);
+    }
   }
 
   &[data-size='base'] {
@@ -61,6 +68,12 @@
       padding: var(--dropdown-items-basic-small-v-padding) var(--dropdown-items-basic-small-h-padding);
       gap: var(--dropdown-items-basic-small-gap);
       border-radius: var(--dropdown-items-basic-small-radius);
+    }
+
+    // At this scale the items are already at the smallest body size, so the
+    // group heading steps below the type scale to keep the caption hierarchy.
+    .tk-dropdown-label {
+      font-size: 11px;
     }
   }
 }
@@ -117,15 +130,28 @@
 }
 
 @mixin dropdown-label {
-  padding-inline: 0.5rem;
+  // Matches `select-label`: the group heading carries its own divider — label
+  // text followed by a rule that runs out to the panel edge, so consecutive
+  // groups read as banded sections without a `Dropdown.Separator` between them.
+  // The rule is a pseudo-element, so it needs no extra node and flips with the
+  // writing direction on its own.
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-l);
+  padding-inline: var(--spacing-m-base);
   padding-block: 0.25rem;
   font-size: var(--desktop-body-xs-size);
   line-height: var(--desktop-body-xs-line-height);
-  font-weight: 500;
-  color: var(--text-sub-base);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  font-weight: 400;
+  color: var(--text-dark);
   user-select: none;
+
+  &::after {
+    content: '';
+    flex: 1 1 auto;
+    height: 1px;
+    background-color: var(--border-light);
+  }
 }
 
 @mixin dropdown-separator {

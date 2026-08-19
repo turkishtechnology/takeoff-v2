@@ -264,6 +264,62 @@ export const longTrailDemo = String.raw`
 </div>
 `;
 
+export const collapsedTrailDemo = String.raw`
+function CollapsedTrailDemo() {
+  const hiddenCrumbs = [
+    { href: '#booking', label: 'Booking' },
+    { href: '#booking-flights', label: 'Flights' },
+    { href: '#booking-flights-seats', label: 'Seat selection' },
+  ];
+
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Breadcrumb>
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link href="#">Home</Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator />
+
+        {expanded ? (
+          hiddenCrumbs.map((crumb) => (
+            <React.Fragment key={crumb.href}>
+              <Breadcrumb.Item>
+                <Breadcrumb.Link href={crumb.href}>{crumb.label}</Breadcrumb.Link>
+              </Breadcrumb.Item>
+              <Breadcrumb.Separator />
+            </React.Fragment>
+          ))
+        ) : (
+          <React.Fragment>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link
+                as="button"
+                type="button"
+                style={{ appearance: 'none', background: 'none', border: 0, margin: 0, padding: '0 2px' }}
+                aria-expanded={false}
+                aria-label={'Show ' + hiddenCrumbs.length + ' hidden crumbs'}
+                onPress={() => setExpanded(true)}
+              >
+                …
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Separator />
+          </React.Fragment>
+        )}
+
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>Passenger details</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb>
+  );
+}
+
+render(<CollapsedTrailDemo />);
+`;
+
 export const externalLinkDemo = String.raw`
 <Breadcrumb>
   <Breadcrumb.List>
@@ -509,6 +565,22 @@ while tabbing through an overflowing trail.
   code={longTrailDemo}
   cssCode={breadcrumbDemoCss}
   editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={breadcrumbScope}
+/>
+
+## Collapsed Trail
+
+Deep trails can keep only the first and last crumb visible and fold the middle
+ones behind an ellipsis. The ellipsis crumb is a customizable area left to the
+consumer:
+
+<LiveCode
+  code={collapsedTrailDemo}
+  cssCode={breadcrumbDemoCss}
+  editable={false}
+  noInline
   previewMinHeight={120}
   previewWrapper={ReactSparDemoRoot}
   scope={breadcrumbScope}
