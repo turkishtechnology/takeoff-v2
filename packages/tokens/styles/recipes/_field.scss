@@ -17,6 +17,7 @@
   // ---- Label ----
 
   .tk-field-label {
+    padding: var(--input-external-label-large-label-v-padding) var(--input-external-label-large-label-h-padding);
     color: var(--text-darkest);
     font-weight: 400;
     font-size: var(--desktop-label-m-base-size);
@@ -24,12 +25,15 @@
     cursor: default;
   }
 
+  &:has(> [data-size='small']) > .tk-field-label {
+    padding: var(--input-external-label-small-label-v-padding) var(--input-external-label-small-label-h-padding);
+  }
+
   .tk-field-asterisk {
     color: var(--states-danger-base);
     font-size: var(--desktop-label-s-size);
     font-weight: 300;
     line-height: var(--desktop-label-s-line-height);
-    margin-inline-start: 0.125rem;
   }
 
   &[data-disabled] .tk-field-label {
@@ -50,7 +54,6 @@
     font-size: var(--desktop-body-xs-size);
     line-height: var(--desktop-body-xs-line-height);
     font-weight: 400;
-    margin-block-start: var(--spacing-xxs);
   }
 
   // Leading helper-text icon — sized a touch larger than the text and centred
