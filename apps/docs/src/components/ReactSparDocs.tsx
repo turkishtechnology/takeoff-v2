@@ -38,6 +38,7 @@ export {
   Toast,
   Toaster,
   Tooltip,
+  Upload,
   createToaster,
 } from '@takeoff-ui/react-spar';
 
