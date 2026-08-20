@@ -112,7 +112,7 @@ an inner wrapper so the arrow is not clipped.
   <Popover.Content>
     <Popover.Header className="flex items-center justify-between">
       <span>Title</span>
-      <Popover.Close>x</Popover.Close>
+      <Popover.Close />
     </Popover.Header>
     <Popover.Description>Click x to dismiss</Popover.Description>
   </Popover.Content>

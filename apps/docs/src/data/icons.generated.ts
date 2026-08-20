@@ -91,6 +91,11 @@ export const iconCategories: IconGalleryCategory[] = [
     description: 'Accounts, persons, groups and contacts.',
   },
   {
+    id: 'pin',
+    label: 'Pin',
+    description: '',
+  },
+  {
     id: 'security',
     label: 'Security',
     description: 'Locks, passwords and encryption.',
@@ -904,7 +909,7 @@ export const iconEntries: IconGalleryEntry[] = [
     searchText: 'alert actions ! alert attention caution danger error important message notification problem risk system actions',
     defaultSvg: {
       viewBox: '0 0 24 24',
-      svg: '<path fill="currentColor" d="M10.71 15.72c.21.21.5.33.8.33s.58-.12.79-.33.33-.5.33-.77L13 4.85c.03-.39-.11-.77-.39-1.06-.58-.62-1.64-.62-2.22 0-.27.29-.41.67-.39 1.04l.37 10.1c0 .3.12.59.33.8zm.79 2.58c-.82 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5"/>',
+      svg: '<path fill="currentColor" d="M11.75 15.03c.41 0 .75-.34.75-.75V6.75c0-.41-.34-.75-.75-.75s-.75.34-.75.75v7.53c0 .41.34.75.75.75m0 3.22a.76.76 0 0 0 .75-.77.76.76 0 0 0-.75-.77.76.76 0 0 0-.75.77c0 .425.336.77.75.77"/>',
     },
   },
   {
@@ -917,7 +922,7 @@ export const iconEntries: IconGalleryEntry[] = [
     searchText: 'alert-circle actions ! alert attention caution danger error important message notification problem risk system actions',
     defaultSvg: {
       viewBox: '0 0 24 24',
-      svg: '<path fill="currentColor" d="M12.5 1C6.26 1 1.19 6.07 1.19 12.31S6.26 23.62 12.5 23.62s11.31-5.07 11.31-11.31S18.74 1 12.5 1m0 21.12c-5.41 0-9.81-4.4-9.81-9.81S7.09 2.5 12.5 2.5s9.81 4.4 9.81 9.81-4.4 9.81-9.81 9.81"/><path fill="currentColor" d="M11.74 15.41c.2.21.48.32.77.32s.56-.11.77-.32.32-.48.32-.74l.33-9c.03-.37-.11-.73-.37-1.01-.55-.58-1.55-.58-2.1 0-.26.28-.39.64-.37.99l.33 9c0 .29.11.56.32.77zm.76 5a1.42 1.42 0 1 0 0-2.84 1.42 1.42 0 0 0 0 2.84"/>',
+      svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M12 14.53c.41 0 .75-.34.75-.75V6.25c0-.41-.34-.75-.75-.75s-.75.34-.75.75v7.53c0 .41.34.75.75.75m0 3.22a.76.76 0 0 0 .75-.77.76.76 0 0 0-.75-.77.76.76 0 0 0-.75.77c0 .425.336.77.75.77"/>',
     },
   },
   {
@@ -930,7 +935,7 @@ export const iconEntries: IconGalleryEntry[] = [
     searchText: 'alert-square actions ! alert attention caution danger error important message notification problem risk system actions',
     defaultSvg: {
       viewBox: '0 0 24 24',
-      svg: '<path fill="currentColor" d="M20.75 2.31H2.25c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V3.06c0-.41-.34-.75-.75-.75M20 20.81H3v-17h17z"/><path fill="currentColor" d="M10.78 14.98a1.02 1.02 0 0 0 1.45 0c.19-.19.3-.45.3-.7l.28-7.49c.02-.34-.1-.68-.34-.93-.5-.54-1.43-.53-1.93 0-.24.26-.36.59-.34.91l.28 7.48c0 .27.11.53.31.73zm.72 4.19c.72 0 1.31-.59 1.31-1.31s-.59-1.31-1.31-1.31-1.31.59-1.31 1.31.59 1.31 1.31 1.31"/>',
+      svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M12 14.9c.41 0 .75-.34.75-.75V6.62c0-.41-.34-.75-.75-.75s-.75.34-.75.75v7.53c0 .41.34.75.75.75m0 3.23a.76.76 0 0 0 .75-.77.76.76 0 0 0-.75-.77.76.76 0 0 0-.75.77c0 .425.336.77.75.77"/>',
     },
   },
   {
@@ -2168,12 +2173,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'battery',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['bar', 'battery', 'charge', 'device', 'electric', 'empty', 'energy', 'icon', 'indicator', 'low', 'mobile', 'phone', 'power', 'zero'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'battery uncategorized bar battery charge device electric empty energy icon indicator low mobile phone power zero',
+    searchText: 'battery devices-hardware bar battery charge device electric empty energy icon indicator low mobile phone power zero',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M19 9.83c-.41 0-.75.34-.75.75v2.83c0 .41.34.75.75.75s.75-.34.75-.75v-2.83c0-.41-.34-.75-.75-.75M16.2 7H5c-.41 0-.75.34-.75.75v8.5c0 .41.34.75.75.75h11.2c.41 0 .75-.34.75-.75v-8.5c0-.41-.34-.75-.75-.75m-.75 8.5h-9.7v-7h9.7z"/>',
@@ -2181,12 +2186,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'battery-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['bar', 'battery', 'charge', 'device', 'electric', 'empty', 'energy', 'icon', 'indicator', 'low', 'mobile', 'phone', 'power', 'zero'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'battery-circle uncategorized bar battery charge device electric empty energy icon indicator low mobile phone power zero',
+    searchText: 'battery-circle devices-hardware bar battery charge device electric empty energy icon indicator low mobile phone power zero',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M17.5 10.33c-.41 0-.75.34-.75.75v1.83c0 .41.34.75.75.75s.75-.34.75-.75v-1.83c0-.41-.34-.75-.75-.75M15.3 8.5H6.5c-.41 0-.75.34-.75.75v5.5c0 .41.34.75.75.75h8.8c.41 0 .75-.34.75-.75v-5.5c0-.41-.34-.75-.75-.75m-.75 5.5h-7.3v-4h7.3z"/><path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/>',
@@ -2194,7 +2199,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'battery-full',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'battery',
       'capacity',
@@ -2216,7 +2221,8 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'battery-full uncategorized battery capacity charge charged complete component device electric electrical energy filled full power power source status status bar',
+    searchText:
+      'battery-full devices-hardware battery capacity charge charged complete component device electric electrical energy filled full power power source status status bar',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M19 14.15c-.41 0-.75-.34-.75-.75v-2.83c0-.41.34-.75.75-.75s.75.34.75.75v2.83c0 .41-.34.75-.75.75m-11.65.17c-.41 0-.75-.34-.75-.75v-2.95c0-.41.34-.75.75-.75s.75.34.75.75v2.95c0 .41-.34.75-.75.75m2.14 0c-.41 0-.75-.34-.75-.75v-2.95c0-.41.34-.75.75-.75s.75.34.75.75v2.95c0 .41-.34.75-.75.75m2.13 0c-.41 0-.75-.34-.75-.75v-2.95c0-.41.34-.75.75-.75s.75.34.75.75v2.95c0 .41-.34.75-.75.75m2.14 0c-.41 0-.75-.34-.75-.75v-2.95c0-.41.34-.75.75-.75s.75.34.75.75v2.95c0 .41-.34.75-.75.75"/><path fill="currentColor" d="M16.2 16.99H5c-.41 0-.75-.34-.75-.75v-8.5c0-.41.34-.75.75-.75h11.2c.41 0 .75.34.75.75v8.5c0 .41-.34.75-.75.75m-10.45-1.5h9.7v-7h-9.7z"/>',
@@ -2224,7 +2230,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'battery-full-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'battery',
       'capacity',
@@ -2247,7 +2253,7 @@ export const iconEntries: IconGalleryEntry[] = [
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
     searchText:
-      'battery-full-circle uncategorized battery capacity charge charged complete component device electric electrical energy filled full power power source status status bar',
+      'battery-full-circle devices-hardware battery capacity charge charged complete component device electric electrical energy filled full power power source status status bar',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M17.5 10.33c-.41 0-.75.34-.75.75v1.83c0 .41.34.75.75.75s.75-.34.75-.75v-1.83c0-.41-.34-.75-.75-.75m-9.16 3.11c.41 0 .75-.34.75-.75V11.5c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.19c0 .41.34.75.75.75m1.68 0c.41 0 .75-.34.75-.75V11.5c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.19c0 .41.34.75.75.75m1.68 0c.41 0 .75-.34.75-.75V11.5c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.19c0 .41.34.75.75.75m1.68 0c.41 0 .75-.34.75-.75V11.5c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.19c0 .41.34.75.75.75"/><path fill="currentColor" d="M15.3 8.5H6.5c-.41 0-.75.34-.75.75v5.5c0 .41.34.75.75.75h8.8c.41 0 .75-.34.75-.75v-5.5c0-.41-.34-.75-.75-.75m-.75 5.5h-7.3v-4h7.3z"/>',
@@ -2255,7 +2261,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'battery-full-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'battery',
       'capacity',
@@ -2278,7 +2284,7 @@ export const iconEntries: IconGalleryEntry[] = [
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
     searchText:
-      'battery-full-square uncategorized battery capacity charge charged complete component device electric electrical energy filled full power power source status status bar',
+      'battery-full-square devices-hardware battery capacity charge charged complete component device electric electrical energy filled full power power source status status bar',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M17.5 13.67c.41 0 .75-.34.75-.75v-1.83c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.83c0 .41.34.75.75.75m-9.16-2.93c-.41 0-.75.34-.75.75v1.19c0 .41.34.75.75.75s.75-.34.75-.75v-1.19c0-.41-.34-.75-.75-.75m1.68 0c-.41 0-.75.34-.75.75v1.19c0 .41.34.75.75.75s.75-.34.75-.75v-1.19c0-.41-.34-.75-.75-.75m1.68 0c-.41 0-.75.34-.75.75v1.19c0 .41.34.75.75.75s.75-.34.75-.75v-1.19c0-.41-.34-.75-.75-.75m1.68 0c-.41 0-.75.34-.75.75v1.19c0 .41.34.75.75.75s.75-.34.75-.75v-1.19c0-.41-.34-.75-.75-.75"/><path fill="currentColor" d="M6.5 15.5h8.8c.41 0 .75-.34.75-.75v-5.5c0-.41-.34-.75-.75-.75H6.5c-.41 0-.75.34-.75.75v5.5c0 .41.34.75.75.75m.75-5.5h7.3v4h-7.3z"/>',
@@ -2286,12 +2292,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'battery-low',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['low', 'bar', 'battery', 'charge', 'device', 'electric', 'empty', 'energy', 'icon', 'indicator', 'low', 'mobile', 'phone', 'power', 'zero'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'battery-low uncategorized low bar battery charge device electric empty energy icon indicator low mobile phone power zero',
+    searchText: 'battery-low devices-hardware low bar battery charge device electric empty energy icon indicator low mobile phone power zero',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M19 14.17c-.41 0-.75-.34-.75-.75v-2.83c0-.41.34-.75.75-.75s.75.34.75.75v2.83c0 .41-.34.75-.75.75m-11.2.16c-.41 0-.75-.34-.75-.75v-2.95c0-.41.34-.75.75-.75s.75.34.75.75v2.95c0 .41-.34.75-.75.75"/><path fill="currentColor" d="M16.2 17H5c-.41 0-.75-.34-.75-.75v-8.5c0-.41.34-.75.75-.75h11.2c.41 0 .75.34.75.75v8.5c0 .41-.34.75-.75.75M5.75 15.5h9.7v-7h-9.7z"/>',
@@ -2299,12 +2305,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'battery-low-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['low', 'bar', 'battery', 'charge', 'device', 'electric', 'empty', 'energy', 'icon', 'indicator', 'low', 'mobile', 'phone', 'power', 'zero'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'battery-low-circle uncategorized low bar battery charge device electric empty energy icon indicator low mobile phone power zero',
+    searchText: 'battery-low-circle devices-hardware low bar battery charge device electric empty energy icon indicator low mobile phone power zero',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M17.5 10.33c-.41 0-.75.34-.75.75v1.83c0 .41.34.75.75.75s.75-.34.75-.75v-1.83c0-.41-.34-.75-.75-.75m-8.8 3.35c.41 0 .75-.34.75-.75v-1.82c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.82c0 .41.34.75.75.75"/><path fill="currentColor" d="M15.3 8.5H6.5c-.41 0-.75.34-.75.75v5.5c0 .41.34.75.75.75h8.8c.41 0 .75-.34.75-.75v-5.5c0-.41-.34-.75-.75-.75m-.75 5.5h-7.3v-4h7.3z"/>',
@@ -2312,12 +2318,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'battery-low-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['low', 'bar', 'battery', 'charge', 'device', 'electric', 'empty', 'energy', 'icon', 'indicator', 'low', 'mobile', 'phone', 'power', 'zero'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'battery-low-square uncategorized low bar battery charge device electric empty energy icon indicator low mobile phone power zero',
+    searchText: 'battery-low-square devices-hardware low bar battery charge device electric empty energy icon indicator low mobile phone power zero',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 1.98H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.73c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M17.5 13.64c.41 0 .75-.34.75-.75v-1.83c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.83c0 .41.34.75.75.75m-8.8-3.3c-.41 0-.75.34-.75.75v1.82c0 .41.34.75.75.75s.75-.34.75-.75v-1.82c0-.41-.34-.75-.75-.75"/><path fill="currentColor" d="M6.5 15.48h8.8c.41 0 .75-.34.75-.75v-5.5c0-.41-.34-.75-.75-.75H6.5c-.41 0-.75.34-.75.75v5.5c0 .41.34.75.75.75m.75-5.5h7.3v4h-7.3z"/>',
@@ -2325,12 +2331,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'battery-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['bar', 'battery', 'charge', 'device', 'electric', 'empty', 'energy', 'icon', 'indicator', 'low', 'mobile', 'phone', 'power', 'zero'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'battery-square uncategorized bar battery charge device electric empty energy icon indicator low mobile phone power zero',
+    searchText: 'battery-square devices-hardware bar battery charge device electric empty energy icon indicator low mobile phone power zero',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M18 13.83c.41 0 .75-.34.75-.75v-2.17c0-.41-.34-.75-.75-.75s-.75.34-.75.75v2.17c0 .41.34.75.75.75M6 16h9.6c.41 0 .75-.34.75-.75v-6.5c0-.41-.34-.75-.75-.75H6c-.41 0-.75.34-.75.75v6.5c0 .41.34.75.75.75m.75-6.5h8.1v5h-8.1z"/><path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/>',
@@ -2811,12 +2817,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'bulb',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['bulb', 'creative', 'expression', 'idea', 'light', 'objects', 'positive', 'reaction', 'solution', 'thinking'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'bulb uncategorized bulb creative expression idea light objects positive reaction solution thinking',
+    searchText: 'bulb devices-hardware bulb creative expression idea light objects positive reaction solution thinking',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 3.82c-3.72 0-6.75 3-6.75 6.69 0 1.22.33 2.41.97 3.45a.75.75 0 0 0 1.28-.78c-.49-.8-.75-1.73-.75-2.67 0-2.86 2.35-5.19 5.25-5.19s5.25 2.33 5.25 5.19c0 .94-.26 1.87-.75 2.67a.75.75 0 0 0 1.28.78c.63-1.04.97-2.23.97-3.45 0-3.69-3.03-6.69-6.75-6.69"/><path fill="currentColor" d="M7.83 16.13c.14.43.22.66.37.89.22.35.53.62.89.8l.03.13c.12.58.18.91.36 1.22.28.49.72.85 1.25 1.03.34.11.67.11 1.27.11s.93 0 1.28-.11c.53-.18.97-.54 1.25-1.03.18-.31.24-.63.36-1.23l.02-.12c.36-.18.67-.45.9-.8.15-.23.22-.46.37-.91.08-.25.14-.43.13-.65-.02-.47-.32-.89-.76-1.06-.21-.08-.39-.08-.68-.08h-2.12v-2.39c.46-.15.9-.43 1.29-.85.29-.3.27-.77-.03-1.06a.746.746 0 0 0-1.06.03c-.65.68-1.26.69-1.91 0a.755.755 0 0 0-1.06-.03c-.3.29-.31.76-.03 1.06.4.42.84.69 1.29.84v2.39H9.12c-.28 0-.47 0-.68.08-.44.17-.74.59-.76 1.06-.01.22.05.41.13.67m6.89-.3c-.07.21-.12.34-.16.4-.1.16-.26.28-.45.33-.09.02-.29.02-.6.02h-2.98c-.31 0-.51 0-.6-.02a.74.74 0 0 1-.45-.32c-.04-.06-.09-.19-.16-.4h5.39zm-1.48 2.62a.75.75 0 0 1-.42.34c-.12.04-.39.04-.81.04s-.69 0-.8-.04a.75.75 0 0 1-.42-.34c-.04-.06-.07-.19-.11-.37h2.66c-.04.18-.07.31-.11.37z"/>',
@@ -2824,12 +2830,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'bulb-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['bulb', 'creative', 'expression', 'idea', 'light', 'objects', 'positive', 'reaction', 'solution', 'thinking'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'bulb-circle uncategorized bulb creative expression idea light objects positive reaction solution thinking',
+    searchText: 'bulb-circle devices-hardware bulb creative expression idea light objects positive reaction solution thinking',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M11.87 5.31c-2.89 0-5.25 2.47-5.25 5.5 0 .99.26 1.97.74 2.82.21.36.66.48 1.02.28s.48-.66.28-1.02c-.36-.62-.54-1.34-.54-2.08 0-2.21 1.68-4 3.75-4s3.75 1.79 3.75 4c0 .74-.19 1.45-.54 2.08a.74.74 0 0 0 .28 1.02c.12.07.25.1.37.1.26 0 .51-.14.65-.38.49-.85.74-1.82.74-2.82 0-3.03-2.36-5.5-5.25-5.5"/><path fill="currentColor" d="M14.62 13.79c-.2-.08-.37-.08-.59-.08h-1.4v-1.66c.29-.12.62-.34.93-.69.28-.31.25-.78-.06-1.06a.747.747 0 0 0-1.06.06c-.14.16-.36.35-.57.35s-.42-.19-.57-.35a.747.747 0 0 0-1.06-.06c-.31.28-.33.75-.06 1.06.32.36.64.57.93.69v1.66h-1.4c-.22 0-.4 0-.59.08-.39.16-.66.55-.67.98 0 .2.04.36.11.57.11.35.17.54.29.74.17.28.4.5.67.66v.04c.09.47.15.75.29 1.02.23.42.6.75 1.04.9.29.1.57.1 1.03.1s.74 0 1.03-.1c.44-.16.81-.48 1.04-.9.14-.27.19-.54.29-1.02v-.04c.28-.16.51-.38.67-.66.12-.2.18-.39.29-.74.07-.21.12-.37.11-.57-.02-.43-.28-.82-.67-.98zm-.97 1.42c-.02.05-.03.09-.04.11-.05.09-.13.15-.22.18-.04.01-.22.01-.4.01h-2.63a.35.35 0 0 1-.22-.18.4.4 0 0 1-.04-.11h3.56zm-1.25 2.08c-.11.03-.95.04-1.06 0a.36.36 0 0 1-.21-.19c0-.02-.02-.05-.03-.09h1.55s-.02.07-.03.09c-.05.09-.12.16-.21.19z"/>',
@@ -2837,12 +2843,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'bulb-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['bulb', 'creative', 'expression', 'idea', 'light', 'objects', 'positive', 'reaction', 'solution', 'thinking'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'bulb-square uncategorized bulb creative expression idea light objects positive reaction solution thinking',
+    searchText: 'bulb-square devices-hardware bulb creative expression idea light objects positive reaction solution thinking',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="m7.45 14.08 1.29-.76-.38-.65a4.5 4.5 0 0 1-.61-2.27C7.75 7.98 9.66 6 12 6s4.25 1.97 4.25 4.4c0 .8-.21 1.59-.61 2.27l-.38.65 1.29.76.38-.65c.53-.91.82-1.96.82-3.03 0-3.25-2.58-5.9-5.75-5.9s-5.75 2.65-5.75 5.9c0 1.07.28 2.12.82 3.03z"/><path fill="currentColor" d="M15.01 13.69c-.2-.08-.38-.08-.62-.08h-1.64v-1.9c.33-.13.69-.35 1.05-.74l.51-.55-1.11-1.01-.51.55c-.17.19-.43.41-.7.41s-.53-.22-.7-.41l-.51-.55-1.11 1.01.51.55c.36.4.72.62 1.05.74v1.9H9.59c-.24 0-.42 0-.62.08-.41.17-.69.56-.71 1.01 0 .21.04.37.12.6v.02c.12.35.19.57.31.77.18.3.44.54.74.71v.07c.11.52.17.81.32 1.09.24.45.64.78 1.11.94.31.11.61.11 1.11.11s.8 0 1.11-.11c.47-.16.87-.5 1.11-.95.16-.29.21-.59.31-1.09v-.07c.31-.17.57-.4.75-.71.13-.21.2-.42.32-.79.07-.23.13-.4.12-.61-.02-.45-.3-.84-.71-1zm-2.11 3.55c-.06.12-.16.2-.28.24-.15.05-1.11.05-1.24 0a.5.5 0 0 1-.28-.25.7.7 0 0 1-.06-.18h1.92c-.02.08-.04.15-.06.18zm1.1-1.93c-.07.12-.18.2-.3.23-.06.01-.24.01-.46.01h-2.49c-.23 0-.41 0-.46-.01a.5.5 0 0 1-.3-.23c-.02-.03-.05-.11-.08-.21h4.17c-.03.1-.06.17-.08.21"/>',
@@ -2889,7 +2895,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'cable',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'cable',
       'adapter',
@@ -2911,7 +2917,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'cable uncategorized cable adapter charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
+    searchText: 'cable devices-hardware cable adapter charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M19 8.21c-.08-.39-.3-.72-.6-.97v-.9c0-.41-.34-.75-.75-.75s-.75.34-.75.75v.51h-1.01v-.51c0-.41-.34-.75-.75-.75s-.75.34-.75.75v.9c-.3.24-.52.57-.59.96-.03.17-.03.32-.03.65 0 .35 0 .53.03.68.15.97.9 1.73 1.86 1.91v4.01c0 .4-.16.77-.45 1.05s-.69.41-1.07.4c-.76-.03-1.38-.75-1.38-1.59V8.54c0-.81-.32-1.57-.91-2.13s-1.36-.85-2.17-.81c-1.55.07-2.82 1.45-2.82 3.09v3.87c-.96.18-1.7.94-1.86 1.91-.02.15-.03.32-.03.75 0 .29 0 .44.03.57.08.39.3.72.6.97v.9c0 .41.34.75.75.75s.75-.34.75-.75v-.51h1.01v.51c0 .41.34.75.75.75s.75-.34.75-.75v-.9c.3-.24.52-.57.6-.97.02-.12.03-.27.03-.56v-.08c0-.35 0-.53-.03-.68-.15-.97-.9-1.73-1.86-1.91V8.69c0-.84.62-1.56 1.38-1.59.39-.02.78.12 1.07.4s.45.65.45 1.05v6.77c0 1.63 1.26 3.02 2.82 3.09h.13c.76 0 1.48-.29 2.04-.82.59-.56.91-1.32.91-2.13v-4.01c.96-.18 1.7-.94 1.86-1.91.02-.15.03-.32.03-.76 0-.25 0-.41-.03-.57zM8.73 14.7c.02.1.01.21.01.45v.35c-.02.08-.07.13-.14.15H6.64c-.08-.02-.14-.07-.15-.15v-.8c.06-.35.33-.62.68-.68.06 0 .12-.01.21-.01h.23c.23 0 .35 0 .44.01.35.06.63.33.68.68m8.79-5.4c-.06.35-.33.62-.68.68-.1.01-.21 0-.44 0s-.34 0-.44-.01a.82.82 0 0 1-.68-.68c-.02-.1-.01-.21-.01-.52V8.5c.02-.08.07-.13.14-.15h1.96q.12.03.15.15v.35c0 .23 0 .35-.01.44z"/>',
@@ -2919,7 +2925,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'cable-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'cable',
       'adapter',
@@ -2941,7 +2947,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'cable-circle uncategorized cable adapter charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
+    searchText: 'cable-circle devices-hardware cable adapter charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M18.16 8.82c-.07-.34-.25-.63-.49-.84v-.69c0-.41-.34-.75-.75-.75s-.75.34-.75.75v.3h-.6v-.3c0-.41-.34-.75-.75-.75s-.75.34-.75.75v.69c-.25.22-.43.5-.49.84-.03.15-.03.28-.03.57 0 .31 0 .46.03.58.13.82.75 1.46 1.55 1.66v3.26c0 .3-.12.58-.33.78s-.5.33-.8.3c-.57-.03-1.04-.57-1.04-1.2V9.12c0-.71-.28-1.38-.8-1.87-.51-.49-1.19-.74-1.9-.71-1.36.06-2.47 1.27-2.47 2.7v3.14c-.8.2-1.42.83-1.55 1.66-.02.13-.02.28-.02.65 0 .26 0 .38.03.5.07.34.25.63.5.84v.69c0 .41.34.75.75.75s.75-.34.75-.75v-.3h.6v.3c0 .41.34.75.75.75s.75-.34.75-.75v-.69c.25-.22.43-.5.49-.84.03-.15.03-.28.03-.5v-.07c0-.31 0-.46-.03-.58-.13-.82-.75-1.46-1.55-1.66V9.24c0-.64.46-1.18 1.03-1.2.3 0 .59.09.8.3.22.21.33.48.33.78v5.65c0 1.43 1.11 2.64 2.47 2.7h.12c.67 0 1.3-.25 1.79-.72.51-.49.8-1.16.8-1.87v-3.26c.8-.2 1.42-.83 1.55-1.66.02-.13.03-.28.03-.65 0-.22 0-.35-.03-.5zm-8.81 5.81v.07c0 .1 0 .17-.02.23h-1.4c-.1 0-.17 0-.23-.01v-.64c.04-.24.23-.43.46-.47.08-.01.17 0 .35 0h.35c.24.04.43.23.47.47.01.08 0 .17 0 .35zm7.34-4.9c-.04.24-.23.43-.46.47-.08.01-.17 0-.35 0h-.35a.57.57 0 0 1-.47-.47c-.01-.08 0-.17 0-.41 0-.1 0-.17.02-.23h1.4c.1 0 .17 0 .23.02v.63z"/>',
@@ -2949,7 +2955,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'cable-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'cable',
       'adapter',
@@ -2971,7 +2977,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'cable-square uncategorized cable adapter charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
+    searchText: 'cable-square devices-hardware cable adapter charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M5.83 16.75v.9c0 .41.34.75.75.75s.75-.34.75-.75v-.51h1.01v.51c0 .41.34.75.75.75s.75-.34.75-.75v-.9c.3-.24.52-.57.6-.97.02-.12.03-.27.03-.56v-.08c0-.35 0-.53-.03-.68-.15-.97-.9-1.73-1.86-1.91V8.68c0-.84.62-1.56 1.38-1.59.4-.02.78.12 1.07.4s.45.65.45 1.05v6.77c0 1.63 1.26 3.02 2.82 3.09h.13c.76 0 1.48-.29 2.04-.82.59-.56.91-1.32.91-2.13v-4.01c.96-.18 1.7-.94 1.86-1.91.02-.15.03-.32.03-.76 0-.29 0-.44-.03-.57-.08-.39-.3-.72-.6-.97v-.9c0-.41-.34-.75-.75-.75s-.75.34-.75.75v.51h-1.01v-.51c0-.41-.34-.75-.75-.75s-.75.34-.75.75v.9c-.3.24-.52.57-.59.96-.03.17-.03.32-.03.65 0 .35 0 .53.03.68.15.97.9 1.73 1.86 1.91v4.01c0 .4-.16.77-.45 1.05s-.68.41-1.07.4c-.76-.03-1.38-.75-1.38-1.59V8.53c0-.81-.32-1.57-.91-2.13a2.9 2.9 0 0 0-2.17-.81C8.37 5.66 7.1 7.04 7.1 8.68v3.87c-.96.18-1.7.94-1.86 1.91-.02.15-.03.33-.03.76 0 .3 0 .44.03.57.08.39.3.72.59.97zm9.68-7.45c-.02-.1-.01-.21-.01-.52v-.27c.02-.08.07-.13.14-.15h1.96c.08.02.14.07.15.14v.36c0 .23 0 .35-.01.44-.06.35-.33.62-.68.68-.1.02-.21 0-.44 0s-.34 0-.44-.01a.82.82 0 0 1-.68-.68zm-8.8 5.4c.06-.35.33-.62.68-.68.06 0 .12-.01.21-.01h.23c.23 0 .34 0 .44.01.35.06.63.33.68.68.01.1 0 .21 0 .44v.35c-.02.08-.08.13-.14.15H6.85a.19.19 0 0 1-.15-.15v-.35c0-.23 0-.35.01-.44"/>',
@@ -3621,7 +3627,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'camera',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'camera',
       'capture',
@@ -3644,7 +3650,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp'],
-    searchText: 'camera uncategorized camera capture circle device flash image landscape lens photo photography picture rear rear camera record square technology video',
+    searchText: 'camera devices-hardware camera capture circle device flash image landscape lens photo photography picture rear rear camera record square technology video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="m16.18 7.34-1.04-1.95a.76.76 0 0 0-.66-.4H9.54c-.28 0-.53.15-.66.4L7.83 7.34H4.26c-.41 0-.75.34-.75.75v10.16c0 .41.34.75.75.75h15.5c.41 0 .75-.34.75-.75V8.09c0-.41-.34-.75-.75-.75zM19 17.5H5V8.84h3.27c.28 0 .53-.15.66-.4l1.05-1.95h4.05l1.04 1.95c.13.24.38.4.66.4H19z"/><path fill="currentColor" d="M12 9.69a3.09 3.09 0 0 0 0 6.18 3.09 3.09 0 0 0 0-6.18m0 4.69c-.87 0-1.58-.71-1.58-1.59s.71-1.59 1.58-1.59 1.58.71 1.58 1.59-.71 1.59-1.58 1.59"/>',
@@ -3652,7 +3658,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'camera-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'camera',
       'capture',
@@ -3675,7 +3681,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp'],
-    searchText: 'camera-circle uncategorized camera capture circle device flash image landscape lens photo photography picture rear rear camera record square technology video',
+    searchText: 'camera-circle devices-hardware camera capture circle device flash image landscape lens photo photography picture rear rear camera record square technology video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M17 8.35h-2.15l-.6-1.11a.75.75 0 0 0-.66-.39H10.4c-.28 0-.53.15-.66.39l-.6 1.11H6.99c-.41 0-.75.34-.75.75v6.5c0 .41.34.75.75.75h10c.41 0 .75-.34.75-.75V9.1c0-.41-.34-.75-.75-.75zm-.75 6.5h-8.5v-5h1.84c.28 0 .53-.15.66-.39l.6-1.11h2.29l.6 1.11c.13.24.38.39.66.39h1.84v5z"/><path fill="currentColor" d="M12 9.85c-1.24 0-2.25 1.01-2.25 2.25s1.01 2.25 2.25 2.25 2.25-1.01 2.25-2.25S13.24 9.85 12 9.85m0 3c-.41 0-.75-.34-.75-.75s.34-.75.75-.75.75.34.75.75-.34.75-.75.75"/>',
@@ -3683,7 +3689,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'camera-off',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'camera',
       'off',
@@ -3710,7 +3716,7 @@ export const iconEntries: IconGalleryEntry[] = [
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
     searchText:
-      'camera-off uncategorized camera off blocked video off offline capture device digital electronic film image lens media optic photo photography picture record shoot video',
+      'camera-off devices-hardware camera off blocked video off offline capture device digital electronic film image lens media optic photo photography picture record shoot video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M6 15.84v-7h.38L4.95 7.41a.75.75 0 0 0-.45.68v8.5c0 .41.34.75.75.75h9.45s.1-.01.15-.02l-1.47-1.48zm11.84-7.37-2.39 1.52v-1.9c0-.41-.34-.75-.75-.75H9.12l1.5 1.5h3.33v3.33l4.07 4.07c.12.06.26.08.4.08.06 0 .13 0 .2-.02.29-.05.55-.23.71-.48.11-.18.17-.39.17-.6V9.41c0-.8-.92-1.38-1.66-.94m.16 5.97-2.55-1.81v-.88s.02 0 .03-.01L18 10.15zM6.25 5.53a.754.754 0 0 0-1.06 0c-.29.29-.29.77 0 1.06l11.88 11.88c.15.15.34.22.53.22s.39-.07.53-.22c.3-.29.3-.76 0-1.06z"/>',
@@ -3718,7 +3724,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'camera-off-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'camera',
       'off',
@@ -3745,7 +3751,7 @@ export const iconEntries: IconGalleryEntry[] = [
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
     searchText:
-      'camera-off-circle uncategorized camera off blocked video off offline capture device digital electronic film image lens media optic photo photography picture record shoot video',
+      'camera-off-circle devices-hardware camera off blocked video off offline capture device digital electronic film image lens media optic photo photography picture record shoot video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M17.46 8.74c-.18 0-.35.05-.51.14l-1.9 1.07v-1.2c0-.41-.34-.75-.75-.75h-4.17l1.5 1.5h1.92v1.92l3.79 3.79s.08.01.12.01c.33 0 .65-.15.85-.43.13-.18.19-.38.19-.59V9.76c0-.56-.46-1.01-1.04-1.02M17 13.35l-1.95-1.24v-.43L17 10.57zM7 14.5v-5h.37l-.98-.98c-.14-.15-.25-.31-.32-.49a.73.73 0 0 0-.57.72v6.5c0 .41.34.75.75.75h7.62l-1.5-1.5zm.99-7.58a.767.767 0 0 0-1.07 0c-.29.3-.29.77 0 1.07l9.09 9.09c.15.14.34.21.53.21.2 0 .39-.07.54-.21.29-.3.29-.77 0-1.07z"/>',
@@ -3753,7 +3759,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'camera-off-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'camera',
       'off',
@@ -3780,7 +3786,7 @@ export const iconEntries: IconGalleryEntry[] = [
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
     searchText:
-      'camera-off-square uncategorized camera off blocked video off offline capture device digital electronic film image lens media optic photo photography picture record shoot video',
+      'camera-off-square devices-hardware camera off blocked video off offline capture device digital electronic film image lens media optic photo photography picture record shoot video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M13.55 9.5v1.92l3.79 3.79s.08.01.12.01c.33 0 .65-.15.86-.44.12-.17.18-.37.18-.58V9.76c0-.74-.88-1.26-1.55-.88l-1.9 1.07v-1.2c0-.41-.34-.75-.75-.75h-4.17l1.5 1.5zm1.5 2.18L17 10.57v2.78l-1.95-1.24zM6.25 16h7.62l-1.5-1.5H7v-5h.37l-.98-.98c-.14-.15-.25-.31-.32-.49a.73.73 0 0 0-.57.72v6.5c0 .41.34.75.75.75m9.76 1.08c.15.14.34.21.53.21.2 0 .39-.07.54-.21.29-.3.29-.77 0-1.07L7.99 6.92a.767.767 0 0 0-1.07 0c-.29.3-.29.77 0 1.07z"/>',
@@ -3788,7 +3794,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'camera-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'camera',
       'capture',
@@ -3811,7 +3817,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp'],
-    searchText: 'camera-square uncategorized camera capture circle device flash image landscape lens photo photography picture rear rear camera record square technology video',
+    searchText: 'camera-square devices-hardware camera capture circle device flash image landscape lens photo photography picture rear rear camera record square technology video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M5.5 17.75h13c.41 0 .75-.34.75-.75V8.88c0-.41-.34-.75-.75-.75h-2.93l-.84-1.49a.73.73 0 0 0-.65-.38H9.93c-.27 0-.52.15-.65.38l-.84 1.49H5.51c-.41 0-.75.34-.75.75V17c0 .41.34.75.75.75zm.75-8.13h2.62c.27 0 .52-.15.65-.38l.84-1.49h3.27l.84 1.49c.13.24.38.38.65.38h2.62v6.62H6.25z"/><path fill="currentColor" d="M12 10c-1.49 0-2.7 1.18-2.7 2.62s1.21 2.62 2.7 2.62 2.7-1.18 2.7-2.62S13.49 10 12 10m0 3.75c-.66 0-1.2-.5-1.2-1.12s.54-1.12 1.2-1.12 1.2.5 1.2 1.12-.54 1.12-1.2 1.12"/>',
@@ -4544,7 +4550,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'charging',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       '%',
       'battery',
@@ -4566,7 +4572,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'charging uncategorized % battery battery level cell charge charging device electric electricity energy lightning low power power status thunderbolt percent',
+    searchText: 'charging devices-hardware % battery battery level cell charge charging device electric electricity energy lightning low power power status thunderbolt percent',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M19.02 9.83c-.41 0-.75.34-.75.75v2.83c0 .41.34.75.75.75s.75-.34.75-.75v-2.83c0-.41-.34-.75-.75-.75M5.73 15.5v-7h3.41V7H4.98c-.41 0-.75.34-.75.75v8.5c0 .41.34.75.75.75h2.99v-1.5zM16.18 7h-3.01v1.5h2.26v7h-3.47V17h4.22c.41 0 .75-.34.75-.75v-8.5c0-.41-.34-.75-.75-.75"/><path fill="currentColor" d="m10.54 11.14 1.51-2.64.32-.55-1.3-.75-.75 1.3-2.37 4.14h2.8L9.11 15.5l-.19.34 1.31.74.62-1.08 2.49-4.36z"/>',
@@ -4574,7 +4580,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'charging-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       '%',
       'battery',
@@ -4597,7 +4603,7 @@ export const iconEntries: IconGalleryEntry[] = [
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
     searchText:
-      'charging-circle uncategorized % battery battery level cell charge charging device electric electricity energy lightning low power power status thunderbolt percent',
+      'charging-circle devices-hardware % battery battery level cell charge charging device electric electricity energy lightning low power power status thunderbolt percent',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.48 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.82-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M17.5 10.33c-.41 0-.75.34-.75.75v1.83c0 .41.34.75.75.75s.75-.34.75-.75v-1.83c0-.41-.34-.75-.75-.75M7.25 14v-4h2.4V8.5H6.5c-.41 0-.75.34-.75.75v5.5c0 .41.34.75.75.75h2.56V14zm8.05-5.5h-2.61V10h1.86v4h-2.44v1.5h3.19c.41 0 .75-.34.75-.75v-5.5c0-.41-.34-.75-.75-.75"/><path fill="currentColor" d="m11.26 11.18.82-1.18.44-.63-1.24-.86L10.25 10l-1.86 2.68h2.2L9.67 14l-.34.49 1.23.86 2.9-4.17z"/>',
@@ -4605,7 +4611,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'charging-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       '%',
       'battery',
@@ -4628,7 +4634,7 @@ export const iconEntries: IconGalleryEntry[] = [
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
     searchText:
-      'charging-square uncategorized % battery battery level cell charge charging device electric electricity energy lightning low power power status thunderbolt percent',
+      'charging-square devices-hardware % battery battery level cell charge charging device electric electricity energy lightning low power power status thunderbolt percent',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M17.5 13.67c.41 0 .75-.34.75-.75v-1.83c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.83c0 .41.34.75.75.75m-2.95.33h-2.44v1.5h3.19c.41 0 .75-.34.75-.75v-5.5c0-.41-.34-.75-.75-.75h-2.61V10h1.86zM6.5 15.5h2.56V14H7.25v-4h2.4V8.5H6.5c-.41 0-.75.34-.75.75v5.5c0 .41.34.75.75.75"/><path fill="currentColor" d="M10.59 12.68 9.67 14l-.34.49 1.23.86 2.9-4.17h-2.2l.82-1.18.44-.63-1.24-.86L10.25 10l-1.86 2.68z"/>',
@@ -5441,7 +5447,7 @@ export const iconEntries: IconGalleryEntry[] = [
     searchText: 'chevron-bottom arrow chevton directional pointer pointing arrowhead down download arrow',
     defaultSvg: {
       viewBox: '0 0 24 24',
-      svg: '<path fill="currentColor" d="M6.25 9.997c0 .19.07.38.22.53l5 5c.29.29.77.29 1.06 0l5-5c.29-.29.29-.77 0-1.06a.755.755 0 0 0-1.06 0L12 13.937l-4.47-4.47a.755.755 0 0 0-1.06 0c-.15.15-.22.34-.22.53"/>',
+      svg: '<path fill="currentColor" d="M6.25 9.998c0 .19.07.38.22.53l5 5c.29.29.77.29 1.06 0l5-5c.29-.29.29-.77 0-1.06a.754.754 0 0 0-1.06 0L12 13.938l-4.47-4.47a.754.754 0 0 0-1.06 0c-.15.15-.22.34-.22.53"/>',
     },
   },
   {
@@ -9955,12 +9961,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'flashlight',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['bright', 'button', 'camping', 'discovery', 'flash', 'flashlight', 'handheld', 'handle', 'light', 'shine', 'spotlight'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'flashlight uncategorized bright button camping discovery flash flashlight handheld handle light shine spotlight',
+    searchText: 'flashlight devices-hardware bright button camping discovery flash flashlight handheld handle light shine spotlight',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M15.59 10.78c.43-.71.66-1.53.66-2.36V6.24a.77.77 0 0 0-.76-.75H8.51c-.41 0-.75.33-.75.74V8.4c0 .83.23 1.64.67 2.37l.73 1.15v5.8c0 .41.34.75.75.75h4.2a.75.75 0 0 0 .75-.75c0-.63 0-1.08-.03-1.39l.03-4.41.74-1.17zM14.74 7v.67H9.22c.01-.18.02-.4.02-.68h5.49zm-.43 2.99-.85 1.34c-.08.12-.12.26-.12.4V17h-2.7v-5.27c0-.14-.04-.28-.12-.4l-.84-1.32c-.16-.26-.27-.54-.35-.83h5.3c-.07.29-.19.56-.34.82z"/><path fill="currentColor" d="M12 12.3c-.41 0-.75.34-.75.75v1.32c0 .41.34.75.75.75s.75-.34.75-.75v-1.32c0-.41-.34-.75-.75-.75"/>',
@@ -9968,12 +9974,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'flashlight-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['bright', 'button', 'camping', 'discovery', 'flash', 'flashlight', 'handheld', 'handle', 'light', 'shine', 'spotlight'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'flashlight-circle uncategorized bright button camping discovery flash flashlight handheld handle light shine spotlight',
+    searchText: 'flashlight-circle devices-hardware bright button camping discovery flash flashlight handheld handle light shine spotlight',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M14.99 6H9.01c-.41 0-.75.33-.75.74v1.98c0 .76.2 1.51.58 2.18l.62 1.04v5.29c0 .41.34.75.75.75h3.6a.75.75 0 0 0 .75-.75c0-.56 0-.97-.03-1.27l.03-4.02.63-1.06c.38-.66.57-1.41.57-2.17V6.72a.77.77 0 0 0-.76-.75zm-.74 1.5v.48H9.74c0-.14.01-.3.02-.49h4.5zm-1.09 3.87c-.07.12-.11.25-.11.38v4.75h-2.1v-4.75a.73.73 0 0 0-.11-.38l-.72-1.21c-.12-.21-.21-.44-.28-.67h4.3c-.06.23-.15.46-.27.66l-.73 1.22z"/><path fill="currentColor" d="M12 12.22c-.41 0-.75.34-.75.75v1.22c0 .41.34.75.75.75s.75-.34.75-.75v-1.22c0-.41-.34-.75-.75-.75"/>',
@@ -9981,12 +9987,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'flashlight-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['bright', 'button', 'camping', 'discovery', 'flash', 'flashlight', 'handheld', 'handle', 'light', 'shine', 'spotlight'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'flashlight-square uncategorized bright button camping discovery flash flashlight handheld handle light shine spotlight',
+    searchText: 'flashlight-square devices-hardware bright button camping discovery flash flashlight handheld handle light shine spotlight',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M9.45 12.24v5.29c0 .41.34.75.75.75h3.6a.75.75 0 0 0 .75-.75c0-.56 0-.97-.03-1.27l.03-4.02.63-1.06c.38-.66.57-1.41.57-2.17V7.02a.77.77 0 0 0-.76-.75H9.01c-.41 0-.75.33-.75.74v1.98c0 .76.2 1.51.58 2.18l.62 1.04zm3.71-.59c-.07.12-.11.25-.11.38v4.75h-2.1v-4.75a.73.73 0 0 0-.11-.38l-.72-1.21c-.12-.21-.21-.44-.28-.67h4.3c-.06.23-.15.46-.27.66l-.73 1.22zm1.09-3.87v.48H9.74c0-.14.01-.3.02-.49h4.5z"/><path fill="currentColor" d="M12 12.5c-.41 0-.75.34-.75.75v1.22c0 .41.34.75.75.75s.75-.34.75-.75v-1.22c0-.41-.34-.75-.75-.75"/>',
@@ -10642,12 +10648,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'gps-signal',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['device', 'devices', 'connection', 'gsm', 'signal', 'phone', 'gps', 'gps signal', 'antenna'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'gps-signal uncategorized device devices connection gsm signal phone gps gps signal antenna',
+    searchText: 'gps-signal devices-hardware device devices connection gsm signal phone gps gps signal antenna',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="m10.64 14.42 1.89-1.89c.29-.29.29-.77 0-1.06a.754.754 0 0 0-1.06 0l-1.89 1.89-3.5-3.5a.73.73 0 0 0-.63-.21c-.23.03-.43.17-.55.37-1.85 3.16-.78 7.23 2.38 9.08 1.03.6 2.19.91 3.35.91s2.32-.3 3.35-.91c.2-.12.33-.32.37-.55a.78.78 0 0 0-.21-.63zm-2.6 3.38a5.15 5.15 0 0 1-2.26-6.12l6.54 6.54c-1.4.48-2.97.34-4.28-.42m3.15-10.58c-.41 0-.75.34-.75.75s.34.75.75.75c2.25 0 4.08 1.83 4.08 4.08 0 .41.34.75.75.75s.75-.34.75-.75c0-3.08-2.5-5.58-5.58-5.58"/><path fill="currentColor" d="M11.19 4c-.41 0-.75.34-.75.75s.34.75.75.75c4.03 0 7.31 3.28 7.31 7.31 0 .41.34.75.75.75s.75-.34.75-.75C20 7.95 16.05 4 11.19 4"/>',
@@ -10655,12 +10661,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'gps-signal-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['device', 'devices', 'connection', 'gsm', 'signal', 'phone', 'gps', 'gps signal', 'antenna'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'gps-signal-circle uncategorized device devices connection gsm signal phone gps gps signal antenna',
+    searchText: 'gps-signal-circle devices-hardware device devices connection gsm signal phone gps gps signal antenna',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="m11.31 13.75 1.22-1.22c.29-.29.29-.77 0-1.06a.754.754 0 0 0-1.06 0l-1.22 1.22-2.39-2.39a.76.76 0 0 0-.63-.21c-.23.03-.43.17-.55.37a4.96 4.96 0 0 0-.52 3.8c.34 1.3 1.16 2.38 2.32 3.06.78.46 1.66.68 2.53.68s1.75-.23 2.53-.68c.2-.12.33-.32.37-.55a.78.78 0 0 0-.21-.63zm-2.07 2.27a3.44 3.44 0 0 1-1.62-2.14c-.15-.57-.15-1.16-.02-1.72l4.24 4.24c-.87.21-1.81.08-2.6-.38m2.18-7.69c-.41 0-.75.34-.75.75s.34.75.75.75c1.52 0 2.75 1.23 2.75 2.75 0 .41.34.75.75.75s.75-.34.75-.75a4.26 4.26 0 0 0-4.25-4.25"/><path fill="currentColor" d="M11.42 6c-.41 0-.75.34-.75.75s.34.75.75.75c2.8 0 5.08 2.28 5.08 5.08 0 .41.34.75.75.75s.75-.34.75-.75C18 8.95 15.05 6 11.42 6"/>',
@@ -10668,12 +10674,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'gps-signal-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['device', 'devices', 'connection', 'gsm', 'signal', 'phone', 'gps', 'gps signal', 'antenna'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'gps-signal-square uncategorized device devices connection gsm signal phone gps gps signal antenna',
+    searchText: 'gps-signal-square devices-hardware device devices connection gsm signal phone gps gps signal antenna',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M8.48 17.31c.78.46 1.66.68 2.53.68s1.75-.23 2.53-.68c.2-.12.33-.32.37-.55a.78.78 0 0 0-.21-.63l-2.39-2.39 1.22-1.22c.29-.29.29-.77 0-1.06a.754.754 0 0 0-1.06 0l-1.22 1.22-2.39-2.39a.75.75 0 0 0-.63-.21c-.23.03-.43.17-.55.37a4.96 4.96 0 0 0-.52 3.8c.34 1.3 1.16 2.38 2.32 3.06m-.88-5.15 4.24 4.24c-.87.21-1.81.08-2.6-.38a3.44 3.44 0 0 1-1.62-2.14c-.15-.57-.15-1.16-.02-1.72m3.82-2.33c1.52 0 2.75 1.23 2.75 2.75 0 .41.34.75.75.75s.75-.34.75-.75a4.26 4.26 0 0 0-4.25-4.25c-.41 0-.75.34-.75.75s.34.75.75.75"/><path fill="currentColor" d="M11.42 7.5c2.8 0 5.08 2.28 5.08 5.08 0 .41.34.75.75.75s.75-.34.75-.75C18 8.95 15.05 6 11.42 6c-.41 0-.75.34-.75.75s.34.75.75.75"/>',
@@ -11049,7 +11055,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'hard-drive',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'archive',
       'backup',
@@ -11072,7 +11078,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'hard-drive uncategorized archive backup component computer data device digital disk documents hard drive hardware hdd memory save server storage store',
+    searchText: 'hard-drive devices-hardware archive backup component computer data device digital disk documents hard drive hardware hdd memory save server storage store',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M19.75 12.72s0-.04-.01-.05v-.06c-.01-.07-.03-.15-.07-.29l-.85-2.91c-.6-2.07-.93-3.21-1.87-3.93-.95-.73-2.11-.73-4.21-.73h-1.47c-2.11 0-3.27 0-4.21.73-.94.72-1.27 1.86-1.87 3.93l-.85 2.91c-.04.14-.06.21-.07.32v.29c0 2.71 0 4.07.89 5.1.09.1.18.2.28.29 1.01.93 2.42.93 4.98.93h3.2c2.56 0 3.96 0 4.98-.93.1-.09.19-.19.28-.29.9-1.03.9-2.39.9-5.1v-.2zM7.97 6.67c.52-.4 1.34-.42 3.3-.42h1.47c1.96 0 2.78.02 3.3.42.55.42.82 1.34 1.35 3.16l.62 2.15H6l.62-2.15c.53-1.82.8-2.74 1.35-3.16m9.59 10.54c-.58.54-1.71.54-3.96.54h-3.2c-2.25 0-3.38 0-3.96-.53-.06-.05-.11-.11-.17-.17-.49-.56-.53-1.6-.53-3.57h12.5c0 1.97-.04 3.01-.53 3.57-.05.06-.1.12-.16.17z"/><path fill="currentColor" d="M16.2 16.54c.508 0 .92-.416.92-.93a.925.925 0 0 0-.92-.93.925.925 0 0 0-.92.93c0 .514.412.93.92.93m-2.8-1.86c-.51 0-.93.42-.93.93s.42.93.93.93.92-.42.92-.93-.42-.93-.92-.93"/>',
@@ -11080,7 +11086,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'hard-drive-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'archive',
       'backup',
@@ -11104,7 +11110,7 @@ export const iconEntries: IconGalleryEntry[] = [
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
     searchText:
-      'hard-drive-circle uncategorized archive backup component computer data device digital disk documents hard drive hardware hdd memory save server storage store hard-drive-cirlce',
+      'hard-drive-circle devices-hardware archive backup component computer data device digital disk documents hard drive hardware hdd memory save server storage store hard-drive-cirlce',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M18.25 12.56v-.12c0-.06-.02-.12-.06-.24l-.66-2.24c-.48-1.63-.75-2.53-1.53-3.11-.78-.59-1.71-.59-3.4-.59h-1.15c-1.69 0-2.62 0-3.4.59S7 8.34 6.52 9.96l-.67 2.24c-.04.12-.05.18-.06.27v.24c0 2.06 0 3.2.75 4.04.07.08.15.16.23.23.84.76 1.97.76 4.01.76h2.51c2.05 0 3.17 0 4.01-.76.08-.08.16-.15.23-.23.75-.85.75-1.98.75-4.04v-.15zM7.93 10.38c.43-1.46.62-2.06 1-2.34.37-.28 1-.29 2.5-.29h1.15c1.5 0 2.13.01 2.5.29s.56.88 1 2.34l.41 1.42H7.51zm8.44 5.39s-.07.08-.11.11c-.39.36-1.21.37-3.01.37h-2.51c-1.8 0-2.61-.01-3-.37l-.12-.12c-.32-.36-.36-1.11-.36-2.46h9.49c0 1.32-.05 2.09-.38 2.46z"/><path fill="currentColor" d="M13.1 15.67c.49 0 .89-.4.89-.89s-.4-.89-.89-.89-.89.4-.89.89.4.89.89.89m2.2 0c.49 0 .89-.4.89-.89s-.4-.89-.89-.89-.89.4-.89.89.4.89.89.89"/>',
@@ -11112,7 +11118,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'hard-drive-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'archive',
       'backup',
@@ -11135,7 +11141,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'hard-drive-square uncategorized archive backup component computer data device digital disk documents hard drive hardware hdd memory save server storage store',
+    searchText: 'hard-drive-square devices-hardware archive backup component computer data device digital disk documents hard drive hardware hdd memory save server storage store',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M6.5 16.76c.07.08.15.16.23.23.84.76 1.97.76 4.01.76h2.51c2.05 0 3.17 0 4.01-.76.08-.07.16-.15.23-.23.75-.85.75-1.98.75-4.04v-.27a.8.8 0 0 0-.06-.24l-.66-2.24c-.48-1.63-.75-2.53-1.53-3.11-.79-.59-1.71-.59-3.4-.59h-1.15c-1.69 0-2.62 0-3.4.59S6.99 8.35 6.51 9.97l-.66 2.24c-.04.12-.05.18-.06.27v.24c0 2.06 0 3.2.75 4.04zm9.76-.88c-.4.36-1.21.37-3.01.37h-2.51c-1.8 0-2.61-.01-3.01-.37l-.11-.11c-.32-.36-.36-1.11-.36-2.46h9.49c0 1.32-.05 2.09-.37 2.46-.04.04-.07.08-.11.12zm-8.33-5.5c.43-1.46.62-2.06 1-2.34.37-.28 1-.29 2.5-.29h1.15c1.5 0 2.13.01 2.5.29s.56.88 1 2.34l.41 1.43H7.5l.42-1.42z"/><path fill="currentColor" d="M13.1 13.89c-.49 0-.89.4-.89.89s.4.89.89.89.89-.4.89-.89-.4-.89-.89-.89m2.2 0c-.49 0-.89.4-.89.89s.4.89.89.89.89-.4.89-.89-.4-.89-.89-.89"/>',
@@ -11143,7 +11149,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'hd',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'definition',
       'digital',
@@ -11169,7 +11175,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'hd uncategorized definition digital display film font hd high media movie movies multimedia pixels playback quality resolution screen sharp streaming tv video',
+    searchText: 'hd devices-hardware definition digital display film font hd high media movie movies multimedia pixels playback quality resolution screen sharp streaming tv video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M10.55 9.11c-.41 0-.75.34-.75.75v1.39H8.4V9.86c0-.41-.34-.75-.75-.75s-.75.34-.75.75v4.29c0 .41.34.75.75.75s.75-.34.75-.75v-1.39h1.4v1.39c0 .41.34.75.75.75s.75-.34.75-.75V9.86c0-.41-.34-.75-.75-.75m3.99 0h-.73c-.61 0-1.11.5-1.11 1.11v3.57c0 .61.5 1.11 1.11 1.11h.73c1.41 0 2.56-1.14 2.56-2.54v-.71c0-1.4-1.15-2.54-2.56-2.54m1.06 3.25c0 .57-.48 1.04-1.06 1.04h-.34v-2.79h.34c.59 0 1.06.46 1.06 1.04z"/><path fill="currentColor" d="M17.25 6.25H6.75C5.23 6.25 4 7.48 4 9v6c0 1.52 1.23 2.75 2.75 2.75h10.5c1.52 0 2.75-1.23 2.75-2.75V9c0-1.52-1.23-2.75-2.75-2.75M18.5 15c0 .69-.56 1.25-1.25 1.25H6.75c-.69 0-1.25-.56-1.25-1.25V9c0-.69.56-1.25 1.25-1.25h10.5c.69 0 1.25.56 1.25 1.25z"/>',
@@ -11177,7 +11183,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'hd-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'definition',
       'digital',
@@ -11204,7 +11210,7 @@ export const iconEntries: IconGalleryEntry[] = [
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
     searchText:
-      'hd-square uncategorized definition digital display film font hd high media movie movies multimedia pixels playback quality resolution screen sharp streaming tv video',
+      'hd-square devices-hardware definition digital display film font hd high media movie movies multimedia pixels playback quality resolution screen sharp streaming tv video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M13.56 14.46h.62c1.28 0 2.31-.98 2.31-2.18v-.57c0-1.2-1.04-2.18-2.31-2.18h-.62c-.59 0-1.06.46-1.06 1.04v2.86c0 .57.48 1.04 1.06 1.04zm.44-3.42h.19c.45 0 .81.3.81.68v.57c0 .37-.36.68-.81.68H14zm-5.75 3.42c.41 0 .75-.34.75-.75v-.96h1v.96c0 .41.34.75.75.75s.75-.34.75-.75v-3.43c0-.41-.34-.75-.75-.75s-.75.34-.75.75v.96H9v-.96c0-.41-.34-.75-.75-.75s-.75.34-.75.75v3.43c0 .41.34.75.75.75"/><path fill="currentColor" d="M7.75 16.75h8.5c1.52 0 2.75-1.23 2.75-2.75v-4c0-1.52-1.23-2.75-2.75-2.75h-8.5C6.23 7.25 5 8.48 5 10v4c0 1.52 1.23 2.75 2.75 2.75M6.5 10c0-.69.56-1.25 1.25-1.25h8.5c.69 0 1.25.56 1.25 1.25v4c0 .69-.56 1.25-1.25 1.25h-8.5c-.69 0-1.25-.56-1.25-1.25z"/>',
@@ -11212,12 +11218,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'hdmi',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['hdmi', 'cable', 'connector', 'digital connection', 'input', 'adapter', 'signal', 'connection'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp'],
-    searchText: 'hdmi uncategorized hdmi cable connector digital connection input adapter signal connection',
+    searchText: 'hdmi devices-hardware hdmi cable connector digital connection input adapter signal connection',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="m19 8.25-13.99.04c-.41 0-.75.34-.75.75v4.46c0 .41.34.75.75.75h.47l1.34 1.29c.14.14.33.21.52.21h9.33c.19 0 .38-.08.52-.21l1.34-1.29H19c.42 0 .75-.34.75-.75V9c0-.42-.34-.75-.75-.75m-.76 4.5h-.02c-.19 0-.38.08-.52.21l-1.34 1.29H7.64L6.3 12.96a.73.73 0 0 0-.52-.21l-.02-2.97 11.06-.03h1.43v3.01z"/><path fill="currentColor" d="M15.5 11.25h-7a.749.749 0 1 0 0 1.5h7a.749.749 0 1 0 0-1.5"/>',
@@ -11225,12 +11231,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'hdmi-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['hdmi', 'cable', 'connector', 'digital connection', 'input', 'adapter', 'signal', 'connection'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp'],
-    searchText: 'hdmi-circle uncategorized hdmi cable connector digital connection input adapter signal connection',
+    searchText: 'hdmi-circle devices-hardware hdmi cable connector digital connection input adapter signal connection',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M18.01 8.75H18L6 8.78c-.41 0-.75.34-.75.75v3.72c0 .41.34.75.75.75h.37l1.12 1.05c.14.13.32.2.51.2h8c.19 0 .37-.07.51-.2L17.63 14H18c.41 0 .75-.34.75-.75V9.5c0-.41-.33-.74-.74-.75m-.76 3.76a.8.8 0 0 0-.43.2l-1.12 1.05H8.29l-1.12-1.05a.8.8 0 0 0-.43-.2v-2.23l9.38-.03h1.12v2.26z"/><path fill="currentColor" d="M15 11.25H9c-.41 0-.75.34-.75.75s.34.75.75.75h6c.41 0 .75-.34.75-.75s-.34-.75-.75-.75"/>',
@@ -11238,12 +11244,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'hdmi-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['hdmi', 'cable', 'connector', 'digital connection', 'input', 'adapter', 'signal', 'connection'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp'],
-    searchText: 'hdmi-square uncategorized hdmi cable connector digital connection input adapter signal connection',
+    searchText: 'hdmi-square devices-hardware hdmi cable connector digital connection input adapter signal connection',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M6.06 14.03h.36l1.1 1.07c.14.14.33.21.52.21h7.92c.19 0 .38-.08.52-.21l1.1-1.07h.36c.41 0 .75-.34.75-.75V9.44c0-.41-.33-.74-.74-.75h-.01l-11.88.03c-.41 0-.75.34-.75.75v3.81c0 .41.34.75.75.75m.75-3.81 9.28-.03h1.1v2.35a.73.73 0 0 0-.43.21l-1.1 1.07H8.35l-1.1-1.07a.8.8 0 0 0-.43-.21v-2.31z"/><path fill="currentColor" d="M9.03 12.75h5.94c.41 0 .75-.34.75-.75s-.34-.75-.75-.75H9.03c-.41 0-.75.34-.75.75s.34.75.75.75"/>',
@@ -11860,7 +11866,7 @@ export const iconEntries: IconGalleryEntry[] = [
     searchText: 'info actions about alert data details guide help i important info information message notice read service support',
     defaultSvg: {
       viewBox: '0 0 24 24',
-      svg: '<path fill="currentColor" d="M12 2C6.482 2 2 6.482 2 12s4.482 10 10 10 10-4.482 10-10S17.518 2 12 2m0 18.462c-4.667 0-8.462-3.795-8.462-8.462S7.333 3.538 12 3.538 20.462 7.333 20.462 12 16.667 20.462 12 20.462"/><path fill="currentColor" d="M12 10.82c-.708 0-1.282.575-1.282 1.283v3.692a1.283 1.283 0 0 0 2.564 0v-3.692c0-.708-.574-1.283-1.282-1.283m0-4.45a1.283 1.283 0 1 0 0 2.564 1.283 1.283 0 0 0 0-2.565"/>',
+      svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M12 11c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1s1-.45 1-1v-4c0-.55-.45-1-1-1m0-2a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>',
     },
   },
   {
@@ -11873,7 +11879,7 @@ export const iconEntries: IconGalleryEntry[] = [
     searchText: 'info-circle actions about alert data details guide help i important info information message notice read service support',
     defaultSvg: {
       viewBox: '0 0 24 24',
-      svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M12 5.06c-3.83 0-6.94 3.11-6.94 6.94s3.11 6.94 6.94 6.94 6.94-3.11 6.94-6.94S15.83 5.06 12 5.06m0 12.38C9 17.44 6.56 15 6.56 12S9 6.56 12 6.56 17.44 9 17.44 12 15 17.44 12 17.44"/><path fill="currentColor" d="M12.01 11.62c-.55 0-1 .45-1 1v2.48c0 .55.45 1 1 1s1-.45 1-1v-2.48c0-.55-.45-1-1-1m0-3.1c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1"/>',
+      svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M12 5c-3.86 0-7 3.14-7 7s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7m0 12.5A5.51 5.51 0 0 1 6.5 12c0-3.03 2.47-5.5 5.5-5.5s5.5 2.47 5.5 5.5-2.47 5.5-5.5 5.5"/><path fill="currentColor" d="M12 11.25c-.41 0-.75.34-.75.75v2.7c0 .41.34.75.75.75s.75-.34.75-.75V12c0-.41-.34-.75-.75-.75m0-1.27a.68.68 0 1 0 0-1.36.68.68 0 0 0 0 1.36"/>',
     },
   },
   {
@@ -11886,7 +11892,7 @@ export const iconEntries: IconGalleryEntry[] = [
     searchText: 'info-square actions about alert data details guide help i important info information message notice read service support',
     defaultSvg: {
       viewBox: '0 0 24 24',
-      svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.33-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.42-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M12 18.75c-3.72 0-6.75-3.03-6.75-6.75S8.28 5.25 12 5.25s6.75 3.03 6.75 6.75-3.03 6.75-6.75 6.75m0-12c-2.89 0-5.25 2.36-5.25 5.25s2.36 5.25 5.25 5.25 5.25-2.36 5.25-5.25S14.89 6.75 12 6.75"/><path fill="currentColor" d="M12 15.4c-.55 0-1-.45-1-1V12c0-.55.45-1 1-1s1 .45 1 1v2.4c0 .55-.45 1-1 1m.01-4.8c-.55 0-1-.45-1-1s.44-1 1-1c.55 0 1 .45 1 1s-.45 1-1 1"/>',
+      svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M12 19c3.86 0 7-3.14 7-7s-3.14-7-7-7-7 3.14-7 7 3.14 7 7 7m0-12.5c3.03 0 5.5 2.47 5.5 5.5s-2.47 5.5-5.5 5.5A5.51 5.51 0 0 1 6.5 12c0-3.03 2.47-5.5 5.5-5.5"/><path fill="currentColor" d="M12 15.45c.41 0 .75-.34.75-.75V12c0-.41-.34-.75-.75-.75s-.75.34-.75.75v2.7c0 .41.34.75.75.75m0-5.48a.68.68 0 1 0-.001-1.361A.68.68 0 0 0 12 9.97"/>',
     },
   },
   {
@@ -12294,12 +12300,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'laptop',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['android', 'computer', 'desktop', 'device', 'digital', 'display', 'electronic', 'ios', 'laptop', 'mac', 'macbook', 'monitor', 'network', 'screen', 'web', 'window'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'laptop uncategorized android computer desktop device digital display electronic ios laptop mac macbook monitor network screen web window',
+    searchText: 'laptop devices-hardware android computer desktop device digital display electronic ios laptop mac macbook monitor network screen web window',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="m19.2 16.98-1.06-2.73s.03-.08.03-.13V6.74c0-.41-.34-.75-.75-.75H6.68c-.41 0-.75.34-.75.75v7.38s.02.07.02.1l-1.14 2.73a.75.75 0 0 0 .69 1.04h13a.757.757 0 0 0 .7-1.03zM7.43 7.5h9.24v5.88H7.43zm-.8 9 .55-1.31h9.72l.51 1.31z"/>',
@@ -12307,12 +12313,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'laptop-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['android', 'computer', 'desktop', 'device', 'digital', 'display', 'electronic', 'ios', 'laptop', 'mac', 'macbook', 'monitor', 'network', 'screen', 'web', 'window'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'laptop-circle uncategorized android computer desktop device digital display electronic ios laptop mac macbook monitor network screen web window',
+    searchText: 'laptop-circle devices-hardware android computer desktop device digital display electronic ios laptop mac macbook monitor network screen web window',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="m18.08 16.07-.86-2.22s.02-.06.02-.09v-6.1c0-.41-.34-.75-.75-.75H7.6c-.41 0-.75.34-.75.75v6.1s.01.04.01.07l-.93 2.23a.75.75 0 0 0 .69 1.04h10.76a.757.757 0 0 0 .7-1.03M8.35 8.41h7.39v4.6H8.35zm-.6 7.18.34-.82h7.87l.32.82z"/>',
@@ -12320,12 +12326,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'laptop-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['android', 'computer', 'desktop', 'device', 'digital', 'display', 'electronic', 'ios', 'laptop', 'mac', 'macbook', 'monitor', 'network', 'screen', 'web', 'window'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp'],
-    searchText: 'laptop-square uncategorized android computer desktop device digital display electronic ios laptop mac macbook monitor network screen web window',
+    searchText: 'laptop-square devices-hardware android computer desktop device digital display electronic ios laptop mac macbook monitor network screen web window',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M5.5 17.92h13a.757.757 0 0 0 .7-1.03l-1.06-2.73s.03-.08.03-.13V6.65c0-.41-.34-.75-.75-.75H6.68c-.41 0-.75.34-.75.75v7.38s.02.07.02.1l-1.14 2.73a.75.75 0 0 0 .69 1.04zm1.93-10.5h9.24v5.88H7.43zm-.26 7.69h9.72l.51 1.31H6.63l.55-1.31z"/>',
@@ -13701,12 +13707,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'mobile',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['android', 'os', 'call', 'cell', 'cellphone', 'cellular', 'communication', 'device', 'ios', 'mobile', 'phone', 'screen', 'smartphone'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'mobile uncategorized android os call cell cellphone cellular communication device ios mobile phone screen smartphone',
+    searchText: 'mobile devices-hardware android os call cell cellphone cellular communication device ios mobile phone screen smartphone',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M14.66 4.7h-5c-1.52 0-2.75 1.23-2.75 2.75v9c0 1.52 1.23 2.75 2.75 2.75h5c1.52 0 2.75-1.23 2.75-2.75v-9c0-1.52-1.23-2.75-2.75-2.75m1.25 11.75c0 .69-.56 1.25-1.25 1.25h-5c-.69 0-1.25-.56-1.25-1.25v-9c0-.69.56-1.25 1.25-1.25h5c.69 0 1.25.56 1.25 1.25z"/><path fill="currentColor" d="M12.17 15.1c-.41 0-.75.34-.75.75s.34.75.75.75.75-.34.75-.75-.34-.75-.75-.75"/>',
@@ -13714,12 +13720,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'mobile-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['android', 'os', 'call', 'cell', 'cellphone', 'cellular', 'communication', 'device', 'ios', 'mobile', 'phone', 'screen', 'smartphone'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'mobile-circle uncategorized android os call cell cellphone cellular communication device ios mobile phone screen smartphone',
+    searchText: 'mobile-circle devices-hardware android os call cell cellphone cellular communication device ios mobile phone screen smartphone',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M14.25 5.75H9.74c-1.1 0-2 .9-2 2v8.51c0 1.1.9 2 2 2h4.51c1.1 0 2-.9 2-2V7.75c0-1.1-.9-2-2-2m.5 10.5c0 .27-.22.5-.5.5H9.74c-.27 0-.5-.22-.5-.5v-8.5c0-.27.22-.5.5-.5h4.51c.27 0 .5.22.5.5v8.51z"/><path fill="currentColor" d="M12 14.55c-.41 0-.75.34-.75.75s.34.75.75.75.75-.34.75-.75-.34-.75-.75-.75"/>',
@@ -13727,12 +13733,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'mobile-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['android', 'os', 'call', 'cell', 'cellphone', 'cellular', 'communication', 'device', 'ios', 'mobile', 'phone', 'screen', 'smartphone'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'mobile-square uncategorized android os call cell cellphone cellular communication device ios mobile phone screen smartphone',
+    searchText: 'mobile-square devices-hardware android os call cell cellphone cellular communication device ios mobile phone screen smartphone',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M9.31 18.49h4.51c1.1 0 2-.9 2-2v-8.5c0-1.1-.9-2-2-2H9.31a2 2 0 0 0-2 2v8.51a2 2 0 0 0 2 2zm-.49-10.5c0-.27.22-.5.5-.5h4.51c.27 0 .5.22.5.5v8.51c0 .27-.22.5-.5.5H9.32c-.27 0-.5-.22-.5-.5z"/><path fill="currentColor" d="M11.57 16.29c.41 0 .75-.34.75-.75s-.34-.75-.75-.75-.75.34-.75.75.34.75.75.75"/>',
@@ -13857,12 +13863,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'mouse',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['click', 'computer', 'cursor', 'desktop', 'device', 'digital', 'hardware', 'laptop', 'mouse', 'object', 'scrolling', 'select', 'technology', 'trackpad'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'mouse uncategorized click computer cursor desktop device digital hardware laptop mouse object scrolling select technology trackpad',
+    searchText: 'mouse devices-hardware click computer cursor desktop device digital hardware laptop mouse object scrolling select technology trackpad',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M11.99 3.5c-3.16 0-5.74 2.57-5.74 5.74v5.53c0 3.16 2.57 5.74 5.74 5.74h.03c3.16 0 5.74-2.57 5.74-5.74V9.24c0-3.16-2.57-5.74-5.76-5.74zm4.26 11.26c0 2.34-1.9 4.24-4.24 4.24h-.03c-2.34 0-4.24-1.9-4.24-4.24V9.23c0-2.34 1.9-4.24 4.26-4.24s4.24 1.9 4.24 4.24v5.53z"/><path fill="currentColor" d="M11.98 7.5c-.41 0-.75.34-.75.75v3.7c0 .41.34.75.75.75s.75-.34.75-.75v-3.7c0-.41-.34-.75-.75-.75"/>',
@@ -13870,12 +13876,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'mouse-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['click', 'computer', 'cursor', 'desktop', 'device', 'digital', 'hardware', 'laptop', 'mouse', 'object', 'scrolling', 'select', 'technology', 'trackpad'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'mouse-circle uncategorized click computer cursor desktop device digital hardware laptop mouse object scrolling select technology trackpad',
+    searchText: 'mouse-circle devices-hardware click computer cursor desktop device digital hardware laptop mouse object scrolling select technology trackpad',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M12.25 5.24h-.5a4.11 4.11 0 0 0-4.11 4.11v4.81a4.11 4.11 0 0 0 4.11 4.11h.5a4.11 4.11 0 0 0 4.11-4.11V9.35a4.11 4.11 0 0 0-4.11-4.11m2.61 8.92c0 1.44-1.17 2.61-2.61 2.61h-.5c-1.44 0-2.61-1.17-2.61-2.61V9.35c0-1.44 1.17-2.61 2.61-2.61h.5c1.44 0 2.61 1.17 2.61 2.61z"/><path fill="currentColor" d="M11.98 8.21c-.41 0-.75.34-.75.75v2.75c0 .41.34.75.75.75s.75-.34.75-.75V8.96c0-.41-.34-.75-.75-.75"/>',
@@ -13883,12 +13889,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'mouse-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['click', 'computer', 'cursor', 'desktop', 'device', 'digital', 'hardware', 'laptop', 'mouse', 'object', 'scrolling', 'select', 'technology', 'trackpad'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'mouse-square uncategorized click computer cursor desktop device digital hardware laptop mouse object scrolling select technology trackpad',
+    searchText: 'mouse-square devices-hardware click computer cursor desktop device digital hardware laptop mouse object scrolling select technology trackpad',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M11.53 18.67a4.58 4.58 0 0 0 4.58-4.58V9.88a4.58 4.58 0 1 0-9.16 0v4.21a4.58 4.58 0 0 0 4.58 4.58M8.45 9.88c0-1.7 1.38-3.08 3.08-3.08s3.08 1.38 3.08 3.08v4.21c0 1.7-1.38 3.08-3.08 3.08s-3.08-1.38-3.08-3.08z"/><path fill="currentColor" d="M11.51 12.69c.41 0 .75-.34.75-.75V9.11c0-.41-.34-.75-.75-.75s-.75.34-.75.75v2.83c0 .41.34.75.75.75"/>',
@@ -15711,12 +15717,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'pin',
-    category: 'uncategorized',
+    category: 'pin',
     tags: ['login', 'logout', 'map marker', 'mapping', 'marker', 'navigation', 'numbers', 'password', 'pattern', 'map', 'pin', 'lock'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'pin uncategorized login logout map marker mapping marker navigation numbers password pattern map pin lock',
+    searchText: 'pin pin login logout map marker mapping marker navigation numbers password pattern map pin lock',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 17.41c-.41 0-.75-.34-.75-.75v-3.32a3.42 3.42 0 0 1-2.66-3.33c0-1.88 1.53-3.41 3.41-3.41s3.41 1.53 3.41 3.41a3.42 3.42 0 0 1-2.66 3.33v3.32c0 .41-.34.75-.75.75m0-9.32c-1.05 0-1.91.86-1.91 1.91s.86 1.91 1.91 1.91 1.91-.86 1.91-1.91-.86-1.91-1.91-1.91"/>',
@@ -15724,12 +15730,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'pin-circle',
-    category: 'uncategorized',
+    category: 'pin',
     tags: ['login', 'logout', 'map marker', 'mapping', 'marker', 'navigation', 'numbers', 'password', 'pattern', 'map', 'pin', 'lock', 'circle'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'pin-circle uncategorized login logout map marker mapping marker navigation numbers password pattern map pin lock circle',
+    searchText: 'pin-circle pin login logout map marker mapping marker navigation numbers password pattern map pin lock circle',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.52 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M12 7.45a2.92 2.92 0 0 0-.75 5.74v2.6c0 .41.34.75.75.75s.75-.34.75-.75v-2.6A2.92 2.92 0 0 0 12 7.45m0 4.34c-.78 0-1.42-.64-1.42-1.42s.64-1.42 1.42-1.42 1.42.64 1.42 1.42-.64 1.42-1.42 1.42"/>',
@@ -15830,12 +15836,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'pin-square',
-    category: 'uncategorized',
+    category: 'pin',
     tags: ['login', 'logout', 'map marker', 'mapping', 'marker', 'navigation', 'numbers', 'password', 'pattern', 'map', 'pin', 'lock', 'square'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'pin-square uncategorized login logout map marker mapping marker navigation numbers password pattern map pin lock square',
+    searchText: 'pin-square pin login logout map marker mapping marker navigation numbers password pattern map pin lock square',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<g fill="currentColor"><path d="M11.25 13.19v2.6c0 .41.34.75.75.75s.75-.34.75-.75v-2.6a2.92 2.92 0 1 0-1.5 0M12 8.95c.78 0 1.42.64 1.42 1.42s-.64 1.42-1.42 1.42-1.42-.64-1.42-1.42.64-1.42 1.42-1.42"/><path d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/></g>',
@@ -16216,7 +16222,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'plug',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'adapter',
       'cable',
@@ -16238,7 +16244,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'plug uncategorized adapter cable charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
+    searchText: 'plug devices-hardware adapter cable charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M15.75 7.89H15V5.24c0-.41-.34-.75-.75-.75s-.75.34-.75.75v2.65h-3V5.24c0-.41-.34-.75-.75-.75S9 4.83 9 5.24v2.65h-.75c-.83 0-1.5.67-1.5 1.5v3c0 2.07 1.68 3.75 3.75 3.75h.75v2.62c0 .41.34.75.75.75s.75-.34.75-.75v-2.62h.75c2.07 0 3.75-1.68 3.75-3.75v-3c0-.83-.67-1.5-1.5-1.5m0 4.5c0 1.24-1.01 2.25-2.25 2.25h-3c-1.24 0-2.25-1.01-2.25-2.25v-3h7.5z"/>',
@@ -16246,7 +16252,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'plug-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'adapter',
       'cable',
@@ -16268,7 +16274,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'plug-circle uncategorized adapter cable charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
+    searchText: 'plug-circle devices-hardware adapter cable charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M14.38 8.77V7c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.77h-1.75V7c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.77H9.3c-.71 0-1.29.58-1.29 1.3v2.22c0 1.64 1.31 2.97 2.92 2.97h.33V17c0 .41.34.75.75.75s.75-.34.75-.75v-1.74h.33c1.61 0 2.92-1.33 2.92-2.97v-2.22c0-.72-.58-1.3-1.29-1.3zm.12 3.52c0 .81-.63 1.47-1.42 1.47h-2.17c-.78 0-1.42-.66-1.42-1.47v-2.02h5v2.02z"/>',
@@ -16276,7 +16282,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'plug-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'adapter',
       'cable',
@@ -16298,7 +16304,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'plug-square uncategorized adapter cable charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
+    searchText: 'plug-square devices-hardware adapter cable charge charging connect connector device electric electrical electricity electronics energy plug port power socket',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M10.92 15.26h.33V17c0 .41.34.75.75.75s.75-.34.75-.75v-1.74h.33c1.61 0 2.92-1.33 2.92-2.97v-2.22c0-.72-.58-1.31-1.29-1.31h-.33V7c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.76h-1.75V7c0-.41-.34-.75-.75-.75s-.75.34-.75.75v1.76H9.3c-.71 0-1.29.59-1.29 1.31v2.22c0 1.64 1.31 2.97 2.92 2.97zm3.58-5v2.03c0 .81-.64 1.47-1.42 1.47h-2.17c-.78 0-1.42-.66-1.42-1.47v-2.03z"/>',
@@ -18801,12 +18807,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'sim',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['card', 'chip', 'communication', 'device', 'memory', 'mobile', 'module', 'network', 'phone', 'service', 'signal', 'sim', 'sim card', 'smart card', 'storage'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'sim uncategorized card chip communication device memory mobile module network phone service signal sim sim card smart card storage',
+    searchText: 'sim devices-hardware card chip communication device memory mobile module network phone service signal sim sim card smart card storage',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M18.25 5c0-.41-.34-.75-.75-.75H9.94c-.2 0-.39.08-.54.22l-3.44 3.5a.74.74 0 0 0-.21.53V19a.75.75 0 0 0 .75.75h11c.41 0 .75-.34.75-.75zm-1.5 13.25h-9.5V8.81l3-3.06h6.5z"/><path fill="currentColor" d="M13 17.45c.41 0 .75-.34.75-.75v-2.24c0-.41-.34-.75-.75-.75s-.75.34-.75.75v2.24c0 .41.34.75.75.75m0-4.75c.41 0 .75-.34.75-.75v-.34c0-.41-.34-.75-.75-.75s-.75.34-.75.75v.34c0 .41.34.75.75.75m2.18 1.9c.41 0 .75-.34.75-.75v-2.24c0-.41-.34-.75-.75-.75s-.75.34-.75.75v2.24c0 .41.34.75.75.75m0 2.85c.41 0 .75-.34.75-.75v-.34c0-.41-.34-.75-.75-.75s-.75.34-.75.75v.34c0 .41.34.75.75.75"/>',
@@ -18814,12 +18820,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'sim-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['card', 'chip', 'communication', 'device', 'memory', 'mobile', 'module', 'network', 'phone', 'service', 'signal', 'sim', 'sim card', 'smart card', 'storage'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'sim-square uncategorized card chip communication device memory mobile module network phone service signal sim sim card smart card storage',
+    searchText: 'sim-square devices-hardware card chip communication device memory mobile module network phone service signal sim sim card smart card storage',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M6.97 18.53c.14.14.33.22.53.22h9c.41 0 .75-.34.75-.75V6c0-.41-.34-.75-.75-.75h-6.19c-.21 0-.41.09-.55.24l-2.81 3c-.13.14-.2.32-.2.51v9c0 .2.08.39.22.53M8.25 9.3l2.39-2.55h5.11v10.5h-7.5z"/><path fill="currentColor" d="M12.82 13.36c-.41 0-.75.34-.75.75v1.92c0 .41.34.75.75.75s.75-.34.75-.75v-1.92c0-.41-.34-.75-.75-.75m0-2.44c-.41 0-.75.34-.75.75v.29c0 .41.34.75.75.75s.75-.34.75-.75v-.29c0-.41-.34-.75-.75-.75m1.78 0c-.41 0-.75.34-.75.75v1.92c0 .41.34.75.75.75s.75-.34.75-.75v-1.92c0-.41-.34-.75-.75-.75m0 4.07c-.41 0-.75.34-.75.75v.29c0 .41.34.75.75.75s.75-.34.75-.75v-.29c0-.41-.34-.75-.75-.75"/>',
@@ -21367,6 +21373,84 @@ export const iconEntries: IconGalleryEntry[] = [
     },
   },
   {
+    name: 'traffic-lights',
+    category: 'logistic',
+    tags: ['barrier', 'block', 'car', 'caution', 'detour', 'direction', 'guide', 'highway', 'light', 'road', 'safety', 'signal', 'street', 'traffic', 'warning'],
+    aliases: [],
+    deprecated: false,
+    variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
+    searchText: 'traffic-lights logistic barrier block car caution detour direction guide highway light road safety signal street traffic warning',
+    defaultSvg: {
+      viewBox: '0 0 24 24',
+      svg: '<path fill="currentColor" d="M12 9.338a2.054 2.054 0 0 0 2.046-2.056A2.054 2.054 0 0 0 12 5.226a2.054 2.054 0 0 0-2.046 2.056c0 1.133.918 2.056 2.046 2.056m0-2.608c.3 0 .549.251.549.552 0 .3-.25.551-.549.551s-.549-.25-.549-.551c0-.3.25-.552.549-.552m0 7.591a2.054 2.054 0 0 0 2.046-2.055A2.054 2.054 0 0 0 12 10.21a2.054 2.054 0 0 0-2.046 2.056c0 1.133.918 2.055 2.046 2.055m0-2.607c.3 0 .549.25.549.552 0 .3-.25.551-.549.551s-.549-.25-.549-.551.25-.552.549-.552"/><path fill="currentColor" d="M7.749 3C7.339 3 7 3.34 7 3.752v11.943c0 .411.34.752.749.752h3.503v3.8c0 .412.339.753.748.753.41 0 .749-.34.749-.752v-3.8h3.502c.41 0 .749-.342.749-.753V3.752A.756.756 0 0 0 16.252 3zm7.744 11.943H8.497V4.504h6.996z"/>',
+    },
+  },
+  {
+    name: 'traffic-lights-circle',
+    category: 'logistic',
+    tags: ['barrier', 'block', 'car', 'caution', 'detour', 'direction', 'guide', 'highway', 'light', 'road', 'safety', 'signal', 'street', 'traffic', 'warning'],
+    aliases: [],
+    deprecated: false,
+    variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
+    searchText: 'traffic-lights-circle logistic barrier block car caution detour direction guide highway light road safety signal street traffic warning',
+    defaultSvg: {
+      viewBox: '0 0 24 24',
+      svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M12 10.63c.99 0 1.8-.81 1.8-1.8s-.81-1.8-1.8-1.8-1.8.81-1.8 1.8.81 1.8 1.8 1.8m0-2.1c.16 0 .3.13.3.3s-.13.3-.3.3-.3-.13-.3-.3.13-.3.3-.3m0 6.09c.99 0 1.8-.81 1.8-1.8s-.81-1.8-1.8-1.8-1.8.81-1.8 1.8.81 1.8 1.8 1.8m0-2.09c.16 0 .3.13.3.3s-.13.3-.3.3-.3-.13-.3-.3.13-.3.3-.3"/><path fill="currentColor" d="M15.42 5.25H8.58c-.41 0-.75.34-.75.75v9.58c0 .41.34.75.75.75h2.67v2.9c0 .41.34.75.75.75s.75-.34.75-.75v-2.9h2.67c.41 0 .75-.34.75-.75V6c0-.41-.34-.75-.75-.75m-.75 9.58H9.33V6.75h5.34z"/>',
+    },
+  },
+  {
+    name: 'traffic-lights-square',
+    category: 'logistic',
+    tags: ['barrier', 'block', 'car', 'caution', 'detour', 'direction', 'guide', 'highway', 'light', 'road', 'safety', 'signal', 'street', 'traffic', 'warning'],
+    aliases: [],
+    deprecated: false,
+    variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
+    searchText: 'traffic-lights-square logistic barrier block car caution detour direction guide highway light road safety signal street traffic warning',
+    defaultSvg: {
+      viewBox: '0 0 24 24',
+      svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M12 6.13c-1.03 0-1.86.83-1.86 1.86s.83 1.86 1.86 1.86 1.86-.83 1.86-1.86-.83-1.86-1.86-1.86m0 2.22c-.2 0-.36-.16-.36-.36s.16-.36.36-.36.36.16.36.36-.16.36-.36.36m0 2.02c-1.03 0-1.86.83-1.86 1.86s.83 1.86 1.86 1.86 1.86-.83 1.86-1.86-.83-1.86-1.86-1.86m0 2.22c-.2 0-.36-.16-.36-.36s.16-.36.36-.36.36.16.36.36-.16.36-.36.36"/><path fill="currentColor" d="M8.38 15.89h2.88v3.12c0 .41.34.75.75.75s.75-.34.75-.75v-3.12h2.88c.41 0 .75-.34.75-.75V5c0-.41-.34-.75-.75-.75H8.39c-.41 0-.75.34-.75.75v10.14c0 .41.34.75.75.75zm.74-10.14h5.75v8.64H9.12z"/>',
+    },
+  },
+  {
+    name: 'train',
+    category: 'logistic',
+    tags: ['arrow', 'left', 'back', 'direction', 'go back', 'history', 'navigate', 'navigation', 'return', 'reverse', 'undo'],
+    aliases: [],
+    deprecated: false,
+    variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
+    searchText: 'train logistic arrow left back direction go back history navigate navigation return reverse undo',
+    defaultSvg: {
+      viewBox: '0 0 24 24',
+      svg: '<path fill="currentColor" d="M9.85 4C7.384 4 5.37 5.86 5.06 8.25a.8.8 0 0 0-.04.21c0 .02.01.05.01.07 0 .11-.03.22-.03.33v8.36c0 .41.34.75.748.75h1.986l-1.467.92a.75.75 0 0 0-.24 1.03c.14.23.39.35.64.35.139 0 .269-.04.398-.11l3.493-2.19h2.534l3.492 2.19c.12.08.26.11.4.11a.747.747 0 0 0 .398-1.38l-1.466-.92h1.836c.409 0 .748-.34.748-.75V8.89C18.5 6.2 16.315 4 13.62 4zm-3.353 7.78V9.21h4.5v2.57zm5.996-2.57h4.5v2.57h-4.5zM9.86 5.5h3.762c1.447 0 2.674.92 3.153 2.21H6.716A3.345 3.345 0 0 1 9.86 5.5M6.497 16.48v-3.2h10.496v3.2z"/><path fill="currentColor" d="M9.35 13.68c-.658 0-1.187.53-1.187 1.19s.529 1.19 1.187 1.19c.659 0 1.188-.53 1.188-1.19s-.53-1.19-1.188-1.19m4.93 0c-.66 0-1.188.53-1.188 1.19s.529 1.19 1.187 1.19c.659 0 1.188-.53 1.188-1.19s-.53-1.19-1.188-1.19"/>',
+    },
+  },
+  {
+    name: 'train-circle',
+    category: 'logistic',
+    tags: ['arrow', 'left', 'back', 'direction', 'go back', 'history', 'navigate', 'navigation', 'return', 'reverse', 'undo'],
+    aliases: [],
+    deprecated: false,
+    variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
+    searchText: 'train-circle logistic arrow left back direction go back history navigate navigation return reverse undo',
+    defaultSvg: {
+      viewBox: '0 0 24 24',
+      svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M13.92 4.79h-3.84c-2.07 0-3.75 1.68-3.75 3.75v7.21c0 .41.34.75.75.75h1.15l-.8.5a.747.747 0 0 0 .4 1.38c.14 0 .27-.04.4-.11l2.83-1.77h1.86l2.83 1.77c.12.08.26.11.4.11.25 0 .49-.12.64-.35.22-.35.11-.81-.24-1.03l-.8-.5h1.17c.41 0 .75-.34.75-.75V8.54c0-2.07-1.68-3.75-3.75-3.75m-6.09 6.37V9.33h3.42v1.83zm4.92-1.83h3.42v1.83h-3.42zm-2.67-3.04h3.84c.99 0 1.82.65 2.12 1.54H7.96c.3-.89 1.13-1.54 2.12-1.54m-2.25 8.72v-2.35h8.34v2.35z"/><path fill="currentColor" d="M10.04 12.85a.97.97 0 0 0-.97.97c0 .53.44.97.97.97s.97-.44.97-.97-.44-.97-.97-.97m4.04 0a.97.97 0 0 0-.97.97c0 .53.44.97.97.97s.97-.44.97-.97-.44-.97-.97-.97"/>',
+    },
+  },
+  {
+    name: 'train-square',
+    category: 'logistic',
+    tags: ['arrow', 'left', 'back', 'direction', 'go back', 'history', 'navigate', 'navigation', 'return', 'reverse', 'undo'],
+    aliases: [],
+    deprecated: false,
+    variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
+    searchText: 'train-square logistic arrow left back direction go back history navigate navigation return reverse undo',
+    defaultSvg: {
+      viewBox: '0 0 24 24',
+      svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M6.39 17.49h1.68l-1.22.77a.747.747 0 0 0 .4 1.38c.14 0 .27-.04.4-.11l3.26-2.04h2.18l3.26 2.04c.12.08.26.11.4.11.25 0 .49-.12.64-.35.22-.35.11-.81-.24-1.03l-1.22-.77h1.7c.41 0 .75-.34.75-.75V8.1c0-2.07-1.68-3.75-3.75-3.75H9.42c-2.07 0-3.75 1.68-3.75 3.75v8.64c0 .41.34.75.75.75zm4.86-8.17v2.29H7.14V9.32zm5.61 0v2.29h-4.11V9.32zm-9.72 6.67v-2.88h9.71v2.88zM9.39 5.85h5.21c1.14 0 2.08.86 2.22 1.96H7.17c.14-1.1 1.08-1.96 2.22-1.96"/><path fill="currentColor" d="M9.76 15.65a1.11 1.11 0 1 0 0-2.22 1.11 1.11 0 0 0 0 2.22m4.61 0a1.11 1.11 0 1 0 0-2.22 1.11 1.11 0 0 0 0 2.22"/>',
+    },
+  },
+  {
     name: 'tram',
     category: 'lifestyle',
     tags: [
@@ -21681,13 +21765,52 @@ export const iconEntries: IconGalleryEntry[] = [
     },
   },
   {
+    name: 'truck',
+    category: 'logistic',
+    tags: ['transport', 'delivery', 'delivery truck', 'cargo', 'vehicle', 'car'],
+    aliases: [],
+    deprecated: false,
+    variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
+    searchText: 'truck logistic transport delivery delivery truck cargo vehicle car',
+    defaultSvg: {
+      viewBox: '0 0 24 24',
+      svg: '<path fill="currentColor" d="m19.482 12.065-2.034-.683-1.416-2.844a.76.76 0 0 0-.668-.412h-1.576V5.754A.756.756 0 0 0 13.04 5H3.749A.756.756 0 0 0 3 5.754v10.934c0 .413.339.754.748.754h1.715A2.29 2.29 0 0 0 7.626 19a2.29 2.29 0 0 0 2.164-1.558h3.42A2.29 2.29 0 0 0 15.374 19a2.29 2.29 0 0 0 2.163-1.558h1.715a.756.756 0 0 0 .748-.754v-3.91a.76.76 0 0 0-.509-.713zM4.496 6.508h7.807v9.427H9.79a2.29 2.29 0 0 0-2.164-1.558 2.29 2.29 0 0 0-2.163 1.558h-.967zm3.13 10.995a.803.803 0 0 1 0-1.608.803.803 0 0 1 0 1.608m7.748 0a.803.803 0 0 1-.798-.805c0-.442.359-.803.798-.803a.803.803 0 0 1 0 1.608m3.12-1.568h-.967a2.29 2.29 0 0 0-2.163-1.558 2.24 2.24 0 0 0-1.576.643V9.633h1.117l1.346 2.714a.8.8 0 0 0 .429.382l1.814.613v2.613z"/>',
+    },
+  },
+  {
+    name: 'truck-circle',
+    category: 'logistic',
+    tags: ['transport', 'delivery', 'delivery truck', 'cargo', 'vehicle', 'car'],
+    aliases: [],
+    deprecated: false,
+    variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
+    searchText: 'truck-circle logistic transport delivery delivery truck cargo vehicle car',
+    defaultSvg: {
+      viewBox: '0 0 24 24',
+      svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="m18.1 11.91-1.41-.47-1-2a.76.76 0 0 0-.67-.41h-.96V7.5c0-.41-.34-.75-.75-.75H6.48c-.41 0-.75.34-.75.75v7.97c0 .41.34.75.75.75h1.11c.29.67.96 1.14 1.73 1.14s1.44-.47 1.73-1.14h2.23c.29.67.96 1.14 1.73 1.14s1.44-.47 1.73-1.14h1.11c.41 0 .75-.34.75-.75v-2.85c0-.32-.21-.61-.51-.71zM7.24 8.25h5.33v6.47h-1.5c-.29-.67-.96-1.14-1.73-1.14s-1.44.47-1.73 1.14h-.36V8.25zm2.09 7.61a.39.39 0 0 1-.39-.39c0-.22.17-.39.39-.39s.39.17.39.39-.17.39-.39.39m5.69 0a.39.39 0 0 1-.39-.39c0-.22.17-.39.39-.39s.39.17.39.39-.17.39-.39.39m2.1-1.14h-.36c-.29-.67-.96-1.14-1.73-1.14-.35 0-.68.1-.96.27v-3.32h.49l.93 1.86a.8.8 0 0 0 .43.38l1.19.4v1.56z"/>',
+    },
+  },
+  {
+    name: 'truck-square',
+    category: 'logistic',
+    tags: ['transport', 'delivery', 'delivery truck', 'cargo', 'vehicle', 'car'],
+    aliases: [],
+    deprecated: false,
+    variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
+    searchText: 'truck-square logistic transport delivery delivery truck cargo vehicle car',
+    defaultSvg: {
+      viewBox: '0 0 24 24',
+      svg: '<path fill="currentColor" d="M5.1 16.89h1.46c.3.8 1.08 1.38 1.99 1.38s1.68-.58 1.99-1.38h2.93c.3.8 1.08 1.38 1.99 1.38s1.68-.58 1.99-1.38h1.46c.41 0 .75-.34.75-.75v-3.45c0-.32-.21-.61-.51-.71l-1.77-.59-1.24-2.48a.76.76 0 0 0-.67-.41h-1.32V6.49c0-.41-.34-.75-.75-.75H5.1c-.41 0-.75.34-.75.75v9.66c0 .41.34.75.75.75zm3.45-.12c-.35 0-.63-.28-.63-.63s.28-.63.63-.63.63.28.63.63-.28.63-.63.63m6.9 0c-.35 0-.63-.28-.63-.63s.28-.63.63-.63.63.28.63.63-.28.63-.63.63m-.47-6.78 1.17 2.34a.8.8 0 0 0 .43.38l1.56.52v2.16h-.71c-.3-.8-1.08-1.38-1.99-1.38-.5 0-.96.18-1.32.47V9.99zM5.85 7.23h6.78v8.16h-2.09c-.3-.8-1.08-1.38-1.99-1.38s-1.68.58-1.99 1.38h-.71z"/><path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/>',
+    },
+  },
+  {
     name: 'tv',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['device', 'display', 'entertainment', 'living room', 'media', 'monitor', 'screen', 'screencast', 'stream', 'television', 'tv', 'video'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'tv uncategorized device display entertainment living room media monitor screen screencast stream television tv video',
+    searchText: 'tv devices-hardware device display entertainment living room media monitor screen screencast stream television tv video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M18.24 6.29c-.77-.79-1.82-.79-3.74-.79h-5c-1.91 0-2.97 0-3.74.79C5 7.07 5 8.14 5 10.09v1.28c0 1.94 0 3.02.76 3.8.77.79 1.82.79 3.74.79h1.44v.85c0 .11-.08.21-.19.21H9.5c-.41 0-.75.34-.75.75s.34.75.75.75h5c.41 0 .75-.34.75-.75s-.34-.75-.75-.75h-1.25c-.1 0-.19-.09-.19-.21v-.85h1.44c1.91 0 2.97 0 3.74-.79.76-.78.76-1.85.76-3.8v-1.28c0-1.94 0-3.02-.76-3.8m-.74 5.07c0 1.55 0 2.4-.33 2.75-.32.32-1.04.34-2.67.34h-5c-1.62 0-2.35-.01-2.66-.34-.34-.34-.34-1.2-.34-2.75v-1.28c0-1.55 0-2.4.34-2.75.31-.32 1.04-.34 2.66-.34h5c1.62 0 2.35.01 2.67.34.33.34.33 1.2.33 2.75z"/>',
@@ -21695,12 +21818,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'tv-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['device', 'display', 'entertainment', 'living room', 'media', 'monitor', 'screen', 'screencast', 'stream', 'television', 'tv', 'video'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'tv-circle uncategorized device display entertainment living room media monitor screen screencast stream television tv video',
+    searchText: 'tv-circle devices-hardware device display entertainment living room media monitor screen screencast stream television tv video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M14.03 7.35h-3.8c-1.5 0-2.33 0-2.96.63-.64.63-.64 1.51-.64 2.95v.94c0 1.44 0 2.32.64 2.95s1.46.63 2.96.63h.91v.39h-.91c-.41 0-.75.34-.75.75s.34.75.75.75h3.8c.41 0 .75-.34.75-.75s-.34-.75-.75-.75h-.91v-.39h.91c1.5 0 2.32 0 2.96-.63s.64-1.46.64-2.95v-.94c0-1.49 0-2.32-.64-2.95s-1.46-.63-2.96-.63m2.1 4.52c0 1.02 0 1.69-.2 1.89s-.88.2-1.9.2h-3.8c-1.03 0-1.71 0-1.9-.2-.2-.2-.2-.87-.2-1.89v-.94c0-1.02 0-1.69.2-1.89s.88-.2 1.9-.2h3.8c1.03 0 1.71 0 1.9.2.2.19.2.87.2 1.89z"/>',
@@ -21708,12 +21831,12 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'tv-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: ['device', 'display', 'entertainment', 'living room', 'media', 'monitor', 'screen', 'screencast', 'stream', 'television', 'tv', 'video'],
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'tv-square uncategorized device display entertainment living room media monitor screen screencast stream television tv video',
+    searchText: 'tv-square devices-hardware device display entertainment living room media monitor screen screencast stream television tv video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M10.1 15.11h.91v.39h-.91c-.41 0-.75.34-.75.75s.34.75.75.75h3.8c.41 0 .75-.34.75-.75s-.34-.75-.75-.75h-.91v-.39h.91c1.5 0 2.32 0 2.96-.63s.64-1.46.64-2.95v-.94c0-1.44 0-2.31-.64-2.95-.64-.63-1.46-.63-2.96-.63h-3.8c-1.5 0-2.32 0-2.96.63s-.64 1.51-.64 2.95v.94c0 1.49 0 2.32.64 2.95s1.46.63 2.96.63M8 10.58c0-1.02 0-1.69.2-1.89s.88-.2 1.9-.2h3.8c1.03 0 1.71 0 1.9.2.2.2.2.87.2 1.89v.94c0 1.02 0 1.69-.2 1.89s-.88.2-1.9.2h-3.8c-1.03 0-1.71 0-1.9-.2-.2-.2-.2-.87-.2-1.89z"/>',
@@ -21944,7 +22067,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'video-camera',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'aperture',
       'camera',
@@ -21967,7 +22090,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'video-camera uncategorized aperture camera capture device digital electronic film image lens media optic photo photography picture record shoot video',
+    searchText: 'video-camera devices-hardware aperture camera capture device digital electronic film image lens media optic photo photography picture record shoot video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="m17.84 8.13-2.39 1.51v-1.9c0-.41-.34-.75-.75-.75H5.25c-.41 0-.75.34-.75.75v8.5c0 .41.34.75.75.75h9.45c.41 0 .75-.34.75-.75v-2.12l2.35 1.66c.18.13.4.19.62.19.07 0 .14 0 .21-.02.29-.06.54-.23.7-.49.11-.18.17-.39.17-.6V9.05c0-.81-.92-1.39-1.66-.94zm-3.89 7.37H6v-7h7.95zM18 14.1l-2.55-1.8v-.88s.02 0 .03-.01L18 9.82v4.29z"/>',
@@ -21975,7 +22098,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'video-camera-circle',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'aperture',
       'camera',
@@ -21998,7 +22121,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'video-camera-circle uncategorized aperture camera capture device digital electronic film image lens media optic photo photography picture record shoot video',
+    searchText: 'video-camera-circle devices-hardware aperture camera capture device digital electronic film image lens media optic photo photography picture record shoot video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18.5c-4.69 0-8.5-3.81-8.5-8.5S7.31 3.5 12 3.5s8.5 3.81 8.5 8.5-3.81 8.5-8.5 8.5"/><path fill="currentColor" d="M17.46 8.74c-.18 0-.35.05-.52.13l-1.9 1.08v-1.2c0-.41-.34-.75-.75-.75H6.25c-.41 0-.75.34-.75.75v6.5c0 .41.34.75.75.75h8.05c.41 0 .75-.34.75-.75v-1.37l1.85 1.18c.17.11.37.16.56.16.33 0 .65-.15.85-.44.12-.17.19-.37.19-.58V9.76c0-.56-.46-1.02-1.04-1.02m-3.91 5.76H7v-5h6.55zM17 13.35l-1.95-1.24v-.43L17 10.57z"/>',
@@ -22006,7 +22129,7 @@ export const iconEntries: IconGalleryEntry[] = [
   },
   {
     name: 'video-camera-square',
-    category: 'uncategorized',
+    category: 'devices-hardware',
     tags: [
       'aperture',
       'camera',
@@ -22029,7 +22152,7 @@ export const iconEntries: IconGalleryEntry[] = [
     aliases: [],
     deprecated: false,
     variants: ['filled/bevel', 'filled/rounded', 'filled/sharp', 'filled/tk', 'outlined/bevel', 'outlined/rounded', 'outlined/sharp', 'outlined/tk'],
-    searchText: 'video-camera-square uncategorized aperture camera capture device digital electronic film image lens media optic photo photography picture record shoot video',
+    searchText: 'video-camera-square devices-hardware aperture camera capture device digital electronic film image lens media optic photo photography picture record shoot video',
     defaultSvg: {
       viewBox: '0 0 24 24',
       svg: '<path fill="currentColor" d="M21.25 2H2.75c-.41 0-.75.34-.75.75v18.5c0 .41.34.75.75.75h18.5c.41 0 .75-.34.75-.75V2.75c0-.41-.34-.75-.75-.75m-.75 18.5h-17v-17h17z"/><path fill="currentColor" d="M6.25 16h8.05c.41 0 .75-.34.75-.75v-1.37l1.85 1.18c.17.11.37.16.56.16.33 0 .65-.15.86-.44.12-.17.18-.37.18-.58V9.76c0-.74-.88-1.26-1.55-.89l-1.9 1.08v-1.2c0-.41-.34-.75-.75-.75H6.25c-.41 0-.75.34-.75.75v6.5c0 .41.34.75.75.75m8.8-4.32L17 10.57v2.78l-1.95-1.24zM7 9.5h6.55v5H7z"/>',

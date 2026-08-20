@@ -349,7 +349,7 @@ function ClosableDemo() {
                   }}
                   onKeyDown={event => handleCloseKeyDown(event, tab)}
                 >
-                  x
+                  <CloseIconOutlinedRounded />
                 </span>
               </span>
             )}

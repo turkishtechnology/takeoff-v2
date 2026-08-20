@@ -71,11 +71,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/tokens
       "@takeoff-icons/core":
-        specifier: ^0.3.0
-        version: 0.3.0
+        specifier: ^0.4.0
+        version: 0.4.0
       "@takeoff-icons/react":
-        specifier: ^0.3.0
-        version: 0.3.0(react@19.2.8)
+        specifier: ^0.4.0
+        version: 0.4.0(react@19.2.8)
       "@takeoff-ui/react-spar":
         specifier: workspace:*
         version: link:../../packages/react-spar
@@ -138,8 +138,8 @@ importers:
   packages/react-spar:
     dependencies:
       "@takeoff-icons/react":
-        specifier: ^0.3.0
-        version: 0.3.0(react@19.2.8)
+        specifier: ^0.4.0
+        version: 0.4.0(react@19.2.8)
       "@tanstack/react-table":
         specifier: 8.21.3
         version: 8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -2711,11 +2711,11 @@ packages:
   "@tailwindcss/postcss@4.3.3":
     resolution: { integrity: sha512-JTSZZGQi1AyKirbLN3azmjVzef92tcX7h+iSqPdaeStyFpGpDlKvvpxeOE8njhbUanbRwr3z8DyzhICWnMtQeg== }
 
-  "@takeoff-icons/core@0.3.0":
-    resolution: { integrity: sha512-GiXV+HwHihI+XVvf1lQ5Txs5LC9ypbu3AHrzLscUdf66XdOUbv18PTsNVaV/zReC9zeiQUOApMepiJS6jQfGMQ== }
+  "@takeoff-icons/core@0.4.0":
+    resolution: { integrity: sha512-W64B1+wIhCBsSOuqua3ECtC4Xpj7oFZe0DTp75h1YLLaXTqyICY8cY8Tf+vjuavNLnXrI/GgpaLjYi0lhZ7+aA== }
 
-  "@takeoff-icons/react@0.3.0":
-    resolution: { integrity: sha512-DTeOUo/eX2p0X2oSbDMiVZpO7RbgooZ7ETht04yRKvLd9wiKtYuTDmYpfGp3d+BwxSgY5BRX9alAXMxa3ko+NQ== }
+  "@takeoff-icons/react@0.4.0":
+    resolution: { integrity: sha512-thC28M9HlZoh4iQdXThpM7JQ7hYMEWT26L4j+XEiUlXJRVN1IvGamb7WKagJSh+7KjSU2v9e2pikxWN2icscww== }
     peerDependencies:
       react: ">=18"
 
@@ -11115,9 +11115,9 @@ snapshots:
       postcss: 8.5.23
       tailwindcss: 4.3.3
 
-  "@takeoff-icons/core@0.3.0": {}
+  "@takeoff-icons/core@0.4.0": {}
 
-  "@takeoff-icons/react@0.3.0(react@19.2.8)":
+  "@takeoff-icons/react@0.4.0(react@19.2.8)":
     dependencies:
       react: 19.2.8
 

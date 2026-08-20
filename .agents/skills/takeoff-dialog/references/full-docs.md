@@ -37,7 +37,7 @@ function PlaygroundDemo() {
       <Dialog.Panel>
         <Dialog.Header>
           <Dialog.Title>Flight Details</Dialog.Title>
-          <Dialog.Close>✕</Dialog.Close>
+          <Dialog.Close />
         </Dialog.Header>
         <Dialog.Body>
           <Dialog.Description>
@@ -69,7 +69,7 @@ function OverlayIntensityDemo() {
           <Dialog.Panel>
             <Dialog.Header>
               <Dialog.Title>{intensity} overlay</Dialog.Title>
-              <Dialog.Close>✕</Dialog.Close>
+              <Dialog.Close />
             </Dialog.Header>
             <Dialog.Body>
               Overlay intensity is set to <code>{intensity}</code>.
@@ -99,7 +99,7 @@ function OverlayBehaviorDemo() {
         <Dialog.Panel>
           <Dialog.Header>
             <Dialog.Title>Blurred overlay</Dialog.Title>
-            <Dialog.Close>✕</Dialog.Close>
+            <Dialog.Close />
           </Dialog.Header>
           <Dialog.Body>
             The backdrop stays visible and adds a soft blur effect behind the
@@ -114,7 +114,7 @@ function OverlayBehaviorDemo() {
         <Dialog.Panel>
           <Dialog.Header>
             <Dialog.Title>Invisible overlay</Dialog.Title>
-            <Dialog.Close>✕</Dialog.Close>
+            <Dialog.Close />
           </Dialog.Header>
           <Dialog.Body>
             The overlay remains mounted for interaction but is visually hidden.
@@ -146,7 +146,7 @@ function HeaderTypeDemo() {
           <Dialog.Panel>
             <Dialog.Header headerType={headerType}>
               <Dialog.Title>{headerType} header</Dialog.Title>
-              <Dialog.Close>✕</Dialog.Close>
+              <Dialog.Close />
             </Dialog.Header>
             <Dialog.Body>
               <Dialog.Description>
@@ -181,7 +181,7 @@ function DismissibleDemo() {
       <Dialog.Panel>
         <Dialog.Header headerType="light">
           <Dialog.Title>Dismiss disabled</Dialog.Title>
-          <Dialog.Close>✕</Dialog.Close>
+          <Dialog.Close />
         </Dialog.Header>
         <Dialog.Body>
           Escape and outside clicks will not close this dialog. Use the close
@@ -213,7 +213,7 @@ function FooterTypeDemo() {
           <Dialog.Panel>
             <Dialog.Header headerType="divided">
               <Dialog.Title>{footerType} footer</Dialog.Title>
-              <Dialog.Close>✕</Dialog.Close>
+              <Dialog.Close />
             </Dialog.Header>
             <Dialog.Body>
               Footer styling changes with <code>footerType</code>.
@@ -252,7 +252,7 @@ function ControlledDemo() {
         <Dialog.Panel>
           <Dialog.Header headerType="light">
             <Dialog.Title>Controlled dialog</Dialog.Title>
-            <Dialog.Close>✕</Dialog.Close>
+            <Dialog.Close />
           </Dialog.Header>
           <Dialog.Body>
             This dialog is controlled outside the component. Escape and outside

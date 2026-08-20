@@ -17,7 +17,7 @@ import { Drawer } from '@takeoff-ui/react-spar';
   <Drawer.Panel>
     <Drawer.Header>
       <Drawer.Title />
-      <Drawer.Close>✕</Drawer.Close>
+      <Drawer.Close />
     </Drawer.Header>
     <Drawer.Body>
       <Drawer.Description />
@@ -38,7 +38,7 @@ function PlaygroundDemo() {
       <Drawer.Panel>
         <Drawer.Header>
           <Drawer.Title>Flight Details</Drawer.Title>
-          <Drawer.Close>✕</Drawer.Close>
+          <Drawer.Close />
         </Drawer.Header>
         <Drawer.Body>
           <Drawer.Description>
@@ -71,7 +71,7 @@ function PlacementDemo() {
           <Drawer.Panel>
             <Drawer.Header>
               <Drawer.Title>Drawer from {p}</Drawer.Title>
-              <Drawer.Close>✕</Drawer.Close>
+              <Drawer.Close />
             </Drawer.Header>
             <Drawer.Body>
               This drawer slides in from the <strong>{p}</strong> side.
@@ -110,7 +110,7 @@ function FullScreenDemo() {
           <Drawer.Panel style={fullScreen}>
             <Drawer.Header headerType="divided">
               <Drawer.Title>Full-screen drawer</Drawer.Title>
-              <Drawer.Close>✕</Drawer.Close>
+              <Drawer.Close />
             </Drawer.Header>
             <Drawer.Body>
               The panel is stretched to the viewport by the style override and
@@ -150,7 +150,7 @@ function FooterTypeDrawerDemo() {
           <Drawer.Panel>
             <Drawer.Header>
               <Drawer.Title>{type} footer</Drawer.Title>
-              <Drawer.Close>✕</Drawer.Close>
+              <Drawer.Close />
             </Drawer.Header>
             <Drawer.Body>
               This footer uses <code>{type}</code> styling.
@@ -188,7 +188,7 @@ function HeaderTypeDrawerDemo() {
           <Drawer.Panel>
             <Drawer.Header headerType={type}>
               <Drawer.Title>{type} header</Drawer.Title>
-              <Drawer.Close>✕</Drawer.Close>
+              <Drawer.Close />
             </Drawer.Header>
             <Drawer.Body>Header type: {type}</Drawer.Body>
           </Drawer.Panel>
@@ -222,7 +222,7 @@ function DismissibleDrawerDemo() {
       <Drawer.Panel>
         <Drawer.Header>
           <Drawer.Title>Sticky Drawer</Drawer.Title>
-          <Drawer.Close>✕</Drawer.Close>
+          <Drawer.Close />
         </Drawer.Header>
         <Drawer.Body>
           This drawer can only be closed using the close control.
@@ -250,7 +250,7 @@ function OverlayBehaviorDemo() {
         <Drawer.Panel>
           <Drawer.Header>
             <Drawer.Title>Blurred overlay</Drawer.Title>
-            <Drawer.Close>✕</Drawer.Close>
+            <Drawer.Close />
           </Drawer.Header>
           <Drawer.Body>
             The backdrop stays visible and adds a soft blur effect behind the
@@ -265,7 +265,7 @@ function OverlayBehaviorDemo() {
         <Drawer.Panel>
           <Drawer.Header>
             <Drawer.Title>Invisible overlay</Drawer.Title>
-            <Drawer.Close>✕</Drawer.Close>
+            <Drawer.Close />
           </Drawer.Header>
           <Drawer.Body>
             The overlay remains mounted for interaction but is visually hidden.
@@ -296,7 +296,7 @@ function OverlayIntensityDemo() {
           <Drawer.Panel>
             <Drawer.Header>
               <Drawer.Title>{intensity}</Drawer.Title>
-              <Drawer.Close>✕</Drawer.Close>
+              <Drawer.Close />
             </Drawer.Header>
             <Drawer.Body>Overlay intensity: {intensity}</Drawer.Body>
           </Drawer.Panel>

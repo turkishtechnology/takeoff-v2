@@ -531,7 +531,7 @@ function PassengerArrayDemo() {
                       onClick={() => remove(index)}
                       className="inline-flex h-5 w-5 justify-center"
                     >
-                      x
+                      <CloseIconOutlinedRounded />
                     </button>
                   </Input.Suffix>
                 </Input>

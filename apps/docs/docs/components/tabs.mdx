@@ -8,6 +8,8 @@ sidebar_position: 8
 slug: /components/tabs
 ---
 
+import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
+
 import LiveCode from '@site/src/components/LiveCode';
 import {
   Badge,
@@ -16,7 +18,7 @@ import {
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const tabsScope = { Badge, Tabs };
+export const tabsScope = { Badge, CloseIconOutlinedRounded, Tabs };
 
 {/* prettier-ignore-start */}
 
@@ -300,7 +302,7 @@ function ClosableDemo() {
                   }}
                   onKeyDown={(event) => handleCloseKeyDown(event, tab)}
                 >
-                  x
+                  <CloseIconOutlinedRounded />
                 </span>
               </span>
             )}
