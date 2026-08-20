@@ -1,5 +1,259 @@
 # @takeoff-design/tokens
 
+## 0.4.0
+
+### Minor Changes
+
+- [#183](https://github.com/turkishtechnology/takeoff-v2/pull/183)
+  [`de05dc2`](https://github.com/turkishtechnology/takeoff-v2/commit/de05dc251633de7e90dcf9839703c9abd433b044)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Drop
+  `full-screen` from `Drawer`'s `placement`.
+
+  `placement` answers which edge the panel belongs to, and every other value in
+  the union drives a directional slide off that edge. `full-screen` answered a
+  different question — how big the panel is — and had to opt out of the axis it
+  was sitting on: the recipe gave it `transition: none` and `transform: none`,
+  then reintroduced a scale + opacity pair so it had any entry animation at all.
+  One value in a four-value enum carrying its own animation model is the shape
+  of a second concern wearing the first one's clothes.
+
+  `DrawerPlacement` is now `'left' | 'right' | 'top' | 'bottom'`, and the
+  `[data-placement='full-screen']` blocks are gone from the drawer recipe. A
+  full-screen drawer is built by keeping the edge that owns the slide-in and
+  stretching `Drawer.Panel` to the viewport with a style override — documented
+  with a live example on the Drawer docs page. Leave `transform` alone in that
+  override; the recipe drives the open/close slide through it.
+
+  Consumers passing `placement="full-screen"` get a type error and should move
+  to the override. Nothing else about the drawer changes.
+
+- [#177](https://github.com/turkishtechnology/takeoff-v2/pull/177)
+  [`74eae25`](https://github.com/turkishtechnology/takeoff-v2/commit/74eae2587456961722a841ca96470a86e3db5bca)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Add the
+  `Upload` file control — a click-to-browse trigger, a drag-and-drop dropzone, a
+  per-file list with previews and status, validation, and a read-only view mode
+  — plus the matching `tk-upload` recipes in the tokens package.
+
+  `Upload` is composition-first: the root owns the value and the validation, and
+  every capability comes from placing the matching part rather than toggling a
+  prop — no `Upload.Dropzone`, no drag-and-drop. The anatomy is
+  `Upload.Dropzone`, `Upload.Actions`, `Upload.Trigger`, `Upload.Submit`, and
+  `Upload.List` with an `Upload.Item` per file, whose `Upload.ItemPreview` /
+  `Upload.ItemContent` / `Upload.ItemActions` regions render by default and are
+  replaced by composing that part in the row.
+
+  It owns selection, validation, and drag-and-drop only — no part performs the
+  network upload, `Upload.Submit` included. That stays the consumer's: started
+  from `onFileAccept` as files are accepted, or from `Upload.Submit`'s `onClick`
+  when the user sends the batch. `status` / `progress` are consumer-owned for
+  the same reason. The component only displays them (`idle` / `uploading` /
+  `processing` / `completed` / `error`), and the progress bar draws only while
+  `uploading` with a numeric `progress`.
+
+  `Upload.Submit` is a `Button` that disables itself whenever sending makes no
+  sense — while the value is empty, and while a batch is already going (any file
+  `uploading` or `processing`), which is the double-submit guard the status
+  vocabulary makes cheap. It takes `Upload.Trigger`'s `outlined` / `neutral`
+  treatment rather than Button's own. Its place is beside the Trigger, in the
+  zone — browse and send are one decision — and since the zone stacks its
+  children, the two go in an `Upload.Actions`: a layout row that holds whatever
+  is put in it, `--spacing-m-base` apart, so a third control or a file count
+  sits on the same line just as well. `readOnly` leaves Submit live, since
+  handing a fixed list upstream does not change it.
+
+  The value is an `UploadFile` that points at a `File` rather than being one — a
+  plain object with no constructor to import, so an attachment that already
+  lives on the server is described with a `url` and an optional `thumbUrl`.
+  Validation runs on `accept`, `maxFileSize`, `maxFileCount`, and `multiple`;
+  rejected files never enter `value`, and `onFilesReject` hands back the limit
+  that broke (`file-too-large`, `file-invalid-type`, `too-many-files`) rather
+  than a sentence. `onFileAccept` reports only the entries that just arrived.
+
+  `Upload.ItemAction` is the single per-file control: `action` names it and is
+  mirrored as `data-action`, `'download'` and `'remove'` arrive wired, and any
+  other name — `'preview'`, `'retry'` — takes its behavior from `onClick`, its
+  glyph from `children`, and its wording from `label`. Built-in behavior runs
+  after `onClick` unless it is `preventDefault()`ed — the same veto
+  `Upload.Trigger` honours, and one `Upload.Dropzone` deliberately does not,
+  since on a drop `preventDefault()` is required boilerplate rather than an
+  intent. The part is polymorphic, so `as="a"` with an `href` hands the download
+  to the platform, and an `as`-rendered control stays activatable from the
+  keyboard.
+
+  `Upload.ItemPreview` draws an image thumbnail (`thumbUrl`, or the file itself
+  through an object URL revoked on unmount), a shipped Takeoff icon for the
+  known formats, or the uppercased extension as a badge — matched on extension
+  first, MIME type second, with a failed image falling back to the icon.
+
+  Every word the component renders on its own comes from a root prop, one per
+  string — `uploadingLabel`, `processingLabel`, `completedLabel`, `errorLabel`,
+  `progressLabel`, `downloadLabel`, `removeLabel` — so a localized app sets them
+  app-wide through the provider's `components` map. The accessible-name three
+  take `{name}` as a placeholder rather than a suffix, so a translation can move
+  the file name inside the sentence; emptying a status string silences it, while
+  the other three are accessible names on icon-only controls and cannot be
+  silenced. File size is a number, not a label, so `Intl` formats it in the
+  runtime's locale.
+
+  `readOnly` keeps files rendered and downloadable but drops the remove action
+  entirely and freezes `Upload.Trigger` in place; `disabled` changes no shape
+  and goes inert under the root's `data-disabled`; `invalid` is the danger
+  treatment. All three resolve as `own prop ?? Field ?? false`, and composing
+  inside a `Field` wires the label and helper/error text to the root's
+  `role="group"`.
+
+  The docs API generator changed with it: `escapeMarkdownCell` now writes `{`
+  and `}` as entities outside inline code spans, because a JSDoc `@defaultValue`
+  carrying a `{name}` placeholder reached the mdx unescaped and MDX parsed it as
+  a JSX expression, failing SSG. It is shared infrastructure rather than an
+  Upload detail — every generated API table goes through it, so re-running
+  `gen:api` can reflow cells on component pages that have nothing to do with
+  this change.
+
+### Patch Changes
+
+- [#178](https://github.com/turkishtechnology/takeoff-v2/pull/178)
+  [`11a602a`](https://github.com/turkishtechnology/takeoff-v2/commit/11a602a841b11852783e43a5d93efb367481d552)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Stop Button
+  and Chip from thickening the icons they hold.
+
+  Both recipes coloured the SVGs in their icon slots with `fill: currentColor`
+  **and** `stroke: currentColor` — a defensive pair carried since the first
+  Button commit, so that a glyph would take the control's colour whether it was
+  drawn as a fill or as a stroke. On the Takeoff icon set, which draws every
+  glyph as a filled path, the second declaration is not a no-op: it paints SVG's
+  default 1-unit-wide outline centred on each path edge, adding a full unit to a
+  24-unit glyph. A close mark's arms went from ~1.5 units to ~2.5 — roughly 1.6x
+  the intended weight, and visibly heavier than the same icon rendered outside a
+  button (an Upload row's status marks next to its action buttons made the
+  difference obvious).
+
+  The `stroke` is dropped from `.tk-button-content svg` /
+  `.tk-button-spinner svg` and `.tk-chip-remove svg`. The eight icons that
+  genuinely are stroke-drawn (`funnel`, `filter-horizontal`) carry their own
+  `stroke="currentColor"` and `stroke-width` attributes, so they keep colouring
+  correctly — which is also why the fix is a removal rather than a
+  `stroke: none`, since that would override those attributes and erase the
+  glyphs entirely.
+
+- [#184](https://github.com/turkishtechnology/takeoff-v2/pull/184)
+  [`04aad7d`](https://github.com/turkishtechnology/takeoff-v2/commit/04aad7d8610a0570e76a7499562e28d0829d54de)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Give
+  `Field`'s label and the standalone `Label` the inset their design tokens have
+  always defined for them.
+
+  `.tk-field-label` and `.tk-label` carried no padding at all, so a label sat
+  flush against the edge of its wrapper while the `input-external-label-*`
+  family — the same family `Input` and `Select` already read their padding, gap,
+  and radius from — shipped `label-h-padding` / `label-v-padding` entries that
+  no recipe consumed. Both recipes now apply them: `8px` horizontal, `0`
+  vertical. `Field` steps down to the small variant (`6px`) when the control it
+  wraps reports `data-size="small"`, matching how `Input` and `Select` scale;
+  the standalone `Label` has no size context to read, so it stays on the large
+  inset.
+
+  Two hand-written offsets go away in the same pass. The required asterisk's
+  `margin-inline-start: 0.125rem` is dropped so `*` sits tight against the label
+  text as the design shows it — on `Field`'s `.tk-field-asterisk` span and on
+  `Label`'s `[data-required]::after` alike. The helper text's
+  `margin-block-start: var(--spacing-xxs)` is dropped too, because `Field`'s
+  root already spaces its rows with `--input-external-label-base-div-gap`; the
+  extra `2px` stacked on top of that gap and pushed description and error
+  messages `6px` below the control instead of the intended `4px`.
+
+  Styling only — no markup, class name, token value, or API changes.
+
+- [#190](https://github.com/turkishtechnology/takeoff-v2/pull/190)
+  [`d71dfad`](https://github.com/turkishtechnology/takeoff-v2/commit/d71dfad6299c609efd3ed5be196343c644cece89)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Move the
+  wrapper icons onto the official Takeoff set and settle a batch of panel / row
+  sizing issues that came out of it.
+
+  **Official glyphs.** `Alert.Close`, `Chip`'s remove control,
+  `Input.ClearButton`, `Input.Increment` / `Input.Decrement` and
+  `Field.ErrorMessage` now render `@takeoff-icons/react` glyphs (`close`,
+  `chevron-top` / `chevron-bottom`, `alert-circle`) instead of the inline
+  Lucide-derived placeholders, and `Checkbox.Indicator` renders the official
+  `check` / `remove`. The placeholder module keeps only the three glyphs the
+  icon set does not ship — `info` and `eye` / `eye-off` are still missing as of
+  `@takeoff-icons/react` 0.2.0, so `Field.Description` and `Input.RevealButton`
+  stay on their inline SVGs; the stroked Lucide base and every replaced glyph
+  are deleted.
+
+  Swapping the art changes its optical size, because the official glyphs are
+  drawn well inside the 24×24 grid: the check spans ~9.3 units against the
+  placeholder's 17. Two recipes compensate so nothing looks bigger or smaller
+  than before. The Checkbox icon box scales the svg per size and per state (base
+  22px / 14px, small 18px / 12px, with `flex: none` so the icon box cannot
+  squash it back down), which keeps the painted mark's width within ~0.2px of
+  the placeholder's at both sizes. `Field.ErrorMessage`'s icon drops to the
+  helper-text size and lifts 1px, since the edge-to-edge official glyph read
+  larger and lower than the inset placeholder the description still renders.
+
+  **Alert.** The filled surface's action colour is qualified with `.tk-button`
+  (`.tk-alert-action.tk-button`). The rule and the Button's own variant colour
+  were both `(0,4,0)`, so the winner came down to source order — and CSS
+  minifiers reorder equal-specificity rules, which is why a filled toast's
+  action label rendered light in dev and variant-coloured (dark green on green,
+  ~1.9:1 contrast) in a production build. The gradient appearance now takes a
+  `$gradient-border-color` (defaulting to the variant's base colour) instead of
+  inheriting the sub-base border, and `Alert.Close` anchors to the top-right of
+  the row rather than being centred.
+
+  **Chip / Input.** `chip-size` sets `height` instead of `min-height`, so the
+  size token is the outer box: with the root's `box-sizing: border-box` the
+  border and padding resolve inside it and a chip measures exactly 20 / 24 /
+  28px instead of overshooting to 22 / 26 / 34. Chips inside an Input are
+  additionally pinned to the field's own line box, so committing the first tag
+  no longer pushes the bordered row open — the row keeps its height whether it
+  is empty or full.
+
+  **Tabs.** In the horizontal `divided` type the strip's rule moves from the
+  list's `border-bottom` into its padding box as a 1px background line. The list
+  is a scroll container, and a scroll container clips its children at the
+  padding box, so a trigger could never paint over a rule that lived in the
+  border area. Every divided tab now carries the same bottom border pulled 1px
+  down over that line and only its colour flips on selection, so the active tab
+  merges into the panel without the 1px height jump and the grey `currentColor`
+  flash the previous version animated through.
+
+  **Select / Dropdown group headings.** Both panels' group headings now carry
+  their own divider: `Select.Label` and `Dropdown.Label` are flex rows whose
+  `::after` rule runs out to the panel edge, so consecutive groups read as
+  banded sections and neither panel needs a `Select.Separator` /
+  `Dropdown.Separator` between them (the parts stay, for separating plain
+  items). The headings also drop the uppercase / letter-spacing treatment and
+  move to `--text-dark` at 400 weight, with an 8px inline inset — the same one
+  the items use, so the rule stays flush at every size — 10px between text and
+  rule, and a type step per size: 11px in `small`, `--desktop-body-xs-size` in
+  `base`, `--desktop-body-s-size` in `large`.
+
+- [#192](https://github.com/turkishtechnology/takeoff-v2/pull/192)
+  [`2ae641f`](https://github.com/turkishtechnology/takeoff-v2/commit/2ae641fc543bda895cd7f867ca405d26ca989ed8)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Retire the
+  last inlined glyphs now that `@takeoff-icons` 0.3.0 ships them:
+  `Field.Description` uses `info` and `Input.RevealButton` uses `eye-open` /
+  `eye-closed`, so the `placeholderIcons` module is gone and every glyph
+  react-spar renders comes from the official icon set.
+
+  With both helper-text glyphs now drawn edge to edge on the official 24x24
+  grid, the field recipe's size-and-lift correction folds back from an
+  error-only override into the shared description/error icon rule, so the two
+  line up identically.
+
+  Also drops `renderIconSymbol`, dead since the compound API landed: nothing
+  called it, it was never exported from the package root, and no component emits
+  the `data-icon-kind` attribute it documented.
+
+- [#192](https://github.com/turkishtechnology/takeoff-v2/pull/192)
+  [`2ae641f`](https://github.com/turkishtechnology/takeoff-v2/commit/2ae641fc543bda895cd7f867ca405d26ca989ed8)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Give the
+  table's sort and pagination controls glyphs that read unambiguously. Sorting
+  now uses up/down arrows instead of chevrons, which already mean disclosure
+  both in the table's own row-expand toggle and across the library, and
+  first/last page use double chevrons instead of plain arrows that were easy to
+  mistake for previous/next.
+
 ## 0.3.0
 
 ### Minor Changes

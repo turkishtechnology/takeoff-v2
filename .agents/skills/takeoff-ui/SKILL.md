@@ -94,17 +94,19 @@ props, a11y, and a verbatim Copy-page doc in its `references/`.
 
 **Actions & form controls:** `takeoff-button` · `takeoff-checkbox` ·
 `takeoff-input` · `takeoff-label` · `takeoff-radio` · `takeoff-select` ·
-`takeoff-switch` · `takeoff-field` (form-field wrapper: label + description +
-error context for nested controls)
+`takeoff-slider` · `takeoff-switch` · `takeoff-upload` (file control: browse
+trigger, dropzone, per-file list) · `takeoff-field` (form-field wrapper: label,
+description, and error context for nested controls)
 
 **Navigation & disclosure:** `takeoff-accordion` · `takeoff-breadcrumb` ·
-`takeoff-tabs`
+`takeoff-dropdown` · `takeoff-stepper` · `takeoff-tabs`
 
 **Feedback & status:** `takeoff-alert` · `takeoff-badge` · `takeoff-chip` ·
-`takeoff-spinner` · `takeoff-tooltip` · `takeoff-toast`
+`takeoff-progress` · `takeoff-skeleton` · `takeoff-spinner` · `takeoff-tooltip`
+· `takeoff-toast`
 
-**Content & overlays:** `takeoff-card` · `takeoff-dialog` · `takeoff-drawer` ·
-`takeoff-popover` · `takeoff-table`
+**Content & overlays:** `takeoff-card` · `takeoff-dialog` · `takeoff-divider` ·
+`takeoff-drawer` · `takeoff-popover` · `takeoff-table`
 
 ## Forms
 

@@ -80,6 +80,19 @@ import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerB
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 import { SkeletonBase } from './components/skeleton/base';
+import {
+  UploadActionsBase,
+  UploadBase,
+  UploadDropzoneBase,
+  UploadItemActionBase,
+  UploadItemActionsBase,
+  UploadItemBase,
+  UploadItemContentBase,
+  UploadItemPreviewBase,
+  UploadListBase,
+  UploadSubmitBase,
+  UploadTriggerBase,
+} from './components/upload/base';
 
 /**
  * Inventory of every shipped component's slot-class map. The styling recipes
@@ -212,4 +225,15 @@ export const slotClassRegistry = {
   tooltipDescription: { slots: TooltipDescriptionBase.classes },
   tooltipArrow: { slots: TooltipArrowBase.classes },
   skeleton: { slots: SkeletonBase.classes },
+  upload: { slots: UploadBase.classes },
+  uploadDropzone: { slots: UploadDropzoneBase.classes },
+  uploadActions: { slots: UploadActionsBase.classes },
+  uploadTrigger: { slots: UploadTriggerBase.classes },
+  uploadSubmit: { slots: UploadSubmitBase.classes },
+  uploadList: { slots: UploadListBase.classes },
+  uploadItem: { slots: UploadItemBase.classes },
+  uploadItemContent: { slots: UploadItemContentBase.classes },
+  uploadItemPreview: { slots: UploadItemPreviewBase.classes },
+  uploadItemActions: { slots: UploadItemActionsBase.classes },
+  uploadItemAction: { slots: UploadItemActionBase.classes },
 } as const;

@@ -42,7 +42,7 @@ function PlaygroundDemo() {
         </Stepper.Item>
       </Stepper>
       <div className="flex justify-center gap-3">
-        <Button size="small" variant="secondary" disabled={active === 0} onClick={() => setActive(active - 1)}>
+        <Button size="small" variant="secondary" appearance="outlined" disabled={active === 0} onClick={() => setActive(active - 1)}>
           Back
         </Button>
         <Button size="small" disabled={active === 2} onClick={() => setActive(active + 1)}>

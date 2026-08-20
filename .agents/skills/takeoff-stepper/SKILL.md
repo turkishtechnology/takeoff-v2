@@ -13,6 +13,12 @@ description:
 Use `Stepper` to show progress through an ordered workflow and optionally let
 users navigate between eligible steps. It is a standalone Takeoff component.
 
+**When to use:** Multi-step flows where the sequence itself is meaningful and
+the user should see where they are and what remains — checkout, booking,
+onboarding, multi-page forms. Not this — use `takeoff-tabs` when sections can be
+visited in any order, and `takeoff-progress` when you only need to show
+completion without naming the steps.
+
 ## Quick start
 
 ```tsx

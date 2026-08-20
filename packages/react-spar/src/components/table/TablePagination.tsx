@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ArrowLeftIconOutlinedRounded } from '@takeoff-icons/react/arrow-left';
-import { ArrowRightIconOutlinedRounded } from '@takeoff-icons/react/arrow-right';
 import { ChevronLeftIconOutlinedRounded } from '@takeoff-icons/react/chevron-left';
 import { ChevronRightIconOutlinedRounded } from '@takeoff-icons/react/chevron-right';
+import { DoubleChevronLeftIconOutlinedRounded } from '@takeoff-icons/react/double-chevron-left';
+import { DoubleChevronRightIconOutlinedRounded } from '@takeoff-icons/react/double-chevron-right';
 import { Button } from '../button';
 import { Input } from '../input';
 import { Select } from '../select';
@@ -61,7 +61,7 @@ export const TablePagination = () => {
           variant="neutral"
           appearance="text"
           aria-label="First page"
-          startContent={<ArrowLeftIconOutlinedRounded />}
+          startContent={<DoubleChevronLeftIconOutlinedRounded />}
           disabled={!table.getCanPreviousPage()}
           onClick={() => table.setPageIndex(0)}
         />
@@ -114,7 +114,7 @@ export const TablePagination = () => {
           variant="neutral"
           appearance="text"
           aria-label="Last page"
-          startContent={<ArrowRightIconOutlinedRounded />}
+          startContent={<DoubleChevronRightIconOutlinedRounded />}
           disabled={!table.getCanNextPage() || pageCount <= 0}
           onClick={() => table.setPageIndex(pageCount - 1)}
         />

@@ -12,6 +12,11 @@ description:
 Use `Divider` to create semantic or decorative boundaries between related
 content. It is a standalone Takeoff component rather than a Spar primitive.
 
+**When to use:** Separating sections of a page, groups in a list or menu, or
+items in a horizontal toolbar — optionally with a label ("OR") in the middle.
+Not this — reach for spacing, a heading, or `takeoff-card` when the goal is
+grouping content rather than drawing a line between it.
+
 ## Quick start
 
 ```tsx

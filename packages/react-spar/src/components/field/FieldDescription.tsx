@@ -1,8 +1,8 @@
 import type { ElementType } from 'react';
+import { InfoIconFilledRounded } from '@takeoff-icons/react/info';
 import { FieldDescription as SparFieldDescription } from '@turkish-technology/spar';
 
 import { buildSlotAttrs, composeRootAttrs } from '../../core';
-import { PlaceholderInfo } from '../../icons';
 import { useComponentTheme } from '../../provider';
 
 import { FieldDescriptionBase } from './base';
@@ -32,7 +32,7 @@ export const FieldDescription = <T extends ElementType = 'div'>(props: FieldDesc
     <SparFieldDescription {...spar} ref={ref} {...rootAttrs}>
       {hasContent && (
         <span {...iconAttrs} aria-hidden="true">
-          <PlaceholderInfo />
+          <InfoIconFilledRounded />
         </span>
       )}
       {children}

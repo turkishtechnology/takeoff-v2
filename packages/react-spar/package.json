@@ -1,6 +1,6 @@
 {
   "name": "@takeoff-ui/react-spar",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "React-first Takeoff wrappers built on top of @turkish-technology/spar.",
   "type": "module",
   "author": "Turkish Technology Frontend Infrastructure Team <takeoffui@thy.com>",
@@ -30,7 +30,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "agents"
   ],
   "exports": {
     ".": {
@@ -54,7 +55,7 @@
     "prepack": "tsup"
   },
   "dependencies": {
-    "@takeoff-icons/react": "^0.1.1",
+    "@takeoff-icons/react": "^0.4.0",
     "@tanstack/react-table": "8.21.3",
     "@turkish-technology/spar": "0.2.1",
     "clsx": "^2.1.1"

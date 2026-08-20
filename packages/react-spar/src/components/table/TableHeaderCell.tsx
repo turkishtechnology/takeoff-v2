@@ -1,6 +1,6 @@
 import { flexRender, type Header } from '@tanstack/react-table';
-import { ChevronBottomIconOutlinedRounded } from '@takeoff-icons/react/chevron-bottom';
-import { ChevronTopIconOutlinedRounded } from '@takeoff-icons/react/chevron-top';
+import { ArrowBottomIconOutlinedRounded } from '@takeoff-icons/react/arrow-bottom';
+import { ArrowTopIconOutlinedRounded } from '@takeoff-icons/react/arrow-top';
 import { SwapIconOutlinedRounded } from '@takeoff-icons/react/swap';
 
 import { useTableContext } from './context';
@@ -47,7 +47,7 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
           <button {...slotAttrs('sortTrigger')} type="button" onClick={column.getToggleSortingHandler()}>
             {content}
             <span {...slotAttrs('sortIcon')} data-direction={sorted || 'none'} aria-hidden="true">
-              {sorted === 'asc' ? <ChevronTopIconOutlinedRounded /> : sorted === 'desc' ? <ChevronBottomIconOutlinedRounded /> : <SwapIconOutlinedRounded />}
+              {sorted === 'asc' ? <ArrowTopIconOutlinedRounded /> : sorted === 'desc' ? <ArrowBottomIconOutlinedRounded /> : <SwapIconOutlinedRounded />}
             </span>
           </button>
         ) : (

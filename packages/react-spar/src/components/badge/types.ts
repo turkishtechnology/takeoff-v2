@@ -3,20 +3,7 @@ import type { ReactNode, Ref } from 'react';
 import type { ClassNamesMap, SlotPropsMap, TakeoffHTMLProps } from '../../core';
 
 export type BadgeVariant =
-  | 'primary'
-  | 'secondary'
-  | 'neutral'
-  | 'info'
-  | 'success'
-  | 'danger'
-  | 'warning'
-  | 'verified'
-  | 'purple'
-  | 'cyan'
-  | 'business'
-  | 'teal'
-  | 'white'
-  | 'dark';
+  'primary' | 'secondary' | 'neutral' | 'info' | 'success' | 'danger' | 'warning' | 'verified' | 'purple' | 'cyan' | 'business' | 'teal' | 'white' | 'dark';
 
 export type BadgeAppearance = 'filled' | 'filledLight' | 'outlined' | 'text';
 

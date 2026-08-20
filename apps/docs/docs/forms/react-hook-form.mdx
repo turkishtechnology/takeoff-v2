@@ -7,6 +7,7 @@ sidebar_label: React Hook Form
 slug: /forms/react-hook-form
 ---
 
+import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
 import LiveCode from '@site/src/components/LiveCode';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -23,6 +24,7 @@ import * as z from 'zod';
 export const formScope = {
   Button,
   Checkbox,
+  CloseIconOutlinedRounded,
   Controller,
   Field,
   Input,
@@ -191,7 +193,7 @@ function PassengerArrayDemo() {
                       onClick={() => remove(index)}
                       className="inline-flex h-5 w-5 justify-center"
                     >
-                      x
+                      <CloseIconOutlinedRounded />
                     </button>
                   </Input.Suffix>
                 </Input>

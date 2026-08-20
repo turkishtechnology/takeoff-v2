@@ -1,5 +1,7 @@
+import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
+import { RemoveIconOutlinedRounded } from '@takeoff-icons/react/remove';
+
 import { buildSlotAttrs } from '../../core';
-import { PlaceholderCheck, PlaceholderRemove } from '../../icons';
 import { useComponentTheme } from '../../provider';
 
 import { CheckboxBase } from './base';
@@ -35,7 +37,7 @@ export const CheckboxIndicator = (props: CheckboxIndicatorProps) => {
       ? children({ checked, indeterminate })
       : (children ?? (
           <span {...iconAttrs} aria-hidden>
-            {indeterminate ? <PlaceholderRemove /> : <PlaceholderCheck />}
+            {indeterminate ? <RemoveIconOutlinedRounded /> : <CheckIconOutlinedRounded />}
           </span>
         ));
 

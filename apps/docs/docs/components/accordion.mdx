@@ -69,6 +69,66 @@ function PlaygroundDemo() {
 render(<PlaygroundDemo />);
 `;
 
+export const typeDemo = String.raw`
+function TypeDemo() {
+  return (
+    <div className="flex w-full max-w-90 flex-col gap-8">
+      <div>
+        <div className="mb-2 text-sm text-sub-base">type="grouped"</div>
+        <Accordion type="grouped" defaultValue="fare">
+          <Accordion.Item value="fare">
+            <Accordion.Header>
+              <Accordion.Trigger>
+                Fare conditions
+                <Accordion.Indicator />
+              </Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Grouped items render as separate cards, each with its own border and surface.</Accordion.Content>
+          </Accordion.Item>
+
+          <Accordion.Item value="baggage">
+            <Accordion.Header>
+              <Accordion.Trigger>
+                Baggage allowance
+                <Accordion.Indicator />
+              </Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Use grouped when each section should read as a standalone block on the page.</Accordion.Content>
+          </Accordion.Item>
+        </Accordion>
+      </div>
+
+      <div>
+        <div className="mb-2 text-sm text-sub-base">type="divided"</div>
+        <Accordion type="divided" defaultValue="fare">
+          <Accordion.Item value="fare">
+            <Accordion.Header>
+              <Accordion.Trigger>
+                Fare conditions
+                <Accordion.Indicator />
+              </Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Divided items share one continuous list, separated by rules instead of card edges.</Accordion.Content>
+          </Accordion.Item>
+
+          <Accordion.Item value="baggage">
+            <Accordion.Header>
+              <Accordion.Trigger>
+                Baggage allowance
+                <Accordion.Indicator />
+              </Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Use divided for dense FAQ-style lists where the sections belong to one group.</Accordion.Content>
+          </Accordion.Item>
+        </Accordion>
+      </div>
+    </div>
+  );
+}
+
+render(<TypeDemo />);
+`;
+
 export const multipleDemo = String.raw`
 function MultipleDemo() {
   return (
@@ -309,6 +369,20 @@ import { Accordion } from '@takeoff-ui/react-spar';
   code={playgroundDemo}
   noInline
   previewMinHeight={360}
+  previewWrapper={ReactSparDemoRoot}
+  scope={accordionScope}
+/>
+
+## Type
+
+`type` sets the visual grouping. `grouped` (default) renders each item as its
+own bordered card; `divided` joins the items into a single list separated by
+rules. The prop is set on the root and cascades to every item via `data-type`.
+
+<LiveCode
+  code={typeDemo}
+  noInline
+  previewMinHeight={420}
   previewWrapper={ReactSparDemoRoot}
   scope={accordionScope}
 />

@@ -60,7 +60,7 @@ function FlightDialog() {
       <Dialog.Panel>
         <Dialog.Header>
           <Dialog.Title>Flight Details</Dialog.Title>
-          <Dialog.Close>✕</Dialog.Close>
+          <Dialog.Close />
         </Dialog.Header>
         <Dialog.Body>
           <Dialog.Description>
@@ -89,7 +89,7 @@ hidden.
   <Dialog.Panel>
     <Dialog.Header>
       <Dialog.Title>Dark blurred overlay</Dialog.Title>
-      <Dialog.Close>✕</Dialog.Close>
+      <Dialog.Close />
     </Dialog.Header>
     <Dialog.Body>The backdrop is darkened with a soft blur.</Dialog.Body>
   </Dialog.Panel>
@@ -109,7 +109,7 @@ changing the layout.
   <Dialog.Panel>
     <Dialog.Header headerType="divided">
       <Dialog.Title>Confirm changes</Dialog.Title>
-      <Dialog.Close>✕</Dialog.Close>
+      <Dialog.Close />
     </Dialog.Header>
     <Dialog.Body>Apply these changes to your itinerary?</Dialog.Body>
     <Dialog.Footer footerType="light">
@@ -132,7 +132,7 @@ the user must use an explicit close action.
   <Dialog.Panel>
     <Dialog.Header headerType="light">
       <Dialog.Title>Dismiss disabled</Dialog.Title>
-      <Dialog.Close>✕</Dialog.Close>
+      <Dialog.Close />
     </Dialog.Header>
     <Dialog.Body>
       Escape and outside clicks will not close this dialog. Use the close
@@ -162,7 +162,7 @@ function ControlledDialog() {
         <Dialog.Panel>
           <Dialog.Header headerType="light">
             <Dialog.Title>Controlled dialog</Dialog.Title>
-            <Dialog.Close>✕</Dialog.Close>
+            <Dialog.Close />
           </Dialog.Header>
           <Dialog.Body>
             This dialog's state is managed in the parent.

@@ -1,8 +1,8 @@
 import type { ElementType, KeyboardEvent, MouseEvent } from 'react';
+import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
 import { useInputContext } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
-import { PlaceholderClose } from '../../icons';
 import { useComponentTheme } from '../../provider';
 import { Button } from '../button';
 
@@ -75,7 +75,7 @@ export const InputClearButton = <T extends ElementType = 'button'>(props: InputC
       aria-label={ariaLabel}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      startContent={children ?? <PlaceholderClose />}
+      startContent={children ?? <CloseIconOutlinedRounded />}
     />
   );
 };

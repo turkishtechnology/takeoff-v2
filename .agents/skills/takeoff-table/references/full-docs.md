@@ -887,20 +887,20 @@ for primitive behavior.
 
 #### Data attributes {#table-data-attributes}
 
-| Attribute                  | Applied when                                                              | Purpose                                                                                                    |
-| -------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| data-slot="root"           | Always                                                                    | Stable selector for the root container.                                                                    |
-| data-slot="table-viewport" | Always                                                                    | The table-only horizontal/vertical scroll container; pagination remains outside it.                        |
-| data-size                  | Always                                                                    | Reflects the resolved `size` (density) so recipes can scope cell padding.                                  |
-| data-striped               | When `striped` is true.                                                   | Enables zebra striping on body rows.                                                                       |
-| data-bordered              | When `bordered` is true.                                                  | Adds vertical separators between columns.                                                                  |
-| data-sticky-header         | When `stickyHeader` is true.                                              | Pins the header row during vertical scroll.                                                                |
-| data-scrolled              | On the table viewport while `scrollTop > 0`.                              | Adds sticky-header elevation only after vertical scrolling begins.                                         |
-| data-loading               | When `loading` is true.                                                   | Shows the loading overlay; the table is also marked `aria-busy`.                                           |
-| data-align                 | On every header/body cell with an `align` (or column `meta.headerAlign`). | Drives cell `text-align` (`start` \| `center` \| `end`).                                                   |
-| data-sticky                | On cells of a column with `sticky: "left" \| "right"`.                    | Pins the column; per-edge offset + z-index are applied inline.                                             |
-| aria-sort                  | On sortable header cells.                                                 | A11y sort state (`ascending` \| `descending` \| `none`); the sort chevron mirrors it via `data-direction`. |
-| data-selected              | On a selected body row.                                                   | Theme hook for the selected-row background.                                                                |
+| Attribute                  | Applied when                                                              | Purpose                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| data-slot="root"           | Always                                                                    | Stable selector for the root container.                                                                  |
+| data-slot="table-viewport" | Always                                                                    | The table-only horizontal/vertical scroll container; pagination remains outside it.                      |
+| data-size                  | Always                                                                    | Reflects the resolved `size` (density) so recipes can scope cell padding.                                |
+| data-striped               | When `striped` is true.                                                   | Enables zebra striping on body rows.                                                                     |
+| data-bordered              | When `bordered` is true.                                                  | Adds vertical separators between columns.                                                                |
+| data-sticky-header         | When `stickyHeader` is true.                                              | Pins the header row during vertical scroll.                                                              |
+| data-scrolled              | On the table viewport while `scrollTop > 0`.                              | Adds sticky-header elevation only after vertical scrolling begins.                                       |
+| data-loading               | When `loading` is true.                                                   | Shows the loading overlay; the table is also marked `aria-busy`.                                         |
+| data-align                 | On every header/body cell with an `align` (or column `meta.headerAlign`). | Drives cell `text-align` (`start` \| `center` \| `end`).                                                 |
+| data-sticky                | On cells of a column with `sticky: "left" \| "right"`.                    | Pins the column; per-edge offset + z-index are applied inline.                                           |
+| aria-sort                  | On sortable header cells.                                                 | A11y sort state (`ascending` \| `descending` \| `none`); the sort arrow mirrors it via `data-direction`. |
+| data-selected              | On a selected body row.                                                   | Theme hook for the selected-row background.                                                              |
 
 ### Type Definitions {#table-type-definitions}
 

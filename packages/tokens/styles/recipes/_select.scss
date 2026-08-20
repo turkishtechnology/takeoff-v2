@@ -190,6 +190,13 @@
       gap: var(--dropdown-items-basic-large-gap);
       border-radius: var(--dropdown-items-basic-large-radius);
     }
+
+    // One step under the panel's own body-m items, mirroring how the base size
+    // pairs body-s items with a body-xs heading.
+    .tk-select-label {
+      font-size: var(--desktop-body-s-size);
+      line-height: var(--desktop-body-s-line-height);
+    }
   }
 
   &[data-size='base'] {
@@ -205,6 +212,12 @@
       padding: var(--dropdown-items-basic-small-v-padding) var(--dropdown-items-basic-small-h-padding);
       gap: var(--dropdown-items-basic-small-gap);
       border-radius: var(--dropdown-items-basic-small-radius);
+    }
+
+    // At this scale the items are already at the smallest body size, so the
+    // group heading steps below the type scale to keep the caption hierarchy.
+    .tk-select-label {
+      font-size: 11px;
     }
   }
 }
@@ -289,15 +302,23 @@
 }
 
 @mixin select-label {
-  padding-inline: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-l);
+  padding-inline: var(--spacing-m-base);
   padding-block: 0.25rem;
   font-size: var(--desktop-body-xs-size);
   line-height: var(--desktop-body-xs-line-height);
-  font-weight: 500;
-  color: var(--text-sub-base);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  font-weight: 400;
+  color: var(--text-dark);
   user-select: none;
+
+  &::after {
+    content: '';
+    flex: 1 1 auto;
+    height: 1px;
+    background-color: var(--border-light);
+  }
 }
 
 // ---------------------------------------------------------------------------

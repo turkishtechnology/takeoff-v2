@@ -110,7 +110,6 @@ table needs updating.
 | `data-icon-only`      | Button                 | No label content, only icon                      |
 | `data-rounded`        | Button                 | Circular icon-only shape                         |
 | `data-underline`      | Button                 | Label is underlined                              |
-| `data-icon-kind`      | Button, AccordionItem  | Distinguishes string icons from ReactNode icons  |
 | `data-hide-arrows`    | Accordion root         | Auto-rendered arrows are hidden                  |
 | `data-arrow-position` | Accordion root         | Layout intent for trigger arrows                 |
 | `data-position`       | Radio root/item        | Indicator placement (`left` / `right`)           |
@@ -125,10 +124,9 @@ table needs updating.
 These are emitted outside the component composition pipeline (`composeRootAttrs`
 / `buildSlotAttrs`). They follow the same rules but live at different layers.
 
-| Attribute               | Layer                                                                 | Purpose                                          |
-| ----------------------- | --------------------------------------------------------------------- | ------------------------------------------------ |
-| `data-theme`            | [`<TakeoffSparProvider>`](../src/provider.tsx) — written to `<html>`  | Active theme name (consumed by token CSS)        |
-| `data-placeholder-icon` | [`src/icons/placeholderIcons.tsx`](../src/icons/placeholderIcons.tsx) | Marks default decorative SVGs for swap targeting |
+| Attribute    | Layer                                                                | Purpose                                   |
+| ------------ | -------------------------------------------------------------------- | ----------------------------------------- |
+| `data-theme` | [`<TakeoffSparProvider>`](../src/provider.tsx) — written to `<html>` | Active theme name (consumed by token CSS) |
 
 ## Component-specific decisions
 
@@ -367,3 +365,16 @@ follow the standard conventions (presence = `''`, finite = string).
   `Popover.Trigger` owner node (which emits its own `data-slot="root"`), so the
   filter button/panel are styled by class (`.tk-table-filter-button` /
   `.tk-table-filter-panel`) rather than a Table `data-slot` anchor.
+
+### Upload
+
+Upload is **v2-owned** with no upstream Spar primitive, so its vocabulary is
+wrapper-emitted. Recorded here per rule 10.
+
+- **`data-status` (State) lives on the item, not the root.** Status is per-file
+  and consumer-driven (`UploadFile.status`), so each `.tk-upload-item` carries
+  its own — there is no meaningful root-level upload status to mirror.
+- **The dropzone owns `data-drag-state`** (`accept` | `reject`), resolved by
+  matching the dragged payload against `accept`. It sits on the drop target
+  rather than the root because the affordance it drives is the dropzone's
+  border, and only a composed dropzone can be dragged over at all.

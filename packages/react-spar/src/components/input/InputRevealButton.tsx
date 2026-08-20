@@ -1,8 +1,9 @@
 import { useEffect, type ElementType, type MouseEvent } from 'react';
+import { EyeClosedIconOutlinedRounded } from '@takeoff-icons/react/eye-closed';
+import { EyeOpenIconOutlinedRounded } from '@takeoff-icons/react/eye-open';
 import { useInputContext } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
-import { PlaceholderEye, PlaceholderEyeOff } from '../../icons';
 import { useComponentTheme } from '../../provider';
 import { Button } from '../button';
 
@@ -57,7 +58,7 @@ export const InputRevealButton = <T extends ElementType = 'button'>(props: Input
       aria-label="Toggle password visibility"
       aria-pressed={revealed}
       onClick={handleClick}
-      startContent={children ?? (revealed ? <PlaceholderEyeOff /> : <PlaceholderEye />)}
+      startContent={children ?? (revealed ? <EyeClosedIconOutlinedRounded /> : <EyeOpenIconOutlinedRounded />)}
     />
   );
 };

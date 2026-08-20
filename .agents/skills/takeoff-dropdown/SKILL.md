@@ -13,6 +13,13 @@ Use `Dropdown` for a trigger that opens a keyboard-accessible list of actions.
 It wraps Spar's DropdownMenu primitives and adds Takeoff sizing, width, and
 visual slots.
 
+**When to use:** A trigger that opens a menu of _commands_ — row actions,
+overflow ("⋯") menus, toolbar menus, account menus. Items fire an action via
+`onSelect`; nothing is persisted as a value. Not this — use `takeoff-select`
+when the user is picking a value that stays selected and submits with a form,
+and `takeoff-popover` for arbitrary anchored content (forms, rich panels) rather
+than a list of commands.
+
 ## Quick start
 
 ```tsx

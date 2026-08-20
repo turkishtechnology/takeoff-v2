@@ -60,7 +60,7 @@ function FlightDrawer() {
       <Drawer.Panel>
         <Drawer.Header>
           <Drawer.Title>Flight Details</Drawer.Title>
-          <Drawer.Close>✕</Drawer.Close>
+          <Drawer.Close />
         </Drawer.Header>
         <Drawer.Body>
           <Drawer.Description>
@@ -79,7 +79,7 @@ function FlightDrawer() {
 ### Placement
 
 `placement` controls which edge the drawer slides in from: `left`, `right`,
-`top`, `bottom`, or `full-screen`.
+`top`, or `bottom`.
 
 ```tsx
 <Drawer placement="left">
@@ -88,12 +88,43 @@ function FlightDrawer() {
   <Drawer.Panel>
     <Drawer.Header>
       <Drawer.Title>Menu</Drawer.Title>
-      <Drawer.Close>✕</Drawer.Close>
+      <Drawer.Close />
     </Drawer.Header>
     <Drawer.Body>This drawer slides in from the left side.</Drawer.Body>
   </Drawer.Panel>
 </Drawer>
 ```
+
+### Full screen
+
+Stretch `Drawer.Panel` to the viewport with a style override. `placement` still
+decides which edge the panel slides in from.
+
+```tsx
+<Drawer placement="right">
+  <Drawer.Trigger as={Button}>Open full screen</Drawer.Trigger>
+  <Drawer.Overlay />
+  <Drawer.Panel
+    style={{
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      border: 'none',
+      borderRadius: 0,
+    }}
+  >
+    <Drawer.Header headerType="divided">
+      <Drawer.Title>Full-screen drawer</Drawer.Title>
+      <Drawer.Close />
+    </Drawer.Header>
+    <Drawer.Body>
+      Stretched to the viewport, still slides in from the right.
+    </Drawer.Body>
+  </Drawer.Panel>
+</Drawer>
+```
+
+Do not override `transform` — the recipe drives the open/close slide through it.
 
 ### Footer actions
 
@@ -107,7 +138,7 @@ function FlightDrawer() {
   <Drawer.Panel>
     <Drawer.Header headerType="divided">
       <Drawer.Title>Edit profile</Drawer.Title>
-      <Drawer.Close>✕</Drawer.Close>
+      <Drawer.Close />
     </Drawer.Header>
     <Drawer.Body>Form fields go here.</Drawer.Body>
     <Drawer.Footer footerType="divided">
@@ -143,7 +174,7 @@ function StickyDrawer() {
       <Drawer.Panel>
         <Drawer.Header>
           <Drawer.Title>Sticky Drawer</Drawer.Title>
-          <Drawer.Close>✕</Drawer.Close>
+          <Drawer.Close />
         </Drawer.Header>
         <Drawer.Body>
           This drawer can only be closed using the close control.
@@ -166,7 +197,7 @@ Tune the backdrop with `intensity` (`lightest` → `darkest`), `blur`, or
   <Drawer.Panel>
     <Drawer.Header>
       <Drawer.Title>Blurred overlay</Drawer.Title>
-      <Drawer.Close>✕</Drawer.Close>
+      <Drawer.Close />
     </Drawer.Header>
     <Drawer.Body>The backdrop adds a soft blur behind the panel.</Drawer.Body>
   </Drawer.Panel>
@@ -175,20 +206,20 @@ Tune the backdrop with `intensity` (`lightest` → `darkest`), `blur`, or
 
 ## Key props
 
-| Prop           | Type                                                      | Default   | Notes                                                       |
-| -------------- | --------------------------------------------------------- | --------- | ----------------------------------------------------------- |
-| `placement`    | `'left' \| 'right' \| 'top' \| 'bottom' \| 'full-screen'` | —         | Edge the panel slides in from (on `Drawer`).                |
-| `dismissible`  | `boolean`                                                 | `true`    | When false, outside-click/Escape won't close (on `Drawer`). |
-| `open`         | `boolean`                                                 | —         | Controlled open state (on `Drawer`).                        |
-| `defaultOpen`  | `boolean`                                                 | `false`   | Uncontrolled initial open state (on `Drawer`).              |
-| `onOpenChange` | `(open: boolean) => void`                                 | —         | Fires when open state changes (on `Drawer`).                |
-| `disabled`     | `boolean`                                                 | `false`   | Disables triggers, preventing opening (on `Drawer`).        |
-| `headerType`   | `'basic' \| 'divided' \| 'light' \| 'dark' \| 'primary'`  | `'basic'` | On `Drawer.Header`.                                         |
-| `footerType`   | `'basic' \| 'divided' \| 'light'`                         | `'basic'` | On `Drawer.Footer`.                                         |
-| `intensity`    | `'lightest' \| 'light' \| 'base' \| 'dark' \| 'darkest'`  | `'base'`  | On `Drawer.Overlay`.                                        |
-| `blur`         | `boolean`                                                 | `false`   | Backdrop blur, on `Drawer.Overlay`.                         |
-| `invisible`    | `boolean`                                                 | `false`   | Overlay rendered but visually hidden, on `Drawer.Overlay`.  |
-| `level`        | `number`                                                  | `5`       | Heading tag (h1–h6) for `Drawer.Title`; visual size fixed.  |
+| Prop           | Type                                                     | Default   | Notes                                                       |
+| -------------- | -------------------------------------------------------- | --------- | ----------------------------------------------------------- |
+| `placement`    | `'left' \| 'right' \| 'top' \| 'bottom'`                 | —         | Edge the panel slides in from (on `Drawer`).                |
+| `dismissible`  | `boolean`                                                | `true`    | When false, outside-click/Escape won't close (on `Drawer`). |
+| `open`         | `boolean`                                                | —         | Controlled open state (on `Drawer`).                        |
+| `defaultOpen`  | `boolean`                                                | `false`   | Uncontrolled initial open state (on `Drawer`).              |
+| `onOpenChange` | `(open: boolean) => void`                                | —         | Fires when open state changes (on `Drawer`).                |
+| `disabled`     | `boolean`                                                | `false`   | Disables triggers, preventing opening (on `Drawer`).        |
+| `headerType`   | `'basic' \| 'divided' \| 'light' \| 'dark' \| 'primary'` | `'basic'` | On `Drawer.Header`.                                         |
+| `footerType`   | `'basic' \| 'divided' \| 'light'`                        | `'basic'` | On `Drawer.Footer`.                                         |
+| `intensity`    | `'lightest' \| 'light' \| 'base' \| 'dark' \| 'darkest'` | `'base'`  | On `Drawer.Overlay`.                                        |
+| `blur`         | `boolean`                                                | `false`   | Backdrop blur, on `Drawer.Overlay`.                         |
+| `invisible`    | `boolean`                                                | `false`   | Overlay rendered but visually hidden, on `Drawer.Overlay`.  |
+| `level`        | `number`                                                 | `5`       | Heading tag (h1–h6) for `Drawer.Title`; visual size fixed.  |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
