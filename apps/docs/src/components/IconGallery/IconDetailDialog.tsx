@@ -78,9 +78,7 @@ export default function IconDetailDialog({ entry, initialVariant, svg, onVariant
                 </span>
               </span>
             </span>
-            <Dialog.Close className={styles.dialogClose} aria-label="Close">
-              ✕
-            </Dialog.Close>
+            <Dialog.Close className={styles.dialogClose} aria-label="Close" />
           </Dialog.Header>
 
           <Dialog.Body className={styles.dialogBody}>

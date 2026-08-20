@@ -60,7 +60,7 @@ function FlightDrawer() {
       <Drawer.Panel>
         <Drawer.Header>
           <Drawer.Title>Flight Details</Drawer.Title>
-          <Drawer.Close>✕</Drawer.Close>
+          <Drawer.Close />
         </Drawer.Header>
         <Drawer.Body>
           <Drawer.Description>
@@ -88,7 +88,7 @@ function FlightDrawer() {
   <Drawer.Panel>
     <Drawer.Header>
       <Drawer.Title>Menu</Drawer.Title>
-      <Drawer.Close>✕</Drawer.Close>
+      <Drawer.Close />
     </Drawer.Header>
     <Drawer.Body>This drawer slides in from the left side.</Drawer.Body>
   </Drawer.Panel>
@@ -115,7 +115,7 @@ decides which edge the panel slides in from.
   >
     <Drawer.Header headerType="divided">
       <Drawer.Title>Full-screen drawer</Drawer.Title>
-      <Drawer.Close>✕</Drawer.Close>
+      <Drawer.Close />
     </Drawer.Header>
     <Drawer.Body>
       Stretched to the viewport, still slides in from the right.
@@ -138,7 +138,7 @@ Do not override `transform` — the recipe drives the open/close slide through i
   <Drawer.Panel>
     <Drawer.Header headerType="divided">
       <Drawer.Title>Edit profile</Drawer.Title>
-      <Drawer.Close>✕</Drawer.Close>
+      <Drawer.Close />
     </Drawer.Header>
     <Drawer.Body>Form fields go here.</Drawer.Body>
     <Drawer.Footer footerType="divided">
@@ -174,7 +174,7 @@ function StickyDrawer() {
       <Drawer.Panel>
         <Drawer.Header>
           <Drawer.Title>Sticky Drawer</Drawer.Title>
-          <Drawer.Close>✕</Drawer.Close>
+          <Drawer.Close />
         </Drawer.Header>
         <Drawer.Body>
           This drawer can only be closed using the close control.
@@ -197,7 +197,7 @@ Tune the backdrop with `intensity` (`lightest` → `darkest`), `blur`, or
   <Drawer.Panel>
     <Drawer.Header>
       <Drawer.Title>Blurred overlay</Drawer.Title>
-      <Drawer.Close>✕</Drawer.Close>
+      <Drawer.Close />
     </Drawer.Header>
     <Drawer.Body>The backdrop adds a soft blur behind the panel.</Drawer.Body>
   </Drawer.Panel>
