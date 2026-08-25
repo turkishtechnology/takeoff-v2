@@ -40,6 +40,18 @@ export interface DrawerProps
   extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled'> {
   /** Side the drawer slides in from. */
   placement?: DrawerPlacement;
+  // Declared here rather than picked from `SparDialogProps`: Spar's Dialog
+  // implements `modal` but its published types omit it. Nothing else is needed —
+  // the root spreads its rest props straight into `SparDialog`, and JSX spread
+  // skips excess-property checking, so the value reaches Spar as-is.
+  /**
+   * Whether the drawer takes the page over: focus trap, scroll lock, and an
+   * overlay that swallows pointer events. `false` leaves the page live behind
+   * the panel, for a drawer that inspects what is still on screen rather than
+   * interrupting it.
+   * @defaultValue true
+   */
+  modal?: boolean;
   /** Whether the drawer can be dismissed by clicking outside or pressing Escape. @defaultValue true */
   dismissible?: boolean;
   children?: ReactNode;
