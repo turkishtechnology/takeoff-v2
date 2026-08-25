@@ -47,6 +47,48 @@ const outFile = resolve(docsAppDir, 'src/data/icons.generated.ts');
  */
 const svgOutDir = resolve(docsAppDir, 'static/icon-svg');
 
+/**
+ * Full per-icon inventory in plain Markdown. `generate-llms.mjs` folds this into
+ * the gallery page's `.md` mirror, so "Copy page" / "Open in Claude" on a page
+ * that renders entirely from React still hand over the actual icon set instead
+ * of the two-line frontmatter fallback. Written OUTSIDE `static/icons/` because
+ * gen:llms wipes that directory before it writes, and it runs after gen:icons.
+ */
+const inventoryFile = resolve(docsAppDir, 'static/icons-inventory.md');
+
+/**
+ * One line per icon: the kebab name every distribution keys off, the React
+ * export for the default variant, and the variants it actually ships (icons are
+ * not uniformly covered — see the variant table on the reference page).
+ */
+function buildInventoryMarkdown(entries, categories) {
+  const label = new Map(categories.map(c => [c.id, c.label]));
+  const lines = [
+    '## Icon inventory',
+    '',
+    `All **${entries.length}** icons, grouped by category. Each line is \`<name>\` — \`<React export for ${DEFAULT_VARIANT}>\`, then the variants that icon ships.`,
+    '',
+  ];
+
+  const byCategory = new Map();
+  for (const entry of entries) {
+    const key = entry.category || 'uncategorized';
+    if (!byCategory.has(key)) byCategory.set(key, []);
+    byCategory.get(key).push(entry);
+  }
+
+  for (const [id, group] of byCategory) {
+    lines.push(`### ${label.get(id) ?? id}`, '');
+    for (const entry of group) {
+      const exportName = reactExportName(entry.name, entry.variants.includes(DEFAULT_VARIANT) ? DEFAULT_VARIANT : entry.variants[0]);
+      lines.push(`- \`${entry.name}\` — \`${exportName}\` — variants: ${entry.variants.map(v => `\`${v}\``).join(', ')}`);
+    }
+    lines.push('');
+  }
+
+  return `${lines.join('\n').trim()}\n`;
+}
+
 /** Reference page whose marker block is rewritten with generated tables. */
 const metadataMdxFile = resolve(docsAppDir, 'icons/metadata.mdx');
 const startMarkerToken = 'icons-reference:start';
@@ -285,6 +327,8 @@ export const iconEntries: IconGalleryEntry[] = ${JSON.stringify(entries, null, 2
   await writeFile(outFile, formatted, 'utf8');
 
   // Inject the generated reference tables into icons/metadata.mdx.
+  await writeFile(inventoryFile, buildInventoryMarkdown(entries, categories), 'utf8');
+
   const referenceMd = buildReferenceMarkdown(entries, categories);
   let mdxSource;
   try {
@@ -300,7 +344,9 @@ export const iconEntries: IconGalleryEntry[] = ${JSON.stringify(entries, null, 2
     await writeFile(metadataMdxFile, nextMdx, 'utf8');
   }
 
-  console.log(`✓ ${entries.length} icons → src/data/icons.generated.ts (+ ${svgFileCount} per-variant SVG maps → static/icon-svg/, reference tables → icons/metadata.mdx)`);
+  console.log(
+    `✓ ${entries.length} icons → src/data/icons.generated.ts (+ ${svgFileCount} per-variant SVG maps → static/icon-svg/, inventory → static/icons-inventory.md, reference tables → icons/metadata.mdx)`,
+  );
 }
 
 main().catch(err => {

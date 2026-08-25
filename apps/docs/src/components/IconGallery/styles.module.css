@@ -1,226 +1,591 @@
+/* ==========================================================================
+   ICON GALLERY — Showroom layout
+   --------------------------------------------------------------------------
+   Three bands stacked on the docs container: a centred hero, a filter card,
+   and category sections of fixed-size cells. Every colour resolves through the
+   `--docs-*` aliases in `docusaurus-overrides.css`, so light and dark share one
+   skeleton and only the token values flex.
+   ========================================================================== */
+
 .root {
   display: grid;
-  gap: 20px;
+  /* Page rhythm, taken from the Showroom frame: hero -> filter bar -> sections
+     are 24 apart (264 - 240, and 470 - 446 in the design's coordinates). */
+  gap: 24px;
 }
 
-.controls {
+/* ---- Hero ------------------------------------------------------------- */
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* 32 between the text block, the actions and the trait pills — the design's
+     108 - 76 and 200 - 168. */
+  gap: 32px;
+  text-align: center;
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.heroEyebrow {
+  color: var(--text-darkest);
+  text-align: center;
+  font-family: var(--desktop-subheading-m-base-font);
+  font-size: var(--desktop-subheading-m-base-size);
+  font-style: normal;
+  font-weight: 300;
+  line-height: var(--desktop-subheading-m-base-line-height);
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  color: var(--text-darkest);
+  text-align: center;
+  font-family: var(--desktop-title-h2-font);
+  font-size: var(--desktop-title-h2-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--desktop-title-h2-line-height);
+}
+
+.heroActions {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  justify-content: center;
   gap: 12px;
 }
 
-.search {
-  flex: 1 1 240px;
-  min-width: 200px;
-  padding: 10px 14px;
-  border: 1px solid var(--docs-border-subtle);
-  border-radius: var(--radius-l, 12px);
-  background: var(--docs-surface-2);
-  color: inherit;
-  font-size: 0.95rem;
+.heroActions :is(button, a) {
+  height: 40px;
+  padding-block: 0;
 }
 
-.search:focus-visible {
-  outline: none;
-  border-color: var(--docs-border-strong);
+.heroTraits {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* ---- Filter bar -------------------------------------------------------- */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  background: var(--background-lightest);
+}
+
+.searchField {
+  flex: 3 1 200px;
+  min-width: 200px;
+  max-width: 420px;
 }
 
 .field {
   display: grid;
+  flex: 1 1 148px;
+  min-width: 148px;
+  max-width: 220px;
   gap: 4px;
 }
 
 .fieldLabel {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--docs-text-muted, #888);
+  display: flex;
+  align-items: center;
+  min-height: var(--label-m-base-line-height);
+  padding-inline: var(--input-external-label-small-label-h-padding);
+  color: var(--text-darkest);
+  font-family: var(--desktop-label-s-font);
+  font-size: var(--desktop-label-s-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--desktop-label-s-line-height);
 }
 
-.select {
-  padding: 9px 12px;
+.fieldNarrow {
+  flex: 1 1 104px;
+  min-width: 104px;
+  max-width: 160px;
+}
+
+.fieldColor {
+  display: grid;
+  flex: 1 1 148px;
+  min-width: 148px;
+  max-width: 220px;
+}
+
+/* Wraps the segmented control, which sizes to its own labels. */
+.fieldAuto {
+  display: grid;
+  flex: 1 1 152px;
+  min-width: 152px;
+  max-width: 220px;
+}
+
+/* Spar's controls carry an intrinsic min-width from their content. Inside a
+   flexible field that makes them render past the field and lap over the next
+   one, so each is told to fill its field and shrink with it. */
+.searchField > *,
+.field > :last-child,
+.fieldColor > :last-child,
+.fieldAuto > :last-child {
+  width: 100%;
+  min-width: 0;
+}
+
+/* With the trigger now allowed to shrink, a long option has to truncate rather
+   than force the box wide again. `data-slot` is the component's own published
+   seam, not a hashed class. */
+.field :global([data-slot='value']) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Colour picker. A native `<input type="color">` is the swatch itself, so the OS
+   picker opens from the dot the user clicks — there is no component equivalent
+   for that, which is why this one control is assembled by hand. Every colour in
+   it is still a `--docs-*` alias, so it follows the theme exactly like the Spar
+   controls beside it. Until a colour is picked the box shows the brand hex
+   greyed out: the icons stay ink-coloured, which is what keeps them legible in
+   both schemes. */
+.colorControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 10px;
   border: 1px solid var(--docs-border-subtle);
-  border-radius: var(--radius-l, 12px);
-  background: var(--docs-surface-2);
-  color: inherit;
-  font-size: 0.9rem;
-  text-transform: capitalize;
+  border-radius: var(--radius-m-base, 8px);
+  background: var(--docs-surface-1);
 }
 
-.count {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--docs-text-muted, #888);
+.colorControl[data-placeholder] .colorSwatch {
+  filter: grayscale(1);
+  opacity: 0.35;
 }
 
-.count code {
-  font-size: 0.8rem;
+.colorControl[data-placeholder] .colorValue {
+  color: var(--docs-ink-faint);
+}
+
+.colorSwatch {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full, 999px);
+  background: none;
+  cursor: pointer;
+  appearance: none;
+}
+
+.colorSwatch::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.colorSwatch::-webkit-color-swatch {
+  border: 1px solid var(--docs-border-subtle);
+  border-radius: var(--radius-full, 999px);
+}
+
+.colorSwatch::-moz-color-swatch {
+  border: 1px solid var(--docs-border-subtle);
+  border-radius: var(--radius-full, 999px);
+}
+
+.colorValue {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  color: var(--docs-ink-strong);
+}
+
+.colorReset {
+  margin-left: auto;
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--docs-ink-faint);
+  cursor: pointer;
+}
+
+.colorReset:hover {
+  color: var(--docs-ink-strong);
+}
+
+/* Shell for the Outlined / Filled pair. Only the track is styled here — each
+   segment is a Spar `Button`, so its fill, hover and dark-mode colours come from
+   the Button recipe rather than from literals. */
+.segmented {
+  display: flex;
+  gap: 2px;
+  height: 40px;
+  padding: 3px;
+  border: 1px solid var(--docs-border-subtle);
+  border-radius: var(--radius-m-base, 8px);
+  background: var(--docs-surface-1);
+}
+
+/* Scoped to the track on purpose: a bare `.segment` ties with `.tk-button`'s own
+   `padding` and `min-height`, and the recipe wins the tie — which leaves a 40px
+   button inside a 32px track, clipped top and bottom. The extra class clears the
+   tie without `!important`; `min-height: 0` is what lets the percentage height
+   actually resolve against the track's content box. */
+.segmented .segment {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  padding-block: 0;
+}
+
+/* ---- Sections + grid --------------------------------------------------- */
+
+.sections {
+  display: grid;
+  /* Section to section is 24 in the design (420 - 396), heading to grid is 12
+     (36 - 24). */
+  gap: 24px;
+}
+
+.section {
+  display: grid;
+  gap: 12px;
+}
+
+.sectionTitle {
+  color: var(--text-darkest);
+  font-family: var(--desktop-body-l-font);
+  font-size: var(--desktop-body-l-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--desktop-body-l-line-height);
 }
 
 .empty {
-  padding: 32px;
+  padding: 48px;
   text-align: center;
-  color: var(--docs-text-muted, #888);
+  color: var(--docs-ink-faint);
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 12px;
 }
 
 .cell {
   display: flex;
+  padding: 12px 8px;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 16px 8px 12px;
-  border: 1px solid var(--docs-border-subtle);
-  border-radius: var(--radius-l, 12px);
-  background: var(--docs-surface-1);
+  gap: 10px;
+  place-content: center;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  background: var(--overlay-white-light);
   color: inherit;
   cursor: pointer;
   transition:
     border-color 150ms ease,
-    background 150ms ease,
-    transform 150ms ease;
+    box-shadow 150ms ease;
 }
 
 .cell:hover {
   border-color: var(--docs-border-strong);
-  transform: translateY(-1px);
+  box-shadow: var(--docs-shadow-card);
 }
 
+.cell[data-selected] {
+  border-color: var(--docs-cardinal-border);
+  background: var(--docs-cardinal-soft);
+}
+
+.glyphBox {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
 .glyph {
-  font-size: 28px;
   color: inherit;
 }
 
 .glyphPlaceholder {
-  width: 28px;
-  height: 28px;
+  display: block;
   border-radius: 6px;
-  background: var(--docs-surface-2);
+  background: var(--docs-surface-3);
 }
 
 .cellName {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   max-width: 100%;
   overflow: hidden;
-  font-size: 0.72rem;
-  line-height: 1.2;
+  color: var(--text-sub-base);
   text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--docs-text-muted, #888);
+  font-family: var(--desktop-body-s-font);
+  font-size: var(--desktop-body-s-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--desktop-body-s-line-height);
 }
 
-/* ---- Detail dialog --------------------------------------------------- */
-/* The shell (overlay, panel chrome, header/footer dividers, close button,
-   scroll, focus trap) comes from takeoff-v2 `Dialog`; code blocks come from
-   Docusaurus `@theme/CodeBlock`. Only the in-panel layout lives here.
-   `min-width: 0` on the flex/grid children is what lets CodeBlock scroll long
-   import paths INSIDE the block instead of widening the dialog. */
-
-.dialogPanel {
-  width: min(560px, calc(100vw - 32px));
-  max-width: 100%;
+/* ---- Detail sheet ------------------------------------------------------ */
+.sheetPanel.sheetPanel.sheetPanel {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-radius: 16px;
+  border: 1px solid var(--border-sub-base);
+  max-height: min(70vh, 560px);
+  width: min(969px, calc(100vw - 32px));
+  bottom: 20px;
+  inset-inline: 0;
+  margin-inline: auto;
 }
 
-.dialogHeading {
+@media (min-width: 997px) {
+  .sheetPanel.sheetPanel.sheetPanel {
+    width: min(969px, calc(100vw - var(--doc-sidebar-width, 264px)));
+    inset-inline-start: var(--doc-sidebar-width, 264px);
+  }
+}
+
+.sheetTitle {
+  color: var(--text-darkest);
+  font-family: var(--desktop-body-m-base-font);
+  font-size: var(--desktop-body-m-base-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--desktop-body-m-base-line-height);
+}
+
+.sheetBody {
+  display: grid;
+  grid-template-columns: minmax(0, 500px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.sheetInspectCol {
   display: flex;
-  align-items: center;
+  min-width: 0;
+}
+
+.sheetInspect {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 16px;
   min-width: 0;
 }
 
-.dialogPreview {
+.previewRow {
+  display: grid;
+  grid-template-columns: 188px minmax(0, 280px);
+  align-items: start;
+  gap: 16px;
+  width: 100%;
+}
+
+.previewBox {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  flex: none;
-  border: 1px solid var(--docs-border-subtle);
-  border-radius: var(--radius-l, 12px);
-  background: var(--docs-surface-2);
+  width: 188px;
+  height: 188px;
+  border-radius: 12px;
+  background: var(--frames-light);
 }
 
-.dialogGlyph {
-  font-size: 32px;
+/* The inverted swatch. These three tokens all flip with `data-scheme`, so the
+   box lands on the opposite surface from whatever theme the reader is in —
+   which is the point of the toggle — without a literal that only works in one
+   of them. */
+.previewBox[data-inverted] {
+  border-color: var(--border-darkest);
+  background: var(--background-darkest);
+  color: var(--text-lightest);
+}
+
+.previewGlyph {
   color: inherit;
 }
 
-.dialogTitleBlock {
+.previewToggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.previewControls {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  width: 100%;
+  gap: 20px;
+}
+
+.previewControlRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 8px;
+}
+
+.previewControls .field {
   min-width: 0;
+  max-width: none;
+  gap: var(--input-external-label-small-text-field-gap, 2px);
 }
 
-.dialogTitle {
-  margin: 0;
-  font-size: 1.1rem;
-  overflow-wrap: anywhere;
+.previewControls .colorControl {
+  gap: var(--input-external-label-small-input-gap, 4px);
+  height: 32px;
+  padding: var(--input-external-label-small-input-v-padding, 6px) var(--input-external-label-small-input-h-padding, 8px);
+  border-color: var(--border-light);
+  border-radius: var(--input-external-label-small-text-area-radius, 8px);
+  background: var(--static-light);
 }
 
-.dialogMeta {
+.previewControls .colorSwatch {
+  width: 20px;
+  height: 20px;
+}
+
+.previewControls .colorValue {
+  font-family: var(--desktop-body-xs-font);
+  font-size: var(--desktop-body-xs-size);
+  line-height: var(--desktop-body-xs-line-height);
+}
+
+.colorChevron {
+  flex: none;
+  color: var(--text-dark);
+}
+
+.checkboxField {
   display: flex;
   align-items: center;
+  align-self: flex-start;
   gap: 8px;
-  font-size: 0.85rem;
-  color: var(--docs-text-muted, #888);
-}
-
-.dialogCategory {
-  text-transform: capitalize;
-}
-
-.dialogClose {
-  flex: none;
+  box-sizing: border-box;
+  height: 32px;
+  padding-inline: 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--card-switcher-container-radius, 8px);
+  background: var(--static-light);
   cursor: pointer;
 }
 
-.dialogBody {
-  display: grid;
-  gap: 16px;
-  min-width: 0;
+.checkboxField .fieldLabel {
+  min-height: 0;
+  padding: 0;
+  font-family: var(--desktop-body-xs-font);
+  font-size: var(--desktop-body-xs-size);
+  line-height: var(--desktop-body-xs-line-height);
 }
 
-.dialogVariantRow {
+.metaBlock {
   display: flex;
+  align-items: baseline;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
 }
 
-.formatPanel {
-  display: grid;
-  gap: 12px;
+.blockLabel {
+  color: var(--text-darkest);
+
+  /* Body/X-Small-12 */
+  font-family: var(--desktop-body-xs-font);
+  font-size: var(--desktop-body-xs-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--desktop-body-xs-line-height);
+}
+
+.metaValue {
+  flex: 1 1 200px;
   min-width: 0;
-  padding-top: 16px;
+  color: var(--text-base);
+  font-family: var(--desktop-body-xs-font);
+  font-size: var(--desktop-body-xs-size);
+  font-style: normal;
+  font-weight: 300;
+  line-height: var(--desktop-body-xs-line-height);
+  overflow-wrap: anywhere;
 }
 
-/* Keep CodeBlock from stretching the panel: each block scrolls within itself. */
-.formatPanel :global(.theme-code-block),
-.formatPanel pre {
+.metaCopy {
+  flex: none;
+}
+
+.sheetCode {
+  display: grid;
+  min-width: 0;
+}
+
+.codeAccordion {
+  width: 100%;
+  min-width: 0;
+}
+
+.codePanel {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.codePanel :global(.theme-code-block),
+.codePanel pre {
   min-width: 0;
   max-width: 100%;
-}
-
-/* Reserve a constant height for the code block sized to the tallest snippet
-   longest usage snippet so switching tabs never resizes the dialog. The
-   inner CodeBlock stretches to fill, keeping every panel the same height. */
-.codeSlot {
-  min-width: 0;
-  min-height: 11.5em;
-  display: flex;
-}
-
-.codeSlot > :global(.theme-code-block) {
-  flex: 1 1 auto;
   margin: 0;
 }
 
-.codeSlot :global(pre) {
-  height: 100%;
+/* Below the two-column threshold the code column stacks under the preview and
+   trades its rule for a top border. */
+@media (max-width: 996px) {
+  .sheetBody {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .sheetDivider {
+    display: none;
+  }
+
+  .sheetCode {
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light, #e1e4ea);
+  }
+}
+
+@media (max-width: 520px) {
+  .previewRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

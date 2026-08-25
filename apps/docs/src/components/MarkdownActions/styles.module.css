@@ -1,0 +1,25 @@
+/* Layout owned by the action group itself. Placement (floating in a doc header
+   vs. inline in a page hero) is the caller's job, via `className`. */
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.menu {
+  /* Keep the panel from stretching to the longest possible label. */
+  max-width: 18rem;
+}
+
+/* Visually hidden, still announced — for the copy-result live region. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
