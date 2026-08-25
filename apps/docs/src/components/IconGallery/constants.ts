@@ -17,7 +17,7 @@ export const ICON_TYPES: { value: string; label: string }[] = [
 /** Steps offered by the size picker. */
 export const ICON_SIZES = [16, 20, 24, 32, 48] as const;
 
-export const DEFAULT_ICON_SIZE = 24;
+export const DEFAULT_ICON_SIZE = 32;
 
 /** Brand red, shown as the colour box's placeholder while no override is set. */
 export const PLACEHOLDER_COLOR = '#c90019';

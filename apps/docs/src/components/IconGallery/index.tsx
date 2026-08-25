@@ -3,7 +3,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import { ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
 import { DEFAULT_VARIANT, iconCategories, iconEntries, type IconGalleryEntry } from '@site/src/data/icons.generated';
-import { DEFAULT_ICON_SIZE, titleCase, type IconStyle } from './constants';
+import { DEFAULT_ICON_SIZE, ICON_TYPES, titleCase, type IconStyle } from './constants';
 import GalleryHero from './GalleryHero';
 import GalleryToolbar from './GalleryToolbar';
 import IconDetailDrawer from './IconDetailDrawer';
@@ -53,12 +53,37 @@ function IconCell({ entry, variant, size, selected, svgBaseUrl, onOpen }: IconCe
  * can change independently of the grid) and forwards it down. Kept as a thin
  * wrapper so the SVG-loading hook stays out of the dialog's own concerns.
  */
-function DialogHost({ entry, galleryVariant, svgBaseUrl, onClose }: { entry: IconGalleryEntry; galleryVariant: string; svgBaseUrl: string; onClose: () => void }) {
+function DialogHost({
+  entry,
+  galleryVariant,
+  color,
+  onColorChange,
+  svgBaseUrl,
+  onClose,
+}: {
+  entry: IconGalleryEntry;
+  galleryVariant: string;
+  color: string | null;
+  onColorChange: (value: string | null) => void;
+  svgBaseUrl: string;
+  onClose: () => void;
+}) {
   const [detailEntry, setDetailEntry] = useState(entry);
   const [variant, setVariant] = useState(galleryVariant);
   const svg = useVariantSvg(detailEntry, variant, svgBaseUrl);
 
-  return <IconDetailDrawer entry={detailEntry} initialVariant={galleryVariant} svg={svg} onEntryChange={setDetailEntry} onVariantChange={setVariant} onClose={onClose} />;
+  return (
+    <IconDetailDrawer
+      entry={detailEntry}
+      initialVariant={galleryVariant}
+      svg={svg}
+      color={color}
+      onColorChange={onColorChange}
+      onEntryChange={setDetailEntry}
+      onVariantChange={setVariant}
+      onClose={onClose}
+    />
+  );
 }
 
 export default function IconGallery() {
@@ -76,14 +101,35 @@ export default function IconGallery() {
   /** Every style x type rendition in the set — the hero's second headline number. */
   const variantCount = useMemo(() => iconEntries.reduce((total, entry) => total + entry.variants.length, 0), []);
 
-  const filtered = useMemo(() => {
+  /**
+   * Which types still have icons under the current category, query and style.
+   * Same rule as the grid one level up: a type that would yield an empty page is
+   * offered but not selectable, rather than letting the reader pick it and land
+   * on "no icons match".
+   */
+  const availableTypes = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return iconEntries.filter(entry => {
+    const inScope = iconEntries.filter(entry => {
       if (category !== 'all' && entry.category !== category) return false;
       if (q && !entry.searchText.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [query, category]);
+    return new Set(ICON_TYPES.filter(t => inScope.some(entry => entry.variants.includes(`${style}/${t.value}`))).map(t => t.value));
+  }, [query, category, style]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return iconEntries.filter(entry => {
+      // Coverage is not uniform — `outlined/tk` ships 1,047 of the 1,128, and a
+      // handful of icons have no filled cut at all. An entry without the current
+      // variant used to render as an empty tile, so drop it from the set
+      // instead: the grid shows what the variant actually has.
+      if (!entry.variants.includes(variant)) return false;
+      if (category !== 'all' && entry.category !== category) return false;
+      if (q && !entry.searchText.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [query, category, variant]);
 
   /**
    * The design lays the set out as titled category sections rather than one
@@ -126,6 +172,7 @@ export default function IconGallery() {
           category={category}
           onCategoryChange={setCategory}
           type={type}
+          availableTypes={availableTypes}
           onTypeChange={setType}
           size={size}
           onSizeChange={setSize}
@@ -155,7 +202,9 @@ export default function IconGallery() {
           </div>
         )}
 
-        {selected ? <DialogHost key={selected.name} entry={selected} galleryVariant={variant} svgBaseUrl={svgBaseUrl} onClose={handleClose} /> : null}
+        {selected ? (
+          <DialogHost key={selected.name} entry={selected} galleryVariant={variant} color={color} onColorChange={setColor} svgBaseUrl={svgBaseUrl} onClose={handleClose} />
+        ) : null}
       </div>
     </ReactSparDemoRoot>
   );

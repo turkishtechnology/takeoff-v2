@@ -1,11 +1,10 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import CodeBlock from '@theme/CodeBlock';
 
-import { Accordion, Button, Checkbox, Divider, Drawer, Select } from '@takeoff-ui/react-spar';
+import { Accordion, Button, Checkbox, Divider, Drawer, Field, Input, Select } from '@takeoff-ui/react-spar';
 import { ReactSparDemoRoot } from '../ReactSparDocs';
 import { CopyIconOutlinedRounded } from '@takeoff-icons/react/copy';
 import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
-import { ChevronBottomIconOutlinedRounded } from '@takeoff-icons/react/chevron-bottom';
 import { MoonIconOutlinedRounded } from '@takeoff-icons/react/moon';
 import { SunIconOutlinedRounded } from '@takeoff-icons/react/sun';
 import { iconEntries, type IconGalleryEntry, type IconVariantSvg } from '@site/src/data/icons.generated';
@@ -55,6 +54,14 @@ function shapeLabel(entry: IconGalleryEntry, variants: IconGalleryEntry[]): stri
 }
 
 interface IconDetailDrawerProps {
+  /**
+   * Preview colour, owned by the gallery rather than the sheet: it is one page-
+   * wide setting, so a colour typed in the toolbar shows here too and a colour
+   * typed here repaints the grid behind. `null` means no override — the glyphs
+   * fall back to the theme's ink.
+   */
+  color: string | null;
+  onColorChange: (value: string | null) => void;
   entry: IconGalleryEntry;
   /** Variant pre-selected from the gallery toolbar, `<style>/<type>`. */
   initialVariant: string;
@@ -67,14 +74,18 @@ interface IconDetailDrawerProps {
   onClose: () => void;
 }
 
-export default function IconDetailDrawer({ entry, initialVariant, svg, onEntryChange, onVariantChange, onClose }: IconDetailDrawerProps) {
+export default function IconDetailDrawer({ entry, initialVariant, svg, color, onColorChange, onEntryChange, onVariantChange, onClose }: IconDetailDrawerProps) {
   const [initialStyle, initialType] = initialVariant.split('/');
   const [filled, setFilled] = useState(initialStyle === 'filled');
   const [type, setType] = useState(initialType);
   const [size, setSize] = useState<number>(PREVIEW_SIZE);
-  const [color, setColor] = useState<string | null>(null);
   const [previewDark, setPreviewDark] = useState(false);
   const [copiedMeta, setCopiedMeta] = useState(false);
+
+  /* Same draft as the toolbar's: a controlled box that only commits complete
+     hex values would reset itself on the first keystroke. */
+  const [colorDraft, setColorDraft] = useState(color ?? '');
+  useEffect(() => setColorDraft(color ?? ''), [color]);
 
   // Portal each Select's dropdown INTO the sheet (not <body>). The panel detects
   // "outside" clicks via DOM `contains`, so a dropdown portaled to <body> reads
@@ -84,6 +95,13 @@ export default function IconDetailDrawer({ entry, initialVariant, svg, onEntryCh
   const [panel, setPanel] = useState<HTMLDivElement | null>(null);
   const panelRef = useCallback((node: HTMLDivElement | null) => setPanel(node), []);
 
+  /*
+   * Per type, not per icon. `add-circle` ships filled cuts for bevel, sharp and
+   * tk but not for rounded, so "does it have any filled variant" would offer a
+   * toggle that blanks the preview. Whenever `filled` is already on this is true
+   * by definition, so the control can never vanish out from under the reader.
+   */
+  const hasFilledCut = entry.variants.includes(`filled/${type}`);
   const style = filled ? 'filled' : 'outlined';
   const variant = `${style}/${type}`;
   const formats = useMemo(() => buildIconFormats(entry.name, variant), [entry.name, variant]);
@@ -163,8 +181,8 @@ export default function IconDetailDrawer({ entry, initialVariant, svg, onEntryCh
 
                   <div className={styles.previewControls}>
                     <div className={styles.previewControlRow}>
-                      <label className={styles.field}>
-                        <span className={styles.fieldLabel}>Size</span>
+                      <Field className={styles.field}>
+                        <Field.Label>Size</Field.Label>
                         <Select size="small" value={String(size)} onChange={value => setSize(Number(value))}>
                           <Select.Trigger placeholder="Size" />
                           <Select.Content container={panel ?? undefined}>
@@ -177,34 +195,32 @@ export default function IconDetailDrawer({ entry, initialVariant, svg, onEntryCh
                             </Select.Viewport>
                           </Select.Content>
                         </Select>
-                      </label>
+                      </Field>
 
-                      <div className={styles.field}>
-                        <span className={styles.fieldLabel} id="detail-color-label">
-                          Color
-                        </span>
-                        <div className={styles.colorControl} data-placeholder={color === null || undefined}>
-                          <input
-                            className={styles.colorSwatch}
-                            type="color"
-                            value={color ?? PLACEHOLDER_COLOR}
-                            onChange={e => setColor(e.target.value)}
-                            aria-labelledby="detail-color-label"
+                      {/* Plain hex box, matching the toolbar's. */}
+                      <Field className={styles.field}>
+                        <Field.Label>Color</Field.Label>
+                        <Input size="small">
+                          <Input.Field
+                            value={colorDraft}
+                            onChange={e => {
+                              const raw = e.target.value;
+                              setColorDraft(raw);
+                              const next = raw.trim();
+                              if (next === '') onColorChange(null);
+                              else if (/^#[0-9a-f]{6}$/iu.test(next)) onColorChange(next.toLowerCase());
+                            }}
+                            onBlur={() => setColorDraft(color ?? '')}
+                            placeholder={PLACEHOLDER_COLOR}
+                            spellCheck={false}
                           />
-                          <span className={styles.colorValue}>{(color ?? PLACEHOLDER_COLOR).toUpperCase()}</span>
-                          {color === null ? <ChevronBottomIconOutlinedRounded className={styles.colorChevron} width={20} height={20} aria-hidden="true" /> : null}
-                          {color === null ? null : (
-                            <button type="button" className={styles.colorReset} onClick={() => setColor(null)} aria-label="Reset icon colour">
-                              ×
-                            </button>
-                          )}
-                        </div>
-                      </div>
+                        </Input>
+                      </Field>
                     </div>
 
                     <div className={styles.previewControlRow}>
-                      <label className={styles.field}>
-                        <span className={styles.fieldLabel}>Variant</span>
+                      <Field className={styles.field}>
+                        <Field.Label>Variant</Field.Label>
                         <Select size="small" value={entry.name} disabled={shapeVariants.length < 2} onChange={value => onEntryChange(entriesByName.get(value) ?? entry)}>
                           <Select.Trigger placeholder="Variant" />
                           <Select.Content container={panel ?? undefined}>
@@ -217,31 +233,39 @@ export default function IconDetailDrawer({ entry, initialVariant, svg, onEntryCh
                             </Select.Viewport>
                           </Select.Content>
                         </Select>
-                      </label>
+                      </Field>
 
-                      <label className={styles.field}>
-                        <span className={styles.fieldLabel}>Type</span>
+                      <Field className={styles.field}>
+                        <Field.Label>Type</Field.Label>
                         <Select size="small" value={type} onChange={handleType}>
                           <Select.Trigger placeholder="Type" />
                           <Select.Content container={panel ?? undefined}>
                             <Select.Viewport>
+                              {/* Coverage is not uniform, so a type this icon has no cut
+                                  for is offered but not selectable — picking it would
+                                  blank the preview. */}
                               {ICON_TYPES.map(t => (
-                                <Select.Item key={t.value} value={t.value} label={t.label}>
+                                <Select.Item key={t.value} value={t.value} label={t.label} disabled={!entry.variants.includes(`${style}/${t.value}`)}>
                                   {t.label}
                                 </Select.Item>
                               ))}
                             </Select.Viewport>
                           </Select.Content>
                         </Select>
-                      </label>
+                      </Field>
                     </div>
 
-                    <label className={styles.checkboxField}>
-                      <Checkbox checked={filled} onChange={handleFilled}>
-                        <Checkbox.Indicator />
-                      </Checkbox>
-                      <span className={styles.fieldLabel}>Filled</span>
-                    </label>
+                    {hasFilledCut ? (
+                      /* `Field` so the label is wired to the checkbox by the
+                         component rather than by a wrapping <label>. It stacks by
+                         default; `.checkboxField` turns this one into a row. */
+                      <Field className={styles.checkboxField}>
+                        <Checkbox checked={filled} onChange={handleFilled}>
+                          <Checkbox.Indicator />
+                        </Checkbox>
+                        <Field.Label className={styles.checkboxLabel}>Filled</Field.Label>
+                      </Field>
+                    ) : null}
                   </div>
                 </div>
 
@@ -265,7 +289,7 @@ export default function IconDetailDrawer({ entry, initialVariant, svg, onEntryCh
 
             <div className={styles.sheetCode}>
               <span className={styles.blockLabel}>Code:</span>
-              <Accordion type="divided" defaultValue="react" className={styles.codeAccordion}>
+              <Accordion type="divided" className={styles.codeAccordion}>
                 {formats.map(f => (
                   <Accordion.Item key={f.id} value={f.id}>
                     <Accordion.Header>

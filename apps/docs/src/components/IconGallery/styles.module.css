@@ -78,163 +78,25 @@
 .toolbar {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
   justify-content: center;
+  align-items: flex-end;
   gap: 12px;
   padding: 16px;
   border-radius: 16px;
   border: 1px solid var(--border-light);
-  background: var(--background-lightest);
+  background: var(--static-light);
 }
 
-.searchField {
-  flex: 3 1 200px;
-  min-width: 200px;
-  max-width: 420px;
-}
-
-.field {
-  display: grid;
-  flex: 1 1 148px;
-  min-width: 148px;
-  max-width: 220px;
-  gap: 4px;
-}
-
-.fieldLabel {
-  display: flex;
-  align-items: center;
-  min-height: var(--label-m-base-line-height);
-  padding-inline: var(--input-external-label-small-label-h-padding);
-  color: var(--text-darkest);
-  font-family: var(--desktop-label-s-font);
-  font-size: var(--desktop-label-s-size);
-  font-style: normal;
-  font-weight: 400;
-  line-height: var(--desktop-label-s-line-height);
-}
-
-.fieldNarrow {
-  flex: 1 1 104px;
-  min-width: 104px;
-  max-width: 160px;
-}
-
-.fieldColor {
-  display: grid;
-  flex: 1 1 148px;
-  min-width: 148px;
+.toolbar > * {
+  flex: 1 1 140px;
+  min-width: 0;
   max-width: 220px;
 }
 
-/* Wraps the segmented control, which sizes to its own labels. */
-.fieldAuto {
-  display: grid;
-  flex: 1 1 152px;
-  min-width: 152px;
-  max-width: 220px;
-}
-
-/* Spar's controls carry an intrinsic min-width from their content. Inside a
-   flexible field that makes them render past the field and lap over the next
-   one, so each is told to fill its field and shrink with it. */
-.searchField > *,
-.field > :last-child,
-.fieldColor > :last-child,
-.fieldAuto > :last-child {
+.toolbar > * > * {
   width: 100%;
-  min-width: 0;
 }
 
-/* With the trigger now allowed to shrink, a long option has to truncate rather
-   than force the box wide again. `data-slot` is the component's own published
-   seam, not a hashed class. */
-.field :global([data-slot='value']) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Colour picker. A native `<input type="color">` is the swatch itself, so the OS
-   picker opens from the dot the user clicks — there is no component equivalent
-   for that, which is why this one control is assembled by hand. Every colour in
-   it is still a `--docs-*` alias, so it follows the theme exactly like the Spar
-   controls beside it. Until a colour is picked the box shows the brand hex
-   greyed out: the icons stay ink-coloured, which is what keeps them legible in
-   both schemes. */
-.colorControl {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 10px;
-  border: 1px solid var(--docs-border-subtle);
-  border-radius: var(--radius-m-base, 8px);
-  background: var(--docs-surface-1);
-}
-
-.colorControl[data-placeholder] .colorSwatch {
-  filter: grayscale(1);
-  opacity: 0.35;
-}
-
-.colorControl[data-placeholder] .colorValue {
-  color: var(--docs-ink-faint);
-}
-
-.colorSwatch {
-  width: 18px;
-  height: 18px;
-  flex: none;
-  padding: 0;
-  border: 0;
-  border-radius: var(--radius-full, 999px);
-  background: none;
-  cursor: pointer;
-  appearance: none;
-}
-
-.colorSwatch::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-
-.colorSwatch::-webkit-color-swatch {
-  border: 1px solid var(--docs-border-subtle);
-  border-radius: var(--radius-full, 999px);
-}
-
-.colorSwatch::-moz-color-swatch {
-  border: 1px solid var(--docs-border-subtle);
-  border-radius: var(--radius-full, 999px);
-}
-
-.colorValue {
-  min-width: 0;
-  overflow: hidden;
-  font-size: 0.875rem;
-  font-variant-numeric: tabular-nums;
-  text-overflow: ellipsis;
-  color: var(--docs-ink-strong);
-}
-
-.colorReset {
-  margin-left: auto;
-  padding: 0 2px;
-  border: 0;
-  background: none;
-  font-size: 1rem;
-  line-height: 1;
-  color: var(--docs-ink-faint);
-  cursor: pointer;
-}
-
-.colorReset:hover {
-  color: var(--docs-ink-strong);
-}
-
-/* Shell for the Outlined / Filled pair. Only the track is styled here — each
-   segment is a Spar `Button`, so its fill, hover and dark-mode colours come from
-   the Button recipe rather than from literals. */
 .segmented {
   display: flex;
   gap: 2px;
@@ -265,6 +127,7 @@
   /* Section to section is 24 in the design (420 - 396), heading to grid is 12
      (36 - 24). */
   gap: 24px;
+  color: var(--text-darkest);
 }
 
 .section {
@@ -281,10 +144,15 @@
   line-height: var(--desktop-body-l-line-height);
 }
 
+/* Empty state. Reachable in more ways than a bad search now: a category and a
+   type can be individually fine yet have nothing in common. */
 .empty {
   padding: 48px;
+  color: var(--text-base);
   text-align: center;
-  color: var(--docs-ink-faint);
+  font-family: var(--desktop-body-s-font);
+  font-size: var(--desktop-body-s-size);
+  line-height: var(--desktop-body-s-line-height);
 }
 
 .grid {
@@ -295,7 +163,7 @@
 
 .cell {
   display: flex;
-  padding: 12px 8px;
+  padding: 12px;
   flex-direction: column;
   align-items: center;
   gap: 10px;
@@ -303,7 +171,6 @@
   aspect-ratio: 1;
   border-radius: 12px;
   border: 1px solid var(--border-light);
-  background: var(--overlay-white-light);
   color: inherit;
   cursor: pointer;
   transition:
@@ -312,18 +179,25 @@
 }
 
 .cell:hover {
-  border-color: var(--docs-border-strong);
+  border-color: var(--background-dark);
   box-shadow: var(--docs-shadow-card);
 }
 
+/* Selected tile. The glyph paints with `currentColor`, so setting `color` once
+   turns it; the label needs its own rule only because it declares a colour of
+   its own, and `inherit` is what defers back rather than repeating the token. */
 .cell[data-selected] {
-  border-color: var(--docs-cardinal-border);
-  background: var(--docs-cardinal-soft);
+  border-color: var(--primary-base);
+  color: var(--primary-base);
+  box-shadow: var(--docs-shadow-card);
+}
+
+.cell[data-selected] .cellName {
+  color: inherit;
 }
 
 .glyphBox {
   display: flex;
-  flex: none;
   align-items: center;
   justify-content: center;
 }
@@ -343,12 +217,12 @@
   -webkit-line-clamp: 2;
   max-width: 100%;
   overflow: hidden;
-  color: var(--text-sub-base);
+  color: var(--text-darkest);
   text-align: center;
   font-family: var(--desktop-body-s-font);
   font-size: var(--desktop-body-s-size);
   font-style: normal;
-  font-weight: 400;
+  font-weight: 300;
   line-height: var(--desktop-body-s-line-height);
 }
 
@@ -385,7 +259,6 @@
 .sheetBody {
   display: grid;
   grid-template-columns: minmax(0, 500px) minmax(0, 1fr);
-  gap: 16px;
   align-items: start;
 }
 
@@ -416,10 +289,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 188px;
   height: 188px;
   border-radius: 12px;
   background: var(--frames-light);
+  color: var(--text-darkest);
 }
 
 /* The inverted swatch. These three tokens all flip with `data-scheme`, so the
@@ -456,57 +329,21 @@
   gap: 8px;
 }
 
-.previewControls .field {
-  min-width: 0;
-  max-width: none;
-  gap: var(--input-external-label-small-text-field-gap, 2px);
-}
-
-.previewControls .colorControl {
-  gap: var(--input-external-label-small-input-gap, 4px);
-  height: 32px;
-  padding: var(--input-external-label-small-input-v-padding, 6px) var(--input-external-label-small-input-h-padding, 8px);
-  border-color: var(--border-light);
-  border-radius: var(--input-external-label-small-text-area-radius, 8px);
-  background: var(--static-light);
-}
-
-.previewControls .colorSwatch {
-  width: 20px;
-  height: 20px;
-}
-
-.previewControls .colorValue {
-  font-family: var(--desktop-body-xs-font);
-  font-size: var(--desktop-body-xs-size);
-  line-height: var(--desktop-body-xs-line-height);
-}
-
-.colorChevron {
-  flex: none;
-  color: var(--text-dark);
-}
-
 .checkboxField {
-  display: flex;
-  align-items: center;
   align-self: flex-start;
-  gap: 8px;
   box-sizing: border-box;
   height: 32px;
   padding-inline: 8px;
   border: 1px solid var(--border-light);
   border-radius: var(--card-switcher-container-radius, 8px);
-  background: var(--static-light);
-  cursor: pointer;
 }
 
-.checkboxField .fieldLabel {
-  min-height: 0;
-  padding: 0;
-  font-family: var(--desktop-body-xs-font);
-  font-size: var(--desktop-body-xs-size);
-  line-height: var(--desktop-body-xs-line-height);
+/* The checkbox row sits inline, so its label drops to body-xs rather than the
+   Field label's default stacked size. */
+.checkboxLabel {
+  font-family: var(--desktop-body-xs-font) !important;
+  font-size: var(--desktop-body-xs-size) !important;
+  line-height: var(--desktop-body-xs-line-height) !important;
 }
 
 .metaBlock {
@@ -518,8 +355,6 @@
 
 .blockLabel {
   color: var(--text-darkest);
-
-  /* Body/X-Small-12 */
   font-family: var(--desktop-body-xs-font);
   font-size: var(--desktop-body-xs-size);
   font-style: normal;
@@ -537,33 +372,6 @@
   font-weight: 300;
   line-height: var(--desktop-body-xs-line-height);
   overflow-wrap: anywhere;
-}
-
-.metaCopy {
-  flex: none;
-}
-
-.sheetCode {
-  display: grid;
-  min-width: 0;
-}
-
-.codeAccordion {
-  width: 100%;
-  min-width: 0;
-}
-
-.codePanel {
-  display: grid;
-  gap: 8px;
-  min-width: 0;
-}
-
-.codePanel :global(.theme-code-block),
-.codePanel pre {
-  min-width: 0;
-  max-width: 100%;
-  margin: 0;
 }
 
 /* Below the two-column threshold the code column stacks under the preview and

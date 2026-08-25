@@ -1,6 +1,6 @@
-import type { JSX } from 'react';
+import { useEffect, useState, type JSX } from 'react';
 
-import { Button, Input, Select } from '@takeoff-ui/react-spar';
+import { Button, Field, Input, Select } from '@takeoff-ui/react-spar';
 import { SearchIconOutlinedRounded } from '@takeoff-icons/react/search';
 import type { IconGalleryCategory } from '@site/src/data/icons.generated';
 import { ICON_SIZES, ICON_STYLES, ICON_TYPES, PLACEHOLDER_COLOR, type IconStyle } from './constants';
@@ -25,6 +25,8 @@ interface GalleryToolbarProps {
   category: string;
   onCategoryChange: (value: string) => void;
   type: string;
+  /** Types that still have icons under the current category, query and style. */
+  availableTypes: Set<string>;
   onTypeChange: (value: string) => void;
   size: number;
   onSizeChange: (value: number) => void;
@@ -42,6 +44,7 @@ export default function GalleryToolbar({
   category,
   onCategoryChange,
   type,
+  availableTypes,
   onTypeChange,
   size,
   onSizeChange,
@@ -50,19 +53,27 @@ export default function GalleryToolbar({
   style,
   onStyleChange,
 }: GalleryToolbarProps): JSX.Element {
+  /* The box needs a draft of its own: committing only complete hex values means
+     an empty `color` would otherwise reset the field on the very first
+     keystroke, so `#` could never be typed. Empty commits `null` — no override,
+     glyphs fall back to the theme ink. */
+  const [colorDraft, setColorDraft] = useState(color ?? '');
+  useEffect(() => setColorDraft(color ?? ''), [color]);
+
   return (
     <div className={styles.toolbar}>
-      <div className={styles.searchField}>
+      <Field>
+        <Field.Label>Search</Field.Label>
         <Input>
-          <Input.Field type="search" placeholder="Search takeoff icons" value={query} onChange={e => onQueryChange(e.target.value)} aria-label="Search icons" />
+          <Input.Field type="search" placeholder="Search icons" value={query} onChange={e => onQueryChange(e.target.value)} />
           <Input.TrailingIcon>
             <SearchIconOutlinedRounded width={16} height={16} />
           </Input.TrailingIcon>
         </Input>
-      </div>
+      </Field>
 
-      <label className={styles.field}>
-        <span className={styles.fieldLabel}>Category</span>
+      <Field>
+        <Field.Label>Category</Field.Label>
         <Select value={category} onChange={onCategoryChange}>
           <Select.Trigger placeholder="All" />
           <Select.Content>
@@ -78,26 +89,26 @@ export default function GalleryToolbar({
             </Select.Viewport>
           </Select.Content>
         </Select>
-      </label>
+      </Field>
 
-      <label className={styles.field}>
-        <span className={styles.fieldLabel}>Type</span>
+      <Field>
+        <Field.Label>Type</Field.Label>
         <Select value={type} onChange={onTypeChange}>
           <Select.Trigger placeholder="Type" />
           <Select.Content>
             <Select.Viewport>
               {ICON_TYPES.map(t => (
-                <Select.Item key={t.value} value={t.value} label={t.label}>
+                <Select.Item key={t.value} value={t.value} label={t.label} disabled={!availableTypes.has(t.value)}>
                   {t.label}
                 </Select.Item>
               ))}
             </Select.Viewport>
           </Select.Content>
         </Select>
-      </label>
+      </Field>
 
-      <label className={`${styles.field} ${styles.fieldNarrow}`}>
-        <span className={styles.fieldLabel}>Size</span>
+      <Field>
+        <Field.Label>Size</Field.Label>
         <Select value={String(size)} onChange={value => onSizeChange(Number(value))}>
           <Select.Trigger placeholder="Size" />
           <Select.Content>
@@ -110,28 +121,38 @@ export default function GalleryToolbar({
             </Select.Viewport>
           </Select.Content>
         </Select>
-      </label>
+      </Field>
 
-      <div className={styles.fieldColor}>
-        <span className={styles.fieldLabel} id="icon-color-label">
-          Color
-        </span>
-        <div className={styles.colorControl} data-placeholder={color === null || undefined}>
-          <input className={styles.colorSwatch} type="color" value={color ?? PLACEHOLDER_COLOR} onChange={e => onColorChange(e.target.value)} aria-labelledby="icon-color-label" />
-          <span className={styles.colorValue}>{(color ?? PLACEHOLDER_COLOR).toUpperCase()}</span>
-          {color === null ? null : (
-            <button type="button" className={styles.colorReset} onClick={() => onColorChange(null)} aria-label="Reset icon colour">
-              ×
-            </button>
-          )}
-        </div>
-      </div>
+      {/* Plain hex box for now — `@takeoff-ui/react-spar` ships no colour picker,
+          and pulling the v1 web component in for one control is a bigger call
+          than this page should make. Empty means "no override": the glyphs fall
+          back to the theme's ink, which is what keeps them legible in both
+          schemes. Only a complete six-digit value commits, so the grid does not
+          repaint mid-edit. */}
+      <Field>
+        <Field.Label>Color</Field.Label>
+        <Input>
+          <Input.Field
+            value={colorDraft}
+            onChange={e => {
+              const raw = e.target.value;
+              setColorDraft(raw);
+              const next = raw.trim();
+              if (next === '') onColorChange(null);
+              else if (/^#[0-9a-f]{6}$/iu.test(next)) onColorChange(next.toLowerCase());
+            }}
+            onBlur={() => setColorDraft(color ?? '')}
+            placeholder={PLACEHOLDER_COLOR}
+            spellCheck={false}
+          />
+        </Input>
+      </Field>
 
-      <div className={styles.fieldAuto}>
-        <span className={styles.fieldLabel} id="icon-style-label">
-          Icon style
-        </span>
-        <div className={styles.segmented} role="radiogroup" aria-labelledby="icon-style-label">
+      {/* A span, not a <label>: a label may only name a single form control, and
+          the group carries its own `aria-label` for the same reason as above. */}
+      <Field>
+        <Field.Label as="span">Icon style</Field.Label>
+        <div className={styles.segmented} role="radiogroup" aria-label="Icon style">
           {ICON_STYLES.map(s => (
             <Button
               key={s.value}
@@ -146,7 +167,7 @@ export default function GalleryToolbar({
             </Button>
           ))}
         </div>
-      </div>
+      </Field>
     </div>
   );
 }
