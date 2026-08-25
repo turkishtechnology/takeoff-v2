@@ -210,6 +210,7 @@ Tune the backdrop with `intensity` (`lightest` → `darkest`), `blur`, or
 | -------------- | -------------------------------------------------------- | --------- | ----------------------------------------------------------- |
 | `placement`    | `'left' \| 'right' \| 'top' \| 'bottom'`                 | —         | Edge the panel slides in from (on `Drawer`).                |
 | `dismissible`  | `boolean`                                                | `true`    | When false, outside-click/Escape won't close (on `Drawer`). |
+| `modal`        | `boolean`                                                | `true`    | When false, page stays scrollable and clickable behind it.  |
 | `open`         | `boolean`                                                | —         | Controlled open state (on `Drawer`).                        |
 | `defaultOpen`  | `boolean`                                                | `false`   | Uncontrolled initial open state (on `Drawer`).              |
 | `onOpenChange` | `(open: boolean) => void`                                | —         | Fires when open state changes (on `Drawer`).                |
@@ -233,6 +234,11 @@ Full props, events, data attributes & type definitions: see
   `finalFocus`).
 - Escape closes the drawer; Tab / Shift+Tab cycle focus within the panel.
 - With `dismissible={false}`, Escape and outside clicks do not close the drawer.
+- `modal={false}` leaves the page live behind the panel — no focus trap, no
+  scroll lock. Omit `Drawer.Overlay` with it: the overlay is what swallows
+  pointer events, so the page is only interactive once both are gone. Use it for
+  a drawer that inspects something still on screen; keep the default for one
+  that interrupts.
 
 ## Reference
 
