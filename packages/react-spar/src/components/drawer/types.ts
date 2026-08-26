@@ -34,24 +34,12 @@ export type DrawerCloseSlot = 'root';
  * children, which read shared values from context).
  */
 export interface DrawerProps
-  // Dialog root identity, controlled state, and trigger disable. Other Spar
-  // Dialog root props (e.g. `modal`) are intentionally not exposed — the
-  // Drawer's modality is part of its visual contract, not a consumer knob.
-  extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled'> {
+  // Dialog root identity, controlled state, modality and trigger disable.
+  // `forceMount` stays unexposed on purpose — the Panel has to outlive the open
+  // -> closed boundary for the slide-out to run, so it is pinned in `Drawer.tsx`.
+  extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled' | 'modal'> {
   /** Side the drawer slides in from. */
   placement?: DrawerPlacement;
-  // Declared here rather than picked from `SparDialogProps`: Spar's Dialog
-  // implements `modal` but its published types omit it. Nothing else is needed —
-  // the root spreads its rest props straight into `SparDialog`, and JSX spread
-  // skips excess-property checking, so the value reaches Spar as-is.
-  /**
-   * Whether the drawer takes the page over: focus trap, scroll lock, and an
-   * overlay that swallows pointer events. `false` leaves the page live behind
-   * the panel, for a drawer that inspects what is still on screen rather than
-   * interrupting it.
-   * @defaultValue true
-   */
-  modal?: boolean;
   /** Whether the drawer can be dismissed by clicking outside or pressing Escape. @defaultValue true */
   dismissible?: boolean;
   children?: ReactNode;
@@ -102,12 +90,15 @@ export type DrawerPanelProps<T extends ElementType = 'div'> = PolymorphicProps<
   'div',
   T,
   DrawerPanelOwnProps &
-    // Focus management (trap/restore/initial/final + auto-focus hooks) and
-    // dismiss event hooks. Consumers need these to integrate with their own
-    // focus orchestration and to veto dismissal. Spar's visual content props
-    // (e.g. forceMount) are not exposed — takeoff-v2 sets them internally.
+    // Panel role, focus management (trap/restore/initial/final + auto-focus
+    // hooks) and dismiss event hooks — the same surface `Dialog.Panel` exposes,
+    // since consumers need them to integrate with their own focus orchestration
+    // and to veto dismissal. `forceMount` stays out: the panel has to outlive
+    // the open -> closed boundary for the slide-out to run, so it is pinned in
+    // `Drawer.tsx` rather than offered as a knob.
     Pick<
       SparDialogContentProps,
+      | 'role'
       | 'container'
       | 'trapFocus'
       | 'restoreFocus'

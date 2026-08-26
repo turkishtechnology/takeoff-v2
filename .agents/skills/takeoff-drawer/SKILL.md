@@ -206,21 +206,22 @@ Tune the backdrop with `intensity` (`lightest` → `darkest`), `blur`, or
 
 ## Key props
 
-| Prop           | Type                                                     | Default   | Notes                                                       |
-| -------------- | -------------------------------------------------------- | --------- | ----------------------------------------------------------- |
-| `placement`    | `'left' \| 'right' \| 'top' \| 'bottom'`                 | —         | Edge the panel slides in from (on `Drawer`).                |
-| `dismissible`  | `boolean`                                                | `true`    | When false, outside-click/Escape won't close (on `Drawer`). |
-| `modal`        | `boolean`                                                | `true`    | When false, page stays scrollable and clickable behind it.  |
-| `open`         | `boolean`                                                | —         | Controlled open state (on `Drawer`).                        |
-| `defaultOpen`  | `boolean`                                                | `false`   | Uncontrolled initial open state (on `Drawer`).              |
-| `onOpenChange` | `(open: boolean) => void`                                | —         | Fires when open state changes (on `Drawer`).                |
-| `disabled`     | `boolean`                                                | `false`   | Disables triggers, preventing opening (on `Drawer`).        |
-| `headerType`   | `'basic' \| 'divided' \| 'light' \| 'dark' \| 'primary'` | `'basic'` | On `Drawer.Header`.                                         |
-| `footerType`   | `'basic' \| 'divided' \| 'light'`                        | `'basic'` | On `Drawer.Footer`.                                         |
-| `intensity`    | `'lightest' \| 'light' \| 'base' \| 'dark' \| 'darkest'` | `'base'`  | On `Drawer.Overlay`.                                        |
-| `blur`         | `boolean`                                                | `false`   | Backdrop blur, on `Drawer.Overlay`.                         |
-| `invisible`    | `boolean`                                                | `false`   | Overlay rendered but visually hidden, on `Drawer.Overlay`.  |
-| `level`        | `number`                                                 | `5`       | Heading tag (h1–h6) for `Drawer.Title`; visual size fixed.  |
+| Prop           | Type                                                     | Default    | Notes                                                                |
+| -------------- | -------------------------------------------------------- | ---------- | -------------------------------------------------------------------- |
+| `placement`    | `'left' \| 'right' \| 'top' \| 'bottom'`                 | —          | Edge the panel slides in from (on `Drawer`).                         |
+| `dismissible`  | `boolean`                                                | `true`     | When false, outside-click/Escape won't close (on `Drawer`).          |
+| `modal`        | `boolean`                                                | `true`     | When false, page stays scrollable and clickable behind it.           |
+| `open`         | `boolean`                                                | —          | Controlled open state (on `Drawer`).                                 |
+| `defaultOpen`  | `boolean`                                                | `false`    | Uncontrolled initial open state (on `Drawer`).                       |
+| `onOpenChange` | `(open: boolean) => void`                                | —          | Fires when open state changes (on `Drawer`).                         |
+| `disabled`     | `boolean`                                                | `false`    | Disables triggers, preventing opening (on `Drawer`).                 |
+| `headerType`   | `'basic' \| 'divided' \| 'light' \| 'dark' \| 'primary'` | `'basic'`  | On `Drawer.Header`.                                                  |
+| `footerType`   | `'basic' \| 'divided' \| 'light'`                        | `'basic'`  | On `Drawer.Footer`.                                                  |
+| `intensity`    | `'lightest' \| 'light' \| 'base' \| 'dark' \| 'darkest'` | `'base'`   | On `Drawer.Overlay`.                                                 |
+| `blur`         | `boolean`                                                | `false`    | Backdrop blur, on `Drawer.Overlay`.                                  |
+| `invisible`    | `boolean`                                                | `false`    | Overlay rendered but visually hidden, on `Drawer.Overlay`.           |
+| `level`        | `number`                                                 | `5`        | Heading tag (h1–h6) for `Drawer.Title`; visual size fixed.           |
+| `role`         | `React.AriaRole`                                         | `'dialog'` | ARIA role on `Drawer.Panel`; use `'alertdialog'` when it interrupts. |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
