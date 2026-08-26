@@ -222,6 +222,7 @@ Tune the backdrop with `intensity` (`lightest` → `darkest`), `blur`, or
 | `invisible`    | `boolean`                                                | `false`    | Overlay rendered but visually hidden, on `Drawer.Overlay`.           |
 | `level`        | `number`                                                 | `5`        | Heading tag (h1–h6) for `Drawer.Title`; visual size fixed.           |
 | `role`         | `React.AriaRole`                                         | `'dialog'` | ARIA role on `Drawer.Panel`; use `'alertdialog'` when it interrupts. |
+| `forceMount`   | `boolean`                                                | `true`     | Keeps the panel mounted while closed so the slide-out can run.       |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
@@ -240,6 +241,10 @@ Full props, events, data attributes & type definitions: see
   pointer events, so the page is only interactive once both are gone. Use it for
   a drawer that inspects something still on screen; keep the default for one
   that interrupts.
+- `forceMount={false}` unmounts the panel on close. The slide-out animation runs
+  off `data-state='closed'` on a mounted element, so turning it off trades that
+  animation away — worth it only for a panel heavy enough that keeping it in the
+  DOM costs more than the transition is worth.
 
 ## Reference
 

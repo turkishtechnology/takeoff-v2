@@ -34,10 +34,11 @@ export type DrawerCloseSlot = 'root';
  * children, which read shared values from context).
  */
 export interface DrawerProps
-  // Dialog root identity, controlled state, modality and trigger disable.
-  // `forceMount` stays unexposed on purpose — the Panel has to outlive the open
-  // -> closed boundary for the slide-out to run, so it is pinned in `Drawer.tsx`.
-  extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled' | 'modal'> {
+  // Dialog root identity, controlled state, modality and trigger disable are
+  // consumer knobs. `forceMount` is exposed for the same reason `Dialog` exposes
+  // it: the root turns it on by default so the exit transition can run, and a
+  // consumer with a heavy panel may want to opt out (see `Drawer.tsx`).
+  extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled' | 'modal' | 'forceMount'> {
   /** Side the drawer slides in from. */
   placement?: DrawerPlacement;
   /** Whether the drawer can be dismissed by clicking outside or pressing Escape. @defaultValue true */
