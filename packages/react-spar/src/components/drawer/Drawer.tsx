@@ -17,18 +17,16 @@ export const Drawer = (props: DrawerProps) => {
   const theme = useComponentTheme('Drawer');
   const merged = { ...theme?.defaultProps, ...props };
 
-  const { placement = DEFAULT_PLACEMENT, dismissible = true, disabled = false, children, ...sparProps } = merged;
+  // `forceMount` defaults to `true` so the overlay/panel stay in the DOM across
+  // the open → closed boundary, letting the CSS exit transitions in
+  // `_drawer.scss` (`&[data-state='closed']`) run before unmount. Without it
+  // Spar unmounts on close and the slide-out never plays. Consumers can still
+  // opt out by passing `forceMount={false}` — matching `Dialog`.
+  const { placement = DEFAULT_PLACEMENT, dismissible = true, disabled = false, forceMount = true, children, ...sparProps } = merged;
 
   return (
     <DrawerProvider value={{ placement, dismissible }}>
-      {/*
-        forceMount is hardcoded: the Drawer's slide-in/out transition needs
-        the panel to stay in the DOM across the open → closed boundary, so
-        CSS exit animations can run before unmount. Exposing it as a knob
-        would let consumers break the visual contract; if a use case ever
-        needs unmount-on-close, treat it as a contract change.
-      */}
-      <SparDialog {...sparProps} disabled={disabled} forceMount>
+      <SparDialog {...sparProps} disabled={disabled} forceMount={forceMount}>
         {children}
       </SparDialog>
     </DrawerProvider>

@@ -40,6 +40,7 @@ import { fileURLToPath } from 'node:url';
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const DOCS_APP_DIR = resolve(SCRIPT_DIR, '..');
 const DOCS_DIR = join(DOCS_APP_DIR, 'docs');
+const ICONS_DIR = join(DOCS_APP_DIR, 'icons');
 const STATIC_DIR = join(DOCS_APP_DIR, 'static');
 const CONFIG_FILE = join(DOCS_APP_DIR, 'docusaurus.config.ts');
 const SKILLS_DIR = resolve(DOCS_APP_DIR, '../../.agents/skills');
@@ -48,6 +49,26 @@ const SKILLS_DIR = resolve(DOCS_APP_DIR, '../../.agents/skills');
 // the docs plugin if `routeBasePath` is ever set explicitly.
 const ROUTE_BASE = '/docs';
 
+/**
+ * Every docs tree the site serves, each with the route base its plugin instance
+ * is mounted at. Both are mirrored to `static/`, so the "Copy page" action
+ * resolves on every docs route rather than 404-ing outside `/docs`. `section`
+ * overrides the prefix-matched grouping for trees that are one section.
+ */
+const DOC_TREES = [
+  { dir: DOCS_DIR, routeBase: ROUTE_BASE, staticSubdir: 'docs' },
+  { dir: ICONS_DIR, routeBase: '/icons', staticSubdir: 'icons', section: 'Icons' },
+];
+
+/**
+ * Pages whose rendered content comes from a React component rather than MDX
+ * prose, mapped to the generated Markdown that stands in for it. Without this
+ * the mirror is just the frontmatter, so "Copy page" on the gallery would hand
+ * an assistant a description instead of the icon set. `gen:icons` writes these
+ * (it owns the data) and runs before `gen:llms` in predev/prebuild.
+ */
+const GENERATED_BODY = new Map([['/icons/gallery', join(STATIC_DIR, 'icons-inventory.md')]]);
+
 // Section grouping for llms.txt, in display order. First matching prefix wins;
 // anything unmatched falls through to "Guides".
 const SECTIONS = [
@@ -55,6 +76,7 @@ const SECTIONS = [
   { title: 'Foundations', match: p => p.startsWith('foundations/') },
   { title: 'Components', match: p => p.startsWith('components/') },
   { title: 'Forms', match: p => p.startsWith('forms/') },
+  { title: 'Icons', match: () => false },
 ];
 
 // --- site URL (read from docusaurus.config.ts, with a safe fallback) ---------
@@ -289,9 +311,9 @@ function withSkillGuidance(markdown, componentSlug) {
 
 // --- routing -----------------------------------------------------------------
 
-function permalinkFor(slug) {
-  if (slug === '/' || slug === '') return `${ROUTE_BASE}/`;
-  return ROUTE_BASE + (slug.startsWith('/') ? slug : `/${slug}`);
+function permalinkFor(slug, routeBase = ROUTE_BASE) {
+  if (slug === '/' || slug === '') return `${routeBase}/`;
+  return routeBase + (slug.startsWith('/') ? slug : `/${slug}`);
 }
 
 // Maps a permalink to the served `.md` path. Both this and the docs footer
@@ -324,54 +346,78 @@ function listDocs(dir) {
 
 function main() {
   const siteUrl = readSiteUrl();
-  const files = listDocs(DOCS_DIR).sort();
   const pages = [];
   let skillsApplied = 0;
   const missingSkillGuidance = [];
 
-  // Remove outputs for docs pages that no longer exist. Without this cleanup,
-  // a persistent build workspace can keep serving deleted pages indefinitely.
-  rmSync(join(STATIC_DIR, 'docs'), { recursive: true, force: true });
+  // Remove outputs for pages that no longer exist. Without this cleanup, a
+  // persistent build workspace can keep serving deleted pages indefinitely.
+  for (const tree of DOC_TREES) {
+    rmSync(join(STATIC_DIR, tree.staticSubdir), { recursive: true, force: true });
+  }
 
-  for (const file of files) {
-    const relPath = relative(DOCS_DIR, file).split('\\').join('/');
-    const raw = readFileSync(file, 'utf8');
-    const { data, body } = parseFrontmatter(raw);
-    if (!data.slug) {
-      console.warn(`gen:llms — skipping ${relPath} (no slug frontmatter)`);
-      continue;
+  for (const tree of DOC_TREES) {
+    for (const file of listDocs(tree.dir).sort()) {
+      const relPath = relative(tree.dir, file).split('\\').join('/');
+      const raw = readFileSync(file, 'utf8');
+      const { data, body } = parseFrontmatter(raw);
+
+      // Docusaurus falls back to the file path when a page declares no slug, so
+      // mirror that rather than skipping the page and leaving its route without
+      // a `.md` for the "Copy page" action to fetch.
+      const slug = data.slug ?? `/${relPath.replace(/\.mdx?$/u, '').replace(/\/index$/u, '')}`;
+
+      const permalink = permalinkFor(slug, tree.routeBase);
+      const mdPath = mdPathFor(permalink);
+      let markdown = mdxToMarkdown(body);
+
+      // A page whose body is nothing but a component invocation — the icon
+      // gallery renders entirely from React — reduces to an empty mirror. Fall
+      // back to the frontmatter so the served `.md` still states what the page
+      // is instead of shipping a bare `<IconGallery />`.
+      if (!markdown.replace(/<[^>]*>/gu, '').trim()) {
+        markdown = `${[`# ${data.title ?? relPath}`, '', data.description ?? ''].join('\n').trim()}\n`;
+      }
+
+      // Fold in the component-rendered content for pages that have one. Missing
+      // is not fatal: a `gen:llms` run without a preceding `gen:icons` still
+      // produces a valid (if thinner) mirror.
+      const generatedBody = GENERATED_BODY.get(permalink);
+      if (generatedBody) {
+        try {
+          markdown = `${markdown.trimEnd()}\n\n${readFileSync(generatedBody, 'utf8').trim()}\n`;
+        } catch {
+          console.warn(`gen:llms — no generated body at ${relative(DOCS_APP_DIR, generatedBody)} for ${permalink}; run gen:icons first`);
+        }
+      }
+
+      // Fold in the agent-skill guidance for component pages. `components/index`
+      // is the section landing page, not a component — it has no skill by design,
+      // so exclude it rather than reporting it as missing on every run.
+      const componentSlug = relPath.startsWith('components/') && !/^components\/index\.mdx?$/u.test(relPath) ? relPath.replace(/^components\//u, '').replace(/\.mdx?$/u, '') : null;
+      if (componentSlug) {
+        const enriched = withSkillGuidance(markdown, componentSlug);
+        markdown = enriched.markdown;
+        if (enriched.applied) skillsApplied++;
+        else missingSkillGuidance.push(componentSlug);
+      }
+
+      pages.push({
+        relPath,
+        title: data.title ?? relPath,
+        description: data.description ?? '',
+        section: tree.section ?? sectionFor(relPath),
+        position: Number.parseInt(data.sidebar_position ?? '999', 10),
+        permalink,
+        mdPath,
+        mdUrl: siteUrl + mdPath,
+        markdown,
+      });
+
+      const outFile = join(STATIC_DIR, mdPath);
+      mkdirSync(dirname(outFile), { recursive: true });
+      writeFileSync(outFile, markdown);
     }
-
-    const permalink = permalinkFor(data.slug);
-    const mdPath = mdPathFor(permalink);
-    let markdown = mdxToMarkdown(body);
-
-    // Fold in the agent-skill guidance for component pages. `components/index`
-    // is the section landing page, not a component — it has no skill by design,
-    // so exclude it rather than reporting it as missing on every run.
-    const componentSlug = relPath.startsWith('components/') && !/^components\/index\.mdx?$/u.test(relPath) ? relPath.replace(/^components\//u, '').replace(/\.mdx?$/u, '') : null;
-    if (componentSlug) {
-      const enriched = withSkillGuidance(markdown, componentSlug);
-      markdown = enriched.markdown;
-      if (enriched.applied) skillsApplied++;
-      else missingSkillGuidance.push(componentSlug);
-    }
-
-    pages.push({
-      relPath,
-      title: data.title ?? relPath,
-      description: data.description ?? '',
-      section: sectionFor(relPath),
-      position: Number.parseInt(data.sidebar_position ?? '999', 10),
-      permalink,
-      mdPath,
-      mdUrl: siteUrl + mdPath,
-      markdown,
-    });
-
-    const outFile = join(STATIC_DIR, mdPath);
-    mkdirSync(dirname(outFile), { recursive: true });
-    writeFileSync(outFile, markdown);
   }
 
   // llms.txt — grouped, ordered index.
@@ -409,7 +455,7 @@ function main() {
   }
   writeFileSync(join(STATIC_DIR, 'llms-full.txt'), `${fullParts.join('\n').trim()}\n`);
 
-  console.log(`gen:llms — wrote ${pages.length} page(s) to static/docs, plus llms.txt and llms-full.txt`);
+  console.log(`gen:llms — wrote ${pages.length} page(s) to ${DOC_TREES.map(t => `static/${t.staticSubdir}`).join(' + ')}, plus llms.txt and llms-full.txt`);
   console.log(`gen:llms — folded agent-skill guidance into ${skillsApplied} component page(s)`);
   // Surfaced rather than silently skipped: a component page with no skill
   // guidance means the skill is missing the block, not that none was wanted.

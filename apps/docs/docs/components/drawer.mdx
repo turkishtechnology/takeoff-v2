@@ -432,8 +432,10 @@ animation library is required.
 | <ApiBadge label="dismissible" /> | <code>boolean</code>                                                  | true    | Whether the drawer can be dismissed by clicking outside or pressing Escape.                                                                                                      |
 | <ApiBadge label="id" />          | <code>string</code>                                                   | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-title`, `${id}-description`, `${id}-content`. |
 | <ApiBadge label="disabled" />    | <code>boolean</code>                                                  | false   | Disables all dialog triggers (prevents opening)                                                                                                                                  |
+| <ApiBadge label="forceMount" />  | <code>boolean</code>                                                  | false   | Always render portal/overlay/content (for animation libraries)                                                                                                                   |
 | <ApiBadge label="open" />        | <code>boolean</code>                                                  | -       | Controlled open state                                                                                                                                                            |
 | <ApiBadge label="defaultOpen" /> | <code>boolean</code>                                                  | false   | Initial open state (uncontrolled)                                                                                                                                                |
+| <ApiBadge label="modal" />       | <code>boolean</code>                                                  | true    | Whether dialog is modal (blocks interaction outside)                                                                                                                             |
 
 #### Events {#drawer-events}
 
@@ -480,6 +482,7 @@ animation library is required.
 | --------------------------------- | ----------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
 | <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -             |                                                                            |
 | <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             |                                                                            |
+| <ApiBadge label="role" />         | <code>React.AriaRole</code>                                                               | 'dialog'      | ARIA role for dialog type                                                  |
 | <ApiBadge label="container" />    | <code>HTMLElement &#124; null</code>                                                      | document.body | Portal container element. Content is portaled to document.body by default. |
 | <ApiBadge label="trapFocus" />    | <code>boolean</code>                                                                      | true          | Enable focus trapping                                                      |
 | <ApiBadge label="restoreFocus" /> | <code>boolean</code>                                                                      | true          | Restore focus on close                                                     |
