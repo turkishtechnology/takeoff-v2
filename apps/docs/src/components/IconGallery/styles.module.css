@@ -170,7 +170,7 @@
   gap: 10px;
   width: 108px;
   height: 108px;
-  justify-content: flex-start;
+  justify-content: center;
   border-radius: 12px;
   border: 1px solid var(--border-light);
   background: var(--static-light);
@@ -201,10 +201,8 @@
 }
 
 .cellName {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
   max-width: 100%;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--text-darkest);
@@ -231,7 +229,7 @@
   align-items: flex-start;
   border-radius: 16px;
   border: 1px solid var(--border-sub-base);
-  max-height: min(70vh, 560px);
+  height: 345px;
   width: min(969px, calc(100vw - 32px));
   bottom: 20px;
   inset-inline: 0;
