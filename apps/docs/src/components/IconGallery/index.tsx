@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import { ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
@@ -28,14 +28,7 @@ function IconCell({ entry, variant, size, selected, svgBaseUrl, onOpen }: IconCe
   const svg = useVariantSvg(entry, variant, svgBaseUrl);
 
   return (
-    <button
-      type="button"
-      className={styles.cell}
-      data-selected={selected || undefined}
-      aria-pressed={selected}
-      onClick={() => onOpen(entry)}
-      title={`${entry.name} — click for usage`}
-    >
+    <button type="button" className={styles.cell} data-selected={selected || undefined} aria-pressed={selected} onClick={() => onOpen(entry)} title={entry.name}>
       <span className={styles.glyphBox}>
         {svg ? (
           <svg className={styles.glyph} viewBox={svg.viewBox} width={size} height={size} role="img" aria-label={entry.name} dangerouslySetInnerHTML={{ __html: svg.svg }} />
@@ -71,6 +64,11 @@ function DialogHost({
   const [detailEntry, setDetailEntry] = useState(entry);
   const [variant, setVariant] = useState(galleryVariant);
   const svg = useVariantSvg(detailEntry, variant, svgBaseUrl);
+
+  useEffect(() => {
+    setDetailEntry(entry);
+    setVariant(galleryVariant);
+  }, [entry, galleryVariant]);
 
   return (
     <IconDetailDrawer
@@ -202,9 +200,7 @@ export default function IconGallery() {
           </div>
         )}
 
-        {selected ? (
-          <DialogHost key={selected.name} entry={selected} galleryVariant={variant} color={color} onColorChange={setColor} svgBaseUrl={svgBaseUrl} onClose={handleClose} />
-        ) : null}
+        {selected ? <DialogHost entry={selected} galleryVariant={variant} color={color} onColorChange={setColor} svgBaseUrl={svgBaseUrl} onClose={handleClose} /> : null}
       </div>
     </ReactSparDemoRoot>
   );

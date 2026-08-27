@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CodeBlock from '@theme/CodeBlock';
+import { useWindowSize } from '@docusaurus/theme-common';
 
 import { Accordion, Button, Checkbox, Divider, Drawer, Field, Input, Select } from '@takeoff-ui/react-spar';
 import { ReactSparDemoRoot } from '../ReactSparDocs';
@@ -7,6 +8,7 @@ import { CopyIconOutlinedRounded } from '@takeoff-icons/react/copy';
 import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
 import { MoonIconOutlinedRounded } from '@takeoff-icons/react/moon';
 import { SunIconOutlinedRounded } from '@takeoff-icons/react/sun';
+import { ArrowDownloadIconOutlinedRounded } from '@takeoff-icons/react/arrow-download';
 import { iconEntries, type IconGalleryEntry, type IconVariantSvg } from '@site/src/data/icons.generated';
 import { ICON_SIZES, ICON_TYPES, PLACEHOLDER_COLOR, titleCase } from './constants';
 import { buildIconFormats } from './snippets';
@@ -27,6 +29,46 @@ const PREVIEW_SIZE = 96;
 const RESET_MS = 2000;
 const SHAPE_SUFFIXES = ['circle', 'square'] as const;
 const entriesByName = new Map(iconEntries.map(icon => [icon.name, icon]));
+
+function buildSvgMarkup(svg: IconVariantSvg, size: number, color: string | null): string {
+  const inner = color ? svg.svg.replace(/currentColor/g, color) : svg.svg;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${svg.viewBox}" width="${size}" height="${size}">${inner}</svg>`;
+}
+
+/** Hand a blob to the browser's download machinery under a chosen file name. */
+function saveBlob(blob: Blob, fileName: string): void {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  /* Revoked a task later: Safari cancels the download if the object URL dies in
+     the same tick as the click. */
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+async function savePng(markup: string, fileName: string, size: number): Promise<void> {
+  const image = new Image();
+  image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`;
+
+  await new Promise<void>((resolve, reject) => {
+    image.onload = () => resolve();
+    image.onerror = () => reject(new Error('Could not rasterise the icon.'));
+  });
+
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('Canvas 2D is unavailable.');
+  context.drawImage(image, 0, 0, size, size);
+
+  const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
+  if (!blob) throw new Error('Could not encode the PNG.');
+  saveBlob(blob, fileName);
+}
 
 /** The gallery publishes circle and square as sibling icons, not SVG variants. */
 function getShapeVariants(entry: IconGalleryEntry): IconGalleryEntry[] {
@@ -82,6 +124,11 @@ export default function IconDetailDrawer({ entry, initialVariant, svg, color, on
   const [previewDark, setPreviewDark] = useState(false);
   const [copiedMeta, setCopiedMeta] = useState(false);
 
+  /* The preview node is the source of truth for what the raster should be
+     painted with: it already resolves the colour override, the theme's ink and
+     the inverted-background toggle into one computed value. */
+  const previewGlyphRef = useRef<SVGSVGElement>(null);
+
   /* Same draft as the toolbar's: a controlled box that only commits complete
      hex values would reset itself on the first keystroke. */
   const [colorDraft, setColorDraft] = useState(color ?? '');
@@ -104,9 +151,12 @@ export default function IconDetailDrawer({ entry, initialVariant, svg, color, on
   const hasFilledCut = entry.variants.includes(`filled/${type}`);
   const style = filled ? 'filled' : 'outlined';
   const variant = `${style}/${type}`;
+  const dividerOrientation = useWindowSize() === 'mobile' ? 'horizontal' : 'vertical';
   const formats = useMemo(() => buildIconFormats(entry.name, variant), [entry.name, variant]);
   const meta = useMemo(() => [...entry.tags, ...entry.aliases].filter(Boolean).join(', '), [entry.tags, entry.aliases]);
   const shapeVariants = useMemo(() => getShapeVariants(entry), [entry]);
+  /** `add` + `outlined/rounded` -> `add-outlined-rounded`, the downloaded file's stem. */
+  const fileStem = `${entry.name}-${variant.replace('/', '-')}`;
 
   const handleType = (next: string) => {
     setType(next);
@@ -124,6 +174,22 @@ export default function IconDetailDrawer({ entry, initialVariant, svg, color, on
       window.setTimeout(() => setCopiedMeta(false), RESET_MS);
     } catch {
       /* Clipboard denied — the text is selectable in place, so stay quiet. */
+    }
+  }
+  function downloadSvg(): void {
+    if (!svg) return;
+    const markup = buildSvgMarkup(svg, size, color);
+    saveBlob(new Blob([markup], { type: 'image/svg+xml;charset=utf-8' }), `${fileStem}.svg`);
+  }
+
+  async function downloadPng(): Promise<void> {
+    if (!svg) return;
+    const ink = previewGlyphRef.current ? window.getComputedStyle(previewGlyphRef.current).color : color;
+    try {
+      await savePng(buildSvgMarkup(svg, size, ink || '#000000'), `${fileStem}-${size}.png`, size);
+    } catch {
+      /* Rasterising failed (canvas unavailable, encoder refused) — the SVG
+         download and the copy-able snippets both still work, so stay quiet. */
     }
   }
 
@@ -144,16 +210,16 @@ export default function IconDetailDrawer({ entry, initialVariant, svg, color, on
           </Drawer.Header>
 
           <Drawer.Body className={styles.sheetBody}>
-            {/* Inspect column and its rule share a flex row: a vertical `Divider`
-                sizes from its container, so in here it fills the inspect column
-                and stops. As a direct child of the body grid it would stretch to
-                the tallest column — the accordion — and grow on every expand. */}
+            {/* Three tracks: inspect, rule, code. The `Divider` is the middle
+                one and takes its length from `align-self: stretch` — see
+                `.sheetDivider`. */}
             <div className={styles.sheetInspectCol}>
               <div className={styles.sheetInspect}>
                 <div className={styles.previewRow}>
                   <div className={styles.previewBox} data-inverted={previewDark || undefined} style={{ color: color ?? undefined }}>
                     {svg ? (
                       <svg
+                        ref={previewGlyphRef}
                         className={styles.previewGlyph}
                         viewBox={svg.viewBox}
                         width={size}
@@ -283,10 +349,8 @@ export default function IconDetailDrawer({ entry, initialVariant, svg, color, on
                   />
                 </div>
               </div>
-
-              <Divider orientation="vertical" decorative className={styles.sheetDivider} />
             </div>
-
+            <Divider orientation={dividerOrientation} decorative className={styles.sheetDivider} />
             <div className={styles.sheetCode}>
               <span className={styles.blockLabel}>Code:</span>
               <Accordion type="divided" className={styles.codeAccordion}>
@@ -305,6 +369,32 @@ export default function IconDetailDrawer({ entry, initialVariant, svg, color, on
                   </Accordion.Item>
                 ))}
               </Accordion>
+
+              {/* The downloads close out the code column. */}
+              <div className={styles.downloadBlock}>
+                <div className={styles.downloadActions}>
+                  <Button
+                    variant="neutral"
+                    appearance="outlined"
+                    size="small"
+                    disabled={!svg}
+                    onClick={downloadSvg}
+                    startContent={<ArrowDownloadIconOutlinedRounded width={16} height={16} />}
+                  >
+                    SVG
+                  </Button>
+                  <Button
+                    variant="neutral"
+                    appearance="outlined"
+                    size="small"
+                    disabled={!svg}
+                    onClick={() => void downloadPng()}
+                    startContent={<ArrowDownloadIconOutlinedRounded width={16} height={16} />}
+                  >
+                    PNG
+                  </Button>
+                </div>
+              </div>
             </div>
           </Drawer.Body>
         </Drawer.Panel>

@@ -37,7 +37,7 @@
   color: var(--text-darkest);
   text-align: center;
   font-family: var(--desktop-subheading-m-base-font);
-  font-size: var(--desktop-subheading-m-base-size);
+  font-size: var(--desktop-subheading-s-size);
   font-style: normal;
   font-weight: 300;
   line-height: var(--desktop-subheading-m-base-line-height);
@@ -51,7 +51,7 @@
   font-size: var(--desktop-title-h2-size);
   font-style: normal;
   font-weight: 400;
-  line-height: var(--desktop-title-h2-line-height);
+  line-height: 60px;
 }
 
 .heroActions {
@@ -71,6 +71,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 16px;
+  margin-bottom: 20px;
 }
 
 /* ---- Filter bar -------------------------------------------------------- */
@@ -163,14 +164,16 @@
 
 .cell {
   display: flex;
-  padding: 12px;
+  padding: 12px 8px;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  place-content: center;
-  aspect-ratio: 1;
+  width: 108px;
+  height: 108px;
+  justify-content: flex-start;
   border-radius: 12px;
   border: 1px solid var(--border-light);
+  background: var(--static-light);
   color: inherit;
   cursor: pointer;
   transition:
@@ -179,14 +182,15 @@
 }
 
 .cell:hover {
-  border-color: var(--background-dark);
   box-shadow: var(--docs-shadow-card);
+  transform: translateY(-1px);
 }
 
 /* Selected tile. The glyph paints with `currentColor`, so setting `color` once
    turns it; the label needs its own rule only because it declares a colour of
    its own, and `inherit` is what defers back rather than repeating the token. */
 .cell[data-selected] {
+  background: var(--background-lightest);
   border-color: var(--primary-base);
   color: var(--primary-base);
   box-shadow: var(--docs-shadow-card);
@@ -196,27 +200,13 @@
   color: inherit;
 }
 
-.glyphBox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.glyph {
-  color: inherit;
-}
-
-.glyphPlaceholder {
-  display: block;
-  border-radius: 6px;
-  background: var(--docs-surface-3);
-}
-
 .cellName {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   max-width: 100%;
   overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--text-darkest);
   text-align: center;
   font-family: var(--desktop-body-s-font);
@@ -227,8 +217,16 @@
 }
 
 /* ---- Detail sheet ------------------------------------------------------ */
+@keyframes sheetIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
 .sheetPanel.sheetPanel.sheetPanel {
   display: inline-flex;
+  animation: sheetIn 220ms cubic-bezier(0.4, 0, 0.2, 1);
   flex-direction: column;
   align-items: flex-start;
   border-radius: 16px;
@@ -258,12 +256,21 @@
 
 .sheetBody {
   display: grid;
-  grid-template-columns: minmax(0, 500px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 16px;
   align-items: start;
 }
 
 .sheetInspectCol {
   display: flex;
+  min-width: 0;
+}
+
+.sheetDivider {
+  align-self: stretch;
+}
+
+.sheetCode {
   min-width: 0;
 }
 
@@ -383,12 +390,7 @@
   }
 
   .sheetDivider {
-    display: none;
-  }
-
-  .sheetCode {
-    padding-top: 20px;
-    border-top: 1px solid var(--border-light, #e1e4ea);
+    align-self: auto;
   }
 }
 
@@ -396,4 +398,24 @@
   .previewRow {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheetPanel.sheetPanel.sheetPanel {
+    animation: none;
+  }
+}
+
+.downloadBlock {
+  display: flex;
+  align-items: center;
+  justify-self: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.downloadActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
