@@ -13,6 +13,9 @@ import {
   Field,
   Input,
   ReactSparDemoRoot,
+  createDateMask,
+  createNumberMask,
+  createTimeMask,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 import { LockOpenIconOutlinedRounded } from '@takeoff-icons/react/lock-open';
@@ -25,6 +28,9 @@ export const inputScope = {
   LockOpenIconOutlinedRounded,
   SearchIconOutlinedRounded,
   TakeoffRocketIconOutlinedRounded,
+  createDateMask,
+  createNumberMask,
+  createTimeMask,
 };
 
 {/* prettier-ignore-start */}
@@ -300,6 +306,222 @@ function ChipsDemo() {
 render(<ChipsDemo />);
 `;
 
+export const maskShapeDemo = String.raw`
+function MaskShapeDemo() {
+  const [meta, setMeta] = React.useState({ raw: '', completed: false });
+  return (
+    <div className="w-full max-w-90">
+      <Field>
+        <Field.Label>Card number</Field.Label>
+        <Input>
+          <Input.Field
+            inputMode="numeric"
+            placeholder="0000 0000 0000 0000"
+            mask={{ blocks: [4, 4, 4, 4], delimiter: ' ', numericOnly: true }}
+            onValueChange={(value, next) => setMeta(next)}
+          />
+          <Input.ClearButton />
+        </Input>
+        <Field.Description>
+          raw: {meta.raw || '—'} · completed: {String(meta.completed)}
+        </Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<MaskShapeDemo />);
+`;
+
+export const maskPresetDemo = String.raw`
+function MaskPresetDemo() {
+  const [departure, setDeparture] = React.useState({});
+  const [boarding, setBoarding] = React.useState({});
+  return (
+    <div className="flex w-full max-w-180 flex-col gap-4 sm:flex-row">
+      <Field className="flex-1">
+        <Field.Label>Departure date</Field.Label>
+        <Input>
+          <Input.Field
+            inputMode="numeric"
+            placeholder="dd/mm/yyyy"
+            mask={{ date: true, delimiter: '/', dateMin: '2026-01-01', dateMax: '2030-12-31' }}
+            onValueChange={(value, meta) => setDeparture(meta)}
+          />
+        </Input>
+        <Field.Description>iso: {departure.iso ?? '—'}</Field.Description>
+      </Field>
+      <Field className="flex-1">
+        <Field.Label>Boarding time</Field.Label>
+        <Input>
+          <Input.Field
+            inputMode="numeric"
+            placeholder="hh:mm"
+            mask={{ time: true, delimiter: ':' }}
+            onValueChange={(value, meta) => setBoarding(meta)}
+          />
+        </Input>
+        <Field.Description>iso: {boarding.iso ?? '—'}</Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<MaskPresetDemo />);
+`;
+
+export const maskNumberDemo = String.raw`
+function MaskNumberDemo() {
+  const [fare, setFare] = React.useState({});
+  return (
+    <div className="flex w-full max-w-180 flex-col gap-4 sm:flex-row">
+      <Field className="flex-1">
+        <Field.Label>Fare</Field.Label>
+        <Input>
+          <Input.Prefix>TRY</Input.Prefix>
+          <Input.Field
+            inputMode="decimal"
+            placeholder="0,00"
+            mask={{ number: true, numberLocale: 'tr-TR' }}
+            onValueChange={(value, meta) => setFare(meta)}
+          />
+        </Input>
+        <Field.Description>
+          iso: {fare.iso ?? '—'} · two passengers:{' '}
+          {fare.iso ? (Number(fare.iso) * 2).toLocaleString('tr-TR') : '—'}
+        </Field.Description>
+      </Field>
+
+      <Field className="flex-1">
+        <Field.Label>Baggage allowance</Field.Label>
+        <Input>
+          <Input.Field
+            inputMode="numeric"
+            placeholder="0"
+            mask={{
+              number: true,
+              numberLocale: 'tr-TR',
+              numberDecimalScale: 0,
+              numberIntegerScale: 3,
+              numberPositiveOnly: true,
+            }}
+          />
+          <Input.Suffix>kg</Input.Suffix>
+        </Input>
+        <Field.Description>Whole kilos, three digits, never negative.</Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<MaskNumberDemo />);
+`;
+
+export const maskRegexDemo = String.raw`
+function MaskRegexDemo() {
+  const [completed, setCompleted] = React.useState(false);
+  return (
+    <div className="w-full max-w-90">
+      <Field>
+        <Field.Label>Flight number</Field.Label>
+        <Input>
+          <Input.Field
+            placeholder="TK1985"
+            mask={{ regex: /^[A-Z]{2}\d{1,4}$/, uppercase: true }}
+            onValueChange={(value, meta) => setCompleted(meta.completed)}
+          />
+        </Input>
+        <Field.Description>
+          Two letters, then up to four digits. completed: {String(completed)}
+        </Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<MaskRegexDemo />);
+`;
+
+export const maskResolverDemo = String.raw`
+function MaskResolverDemo() {
+  const [meta, setMeta] = React.useState({});
+
+  const ibanMask = React.useCallback((raw) => {
+    const clean = raw.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 26);
+    return {
+      value: clean.replace(/(.{4})(?=.)/g, '$1 '),
+      iso: clean,
+      completed: clean.length === 26,
+    };
+  }, []);
+
+  return (
+    <div className="w-full max-w-120">
+      <Field>
+        <Field.Label>IBAN</Field.Label>
+        <Input>
+          <Input.Field
+            placeholder="TR33 0006 1005 1978 6457 8413 26"
+            mask={ibanMask}
+            onValueChange={(value, next) => setMeta(next)}
+          />
+        </Input>
+        <Field.Description>
+          iso: {meta.iso || '—'} · {(meta.raw ?? '').length}/26
+        </Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<MaskResolverDemo />);
+`;
+
+export const maskComposeDemo = String.raw`
+function MaskComposeDemo() {
+  const [meta, setMeta] = React.useState({});
+
+  // createDateMask returns a plain resolver, so it can be wrapped like any
+  // other function: run the built-in first, then add the one rule it cannot
+  // express — dateMin/dateMax bound a range, not a weekday.
+  const businessDayMask = React.useMemo(() => {
+    const base = createDateMask({ date: true, delimiter: '.' });
+    return (raw, ctx) => {
+      const result = base(raw, ctx);
+      if (!result.completed || !result.iso) return result;
+      const weekday = new Date(result.iso + 'T00:00:00Z').getUTCDay();
+      const isWeekend = weekday === 0 || weekday === 6;
+      return isWeekend ? { ...result, completed: false, iso: undefined } : result;
+    };
+  }, []);
+
+  return (
+    <div className="w-full max-w-90">
+      <Field>
+        <Field.Label>Settlement date</Field.Label>
+        <Input>
+          <Input.Field
+            inputMode="numeric"
+            placeholder="dd.mm.yyyy"
+            mask={businessDayMask}
+            onValueChange={(value, next) => setMeta(next)}
+          />
+        </Input>
+        <Field.Description>
+          {meta.iso
+            ? 'Business day — ' + meta.iso
+            : meta.completed === false && (meta.raw ?? '').length === 8
+              ? 'That is a weekend; pick a business day.'
+              : 'Weekends are rejected even once the date is well-formed.'}
+        </Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<MaskComposeDemo />);
+`;
+
 export const slotPropsDemo = String.raw`
 function SearchTemplate() {
   return (
@@ -479,6 +701,130 @@ attribute, so the look no longer depends on where the buttons sit in the DOM.
 > That detection is gone; add `data-layout="counter"` to the `Input` root to opt
 > in. Without it the same markup now renders as a plain left-aligned field.
 
+## Mask
+
+`Input.Field` takes a `mask` prop and, while it is set, reports every edit
+through `onValueChange(value, meta)`. `meta` carries `raw` (the value with
+separators stripped), `completed`, and — when the mask defines a canonical form
+— `iso`. Prefer `onValueChange` over `onChange` on a masked field: deletions and
+undo are applied directly to the control, so they never surface as a React
+change event.
+
+Caret handling, delete/undo behaviour and paste are all handled by Spar. There
+are only two engine patterns, and both are pure mechanics:
+
+### Shape
+
+`blocks` lays characters into groups and puts a delimiter between them.
+`numericOnly` / `letterOnly` filter what is accepted, `uppercase` / `lowercase`
+case the result.
+
+<LiveCode
+  code={maskShapeDemo}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={inputScope}
+/>
+
+`Input.ClearButton` above is not decoration — it proves the wiring. Backspacing
+to empty is applied imperatively by the mask, and the button still disappears,
+because `Input.Field` mirrors `onValueChange` back into the Input context that
+`Input.ClearButton` and `Input.Strength` read.
+
+### Regex
+
+`regex` is matched one character at a time: write the pattern for the **final**
+value and partial states are derived from it. The pattern is the whole
+specification, so `blocks` and delimiters do not apply — a character is either
+accepted or dropped.
+
+<LiveCode
+  code={maskRegexDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={inputScope}
+/>
+
+### Date & time
+
+`{ date: true }` and `{ time: true }` do something the two engine patterns
+cannot: they clamp the typed value into a legal range. Typing `4` into the day
+block yields `04`, `35` becomes `31`, `13` in the month block becomes `12`, and
+`dateMin` / `dateMax` bound the year. Once the value is complete, `meta.iso`
+carries `YYYY-MM-DD` (or `HH:mm[:ss]`).
+
+<LiveCode
+  code={maskPresetDemo}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={inputScope}
+/>
+
+### Number
+
+`{ number: true }` groups the integer part as it grows and keeps one decimal
+mark. It is the only mask with no fixed length, so it has no `blocks` — grouping
+is variable-width and applied right to left.
+
+Separators and group sizes come from `Intl.NumberFormat`, so `numberLocale` is
+the whole configuration: `'tr-TR'` gives `1.234.567,89`, `'de-DE'` the same,
+`'en-US'` gives `1,234,567.89`, and `'en-IN'` gives lakh grouping
+(`1,12,34,567`) without a separate option. Override just the character with
+`delimiter` (`delimiter: ''` turns grouping off) or just the mark with
+`numberDecimalMark`. `numberDecimalScale` caps the fraction (`0` makes the field
+integer-only and the mark inert), `numberIntegerScale` caps the integer digits,
+and `numberPositiveOnly` rejects the minus sign.
+
+`meta.raw` keeps the sign and the decimal mark — those are part of the number,
+not punctuation between blocks — while `meta.iso` is always a
+`Number()`-parseable string with a `.` fraction, so it is what you send to the
+server.
+
+<LiveCode
+  code={maskNumberDemo}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={inputScope}
+/>
+
+### Resolvers
+
+Anything else is a function. It receives the candidate string plus a context
+(`caret`, `previousValue`, `inputType`) and returns `{ value }` — optionally
+with `raw`, `completed`, `iso` and its own `insignificant` separator pattern.
+Caret placement stays inside Spar, so a resolver only decides what the value
+_is_.
+
+<LiveCode
+  code={maskResolverDemo}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={inputScope}
+/>
+
+This is the full contract, not a fallback. `date`, `time` and `number` are
+themselves resolvers — `{ date: true }` is exactly
+`createDateMask({ date: true })` — so a built-in has no capability your own mask
+lacks, and can be wrapped like any other function when you need one rule it does
+not express.
+
+<LiveCode
+  code={maskComposeDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={inputScope}
+/>
+
+All three factories — `createDateMask`, `createTimeMask`, `createNumberMask` —
+and the `Mask*` types are re-exported from `@takeoff-ui/react-spar` so a typed
+resolver has the same contract Spar validates against.
+
 ## Chips
 
 `Input.Chips` turns the input into a tag field. It owns the `string[]` value
@@ -498,9 +844,8 @@ ignored — and `allowDuplicates` permits repeats.
 />
 
 Object-valued tags and per-chip options are out of scope for now; the chips
-value is a `string[]`. For input **masking / formatting** (dates, phone numbers,
-currency), wire a formatter into `Input.Field`'s `onChange` — the compound stays
-format-agnostic, matching Spar's headless input.
+value is a `string[]`. Masking and formatting are no longer something you wire
+into `onChange` by hand — see [Mask](#mask) for the built-in `mask` prop.
 
 ## Textarea
 
@@ -584,12 +929,19 @@ for primitive behavior.
 
 #### Props {#input-field-props}
 
-| Name                            | Type                                                                                      | Default | Description                                           |
-| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------- |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                        |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                    |
-| <ApiBadge label="autoFocus" />  | <code>boolean</code>                                                                      | false   | Whether to focus the input on mount                   |
-| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part. |
+| Name                            | Type                                                                                      | Default | Description                                                                  |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------- |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                               |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                           |
+| <ApiBadge label="mask" />       | <code><a href="#input-td-mask">Mask</a></code>                                            | -       | Input mask — a shape/date/time/number/regex pattern, or a resolver function. |
+| <ApiBadge label="autoFocus" />  | <code>boolean</code>                                                                      | false   | Whether to focus the input on mount                                          |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.                        |
+
+#### Events {#input-field-events}
+
+| Name                               | Type                                                                                                 | Default | Description                                                                |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="onValueChange" /> | <code>(value: string, meta: <a href="#input-td-maskchangemeta">MaskChangeMeta</a>) =&gt; void</code> | -       | Fires with the **masked** value plus `raw` / `completed` / `iso` metadata. |
 
 #### Data attributes {#input-field-data-attributes}
 
@@ -722,8 +1074,10 @@ for primitive behavior.
 
 ### Type Definitions {#input-type-definitions}
 
-| Name                                                                | Definition                                        |
-| ------------------------------------------------------------------- | ------------------------------------------------- |
-| <span id="input-td-inputsize"><ApiBadge label="InputSize" /></span> | <code>'small' &#124; 'base' &#124; 'large'</code> |
+| Name                                                                          | Definition                                                               |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| <span id="input-td-inputsize"><ApiBadge label="InputSize" /></span>           | <code>'small' &#124; 'base' &#124; 'large'</code>                        |
+| <span id="input-td-mask"><ApiBadge label="Mask" /></span>                     | <code>MaskPattern &#124; MaskPreset &#124; MaskResolver</code>           |
+| <span id="input-td-maskchangemeta"><ApiBadge label="MaskChangeMeta" /></span> | <code>&#123; raw: string; completed: boolean; iso?: string &#125;</code> |
 
 {/* api-tables:end */}
