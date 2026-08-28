@@ -58,3 +58,33 @@ span `data-selected`, so the filled pill is scoped to the two ends and the
 middle keeps the light band. The band itself is painted on a pseudo-element
 rather than the cell, because `border-radius` is ignored on a table cell under
 `border-collapse: collapse` — the layout the flush-column design needs.
+
+Two Core header features have no `react-day-picker` counterpart, so the wrapper
+supplies them. `headerType` (`basic` | `divided` | `light` | `primary` | `dark`)
+is Core's `tk-datepicker` header vocabulary: `basic` divides the month row from
+the grid, the rest drop that divider for a boxed surface, and the two filled
+ones flip the label and arrows to white. The header also carries Core's second
+pair of arrows: each pair steps one rung of the board it is on — the single ones
+move a month, or a year on the year board; the double ones move a year, or a
+whole twelve-year page.
+
+`view` (`day` | `month` | `year`) is Core's view switch: the month and the year
+in the caption are buttons that swap the day grid for a twelve-month or
+twelve-year board. Which board shows is a third controlled pair — `view` +
+`onViewChange`, with `defaultView` for the uncontrolled case, alongside the ones
+for the selection and the displayed month. The boards are the one part of the
+anatomy the engine does not render, so they are wrapper-owned — `role="grid"`
+with one tab stop, arrow-key roving focus, `aria-selected` on the current cell,
+focus moving into a board as it opens and back to the trigger once a month is
+picked. Their accessible names come from the engine's own
+`labels.labelMonthDropdown` / `labelYearDropdown`, so translating the calendar
+translates the boards. Only the body is replaced: the displayed month stays the
+engine's, through `goToMonth`. A `dropdown*` caption keeps the engine's
+`<select>` pair instead of switch buttons and drops the year arrows, since the
+year `<select>` covers them; the boards still work there.
+
+One consequence worth calling out: since a board can replace the day grid on any
+calendar, the body box is now pinned — the grid keeps a constant height and
+width instead of growing a row in six-week months. Switching views no longer
+resizes the card, and `fixedWeeks` is no longer needed to stop the
+month-to-month jump.

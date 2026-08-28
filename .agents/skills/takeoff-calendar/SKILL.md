@@ -152,6 +152,30 @@ row from the grid; the other four drop that divider and put the month and its
 arrows inside a boxed surface, with `primary` and `dark` flipping the label,
 arrows and dropdown carets to white.
 
+### Month and year panels
+
+```tsx
+<Calendar defaultView="month" />
+```
+
+The month and the year in the caption are buttons that swap the day grid for a
+twelve-month or twelve-year board. Picking a year drills down to that year's
+months; picking a month returns to the days. Which board shows is a controlled
+pair — `view` + `onViewChange` — with `defaultView` (`'day' | 'month' | 'year'`,
+default `'day'`) for the uncontrolled case. The header carries two pairs of
+arrows, each stepping one rung of the board it is on — the single ones move a
+month, or a year on the year board; the double ones move a year, or a whole
+twelve-year page — and `minDate` / `maxDate` disable out-of-range cells.
+
+`react-day-picker` has no such view, so this is the one node the wrapper renders
+itself — reach it through the `monthYearGrid` / `monthYearCell` /
+`captionTrigger` slots. The boards are `role="grid"` with one tab stop and
+arrow-key roving focus, and focus returns to the trigger once a month is picked.
+
+A `dropdown*` caption keeps the engine's `<select>` pair instead of switch
+buttons, and drops the year arrows since the year `<select>` covers them. The
+boards still work there.
+
 ### Controlling the displayed month
 
 ```tsx
@@ -242,29 +266,32 @@ only that locale is bundled.
 
 ## Key props
 
-| Prop                  | Type                                                             | Default      | Notes                                                                  |
-| --------------------- | ---------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------- |
-| `mode`                | `'single' \| 'range' \| 'multiple'`                              | `'single'`   | Decides the shape of `value` / `onValueChange`.                        |
-| `value`               | `Date` \| `Date[]` \| `CalendarRange`                            | -            | Controlled selection; type follows `mode`.                             |
-| `defaultValue`        | same as `value`                                                  | -            | Uncontrolled initial selection.                                        |
-| `onValueChange`       | `(value) => void`                                                | -            | Fires with the new selection, or `undefined` when cleared.             |
-| `size`                | `'small' \| 'base'`                                              | `'base'`     | Grid scale → `data-size`. Two scales by design; see above.             |
-| `headerType`          | `'basic' \| 'divided' \| 'light' \| 'primary' \| 'dark'`         | `'basic'`    | Caption-row treatment → `data-header-type`.                            |
-| `minDate` / `maxDate` | `Date`                                                           | -            | Inclusive bounds on navigation and selection.                          |
-| `disabledDates`       | `Date[]`                                                         | -            | Individual days that cannot be picked.                                 |
-| `allowedDates`        | `Date[]`                                                         | -            | Whitelist; every unlisted day is disabled. Empty array = no whitelist. |
-| `disabledWeekDays`    | `number[]`                                                       | -            | Weekday indices to disable (`0` = Sunday).                             |
-| `firstDayOfWeekIndex` | `0-6`                                                            | locale's own | First column of the week.                                              |
-| `min` / `max`         | `number`                                                         | -            | Range span or selected-count bounds (`range` / `multiple` modes).      |
-| `excludeDisabled`     | `boolean`                                                        | `false`      | Forbid a range containing a disabled day (`range` mode).               |
-| `numberOfMonths`      | `number`                                                         | `1`          | Months rendered side by side.                                          |
-| `month`               | `Date`                                                           | -            | Controlled displayed month (pair with `onMonthChange`).                |
-| `defaultMonth`        | `Date`                                                           | today        | Initially displayed month.                                             |
-| `onMonthChange`       | `(month: Date) => void`                                          | -            | Fires when the displayed month moves.                                  |
-| `captionLayout`       | `'label' \| 'dropdown' \| 'dropdown-months' \| 'dropdown-years'` | `'label'`    | Month/year label vs. `<select>` navigation.                            |
-| `navLayout`           | `'around' \| 'after'`                                            | `'around'`   | Where the previous/next arrows sit.                                    |
-| `locale`              | `react-day-picker` locale                                        | English      | Import from `react-day-picker/locale`.                                 |
-| `footer`              | `ReactNode`                                                      | -            | Content under the grid, announced politely.                            |
+| Prop                  | Type                                                             | Default      | Notes                                                                      |
+| --------------------- | ---------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------- |
+| `mode`                | `'single' \| 'range' \| 'multiple'`                              | `'single'`   | Decides the shape of `value` / `onValueChange`.                            |
+| `value`               | `Date` \| `Date[]` \| `CalendarRange`                            | -            | Controlled selection; type follows `mode`.                                 |
+| `defaultValue`        | same as `value`                                                  | -            | Uncontrolled initial selection.                                            |
+| `onValueChange`       | `(value) => void`                                                | -            | Fires with the new selection, or `undefined` when cleared.                 |
+| `size`                | `'small' \| 'base'`                                              | `'base'`     | Grid scale → `data-size`. Two scales by design; see above.                 |
+| `headerType`          | `'basic' \| 'divided' \| 'light' \| 'primary' \| 'dark'`         | `'basic'`    | Caption-row treatment → `data-header-type`.                                |
+| `view`                | `'day' \| 'month' \| 'year'`                                     | -            | Board the body shows (controlled) → `data-view`. Pair with `onViewChange`. |
+| `defaultView`         | `'day' \| 'month' \| 'year'`                                     | `'day'`      | Board the body opens on, uncontrolled.                                     |
+| `onViewChange`        | `(view) => void`                                                 | -            | Fires when the body moves to another board.                                |
+| `minDate` / `maxDate` | `Date`                                                           | -            | Inclusive bounds on navigation and selection.                              |
+| `disabledDates`       | `Date[]`                                                         | -            | Individual days that cannot be picked.                                     |
+| `allowedDates`        | `Date[]`                                                         | -            | Whitelist; every unlisted day is disabled. Empty array = no whitelist.     |
+| `disabledWeekDays`    | `number[]`                                                       | -            | Weekday indices to disable (`0` = Sunday).                                 |
+| `firstDayOfWeekIndex` | `0-6`                                                            | locale's own | First column of the week.                                                  |
+| `min` / `max`         | `number`                                                         | -            | Range span or selected-count bounds (`range` / `multiple` modes).          |
+| `excludeDisabled`     | `boolean`                                                        | `false`      | Forbid a range containing a disabled day (`range` mode).                   |
+| `numberOfMonths`      | `number`                                                         | `1`          | Months rendered side by side.                                              |
+| `month`               | `Date`                                                           | -            | Controlled displayed month (pair with `onMonthChange`).                    |
+| `defaultMonth`        | `Date`                                                           | today        | Initially displayed month.                                                 |
+| `onMonthChange`       | `(month: Date) => void`                                          | -            | Fires when the displayed month moves.                                      |
+| `captionLayout`       | `'label' \| 'dropdown' \| 'dropdown-months' \| 'dropdown-years'` | `'label'`    | Month/year label vs. `<select>` navigation.                                |
+| `navLayout`           | `'around' \| 'after'`                                            | `'around'`   | Where the previous/next arrows sit.                                        |
+| `locale`              | `react-day-picker` locale                                        | English      | Import from `react-day-picker/locale`.                                     |
+| `footer`              | `ReactNode`                                                      | -            | Content under the grid, announced politely.                                |
 
 Also passed through to the engine: `showOutsideDays`, `showWeekNumber`,
 `fixedWeeks`, `hideWeekdays`, `hideNavigation`, `disableNavigation`,
@@ -281,6 +308,8 @@ Also passed through to the engine: `showOutsideDays`, `showWeekNumber`,
   `data-today`, `data-outside`, `data-disabled`, `data-focused`.
 - Range position is a class, not an attribute: `.tk-calendar-day-range-start` /
   `-middle` / `-end`.
+- Month/year panel: `data-slot="month-year-grid"` with `data-view="months"` or
+  `"years"`, and cells carrying `data-selected` / `data-disabled`.
 
 ```tsx
 <Calendar

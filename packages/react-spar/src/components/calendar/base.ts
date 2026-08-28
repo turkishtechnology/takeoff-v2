@@ -19,8 +19,29 @@ import type { CalendarProps, CalendarSlot } from './types';
  * a v2-owned react-enhancement over a third-party engine, so it records its
  * decisions here; the shipped entry lives under "Component-specific decisions →
  * Calendar"):
- *   Root:  data-size (v2 visual vocabulary) + data-slot.
+ *   Root:  data-size, data-header-type, data-view (v2 visual vocabulary) +
+ *          data-slot.
+ *   Caption trigger / month-year board: data-view names the board each one
+ *          opens or shows; the board's cells carry data-selected / data-disabled
+ *          because these nodes are wrapper-rendered, so the engine emits nothing
+ *          for them.
  *   Every other node: data-slot only.
+ *
+ * @bypass Nav — the engine's `Nav` hard-codes chevron orientation (it never
+ * flips for `dir="rtl"` outside `navLayout="around"`) and knows only month
+ * paging, so it cannot carry Core's year arrows or page a month/year board. The
+ * override rebuilds the row but still delegates day-view clicks to the engine's
+ * own handlers, so `pagedNavigation`, `numberOfMonths` and the navigation
+ * bounds stay upstream.
+ *
+ * @bypass Chevron — the engine draws inline polygons; icon rendering is a
+ * takeoff-spar responsibility, so the glyph comes from `@takeoff-icons`.
+ *
+ * @bypass Month / MonthGrid — `react-day-picker` has no month or year view, so
+ * the `view` boards are wrapper-rendered. `MonthGrid` swaps the body and `Month`
+ * unmounts the extra months while a board is open (a board belongs to the
+ * calendar, not to a month). Only the body is replaced: the displayed month
+ * stays the engine's through `goToMonth`.
  *
  * Deliberately **not** mirrored (rule 7 — the engine already owns them):
  *   Root:     data-mode, data-required, data-multiple-months, data-week-numbers,
@@ -45,13 +66,18 @@ export const CalendarBase = createComponentBase<CalendarProps, CalendarSlot>({
     'nav',
     'previousMonthButton',
     'nextMonthButton',
+    'previousYearButton',
+    'nextYearButton',
     'chevron',
     'monthCaption',
     'captionLabel',
+    'captionTrigger',
     'dropdowns',
     'dropdownRoot',
     'dropdown',
     'monthGrid',
+    'monthYearGrid',
+    'monthYearCell',
     'weekdays',
     'weekday',
     'weeks',
@@ -67,15 +93,20 @@ export const CalendarBase = createComponentBase<CalendarProps, CalendarSlot>({
     months: 'tk-calendar-months',
     month: 'tk-calendar-month',
     nav: 'tk-calendar-nav',
-    previousMonthButton: 'tk-calendar-nav-previous',
-    nextMonthButton: 'tk-calendar-nav-next',
+    previousMonthButton: 'tk-calendar-nav-previous-month',
+    nextMonthButton: 'tk-calendar-nav-next-month',
+    previousYearButton: 'tk-calendar-nav-previous-year',
+    nextYearButton: 'tk-calendar-nav-next-year',
     chevron: 'tk-calendar-chevron',
     monthCaption: 'tk-calendar-month-caption',
     captionLabel: 'tk-calendar-caption-label',
+    captionTrigger: 'tk-calendar-caption-trigger',
     dropdowns: 'tk-calendar-dropdowns',
     dropdownRoot: 'tk-calendar-dropdown-root',
     dropdown: 'tk-calendar-dropdown',
     monthGrid: 'tk-calendar-month-grid',
+    monthYearGrid: 'tk-calendar-month-year-grid',
+    monthYearCell: 'tk-calendar-month-year-cell',
     weekdays: 'tk-calendar-weekdays',
     weekday: 'tk-calendar-weekday',
     weeks: 'tk-calendar-weeks',

@@ -33,6 +33,12 @@ const calendarDataAttributes = [
     purpose: 'Reflects the resolved `headerType`; drives the caption-row treatment.',
   },
   {
+    attribute: 'data-view',
+    appliedWhen: 'Always',
+    purpose:
+      'The board the body is showing — `day`, `month` or `year`. Also what pins the body box, so switching views does not resize the card. The caption triggers and the board carry their own `data-view`.',
+  },
+  {
     attribute: 'data-mode',
     appliedWhen: 'Always',
     purpose: 'Emitted by the engine. Reflects the selection mode.',

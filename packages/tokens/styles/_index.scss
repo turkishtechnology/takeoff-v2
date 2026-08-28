@@ -101,8 +101,10 @@
   @include calendar.calendar-nav;
 }
 
-.tk-calendar-nav-previous,
-.tk-calendar-nav-next {
+.tk-calendar-nav-previous-month,
+.tk-calendar-nav-next-month,
+.tk-calendar-nav-previous-year,
+.tk-calendar-nav-next-year {
   @include calendar.calendar-nav-button;
 }
 
@@ -124,6 +126,18 @@
 
 .tk-calendar-month-grid {
   @include calendar.calendar-month-grid;
+}
+
+.tk-calendar-caption-trigger {
+  @include calendar.calendar-caption-trigger;
+}
+
+.tk-calendar-month-year-grid {
+  @include calendar.calendar-month-year-grid;
+}
+
+.tk-calendar-month-year-cell {
+  @include calendar.calendar-month-year-cell;
 }
 
 .tk-calendar-weekdays {

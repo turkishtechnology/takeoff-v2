@@ -52,3 +52,22 @@ export const assignRef = <T>(ref: Ref<T> | undefined, node: T | null): void => {
     (ref as { current: T | null }).current = node;
   }
 };
+
+/** Core pages years twelve at a time, aligned to a multiple of twelve. */
+export const YEARS_PER_PAGE = 12;
+
+export const yearPageStart = (year: number): number => Math.floor(year / YEARS_PER_PAGE) * YEARS_PER_PAGE;
+
+/** A month is reachable while any part of it falls inside the bounds. */
+export const isMonthInBounds = (year: number, month: number, minDate?: Date, maxDate?: Date): boolean => {
+  if (minDate && new Date(year, month + 1, 0, 23, 59, 59, 999) < minDate) return false;
+  if (maxDate && new Date(year, month, 1) > maxDate) return false;
+  return true;
+};
+
+/** Same rule as {@link isMonthInBounds}, widened to the whole year. */
+export const isYearInBounds = (year: number, minDate?: Date, maxDate?: Date): boolean => {
+  if (minDate && year < minDate.getFullYear()) return false;
+  if (maxDate && year > maxDate.getFullYear()) return false;
+  return true;
+};

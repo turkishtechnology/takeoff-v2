@@ -40,6 +40,16 @@ export type CalendarSize = 'small' | 'base';
  */
 export type CalendarHeaderType = 'basic' | 'divided' | 'light' | 'primary' | 'dark';
 
+/**
+ * Which board the body shows → root `data-view`. Takeoff Core's `tk-datepicker`
+ * view switch, which `react-day-picker` has no equivalent for: the month and
+ * the year in the caption are buttons, and they swap the day grid for a
+ * twelve-month or twelve-year board.
+ *
+ * @defaultValue 'day'
+ */
+export type CalendarView = 'day' | 'month' | 'year';
+
 /** A selected range. `to` is undefined while the range is half-picked. */
 export type CalendarRange = DateRange;
 
@@ -57,13 +67,18 @@ export type CalendarSlot =
   | 'nav'
   | 'previousMonthButton'
   | 'nextMonthButton'
+  | 'previousYearButton'
+  | 'nextYearButton'
   | 'chevron'
   | 'monthCaption'
   | 'captionLabel'
+  | 'captionTrigger'
   | 'dropdowns'
   | 'dropdownRoot'
   | 'dropdown'
   | 'monthGrid'
+  | 'monthYearGrid'
+  | 'monthYearCell'
   | 'weekdays'
   | 'weekday'
   | 'weeks'
@@ -144,6 +159,22 @@ export interface CalendarOwnProps extends Pick<
    * @defaultValue 'basic'
    */
   headerType?: CalendarHeaderType;
+  /**
+   * Board the body shows (controlled). Pair with `onViewChange`; the caption's
+   * month and year switch it, so a `view` passed without a handler locks the
+   * body to that board.
+   *
+   * Under a `dropdown*` caption the boards still work, but the caption keeps
+   * the engine's `<select>` pair instead of gaining switch buttons.
+   */
+  view?: CalendarView;
+  /**
+   * Board the body opens on, without taking control of it.
+   * @defaultValue 'day'
+   */
+  defaultView?: CalendarView;
+  /** Fires when the caption or a board selection moves the body to another board. */
+  onViewChange?: (view: CalendarView) => void;
   /**
    * Earliest selectable date, inclusive. Bounds both navigation (the engine's
    * `startMonth`) and selection (a `{ before }` disabled matcher).

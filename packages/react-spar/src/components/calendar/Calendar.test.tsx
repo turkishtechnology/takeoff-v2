@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { axe } from 'vitest-axe';
 
 import { TakeoffSparProvider } from '../../provider';
-import { render, screen } from '../../test-utils';
+import { render, screen, within } from '../../test-utils';
 
 import { Calendar, type CalendarRange } from './index';
 
@@ -37,6 +37,8 @@ describe('Calendar', () => {
       expect(root).toBeInTheDocument();
       expect(root).toHaveAttribute('data-slot', 'root');
       expect(root).toHaveAttribute('data-size', 'base');
+      expect(root).toHaveAttribute('data-header-type', 'basic');
+      expect(root).toHaveAttribute('data-view', 'day');
       // Engine-owned; asserted to prove it is not being mirrored by the wrapper.
       expect(root).toHaveAttribute('data-mode', 'single');
       expect(screen.getByRole('grid')).toBeInTheDocument();
@@ -338,6 +340,174 @@ describe('Calendar', () => {
 
       expect(dayButton(container, '2026-08-15')).toBe(before);
       expect(document.activeElement).toBe(dayButton(container, '2026-08-16'));
+    });
+  });
+
+  describe('month and year panels', () => {
+    const openPanel = async (user: ReturnType<typeof userEvent.setup>, name: string) => {
+      await user.click(screen.getByRole('button', { name: new RegExp(name) }));
+      return screen.getByRole('grid');
+    };
+
+    it('swaps the day grid for a month board and drills back down to days', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} />);
+
+      const grid = await openPanel(user, 'Choose the Month');
+      expect(grid).toHaveAccessibleName('Choose the Month, 2026');
+      expect(within(grid).getAllByRole('gridcell')).toHaveLength(12);
+      expect(within(grid).getByRole('gridcell', { name: 'August 2026' })).toHaveAttribute('aria-selected', 'true');
+
+      await user.click(within(grid).getByRole('gridcell', { name: 'March 2026' }));
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('March 2026');
+      expect(screen.getByRole('button', { name: /Choose the Month/ })).toHaveTextContent('March');
+    });
+
+    it('pages years twelve at a time and drills a picked year into its months', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} />);
+
+      const grid = await openPanel(user, 'Choose the Year');
+      expect(grid).toHaveAccessibleName('Choose the Year, 2016–2027');
+
+      await user.click(within(grid).getByRole('gridcell', { name: '2019' }));
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('Choose the Month, 2019');
+    });
+
+    it('gives the board one tab stop and moves focus with the arrow keys', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} />);
+
+      const grid = await openPanel(user, 'Choose the Month');
+      const cells = within(grid).getAllByRole('gridcell');
+
+      // The board opens focused on the displayed month, and it is the only stop.
+      expect(cells.filter(cell => cell.getAttribute('tabindex') === '0')).toEqual([cells[7]]);
+      cells[7].focus();
+
+      await user.keyboard('{ArrowRight}');
+      expect(document.activeElement).toBe(cells[8]);
+
+      // Four columns, so a vertical step is four cells.
+      await user.keyboard('{ArrowUp}');
+      expect(document.activeElement).toBe(cells[4]);
+
+      await user.keyboard('{Home}');
+      expect(document.activeElement).toBe(cells[4]);
+
+      await user.keyboard('{End}');
+      expect(document.activeElement).toBe(cells[7]);
+
+      // Not past the edges.
+      await user.keyboard('{ArrowRight}{ArrowRight}');
+      expect(document.activeElement).toBe(cells[9]);
+    });
+
+    it('hands focus back to the trigger once a month is picked', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} />);
+
+      const grid = await openPanel(user, 'Choose the Month');
+      await user.click(within(grid).getByRole('gridcell', { name: 'May 2026' }));
+
+      expect(document.activeElement).toBe(screen.getByRole('button', { name: /Choose the Month/ }));
+    });
+
+    it('disables the cells outside minDate and maxDate', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} minDate={new Date(2026, 5, 1)} maxDate={new Date(2026, 8, 30)} />);
+
+      const grid = await openPanel(user, 'Choose the Month');
+
+      expect(within(grid).getByRole('gridcell', { name: 'June 2026' })).toBeEnabled();
+      expect(within(grid).getByRole('gridcell', { name: 'May 2026' })).toBeDisabled();
+      expect(within(grid).getByRole('gridcell', { name: 'October 2026' })).toBeDisabled();
+    });
+
+    it('opens on the board `defaultView` names', () => {
+      render(<Calendar defaultMonth={AUGUST_2026} defaultView="year" />);
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('Choose the Year, 2016–2027');
+    });
+
+    it('reports every board change and follows a controlled `view`', async () => {
+      const user = userEvent.setup();
+      const onViewChange = vi.fn();
+      const { rerender } = render(<Calendar defaultMonth={AUGUST_2026} view="day" onViewChange={onViewChange} />);
+
+      await user.click(screen.getByRole('button', { name: /Choose the Month/ }));
+
+      // Controlled: the parent decides, so the body has not moved yet.
+      expect(onViewChange).toHaveBeenCalledWith('month');
+      expect(screen.getByRole('grid')).toHaveAccessibleName('August 2026');
+
+      rerender(<Calendar defaultMonth={AUGUST_2026} view="month" onViewChange={onViewChange} />);
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('Choose the Month, 2026');
+    });
+
+    it('renders one board no matter how many months are displayed', () => {
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} numberOfMonths={2} defaultView="month" />);
+
+      expect(container.querySelectorAll('[data-slot="month-year-grid"]')).toHaveLength(1);
+      expect(screen.getAllByRole('grid')).toHaveLength(1);
+    });
+
+    it('takes its accessible names from the engine labels, so they translate', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} labels={{ labelMonthDropdown: () => 'Ay seçin' }} />);
+
+      const grid = await openPanel(user, 'Ay seçin');
+
+      expect(grid).toHaveAccessibleName('Ay seçin, 2026');
+    });
+
+    it('pages the year with the double chevrons', async () => {
+      const user = userEvent.setup();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} />);
+
+      await user.click(container.querySelector('.tk-calendar-nav-next-year') as HTMLElement);
+
+      expect(screen.getByRole('button', { name: /Choose the Year/ })).toHaveTextContent('2027');
+      expect(screen.getByRole('button', { name: /Choose the Month/ })).toHaveTextContent('August');
+    });
+
+    it('steps the year board a year at a time, and a whole page with the double chevrons', async () => {
+      const user = userEvent.setup();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} defaultView="year" />);
+
+      const selected = () =>
+        within(screen.getByRole('grid'))
+          .getAllByRole('gridcell')
+          .find(cell => cell.getAttribute('aria-selected') === 'true');
+
+      await user.click(container.querySelector('.tk-calendar-nav-next-month') as HTMLElement);
+      expect(selected()).toHaveTextContent('2027');
+
+      await user.click(container.querySelector('.tk-calendar-nav-previous-month') as HTMLElement);
+      expect(selected()).toHaveTextContent('2026');
+
+      await user.click(container.querySelector('.tk-calendar-nav-next-year') as HTMLElement);
+      expect(screen.getByRole('grid')).toHaveAccessibleName('Choose the Year, 2028–2039');
+    });
+
+    it('leaves the caption and the year arrows to the engine under a dropdown layout, but still shows the boards', () => {
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} captionLayout="dropdown" defaultView="month" />);
+
+      expect(screen.queryByRole('button', { name: /Choose the Month/ })).not.toBeInTheDocument();
+      expect(screen.getAllByRole('combobox').length).toBeGreaterThan(0);
+      expect(screen.getByRole('grid')).toHaveAccessibleName('Choose the Month, 2026');
+      // The year `<select>` already navigates years, so the double chevrons go.
+      expect(container.querySelector('.tk-calendar-nav-next-year')).not.toBeInTheDocument();
+      expect(container.querySelector('.tk-calendar-nav-next-month')).toBeInTheDocument();
+    });
+
+    it('has no a11y violations while a board is open', async () => {
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} defaultView="month" />);
+
+      expect(await axe(container)).toHaveNoViolations();
     });
   });
 

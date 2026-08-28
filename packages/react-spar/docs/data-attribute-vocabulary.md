@@ -91,17 +91,19 @@ table needs updating.
 
 ### Variant
 
-| Attribute          | Scope            | Example values                                                            | Notes                                                                     |
-| ------------------ | ---------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `data-variant`     | Root             | `primary`, `danger`, `neutral`                                            | Semantic color treatment                                                  |
-| `data-size`        | Root, Item       | `base`, `large`, `small`                                                  | Duplicated to items by design where recipes need item-local selectors     |
-| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`                                    | Rendering or behavior mode                                                |
-| `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below                |
-| `data-animation`   | Root             | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                         |
-| `data-orientation` | Root             | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                    |
-| `data-thumb`       | Slider thumb     | `min`, `max`                                                              | First / last handle of a range; middle handles carry none                 |
-| `data-track`       | Slider root      | `normal`, `inverted`, `none`                                              | Rail fill mode: `inverted` swaps rail/fill colours, `none` drops the fill |
-| `data-tooltip`     | Slider root      | `auto`, `always`, `never`                                                 | When the value bubble is shown (`auto` = on drag/focus)                   |
+| Attribute          | Scope                         | Example values                                                            | Notes                                                                     |
+| ------------------ | ----------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `data-variant`     | Root                          | `primary`, `danger`, `neutral`                                            | Semantic color treatment                                                  |
+| `data-size`        | Root, Item                    | `base`, `large`, `small`                                                  | Duplicated to items by design where recipes need item-local selectors     |
+| `data-mode`        | Root, Item                    | `button`, `link`, `default`, `compact`                                    | Rendering or behavior mode                                                |
+| `data-type`        | Root **or** Item              | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below                |
+| `data-animation`   | Root                          | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                         |
+| `data-orientation` | Root                          | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                    |
+| `data-thumb`       | Slider thumb                  | `min`, `max`                                                              | First / last handle of a range; middle handles carry none                 |
+| `data-track`       | Slider root                   | `normal`, `inverted`, `none`                                              | Rail fill mode: `inverted` swaps rail/fill colours, `none` drops the fill |
+| `data-tooltip`     | Slider root                   | `auto`, `always`, `never`                                                 | When the value bubble is shown (`auto` = on drag/focus)                   |
+| `data-header-type` | Calendar root                 | `basic`, `divided`, `light`, `primary`, `dark`                            | Caption-row treatment (Core's `tk-datepicker` header vocabulary)          |
+| `data-view`        | Calendar root, trigger, board | `day`, `month`, `year`                                                    | Which board the body shows; on a trigger, the board it opens              |
 
 ### Semantic
 
@@ -339,6 +341,23 @@ rather than inheriting one. Recorded here per rule 10.
   which the engine has no notion of. It drives the day-cell geometry through the
   `--tk-calendar-cell-size` custom property (a continuous value, so it is a
   property rather than an attribute — the Skeleton/Progress precedent).
+- **`data-header-type` (Variant) is root-only and always present** (rule 8). It
+  carries Takeoff Core's `tk-datepicker` header vocabulary (`basic` | `divided`
+  | `light` | `primary` | `dark`); the recipe draws the caption row's divider or
+  its boxed surface from it. The engine has no notion of a header treatment.
+- **`data-view` (Variant) is root-only and always present.** `day` | `month` |
+  `year` — which board the body is showing. `react-day-picker` has no month or
+  year view, so both boards are wrapper-rendered and this is the only hook that
+  names the current one. It doubles as the pin marker: because a board can
+  replace the day grid on any calendar, the recipe keys on `[data-view]` to fix
+  the body box so switching does not resize the card.
+- **The caption triggers and the board re-emit `data-view`** (Accordion/Tabs
+  per-node mirror precedent): on a trigger it names the board that button opens,
+  on the board it names the one being shown, so the recipe can style either
+  without an ancestor lookup.
+- **The board's cells carry `data-selected` / `data-disabled`.** Rule 7 does not
+  apply here — these nodes are wrapper-rendered, so no primitive emits state for
+  them, unlike the day cells below.
 - **`data-slot` reaches the engine's internal nodes through a `components`
   override map.** Each override adds the anchor and the slot's `slotProps`, then
   defers to the engine's own part, so rules 3 and 4 hold for a tree this package
