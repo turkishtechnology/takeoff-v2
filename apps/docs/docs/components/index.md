@@ -50,14 +50,15 @@ and accessibility guidance where the component owns interaction behavior.
 
 ## Content & overlays
 
-| Component                           | Use it for                                                     |
-| ----------------------------------- | -------------------------------------------------------------- |
-| [Card](/docs/components/card)       | Grouping related content, summaries, and actions.              |
-| [Dialog](/docs/components/dialog)   | Handling focused forms, confirmations, and blocking decisions. |
-| [Divider](/docs/components/divider) | Separating content sections with an optional aligned label.    |
-| [Drawer](/docs/components/drawer)   | Showing navigation, filters, or details over the current page. |
-| [Popover](/docs/components/popover) | Displaying additional content or actions in a floating panel.  |
-| [Table](/docs/components/table)     | Scanning, sorting, filtering, and paginating structured data.  |
+| Component                             | Use it for                                                       |
+| ------------------------------------- | ---------------------------------------------------------------- |
+| [Calendar](/docs/components/calendar) | Picking a day, a date range, or several dates from a month grid. |
+| [Card](/docs/components/card)         | Grouping related content, summaries, and actions.                |
+| [Dialog](/docs/components/dialog)     | Handling focused forms, confirmations, and blocking decisions.   |
+| [Divider](/docs/components/divider)   | Separating content sections with an optional aligned label.      |
+| [Drawer](/docs/components/drawer)     | Showing navigation, filters, or details over the current page.   |
+| [Popover](/docs/components/popover)   | Displaying additional content or actions in a floating panel.    |
+| [Table](/docs/components/table)       | Scanning, sorting, filtering, and paginating structured data.    |
 
 Start with [Composition & styling](/docs/foundations/composition-styling) to
 learn the shared compound, slot, and customization model.

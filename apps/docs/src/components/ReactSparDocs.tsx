@@ -13,6 +13,7 @@ export {
   Badge,
   Breadcrumb,
   Button,
+  Calendar,
   Card,
   Checkbox,
   Chip,

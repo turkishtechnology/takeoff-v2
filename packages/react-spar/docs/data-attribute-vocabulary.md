@@ -322,6 +322,39 @@ its state attributes are wrapper-emitted. Recorded here per rule 10.
   recipe for the cursor and hover affordances. Matches Chip's `data-clickable`
   vocabulary.
 
+### Calendar
+
+Calendar is a **v2-owned, react-day-picker-backed** component with no upstream
+Spar primitive (Table/TanStack precedent), so it introduces its own vocabulary
+rather than inheriting one. Recorded here per rule 10.
+
+- **The engine's own attributes are not mirrored** (rule 7). `react-day-picker`
+  emits `data-mode`, `data-required`, `data-multiple-months`,
+  `data-week-numbers`, `data-broadcast-calendar` and `data-nav-layout` on the
+  root, and `data-day` (ISO date), `data-month`, `data-selected`,
+  `data-disabled`, `data-hidden`, `data-outside`, `data-focused`, `data-today`
+  on every day cell. The recipe reads those directly; duplicating them under a
+  `tk-` spelling would be two names for one state.
+- **The wrapper adds `data-size` on the root** — takeoff-v2's own visual scale,
+  which the engine has no notion of. It drives the day-cell geometry through the
+  `--tk-calendar-cell-size` custom property (a continuous value, so it is a
+  property rather than an attribute — the Skeleton/Progress precedent).
+- **`data-slot` reaches the engine's internal nodes through a `components`
+  override map.** Each override adds the anchor and the slot's `slotProps`, then
+  defers to the engine's own part, so rules 3 and 4 hold for a tree this package
+  does not render itself.
+- **One documented gap: `dropdownRoot` is class-only.** The span wrapping the
+  month/year `<select>` (rendered only by `captionLayout="dropdown*"`) has its
+  attributes hardcoded by the engine, so it carries no `data-slot` and
+  `slotProps.dropdownRoot` does not reach it. The `<select>` inside it — which
+  owns the semantics — is anchored as `dropdown`.
+- **Range position is a class, not an attribute.** `range_start` /
+  `range_middle` / `range_end` are the only selection states the engine does not
+  express as `data-*`, so they arrive as
+  `.tk-calendar-day-range-{start,middle,end}`. This is the one place the recipe
+  keys on a class for state rather than an attribute, and the reason is
+  upstream, not stylistic.
+
 ### Table
 
 Table is a **v2-owned, TanStack-backed** component with no upstream Spar

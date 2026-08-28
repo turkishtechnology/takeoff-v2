@@ -32,6 +32,7 @@ on headless Spar primitives and styled with Takeoff design tokens.
 | `Badge`      | Inline status pills, category tags, count bubbles, notification dots, and overlay indicators on icons/avatars.                                                           |
 | `Breadcrumb` | Render a hierarchical "where am I" trail of ancestor links ending in the current page.                                                                                   |
 | `Button`     | Any clickable action — submit, CTA, toolbar action, icon-only action, or a two-state toggle (via `pressed`/`onPressedChange`).                                           |
+| `Calendar`   | Inline date selection — booking grids, availability views, filters with a permanently visible month.                                                                     |
 | `Card`       | You need a bordered surface that bundles a heading, body content, and an optional action footer.                                                                         |
 | `Checkbox`   | Boolean opt-in/opt-out controls, accept-terms gates, multi-select lists, and tri-state "select all" parents.                                                             |
 | `Chip`       | Filter tags, entered/selected values, and short status metadata.                                                                                                         |
