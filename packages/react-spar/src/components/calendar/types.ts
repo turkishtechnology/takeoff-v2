@@ -30,6 +30,16 @@ export type CalendarMode = 'single' | 'range' | 'multiple';
  */
 export type CalendarSize = 'small' | 'base';
 
+/**
+ * Caption-row treatment → root `data-header-type`. Takeoff Core's
+ * `tk-datepicker` header vocabulary, ported verbatim: `basic` keeps the row
+ * plain and divides it from the grid, the other four drop that divider and draw
+ * the month and its arrows inside a boxed surface.
+ *
+ * @defaultValue 'basic'
+ */
+export type CalendarHeaderType = 'basic' | 'divided' | 'light' | 'primary' | 'dark';
+
 /** A selected range. `to` is undefined while the range is half-picked. */
 export type CalendarRange = DateRange;
 
@@ -129,6 +139,11 @@ export interface CalendarOwnProps extends Pick<
    * @defaultValue 'base'
    */
   size?: CalendarSize;
+  /**
+   * Caption-row treatment → root `data-header-type`.
+   * @defaultValue 'basic'
+   */
+  headerType?: CalendarHeaderType;
   /**
    * Earliest selectable date, inclusive. Bounds both navigation (the engine's
    * `startMonth`) and selection (a `{ before }` disabled matcher).

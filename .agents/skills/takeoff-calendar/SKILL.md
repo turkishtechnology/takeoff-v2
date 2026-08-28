@@ -140,6 +140,18 @@ for a picking grid (40px and 32px). `captionLayout` swaps the month label for
 (`'label' | 'dropdown' | 'dropdown-months' | 'dropdown-years'`), and `navLayout`
 (`'around' | 'after'`) moves the arrows.
 
+### Header types
+
+```tsx
+<Calendar headerType="primary" captionLayout="dropdown" />
+```
+
+`headerType` is Takeoff Core's `tk-datepicker` header vocabulary:
+`'basic' | 'divided' | 'light' | 'primary' | 'dark'`. `basic` divides the month
+row from the grid; the other four drop that divider and put the month and its
+arrows inside a boxed surface, with `primary` and `dark` flipping the label,
+arrows and dropdown carets to white.
+
 ### Controlling the displayed month
 
 ```tsx
@@ -237,6 +249,7 @@ only that locale is bundled.
 | `defaultValue`        | same as `value`                                                  | -            | Uncontrolled initial selection.                                        |
 | `onValueChange`       | `(value) => void`                                                | -            | Fires with the new selection, or `undefined` when cleared.             |
 | `size`                | `'small' \| 'base'`                                              | `'base'`     | Grid scale → `data-size`. Two scales by design; see above.             |
+| `headerType`          | `'basic' \| 'divided' \| 'light' \| 'primary' \| 'dark'`         | `'basic'`    | Caption-row treatment → `data-header-type`.                            |
 | `minDate` / `maxDate` | `Date`                                                           | -            | Inclusive bounds on navigation and selection.                          |
 | `disabledDates`       | `Date[]`                                                         | -            | Individual days that cannot be picked.                                 |
 | `allowedDates`        | `Date[]`                                                         | -            | Whitelist; every unlisted day is disabled. Empty array = no whitelist. |
@@ -261,8 +274,9 @@ Also passed through to the engine: `showOutsideDays`, `showWeekNumber`,
 
 ## Styling hooks
 
-- Root: `data-slot="root"`, `data-size`, plus the engine's own `data-mode`,
-  `data-multiple-months`, `data-week-numbers`, `data-nav-layout`.
+- Root: `data-slot="root"`, `data-size`, `data-header-type`, plus the engine's
+  own `data-mode`, `data-multiple-months`, `data-week-numbers`,
+  `data-nav-layout`.
 - Day cell: `data-slot="day"` plus `data-day` (ISO date), `data-selected`,
   `data-today`, `data-outside`, `data-disabled`, `data-focused`.
 - Range position is a class, not an attribute: `.tk-calendar-day-range-start` /

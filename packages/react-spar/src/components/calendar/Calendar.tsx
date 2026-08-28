@@ -39,9 +39,9 @@ import { buildSlotAttrs, composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { CalendarBase, calendarRangeClassNames } from './base';
-import { DEFAULT_MODE, DEFAULT_SIZE } from './defaults';
+import { DEFAULT_HEADER_TYPE, DEFAULT_MODE, DEFAULT_SIZE } from './defaults';
 import { assignRef, buildDisabledMatchers } from './helpers';
-import type { CalendarMode, CalendarProps, CalendarSize, CalendarSlot, CalendarValue } from './types';
+import type { CalendarHeaderType, CalendarMode, CalendarProps, CalendarSize, CalendarSlot, CalendarValue } from './types';
 
 /**
  * The wrapper's flattened view of the discriminated {@link CalendarProps} union.
@@ -219,7 +219,10 @@ export const Calendar = (props: CalendarProps) => {
     // `data-size` is takeoff-v2's own visual vocabulary. The engine's root
     // already emits `data-mode`, `data-multiple-months`, `data-week-numbers`
     // and `data-nav-layout`, so those are not mirrored here (rule 7).
-    stateAttrs: ({ size = DEFAULT_SIZE }) => ({ 'data-size': size as CalendarSize }),
+    stateAttrs: ({ size = DEFAULT_SIZE, headerType = DEFAULT_HEADER_TYPE }) => ({
+      'data-size': size as CalendarSize,
+      'data-header-type': headerType as CalendarHeaderType,
+    }),
   });
 
   const {
@@ -234,6 +237,7 @@ export const Calendar = (props: CalendarProps) => {
     disabledWeekDays,
     firstDayOfWeekIndex,
     size: _size,
+    headerType: _headerType,
     ref,
     min,
     max,

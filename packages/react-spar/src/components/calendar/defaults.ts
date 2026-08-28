@@ -1,4 +1,5 @@
-import type { CalendarMode, CalendarSize } from './types';
+import type { CalendarHeaderType, CalendarMode, CalendarSize } from './types';
 
 export const DEFAULT_MODE: CalendarMode = 'single';
 export const DEFAULT_SIZE: CalendarSize = 'base';
+export const DEFAULT_HEADER_TYPE: CalendarHeaderType = 'basic';

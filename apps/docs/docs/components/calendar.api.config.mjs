@@ -28,6 +28,11 @@ const calendarDataAttributes = [
     purpose: 'Reflects the resolved `size` for theme recipe scoping; also drives the day-cell geometry.',
   },
   {
+    attribute: 'data-header-type',
+    appliedWhen: 'Always',
+    purpose: 'Reflects the resolved `headerType`; drives the caption-row treatment.',
+  },
+  {
     attribute: 'data-mode',
     appliedWhen: 'Always',
     purpose: 'Emitted by the engine. Reflects the selection mode.',

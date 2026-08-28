@@ -151,12 +151,12 @@
 
 // Core's `.tk-datepicker-header`: the month row, divided from the grid.
 @mixin calendar-month-caption {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: var(--tk-calendar-header-height);
   padding: var(--datepicker-header-base-top-padding) var(--datepicker-header-base-h-padding) var(--datepicker-header-base-bottom-padding);
-  border-bottom: var(--spacing-px) solid var(--border-light);
 
   // In the default layout the nav is absolutely positioned across this row, so
   // the label reserves a button's width at each end to stay centred.
@@ -168,9 +168,43 @@
   .tk-calendar[data-nav-layout='after'] & {
     padding-inline-end: calc(var(--tk-calendar-cell-size) * 2);
   }
+
+  // ── Header types ────────────────────────────────────────────────────────
+  // Core's `tk-datepicker-header-*`. `basic` divides the row from the grid; the
+  // other four drop that divider and put the month inside a boxed surface. The
+  // box is a pseudo-element inset to the row's own padding, matching Core's
+  // inner `.tk-datepicker-header-content` without adding a wrapper the engine
+  // does not render.
+  .tk-calendar[data-header-type='basic'] & {
+    border-bottom: var(--spacing-px) solid var(--border-light);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: var(--datepicker-header-base-top-padding) var(--datepicker-header-base-h-padding) var(--datepicker-header-base-bottom-padding);
+    border-radius: var(--radius-m-base);
+  }
+
+  .tk-calendar[data-header-type='divided'] &::before {
+    border: var(--spacing-px) solid var(--border-light);
+  }
+
+  .tk-calendar[data-header-type='light'] &::before {
+    background: var(--background-lightest);
+  }
+
+  .tk-calendar[data-header-type='primary'] &::before {
+    background: var(--primary-base);
+  }
+
+  .tk-calendar[data-header-type='dark'] &::before {
+    background: var(--neutral-800);
+  }
 }
 
 @mixin calendar-caption-label {
+  position: relative;
   color: var(--text-darkest);
   text-align: center;
   font-family: var(--desktop-body-s-font);
@@ -180,6 +214,10 @@
   line-height: var(--desktop-body-s-line-height);
   padding-inline: var(--datepicker-header-base-date-text-h-padding);
   white-space: nowrap;
+
+  .tk-calendar:is([data-header-type='primary'], [data-header-type='dark']) & {
+    color: var(--static-white);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -193,8 +231,11 @@
 
   // Default layout: the engine renders the nav once, before the months, so it
   // is laid over the caption row — Core's header has the arrows at its ends.
+  // It precedes the caption in the DOM, so the header surface would paint over
+  // it without the stacking bump.
   .tk-calendar:not([data-nav-layout]) & {
     position: absolute;
+    z-index: 1;
     top: 0;
     inset-inline: var(--datepicker-header-base-h-padding);
     pointer-events: none;
@@ -241,6 +282,33 @@
     }
   }
 
+  // Filled header types put the arrows on a coloured surface.
+  .tk-calendar[data-header-type='primary'] & {
+    color: var(--static-white);
+
+    &:hover {
+      color: var(--static-white);
+    }
+
+    &[aria-disabled='true'],
+    &[aria-disabled='true']:hover {
+      color: var(--primary-sub-base);
+    }
+  }
+
+  .tk-calendar[data-header-type='dark'] & {
+    color: var(--static-white);
+
+    &:hover {
+      color: var(--static-white);
+    }
+
+    &[aria-disabled='true'],
+    &[aria-disabled='true']:hover {
+      color: var(--neutral-500);
+    }
+  }
+
   @include mixins.focus-ring(var(--primary-focus));
 }
 
@@ -277,6 +345,16 @@
   padding-inline: var(--datepicker-header-base-date-text-h-padding);
   border-radius: var(--tk-calendar-cell-radius);
   color: var(--text-darkest);
+
+  .tk-calendar:is([data-header-type='primary'], [data-header-type='dark']) & {
+    color: var(--static-white);
+
+    // No token for a hover on a filled surface; a white wash is the one value
+    // that reads over both the primary and the neutral fill.
+    &:hover {
+      background: rgb(255 255 255 / 16%);
+    }
+  }
 
   // The engine reuses the caption-label class for the trigger's visible text and
   // nests the chevron inside it; the root already supplies the padding.
@@ -527,7 +605,6 @@
   align-self: stretch;
   gap: var(--datepicker-footer-base-gap);
   padding: var(--datepicker-footer-base-v-padding) var(--datepicker-footer-base-h-padding);
-  border-top: var(--spacing-px) solid var(--border-light);
   font-size: var(--desktop-body-xs-size);
   line-height: var(--desktop-body-xs-line-height);
   color: var(--text-dark);
