@@ -963,9 +963,11 @@ for primitive behavior.
 
 #### Data attributes {#input-field-data-attributes}
 
-| Attribute                                       | Applied when | Purpose                                               |
-| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when                         | Purpose                                                                                                                                     |
+| ----------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                               | Stable selector for wrapper styling on the root slot.                                                                                       |
+| <ApiBadge label="data-mask" />                  | `mask` is set                        | Emitted by Spar. Presence only — never the pattern itself. The sanctioned hook for styling a masked field without reading its `mask` prop.  |
+| <ApiBadge label="data-mask-completed" />        | `mask` is set and the value fills it | Emitted by Spar. Mirrors `meta.completed` from `onValueChange`, so a field can be styled as finished without lifting that state into React. |
 
 ### Input.Prefix {#input-prefix}
 

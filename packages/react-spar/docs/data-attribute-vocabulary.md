@@ -234,6 +234,13 @@ own vocabulary. All attributes live on the root.
   `.tk-input-strength-segment` nodes use `weak`, `medium`, or `strong`; empty
   segments omit the attribute so the neutral segment style remains the base
   state.
+- **Mask state is Spar-owned and not mirrored** (rule 7). A masked `Input.Field`
+  carries Spar's own `data-mask` (presence — a mask is set) and
+  `data-mask-completed` (presence — the value fills it). The wrapper re-emits
+  neither: duplicating them under a `tk-` spelling would be two names for one
+  state, the same call made for Accordion's `data-state`. Note what is
+  deliberately absent — the pattern itself never reaches the DOM, so a
+  stylesheet cannot come to depend on which mask a field happens to use.
 
 ### Skeleton
 
