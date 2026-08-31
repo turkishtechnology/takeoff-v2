@@ -688,10 +688,13 @@
     border-end-end-radius: 0;
   }
 
-  // The end's own guard: the first click of a range commits `{from: X, to: X}`,
-  // so that one day is start *and* end — and has nothing on either side to
-  // join.
-  .tk-calendar-day.tk-calendar-day-range-end:not(.tk-calendar-day-range-start) & {
+  // The end is guarded the same way, and for the same reason — the band is
+  // clipped at the row edges, so an end that lands on the first day of a week
+  // row has its run in the row above and nothing beside it to join. Asked as a
+  // preceding sibling rather than with `:not(...range-start)`: that also covers
+  // the first click of a range, which commits `{from: X, to: X}` and makes one
+  // day both ends, since a lone day has no range sibling either way.
+  :is(.tk-calendar-day-range-start, .tk-calendar-day-range-middle) + .tk-calendar-day.tk-calendar-day-range-end & {
     border-start-start-radius: 0;
     border-end-start-radius: 0;
   }
