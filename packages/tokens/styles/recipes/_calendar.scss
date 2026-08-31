@@ -1,0 +1,813 @@
+@use '../abstracts/mixins' as mixins;
+
+// ---------------------------------------------------------------------------
+// Calendar recipe
+// ---------------------------------------------------------------------------
+// Slot identity: class names (.tk-calendar-*)
+// Variant flags: data-attributes on the root ([data-size], [data-nav-layout])
+// Day state:     data-attributes emitted by the engine on the day cell
+//                ([data-selected], [data-today], [data-outside],
+//                [data-disabled], [data-focused]) — the wrapper does not
+//                mirror them, so this recipe reads them directly.
+// Range state:   the one selection state with no data-* counterpart, so it
+//                arrives as .tk-calendar-day-range-{start,middle,end}.
+// ---------------------------------------------------------------------------
+// Tokens: the Figma family for a date-picking grid is `datepicker.*`
+// (`datepicker-items-*` = day cells, `-header-*` = the month row, `-body-*` =
+// the grid), so this recipe consumes those rather than inventing names. The
+// separate `calendar.*` Figma family belongs to the (not yet built) activity
+// calendar — `calendar-activity-*`, `calendar-week-cell-*` — and is
+// deliberately not used here.
+//
+// Figma ships two grid scales, base and small; `datepicker-items-*-size` is the
+// only size token pair, which is why `data-size` has exactly those two values.
+// ---------------------------------------------------------------------------
+
+@mixin calendar-size($cell, $radius, $header-height, $font-size, $line-height) {
+  --tk-calendar-cell-size: #{$cell};
+  --tk-calendar-cell-radius: #{$radius};
+  // No exported token: Figma ships the header as a fixed-height row per scale,
+  // and the nav buttons fill it, so both read this one value.
+  --tk-calendar-header-height: #{$header-height};
+
+  // The day grid and the month/year panel take turns in the same slot, so both
+  // are pinned to one box — otherwise switching views resizes the card. The box
+  // is the day grid at its tallest: a weekday row, its group gap, and six week
+  // rows. Seven day columns wide, plus the week-number column when it is shown.
+  --tk-calendar-body-height: calc(
+    var(--datepicker-body-base-day-v-padding) * 2 + #{$cell} + var(--datepicker-body-base-day-row-group-gap) + 6 * (#{$cell} + var(--datepicker-body-base-day-row-gap))
+  );
+  --tk-calendar-body-width: calc(var(--datepicker-body-base-day-h-padding) * 2 + 7 * #{$cell});
+
+  font-size: $font-size;
+  line-height: $line-height;
+}
+
+@mixin calendar {
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-darkest);
+
+  // Nothing about the grid is elastic, so the card is not either: as a flex item
+  // it would otherwise be stretched across the cross axis and leave the month
+  // floating in an oversized surface. Override per instance if a full-width card
+  // is actually wanted.
+  align-self: start;
+
+  // Standalone, the grid is its own surface — Core's inline panel: a bordered
+  // card with no shadow. A component that nests the grid inside its own surface
+  // (a picker popover, say) resets these three from its own recipe.
+  background: var(--static-light);
+  border: var(--spacing-px) solid var(--border-light);
+  border-radius: var(--radius-xl);
+
+  box-shadow:
+    0 2px 2px -1px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
+    0 6px 12px -2px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
+    0 8px 20px 0 var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08));
+
+  @include calendar-size(var(--datepicker-items-base-size), var(--datepicker-items-base-radius), 52px, var(--desktop-body-s-size), var(--desktop-body-s-line-height));
+
+  &[data-size='small'] {
+    @include calendar-size(var(--datepicker-items-small-size), var(--datepicker-items-small-radius), 46px, var(--desktop-body-xs-size), var(--desktop-body-xs-line-height));
+  }
+
+  // The week-number column is an eighth column, so the pinned body widens by one.
+  &[data-week-numbers] {
+    --tk-calendar-body-width: calc(var(--datepicker-body-base-day-h-padding) * 2 + 8 * var(--tk-calendar-cell-size));
+  }
+
+  // ── Host-stylesheet quarantine ────────────────────────────────────────────
+  // The grid is a real `<table>`, so any host that styles bare `table` / `tr` /
+  // `th` / `td` reaches inside it — markdown and CMS themes all do, and
+  // Docusaurus' Infima (the docs site this package ships on) sets
+  // `display: block`, `overflow: auto`, cell borders, a `tr:nth-child(2n)` zebra
+  // stripe and a cell colour.
+  //
+  // A single slot class already outranks those element selectors, so what can
+  // actually leak is only the properties this recipe does not set itself. Those
+  // are neutralised below. The selectors stay **class-based** wherever the
+  // property is also state-driven, so a rule like `.tk-calendar-day[data-outside]`
+  // — same specificity, emitted later — still wins; `thead` is the one exception,
+  // because the engine puts no class on it.
+  .tk-calendar-month-grid {
+    display: table;
+    margin: 0;
+    overflow: visible;
+    text-indent: 0;
+    border: 0;
+
+    thead {
+      background: transparent;
+      border: 0;
+    }
+  }
+
+  .tk-calendar-weekdays,
+  .tk-calendar-weekday,
+  .tk-calendar-weeks,
+  .tk-calendar-week,
+  .tk-calendar-week-number,
+  .tk-calendar-week-number-header,
+  .tk-calendar-day {
+    background: transparent;
+    border: 0;
+  }
+
+  // Infima gives every `td` its own colour; the day cell takes its colour from
+  // the root and from its own state rules, so it has to inherit again.
+  .tk-calendar-day {
+    color: inherit;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Layout — months container, one month, and the caption row
+// ---------------------------------------------------------------------------
+
+@mixin calendar-months {
+  // Anchor for the navigation, which the engine renders here (as a sibling of
+  // the months) in the default layout.
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  // A row of months that has to wrap centres its last line, so the leftover
+  // width is shared instead of leaving the card open on one side.
+  justify-content: center;
+}
+
+@mixin calendar-month {
+  display: flex;
+  flex-direction: column;
+
+  // The day grid and a month/year board take turns in this column, and a board
+  // is reachable on every calendar, so the body is pinned to one box —
+  // otherwise switching views would resize the card. It also fixes the height
+  // across months, which `fixedWeeks` would otherwise be needed for.
+  //
+  // The pin sits on the month rather than on the grid because the grid is a
+  // real `<table>`: a table given a height taller than its rows hands the
+  // difference *to the rows* (CSS 2.1 §17.5.3), so a five-week month would
+  // space its days further apart than a six-week one — plainly visible the
+  // moment two months sit side by side. On the column the leftover simply
+  // stays below the grid.
+  .tk-calendar[data-view] & {
+    min-height: calc(var(--datepicker-header-base-top-padding) + var(--tk-calendar-header-height) + var(--datepicker-header-base-bottom-padding) + var(--tk-calendar-body-height));
+  }
+
+  // `navLayout="after"` renders the nav as a sibling between the caption and
+  // the grid; the nav recipe lifts it back onto the caption row, so the month
+  // has to be its containing block.
+  .tk-calendar[data-nav-layout='after'] & {
+    position: relative;
+  }
+
+  // `navLayout="around"` makes the engine render [prev, caption, next] as three
+  // siblings of the grid. One row for the three, the body spanning underneath —
+  // either body, since the boards take the same slot and would otherwise sit in
+  // the first column and push the caption off centre.
+  .tk-calendar[data-nav-layout='around'] & {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    align-content: start;
+
+    .tk-calendar-month-grid,
+    .tk-calendar-month-year-grid {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+// Core's `.tk-datepicker-header`: the month row, divided from the grid.
+@mixin calendar-month-caption {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tk-calendar-header-height);
+  padding: var(--datepicker-header-base-top-padding) var(--datepicker-header-base-h-padding) var(--datepicker-header-base-bottom-padding);
+
+  // The nav is absolutely positioned over this row and inset from the card
+  // edge, so the reserve is the arrows it holds on that side plus that inset.
+  // Default layout: two arrows at each end.
+  .tk-calendar:not([data-nav-layout]) & {
+    padding-inline: calc(var(--tk-calendar-cell-size) * 2 + var(--datepicker-header-base-h-padding));
+  }
+
+  // A dropdown caption keeps the engine's two-button nav, and its `<select>`
+  // pair needs the width back.
+  .tk-calendar:not([data-nav-layout]) &:has(.tk-calendar-dropdowns) {
+    padding-inline: calc(var(--tk-calendar-cell-size) + var(--datepicker-header-base-h-padding));
+  }
+
+  // `after` puts all four arrows at the end, so the label is start-aligned and
+  // only that side is reserved.
+  .tk-calendar[data-nav-layout='after'] & {
+    justify-content: flex-start;
+    padding-inline-end: calc(var(--tk-calendar-cell-size) * 4);
+  }
+
+  // ── Header types ────────────────────────────────────────────────────────
+  // Core's `tk-datepicker-header-*`. `basic` divides the row from the grid; the
+  // other four drop that divider and put the month inside a boxed surface. The
+  // box is a pseudo-element inset to the row's own padding, matching Core's
+  // inner `.tk-datepicker-header-content` without adding a wrapper the engine
+  // does not render.
+  .tk-calendar[data-header-type='basic'] & {
+    border-bottom: var(--spacing-px) solid var(--border-light);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: var(--datepicker-header-base-top-padding) var(--datepicker-header-base-h-padding) var(--datepicker-header-base-bottom-padding);
+    border-radius: var(--radius-m-base);
+  }
+
+  .tk-calendar[data-header-type='divided'] &::before {
+    border: var(--spacing-px) solid var(--border-light);
+  }
+
+  .tk-calendar[data-header-type='light'] &::before {
+    background: var(--background-lightest);
+  }
+
+  .tk-calendar[data-header-type='primary'] &::before {
+    background: var(--primary-base);
+  }
+
+  .tk-calendar[data-header-type='dark'] &::before {
+    background: var(--neutral-800);
+  }
+
+  // Several months share one header row — the arrows already span it end to
+  // end — so the surface is one band rather than a box per month: only the
+  // outer edges keep the inset and the radius, and the seams between months
+  // close up. `inset-inline` follows `dir`, so the outer edges stay outer in
+  // RTL.
+  .tk-calendar[data-multiple-months] .tk-calendar-month:not(:first-child) &::before {
+    inset-inline-start: 0;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  .tk-calendar[data-multiple-months] .tk-calendar-month:not(:last-child) &::before {
+    inset-inline-end: 0;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  // The outlined header type would otherwise draw a border on both sides of
+  // every seam; the band is one outline, so the seams carry none.
+  .tk-calendar[data-multiple-months][data-header-type='divided'] .tk-calendar-month:not(:first-child) &::before {
+    border-inline-start: 0;
+  }
+
+  .tk-calendar[data-multiple-months][data-header-type='divided'] .tk-calendar-month:not(:last-child) &::before {
+    border-inline-end: 0;
+  }
+}
+
+@mixin calendar-caption-label {
+  position: relative;
+  color: var(--text-darkest);
+  text-align: center;
+  font-family: var(--desktop-body-s-font);
+  font-size: var(--desktop-body-s-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--desktop-body-s-line-height);
+  padding-inline: var(--datepicker-header-base-date-text-h-padding);
+  white-space: nowrap;
+
+  .tk-calendar[data-size='small'] & {
+    color: var(--text-base);
+    font-family: var(--desktop-body-xs-font);
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+  }
+
+  // The caption already insets this side in the `after` layout, and the row is
+  // only just wide enough for the label plus four arrows.
+  .tk-calendar[data-nav-layout='after'] & {
+    padding-inline-start: 0;
+  }
+
+  .tk-calendar:is([data-header-type='primary'], [data-header-type='dark']) & {
+    color: var(--static-white);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Navigation
+// ---------------------------------------------------------------------------
+
+@mixin calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  // The year arrows sit outside the month arrows, so the row is two pairs
+  // rather than two buttons — each pair hugs its end of the header.
+  .tk-calendar[data-view] & {
+    gap: var(--datepicker-header-base-navigation-gap);
+
+    .tk-calendar-nav-previous-month {
+      margin-inline-end: auto;
+    }
+
+    .tk-calendar-nav-next-month {
+      margin-inline-start: auto;
+    }
+  }
+
+  // Default layout: the engine renders the nav once, before the months, so it
+  // is laid over the caption row — Core's header has the arrows at its ends.
+  // It precedes the caption in the DOM, so the header surface would paint over
+  // it without the stacking bump.
+  .tk-calendar:not([data-nav-layout]) & {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    inset-inline: var(--datepicker-header-base-h-padding);
+    pointer-events: none;
+  }
+
+  // `navLayout="after"`: the engine renders the nav below the caption, but the
+  // header is one row — so it is laid over that row, pinned to its end.
+  .tk-calendar[data-nav-layout='after'] & {
+    position: absolute;
+    top: 0;
+    inset-inline-end: var(--datepicker-header-base-h-padding);
+  }
+}
+
+@mixin calendar-nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tk-calendar-cell-size);
+  height: var(--tk-calendar-header-height);
+  padding: 0;
+  border: 0;
+  border-radius: var(--tk-calendar-cell-radius);
+  background: transparent;
+  color: var(--icon-base);
+  cursor: pointer;
+  // Re-enabled here because the default-layout nav row disables pointer events
+  // so it cannot swallow clicks on the caption underneath it.
+  pointer-events: auto;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: var(--icon-darkest);
+  }
+
+  // The engine keeps the button mounted and marks it aria-disabled instead of
+  // removing it, so a boundary month never shifts the layout.
+  &[aria-disabled='true'] {
+    color: var(--icon-sub-base);
+    cursor: not-allowed;
+
+    &:hover {
+      color: var(--icon-sub-base);
+    }
+  }
+
+  // Filled header types put the arrows on a coloured surface.
+  .tk-calendar[data-header-type='primary'] & {
+    color: var(--static-white);
+
+    &:hover {
+      color: var(--static-white);
+    }
+
+    &[aria-disabled='true'],
+    &[aria-disabled='true']:hover {
+      color: var(--primary-sub-base);
+    }
+  }
+
+  .tk-calendar[data-header-type='dark'] & {
+    color: var(--static-white);
+
+    &:hover {
+      color: var(--static-white);
+    }
+
+    &[aria-disabled='true'],
+    &[aria-disabled='true']:hover {
+      color: var(--neutral-500);
+    }
+  }
+
+  @include mixins.focus-ring(var(--primary-focus));
+}
+
+@mixin calendar-chevron {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  fill: currentcolor;
+
+  // The engine's `Nav` hard-codes left/right orientation — only the `around`
+  // layout, which renders its buttons outside the nav, flips with `dir`. So RTL
+  // is mirrored here; scoping to the nav leaves `around` and the dropdown's
+  // down-chevron untouched.
+  .tk-calendar[dir='rtl'] .tk-calendar-nav & {
+    transform: scaleX(-1);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Month/year dropdown navigation (captionLayout="dropdown*")
+// ---------------------------------------------------------------------------
+
+@mixin calendar-dropdowns {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--datepicker-header-base-date-text-gap);
+}
+
+@mixin calendar-dropdown-root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  padding-inline: var(--datepicker-header-base-date-text-h-padding);
+  border-radius: var(--tk-calendar-cell-radius);
+  color: var(--text-darkest);
+
+  .tk-calendar:is([data-header-type='primary'], [data-header-type='dark']) & {
+    color: var(--static-white);
+
+    // No token for a hover on a filled surface; a white wash is the one value
+    // that reads over both the primary and the neutral fill.
+    &:hover {
+      background: rgb(255 255 255 / 16%);
+    }
+  }
+
+  // The engine reuses the caption-label class for the trigger's visible text and
+  // nests the chevron inside it; the root already supplies the padding.
+  .tk-calendar-caption-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    padding-inline: 0;
+  }
+
+  &:hover {
+    background: var(--background-lightest);
+  }
+
+  &[data-disabled='true'] {
+    color: var(--text-sub-base);
+    pointer-events: none;
+  }
+}
+
+// The visible label is a sibling span; the select covers the pair so the native
+// picker opens anywhere on it while staying invisible.
+@mixin calendar-dropdown {
+  position: absolute;
+  // The label is positioned too (it has to clear the header surface) and comes
+  // later in the DOM, so without this it would take the clicks.
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+  appearance: none;
+}
+
+// ---------------------------------------------------------------------------
+// Grid — Core's `.tk-datepicker-body`
+// ---------------------------------------------------------------------------
+
+@mixin calendar-month-grid {
+  // The grid is exactly as wide as its columns, so a cell keeps its own size
+  // instead of stretching to whatever the container hands it.
+  //
+  // `width: auto` is not enough on its own: the table is a flex item of the
+  // month (a column flex container), whose default `align-items: stretch`
+  // stretches it horizontally — and `table-layout: fixed` then shares the extra
+  // width out across the columns, which is exactly the stretch being avoided.
+  // `max-content` pins the table to the sum of its column widths and
+  // `align-self` opts it out of the stretch; the caption above it stays
+  // stretched so its divider still spans the month.
+  width: max-content;
+  align-self: center;
+  flex: none;
+  padding: var(--datepicker-body-base-day-v-padding) var(--datepicker-body-base-day-h-padding);
+  table-layout: fixed;
+  // Separate — with zero spacing — rather than collapsed: a table's own padding
+  // is ignored in the collapsing border model (CSS 2.1 §17.6.2), which would
+  // silently drop the exported body inset above. Nothing here draws cell
+  // borders, so the collapsing model buys nothing; `border-spacing: 0` keeps the
+  // columns flush.
+  border-collapse: separate;
+  border-spacing: 0;
+
+  // The board takes this slot's width as well, so the two views stay the same
+  // width. The *height* is pinned on the month instead — see the note there.
+  .tk-calendar[data-view] & {
+    box-sizing: border-box;
+    width: var(--tk-calendar-body-width);
+  }
+}
+
+@mixin calendar-weekdays {
+  color: var(--text-base);
+
+  // The exported gap between the weekday header group and the first week.
+  .tk-calendar-weekday {
+    padding-bottom: var(--datepicker-body-base-day-row-group-gap);
+  }
+}
+
+@mixin calendar-weekday {
+  width: var(--tk-calendar-cell-size);
+  height: var(--tk-calendar-cell-size);
+  padding: 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  text-transform: capitalize;
+  color: var(--text-base);
+}
+
+@mixin calendar-weeks {
+  // The engine owns row grouping; nothing to paint at this level.
+  border: 0;
+}
+
+@mixin calendar-week {
+  // Row geometry comes from the cells, so the row stays a pure grouping node.
+  border: 0;
+}
+
+@mixin calendar-week-number {
+  width: var(--tk-calendar-cell-size);
+  padding-block: calc(var(--datepicker-body-base-day-row-gap) / 2);
+  padding-inline: 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  color: var(--text-sub-base);
+}
+
+@mixin calendar-week-number-header {
+  width: var(--tk-calendar-cell-size);
+  padding: 0;
+  color: var(--text-sub-base);
+}
+
+// ---------------------------------------------------------------------------
+// Day — the cell carries the range band and the state, the button is the pill
+// ---------------------------------------------------------------------------
+
+@mixin calendar-day {
+  position: relative;
+  width: var(--tk-calendar-cell-size);
+  // No `height`: the cell is the pill plus the gap around it. Half the exported
+  // row gap on each side adds up to that gap between two rows' pills — carried
+  // per cell rather than by `border-spacing`, which would also inset the table's
+  // outer edges.
+  padding-block: calc(var(--datepicker-body-base-day-row-gap) / 2);
+  padding-inline: 0;
+  text-align: center;
+  vertical-align: middle;
+
+  // The range band lives on a pseudo-element rather than the cell so it can be
+  // rounded and clipped at the row edges independently of the cell box, which
+  // also carries the row gap as padding.
+  &::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 50%;
+    height: var(--tk-calendar-cell-size);
+    transform: translateY(-50%);
+    background: transparent;
+  }
+
+  &[data-outside],
+  &[data-disabled] {
+    color: var(--text-sub-base);
+  }
+
+  &[data-disabled] {
+    pointer-events: none;
+  }
+
+  // ── Range band ──────────────────────────────────────────────────────────
+  // Only the middle needs a band: the two ends are `data-selected`, and their
+  // filled pill is as wide as the cell, so any band drawn under them is hidden.
+  // The ends instead square the corners facing the band (see the day-button
+  // recipe) so the pill and the band read as one run.
+  &.tk-calendar-day-range-middle::before {
+    background: var(--primary-lightest);
+  }
+
+  // The band is clipped at the row edges so a range spanning weeks reads as one
+  // run per row. `:first-of-type` targets day cells only — the week-number cell
+  // is a `<th>`.
+  &:first-of-type::before {
+    border-start-start-radius: var(--tk-calendar-cell-radius);
+    border-end-start-radius: var(--tk-calendar-cell-radius);
+  }
+
+  &:last-of-type::before {
+    border-start-end-radius: var(--tk-calendar-cell-radius);
+    border-end-end-radius: var(--tk-calendar-cell-radius);
+  }
+}
+
+@mixin calendar-day-button {
+  position: relative;
+  z-index: 1;
+  // The `today` treatment is a 1px border, so without this the pill would grow
+  // to 42px and break the grid's rhythm — the same reason Core sets it.
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tk-calendar-cell-size);
+  height: var(--tk-calendar-cell-size);
+  margin-inline: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--tk-calendar-cell-radius);
+  background: transparent;
+  font: inherit;
+  font-weight: 400;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease-in-out,
+    color 0.2s ease-in-out;
+
+  // Hover only where a plain day can still be picked — Core excludes selected,
+  // disabled and in-range days.
+  .tk-calendar-day:not([data-selected], [data-disabled], .tk-calendar-day-range-middle) &:hover {
+    background: var(--background-lightest);
+  }
+
+  // Today is an outlined cell, not a coloured one.
+  .tk-calendar-day[data-today]:not([data-selected]) & {
+    border: var(--spacing-px) solid var(--states-info-sub-base);
+    background: var(--background-lightest);
+  }
+
+  // In range mode the engine marks every day of the span `data-selected`, so the
+  // filled pill is scoped to the two ends; the middle keeps the band and its
+  // normal text.
+  .tk-calendar-day[data-selected]:not(.tk-calendar-day-range-middle) & {
+    background: var(--primary-base);
+    color: var(--text-lightest);
+  }
+
+  .tk-calendar-day[data-selected][data-disabled] & {
+    background: var(--primary-lightest);
+    color: var(--primary-light);
+  }
+
+  // The two ends butt against the band, so the corners facing it are squared
+  // off. The start is guarded the same way the band is: a half-picked range has
+  // nothing to join, so it keeps the full pill.
+  .tk-calendar-day.tk-calendar-day-range-start:is(:has(+ .tk-calendar-day-range-middle), :has(+ .tk-calendar-day-range-end)) & {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  // The end is guarded the same way, and for the same reason — the band is
+  // clipped at the row edges, so an end that lands on the first day of a week
+  // row has its run in the row above and nothing beside it to join. Asked as a
+  // preceding sibling rather than with `:not(...range-start)`: that also covers
+  // the first click of a range, which commits `{from: X, to: X}` and makes one
+  // day both ends, since a lone day has no range sibling either way.
+  :is(.tk-calendar-day-range-start, .tk-calendar-day-range-middle) + .tk-calendar-day.tk-calendar-day-range-end & {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  @include mixins.focus-ring(var(--primary-focus));
+}
+
+// ---------------------------------------------------------------------------
+// Month/year panel — Core's months/years views, opened from the caption
+// ---------------------------------------------------------------------------
+
+// The month and the year in the caption become buttons; they read as text until
+// hovered, so the caption still looks like a label.
+@mixin calendar-caption-trigger {
+  padding: var(--spacing-xxs) var(--datepicker-header-base-date-text-h-padding);
+  border: 0;
+  border-radius: var(--tk-calendar-cell-radius);
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background: var(--background-lightest);
+  }
+
+  .tk-calendar:is([data-header-type='primary'], [data-header-type='dark']) &:hover {
+    background: rgb(255 255 255 / 16%);
+  }
+
+  // `disableNavigation` takes the boards down with the arrows. The label keeps
+  // its colour — it is the month, and it still has to be read — so only the
+  // affordance goes.
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
+  @include mixins.focus-ring(var(--primary-focus));
+}
+
+// Both views are the same 4×3 board — Core lays twelve months and a twelve-year
+// page out identically — so one recipe carries both, told apart by `data-view`.
+@mixin calendar-month-year-grid {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  align-self: center;
+  gap: var(--spacing-xs);
+  width: var(--tk-calendar-body-width);
+  min-height: var(--tk-calendar-body-height);
+  padding: var(--datepicker-body-base-day-v-padding) var(--datepicker-body-base-day-h-padding);
+}
+
+@mixin calendar-month-year-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // The row is a `1fr` share of the pinned body, so the pill keeps the day
+  // cell's height and centres in it rather than filling the share.
+  align-self: center;
+  justify-self: center;
+  height: var(--tk-calendar-cell-size);
+  min-width: var(--tk-calendar-cell-size);
+  padding: 0 var(--spacing-m-base);
+  border: 0;
+  border-radius: var(--tk-calendar-cell-radius);
+  background: transparent;
+  font: inherit;
+  font-weight: 400;
+  color: var(--text-darkest);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease-in-out,
+    color 0.2s ease-in-out;
+
+  &:hover:not([data-selected], [data-disabled]) {
+    background: var(--background-lightest);
+  }
+
+  &[data-selected] {
+    background: var(--primary-base);
+    color: var(--text-lightest);
+  }
+
+  &[data-disabled] {
+    color: var(--text-sub-base);
+    cursor: not-allowed;
+  }
+
+  @include mixins.focus-ring(var(--primary-focus));
+}
+
+// ---------------------------------------------------------------------------
+// Footer — Core's `.tk-datepicker-footer`
+// ---------------------------------------------------------------------------
+
+@mixin calendar-footer {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  gap: var(--datepicker-footer-base-gap);
+  padding: var(--datepicker-footer-base-v-padding) var(--datepicker-footer-base-h-padding);
+  font-size: var(--desktop-body-xs-size);
+  line-height: var(--desktop-body-xs-line-height);
+  color: var(--text-dark);
+}

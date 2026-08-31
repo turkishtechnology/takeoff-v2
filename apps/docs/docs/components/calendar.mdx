@@ -1,0 +1,717 @@
+---
+title: Calendar
+description:
+  An always-visible month grid for picking a day, a date range, or several
+  separate dates.
+sidebar_label: Calendar
+sidebar_position: 4
+slug: /components/calendar
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Button,
+  Calendar,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+import { arSA, de, enUS, tr } from 'react-day-picker/locale';
+
+export const calendarScope = { Button, Calendar, arSA, de, enUS, tr };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  const [date, setDate] = React.useState();
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <Calendar value={date} onValueChange={setDate} />
+      <span className="text-sm">{date ? date.toDateString() : 'No date selected'}</span>
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const rangeDemo = String.raw`
+function RangeDemo() {
+  const [range, setRange] = React.useState();
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <Calendar mode="range" value={range} onValueChange={setRange} numberOfMonths={2} min={2} />
+      <span className="text-sm">
+        {range?.from ? range.from.toDateString() : 'Pick a start date'}
+        {range?.to ? ' → ' + range.to.toDateString() : ''}
+      </span>
+    </div>
+  );
+}
+
+render(<RangeDemo />);
+`;
+
+export const multipleDemo = String.raw`
+function MultipleDemo() {
+  const [days, setDays] = React.useState([]);
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <Calendar mode="multiple" value={days} onValueChange={(next) => setDays(next ?? [])} max={5} />
+      <span className="text-sm">{days.length} of 5 days selected</span>
+    </div>
+  );
+}
+
+render(<MultipleDemo />);
+`;
+
+export const restrictionsDemo = String.raw`
+function RestrictionsDemo() {
+  const today = new Date();
+  const inTwoMonths = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+
+  return (
+    <Calendar
+      minDate={today}
+      maxDate={inTwoMonths}
+      disabledWeekDays={[0, 6]}
+      firstDayOfWeekIndex={1}
+      footer="Weekdays only, within the next two months"
+    />
+  );
+}
+
+render(<RestrictionsDemo />);
+`;
+
+export const sizesDemo = String.raw`
+function SizesDemo() {
+  return (
+    <div className="flex flex-wrap items-start justify-center gap-6">
+      <Calendar size="small" />
+      <Calendar size="base" />
+    </div>
+  );
+}
+
+render(<SizesDemo />);
+`;
+
+export const headerTypesDemo = String.raw`
+const HEADER_TYPES = ['basic', 'divided', 'light', 'primary', 'dark'];
+
+function HeaderTypesDemo() {
+  const [headerType, setHeaderType] = React.useState('basic');
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-wrap justify-center gap-1">
+        {HEADER_TYPES.map((type) => (
+          <Button
+            key={type}
+            size="small"
+            variant={type === headerType ? 'primary' : 'neutral'}
+            onClick={() => setHeaderType(type)}
+          >
+            {type}
+          </Button>
+        ))}
+      </div>
+      <Calendar headerType={headerType} captionLayout="dropdown" />
+    </div>
+  );
+}
+
+render(<HeaderTypesDemo />);
+`;
+
+export const monthYearPickerDemo = String.raw`
+function MonthYearPickerDemo() {
+  const [date, setDate] = React.useState();
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <Calendar value={date} onValueChange={setDate} />
+      <span className="text-sm">Click the month or the year in the caption.</span>
+    </div>
+  );
+}
+
+render(<MonthYearPickerDemo />);
+`;
+
+export const navigationDemo = String.raw`
+function NavigationDemo() {
+  return (
+    <div className="flex flex-wrap items-start justify-center gap-6">
+      <Calendar captionLayout="dropdown" showWeekNumber />
+      <Calendar navLayout="after" fixedWeeks showOutsideDays />
+    </div>
+  );
+}
+
+render(<NavigationDemo />);
+`;
+
+export const presetsDemo = String.raw`
+const PRESETS = [
+  { label: 'Today', days: 0, variant: 'primary' },
+  { label: 'Tomorrow', days: 1, variant: 'neutral' },
+];
+
+function PresetsDemo() {
+  const [date, setDate] = React.useState();
+  // The displayed month is its own state: a value set from outside the grid
+  // does not move it, so the preset moves both.
+  const [month, setMonth] = React.useState(new Date());
+
+  const pick = (days) => {
+    const next = new Date();
+    next.setDate(next.getDate() + days);
+    setDate(next);
+    setMonth(next);
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <Calendar
+        value={date}
+        onValueChange={setDate}
+        month={month}
+        onMonthChange={setMonth}
+        footer={
+          <div className="flex flex-wrap items-center justify-start gap-1" role="group" aria-label="Date presets">
+            {PRESETS.map((preset) => (
+              <Button key={preset.label} variant={preset.variant} onClick={() => pick(preset.days)}>
+                {preset.label}
+              </Button>
+            ))}
+          </div>
+        }
+      />
+      <span className="text-sm">{date ? date.toDateString() : 'No date selected'}</span>
+    </div>
+  );
+}
+
+render(<PresetsDemo />);
+`;
+
+export const localeDemo = String.raw`
+const LOCALES = [
+  { code: 'enUS', locale: enUS },
+  { code: 'tr', locale: tr },
+  { code: 'de', locale: de },
+  { code: 'arSA', locale: arSA, dir: 'rtl', numerals: 'arab' },
+];
+
+function LocaleDemo() {
+  const [index, setIndex] = React.useState(0);
+  const active = LOCALES[index];
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-wrap justify-center gap-1">
+        {LOCALES.map((entry, i) => (
+          <Button
+            key={entry.code}
+            size="small"
+            variant={i === index ? 'primary' : 'neutral'}
+            onClick={() => setIndex(i)}
+          >
+            {entry.code}
+          </Button>
+        ))}
+      </div>
+      <Calendar
+        key={active.code}
+        locale={active.locale}
+        dir={active.dir}
+        numerals={active.numerals}
+      />
+    </div>
+  );
+}
+
+render(<LocaleDemo />);
+`;
+
+export const stylingDemo = String.raw`
+const BRAND_CSS = [
+  '.brand-calendar.tk-calendar { border-radius: 24px; border-color: #c7d2fe; background: #eef2ff; box-shadow: none; }',
+  '.brand-calendar .tk-calendar-month-caption { border-bottom-color: #c7d2fe; }',
+  '.brand-calendar .tk-calendar-caption-label { font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #3730a3; }',
+  '.brand-calendar .tk-calendar-nav-previous-month, .brand-calendar .tk-calendar-nav-next-month { color: #6366f1; }',
+  '.brand-calendar .tk-calendar-weekday { color: #6366f1; }',
+  '.brand-calendar .tk-calendar-day-button { border-radius: 8px; }',
+  '.brand-calendar .tk-calendar-day[data-today]:not([data-selected]) .tk-calendar-day-button { border-color: #6366f1; background: #e0e7ff; }',
+  '.brand-calendar .tk-calendar-day[data-selected] .tk-calendar-day-button { background: #4338ca; }',
+  '.brand-calendar .tk-calendar-footer { border-top-color: #c7d2fe; color: #4338ca; }',
+].join('\n');
+
+function StylingDemo() {
+  const [date, setDate] = React.useState();
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <style>{BRAND_CSS}</style>
+      <Calendar
+        value={date}
+        onValueChange={setDate}
+        classNames={{ root: 'brand-calendar' }}
+        slotProps={{ monthGrid: { 'aria-describedby': 'brand-hint' } }}
+        footer={<span id="brand-hint">Restyled entirely from the outside.</span>}
+      />
+    </div>
+  );
+}
+
+render(<StylingDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Calendar
+
+`Calendar` shows a month grid so users can pick a date without opening anything
+first — the right shape for booking flows, availability views, and filters where
+the month should stay on screen.
+
+## Usage
+
+```tsx
+import { Calendar } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Calendar />
+```
+
+Calendar is a single component: the month, the grid, and every day cell are
+rendered by the underlying engine, so there are no compound parts to place.
+Reach any node through the `classNames` / `slotProps` slot keys instead —
+`root`, `months`, `month`, `nav`, `previousMonthButton`, `nextMonthButton`,
+`chevron`, `monthCaption`, `captionLabel`, `dropdowns`, `dropdownRoot`,
+`dropdown`, `monthGrid`, `weekdays`, `weekday`, `weeks`, `week`, `weekNumber`,
+`weekNumberHeader`, `day`, `dayButton`, `footer`.
+
+Values are `Date` objects. `value` + `onValueChange` is the controlled pair;
+`defaultValue` is the uncontrolled one.
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={380}
+  previewWrapper={ReactSparDemoRoot}
+  scope={calendarScope}
+/>
+
+## Range
+
+`mode="range"` selects a continuous span and reports `{ from, to }`. `min` and
+`max` bound how many days it may cover, and `excludeDisabled` rejects a range
+that would swallow a disabled day.
+
+<LiveCode
+  code={rangeDemo}
+  noInline
+  previewMinHeight={400}
+  previewWrapper={ReactSparDemoRoot}
+  scope={calendarScope}
+/>
+
+The range edges are styled by class rather than by attribute, because the engine
+expresses the position that way: `.tk-calendar-day-range-start`,
+`.tk-calendar-day-range-middle`, `.tk-calendar-day-range-end`.
+
+## Multiple dates
+
+`mode="multiple"` collects separate days into an array. `min` / `max` bound how
+many can be selected.
+
+<LiveCode
+  code={multipleDemo}
+  noInline
+  previewMinHeight={380}
+  previewWrapper={ReactSparDemoRoot}
+  scope={calendarScope}
+/>
+
+## Restricting what can be picked
+
+`minDate` and `maxDate` are inclusive and bound both navigation and selection.
+`disabledDates` blocks individual days, `disabledWeekDays` blocks whole columns
+(`0` = Sunday), and `firstDayOfWeekIndex` decides which weekday leads the row.
+
+<LiveCode
+  code={restrictionsDemo}
+  noInline
+  previewMinHeight={380}
+  previewWrapper={ReactSparDemoRoot}
+  scope={calendarScope}
+/>
+
+For a whitelist, pass `allowedDates` — every unlisted day is then disabled. An
+empty array means "no whitelist", so a list that has not loaded yet does not
+disable the whole month:
+
+```tsx
+<Calendar allowedDates={[new Date(2026, 7, 3), new Date(2026, 7, 4)]} />
+```
+
+## Sizes
+
+Two scales, `base` (40px day cells) and `small` (32px) — the two the design
+system defines for a picking grid.
+
+<LiveCode
+  code={sizesDemo}
+  noInline
+  previewMinHeight={340}
+  previewWrapper={ReactSparDemoRoot}
+  scope={calendarScope}
+/>
+
+## Header types
+
+`headerType` is Takeoff Core's `tk-datepicker` header vocabulary. `basic`
+divides the month row from the grid; `divided`, `light`, `primary` and `dark`
+drop that divider and put the month and its arrows inside a boxed surface
+instead.
+
+<LiveCode
+  code={headerTypesDemo}
+  noInline
+  previewMinHeight={440}
+  previewWrapper={ReactSparDemoRoot}
+  scope={calendarScope}
+/>
+
+## Navigation & layout
+
+`captionLayout` swaps the month label for `<select>` navigation, `navLayout`
+moves the arrows, `showWeekNumber` adds the week column, `fixedWeeks` keeps the
+grid six rows tall so the box does not resize between months, and
+`showOutsideDays` fills the leading and trailing week.
+
+<LiveCode
+  code={navigationDemo}
+  noInline
+  previewMinHeight={400}
+  previewWrapper={ReactSparDemoRoot}
+  scope={calendarScope}
+/>
+
+## Month and year panels
+
+The month and the year in the caption are buttons: they swap the day grid for a
+twelve-month or twelve-year board — Takeoff Core's view switch. Picking a year
+drills down to that year's months; picking a month returns to the days.
+
+There is one board however many months are displayed, and it belongs to the
+first of them: that month's caption carries the buttons, the later captions stay
+plain labels of their own month. While a board is open the calendar shows that
+one month, so the card keeps its navigation and returns to the full row when the
+board closes.
+
+Which board is showing is a third controlled pair: `view` + `onViewChange`, with
+`defaultView` to choose the opening board without taking control of it.
+
+The header carries two pairs of arrows, each stepping one rung of the board it
+is on: the single ones move a month, or a year once the year board is showing;
+the double ones move a year, or a whole twelve-year page. Each arrow is named
+after what it lands on and stays live while any part of that month, year or page
+is inside `minDate` / `maxDate`.
+
+<LiveCode
+  code={monthYearPickerDemo}
+  noInline
+  previewMinHeight={440}
+  previewWrapper={ReactSparDemoRoot}
+  scope={calendarScope}
+/>
+
+This is the one part of the anatomy `react-day-picker` does not render — it has
+no month or year view — so the wrapper supplies it, and `minDate` / `maxDate`
+disable the cells that fall outside.
+
+A `dropdown*` caption changes two things and nothing else. The caption keeps the
+engine's `<select>` pair rather than gaining switch buttons, since that layout
+owns the same node; and the header drops the year arrows, because the year
+`<select>` already covers them and the row has no width for both. The boards
+themselves still work, through `view` / `defaultView`.
+
+`navLayout="around"` drops the year arrows for the same reason — the engine
+renders that row itself, as one arrow on each side of the caption. The boards
+work there too: the single arrows step the board's own rung, so the year board
+still walks from one twelve-year page to the next.
+
+`disableNavigation` reaches the boards as well as the arrows: the cells go
+disabled, since picking one would move the displayed month.
+
+## Presets
+
+`footer` takes any node, which makes it the place for shortcut controls under
+the grid. Pair them with the controlled `month` so a preset that lands outside
+the visible month brings the grid with it.
+
+<LiveCode
+  code={presetsDemo}
+  noInline
+  previewMinHeight={440}
+  previewWrapper={ReactSparDemoRoot}
+  scope={calendarScope}
+/>
+
+One caveat worth knowing: the engine renders the footer as a polite live region
+(`role="status"`), which is right for the status text it was designed for and
+less so for a row of buttons. Static labels like these do not re-announce, but
+if you would rather keep controls out of a live region, render them as a sibling
+of `<Calendar>` instead of through `footer` — the wiring is identical.
+
+## Localization
+
+`locale` takes a `react-day-picker` locale object, so only the locales you
+import are bundled:
+
+```tsx
+import { tr } from 'react-day-picker/locale';
+import { Calendar } from '@takeoff-ui/react-spar';
+
+<Calendar locale={tr} firstDayOfWeekIndex={1} />;
+```
+
+`numerals` switches the digit system, `dir="rtl"` mirrors the layout, and
+`timeZone` decides which day counts as today.
+
+<LiveCode
+  code={localeDemo}
+  noInline
+  previewMinHeight={440}
+  previewWrapper={ReactSparDemoRoot}
+  scope={calendarScope}
+/>
+
+## Styling
+
+Every class in the rendered tree is Takeoff-owned (`tk-calendar-*`) — no engine
+stylesheet is imported, and none is needed. Day state is read from the
+attributes the engine already emits, so recipes never need a wrapper mirror:
+
+```css
+.tk-calendar-day[data-selected] {
+  /* … */
+}
+.tk-calendar-day[data-today] .tk-calendar-day-button {
+  /* … */
+}
+```
+
+Per-slot overrides work the same way as everywhere else in the package:
+
+```tsx
+<Calendar
+  classNames={{ day: 'my-day', monthCaption: 'my-caption' }}
+  slotProps={{ monthGrid: { 'aria-describedby': 'hint' } }}
+/>
+```
+
+Putting the two together — one class on `root`, then plain CSS against the
+anatomy underneath it — is enough to re-skin the whole grid without touching the
+recipe:
+
+<LiveCode
+  code={stylingDemo}
+  noInline
+  previewMinHeight={460}
+  previewWrapper={ReactSparDemoRoot}
+  scope={calendarScope}
+/>
+
+Note the selectors carry the `.brand-calendar` prefix. The recipe styles a
+selected day through `.tk-calendar-day[data-selected] .tk-calendar-day-button`,
+so an override needs at least that much weight — which is also why a bare
+utility class on a slot can lose: utility frameworks usually emit into a cascade
+layer, and unlayered recipe rules win over layered ones regardless of order.
+
+## Accessibility & Keyboard
+
+- The grid is a real `role="grid"` table labelled by the month caption.
+- Arrow keys move by day, `PageUp` / `PageDown` by month, `Home` / `End` to the
+  week edges, and `Enter` / `Space` select the focused day.
+- Each day button carries a localized accessible name; disabled and outside days
+  are announced through the engine's own ARIA.
+- The previous/next buttons stay in the tab order at the boundary and expose
+  `aria-disabled`, so reaching the edge does not shift the layout.
+- Chevrons are `aria-hidden` — the buttons carry the names.
+- `footer` is rendered in a polite live region.
+- The month and year boards are `role="grid"` too, with one tab stop: arrow keys
+  move between cells (vertically by four, the board's column count), `Home` /
+  `End` reach the row edges, and the displayed month or year is `aria-selected`.
+  Cells outside `minDate` / `maxDate` cannot take focus, so every key steps over
+  them and leaves the keypress alone when there is nothing left to reach.
+- Opening a board moves focus into it; picking a month hands focus back to the
+  caption trigger for that board — the one it was opened from, or the caption's
+  own when `defaultView` or `view` opened it. `Escape` closes a board the same
+  way, and stops there rather than reaching a surface the calendar sits in.
+- The caption keeps a polite live region of its own, so the month still
+  announces after the arrows move it.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Calendar {#calendar}
+
+See [react-day-picker docs](https://daypicker.dev) for primitive behavior.
+
+#### Props {#calendar-props}
+
+| Name                                     | Type                                                                                                                                    | Default                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="size" />                | <code><a href="#calendar-td-calendarsize">CalendarSize</a></code>                                                                       | 'base'                                           | Size scale → root `data-size`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| <ApiBadge label="headerType" />          | <code><a href="#calendar-td-calendarheadertype">CalendarHeaderType</a></code>                                                           | 'basic'                                          | Caption-row treatment → root `data-header-type`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| <ApiBadge label="view" />                | <code><a href="#calendar-td-calendarview">CalendarView</a></code>                                                                       | -                                                | Board the body shows (controlled). Pair with `onViewChange`; the caption's month and year switch it, so a `view` passed without a handler locks the body to that board. Under a `dropdown*` caption the boards still work, but the caption keeps the engine's `<select>` pair instead of gaining switch buttons.                                                                                                                                                                                                                                                |
+| <ApiBadge label="defaultView" />         | <code><a href="#calendar-td-calendarview">CalendarView</a></code>                                                                       | 'day'                                            | Board the body opens on, without taking control of it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| <ApiBadge label="minDate" />             | <code>Date</code>                                                                                                                       | -                                                | Earliest selectable date, inclusive. Bounds both navigation (the engine's `startMonth`) and selection (a `{ before }` disabled matcher).                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| <ApiBadge label="maxDate" />             | <code>Date</code>                                                                                                                       | -                                                | Latest selectable date, inclusive. Bounds both navigation (the engine's `endMonth`) and selection (an `{ after }` disabled matcher).                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| <ApiBadge label="disabledDates" />       | <code>Date[]</code>                                                                                                                     | -                                                | Individual dates that cannot be selected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| <ApiBadge label="allowedDates" />        | <code>Date[]</code>                                                                                                                     | -                                                | Whitelist: when set, every date **not** listed is disabled. Combines with `disabledDates` / `disabledWeekDays` / `minDate` / `maxDate` — a date must pass all of them to be selectable.                                                                                                                                                                                                                                                                                                                                                                         |
+| <ApiBadge label="disabledWeekDays" />    | <code>number[]</code>                                                                                                                   | -                                                | Weekday indices that cannot be selected, `0` = Sunday.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| <ApiBadge label="firstDayOfWeekIndex" /> | <code><a href="#calendar-td-calendarweekstart">CalendarWeekStart</a></code>                                                             | -                                                | First day of the week, `0` = Sunday. Defaults to the locale's own first day.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| <ApiBadge label="classNames" />          | <code>Partial&lt;Record&lt;<a href="#calendar-td-calendarslot">CalendarSlot</a>, string&gt;&gt;</code>                                  | -                                                | Per-slot class name overrides.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| <ApiBadge label="slotProps" />           | <code>Partial&lt;Record&lt;<a href="#calendar-td-calendarslot">CalendarSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -                                                | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| <ApiBadge label="footer" />              | <code>React.ReactNode</code>                                                                                                            | -                                                | Add a footer to the calendar, acting as a live region. Use this prop to communicate the calendar's status to screen readers. Prefer strings over complex UI elements.                                                                                                                                                                                                                                                                                                                                                                                           |
+| <ApiBadge label="autoFocus" />           | <code>boolean</code>                                                                                                                    | -                                                | When a selection mode is set, DayPicker will focus the first selected day (if set) or today's date (if not disabled). Use this prop when you need to focus DayPicker after a user action, for improved accessibility.                                                                                                                                                                                                                                                                                                                                           |
+| <ApiBadge label="dir" />                 | <code>string</code>                                                                                                                     | -                                                | The text direction of the calendar. Use `ltr` for left-to-right (default) or `rtl` for right-to-left.                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| <ApiBadge label="id" />                  | <code>string</code>                                                                                                                     | -                                                | A unique id to add to the root element.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| <ApiBadge label="role" />                | <code>"dialog" &#124; "application"</code>                                                                                              | -                                                | The role attribute to add to the container element.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| <ApiBadge label="aria-label" />          | <code>string</code>                                                                                                                     | -                                                | The aria-label attribute to add to the container element.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| <ApiBadge label="aria-labelledby" />     | <code>string</code>                                                                                                                     | -                                                | The aria-labelledby attribute to add to the container element.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| <ApiBadge label="month" />               | <code>Date</code>                                                                                                                       | -                                                | The month displayed in the calendar. As opposed to `defaultMonth`, use this prop with `onMonthChange` to change the month programmatically.                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| <ApiBadge label="defaultMonth" />        | <code>Date</code>                                                                                                                       | The current month                                | The initial month to show in the calendar. Use this prop to let DayPicker control the current month. If you need to set the month programmatically, use `month` and `onMonthChange`.                                                                                                                                                                                                                                                                                                                                                                            |
+| <ApiBadge label="numberOfMonths" />      | <code>number</code>                                                                                                                     | 1                                                | The number of displayed months.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| <ApiBadge label="pagedNavigation" />     | <code>boolean</code>                                                                                                                    | -                                                | Paginate the month navigation displaying the `numberOfMonths` at a time.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| <ApiBadge label="reverseMonths" />       | <code>boolean</code>                                                                                                                    | -                                                | Render the months in reversed order (when `numberOfMonths` is set) to display the most recent month first.                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| <ApiBadge label="reverseYears" />        | <code>boolean</code>                                                                                                                    | -                                                | Reverse the order of years in the dropdown when using `captionLayout="dropdown"` or `captionLayout="dropdown-years"`.                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| <ApiBadge label="hideNavigation" />      | <code>boolean</code>                                                                                                                    | -                                                | Hide the navigation buttons. This prop won't disable the navigation: to disable the navigation, use `disableNavigation`.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| <ApiBadge label="disableNavigation" />   | <code>boolean</code>                                                                                                                    | -                                                | Disable the navigation between months. This prop won't hide the navigation: to hide the navigation, use `hideNavigation`.                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| <ApiBadge label="captionLayout" />       | <code>"label" &#124; "dropdown" &#124; "dropdown-months" &#124; "dropdown-years"</code>                                                 | -                                                | Show dropdowns to navigate between months or years. - `label`: Displays the month and year as a label. Default value. - `dropdown`: Displays dropdowns for both month and year navigation. - `dropdown-months`: Displays a dropdown only for the month navigation. - `dropdown-years`: Displays a dropdown only for the year navigation. **Note:** By default, showing the dropdown will set the `startMonth` to 100 years ago and `endMonth` to the end of the current year. You can override this behavior by explicitly setting `startMonth` and `endMonth`. |
+| <ApiBadge label="navLayout" />           | <code>"around" &#124; "after"</code>                                                                                                    | -                                                | Adjust the positioning of the navigation buttons. - `around`: Displays the buttons on either side of the caption. - `after`: Displays the buttons after the caption. This ensures the tab order matches the visual order. If not set, DayPicker preserves its legacy layout, but the tab order may not align with the visual order when using `captionLayout="dropdown"`.                                                                                                                                                                                       |
+| <ApiBadge label="fixedWeeks" />          | <code>boolean</code>                                                                                                                    | -                                                | Display always 6 weeks per each month, regardless of the month’s number of weeks. Weeks will be filled with the days from the next month.                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| <ApiBadge label="hideWeekdays" />        | <code>boolean</code>                                                                                                                    | -                                                | Hide the row displaying the weekday row header.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| <ApiBadge label="showOutsideDays" />     | <code>boolean</code>                                                                                                                    | -                                                | Show the outside days (days falling in the next or the previous month). **Note:** when a `broadcastCalendar` is set, this prop defaults to true.                                                                                                                                                                                                                                                                                                                                                                                                                |
+| <ApiBadge label="showWeekNumber" />      | <code>boolean</code>                                                                                                                    | -                                                | Show the week numbers column. Weeks are numbered according to the local week index.                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| <ApiBadge label="broadcastCalendar" />   | <code>boolean</code>                                                                                                                    | -                                                | Display the weeks in the month following the broadcast calendar. Setting this prop will ignore `weekStartsOn` (always Monday) and `showOutsideDays` will default to true.                                                                                                                                                                                                                                                                                                                                                                                       |
+| <ApiBadge label="ISOWeek" />             | <code>boolean</code>                                                                                                                    | -                                                | Use ISO week dates instead of the locale setting. Setting this prop will ignore `weekStartsOn` and `firstWeekContainsDate`.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| <ApiBadge label="timeZone" />            | <code>string</code>                                                                                                                     | -                                                | The time zone (IANA or UTC offset) to use in the calendar (experimental). See [Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for the possible values.                                                                                                                                                                                                                                                                                                                                                                                |
+| <ApiBadge label="today" />               | <code>Date</code>                                                                                                                       | -                                                | The today’s date. Default is the current date. This date will get the `today` modifier to style the day.                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| <ApiBadge label="locale" />              | <code>Partial&lt;<a href="#calendar-td-daypickerlocale">DayPickerLocale</a>&gt;</code>                                                  | enUS - The English locale default of `date-fns`. | The locale object used to localize dates. Pass a locale from `react-day-picker/locale` to localize the calendar.                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| <ApiBadge label="numerals" />            | <code><a href="#calendar-td-numerals">Numerals</a></code>                                                                               | `latn` Latin (Western Arabic)                    | The numeral system to use when formatting dates. - `latn`: Latin (Western Arabic) - `arab`: Arabic-Indic - `arabext`: Eastern Arabic-Indic (Persian) - `deva`: Devanagari - `beng`: Bengali - `guru`: Gurmukhi - `gujr`: Gujarati - `orya`: Oriya - `tamldec`: Tamil - `telu`: Telugu - `knda`: Kannada - `mlym`: Malayalam                                                                                                                                                                                                                                     |
+| <ApiBadge label="formatters" />          | <code>Partial&lt;<a href="#calendar-td-formatters">Formatters</a>&gt;</code>                                                            | -                                                | Formatters used to format dates to strings. Use this prop to override the default functions.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| <ApiBadge label="labels" />              | <code>Partial&lt;<a href="#calendar-td-labels">Labels</a>&gt;</code>                                                                    | -                                                | Labels creators to override the defaults. Use this prop to customize the aria-label attributes in DayPicker.                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| <ApiBadge label="className" />           | <code>string</code>                                                                                                                     | -                                                | Extra class on the root element.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+
+#### Events {#calendar-events}
+
+| Name                               | Type                                                                                    | Default | Description                                                                  |
+| ---------------------------------- | --------------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------- |
+| <ApiBadge label="onViewChange" />  | <code>(view: <a href="#calendar-td-calendarview">CalendarView</a>) =&gt; void</code>    | -       | Fires when the caption or a board selection moves the body to another board. |
+| <ApiBadge label="onMonthChange" /> | <code><a href="#calendar-td-monthchangeeventhandler">MonthChangeEventHandler</a></code> | -       | Event fired when the user navigates between months.                          |
+
+#### Data attributes {#calendar-data-attributes}
+
+| Attribute                                       | Applied when                            | Purpose                                                                                                                                                                                             |
+| ----------------------------------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                  | Stable selector for wrapper styling on the root slot. Every anatomy node carries its own `data-slot` (`day`, `month-grid`, `weekday`, …).                                                           |
+| <ApiBadge label="data-size" />                  | Always                                  | Reflects the resolved `size` for theme recipe scoping; also drives the day-cell geometry.                                                                                                           |
+| <ApiBadge label="data-header-type" />           | Always                                  | Reflects the resolved `headerType`; drives the caption-row treatment.                                                                                                                               |
+| <ApiBadge label="data-view" />                  | Always                                  | The board the body is showing — `day`, `month` or `year`. Also what pins the body box, so switching views does not resize the card. The caption triggers and the board carry their own `data-view`. |
+| <ApiBadge label="data-mode" />                  | Always                                  | Emitted by the engine. Reflects the selection mode.                                                                                                                                                 |
+| <ApiBadge label="data-multiple-months" />       | `numberOfMonths` is greater than 1      | Emitted by the engine.                                                                                                                                                                              |
+| <ApiBadge label="data-week-numbers" />          | `showWeekNumber` is set                 | Emitted by the engine.                                                                                                                                                                              |
+| <ApiBadge label="data-nav-layout" />            | `navLayout` is set                      | Emitted by the engine.                                                                                                                                                                              |
+| <ApiBadge label="data-day" />                   | Always, on each day cell                | Emitted by the engine. The cell’s ISO date (`YYYY-MM-DD`) — the stable hook for targeting a specific day.                                                                                           |
+| <ApiBadge label="data-selected" />              | The day is part of the selection        | Emitted by the engine on the day cell.                                                                                                                                                              |
+| <ApiBadge label="data-today" />                 | The day is today                        | Emitted by the engine on the day cell.                                                                                                                                                              |
+| <ApiBadge label="data-outside" />               | The day belongs to a neighbouring month | Emitted by the engine on the day cell.                                                                                                                                                              |
+| <ApiBadge label="data-disabled" />              | The day cannot be selected              | Emitted by the engine on the day cell.                                                                                                                                                              |
+| <ApiBadge label="data-focused" />               | The day holds keyboard focus            | Emitted by the engine on the day cell.                                                                                                                                                              |
+
+### Calendar — mode="single" {#calendar-single}
+
+#### Props {#calendar-single-props}
+
+| Name                              | Type                  | Default  | Description                             |
+| --------------------------------- | --------------------- | -------- | --------------------------------------- |
+| <ApiBadge label="mode" />         | <code>"single"</code> | 'single' | Selection mode.                         |
+| <ApiBadge label="value" />        | <code>Date</code>     | -        | Selected date (controlled).             |
+| <ApiBadge label="defaultValue" /> | <code>Date</code>     | -        | Initially selected date (uncontrolled). |
+
+#### Events {#calendar-single-events}
+
+| Name                               | Type                                  | Default | Description                                                      |
+| ---------------------------------- | ------------------------------------- | ------- | ---------------------------------------------------------------- |
+| <ApiBadge label="onValueChange" /> | <code>(value: Date) =&gt; void</code> | -       | Fires with the new selection, or `undefined` when it is cleared. |
+
+### Calendar — mode="multiple" {#calendar-multiple}
+
+#### Props {#calendar-multiple-props}
+
+| Name                              | Type                    | Default | Description                              |
+| --------------------------------- | ----------------------- | ------- | ---------------------------------------- |
+| <ApiBadge label="mode" />         | <code>"multiple"</code> | -       |                                          |
+| <ApiBadge label="value" />        | <code>Date[]</code>     | -       | Selected dates (controlled).             |
+| <ApiBadge label="defaultValue" /> | <code>Date[]</code>     | -       | Initially selected dates (uncontrolled). |
+| <ApiBadge label="min" />          | <code>number</code>     | -       | Fewest dates that may be selected.       |
+| <ApiBadge label="max" />          | <code>number</code>     | -       | Most dates that may be selected.         |
+
+#### Events {#calendar-multiple-events}
+
+| Name                               | Type                                    | Default | Description                                                      |
+| ---------------------------------- | --------------------------------------- | ------- | ---------------------------------------------------------------- |
+| <ApiBadge label="onValueChange" /> | <code>(value: Date[]) =&gt; void</code> | -       | Fires with the new selection, or `undefined` when it is cleared. |
+
+### Calendar — mode="range" {#calendar-range}
+
+#### Props {#calendar-range-props}
+
+| Name                                 | Type                                                        | Default | Description                                        |
+| ------------------------------------ | ----------------------------------------------------------- | ------- | -------------------------------------------------- |
+| <ApiBadge label="mode" />            | <code>"range"</code>                                        | -       |                                                    |
+| <ApiBadge label="value" />           | <code><a href="#calendar-td-daterange">DateRange</a></code> | -       | Selected range (controlled).                       |
+| <ApiBadge label="defaultValue" />    | <code><a href="#calendar-td-daterange">DateRange</a></code> | -       | Initially selected range (uncontrolled).           |
+| <ApiBadge label="min" />             | <code>number</code>                                         | -       | Fewest days the range may span.                    |
+| <ApiBadge label="max" />             | <code>number</code>                                         | -       | Most days the range may span.                      |
+| <ApiBadge label="excludeDisabled" /> | <code>boolean</code>                                        | -       | Forbid a range that would contain a disabled date. |
+
+#### Events {#calendar-range-events}
+
+| Name                               | Type                                                                                    | Default | Description                                                  |
+| ---------------------------------- | --------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------ |
+| <ApiBadge label="onValueChange" /> | <code>(value: <a href="#calendar-td-calendarrange">CalendarRange</a>) =&gt; void</code> | -       | Fires with the new range, or `undefined` when it is cleared. |
+
+### Type Definitions {#calendar-type-definitions}
+
+| Name                                                                                               | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="calendar-td-calendarsize"><ApiBadge label="CalendarSize" /></span>                       | <code>'small' &#124; 'base'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| <span id="calendar-td-calendarheadertype"><ApiBadge label="CalendarHeaderType" /></span>           | <code>'basic' &#124; 'divided' &#124; 'light' &#124; 'primary' &#124; 'dark'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| <span id="calendar-td-calendarview"><ApiBadge label="CalendarView" /></span>                       | <code>'day' &#124; 'month' &#124; 'year'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| <span id="calendar-td-calendarweekstart"><ApiBadge label="CalendarWeekStart" /></span>             | <code>0 &#124; 1 &#124; 2 &#124; 3 &#124; 4 &#124; 5 &#124; 6</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| <span id="calendar-td-calendarslot"><ApiBadge label="CalendarSlot" /></span>                       | <code>&#124; 'root' &#124; 'months' &#124; 'month' &#124; 'nav' &#124; 'previousMonthButton' &#124; 'nextMonthButton' &#124; 'previousYearButton' &#124; 'nextYearButton' &#124; 'chevron' &#124; 'monthCaption' &#124; 'captionLabel' &#124; 'captionTrigger' &#124; 'dropdowns' &#124; 'dropdownRoot' &#124; 'dropdown' &#124; 'monthGrid' &#124; 'monthYearGrid' &#124; 'monthYearCell' &#124; 'weekdays' &#124; 'weekday' &#124; 'weeks' &#124; 'week' &#124; 'weekNumber' &#124; 'weekNumberHeader' &#124; 'day' &#124; 'dayButton' &#124; 'footer'</code>                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| <span id="calendar-td-daypickerlocale"><ApiBadge label="DayPickerLocale" /></span>                 | <code>&#123; labels?: DayPickerLocaleLabels &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| <span id="calendar-td-numerals"><ApiBadge label="Numerals" /></span>                               | <code>"latn" &#124; "arab" &#124; "arabext" &#124; "deva" &#124; "geez" &#124; "beng" &#124; "guru" &#124; "gujr" &#124; "orya" &#124; "tamldec" &#124; "telu" &#124; "knda" &#124; "mlym" &#124; "thai" &#124; "mymr" &#124; "khmr" &#124; "laoo" &#124; "tibt"</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| <span id="calendar-td-formatters"><ApiBadge label="Formatters" /></span>                           | <code>&#123; /** Format the caption of a month grid. \*/ formatCaption: typeof formatCaption; /** Format the day in the day cell. _/ formatDay: typeof formatDay; /\*\* Format the label in the month dropdown. _/ formatMonthDropdown: typeof formatMonthDropdown; /** Format the week number. \*/ formatWeekNumber: typeof formatWeekNumber; /** Format the header of the week number column. _/ formatWeekNumberHeader: typeof formatWeekNumberHeader; /\*\* Format the week day name in the header. _/ formatWeekdayName: typeof formatWeekdayName; /\*_ Format the label in the year dropdown. _/ formatYearDropdown: typeof formatYearDropdown; &#125;</code>                                                                                                                                                                                                                                                                                                                |
+| <span id="calendar-td-labels"><ApiBadge label="Labels" /></span>                                   | <code>&#123; /** The label for the navigation toolbar. \*/ labelNav: typeof labelNav; /** The label for the month grid. _/ labelGrid: typeof labelGrid; /\*\* The label for the gridcell, when the calendar is not interactive. _/ labelGridcell: typeof labelGridcell; /** The label for the month dropdown. \*/ labelMonthDropdown: typeof labelMonthDropdown; /** The label for the year dropdown. _/ labelYearDropdown: typeof labelYearDropdown; /\*\* The label for the "next month" button. _/ labelNext: typeof labelNext; /** The label for the "previous month" button. \*/ labelPrevious: typeof labelPrevious; /** The label for the day button. _/ labelDayButton: typeof labelDayButton; /\*\* The label for the weekday. _/ labelWeekday: typeof labelWeekday; /** The label for the week number. \*/ labelWeekNumber: typeof labelWeekNumber; /** The label for the column of week numbers. \*/ labelWeekNumberHeader: typeof labelWeekNumberHeader; &#125;</code> |
+| <span id="calendar-td-monthchangeeventhandler"><ApiBadge label="MonthChangeEventHandler" /></span> | <code>(month: Date) =&gt; void</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| <span id="calendar-td-daterange"><ApiBadge label="DateRange" /></span>                             | <code>&#123; from: Date &#124; undefined; to?: Date &#124; undefined; &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| <span id="calendar-td-calendarrange"><ApiBadge label="CalendarRange" /></span>                     | <code><a href="#calendar-td-daterange">DateRange</a></code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+
+{/* api-tables:end */}
