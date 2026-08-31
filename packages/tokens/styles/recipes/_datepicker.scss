@@ -25,7 +25,7 @@
 //   2. The calendar draws a standalone border, which duplicates the panel's
 //      shadow once it is floating.
 // A trigger placed inside the field needs no rules here at all: `_input.scss`
-// lists `.tk-datepicker-trigger` alongside `.tk-input-clear-button`, so it is
+// lists `.tk-input-action` alongside `.tk-input-clear-button`, so it is
 // that button's twin — same box, same colour, same focus ring — by
 // construction rather than by a second copy of the same declarations.
 //

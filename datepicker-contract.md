@@ -12,13 +12,13 @@ favour of composition. The reasoning on both sides is below.
 
 ## Decision
 
-| Decision                     | Ruling                                                                 |
-| ---------------------------- | ---------------------------------------------------------------------- |
-| Shape                        | **No `DatePicker` component.** Popover + Calendar, composed per usage. |
-| Reference                    | shadcn/ui `docs/components/base/date-picker` → "Composition".          |
-| Where the wiring lives       | In the consumer's component, shown in full on the docs page.           |
-| What the design system ships | `tk-datepicker-panel`, `tk-datepicker-trigger` — opt-in classes.       |
-| `spar-datepicker-plani.html` | Superseded. Its Approach A is what shipped.                            |
+| Decision                     | Ruling                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| Shape                        | **No `DatePicker` component.** Popover + Calendar, composed per usage.   |
+| Reference                    | shadcn/ui `docs/components/base/date-picker` → "Composition".            |
+| Where the wiring lives       | In the consumer's component, shown in full on the docs page.             |
+| What the design system ships | `tk-datepicker-panel` (opt-in) plus `tk-input-action`, which Input owns. |
+| `spar-datepicker-plani.html` | Superseded. Its Approach A is what shipped.                              |
 
 ## Why composition
 
