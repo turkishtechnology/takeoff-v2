@@ -357,9 +357,54 @@ render(<ChipsDemo />);
 ```
 
 Object-valued tags and per-chip options are out of scope for now; the chips
-value is a `string[]`. For input **masking / formatting** (dates, phone numbers,
-currency), wire a formatter into `Input.Field`'s `onChange` — the compound stays
-format-agnostic, matching Spar's headless input.
+value is a `string[]`.
+
+## Masking
+
+`Input.Field` takes a `mask`. While it is set the displayed value is the masked
+projection of what was typed, and `onValueChange(value, meta)` reports every
+edit.
+
+Do **not** wire a formatter into `onChange` instead. Two reasons: deletes and
+undo/redo are applied to the control imperatively — the mask writes
+`element.value` and preventDefaults the event — so they never surface as a React
+change event and a formatter would miss them entirely. And rewriting the value
+of a controlled input moves the caret to the end, so it has to be put back at an
+offset that accounts for separators the mask just inserted or removed; deriving
+that by diffing old and new value is where caret bugs live. The mask reads
+`beforeinput`, where the operation is stated outright rather than inferred.
+
+```tsx
+<Input.Field
+  mask={{ date: true, datePattern: ['d', 'm', 'Y'], delimiter: '/' }}
+  value={value}
+  onValueChange={(next, meta) => {
+    setValue(next);
+    if (meta.completed) submit(meta.iso); // '1995-12-31'
+  }}
+/>
+```
+
+`meta` carries `raw` (separators stripped), `completed`, and `iso` where the
+mask defines a canonical machine value.
+
+Four levels, in order of reach:
+
+| Form                                                     | Use for                                              |
+| -------------------------------------------------------- | ---------------------------------------------------- |
+| `{ blocks: [4, 4, 4, 4], delimiter: ' ' }`               | A fixed shape — card numbers, IDs.                   |
+| `{ date: true }` / `{ time: true }` / `{ number: true }` | Dates, clock times, grouped numbers.                 |
+| `{ regex: /^[A-Z]{2}-\d{4}$/ }`                          | Anything a pattern describes; matched incrementally. |
+| `(value, context) => ({ value })`                        | Everything else — IBAN, phone, card-type formatting. |
+
+The presets are sugar for resolvers Spar ships. `createDateMask`,
+`createTimeMask` and `createNumberMask` are exported, so a built-in can be
+wrapped rather than reimplemented — a resolver written in userland gets exactly
+what they get.
+
+Bounds belong on both halves when a mask is paired with a picker: the `date`
+preset takes `dateMin` / `dateMax` as ISO strings, so a date a calendar rejects
+cannot be typed either.
 
 ## Textarea
 
