@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@takeoff-icons/react": "^0.4.0",
-    "@tanstack/react-table": "8.21.3",
+    "@tanstack/react-table": "9.2.3",
     "@turkish-technology/spar": "0.2.1",
     "clsx": "^2.1.1"
   },
