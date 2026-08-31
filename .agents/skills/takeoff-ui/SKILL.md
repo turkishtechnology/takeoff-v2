@@ -105,7 +105,8 @@ description, and error context for nested controls)
 `takeoff-progress` · `takeoff-skeleton` · `takeoff-spinner` · `takeoff-tooltip`
 · `takeoff-toast`
 
-**Content & overlays:** `takeoff-card` · `takeoff-dialog` · `takeoff-divider` ·
+**Content & overlays:** `takeoff-calendar` (inline month grid: single, range,
+multiple) · `takeoff-card` · `takeoff-dialog` · `takeoff-divider` ·
 `takeoff-drawer` · `takeoff-popover` · `takeoff-table`
 
 ## Forms

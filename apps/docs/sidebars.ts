@@ -25,6 +25,7 @@ const sidebars: SidebarsConfig = {
         'components/badge',
         'components/breadcrumb',
         'components/button',
+        'components/calendar',
         'components/card',
         'components/checkbox',
         'components/chip',
