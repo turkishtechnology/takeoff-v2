@@ -1,0 +1,63 @@
+@use '../abstracts/mixins' as mixins;
+
+// ---------------------------------------------------------------------------
+// DatePicker recipe
+// ---------------------------------------------------------------------------
+// There is no DatePicker component: a date picker is `Popover` + `Calendar`
+// composed by the consumer (see `apps/docs/docs/components/datepicker.mdx`).
+// So unlike every other recipe here, these classes are **opt-in** — nothing
+// emits them automatically. The consumer applies them through `classNames`,
+// which concatenates, so the element ends up carrying both the popover class
+// and this one.
+//
+// That is also why `_index.scss` mounts these mixins on two-class selectors
+// (`.tk-popover-content.tk-datepicker-panel`). A single class ties with the
+// Popover recipe on specificity, and the Popover block is emitted later, so a
+// one-class override would silently lose the cascade and change nothing.
+//
+// They exist because the composition needs corrections the generic Popover
+// cannot make on its own, and leaving those to each app would mean every picker
+// in the design system looks slightly different:
+//
+//   1. `.tk-popover-content` is a text bubble — `max-width: 296px` plus its own
+//      padding. A calendar body is wider than that, so an unmodified popover
+//      clips it.
+//   2. The calendar draws a standalone border, which duplicates the panel's
+//      shadow once it is floating.
+// A trigger placed inside the field needs no rules here at all: `_input.scss`
+// lists `.tk-datepicker-trigger` alongside `.tk-input-clear-button`, so it is
+// that button's twin — same box, same colour, same focus ring — by
+// construction rather than by a second copy of the same declarations.
+//
+// This is the same correction shadcn writes inline as `className="w-auto p-0"`,
+// kept in the design system so it is written once rather than per app.
+// ---------------------------------------------------------------------------
+
+@mixin datepicker-panel {
+  // The calendar sizes itself; the panel must not cap it.
+  max-width: none;
+  width: max-content;
+  padding: 0;
+  border-radius: var(--radius-xl);
+
+  // The grid is the panel's whole content, so its standalone border would sit
+  // just inside the panel's own edge.
+  .tk-calendar {
+    border: 0;
+  }
+
+  // A floating panel may follow its content, so the day grid is unpinned here:
+  // a four- or five-week month makes the panel shorter instead of leaving dead
+  // space under the last row. `_calendar.scss` pins it for a standalone
+  // calendar on purpose — that one sits in a page layout, where a reflow on
+  // every month change would shove whatever is under it around. A panel has
+  // nothing under it to shove.
+  //
+  // Scoped to the day view so the month/year board keeps the full box. The
+  // board is three rows of cells; letting it size to its content would make it
+  // shorter than any day grid, and switching views would then jump further than
+  // navigating months ever does.
+  .tk-calendar[data-view='day'] .tk-calendar-month {
+    min-height: 0;
+  }
+}

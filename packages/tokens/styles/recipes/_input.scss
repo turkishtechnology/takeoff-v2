@@ -49,11 +49,19 @@
 
   .tk-input-leading-icon,
   .tk-input-trailing-icon,
+  // `.tk-input-action` is the opt-in hook for a control a consumer places in the
+  // field themselves — a date picker's popover trigger, a unit selector, a
+  // search button. Nothing emits it; it is applied through `classNames`. Listed
+  // alongside the built-in actions here and in the blocks below so anything
+  // dropped into a field is `Input.ClearButton`'s twin by construction. The
+  // alternative — each composition carrying its own rules — is the same
+  // appearance written twice, and the two drift.
   .tk-input-clear-button,
   .tk-input-spinner,
   .tk-input-reveal-button,
   .tk-input-decrement,
-  .tk-input-increment {
+  .tk-input-increment,
+  .tk-input-action {
     width: $icon-size;
     height: $icon-size;
     font-size: $icon-size;
@@ -67,7 +75,8 @@
   .tk-input-clear-button,
   .tk-input-reveal-button,
   .tk-input-decrement,
-  .tk-input-increment {
+  .tk-input-increment,
+  .tk-input-action {
     min-width: $icon-size;
     min-height: $icon-size;
 
@@ -288,7 +297,8 @@
   .tk-input-clear-button,
   .tk-input-spinner,
   .tk-input-reveal-button,
-  .tk-input-stepper {
+  .tk-input-stepper,
+  .tk-input-action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -304,7 +314,8 @@
   .tk-input-clear-button,
   .tk-input-reveal-button,
   .tk-input-decrement,
-  .tk-input-increment {
+  .tk-input-increment,
+  .tk-input-action {
     display: inline-flex;
     align-items: center;
     justify-content: center;

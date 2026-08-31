@@ -30,6 +30,7 @@ const sidebars: SidebarsConfig = {
         'components/checkbox',
         'components/chip',
         'components/drawer',
+        'components/datepicker',
         'components/dialog',
         'components/divider',
         'components/dropdown',

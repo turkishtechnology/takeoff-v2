@@ -11,6 +11,7 @@
 @use 'recipes/card';
 @use 'recipes/checkbox';
 @use 'recipes/chip';
+@use 'recipes/datepicker';
 @use 'recipes/dialog';
 @use 'recipes/divider';
 @use 'recipes/drawer';
@@ -502,6 +503,15 @@
 
 .tk-breadcrumb {
   @include breadcrumb.breadcrumb;
+}
+
+// Opt-in, not emitted: there is no DatePicker component, so a consumer composing
+// Popover + Calendar applies these through `classNames` themselves. Both are
+// written against the popover class they sit on — `classNames` concatenates, so
+// the element carries both — because a single class ties with the Popover
+// recipe on specificity and would lose to it on source order.
+.tk-popover-content.tk-datepicker-panel {
+  @include datepicker.datepicker-panel;
 }
 
 .tk-popover-trigger {

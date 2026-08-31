@@ -1,0 +1,544 @@
+---
+title: DatePicker
+description:
+  A date picker is composed from Popover and Calendar — there is no DatePicker
+  component.
+sidebar_label: DatePicker
+sidebar_position: 4
+slug: /components/datepicker
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Button,
+  Calendar,
+  Field,
+  Input,
+  Popover,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+import { CalendarIconOutlinedRounded } from '@takeoff-icons/react/calendar';
+import { DateRangeIconOutlinedRounded } from '@takeoff-icons/react/date-range';
+
+export const datePickerScope = {
+  Button,
+  Calendar,
+  CalendarIconOutlinedRounded,
+  DateRangeIconOutlinedRounded,
+  Field,
+  Input,
+  Popover,
+};
+
+{/* prettier-ignore-start */}
+
+export const inputDemo = String.raw`
+const MIN = new Date(2026, 7, 10);
+const MAX = new Date(2026, 7, 20);
+
+const iso = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const format = (v) =>
+  v ? String(v.getDate()).padStart(2, '0') + '/' + String(v.getMonth() + 1).padStart(2, '0') + '/' + v.getFullYear() : '';
+
+// One pair of dates feeds both halves: the grid takes Dates, the mask takes ISO.
+const DATE_MASK = { date: true, datePattern: ['d', 'm', 'Y'], delimiter: '/', dateMin: iso(MIN), dateMax: iso(MAX) };
+
+function InputDemo() {
+  const [date, setDate] = React.useState();
+  const [month, setMonth] = React.useState(MIN);
+  const [text, setText] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div className="mx-auto w-72">
+      <Field>
+        <Field.Label>Departure</Field.Label>
+        <Popover open={open} onOpenChange={setOpen}>
+          <Input>
+            <Input.Field
+              placeholder="dd/mm/yyyy"
+              mask={DATE_MASK}
+              value={text}
+              onValueChange={(next, meta) => {
+                setText(next);
+                if (next === '') {
+                  setDate(undefined);
+                  return;
+                }
+                if (!meta.completed || !meta.iso) return;
+                const p = meta.iso.split('-').map(Number);
+                const picked = new Date(p[0], p[1] - 1, p[2]);
+                setDate(picked);
+                setMonth(picked);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === 'ArrowDown') {
+                  event.preventDefault();
+                  setOpen(true);
+                }
+              }}
+            />
+            <Input.ClearButton />
+            <Popover.Trigger aria-label="Select date" classNames={{ root: 'tk-input-action' }}>
+              <CalendarIconOutlinedRounded width={20} height={20} />
+            </Popover.Trigger>
+          </Input>
+          <Popover.Content align="end" classNames={{ root: 'tk-datepicker-panel' }}>
+            <Calendar
+              value={date}
+              month={month}
+              onMonthChange={setMonth}
+              minDate={MIN}
+              maxDate={MAX}
+              onValueChange={(next) => {
+                setDate(next);
+                setText(format(next));
+                setOpen(false);
+              }}
+            />
+          </Popover.Content>
+        </Popover>
+        <Field.Description>10-20 August 2026 — try typing 25/08/2026</Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<InputDemo />);
+`;
+
+export const validationDemo = String.raw`
+const DATE_MASK = { date: true, datePattern: ['d', 'm', 'Y'], delimiter: '/' };
+
+const format = (value) =>
+  value
+    ? String(value.getDate()).padStart(2, '0') + '/' + String(value.getMonth() + 1).padStart(2, '0') + '/' + value.getFullYear()
+    : '';
+
+function ValidationDemo() {
+  const [date, setDate] = React.useState();
+  const [text, setText] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+
+  // A mask keeps the shape valid; the rule on top of it is the app's own.
+  const isWeekend = date && (date.getDay() === 0 || date.getDay() === 6);
+  const incomplete = text !== '' && !date;
+  const invalid = Boolean(isWeekend || incomplete);
+
+  return (
+    <div className="mx-auto w-72">
+      <Field invalid={invalid}>
+        <Field.Label>Delivery date</Field.Label>
+        <Popover open={open} onOpenChange={setOpen}>
+          <Input>
+            <Input.Field
+              placeholder="dd/mm/yyyy"
+              mask={DATE_MASK}
+              value={text}
+              onValueChange={(next, meta) => {
+                setText(next);
+                if (!meta.completed || !meta.iso) {
+                setDate(undefined);
+                return;
+              }
+              const p = meta.iso.split('-').map(Number);
+              setDate(new Date(p[0], p[1] - 1, p[2]));
+              }}
+            />
+            <Popover.Trigger aria-label="Select date" classNames={{ root: 'tk-input-action' }}>
+              <CalendarIconOutlinedRounded width={20} height={20} />
+            </Popover.Trigger>
+          </Input>
+          <Popover.Content align="end" classNames={{ root: 'tk-datepicker-panel' }}>
+            <Calendar
+              value={date}
+              disabledWeekDays={[0, 6]}
+              onValueChange={(next) => {
+                setDate(next);
+                setText(format(next));
+                setOpen(false);
+              }}
+            />
+          </Popover.Content>
+        </Popover>
+        {invalid ? (
+          <Field.ErrorMessage>{incomplete ? 'Finish the date' : 'Weekends are not available'}</Field.ErrorMessage>
+        ) : (
+          <Field.Description>Weekdays only</Field.Description>
+        )}
+      </Field>
+    </div>
+  );
+}
+
+render(<ValidationDemo />);
+`;
+
+export const twoFieldRangeDemo = String.raw`
+const format = (value) =>
+  value
+    ? String(value.getDate()).padStart(2, '0') + '/' + String(value.getMonth() + 1).padStart(2, '0') + '/' + value.getFullYear()
+    : '';
+
+function TwoFieldRangeDemo() {
+  const [range, setRange] = React.useState();
+  const [open, setOpen] = React.useState(false);
+
+  // Two fields, one panel. Spar anchors the panel to its trigger, so there is
+  // exactly one trigger — on the second field — and the first field opens the
+  // same panel by click. Two triggers would both work, but the panel would
+  // always hang off whichever mounted last.
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <div className="flex items-end justify-center gap-3">
+        <div className="w-40">
+          <Field>
+            <Field.Label>From</Field.Label>
+            <Input>
+              <Input.Field
+                readOnly
+                placeholder="dd/mm/yyyy"
+                value={format(range && range.from)}
+                onClick={() => setOpen(true)}
+              />
+            </Input>
+          </Field>
+        </div>
+        <div className="w-40">
+          <Field>
+            <Field.Label>To</Field.Label>
+            <Input>
+              <Input.Field readOnly placeholder="dd/mm/yyyy" value={format(range && range.to)} onClick={() => setOpen(true)} />
+              <Popover.Trigger aria-label="Select dates" classNames={{ root: 'tk-input-action' }}>
+                <DateRangeIconOutlinedRounded width={20} height={20} />
+              </Popover.Trigger>
+            </Input>
+          </Field>
+        </div>
+      </div>
+      <Popover.Content align="end" classNames={{ root: 'tk-datepicker-panel' }}>
+        <Calendar
+          mode="range"
+          value={range}
+          numberOfMonths={2}
+          defaultMonth={new Date(2026, 7, 1)}
+          onValueChange={(next) => {
+            setRange(next);
+            if (next && next.from && next.to) setOpen(false);
+          }}
+        />
+      </Popover.Content>
+    </Popover>
+  );
+}
+
+render(<TwoFieldRangeDemo />);
+`;
+
+export const presetsDemo = String.raw`
+const DATE_MASK = { date: true, datePattern: ['d', 'm', 'Y'], delimiter: '/' };
+
+const PRESETS = [
+  { label: 'Today', days: 0 },
+  { label: 'Tomorrow', days: 1 },
+  { label: 'In a week', days: 7 },
+];
+
+const format = (value) =>
+  value
+    ? String(value.getDate()).padStart(2, '0') + '/' + String(value.getMonth() + 1).padStart(2, '0') + '/' + value.getFullYear()
+    : '';
+
+function PresetsDemo() {
+  const [date, setDate] = React.useState();
+  const [month, setMonth] = React.useState(new Date());
+  const [text, setText] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+
+  // A preset has to move all three: the value, the field, and the month — the
+  // grid does not follow a value set from outside it.
+  const commit = (next) => {
+    setDate(next);
+    setMonth(next);
+    setText(format(next));
+    setOpen(false);
+  };
+
+  const pick = (days) => {
+    const next = new Date();
+    next.setDate(next.getDate() + days);
+    commit(next);
+  };
+
+  return (
+    <div className="mx-auto w-72">
+      <Field>
+        <Field.Label>Reminder</Field.Label>
+        <Popover open={open} onOpenChange={setOpen}>
+          <Input>
+            <Input.Field
+              placeholder="dd/mm/yyyy"
+              mask={DATE_MASK}
+              value={text}
+              onValueChange={(next, meta) => {
+                setText(next);
+                if (!meta.completed || !meta.iso) return;
+                const p = meta.iso.split('-').map(Number);
+                const picked = new Date(p[0], p[1] - 1, p[2]);
+                setDate(picked);
+                setMonth(picked);
+              }}
+            />
+            <Popover.Trigger aria-label="Select date" classNames={{ root: 'tk-input-action' }}>
+              <CalendarIconOutlinedRounded width={20} height={20} />
+            </Popover.Trigger>
+          </Input>
+          <Popover.Content align="end" classNames={{ root: 'tk-datepicker-panel' }}>
+            <Calendar
+              value={date}
+              month={month}
+              onMonthChange={setMonth}
+              onValueChange={commit}
+              footer={
+                <div className="flex w-full flex-wrap justify-center gap-1" role="group" aria-label="Date presets">
+                  {PRESETS.map((preset) => (
+                    <Button key={preset.label} variant="neutral" onClick={() => pick(preset.days)}>
+                      {preset.label}
+                    </Button>
+                  ))}
+                </div>
+              }
+            />
+          </Popover.Content>
+        </Popover>
+      </Field>
+    </div>
+  );
+}
+
+render(<PresetsDemo />);
+`;
+
+export const rangeDemo = String.raw`
+function RangeDemo() {
+  const [range, setRange] = React.useState();
+
+  const label = range && range.from
+    ? range.to
+      ? range.from.toLocaleDateString() + ' - ' + range.to.toLocaleDateString()
+      : range.from.toLocaleDateString()
+    : 'Pick a range';
+
+  return (
+    <div className="flex justify-center">
+      <Popover>
+        <Popover.Trigger as={Button} variant="neutral">
+          <DateRangeIconOutlinedRounded width={20} height={20} />
+          {label}
+        </Popover.Trigger>
+        <Popover.Content align="start" classNames={{ root: 'tk-datepicker-panel' }}>
+          <Calendar mode="range" value={range} onValueChange={setRange} numberOfMonths={2} />
+        </Popover.Content>
+      </Popover>
+    </div>
+  );
+}
+
+render(<RangeDemo />);
+`;
+
+export const sizesDemo = String.raw`
+const DATE_MASK = { date: true, datePattern: ['d', 'm', 'Y'], delimiter: '/' };
+
+// The in-field action box is 20px at small and base, 24px at large, so the
+// glyph is stepped to read as a progression rather than tracking the box.
+const ICON = { small: 16, base: 20, large: 24 };
+
+function SizedPicker({ size }) {
+  const [text, setText] = React.useState('15/08/2026');
+
+  return (
+    <Popover>
+      <Input size={size}>
+        <Input.Field aria-label={size} mask={DATE_MASK} value={text} onValueChange={setText} />
+        <Popover.Trigger aria-label={'Select ' + size + ' date'} classNames={{ root: 'tk-input-action' }}>
+          <CalendarIconOutlinedRounded width={ICON[size]} height={ICON[size]} />
+        </Popover.Trigger>
+      </Input>
+      <Popover.Content align="end" classNames={{ root: 'tk-datepicker-panel' }}>
+        <Calendar size={size === 'small' ? 'small' : 'base'} defaultMonth={new Date(2026, 7, 1)} />
+      </Popover.Content>
+    </Popover>
+  );
+}
+
+function SizesDemo() {
+  return (
+    <div className="mx-auto flex w-72 flex-col gap-3">
+      {['small', 'base', 'large'].map((size) => (
+        <SizedPicker key={size} size={size} />
+      ))}
+    </div>
+  );
+}
+
+render(<SizesDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+## Composition
+
+A date picker is built from [`Popover`](/docs/components/popover) and
+[`Calendar`](/docs/components/calendar) — **there is no `DatePicker`
+component**. Both already own their half of the job: Popover the disclosure,
+positioning, dismissal and focus return; Calendar the grid, its keyboard model
+and every selection mode. What is left is the wiring between them, which is
+short enough to read and different enough per form that a component would have
+to guess.
+
+```tsx
+<Popover>
+  <Popover.Trigger>…</Popover.Trigger>
+  <Popover.Content classNames={{ root: 'tk-datepicker-panel' }}>
+    <Calendar />
+  </Popover.Content>
+</Popover>
+```
+
+`tk-datepicker-panel` is the one thing the design system supplies. Popover's
+content box is a text bubble — capped at 296px, with its own padding — so an
+unmodified panel clips a calendar. The class lifts the cap, drops the padding,
+and removes the calendar's standalone border. It is opt-in because nothing emits
+it for you; applying it is what keeps every picker in the system looking the
+same.
+
+## With a text input
+
+The field is an `Input.Field` with a date mask, so it only ever accepts a whole
+date in the shape you asked for. `meta.completed` says when one has arrived and
+`meta.iso` hands it over without a parse. Hold the calendar's `month` in state
+so typing moves the panel, and write the formatted date back on select.
+
+<LiveCode
+  code={inputDemo}
+  noInline
+  previewMinHeight={460}
+  previewWrapper={ReactSparDemoRoot}
+  scope={datePickerScope}
+/>
+
+Three things are worth pulling out of that:
+
+- **Bound both halves from one pair of dates.** `minDate` / `maxDate` bound the
+  grid; the mask takes the same bounds as ISO through `dateMin` / `dateMax`.
+  Give it only to the grid and a date the calendar rejects can still be typed —
+  here `25/08/2026` clamps to the 20th instead.
+- **`Input`'s anatomy is untouched.** The trigger is just another part, and
+  order decides placement: anything after the field lands at its inline end,
+  which is where `Input.ClearButton` already sits. `tk-input-action` is Input's
+  own hook for a consumer-placed control, so the trigger is that button's twin
+  at every size rather than a second set of rules that can drift.
+- **`ArrowDown` is a one-line `onKeyDown`.** It is the affordance that makes the
+  calendar reachable without leaving the keyboard.
+
+## Validation
+
+A mask keeps the _shape_ valid; a rule the mask cannot express is the app's own.
+Mirror it on both halves — `disabledWeekDays` on the grid so the day cannot be
+clicked, and the same check on the value so a typed one is caught.
+
+<LiveCode
+  code={validationDemo}
+  noInline
+  previewMinHeight={440}
+  previewWrapper={ReactSparDemoRoot}
+  scope={datePickerScope}
+/>
+
+## Range across two fields
+
+A range does not have to live in one field. Two fields and one panel is the
+usual booking shape: the grid writes back into both.
+
+Spar anchors the panel to its trigger, and there is one `triggerRef` per popover
+— so use one trigger and let the other field open the same panel by click,
+rather than two triggers where the panel would always hang off whichever mounted
+last. The fields are read-only here because the grid owns the selection; make
+them typable the same way the single-date example does.
+
+<LiveCode
+  code={twoFieldRangeDemo}
+  noInline
+  previewMinHeight={480}
+  previewWrapper={ReactSparDemoRoot}
+  scope={datePickerScope}
+/>
+
+## Presets
+
+`Calendar`'s `footer` takes any node, so shortcuts live inside the panel rather
+than beside it. A preset has to move three things — the value, the field text
+and the displayed month — because the grid does not follow a value set from
+outside it.
+
+<LiveCode
+  code={presetsDemo}
+  noInline
+  previewMinHeight={480}
+  previewWrapper={ReactSparDemoRoot}
+  scope={datePickerScope}
+/>
+
+## Sizes
+
+`size` on the `Input` cascades to the field and the trigger. The calendar has
+its own two-step scale, so pair them deliberately rather than assuming they
+share a vocabulary.
+
+<LiveCode
+  code={sizesDemo}
+  noInline
+  previewMinHeight={420}
+  previewWrapper={ReactSparDemoRoot}
+  scope={datePickerScope}
+/>
+
+## Range in one panel
+
+`mode` behaves no differently inside a popover. A range is not finished on the
+first click, so this one does not close on select.
+
+<LiveCode
+  code={rangeDemo}
+  noInline
+  previewMinHeight={420}
+  previewWrapper={ReactSparDemoRoot}
+  scope={datePickerScope}
+/>
+
+## Inline
+
+Without the popover there is nothing to compose — use
+[`Calendar`](/docs/components/calendar) on its own.
+
+## API Reference
+
+There is no DatePicker component, so there is no API of its own. Every prop
+comes from the components it is built out of:
+
+- [Popover](/docs/components/popover) — `open`, `defaultOpen`, `onOpenChange`,
+  `side`, `align`, and the dismiss callbacks.
+- [Calendar](/docs/components/calendar) — `mode`, `value`, `onValueChange`,
+  `month`, `onMonthChange`, `minDate`, `maxDate`, `headerType`, `size`, and the
+  rest of the grid surface.
+- [Input](/docs/components/input) — the field, its `mask`, and the in-field
+  parts.
+
+### Styling hooks {#datepicker-styling-hooks}
+
+| Class                                    | Applies to        | What it does                                                                                                                                                                                                      |
+| ---------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="tk-datepicker-panel" /> | `Popover.Content` | Lifts the bubble's width cap and padding so a calendar fits, and drops the grid's border.                                                                                                                         |
+| <ApiBadge label="tk-input-action" />     | `Popover.Trigger` | Owned by [Input](/docs/components/input), not by this pattern — the opt-in hook for any control a consumer places in a field. Makes it `Input.ClearButton`'s twin at every size. Does nothing outside an `Input`. |
