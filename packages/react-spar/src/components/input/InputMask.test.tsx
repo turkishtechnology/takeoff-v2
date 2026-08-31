@@ -140,6 +140,36 @@ describe('Input.Field mask', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
+  it('resets the mask state when Input.ClearButton empties a masked field', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn<(value: string, meta: MaskChangeMeta) => void>();
+
+    render(
+      <Input>
+        <Input.Field aria-label="Card" mask={{ blocks: [4, 4], delimiter: ' ', numericOnly: true }} onValueChange={onValueChange} />
+        <Input.ClearButton />
+      </Input>,
+    );
+
+    const field = screen.getByLabelText('Card');
+    await user.type(field, '42425252');
+    expect(field).toHaveValue('4242 5252');
+
+    // ClearButton takes a third path: neither a keyboard delete (which the mask
+    // applies imperatively) nor a normal keystroke. It writes through the
+    // native setter and dispatches a plain `input` event, so this checks the
+    // mask actually resyncs rather than carrying stale block/caret bookkeeping.
+    await user.click(screen.getByRole('button'));
+    expect(field).toHaveValue('');
+    expect(onValueChange).toHaveBeenLastCalledWith('', expect.objectContaining({ raw: '', completed: false }));
+
+    // Typing straight after the clear has to mask from scratch, delimiter and
+    // all — a stale previous-value would show up here first.
+    await user.type(field, '11112222');
+    expect(field).toHaveValue('1111 2222');
+    expect(onValueChange).toHaveBeenLastCalledWith('1111 2222', expect.objectContaining({ raw: '11112222', completed: true }));
+  });
+
   it('leaves an unmasked field untouched', async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
