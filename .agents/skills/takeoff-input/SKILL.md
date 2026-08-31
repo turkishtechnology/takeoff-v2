@@ -191,6 +191,46 @@ function Destinations() {
 }
 ```
 
+### Masked input (dates, numbers, patterns)
+
+`mask` formats as the user types and keeps the caret where they put it. Read the
+value from `onValueChange`, not `onChange`: deletes and undo are applied to the
+control imperatively, so they never surface as a React change event.
+
+`meta` carries `raw` (separators stripped), `completed`, and — for the date,
+time and number presets — `iso`, a canonical machine value that needs no
+parsing.
+
+```tsx
+function MaskedDate() {
+  const [value, setValue] = React.useState('');
+
+  return (
+    <Field>
+      <Field.Label>Date of birth</Field.Label>
+      <Input>
+        <Input.Field
+          placeholder="dd/mm/yyyy"
+          mask={{ date: true, datePattern: ['d', 'm', 'Y'], delimiter: '/' }}
+          value={value}
+          onValueChange={(next, meta) => {
+            setValue(next);
+            if (meta.completed) console.log(meta.iso); // '1995-12-31'
+          }}
+        />
+      </Input>
+    </Field>
+  );
+}
+```
+
+Four ways to write one, in order of reach: `blocks` for a fixed shape
+(`{ blocks: [4, 4, 4, 4], delimiter: ' ' }`), the `date` / `time` / `number`
+presets, `regex` for anything a pattern describes, and a plain function for the
+rest. The factories behind the presets — `createDateMask`, `createTimeMask`,
+`createNumberMask` — are exported, so a built-in can be wrapped rather than
+reimplemented.
+
 ### Textarea
 
 ```tsx
@@ -201,16 +241,18 @@ function Destinations() {
 
 ## Key props
 
-| Prop                                                     | Type                            | Default             | Notes                                                                        |
-| -------------------------------------------------------- | ------------------------------- | ------------------- | ---------------------------------------------------------------------------- |
-| `size` (Input)                                           | `'small' \| 'base' \| 'large'`  | `'base'`            | Size scale; reflected as `data-size`.                                        |
-| `disabled` / `required` / `readOnly` / `invalid` (Input) | `boolean`                       | —                   | Inherited from a wrapping `Field`.                                           |
-| `slotProps` / `classNames` (all parts)                   | `Partial<Record<'root', …>>`    | —                   | Per-slot HTML attrs / class overrides.                                       |
-| `as` (Input.Field)                                       | `'textarea'` etc.               | `input`             | Native attrs (`type`, `min`/`max`/`step`, `rows`, `inputMode`) pass through. |
-| `onClear` (Input.ClearButton)                            | `() => void`                    | —                   | Fires after the value is cleared.                                            |
-| `value` / `defaultValue` (Input.Chips)                   | `string[]`                      | —                   | Controlled / uncontrolled tag list.                                          |
-| `onValueChange` (Input.Chips)                            | `(value: string[]) => void`     | —                   | Next tag array after a commit or removal.                                    |
-| `separator` / `max` / `allowDuplicates` (Input.Chips)    | `string` / `number` / `boolean` | `—` / `—` / `false` | Commit char, tag cap, allow repeats.                                         |
+| Prop                                                     | Type                            | Default             | Notes                                                                                                            |
+| -------------------------------------------------------- | ------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `size` (Input)                                           | `'small' \| 'base' \| 'large'`  | `'base'`            | Size scale; reflected as `data-size`.                                                                            |
+| `disabled` / `required` / `readOnly` / `invalid` (Input) | `boolean`                       | —                   | Inherited from a wrapping `Field`.                                                                               |
+| `slotProps` / `classNames` (all parts)                   | `Partial<Record<'root', …>>`    | —                   | Per-slot HTML attrs / class overrides.                                                                           |
+| `as` (Input.Field)                                       | `'textarea'` etc.               | `input`             | Native attrs (`type`, `min`/`max`/`step`, `rows`, `inputMode`) pass through.                                     |
+| `mask` (Input.Field)                                     | `Mask`                          | —                   | Formats as the user types. A `blocks` shape, a `date`/`time`/`number` preset, a `regex`, or a resolver function. |
+| `onValueChange` (Input.Field)                            | `(value, meta) => void`         | —                   | The masked value plus `raw` / `completed` / `iso`. Use instead of `onChange` while `mask` is set.                |
+| `onClear` (Input.ClearButton)                            | `() => void`                    | —                   | Fires after the value is cleared.                                                                                |
+| `value` / `defaultValue` (Input.Chips)                   | `string[]`                      | —                   | Controlled / uncontrolled tag list.                                                                              |
+| `onValueChange` (Input.Chips)                            | `(value: string[]) => void`     | —                   | Next tag array after a commit or removal.                                                                        |
+| `separator` / `max` / `allowDuplicates` (Input.Chips)    | `string` / `number` / `boolean` | `—` / `—` / `false` | Commit char, tag cap, allow repeats.                                                                             |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.

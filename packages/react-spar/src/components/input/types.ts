@@ -64,8 +64,8 @@ export type InputFieldProps<T extends ElementType = 'input'> = PolymorphicProps<
   T,
   InputFieldOwnProps &
     // Auto-focus on mount, plus the masking surface. `mask` is the whole
-    // specification (an L1 `blocks` shape, the `date`/`time`/`number` presets,
-    // an L3 `regex`, or a resolver function), and `onValueChange` is the channel
+    // specification (a `blocks` shape, the `date`/`time`/`number` presets, a
+    // `regex`, or a resolver function), and `onValueChange` is the channel
     // that reports masked edits: Spar applies deletes and undo/redo
     // imperatively, so those never surface as a React change event. The rest of
     // the input surface (value, onChange, placeholder, etc.) is inherited from

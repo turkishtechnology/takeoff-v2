@@ -804,10 +804,18 @@ server.
 ### Resolvers
 
 Anything else is a function. It receives the candidate string plus a context
-(`caret`, `previousValue`, `inputType`) and returns `{ value }` — optionally
-with `raw`, `completed`, `iso` and its own `insignificant` separator pattern.
-Caret placement stays inside Spar, so a resolver only decides what the value
-_is_.
+(`caret`, `previousValue`, `inputType`) and returns `{ value }`. Caret placement
+stays inside Spar, so a resolver only decides what the value _is_.
+
+The rest of `meta` is derived from `value` unless the resolver overrides it —
+omitting a field is a default, not an absence:
+
+| Field           | Omitted means                                                                                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `raw`           | `value` with every separator stripped. A resolver that formats `TR330006…` as `TR33 0006 …` still reports the unspaced 26 characters, so a length check counts content, not punctuation. |
+| `completed`     | `true`. A mask with no notion of being unfinished must not be able to block submit logic.                                                                                                |
+| `iso`           | absent. Return one where the mask has a canonical machine value, the way `date` reports `YYYY-MM-DD`.                                                                                    |
+| `insignificant` | `/[^\p{L}\p{N}]/u` — what `raw` strips and what the caret skips over. Override it when "separator" means something else for this mask.                                                   |
 
 <LiveCode
   code={maskResolverDemo}
@@ -955,9 +963,11 @@ for primitive behavior.
 
 #### Data attributes {#input-field-data-attributes}
 
-| Attribute                                       | Applied when | Purpose                                               |
-| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+| Attribute                                       | Applied when                         | Purpose                                                                                                                                     |
+| ----------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                               | Stable selector for wrapper styling on the root slot.                                                                                       |
+| <ApiBadge label="data-mask" />                  | `mask` is set                        | Emitted by Spar. Presence only — never the pattern itself. The sanctioned hook for styling a masked field without reading its `mask` prop.  |
+| <ApiBadge label="data-mask-completed" />        | `mask` is set and the value fills it | Emitted by Spar. Mirrors `meta.completed` from `onValueChange`, so a field can be styled as finished without lifting that state into React. |
 
 ### Input.Prefix {#input-prefix}
 
