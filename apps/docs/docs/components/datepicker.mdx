@@ -37,9 +37,8 @@ export const inputDemo = String.raw`
 const MIN = new Date(2026, 7, 10);
 const MAX = new Date(2026, 7, 20);
 
-const iso = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-const format = (v) =>
-  v ? String(v.getDate()).padStart(2, '0') + '/' + String(v.getMonth() + 1).padStart(2, '0') + '/' + v.getFullYear() : '';
+const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const format = v => (v ? String(v.getDate()).padStart(2, '0') + '/' + String(v.getMonth() + 1).padStart(2, '0') + '/' + v.getFullYear() : '');
 
 // One pair of dates feeds both halves: the grid takes Dates, the mask takes ISO.
 const DATE_MASK = { date: true, datePattern: ['d', 'm', 'Y'], delimiter: '/', dateMin: iso(MIN), dateMax: iso(MAX) };
@@ -72,7 +71,7 @@ function InputDemo() {
                 setDate(picked);
                 setMonth(picked);
               }}
-              onKeyDown={(event) => {
+              onKeyDown={event => {
                 if (event.key === 'ArrowDown') {
                   event.preventDefault();
                   setOpen(true);
@@ -91,7 +90,7 @@ function InputDemo() {
               onMonthChange={setMonth}
               minDate={MIN}
               maxDate={MAX}
-              onValueChange={(next) => {
+              onValueChange={next => {
                 setDate(next);
                 setText(format(next));
                 setOpen(false);
@@ -111,10 +110,7 @@ render(<InputDemo />);
 export const validationDemo = String.raw`
 const DATE_MASK = { date: true, datePattern: ['d', 'm', 'Y'], delimiter: '/' };
 
-const format = (value) =>
-  value
-    ? String(value.getDate()).padStart(2, '0') + '/' + String(value.getMonth() + 1).padStart(2, '0') + '/' + value.getFullYear()
-    : '';
+const format = value => (value ? String(value.getDate()).padStart(2, '0') + '/' + String(value.getMonth() + 1).padStart(2, '0') + '/' + value.getFullYear() : '');
 
 function ValidationDemo() {
   const [date, setDate] = React.useState();
@@ -139,11 +135,11 @@ function ValidationDemo() {
               onValueChange={(next, meta) => {
                 setText(next);
                 if (!meta.completed || !meta.iso) {
-                setDate(undefined);
-                return;
-              }
-              const p = meta.iso.split('-').map(Number);
-              setDate(new Date(p[0], p[1] - 1, p[2]));
+                  setDate(undefined);
+                  return;
+                }
+                const p = meta.iso.split('-').map(Number);
+                setDate(new Date(p[0], p[1] - 1, p[2]));
               }}
             />
             <Popover.Trigger aria-label="Select date" classNames={{ root: 'tk-input-action' }}>
@@ -154,7 +150,7 @@ function ValidationDemo() {
             <Calendar
               value={date}
               disabledWeekDays={[0, 6]}
-              onValueChange={(next) => {
+              onValueChange={next => {
                 setDate(next);
                 setText(format(next));
                 setOpen(false);
@@ -162,11 +158,7 @@ function ValidationDemo() {
             />
           </Popover.Content>
         </Popover>
-        {invalid ? (
-          <Field.ErrorMessage>{incomplete ? 'Finish the date' : 'Weekends are not available'}</Field.ErrorMessage>
-        ) : (
-          <Field.Description>Weekdays only</Field.Description>
-        )}
+        {invalid ? <Field.ErrorMessage>{incomplete ? 'Finish the date' : 'Weekends are not available'}</Field.ErrorMessage> : <Field.Description>Weekdays only</Field.Description>}
       </Field>
     </div>
   );
@@ -176,10 +168,7 @@ render(<ValidationDemo />);
 `;
 
 export const twoFieldRangeDemo = String.raw`
-const format = (value) =>
-  value
-    ? String(value.getDate()).padStart(2, '0') + '/' + String(value.getMonth() + 1).padStart(2, '0') + '/' + value.getFullYear()
-    : '';
+const format = value => (value ? String(value.getDate()).padStart(2, '0') + '/' + String(value.getMonth() + 1).padStart(2, '0') + '/' + value.getFullYear() : '');
 
 function TwoFieldRangeDemo() {
   const [range, setRange] = React.useState();
@@ -196,12 +185,7 @@ function TwoFieldRangeDemo() {
           <Field>
             <Field.Label>From</Field.Label>
             <Input>
-              <Input.Field
-                readOnly
-                placeholder="dd/mm/yyyy"
-                value={format(range && range.from)}
-                onClick={() => setOpen(true)}
-              />
+              <Input.Field readOnly placeholder="dd/mm/yyyy" value={format(range && range.from)} onClick={() => setOpen(true)} />
             </Input>
           </Field>
         </div>
@@ -223,7 +207,7 @@ function TwoFieldRangeDemo() {
           value={range}
           numberOfMonths={2}
           defaultMonth={new Date(2026, 7, 1)}
-          onValueChange={(next) => {
+          onValueChange={next => {
             setRange(next);
             if (next && next.from && next.to) setOpen(false);
           }}
@@ -245,10 +229,7 @@ const PRESETS = [
   { label: 'In a week', days: 7 },
 ];
 
-const format = (value) =>
-  value
-    ? String(value.getDate()).padStart(2, '0') + '/' + String(value.getMonth() + 1).padStart(2, '0') + '/' + value.getFullYear()
-    : '';
+const format = value => (value ? String(value.getDate()).padStart(2, '0') + '/' + String(value.getMonth() + 1).padStart(2, '0') + '/' + value.getFullYear() : '');
 
 function PresetsDemo() {
   const [date, setDate] = React.useState();
@@ -258,14 +239,14 @@ function PresetsDemo() {
 
   // A preset has to move all three: the value, the field, and the month — the
   // grid does not follow a value set from outside it.
-  const commit = (next) => {
+  const commit = next => {
     setDate(next);
     setMonth(next);
     setText(format(next));
     setOpen(false);
   };
 
-  const pick = (days) => {
+  const pick = days => {
     const next = new Date();
     next.setDate(next.getDate() + days);
     commit(next);
@@ -302,7 +283,7 @@ function PresetsDemo() {
               onValueChange={commit}
               footer={
                 <div className="flex w-full flex-wrap justify-center gap-1" role="group" aria-label="Date presets">
-                  {PRESETS.map((preset) => (
+                  {PRESETS.map(preset => (
                     <Button key={preset.label} variant="neutral" onClick={() => pick(preset.days)}>
                       {preset.label}
                     </Button>
@@ -324,11 +305,7 @@ export const rangeDemo = String.raw`
 function RangeDemo() {
   const [range, setRange] = React.useState();
 
-  const label = range && range.from
-    ? range.to
-      ? range.from.toLocaleDateString() + ' - ' + range.to.toLocaleDateString()
-      : range.from.toLocaleDateString()
-    : 'Pick a range';
+  const label = range && range.from ? (range.to ? range.from.toLocaleDateString() + ' - ' + range.to.toLocaleDateString() : range.from.toLocaleDateString()) : 'Pick a range';
 
   return (
     <div className="flex justify-center">
@@ -376,7 +353,7 @@ function SizedPicker({ size }) {
 function SizesDemo() {
   return (
     <div className="mx-auto flex w-72 flex-col gap-3">
-      {['small', 'base', 'large'].map((size) => (
+      {['small', 'base', 'large'].map(size => (
         <SizedPicker key={size} size={size} />
       ))}
     </div>
