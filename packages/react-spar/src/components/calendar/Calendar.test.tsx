@@ -322,6 +322,41 @@ describe('Calendar', () => {
       expect(firstWeekday?.getAttribute('aria-label')).toBe('Monday');
     });
 
+    it('forwards min and max to the engine in multiple mode', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} mode="multiple" min={2} max={2} onValueChange={onValueChange} />);
+
+      await user.click(dayButton(container, '2026-08-04'));
+      await user.click(dayButton(container, '2026-08-05'));
+      expect(onValueChange).toHaveBeenLastCalledWith([new Date(2026, 7, 4), new Date(2026, 7, 5)]);
+
+      // At `max` the engine restarts the selection from the new date rather
+      // than refusing the click. Asserted as the engine defines it, since these
+      // props are forwarded rather than reimplemented.
+      await user.click(dayButton(container, '2026-08-06'));
+      expect(onValueChange).toHaveBeenLastCalledWith([new Date(2026, 7, 6)]);
+
+      await user.click(dayButton(container, '2026-08-07'));
+      expect(onValueChange).toHaveBeenLastCalledWith([new Date(2026, 7, 6), new Date(2026, 7, 7)]);
+
+      // Sitting on `min`, a deselection is refused outright — no call at all.
+      await user.click(dayButton(container, '2026-08-07'));
+      expect(onValueChange).toHaveBeenLastCalledWith([new Date(2026, 7, 6), new Date(2026, 7, 7)]);
+    });
+
+    it('refuses a range that would span a disabled date when excludeDisabled is set', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} mode="range" excludeDisabled disabledDates={[new Date(2026, 7, 6)]} onValueChange={onValueChange} />);
+
+      await user.click(dayButton(container, '2026-08-04'));
+      await user.click(dayButton(container, '2026-08-08'));
+
+      // 2026-08-06 sits inside 4–8, so the range is not allowed to close over it.
+      expect(onValueChange.mock.lastCall?.[0]?.to).toBeUndefined();
+    });
+
     it('bounds navigation with minDate/maxDate', () => {
       const { container } = render(<Calendar defaultMonth={AUGUST_2026} minDate={AUGUST_2026} maxDate={new Date(2026, 7, 31)} />);
 
@@ -475,6 +510,35 @@ describe('Calendar', () => {
       // Not past the edges.
       await user.keyboard('{ArrowRight}{ArrowRight}');
       expect(document.activeElement).toBe(cells[9]);
+    });
+
+    it('mirrors the board arrow keys under dir="rtl"', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} dir="rtl" />);
+
+      const grid = await openPanel(user, 'Choose the Month');
+      const cells = within(grid).getAllByRole('gridcell');
+      cells[7].focus();
+
+      // The grid mirrors on screen but not in the DOM, so the physically-left
+      // key steps forward through the array — the same swap the engine makes on
+      // its own day grid.
+      await user.keyboard('{ArrowLeft}');
+      expect(document.activeElement).toBe(cells[8]);
+
+      await user.keyboard('{ArrowRight}');
+      expect(document.activeElement).toBe(cells[7]);
+
+      // The writing mode turns nothing else around: vertical steps and the
+      // logical Home/End stay as they are.
+      await user.keyboard('{ArrowUp}');
+      expect(document.activeElement).toBe(cells[3]);
+
+      await user.keyboard('{End}');
+      expect(document.activeElement).toBe(cells[3]);
+
+      await user.keyboard('{Home}');
+      expect(document.activeElement).toBe(cells[0]);
     });
 
     it('hands focus back to the trigger once a month is picked', async () => {

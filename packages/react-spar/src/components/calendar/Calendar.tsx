@@ -415,7 +415,7 @@ const createEngineComponents = (
 
   const MonthGrid = ({ children, ...engineProps }: HTMLAttributes<HTMLTableElement>) => {
     const { view, setView, navigationDisabled, minDate, maxDate, panelId, panelRef, pendingFocusRef, restoreRef } = viewRef.current;
-    const { formatters, goToMonth, labels } = useDayPicker();
+    const { dayPickerProps, formatters, goToMonth, labels } = useDayPicker();
     const displayed = useDisplayedMonth();
     const dateLib = useDateLib();
 
@@ -507,8 +507,15 @@ const createEngineComponents = (
     const current = items.findIndex(item => item.current && item.enabled);
     const activeIndex = current >= 0 ? current : (seek(0, 1) ?? -1);
 
+    // The board is a CSS grid, so `dir="rtl"` mirrors it on screen while the DOM
+    // order stays put: the physically-left key has to step *forward* through the
+    // array. Read from the same prop the engine's own day grid reads, and
+    // mirrored on the same two keys — `Home`/`End` stay logical there too, and
+    // the vertical pair is not a direction the writing mode turns around.
+    const inline = dayPickerProps.dir === 'rtl' ? -1 : 1;
+
     const move = (event: KeyboardEvent<HTMLDivElement>, from: number) => {
-      const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -PANEL_COLUMNS, ArrowDown: PANEL_COLUMNS }[event.key as 'ArrowLeft'];
+      const step = { ArrowLeft: -inline, ArrowRight: inline, ArrowUp: -PANEL_COLUMNS, ArrowDown: PANEL_COLUMNS }[event.key as 'ArrowLeft'];
       const rowStart = from - (from % PANEL_COLUMNS);
       const rowEnd = rowStart + PANEL_COLUMNS - 1;
       let next: number | undefined;
