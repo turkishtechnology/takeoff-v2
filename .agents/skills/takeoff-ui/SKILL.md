@@ -109,6 +109,15 @@ description, and error context for nested controls)
 multiple) · `takeoff-card` · `takeoff-dialog` · `takeoff-divider` ·
 `takeoff-drawer` · `takeoff-popover` · `takeoff-table`
 
+## Patterns → composition skills
+
+Some things are composed rather than shipped. They have a skill of their own,
+but no component behind them.
+
+**`takeoff-datepicker`** — a date picker is `Popover` + `Calendar`; there is no
+`DatePicker` component. Covers the masked-field variant, ranges, presets, and
+the two styling hooks the composition needs.
+
 ## Forms
 
 `Field` + the controls integrate with React Hook Form and TanStack Form.

@@ -31,8 +31,18 @@ const componentsDir = resolve(repoRoot, 'packages/react-spar/src/components');
 const skillsDir = resolve(repoRoot, '.agents/skills');
 const routerSkill = resolve(skillsDir, 'takeoff-ui/SKILL.md');
 
-/** Skills under `takeoff-*` that are not per-component usage skills. */
-const NON_COMPONENT_SKILLS = new Set(['takeoff-ui', 'takeoff-component-workflow']);
+/**
+ * Skills under `takeoff-*` that are not per-component usage skills.
+ *
+ * `takeoff-datepicker` is a **pattern**, not a component: a date picker is
+ * `Popover` + `Calendar` composed by the consumer, so `packages/react-spar`
+ * ships nothing named `date-picker` and the one-skill-per-component rule below
+ * would read that as an orphan. It still has to be a real skill rather than a
+ * reference under `takeoff-ui`, because `apps/docs/scripts/generate-llms.mjs`
+ * routes a docs page to `takeoff-<page-slug>/SKILL.md` and would otherwise
+ * publish the page with no guidance attached. See `datepicker-contract.md`.
+ */
+const NON_COMPONENT_SKILLS = new Set(['takeoff-ui', 'takeoff-component-workflow', 'takeoff-datepicker']);
 
 const errors = [];
 
