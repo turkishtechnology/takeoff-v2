@@ -447,7 +447,17 @@ function MaskResolverDemo() {
   const [meta, setMeta] = React.useState({});
 
   const ibanMask = React.useCallback((raw) => {
-    const clean = raw.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 26);
+    // A Turkish IBAN is 'TR' and then 24 digits. Accepting per position rather
+    // than per character class is what pins the country code to the front: a
+    // character that does not belong where it landed is dropped, so nothing
+    // after it shifts.
+    const clean = [...raw.toUpperCase()].reduce((accepted, char) => {
+      if (accepted.length >= 26) return accepted;
+      const wanted = 'TR'[accepted.length];
+      if (wanted) return char === wanted ? accepted + char : accepted;
+      return char >= '0' && char <= '9' ? accepted + char : accepted;
+    }, '');
+
     return {
       value: clean.replace(/(.{4})(?=.)/g, '$1 '),
       iso: clean,
