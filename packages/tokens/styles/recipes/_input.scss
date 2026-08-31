@@ -413,10 +413,22 @@
     margin-inline-start: 0;
   }
 
+  // `.tk-input-action` is consumer-placed, so unlike the built-ins above it has
+  // no fixed position in the row — it can land on either side of any of them.
+  // Both directions in one pair of selectors rather than eight more lines.
+  // Without this it keeps the `margin-inline-start: auto` from the block above,
+  // and two auto margins on one flex line split the free space between them:
+  // a visible gap opens where the action group should sit flush.
+  :is(.tk-input-clear-button, .tk-input-spinner, .tk-input-reveal-button, .tk-input-stepper) ~ .tk-input-action,
+  .tk-input-action ~ :is(.tk-input-clear-button, .tk-input-spinner, .tk-input-reveal-button, .tk-input-stepper) {
+    margin-inline-start: 0;
+  }
+
   &:has(.tk-input-clear-button),
   &:has(.tk-input-spinner),
   &:has(.tk-input-reveal-button),
-  &:has(.tk-input-stepper) {
+  &:has(.tk-input-stepper),
+  &:has(.tk-input-action) {
     .tk-input-trailing-icon {
       margin-inline-start: 0;
     }
