@@ -11,7 +11,7 @@ import type { ClassNamesMap, SlotPropsMap } from '../../core';
  * so the `check-spar-pick.mjs` guard does not apply. Engine props are still
  * inherited through `Pick<DayPickerBaseProps, …>` rather than re-declared, so a
  * change upstream reaches this contract automatically. See
- * `calendar-contract.md`.
+ * `docs/component-authoring-contract.md` → Public type boundary.
  */
 
 /** Selection mode. Takeoff Core defines `single` / `range`; `multiple` extends it. */
@@ -57,8 +57,8 @@ export type CalendarRange = DateRange;
  * Slot vocabulary for `classNames` / `slotProps`. Calendar has a single public
  * component, so every anatomy node is reached through these keys rather than a
  * compound part — the nodes are rendered by the engine and are not
- * consumer-placeable (Table precedent, `calendar-contract.md` → Public compound
- * parts).
+ * consumer-placeable (Table precedent,
+ * `docs/component-authoring-contract.md` → Compound component rule).
  */
 export type CalendarSlot =
   | 'root'

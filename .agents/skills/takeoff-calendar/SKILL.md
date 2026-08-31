@@ -36,10 +36,11 @@ import { Calendar } from '@takeoff-ui/react-spar';
 `Calendar` is a single component: it has no compound parts, because every node
 below the root is rendered by the engine. Reach the anatomy through `classNames`
 / `slotProps` keys instead (`root`, `months`, `month`, `nav`,
-`previousMonthButton`, `nextMonthButton`, `chevron`, `monthCaption`,
-`captionLabel`, `dropdowns`, `dropdownRoot`, `dropdown`, `monthGrid`,
-`weekdays`, `weekday`, `weeks`, `week`, `weekNumber`, `weekNumberHeader`, `day`,
-`dayButton`, `footer`).
+`previousMonthButton`, `nextMonthButton`, `previousYearButton`,
+`nextYearButton`, `chevron`, `monthCaption`, `captionLabel`, `captionTrigger`,
+`dropdowns`, `dropdownRoot`, `dropdown`, `monthGrid`, `monthYearGrid`,
+`monthYearCell`, `weekdays`, `weekday`, `weeks`, `week`, `weekNumber`,
+`weekNumberHeader`, `day`, `dayButton`, `footer`).
 
 ## Basic usage
 
@@ -165,16 +166,29 @@ pair — `view` + `onViewChange` — with `defaultView` (`'day' | 'month' | 'yea
 default `'day'`) for the uncontrolled case. The header carries two pairs of
 arrows, each stepping one rung of the board it is on — the single ones move a
 month, or a year on the year board; the double ones move a year, or a whole
-twelve-year page — and `minDate` / `maxDate` disable out-of-range cells.
+twelve-year page. Every arrow is named after what it lands on and stays live
+while any part of that month, year or page is inside `minDate` / `maxDate`,
+which also disable the out-of-range cells.
+
+There is one board however many months are displayed, and it belongs to the
+first of them: that month's caption carries the buttons, the later captions stay
+plain labels of their own month. While a board is open the calendar shows that
+one month, and returns to the full row when it closes.
 
 `react-day-picker` has no such view, so this is the one node the wrapper renders
 itself — reach it through the `monthYearGrid` / `monthYearCell` /
 `captionTrigger` slots. The boards are `role="grid"` with one tab stop and
-arrow-key roving focus, and focus returns to the trigger once a month is picked.
+arrow-key roving focus; focus returns to the trigger once a month is picked, and
+`Escape` closes a board the same way.
 
 A `dropdown*` caption keeps the engine's `<select>` pair instead of switch
-buttons, and drops the year arrows since the year `<select>` covers them. The
-boards still work there.
+buttons, and drops the year arrows since the year `<select>` covers them.
+`navLayout="around"` drops them too — the engine renders that row itself, one
+arrow on each side of the caption. The boards work in both: the single arrows
+step the board's own rung, so the year board still walks from one twelve-year
+page to the next. `disableNavigation` closes the boards along with the arrows:
+the cells go disabled and a trigger will not open one (a board already open
+through `view` / `defaultView` still closes).
 
 ### Controlling the displayed month
 
@@ -289,7 +303,7 @@ only that locale is bundled.
 | `defaultMonth`        | `Date`                                                           | today        | Initially displayed month.                                                 |
 | `onMonthChange`       | `(month: Date) => void`                                          | -            | Fires when the displayed month moves.                                      |
 | `captionLayout`       | `'label' \| 'dropdown' \| 'dropdown-months' \| 'dropdown-years'` | `'label'`    | Month/year label vs. `<select>` navigation.                                |
-| `navLayout`           | `'around' \| 'after'`                                            | `'around'`   | Where the previous/next arrows sit.                                        |
+| `navLayout`           | `'around' \| 'after'`                                            | -            | Where the previous/next arrows sit; unset keeps the engine's own row.      |
 | `locale`              | `react-day-picker` locale                                        | English      | Import from `react-day-picker/locale`.                                     |
 | `footer`              | `ReactNode`                                                      | -            | Content under the grid, announced politely.                                |
 
@@ -308,8 +322,9 @@ Also passed through to the engine: `showOutsideDays`, `showWeekNumber`,
   `data-today`, `data-outside`, `data-disabled`, `data-focused`.
 - Range position is a class, not an attribute: `.tk-calendar-day-range-start` /
   `-middle` / `-end`.
-- Month/year panel: `data-slot="month-year-grid"` with `data-view="months"` or
-  `"years"`, and cells carrying `data-selected` / `data-disabled`.
+- Month/year panel: `data-slot="month-year-grid"` with `data-view="month"` or
+  `"year"`, and cells carrying `data-selected` / `data-disabled`. A caption
+  trigger carries the `data-view` of the board it opens.
 
 ```tsx
 <Calendar
@@ -327,9 +342,16 @@ Also passed through to the engine: `showOutsideDays`, `showWeekNumber`,
 - Nav buttons stay in the tab order at the boundary and expose `aria-disabled`,
   so the layout does not shift.
 - Chevrons are `aria-hidden`; the buttons carry the accessible names.
+- The month and year boards are `role="grid"` as well, with one tab stop: arrow
+  keys move between cells (vertically by four, the board's column count) and
+  `Home` / `End` reach the row edges, stepping over any cell that cannot take
+  focus rather than swallowing the key.
+- `Escape` closes a board and hands focus back to its trigger, without reaching
+  a surface the calendar sits in.
 
 ## Reference
 
 - Source: `packages/react-spar/src/components/calendar/`
-- Contract: `calendar-contract.md` (repo root)
+- Contract: `docs/component-authoring-contract.md`
+- Data attributes: `packages/react-spar/docs/data-attribute-vocabulary.md`
 - Engine docs: https://daypicker.dev

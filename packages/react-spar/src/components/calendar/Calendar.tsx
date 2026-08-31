@@ -1,4 +1,6 @@
 import {
+  createContext,
+  useContext,
   useEffect,
   useId,
   useMemo,
@@ -23,10 +25,12 @@ import { DoubleChevronRightIconOutlinedRounded } from '@takeoff-icons/react/doub
 import {
   Animation as DayPickerAnimation,
   CaptionLabel as DayPickerCaptionLabel,
+  DateLib as DayPickerDateLib,
   DayFlag as DayPickerDayFlag,
   DayPicker,
   Day as DayPickerDay,
   DayButton as DayPickerDayButton,
+  defaultLocale as dayPickerDefaultLocale,
   Dropdown as DayPickerDropdown,
   DropdownNav as DayPickerDropdownNav,
   Footer as DayPickerFooter,
@@ -58,7 +62,7 @@ import { useComponentTheme } from '../../provider';
 
 import { CalendarBase, calendarRangeClassNames } from './base';
 import { DEFAULT_HEADER_TYPE, DEFAULT_MODE, DEFAULT_SIZE, DEFAULT_VIEW } from './defaults';
-import { assignRef, buildDisabledMatchers, isMonthInBounds, isYearInBounds, yearPageStart, YEARS_PER_PAGE } from './helpers';
+import { assignRef, buildDisabledMatchers, isMonthInBounds, isYearInBounds, isYearPageInBounds, yearPageStart, YEARS_PER_PAGE } from './helpers';
 import type { CalendarHeaderType, CalendarMode, CalendarProps, CalendarSize, CalendarSlot, CalendarValue, CalendarView } from './types';
 
 /**
@@ -155,6 +159,8 @@ interface CalendarViewState {
   triggersEnabled: boolean;
   view: CalendarView;
   setView: (view: CalendarView) => void;
+  /** The engine's own prop, read by the wrapper-owned arrows. */
+  navigationDisabled: boolean;
   minDate?: Date;
   maxDate?: Date;
   panelId: string;
@@ -165,8 +171,27 @@ interface CalendarViewState {
   pendingFocusRef: RefObject<boolean>;
 }
 
+/**
+ * The month a caption belongs to, published by the `MonthCaption` override.
+ *
+ * The engine hands `calendarMonth` to `MonthCaption` but not to `CaptionLabel`,
+ * which receives only the already-formatted caption as its children. A
+ * rewritten caption therefore has no way of its own to tell which month it
+ * labels, and reading the *displayed* month would make every caption repeat
+ * that one month as soon as `numberOfMonths > 1`.
+ */
+const CaptionMonthContext = createContext<Date | null>(null);
+
 /** The panel is a four-column board, so vertical arrows move by four. */
 const PANEL_COLUMNS = 4;
+
+/**
+ * What a header arrow steps — which is both what it is named after and the
+ * granularity its bounds are measured in. A year arrow stays live while any
+ * month of the target year is in range, a page arrow while any year of the
+ * target page is; the engine clamps the landing month either way (`goToMonth`).
+ */
+type NavStep = 'month' | 'year' | 'page';
 
 // The design system ships no sr-only utility and the recipe must stay a purely
 // visual dependency, so the status node hides itself inline.
@@ -257,49 +282,117 @@ const createEngineComponents = (
   // a `grid` of rows and cells, one tab stop with arrow-key roving focus, and
   // the same polite announcement of the caption the engine makes.
 
-  /** The month the engine is currently showing — the panel's anchor. */
+  /**
+   * The month a board belongs to: the engine's *first* displayed month, which
+   * is what `goToMonth` moves.
+   *
+   * Not simply `months[0]` — `reverseMonths` reverses that array, so the first
+   * entry is then the last month on screen and a board would anchor to a month
+   * `goToMonth` does not move.
+   */
   const useDisplayedMonth = () => {
-    const { months } = useDayPicker();
-    return months[0]?.date ?? new Date();
+    const { months, dayPickerProps } = useDayPicker();
+    const first = dayPickerProps.reverseMonths ? months[months.length - 1] : months[0];
+
+    return first?.date ?? new Date();
   };
 
-  const useLocaleCode = () => useDayPicker().dayPickerProps.locale?.code;
+  /**
+   * The engine's date library, rebuilt from the props the engine was given.
+   *
+   * `useDayPicker()` publishes `formatters` and `labels` but not the `dateLib`
+   * they take, and every label this file writes has to be produced the way the
+   * engine produces the caption above it — a bare `Intl` would drift from the
+   * grid: with no `locale` prop it falls back to the *browser's* locale where
+   * the engine falls back to `en-US`, and for `ar-SA` it would name Hijri
+   * months over a Gregorian grid. Rebuilding is also what carries `numerals`
+   * through to the panel.
+   */
+  const useDateLib = () => {
+    const { locale, timeZone, numerals, dateLib } = useDayPicker().dayPickerProps;
+
+    return useMemo(
+      // The same merge the engine makes, so a partial `locale` still resolves
+      // against `en-US` rather than leaving fields undefined.
+      () => new DayPickerDateLib({ locale: { ...dayPickerDefaultLocale, ...locale }, timeZone, numerals }, dateLib),
+      [locale, timeZone, numerals, dateLib],
+    );
+  };
+
+  // Publishes the month each caption belongs to. It also has to re-apply the
+  // slot attrs `withSlot` used to add, since the provider is what wraps the
+  // engine's part now.
+  const MonthCaption = ({ calendarMonth, displayIndex, ...engineProps }: ComponentProps<typeof DayPickerMonthCaption>) => (
+    <CaptionMonthContext.Provider value={calendarMonth.date}>
+      <DayPickerMonthCaption
+        calendarMonth={calendarMonth}
+        displayIndex={displayIndex}
+        {...(mergeSlotAttrs(attrsRef.current.monthCaption, engineProps as Record<string, unknown>) as HTMLAttributes<HTMLDivElement>)}
+      />
+    </CaptionMonthContext.Provider>
+  );
+  MonthCaption.displayName = 'Calendar.monthCaption';
 
   const CaptionLabel = ({ children, ...engineProps }: HTMLAttributes<HTMLSpanElement>) => {
-    const { triggersEnabled, view, setView, panelId, pendingFocusRef, restoreRef } = viewRef.current;
-    const { labels } = useDayPicker();
-    const displayed = useDisplayedMonth();
-    const localeCode = useLocaleCode();
+    const { triggersEnabled, view, setView, navigationDisabled, panelId, pendingFocusRef, restoreRef } = viewRef.current;
+    const { formatters, labels } = useDayPicker();
+    const caption = useContext(CaptionMonthContext);
+    const anchor = useDisplayedMonth();
+    const dateLib = useDateLib();
+    // Each caption labels its own month; the anchor is only a fallback for a
+    // caption rendered outside `MonthCaption`.
+    const displayed = caption ?? anchor;
     const slotProps = mergeSlotAttrs(attrsRef.current.captionLabel, engineProps as Record<string, unknown>);
 
-    // A `dropdown*` caption renders this label *inside* the engine's own
-    // `<select>` wrapper, where turning it into buttons would break the select.
-    if (!triggersEnabled) return <DayPickerCaptionLabel {...(slotProps as HTMLAttributes<HTMLSpanElement>)}>{children}</DayPickerCaptionLabel>;
+    // Two captions that keep the engine's plain label:
+    //
+    // - a `dropdown*` caption, which renders this label *inside* the engine's
+    //   own `<select>` wrapper, where turning it into buttons would break the
+    //   select;
+    // - every month but the anchor, because the board is a calendar-level
+    //   surface belonging to that one month, so a trigger elsewhere would open
+    //   a board for a month it does not name. Deferring also leaves the
+    //   engine's per-month `role="status"` announcement intact rather than
+    //   repeating the anchor's.
+    if (!triggersEnabled || displayed.getTime() !== anchor.getTime())
+      return <DayPickerCaptionLabel {...(slotProps as HTMLAttributes<HTMLSpanElement>)}>{children}</DayPickerCaptionLabel>;
 
-    const trigger = (target: Exclude<CalendarView, 'day'>, label: string, describe: string) => (
-      <button
-        type="button"
-        {...(mergeSlotAttrs(attrsRef.current.captionTrigger, {
-          'data-view': target,
-          // The engine's own label, so `labels` translates the panel too; a
-          // per-instance override still wins through `slotProps`.
-          'aria-label': attrsRef.current.captionTrigger['aria-label'] ?? `${label}, ${describe}`,
-          'aria-expanded': view === target,
-          'aria-controls': view === target ? panelId : undefined,
-          'onClick': (event: MouseEvent<HTMLButtonElement>) => {
-            const next = view === target ? 'day' : target;
-            restoreRef.current = next === 'day' ? null : event.currentTarget;
-            pendingFocusRef.current = next !== 'day';
-            setView(next);
-          },
-        }) as ComponentProps<'button'>)}
-      >
-        {label}
-      </button>
-    );
+    const trigger = (target: Exclude<CalendarView, 'day'>, label: string, describe: string) => {
+      // A board's cells all navigate, so `disableNavigation` closes the way in
+      // — but never the way out: a board opened by `defaultView` or a
+      // controlled `view` has to stay closable, or it traps the body.
+      const opens = view !== target;
+      const disabled = navigationDisabled && opens;
 
-    const monthLabel = new Intl.DateTimeFormat(localeCode, { month: 'long' }).format(displayed);
-    const yearLabel = new Intl.DateTimeFormat(localeCode, { year: 'numeric' }).format(displayed);
+      return (
+        <button
+          type="button"
+          {...(mergeSlotAttrs(attrsRef.current.captionTrigger, {
+            'data-view': target,
+            // The engine's own label, so `labels` translates the panel too; a
+            // per-instance override still wins through `slotProps`.
+            'aria-label': attrsRef.current.captionTrigger['aria-label'] ?? `${label}, ${describe}`,
+            'aria-expanded': view === target,
+            'aria-controls': view === target ? panelId : undefined,
+            'aria-disabled': disabled || undefined,
+            'onClick': (event: MouseEvent<HTMLButtonElement>) => {
+              if (disabled) return;
+              const next = opens ? target : 'day';
+              restoreRef.current = next === 'day' ? null : event.currentTarget;
+              pendingFocusRef.current = next !== 'day';
+              setView(next);
+            },
+          }) as ComponentProps<'button'>)}
+        >
+          {label}
+        </button>
+      );
+    };
+
+    // The engine's own formatters, so a `formatters` override reaches the
+    // triggers exactly as it reaches a `dropdown*` caption.
+    const monthLabel = formatters.formatMonthDropdown(displayed, dateLib);
+    const yearLabel = formatters.formatYearDropdown(displayed, dateLib);
 
     return (
       <DayPickerCaptionLabel
@@ -320,29 +413,11 @@ const createEngineComponents = (
   };
   CaptionLabel.displayName = 'Calendar.captionLabel';
 
-  // exemption: a board belongs to the calendar, not to a month, so the extra
-  // months unmount while one is open — rendering it per month would duplicate
-  // its `id` and anchor every copy to the first month anyway.
-  const Month = ({ calendarMonth, displayIndex, ...engineProps }: ComponentProps<typeof DayPickerMonth>) => {
-    // An empty fragment rather than `null`: the engine types this slot as
-    // always returning an element.
-    if (viewRef.current.view !== 'day' && displayIndex !== 0) return <></>;
-
-    return (
-      <DayPickerMonth
-        calendarMonth={calendarMonth}
-        displayIndex={displayIndex}
-        {...(mergeSlotAttrs(attrsRef.current.month, engineProps as Record<string, unknown>) as HTMLAttributes<HTMLDivElement>)}
-      />
-    );
-  };
-  Month.displayName = 'Calendar.month';
-
   const MonthGrid = ({ children, ...engineProps }: HTMLAttributes<HTMLTableElement>) => {
-    const { view, setView, minDate, maxDate, panelId, panelRef, pendingFocusRef, restoreRef } = viewRef.current;
-    const { goToMonth, labels } = useDayPicker();
+    const { view, setView, navigationDisabled, minDate, maxDate, panelId, panelRef, pendingFocusRef, restoreRef } = viewRef.current;
+    const { formatters, goToMonth, labels } = useDayPicker();
     const displayed = useDisplayedMonth();
-    const localeCode = useLocaleCode();
+    const dateLib = useDateLib();
 
     // A board that was opened from the caption takes focus once it is mounted —
     // in an effect rather than in the click handler, so a keypress arriving
@@ -360,54 +435,88 @@ const createEngineComponents = (
     const year = displayed.getFullYear();
     const pageStart = yearPageStart(year);
 
+    // Focus goes back to the trigger the board was opened from. A board opened
+    // by `defaultView` or by a controlled `view` was never clicked, so nothing
+    // was recorded and the trigger it belongs to is found in the DOM instead —
+    // otherwise closing the board would drop focus onto `<body>`.
+    const restoreFocus = () => {
+      const trigger = panelRef.current?.closest('[data-slot="root"]')?.querySelector<HTMLElement>(`[data-slot="caption-trigger"][data-view="${view}"]`);
+
+      (restoreRef.current ?? trigger)?.focus();
+    };
+
     const items =
       view === 'month'
-        ? Array.from({ length: 12 }, (_, month) => ({
-            key: String(month),
-            label: new Intl.DateTimeFormat(localeCode, { month: 'short' }).format(new Date(year, month, 1)),
-            name: new Intl.DateTimeFormat(localeCode, { month: 'long', year: 'numeric' }).format(new Date(year, month, 1)),
-            current: displayed.getMonth() === month,
-            enabled: isMonthInBounds(year, month, minDate, maxDate),
-            select: () => {
-              goToMonth(new Date(year, month, 1));
-              setView('day');
-              restoreRef.current?.focus();
-            },
-          }))
+        ? Array.from({ length: 12 }, (_, month) => {
+            const date = new Date(year, month, 1);
+            return {
+              key: String(month),
+              // No engine formatter abbreviates a month — the dropdown spells
+              // it out — so this is the one label built from a pattern; the
+              // date library is still the engine's, so locale and numerals
+              // hold.
+              label: dateLib.format(date, 'LLL'),
+              name: formatters.formatCaption(date, dateLib.options, dateLib),
+              current: displayed.getMonth() === month,
+              // Picking a cell is navigation, so `disableNavigation` takes the
+              // whole board down with the arrows — `goToMonth` would no-op and
+              // leave an enabled-looking cell that does nothing.
+              enabled: !navigationDisabled && isMonthInBounds(year, month, minDate, maxDate),
+              select: () => {
+                goToMonth(date);
+                setView('day');
+                restoreFocus();
+              },
+            };
+          })
         : Array.from({ length: YEARS_PER_PAGE }, (_, offset) => {
             const candidate = pageStart + offset;
-            const label = new Intl.NumberFormat(localeCode, { useGrouping: false }).format(candidate);
+            const label = formatters.formatYearDropdown(new Date(candidate, 0, 1), dateLib);
             return {
-              key: label,
+              key: String(candidate),
               label,
               name: label,
               current: candidate === year,
-              enabled: isYearInBounds(candidate, minDate, maxDate),
+              enabled: !navigationDisabled && isYearInBounds(candidate, minDate, maxDate),
               select: () => {
                 goToMonth(new Date(candidate, displayed.getMonth(), 1));
                 // Core drills down rather than closing: a picked year lands on
-                // the month list for that year.
+                // the month list for that year. The board changes hands with
+                // it, so the recorded trigger — the year one — is dropped and
+                // the month board finds its own when it closes.
+                restoreRef.current = null;
                 pendingFocusRef.current = true;
                 setView('month');
               },
             };
           });
 
+    // A disabled cell is out of the way rather than in it: `focus()` on a
+    // disabled button does nothing, so a key that landed on one would be
+    // swallowed and the board would feel stuck. Every direction keeps going
+    // until it reaches a cell that can take focus, or the edge.
+    const seek = (start: number, delta: number, min = 0, max = items.length - 1) => {
+      for (let index = start; index >= min && index <= max; index += delta) if (items[index]?.enabled) return index;
+      return undefined;
+    };
+
     // One tab stop: the cell the panel is "on" — the current one, or the first
-    // that can be reached. Every other cell is skipped and reached by arrow.
-    const activeIndex = Math.max(
-      items.findIndex(item => item.current && item.enabled),
-      0,
-    );
+    // that can be reached. Every other cell is skipped and reached by arrow,
+    // and a board with nothing to reach (`disableNavigation`) has no tab stop
+    // at all rather than one on a cell that cannot take focus.
+    const current = items.findIndex(item => item.current && item.enabled);
+    const activeIndex = current >= 0 ? current : (seek(0, 1) ?? -1);
 
     const move = (event: KeyboardEvent<HTMLDivElement>, from: number) => {
       const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -PANEL_COLUMNS, ArrowDown: PANEL_COLUMNS }[event.key as 'ArrowLeft'];
+      const rowStart = from - (from % PANEL_COLUMNS);
+      const rowEnd = rowStart + PANEL_COLUMNS - 1;
       let next: number | undefined;
 
-      if (step !== undefined) next = from + step;
-      else if (event.key === 'Home') next = from - (from % PANEL_COLUMNS);
-      else if (event.key === 'End') next = from - (from % PANEL_COLUMNS) + PANEL_COLUMNS - 1;
-      if (next === undefined || next < 0 || next >= items.length) return;
+      if (step !== undefined) next = seek(from + step, step);
+      else if (event.key === 'Home') next = seek(rowStart, 1, rowStart, rowEnd);
+      else if (event.key === 'End') next = seek(rowEnd, -1, rowStart, rowEnd);
+      if (next === undefined) return;
 
       event.preventDefault();
       const cells = event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="gridcell"]');
@@ -416,8 +525,8 @@ const createEngineComponents = (
 
     const label =
       view === 'month'
-        ? `${labels.labelMonthDropdown()}, ${new Intl.DateTimeFormat(localeCode, { year: 'numeric' }).format(displayed)}`
-        : `${labels.labelYearDropdown()}, ${pageStart}–${pageStart + YEARS_PER_PAGE - 1}`;
+        ? `${labels.labelMonthDropdown()}, ${formatters.formatYearDropdown(displayed, dateLib)}`
+        : `${labels.labelYearDropdown()}, ${dateLib.formatNumber(pageStart)}–${dateLib.formatNumber(pageStart + YEARS_PER_PAGE - 1)}`;
 
     return (
       <div
@@ -428,6 +537,16 @@ const createEngineComponents = (
           'data-view': view,
           'ref': panelRef,
           'onKeyDown': (event: KeyboardEvent<HTMLDivElement>) => {
+            // The caption trigger is a disclosure (`aria-expanded` and all), so
+            // Escape closes what it opened. Kept from bubbling: a surface that
+            // holds the calendar — a picker popover — must not close with it.
+            if (event.key === 'Escape') {
+              event.stopPropagation();
+              setView('day');
+              restoreFocus();
+              return;
+            }
+
             const cells = [...event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="gridcell"]')];
             const from = cells.indexOf(event.target as HTMLButtonElement);
             if (from >= 0) move(event, from);
@@ -464,16 +583,60 @@ const createEngineComponents = (
   };
   MonthGrid.displayName = 'Calendar.monthGrid';
 
+  // `navLayout="around"` is the one layout where the engine renders the month
+  // arrows itself — the row is [prev, caption, next] inside the month — and
+  // never asks for `Nav`, so the board stepping below never reaches them. Only
+  // the year board needs it: on the month board these still step a month,
+  // which is what the engine already does. The year pair has no place in this
+  // layout, the same way a `dropdown*` caption drops it, and none is needed —
+  // stepping a year walks off the end of a twelve-year page on its own.
+  const aroundArrow = (slot: 'previousMonthButton' | 'nextMonthButton') => {
+    const Engine = slot === 'previousMonthButton' ? DayPickerPreviousMonthButton : DayPickerNextMonthButton;
+
+    const Arrow = ({ children, ...engineProps }: ComponentProps<typeof DayPickerPreviousMonthButton>) => {
+      const { view, navigationDisabled, minDate, maxDate } = viewRef.current;
+      const { formatters, goToMonth } = useDayPicker();
+      const displayed = useDisplayedMonth();
+      const dateLib = useDateLib();
+      const slotProps = mergeSlotAttrs(attrsRef.current[slot], engineProps as Record<string, unknown>);
+
+      if (view !== 'year') return <Engine {...(slotProps as ComponentProps<typeof DayPickerPreviousMonthButton>)}>{children}</Engine>;
+
+      const target = new Date(displayed.getFullYear() + (slot === 'previousMonthButton' ? -1 : 1), displayed.getMonth(), 1);
+      const disabled = navigationDisabled || !isYearInBounds(target.getFullYear(), minDate, maxDate);
+
+      // A plain spread, not `mergeSlotAttrs`: on the year board these values
+      // replace the engine's, `undefined` included — its `aria-disabled` is
+      // about the next *month*, which is not what this arrow moves any more.
+      return (
+        <Engine
+          {...(slotProps as ComponentProps<typeof DayPickerPreviousMonthButton>)}
+          aria-label={formatters.formatYearDropdown(target, dateLib)}
+          aria-disabled={disabled || undefined}
+          tabIndex={disabled ? -1 : undefined}
+          onClick={() => {
+            if (!disabled) goToMonth(target);
+          }}
+        >
+          {children}
+        </Engine>
+      );
+    };
+    Arrow.displayName = `Calendar.${slot}`;
+
+    return Arrow;
+  };
+
   // exemption (@bypass Nav): Core's header carries two pairs of arrows — the
   // single ones page the body, the double ones page the year — and the engine's
   // own `Nav` knows only the first pair, only in months. The row is rebuilt
   // here; the day view still delegates to the engine's handlers so
   // `pagedNavigation`, `numberOfMonths` and the navigation bounds are upstream.
   const Nav = (engineProps: ComponentProps<typeof DayPickerNav>) => {
-    const { triggersEnabled, view, minDate, maxDate } = viewRef.current;
-    const { classNames: engineClassNames, components, goToMonth, labels } = useDayPicker();
+    const { triggersEnabled, view, navigationDisabled, minDate, maxDate } = viewRef.current;
+    const { classNames: engineClassNames, components, formatters, goToMonth, labels } = useDayPicker();
     const displayed = useDisplayedMonth();
-    const localeCode = useLocaleCode();
+    const dateLib = useDateLib();
     const slotProps = mergeSlotAttrs(attrsRef.current.nav, engineProps as Record<string, unknown>);
 
     const { onPreviousClick, onNextClick, previousMonth, nextMonth, ...navAttrs } = slotProps as ComponentProps<typeof DayPickerNav>;
@@ -483,20 +646,50 @@ const createEngineComponents = (
     // year, or a whole twelve-year page.
     const singleStep = view === 'year' ? 12 : 1;
     const doubleStep = view === 'year' ? YEARS_PER_PAGE * 12 : 12;
+    const singleGrain: NavStep = view === 'year' ? 'year' : 'month';
+    const doubleGrain: NavStep = view === 'year' ? 'page' : 'year';
 
     const shift = (months: number) => new Date(displayed.getFullYear(), displayed.getMonth() + months, 1);
-    const reachable = (target: Date) => isMonthInBounds(target.getFullYear(), target.getMonth(), minDate, maxDate);
-    const formatYear = (target: Date) => new Intl.DateTimeFormat(localeCode, { year: 'numeric' }).format(target);
 
-    const arrow = (slot: 'previousMonthButton' | 'nextMonthButton' | 'previousYearButton' | 'nextYearButton', months: number, label: string, icon: ReactNode) => {
+    // Measured in what the arrow steps, not in the month it happens to land on:
+    // a board whose year or page is only partly in range is still worth
+    // reaching, and `goToMonth` clamps the landing month to the bounds.
+    const reachable = (target: Date, grain: NavStep) =>
+      grain === 'month'
+        ? isMonthInBounds(target.getFullYear(), target.getMonth(), minDate, maxDate)
+        : grain === 'year'
+          ? isYearInBounds(target.getFullYear(), minDate, maxDate)
+          : isYearPageInBounds(target.getFullYear(), minDate, maxDate);
+
+    const formatYear = (target: Date) => formatters.formatYearDropdown(target, dateLib);
+    const formatPage = (target: Date) => {
+      const start = yearPageStart(target.getFullYear());
+      return `${dateLib.formatNumber(start)}–${dateLib.formatNumber(start + YEARS_PER_PAGE - 1)}`;
+    };
+
+    // Every arrow is named after what it lands on, so the name follows the
+    // board too: the engine's month label only tells the truth while the body
+    // is showing months.
+    const arrowLabel = (grain: NavStep, target: Date, previous: boolean) =>
+      grain === 'month' ? (previous ? labels.labelPrevious(target) : labels.labelNext(target)) : grain === 'year' ? formatYear(target) : formatPage(target);
+
+    const arrow = (slot: 'previousMonthButton' | 'nextMonthButton' | 'previousYearButton' | 'nextYearButton', months: number, grain: NavStep, icon: ReactNode) => {
       const target = shift(months);
+      const label = arrowLabel(grain, target, months < 0);
       // Only the month pair has an engine class-name key; the year pair is
       // wrapper-owned, so its class already sits on the slot attrs and must not
       // be overwritten here.
       const engineOwned = slot === 'previousMonthButton' || slot === 'nextMonthButton';
       const delegated = engineOwned && view === 'day';
-      const disabled = delegated ? !(months < 0 ? previousMonth : nextMonth) : !reachable(target);
-      const Button = slot.startsWith('previous') ? components.PreviousMonthButton : components.NextMonthButton;
+      // The engine's own arrows go `aria-disabled` under `disableNavigation`
+      // (it drops `previousMonth` / `nextMonth`); the wrapper-owned pair has to
+      // say so for itself.
+      const disabled = navigationDisabled || (delegated ? !(months < 0 ? previousMonth : nextMonth) : !reachable(target, grain));
+      // The engine's own part rather than `components.*`: those overrides carry
+      // the month pair's slot attrs, which would then land on the year pair as
+      // well — one `slotProps.previousMonthButton` `id`, two nodes. Each
+      // arrow's own slot attrs are merged below.
+      const Button = slot.startsWith('previous') ? DayPickerPreviousMonthButton : DayPickerNextMonthButton;
 
       return (
         <Button
@@ -527,10 +720,10 @@ const createEngineComponents = (
       <nav {...(navAttrs as HTMLAttributes<HTMLElement>)}>
         {/* A `dropdown*` caption navigates years through its own `<select>`, and
             the row has no width for a second way to do it. */}
-        {triggersEnabled && arrow('previousYearButton', -doubleStep, formatYear(shift(-doubleStep)), doubleChevron(DoubleChevronLeftIconOutlinedRounded))}
-        {arrow('previousMonthButton', -singleStep, labels.labelPrevious(shift(-singleStep)), chevron('left'))}
-        {arrow('nextMonthButton', singleStep, labels.labelNext(shift(singleStep)), chevron('right'))}
-        {triggersEnabled && arrow('nextYearButton', doubleStep, formatYear(shift(doubleStep)), doubleChevron(DoubleChevronRightIconOutlinedRounded))}
+        {triggersEnabled && arrow('previousYearButton', -doubleStep, doubleGrain, doubleChevron(DoubleChevronLeftIconOutlinedRounded))}
+        {arrow('previousMonthButton', -singleStep, singleGrain, chevron('left'))}
+        {arrow('nextMonthButton', singleStep, singleGrain, chevron('right'))}
+        {triggersEnabled && arrow('nextYearButton', doubleStep, doubleGrain, doubleChevron(DoubleChevronRightIconOutlinedRounded))}
       </nav>
     );
   };
@@ -540,13 +733,13 @@ const createEngineComponents = (
     Root,
     Chevron,
     CaptionLabel,
-    Month,
+    MonthCaption,
     MonthGrid,
     Nav,
     Months: withSlot(DayPickerMonths, 'months'),
-    PreviousMonthButton: withSlot(DayPickerPreviousMonthButton, 'previousMonthButton'),
-    NextMonthButton: withSlot(DayPickerNextMonthButton, 'nextMonthButton'),
-    MonthCaption: withSlot(DayPickerMonthCaption, 'monthCaption'),
+    Month: withSlot(DayPickerMonth, 'month'),
+    PreviousMonthButton: aroundArrow('previousMonthButton'),
+    NextMonthButton: aroundArrow('nextMonthButton'),
     DropdownNav: withSlot(DayPickerDropdownNav, 'dropdowns'),
     // The engine hands these props to its own `<select>`, so `dropdown` is the
     // select's anchor. Its wrapping span (`dropdownRoot`) is class-only — see
@@ -622,8 +815,14 @@ export const Calendar = (props: CalendarProps) => {
   // reset, or a saved value arriving late would never reach the grid. This is
   // also why `useControllableState` is not used here: it latches on the first
   // render's value by design, which suits a non-nullable value and not this one.
-  const isControlled = 'value' in rest;
-  const [uncontrolledValue, setUncontrolledValue] = useState<CalendarValue>(defaultValue);
+  //
+  // Asked of `props`, not of `rest`: `resolveProps` merges the theme's
+  // `defaultProps` into `rest`, and a provider-level default is a *fallback* —
+  // a theme that sets `value` must not put every instance into controlled mode
+  // with no handler to advance it. It still seeds the uncontrolled state, which
+  // is what a fallback means here.
+  const isControlled = 'value' in props;
+  const [uncontrolledValue, setUncontrolledValue] = useState<CalendarValue>(isControlled ? undefined : (value ?? defaultValue));
   const selected = isControlled ? value : uncontrolledValue;
 
   const setSelected = (next: CalendarValue) => {
@@ -635,11 +834,16 @@ export const Calendar = (props: CalendarProps) => {
   // navigation — that layout reuses the caption-label node — but the boards
   // themselves work in every layout.
   const triggersEnabled = !engine.captionLayout?.startsWith('dropdown');
-  // Same controlled test as `value`: whether the prop was **passed**, not what
-  // it currently holds.
-  const isViewControlled = 'view' in rest;
-  const [uncontrolledView, setUncontrolledView] = useState<CalendarView>(defaultView);
-  const view = isViewControlled ? (viewProp as CalendarView) : uncontrolledView;
+  // Read from `props` for the same reason as `value` above — a theme default
+  // must not force controlled mode — but by its value rather than its presence,
+  // for the opposite one: a board is always one of three, so `undefined` is not
+  // a state a parent can be in, where a date is `undefined` until it is picked.
+  // That is also what keeps `view={undefined}` (an optional prop forwarded on, a
+  // `useState<CalendarView>()`) from latching and leaving the body on no board
+  // at all. A theme default still chooses the opening board.
+  const isViewControlled = props.view !== undefined;
+  const [uncontrolledView, setUncontrolledView] = useState<CalendarView>(viewProp ?? defaultView);
+  const view = isViewControlled ? (props.view as CalendarView) : uncontrolledView;
 
   const setView = (next: CalendarView) => {
     if (!isViewControlled) setUncontrolledView(next);
@@ -651,8 +855,11 @@ export const Calendar = (props: CalendarProps) => {
   const restoreRef = useRef<HTMLElement | null>(null);
   const pendingFocusRef = useRef(false);
 
-  const viewRef = useRef<CalendarViewState>({ triggersEnabled, view, setView, minDate, maxDate, panelId, panelRef, restoreRef, pendingFocusRef });
-  viewRef.current = { triggersEnabled, view, setView, minDate, maxDate, panelId, panelRef, restoreRef, pendingFocusRef };
+  const navigationDisabled = Boolean(engine.disableNavigation);
+
+  const viewState: CalendarViewState = { triggersEnabled, view, setView, navigationDisabled, minDate, maxDate, panelId, panelRef, restoreRef, pendingFocusRef };
+  const viewRef = useRef<CalendarViewState>(viewState);
+  viewRef.current = viewState;
 
   // Per-slot attrs: the root comes from `composeRootAttrs` (so theme
   // `defaultProps` reach `data-size`), every other slot is composed at what is
@@ -704,6 +911,13 @@ export const Calendar = (props: CalendarProps) => {
   // hence the cast, immediately after the props that vary by mode are assembled.
   const engineProps = {
     ...engine,
+    // A board belongs to the calendar, not to a month, so only one month is
+    // displayed while one is open — the board would otherwise be repeated per
+    // month, `id` and all. Mapped on the prop rather than by dropping the extra
+    // months from the `Month` override, which would take the engine's
+    // navigation down with them: `navLayout="after"` and `"around"` render it
+    // inside a month.
+    numberOfMonths: view === 'day' ? engine.numberOfMonths : 1,
     mode,
     selected,
     onSelect: setSelected,

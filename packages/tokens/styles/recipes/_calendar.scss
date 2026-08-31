@@ -62,7 +62,6 @@
   background: var(--static-light);
   border: var(--spacing-px) solid var(--border-light);
   border-radius: var(--radius-xl);
-  border-radius: 16px;
 
   box-shadow:
     0 2px 2px -1px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
@@ -134,14 +133,29 @@
   position: relative;
   display: flex;
   flex-wrap: wrap;
-  // No token: month-to-month spacing only exists once `numberOfMonths > 1`,
-  // which the single-month Figma frame does not cover. Matches the grid's own
-  // horizontal padding.
+  // A row of months that has to wrap centres its last line, so the leftover
+  // width is shared instead of leaving the card open on one side.
+  justify-content: center;
 }
 
 @mixin calendar-month {
   display: flex;
   flex-direction: column;
+
+  // The day grid and a month/year board take turns in this column, and a board
+  // is reachable on every calendar, so the body is pinned to one box —
+  // otherwise switching views would resize the card. It also fixes the height
+  // across months, which `fixedWeeks` would otherwise be needed for.
+  //
+  // The pin sits on the month rather than on the grid because the grid is a
+  // real `<table>`: a table given a height taller than its rows hands the
+  // difference *to the rows* (CSS 2.1 §17.5.3), so a five-week month would
+  // space its days further apart than a six-week one — plainly visible the
+  // moment two months sit side by side. On the column the leftover simply
+  // stays below the grid.
+  .tk-calendar[data-view] & {
+    min-height: calc(var(--datepicker-header-base-top-padding) + var(--tk-calendar-header-height) + var(--datepicker-header-base-bottom-padding) + var(--tk-calendar-body-height));
+  }
 
   // `navLayout="after"` renders the nav as a sibling between the caption and
   // the grid; the nav recipe lifts it back onto the caption row, so the month
@@ -151,13 +165,17 @@
   }
 
   // `navLayout="around"` makes the engine render [prev, caption, next] as three
-  // siblings of the grid. One row for the three, the grid spanning underneath.
+  // siblings of the grid. One row for the three, the body spanning underneath —
+  // either body, since the boards take the same slot and would otherwise sit in
+  // the first column and push the caption off centre.
   .tk-calendar[data-nav-layout='around'] & {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
+    align-content: start;
 
-    .tk-calendar-month-grid {
+    .tk-calendar-month-grid,
+    .tk-calendar-month-year-grid {
       grid-column: 1 / -1;
     }
   }
@@ -223,6 +241,33 @@
 
   .tk-calendar[data-header-type='dark'] &::before {
     background: var(--neutral-800);
+  }
+
+  // Several months share one header row — the arrows already span it end to
+  // end — so the surface is one band rather than a box per month: only the
+  // outer edges keep the inset and the radius, and the seams between months
+  // close up. `inset-inline` follows `dir`, so the outer edges stay outer in
+  // RTL.
+  .tk-calendar[data-multiple-months] .tk-calendar-month:not(:first-child) &::before {
+    inset-inline-start: 0;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  .tk-calendar[data-multiple-months] .tk-calendar-month:not(:last-child) &::before {
+    inset-inline-end: 0;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  // The outlined header type would otherwise draw a border on both sides of
+  // every seam; the band is one outline, so the seams carry none.
+  .tk-calendar[data-multiple-months][data-header-type='divided'] .tk-calendar-month:not(:first-child) &::before {
+    border-inline-start: 0;
+  }
+
+  .tk-calendar[data-multiple-months][data-header-type='divided'] .tk-calendar-month:not(:last-child) &::before {
+    border-inline-end: 0;
   }
 }
 
@@ -471,13 +516,10 @@
   border-collapse: separate;
   border-spacing: 0;
 
-  // The day grid and a month/year board take turns in the same slot, and a board
-  // is reachable on every calendar, so the body is always pinned to one box —
-  // otherwise switching views would resize the card. This also fixes the height
-  // across months, which `fixedWeeks` would otherwise be needed for.
+  // The board takes this slot's width as well, so the two views stay the same
+  // width. The *height* is pinned on the month instead — see the note there.
   .tk-calendar[data-view] & {
     box-sizing: border-box;
-    min-height: var(--tk-calendar-body-height);
     width: var(--tk-calendar-body-width);
   }
 }
@@ -646,7 +688,10 @@
     border-end-end-radius: 0;
   }
 
-  .tk-calendar-day.tk-calendar-day-range-end & {
+  // The end's own guard: the first click of a range commits `{from: X, to: X}`,
+  // so that one day is start *and* end — and has nothing on either side to
+  // join.
+  .tk-calendar-day.tk-calendar-day-range-end:not(.tk-calendar-day-range-start) & {
     border-start-start-radius: 0;
     border-end-start-radius: 0;
   }
@@ -680,6 +725,17 @@
 
   .tk-calendar:is([data-header-type='primary'], [data-header-type='dark']) &:hover {
     background: rgb(255 255 255 / 16%);
+  }
+
+  // `disableNavigation` takes the boards down with the arrows. The label keeps
+  // its colour — it is the month, and it still has to be read — so only the
+  // affordance goes.
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+
+    &:hover {
+      background: transparent;
+    }
   }
 
   @include mixins.focus-ring(var(--primary-focus));

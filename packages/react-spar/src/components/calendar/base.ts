@@ -13,7 +13,7 @@ import type { CalendarProps, CalendarSlot } from './types';
  * @archetype react-enhancement — Calendar has no upstream Spar primitive (Spar
  * ships no date/calendar component). The state engine is `react-day-picker` and
  * every emitted class name plus every `data-slot` anchor is v2-owned. See
- * `calendar-contract.md` → Behavior ownership.
+ * `docs/component-authoring-contract.md` → Layer responsibilities.
  *
  * Data-attribute vocabulary (data-attribute-vocabulary.md rule 10 — Calendar is
  * a v2-owned react-enhancement over a third-party engine, so it records its
@@ -34,14 +34,22 @@ import type { CalendarProps, CalendarSlot } from './types';
  * own handlers, so `pagedNavigation`, `numberOfMonths` and the navigation
  * bounds stay upstream.
  *
+ * `navLayout="around"` is the one layout the engine never asks `Nav` for — it
+ * renders the two month buttons itself, inside the month — so the
+ * `PreviousMonthButton` / `NextMonthButton` overrides carry the board stepping
+ * there instead. That row has no place for the year pair, the same way a
+ * `dropdown*` caption has none, and needs none: on the year board the single
+ * arrows step a year, which walks off the end of a twelve-year page on its own.
+ *
  * @bypass Chevron — the engine draws inline polygons; icon rendering is a
  * takeoff-spar responsibility, so the glyph comes from `@takeoff-icons`.
  *
- * @bypass Month / MonthGrid — `react-day-picker` has no month or year view, so
- * the `view` boards are wrapper-rendered. `MonthGrid` swaps the body and `Month`
- * unmounts the extra months while a board is open (a board belongs to the
- * calendar, not to a month). Only the body is replaced: the displayed month
- * stays the engine's through `goToMonth`.
+ * @bypass MonthGrid — `react-day-picker` has no month or year view, so the
+ * `view` boards are wrapper-rendered: `MonthGrid` swaps the body while a board
+ * is open. Only the body is replaced — the displayed month stays the engine's
+ * through `goToMonth`, and a board belongs to the calendar rather than to a
+ * month, so `numberOfMonths` is mapped to 1 for as long as one is open (a prop
+ * mapping, not a fourth override).
  *
  * Deliberately **not** mirrored (rule 7 — the engine already owns them):
  *   Root:     data-mode, data-required, data-multiple-months, data-week-numbers,

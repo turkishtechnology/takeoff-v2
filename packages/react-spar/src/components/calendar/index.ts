@@ -1,6 +1,7 @@
 export { Calendar } from './Calendar';
 
 export type {
+  CalendarHeaderType,
   CalendarMode,
   CalendarMultipleProps,
   CalendarProps,
@@ -10,5 +11,6 @@ export type {
   CalendarSize,
   CalendarSlot,
   CalendarValue,
+  CalendarView,
   CalendarWeekStart,
 } from './types';

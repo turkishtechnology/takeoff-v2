@@ -135,6 +135,53 @@ describe('Calendar', () => {
       // stays silent — it reports grid interaction, not every value change.
       expect(onValueChange).not.toHaveBeenCalled();
     });
+
+    // The value and the displayed month are separate state: the engine reads
+    // the month once, at mount, and only navigation moves it afterwards. A
+    // preset that lands outside the visible month therefore has to move both —
+    // the pattern the docs' preset row demonstrates.
+    it('follows a preset into another month through the controlled `month`', async () => {
+      const user = userEvent.setup();
+      const SEPTEMBER_1 = new Date(2026, 8, 1);
+
+      const Presets = () => {
+        const [value, setValue] = useState<Date | undefined>();
+        const [month, setMonth] = useState(AUGUST_2026);
+
+        return (
+          <Calendar
+            value={value}
+            onValueChange={setValue}
+            month={month}
+            onMonthChange={setMonth}
+            footer={
+              <button
+                type="button"
+                onClick={() => {
+                  setValue(SEPTEMBER_1);
+                  setMonth(SEPTEMBER_1);
+                }}
+              >
+                Tomorrow
+              </button>
+            }
+          />
+        );
+      };
+
+      const { container } = render(<Presets />);
+      expect(screen.getByRole('grid')).toHaveAccessibleName('August 2026');
+
+      await user.click(screen.getByRole('button', { name: 'Tomorrow' }));
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('September 2026');
+      expect(dayCell(container, '2026-09-01')).toHaveAttribute('data-selected', 'true');
+
+      // A controlled month still pages from the header, because the engine
+      // reports the move through `onMonthChange`.
+      await user.click(container.querySelector('.tk-calendar-nav-next-month') as HTMLElement);
+      expect(screen.getByRole('grid')).toHaveAccessibleName('October 2026');
+    });
   });
 
   describe('single mode', () => {
@@ -308,6 +355,31 @@ describe('Calendar', () => {
       expect(cell).toHaveAttribute('data-day', '2026-08-15');
     });
 
+    // A theme default is a fallback, not a way to force controlled mode: the
+    // merged props are what the wrapper reads for everything else, so asking
+    // them about controlled-ness would strand every instance under the theme
+    // with no handler to advance it.
+    it('treats a provider default for `value` / `view` as a fallback, not as control', async () => {
+      const user = userEvent.setup();
+      const theme = { Calendar: { defaultProps: { view: 'month' as const, value: new Date(2026, 7, 15) } } };
+
+      const { container } = render(
+        <TakeoffSparProvider components={theme}>
+          <Calendar defaultMonth={AUGUST_2026} />
+        </TakeoffSparProvider>,
+      );
+
+      // The default chose the opening board and the initial value…
+      expect(screen.getByRole('grid')).toHaveAccessibleName('Choose the Month, 2026');
+
+      // …and neither is stuck there.
+      await user.click(screen.getByRole('gridcell', { name: 'September 2026' }));
+      expect(screen.getByRole('grid')).toHaveAccessibleName('September 2026');
+
+      await user.click(dayCell(container, '2026-09-03').querySelector('button') as HTMLElement);
+      expect(dayCell(container, '2026-09-03')).toHaveAttribute('data-selected', 'true');
+    });
+
     it('applies provider defaultProps below instance props', () => {
       const theme = { Calendar: { defaultProps: { size: 'small' as const }, classNames: { day: 'theme-day' } } };
 
@@ -415,6 +487,17 @@ describe('Calendar', () => {
       expect(document.activeElement).toBe(screen.getByRole('button', { name: /Choose the Month/ }));
     });
 
+    // A board that was never opened by a click has no trigger recorded, so the
+    // one it belongs to has to be found rather than remembered.
+    it('hands focus to the caption for a board it did not open itself', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} defaultView="month" />);
+
+      await user.click(screen.getByRole('gridcell', { name: 'September 2026' }));
+
+      expect(document.activeElement).toBe(screen.getByRole('button', { name: 'September, Choose the Month' }));
+    });
+
     it('disables the cells outside minDate and maxDate', async () => {
       const user = userEvent.setup();
       render(<Calendar defaultMonth={AUGUST_2026} minDate={new Date(2026, 5, 1)} maxDate={new Date(2026, 8, 30)} />);
@@ -424,6 +507,148 @@ describe('Calendar', () => {
       expect(within(grid).getByRole('gridcell', { name: 'June 2026' })).toBeEnabled();
       expect(within(grid).getByRole('gridcell', { name: 'May 2026' })).toBeDisabled();
       expect(within(grid).getByRole('gridcell', { name: 'October 2026' })).toBeDisabled();
+    });
+
+    // `focus()` on a disabled button does nothing, so a key that aims at one
+    // would leave the board looking stuck and eat the keypress on the way.
+    it('steps arrow and Home/End over the cells that cannot take focus', async () => {
+      const user = userEvent.setup();
+      const keydown = vi.fn<(defaultPrevented: boolean) => void>();
+      render(
+        <div onKeyDown={event => keydown(event.defaultPrevented)}>
+          <Calendar defaultMonth={AUGUST_2026} minDate={new Date(2026, 5, 1)} maxDate={new Date(2026, 8, 30)} defaultView="month" />
+        </div>,
+      );
+
+      const cells = within(screen.getByRole('grid')).getAllByRole('gridcell');
+      cells[7].focus();
+
+      // The row starts at May, which is out of bounds — Home lands on June.
+      await user.keyboard('{Home}');
+      expect(document.activeElement).toBe(cells[5]);
+
+      // Nothing above June can be focused, so the board stays put and leaves
+      // the key to the page instead of swallowing it.
+      await user.keyboard('{ArrowUp}');
+      expect(document.activeElement).toBe(cells[5]);
+      expect(keydown).toHaveBeenLastCalledWith(false);
+    });
+
+    // The wrapper writes labels the engine has no formatter for, and they have
+    // to read like the caption the engine writes right next to them.
+    it('formats its own labels through the engine, not a bare Intl', () => {
+      const { rerender } = render(<Calendar defaultMonth={AUGUST_2026} numerals="arab" formatters={{ formatMonthDropdown: () => 'AY' }} />);
+
+      expect(screen.getByRole('button', { name: 'AY, Choose the Month' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '٢٠٢٦, Choose the Year' })).toBeInTheDocument();
+
+      // `Intl` reads `ar-SA` as the Hijri calendar and would name a month the
+      // Gregorian grid underneath is not showing.
+      rerender(<Calendar defaultMonth={AUGUST_2026} locale={{ code: 'ar-SA' }} />);
+
+      expect(screen.getByRole('button', { name: 'August, Choose the Month' })).toBeInTheDocument();
+    });
+
+    // `view` is not `value`: a board is always one of three, so an optional
+    // prop forwarded on as `undefined` must read as "not controlled" rather
+    // than as "controlled, on no board".
+    it('treats `view={undefined}` as uncontrolled', async () => {
+      const user = userEvent.setup();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} view={undefined} />);
+
+      expect(container.querySelector('.tk-calendar')).toHaveAttribute('data-view', 'day');
+      expect(screen.getByRole('grid')).toHaveAccessibleName('August 2026');
+
+      await user.click(screen.getByRole('button', { name: /Choose the Month/ }));
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('Choose the Month, 2026');
+    });
+
+    // Picking a cell is navigation, so a board under `disableNavigation` must
+    // not offer cells that quietly do nothing — nor a tab stop on one, nor a
+    // trigger that opens another such board.
+    it('disables the board cells under `disableNavigation`', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} disableNavigation defaultView="month" />);
+
+      const cells = within(screen.getByRole('grid')).getAllByRole('gridcell');
+
+      expect(cells.every(cell => cell.hasAttribute('disabled'))).toBe(true);
+      expect(cells.some(cell => cell.getAttribute('tabindex') === '0')).toBe(false);
+
+      // No way in…
+      const year = screen.getByRole('button', { name: /Choose the Year/ });
+      expect(year).toHaveAttribute('aria-disabled', 'true');
+      await user.click(year);
+      expect(screen.getByRole('grid')).toHaveAccessibleName('Choose the Month, 2026');
+
+      // …but the board this one opened on stays closable, or it traps the body.
+      const month = screen.getByRole('button', { name: /Choose the Month/ });
+      expect(month).not.toHaveAttribute('aria-disabled');
+      await user.click(month);
+      expect(screen.getByRole('grid')).toHaveAccessibleName('August 2026');
+    });
+
+    // `reverseMonths` reverses the engine's month array, but `goToMonth` still
+    // moves the chronologically first month — which is the one the board is.
+    it('anchors the board on the first month even under `reverseMonths`', () => {
+      render(<Calendar defaultMonth={AUGUST_2026} numberOfMonths={2} reverseMonths />);
+
+      expect(screen.getByRole('button', { name: 'August, Choose the Month' })).toBeInTheDocument();
+      expect(screen.getByText('September 2026')).toBeInTheDocument();
+    });
+
+    // The engine renders the arrows itself in this layout and never asks for
+    // `Nav`, so the board stepping has to be grafted onto its own buttons.
+    it('steps the year board from the arrows `navLayout="around"` renders itself', async () => {
+      const user = userEvent.setup();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} navLayout="around" defaultView="year" />);
+
+      const previous = container.querySelector('.tk-calendar-nav-previous-month') as HTMLElement;
+      expect(previous).toHaveAttribute('aria-label', '2025');
+
+      await user.click(previous);
+
+      expect(
+        within(screen.getByRole('grid'))
+          .getAllByRole('gridcell')
+          .find(cell => cell.getAttribute('aria-selected') === 'true'),
+      ).toHaveTextContent('2025');
+    });
+
+    // The year pair borrowed the month pair's slot attrs while it rendered
+    // through `components.PreviousMonthButton`.
+    it('keeps each arrow on its own slotProps', () => {
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} slotProps={{ previousMonthButton: { title: 'a month back' } }} />);
+
+      expect(container.querySelector('.tk-calendar-nav-previous-month')).toHaveAttribute('title', 'a month back');
+      expect(container.querySelector('.tk-calendar-nav-previous-year')).not.toHaveAttribute('title');
+    });
+
+    // Drilling down hands the board to the month trigger, so the focus that
+    // comes back on the way out belongs to it too.
+    it('returns focus to the month trigger after drilling down from a year', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} />);
+
+      // Opened from the year trigger, so that is what was recorded — and the
+      // drill-down is what has to hand the board over.
+      await user.click(screen.getByRole('button', { name: /Choose the Year/ }));
+      await user.click(screen.getByRole('gridcell', { name: '2025' }));
+      await user.click(screen.getByRole('gridcell', { name: 'May 2025' }));
+
+      expect(document.activeElement).toBe(screen.getByRole('button', { name: 'May, Choose the Month' }));
+    });
+
+    it('closes a board on Escape and hands its trigger the focus back', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} />);
+
+      await user.click(screen.getByRole('button', { name: /Choose the Month/ }));
+      await user.keyboard('{Escape}');
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('August 2026');
+      expect(document.activeElement).toBe(screen.getByRole('button', { name: /Choose the Month/ }));
     });
 
     it('opens on the board `defaultView` names', () => {
@@ -453,6 +678,18 @@ describe('Calendar', () => {
 
       expect(container.querySelectorAll('[data-slot="month-year-grid"]')).toHaveLength(1);
       expect(screen.getAllByRole('grid')).toHaveLength(1);
+    });
+
+    // One board, so one caption can open it: the trailing months keep the
+    // engine's label — of their own month, not a repeat of the first.
+    it('gives every displayed month its own caption and the triggers to the first', () => {
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} numberOfMonths={2} />);
+
+      expect(screen.getByRole('button', { name: 'August, Choose the Month' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '2026, Choose the Year' })).toBeInTheDocument();
+      expect(container.querySelectorAll('[data-slot="caption-trigger"]')).toHaveLength(2);
+
+      expect(screen.getByText('September 2026')).toBeInTheDocument();
     });
 
     it('takes its accessible names from the engine labels, so they translate', async () => {
@@ -491,6 +728,40 @@ describe('Calendar', () => {
 
       await user.click(container.querySelector('.tk-calendar-nav-next-year') as HTMLElement);
       expect(screen.getByRole('grid')).toHaveAccessibleName('Choose the Year, 2028–2039');
+    });
+
+    // The engine renders the nav inside a month under `after` and `around`, so
+    // a board must not take the extra months down with it.
+    it('keeps the navigation while a board is open, however many months are displayed', () => {
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} numberOfMonths={2} navLayout="after" defaultView="month" />);
+
+      expect(container.querySelector('[data-slot="nav"]')).toBeInTheDocument();
+      expect(container.querySelector('.tk-calendar-nav-next-month')).toBeInTheDocument();
+      expect(container.querySelectorAll('[data-slot="month"]')).toHaveLength(1);
+    });
+
+    // Every arrow is named after what it lands on, and is live while anything
+    // it would land on is in range — `goToMonth` clamps the rest.
+    it('names and bounds each arrow by what it steps', () => {
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} minDate={new Date(2015, 5, 1)} defaultView="year" />);
+
+      const previousYear = container.querySelector('.tk-calendar-nav-previous-month') as HTMLElement;
+      const previousPage = container.querySelector('.tk-calendar-nav-previous-year') as HTMLElement;
+
+      // On the year board the single arrows step a year, not a month.
+      expect(previousYear).toHaveAttribute('aria-label', '2025');
+      expect(previousPage).toHaveAttribute('aria-label', '2004–2015');
+
+      // June 2015 onwards is in range, so the page holding 2015 is reachable
+      // even though the month the arrow steps to (August 2014) is not.
+      expect(previousPage).not.toHaveAttribute('aria-disabled');
+    });
+
+    it('marks the wrapper-owned arrows disabled under `disableNavigation`', () => {
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} disableNavigation />);
+
+      expect(container.querySelector('.tk-calendar-nav-previous-year')).toHaveAttribute('aria-disabled', 'true');
+      expect(container.querySelector('.tk-calendar-nav-previous-month')).toHaveAttribute('aria-disabled', 'true');
     });
 
     it('leaves the caption and the year arrows to the engine under a dropdown layout, but still shows the boards', () => {

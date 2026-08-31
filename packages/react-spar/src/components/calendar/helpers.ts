@@ -71,3 +71,9 @@ export const isYearInBounds = (year: number, minDate?: Date, maxDate?: Date): bo
   if (maxDate && year > maxDate.getFullYear()) return false;
   return true;
 };
+
+/** Same rule again, widened to the twelve-year page the year sits on. */
+export const isYearPageInBounds = (year: number, minDate?: Date, maxDate?: Date): boolean => {
+  const start = yearPageStart(year);
+  return isYearInBounds(start + YEARS_PER_PAGE - 1, minDate, undefined) && isYearInBounds(start, undefined, maxDate);
+};

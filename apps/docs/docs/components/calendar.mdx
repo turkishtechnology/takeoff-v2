@@ -165,11 +165,15 @@ const PRESETS = [
 
 function PresetsDemo() {
   const [date, setDate] = React.useState();
+  // The displayed month is its own state: a value set from outside the grid
+  // does not move it, so the preset moves both.
+  const [month, setMonth] = React.useState(new Date());
 
   const pick = (days) => {
     const next = new Date();
     next.setDate(next.getDate() + days);
     setDate(next);
+    setMonth(next);
   };
 
   return (
@@ -177,6 +181,8 @@ function PresetsDemo() {
       <Calendar
         value={date}
         onValueChange={setDate}
+        month={month}
+        onMonthChange={setMonth}
         footer={
           <div className="flex flex-wrap items-center justify-start gap-1" role="group" aria-label="Date presets">
             {PRESETS.map((preset) => (
@@ -239,7 +245,7 @@ const BRAND_CSS = [
   '.brand-calendar.tk-calendar { border-radius: 24px; border-color: #c7d2fe; background: #eef2ff; box-shadow: none; }',
   '.brand-calendar .tk-calendar-month-caption { border-bottom-color: #c7d2fe; }',
   '.brand-calendar .tk-calendar-caption-label { font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #3730a3; }',
-  '.brand-calendar .tk-calendar-nav-button { color: #6366f1; }',
+  '.brand-calendar .tk-calendar-nav-previous-month, .brand-calendar .tk-calendar-nav-next-month { color: #6366f1; }',
   '.brand-calendar .tk-calendar-weekday { color: #6366f1; }',
   '.brand-calendar .tk-calendar-day-button { border-radius: 8px; }',
   '.brand-calendar .tk-calendar-day[data-today]:not([data-selected]) .tk-calendar-day-button { border-color: #6366f1; background: #e0e7ff; }',
@@ -408,12 +414,20 @@ The month and the year in the caption are buttons: they swap the day grid for a
 twelve-month or twelve-year board — Takeoff Core's view switch. Picking a year
 drills down to that year's months; picking a month returns to the days.
 
+There is one board however many months are displayed, and it belongs to the
+first of them: that month's caption carries the buttons, the later captions stay
+plain labels of their own month. While a board is open the calendar shows that
+one month, so the card keeps its navigation and returns to the full row when the
+board closes.
+
 Which board is showing is a third controlled pair: `view` + `onViewChange`, with
 `defaultView` to choose the opening board without taking control of it.
 
 The header carries two pairs of arrows, each stepping one rung of the board it
 is on: the single ones move a month, or a year once the year board is showing;
-the double ones move a year, or a whole twelve-year page.
+the double ones move a year, or a whole twelve-year page. Each arrow is named
+after what it lands on and stays live while any part of that month, year or page
+is inside `minDate` / `maxDate`.
 
 <LiveCode
   code={monthYearPickerDemo}
@@ -432,6 +446,14 @@ engine's `<select>` pair rather than gaining switch buttons, since that layout
 owns the same node; and the header drops the year arrows, because the year
 `<select>` already covers them and the row has no width for both. The boards
 themselves still work, through `view` / `defaultView`.
+
+`navLayout="around"` drops the year arrows for the same reason — the engine
+renders that row itself, as one arrow on each side of the caption. The boards
+work there too: the single arrows step the board's own rung, so the year board
+still walks from one twelve-year page to the next.
+
+`disableNavigation` reaches the boards as well as the arrows: the cells go
+disabled, since picking one would move the displayed month.
 
 ## Presets
 
@@ -532,8 +554,12 @@ layer, and unlayered recipe rules win over layered ones regardless of order.
 - The month and year boards are `role="grid"` too, with one tab stop: arrow keys
   move between cells (vertically by four, the board's column count), `Home` /
   `End` reach the row edges, and the displayed month or year is `aria-selected`.
+  Cells outside `minDate` / `maxDate` cannot take focus, so every key steps over
+  them and leaves the keypress alone when there is nothing left to reach.
 - Opening a board moves focus into it; picking a month hands focus back to the
-  caption trigger that opened it.
+  caption trigger for that board — the one it was opened from, or the caption's
+  own when `defaultView` or `view` opened it. `Escape` closes a board the same
+  way, and stops there rather than reaching a surface the calendar sits in.
 - The caption keeps a polite live region of its own, so the month still
   announces after the arrows move it.
 
