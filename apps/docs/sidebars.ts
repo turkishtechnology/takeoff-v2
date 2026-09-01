@@ -46,6 +46,7 @@ const sidebars: SidebarsConfig = {
         'components/radio',
         'components/table',
         'components/tabs',
+        'components/time-picker',
         'components/toast',
         'components/tooltip',
         'components/upload',

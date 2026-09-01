@@ -16,6 +16,7 @@ and accessibility guidance where the component owns interaction behavior.
 | [Radio](/docs/components/radio)                  | Choosing one option from a mutually exclusive set.                    |
 | [Select](/docs/components/select)                | Choosing from a keyboard-accessible list with typeahead.              |
 | [Switch](/docs/components/switch)                | Turning a single setting on or off.                                   |
+| [TimePicker](/docs/components/time-picker)       | Picking an hour and a minute for a form or a filter.                  |
 
 ## Navigation & disclosure
 

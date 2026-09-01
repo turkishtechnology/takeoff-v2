@@ -95,6 +95,7 @@ const PRIMITIVE_TYPE_NAMES = new Set([
   'Element',
   'ComponentPropsWithoutRef',
   'ComponentPropsWithRef',
+  'Date',
   'Event',
   'EventTarget',
   'MouseEvent',
@@ -656,8 +657,11 @@ async function generateForConfig(program, checker, configPath) {
     }
   }
 
-  // Derive a page-level heading base from the first component.
-  const pageHeadingBase = components[0]?.headingBase?.split('-')[0] ?? 'api';
+  // The first entry is always the root component, so its `headingBase` *is* the
+  // page base — the parts that follow are the ones carrying a `-suffix`. Taken
+  // whole rather than split on the first hyphen, which silently truncated a
+  // multi-word component (`time-picker` → `time`).
+  const pageHeadingBase = components[0]?.headingBase ?? 'api';
 
   // Second pass: render component sections with linkified types.
   const sections = [];

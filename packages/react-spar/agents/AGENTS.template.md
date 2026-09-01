@@ -53,6 +53,7 @@ on headless Spar primitives and styled with Takeoff design tokens.
 | `Switch`     | Any boolean toggle that applies immediately.                                                                                                                             |
 | `Table`      | Rendering tabular data with any of sorting, filtering, pagination, row selection, expandable/tree rows, sticky columns, loading/empty states, or server-side paging.     |
 | `Tabs`       | A UI needs a tablist that swaps panels — settings sections, detail views, segmented controls.                                                                            |
+| `TimePicker` | Picking an hour and a minute — a departure time, a reminder, a shift start.                                                                                              |
 | `Toast`      | Any ephemeral, auto-dismissing notification fired imperatively (success/error/info/warning/loading, promise results, undo actions).                                      |
 | `Tooltip`    | Brief, non-interactive hints attached to a trigger element (button, icon).                                                                                               |
 | `Upload`     | Attaching files to a form, a review-then-send batch, an avatar/image picker.                                                                                             |

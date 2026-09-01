@@ -28,6 +28,7 @@
 @use 'recipes/switch';
 @use 'recipes/table';
 @use 'recipes/tabs';
+@use 'recipes/timepicker';
 @use 'recipes/tooltip';
 @use 'recipes/toast';
 @use 'recipes/upload';
@@ -378,6 +379,110 @@
 
 .tk-tabs-content {
   @include tabs.tabs-content;
+}
+
+.tk-timepicker {
+  @include timepicker.timepicker;
+}
+
+.tk-timepicker-header {
+  @include timepicker.timepicker-header;
+}
+
+.tk-timepicker-body {
+  @include timepicker.timepicker-body;
+}
+
+.tk-timepicker-footer {
+  @include timepicker.timepicker-footer;
+}
+
+.tk-timepicker-columns {
+  @include timepicker.timepicker-columns;
+}
+
+.tk-timepicker-highlight {
+  @include timepicker.timepicker-highlight;
+}
+
+.tk-timepicker-column {
+  @include timepicker.timepicker-column;
+}
+
+.tk-timepicker-previous {
+  @include timepicker.timepicker-previous;
+}
+
+.tk-timepicker-next {
+  @include timepicker.timepicker-next;
+}
+
+.tk-timepicker-chevron {
+  @include timepicker.timepicker-chevron;
+}
+
+.tk-timepicker-value-group {
+  @include timepicker.timepicker-value-group;
+}
+
+.tk-timepicker-value {
+  @include timepicker.timepicker-value;
+}
+
+.tk-timepicker-separator {
+  @include timepicker.timepicker-separator;
+}
+
+.tk-timepicker-meridiem {
+  @include timepicker.timepicker-meridiem;
+}
+
+.tk-timepicker-meridiem-option {
+  @include timepicker.timepicker-meridiem-option;
+}
+
+.tk-timepicker-input-group {
+  @include timepicker.timepicker-input-group;
+}
+
+.tk-timepicker-input {
+  @include timepicker.timepicker-input;
+}
+
+.tk-timepicker-input-value {
+  @include timepicker.timepicker-input-value;
+}
+
+.tk-timepicker-input-label {
+  @include timepicker.timepicker-input-label;
+}
+
+.tk-timepicker-input-stack {
+  @include timepicker.timepicker-input-stack;
+}
+
+.tk-timepicker-input-option {
+  @include timepicker.timepicker-input-option;
+}
+
+.tk-timepicker-dial {
+  @include timepicker.timepicker-dial;
+}
+
+.tk-timepicker-dial-face {
+  @include timepicker.timepicker-dial-face;
+}
+
+.tk-timepicker-dial-hand {
+  @include timepicker.timepicker-dial-hand;
+}
+
+.tk-timepicker-dial-cap {
+  @include timepicker.timepicker-dial-cap;
+}
+
+.tk-timepicker-dial-number {
+  @include timepicker.timepicker-dial-number;
 }
 
 .tk-tooltip-content {

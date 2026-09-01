@@ -83,6 +83,10 @@ table needs updating.
 | `data-indeterminate`  | presence     | Root, Indicator (Progress)  | Indeterminate; indicator animates   |
 | `data-invalid`        | presence     | Root                        | Component is visually invalid       |
 | `data-loading`        | presence     | Root                        | Component is in loading state       |
+| `data-active`         | presence     | TimePicker `dial` field     | The field the dial currently edits  |
+| `data-blank`          | presence     | TimePicker value cell       | Padding cell past the list's end    |
+| `data-compact`        | presence     | TimePicker root, body       | Dial stacks under its fields        |
+| `data-empty`          | presence     | Root (TimePicker)           | No time has been picked yet         |
 | `data-readonly`       | presence     | Root (Slider)               | Value renders, interaction blocked  |
 | `data-required`       | presence     | Root (Slider)               | Control is required                 |
 | `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state  |
@@ -95,13 +99,17 @@ table needs updating.
 | ------------------ | ---------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | `data-variant`     | Root             | `primary`, `danger`, `neutral`                                            | Semantic color treatment                                                  |
 | `data-size`        | Root, Item       | `base`, `large`, `small`                                                  | Duplicated to items by design where recipes need item-local selectors     |
-| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`                                    | Rendering or behavior mode                                                |
+| `data-mode`        | Root, Item       | `button`, `link`, `default`, `compact`, `columns`, `dial`                 | Rendering or behavior mode                                                |
 | `data-type`        | Root **or** Item | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below                |
 | `data-animation`   | Root             | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                         |
 | `data-orientation` | Root             | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                    |
 | `data-thumb`       | Slider thumb     | `min`, `max`                                                              | First / last handle of a range; middle handles carry none                 |
 | `data-track`       | Slider root      | `normal`, `inverted`, `none`                                              | Rail fill mode: `inverted` swaps rail/fill colours, `none` drops the fill |
 | `data-tooltip`     | Slider root      | `auto`, `always`, `never`                                                 | When the value bubble is shown (`auto` = on drag/focus)                   |
+| `data-size`        | TimePicker root  | `small`, `base`                                                           | Column scale; `small` is the 32px cell                                    |
+| `data-time-format` | TimePicker root  | `12`, `24`                                                                | Twelve- or twenty-four-hour clock                                         |
+| `data-type`        | TimePicker root  | `basic`, `divided`, `light`, `dark`, `primary`                            | Panel treatment; repaints the surface, the band and the ink               |
+| `data-unit`        | TimePicker unit  | `hour`, `minute`, `second`, `meridiem`                                    | Which part of the time a column, field or hand belongs to                 |
 
 ### Semantic
 
@@ -365,6 +373,77 @@ follow the standard conventions (presence = `''`, finite = string).
   `Popover.Trigger` owner node (which emits its own `data-slot="root"`), so the
   filter button/panel are styled by class (`.tk-table-filter-button` /
   `.tk-table-filter-panel`) rather than a Table `data-slot` anchor.
+
+### TimePicker
+
+TimePicker is **v2-owned** with no upstream Spar primitive and no third-party
+engine (Slider/Progress precedent), so the whole vocabulary is wrapper-emitted.
+Recorded here per rule 10. Takeoff Core's `tk-datepicker` ships only the column
+body, and only bolted to a date field; the dial and the panel's own chrome come
+from the Figma "timer" component.
+
+- **Root carries the variants and the shared state:** `data-mode` (`basic` |
+  `dial` — which body renders), `data-size` (`small` | `base` — the column
+  scale), `data-type` (`basic` | `divided` | `light` | `dark` | `primary` — the
+  panel treatment), `data-time-format` (`12` | `24`), plus `data-disabled` /
+  `data-readonly` / `data-invalid` / `data-required`, each resolved from the own
+  prop or inherited through `useOptionalFieldContext` from a surrounding Field.
+- **The root carries no `data-*` for its own name.** The panel is a
+  `role="group"` named by a surrounding Field label or by the consumer's
+  `aria-label` / `aria-labelledby`; `TimePicker.Header` is a layout row and
+  claims no labelling role, so there is nothing to mirror (rule 9).
+- **`data-type` is the treatment, not a colour variant.** The values are the
+  Card / Dialog / Drawer `*Type` family, not the semantic `data-variant` one, so
+  the attribute is `data-type` — a future `data-variant` stays free to mean what
+  it means everywhere else. Unlike Calendar's `headerType`, Core applies this
+  vocabulary to the _body_ as well (`tk-datepicker-timepicker-body-light` /
+  `-dark`), which is why the prop is `type` here and the whole panel repaints.
+  Every colour in the recipe resolves through one `--tk-timepicker-*` palette on
+  the root, so a treatment is a block of custom-property overrides rather than a
+  parallel set of selectors.
+- **`data-invalid` recolours the `dial` field border only.** The `columns` body
+  has no bordered node to carry it — its band is a selection marker, not a
+  control frame — so the state is announced on every unit as `aria-invalid` and
+  drawn where a border already exists.
+- **`data-empty` (State, presence) means nothing has been picked yet.** The body
+  always shows _a_ time — the reference time, clamped into the bounds — so
+  "empty" cannot be read off the rendered value; the recipe needs the attribute
+  to mute an untouched panel.
+- **`data-compact` is mirrored alongside `data-mode`,** for the same reason and
+  with the same consumer: the dial body reads it to swap its axis. The column
+  body ignores it — it has one shape — so the attribute is emitted whether or
+  not the current body reacts to it, the way a variant attr always is (rule 8).
+- **`data-mode` is mirrored onto the body.** Rule 7 would keep it on the root,
+  but the two are not required to be in the same subtree: a `Popover.Content`
+  commonly sits between them, and a descendant selector cannot cross that
+  boundary. The mirror has a real consumer — the body's own layout — so it is
+  not a speculative duplicate.
+- **The meridiem toggle carries no `data-*` of its own.** `TimePicker.Meridiem`
+  is a `role="radiogroup"` whose chosen option is marked with `data-selected`,
+  the same key a value cell uses — the state is "this is the chosen one" either
+  way, so it does not earn a second name (rule 10). Where the meridiem lives is
+  a prop and the part renders or does not; there is no attribute for it because
+  nothing styles off it (rule 9).
+- **`data-unit` (`hour` | `minute` | `second` | `meridiem`) identifies what a
+  node belongs to**, on each column, each `dial` field and each dial hand. It is
+  not a variant of the component, so it stays off the root: the same panel
+  renders two to four of them at once.
+- **`data-active` (State, presence) lives on the `dial` field the dial edits.**
+  One dial serves both fields, so the state is per-field and has no root-level
+  meaning — the same reason Slider's `data-dragging` lives on the thumb.
+- **`data-selected` / `data-disabled` on a value cell or dial mark** are the
+  generated nodes' own state. They repeat what the unit's `aria-valuenow` and
+  the bounds already say, but the recipe styles the cells individually and
+  cannot compute either from CSS.
+- **`data-blank` marks a padding cell, not an empty value.** A column past
+  either end of its list still renders a cell so the selection band stays
+  centred; naming it `data-empty` would collide with the root's, which answers a
+  different question. Rule 10's "prefer extending an existing entry" is
+  deliberately not applied here — the two states are unrelated.
+- **The dial's geometry is not a data attribute.** Hand rotation and mark
+  placement are continuous, so the wrapper writes them as an inline custom
+  property (`--tk-timepicker-dial-angle`) and the recipe consumes it. Same
+  rationale as Slider's thumb offset and Progress's fill width.
 
 ### Upload
 

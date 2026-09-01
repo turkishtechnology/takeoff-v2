@@ -76,6 +76,7 @@ import { StepperBase, StepperDescriptionBase, StepperItemBase, StepperTitleBase 
 import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
 import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
+import { TimePickerBase, TimePickerBodyBase, TimePickerFooterBase, TimePickerHeaderBase, TimePickerMeridiemBase } from './components/time-picker/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
@@ -211,6 +212,11 @@ export const slotClassRegistry = {
   tabsList: { slots: TabsListBase.classes },
   tabsTrigger: { slots: TabsTriggerBase.classes },
   tabsContent: { slots: TabsContentBase.classes },
+  timePicker: { slots: TimePickerBase.classes },
+  timePickerHeader: { slots: TimePickerHeaderBase.classes },
+  timePickerBody: { slots: TimePickerBodyBase.classes },
+  timePickerFooter: { slots: TimePickerFooterBase.classes },
+  timePickerMeridiem: { slots: TimePickerMeridiemBase.classes },
   popoverTrigger: { slots: PopoverTriggerBase.classes },
   popoverContent: { slots: PopoverContentBase.classes },
   popoverArrow: { slots: PopoverArrowBase.classes },

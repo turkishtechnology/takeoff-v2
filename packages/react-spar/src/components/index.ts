@@ -23,6 +23,7 @@ export * from './stepper';
 export * from './switch';
 export * from './table';
 export * from './tabs';
+export * from './time-picker';
 export * from './tooltip';
 export * from './toast';
 export * from './skeleton';
