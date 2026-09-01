@@ -1,0 +1,585 @@
+---
+title: TimePicker
+description:
+  An inline panel for picking a time of day, as spinning unit columns or as a
+  dial with two number fields. Full keyboard control, step and bound support,
+  and a composable header and footer.
+sidebar_label: TimePicker
+sidebar_position: 16
+slug: /components/time-picker
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Button,
+  Popover,
+  ReactSparDemoRoot,
+  TimePicker,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const timePickerScope = { TimePicker, Button, Popover };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  const [time, setTime] = React.useState(new Date(2026, 8, 1, 10, 45));
+
+  return (
+    <TimePicker
+      className="tk-timepicker-panel"
+      aria-labelledby="timer-heading"
+      value={time}
+      onValueChange={setTime}
+    >
+      <TimePicker.Header>
+        <h5 id="timer-heading">Timer</h5>
+      </TimePicker.Header>
+
+      <TimePicker.Body />
+
+      <TimePicker.Footer>
+        <Button appearance="outlined" variant="neutral">Cancel</Button>
+        <Button>Continue</Button>
+      </TimePicker.Footer>
+    </TimePicker>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const clockDemo = String.raw`
+function ClockDemo() {
+  const [time, setTime] = React.useState(new Date(2026, 8, 1, 12, 15));
+
+  return (
+    <TimePicker
+      className="tk-timepicker-panel"
+      aria-labelledby="clock-heading"
+      mode="dial"
+      value={time}
+      onValueChange={setTime}
+    >
+      <TimePicker.Header>
+        <h5 id="clock-heading">Timer</h5>
+      </TimePicker.Header>
+      <TimePicker.Body />
+    </TimePicker>
+  );
+}
+
+render(<ClockDemo />);
+`;
+
+export const formatDemo = String.raw`
+function FormatDemo() {
+  const [time, setTime] = React.useState(new Date(2026, 8, 1, 13, 45, 30));
+
+  return (
+    <TimePicker
+      className="tk-timepicker-panel"
+      timeFormat="12"
+      showSeconds
+      value={time}
+      onValueChange={setTime}
+    >
+      <TimePicker.Body />
+    </TimePicker>
+  );
+}
+
+render(<FormatDemo />);
+`;
+
+export const meridiemDemo = String.raw`
+function MeridiemDemo() {
+  const [time, setTime] = React.useState(new Date(2026, 8, 1, 13, 45));
+
+  return (
+    <div className="flex flex-wrap items-start gap-4">
+      {['column', 'toggle'].map((meridiem) => (
+        <TimePicker
+          key={meridiem}
+          className="tk-timepicker-panel"
+          timeFormat="12"
+          meridiem={meridiem}
+          value={time}
+          onValueChange={setTime}
+          aria-label={meridiem}
+        >
+          {/* The part renders nothing under meridiem="column", so the same
+              composition serves both. */}
+          <TimePicker.Header>
+            <TimePicker.Meridiem />
+          </TimePicker.Header>
+          <TimePicker.Body />
+        </TimePicker>
+      ))}
+    </div>
+  );
+}
+
+render(<MeridiemDemo />);
+`;
+
+export const stepsDemo = String.raw`
+function StepsDemo() {
+  const [time, setTime] = React.useState(new Date(2026, 8, 1, 9, 30));
+
+  return (
+    <TimePicker
+      className="tk-timepicker-panel"
+      minuteStep={15}
+      minTime={new Date(2026, 8, 1, 9, 0)}
+      maxTime={new Date(2026, 8, 1, 17, 30)}
+      value={time}
+      onValueChange={setTime}
+    >
+      <TimePicker.Body />
+    </TimePicker>
+  );
+}
+
+render(<StepsDemo />);
+`;
+
+export const popoverDemo = String.raw`
+function PopoverDemo() {
+  const [time, setTime] = React.useState(new Date(2026, 8, 1, 10, 45));
+  const [open, setOpen] = React.useState(false);
+  const [draft, setDraft] = React.useState(time);
+
+  const pad = (n) => String(n).padStart(2, '0');
+  const label = pad(time.getHours()) + ':' + pad(time.getMinutes());
+
+  return (
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        // Reopening always starts from the committed time, so a cancelled
+        // edit leaves nothing behind.
+        if (next) setDraft(time);
+      }}
+    >
+      <Popover.Trigger as={Button} appearance="outlined" variant="neutral">
+        {label}
+      </Popover.Trigger>
+
+      <Popover.Content className="p-0">
+        <TimePicker value={draft} onValueChange={setDraft}>
+          <TimePicker.Body />
+          <TimePicker.Footer>
+            <Button
+              appearance="text"
+              variant="neutral"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setTime(draft);
+                setOpen(false);
+              }}
+            >
+              Apply
+            </Button>
+          </TimePicker.Footer>
+        </TimePicker>
+      </Popover.Content>
+    </Popover>
+  );
+}
+
+render(<PopoverDemo />);
+`;
+
+export const compactDemo = String.raw`
+function CompactDemo() {
+  const [time, setTime] = React.useState(new Date(2026, 8, 1, 10, 45));
+
+  return (
+    <div className="flex flex-wrap items-start gap-4">
+      {['columns', 'dial'].map((mode) => (
+        <TimePicker
+          key={mode}
+          className="tk-timepicker-panel"
+          mode={mode}
+          compact
+          timeFormat="12"
+          value={time}
+          onValueChange={setTime}
+          aria-label={mode}
+        >
+          <TimePicker.Body />
+        </TimePicker>
+      ))}
+    </div>
+  );
+}
+
+render(<CompactDemo />);
+`;
+
+export const typeDemo = String.raw`
+function TypeDemo() {
+  const [time, setTime] = React.useState(new Date(2026, 8, 1, 15, 45));
+
+  return (
+    <div className="flex flex-wrap items-start gap-4">
+      {['basic', 'divided', 'light', 'primary', 'dark'].map((type) => (
+        <TimePicker
+          key={type}
+          className="tk-timepicker-panel"
+          type={type}
+          timeFormat="12"
+          meridiem="toggle"
+          value={time}
+          onValueChange={setTime}
+          aria-label={type}
+        >
+          <TimePicker.Header>
+            <TimePicker.Meridiem />
+          </TimePicker.Header>
+          <TimePicker.Body />
+        </TimePicker>
+      ))}
+    </div>
+  );
+}
+
+render(<TypeDemo />);
+`;
+
+export const statesDemo = String.raw`
+function StatesDemo() {
+  const time = new Date(2026, 8, 1, 10, 45);
+
+  return (
+    <div className="flex flex-wrap items-start gap-4">
+      <TimePicker className="tk-timepicker-panel" defaultValue={time} disabled>
+        <TimePicker.Body />
+      </TimePicker>
+      <TimePicker className="tk-timepicker-panel" defaultValue={time} readOnly>
+        <TimePicker.Body />
+      </TimePicker>
+    </div>
+  );
+}
+
+render(<StatesDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+`TimePicker` picks a time of day inline, as a `Date`. Two bodies pick the same
+value: `columns` stacks each unit as a spinning column, `dial` pairs two number
+fields with a clock face.
+
+## Usage
+
+```tsx
+import { TimePicker } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<TimePicker defaultValue={new Date()}>
+  <TimePicker.Body />
+</TimePicker>
+```
+
+`TimePicker.Body` is the picking surface; the root is chrome-free, so a bare
+body drops into a `Popover.Content`. Add the opt-in `tk-timepicker-panel` class
+for a standalone panel. Inside a `Field` it inherits the label and the
+`disabled` / `readOnly` / `invalid` / `required` state.
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={440}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timePickerScope}
+/>
+
+## Clock
+
+`mode="dial"` swaps the columns for two number fields and a dial. The dial edits
+the active field, and picking an hour moves the turn to the minutes. It is
+hidden from assistive technology — every value it offers is reachable from the
+two fields it drives.
+
+A 24-hour face carries the whole day: 00–11 on the outer ring, 12–23 on the
+inner one. A 12-hour face uses the one ring.
+
+<LiveCode
+  code={clockDemo}
+  noInline
+  previewMinHeight={520}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timePickerScope}
+/>
+
+## Twelve-hour clock and seconds
+
+`timeFormat="12"` renumbers the hours 1–12 and adds an AM/PM unit; switching it
+keeps the hour and swaps the half-day. `showSeconds` adds a seconds column —
+`columns` only, since the dial has two fields by design.
+
+<LiveCode
+  code={formatDemo}
+  noInline
+  previewMinHeight={360}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timePickerScope}
+/>
+
+## Where AM/PM lives
+
+Under `timeFormat="12"` the meridiem gets a column of its own.
+`meridiem="toggle"` takes it out of that row and hands it to a composed
+`TimePicker.Meridiem`, a segmented control you place yourself — typically the
+header, for a panel too narrow for a fourth column.
+
+```tsx
+<TimePicker timeFormat="12" meridiem="toggle">
+  <TimePicker.Header>
+    <TimePicker.Meridiem />
+  </TimePicker.Header>
+  <TimePicker.Body />
+</TimePicker>
+```
+
+The part renders nothing under `meridiem="column"` or a 24-hour clock, so it is
+safe to leave composed. It is a `role="radiogroup"`: one tab stop, with the
+arrows moving between the two halves.
+
+<LiveCode
+  code={meridiemDemo}
+  noInline
+  previewMinHeight={380}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timePickerScope}
+/>
+
+## Compact
+
+`compact` is the shorter form of whichever body is rendering: the dial stacks
+under its number fields instead of sitting beside them, and the column body
+drops the spinning columns for those same fields. AM/PM comes along as a
+two-cell box beside them rather than a third number field.
+
+<LiveCode
+  code={compactDemo}
+  noInline
+  previewMinHeight={520}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timePickerScope}
+/>
+
+## Steps and bounds
+
+`hourStep` / `minuteStep` / `secondStep` thin out what a column offers.
+`minTime` / `maxTime` are inclusive and read only the time of day.
+
+A coarse unit stays selectable while **any** finer value it allows is in bounds:
+under a 17:30 ceiling the hour 17 works, and picking it pulls the minutes down
+to 30.
+
+<LiveCode
+  code={stepsDemo}
+  noInline
+  previewMinHeight={360}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timePickerScope}
+/>
+
+## In a popover
+
+The panel ships no trigger. Compose one with `Popover`, and decide there whether
+the picker commits live or behind an Apply button.
+
+<LiveCode
+  code={popoverDemo}
+  noInline
+  previewMinHeight={420}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timePickerScope}
+/>
+
+## Type
+
+`divided` rules the header and footer off the picking surface; `light` tints the
+surface and flips the selection band to white against it; `dark` and `primary`
+repaint it outright.
+
+It does not reach content composed into the panel — a `Button` carries its own
+colours, so `dark` and `primary` need `variant="white"`. For a treatment the
+package does not ship, override the `--tk-timepicker-*` palette on the root.
+
+<LiveCode
+  code={typeDemo}
+  noInline
+  previewMinHeight={360}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timePickerScope}
+/>
+
+## States
+
+`disabled` blocks every interaction and drops the panel out of the tab order;
+`readOnly` keeps the value readable and focusable but commits nothing.
+
+<LiveCode
+  code={statesDemo}
+  noInline
+  previewMinHeight={360}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timePickerScope}
+/>
+
+## Keyboard
+
+Each unit — a `columns` column or a `dial` field — is one tab stop.
+
+| Key                         | Action                                       |
+| --------------------------- | -------------------------------------------- |
+| <kbd>↑</kbd>                | Select the value drawn above the current one |
+| <kbd>↓</kbd>                | Select the value drawn below the current one |
+| <kbd>Page Up</kbd>          | Move five values up                          |
+| <kbd>Page Down</kbd>        | Move five values down                        |
+| <kbd>Home</kbd>             | Jump to the first value the bounds allow     |
+| <kbd>End</kbd>              | Jump to the last value the bounds allow      |
+| <kbd>0</kbd>–<kbd>9</kbd>   | Type the value                               |
+| <kbd>A</kbd> / <kbd>P</kbd> | Set the half-day                             |
+
+Columns read top-to-bottom as ascending, so <kbd>↑</kbd> selects what is drawn
+above — the smaller value. Values the bounds forbid are stepped over rather than
+landed on.
+
+A typed digit lands straight away and waits a second for a second one, so `4`
+selects 4 and `45` selects 45. A pair that names no value starts over from its
+last digit.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### TimePicker {#time-picker}
+
+#### Props {#time-picker-props}
+
+| Name                                   | Type                                                                                                       | Default                                                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="mode" />              | <code><a href="#time-picker-td-timepickermode">TimePickerMode</a></code>                                   | 'columns'                                                    | Which body the panel picks with.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| <ApiBadge label="size" />              | <code><a href="#time-picker-td-timepickersize">TimePickerSize</a></code>                                   | 'base'                                                       | Column scale. `small` is the 32px cell with 12px digits. `columns` only; the dial is drawn at one scale.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| <ApiBadge label="type" />              | <code><a href="#time-picker-td-timepickertype">TimePickerType</a></code>                                   | 'basic'                                                      | Panel treatment. `divided` rules off the header and footer; `light` tints the surface and flips the selection band to white against it; `dark` and `primary` repaint the whole panel.                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| <ApiBadge label="value" />             | <code>Date</code>                                                                                          | -                                                            | Selected time (controlled). Only the hour, minute and second are read; the date part is carried through to every emitted value untouched, so a picker bound to a date keeps it.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| <ApiBadge label="defaultValue" />      | <code>Date</code>                                                                                          | -                                                            | Initially selected time (uncontrolled).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| <ApiBadge label="referenceDate" />     | <code>Date</code>                                                                                          | the current date at 00:00:00.000, resolved once per instance | The day an emitted time falls on while `value` is empty, and the time the body shows before anything is picked (clamped into `minTime` / `maxTime`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| <ApiBadge label="timeFormat" />        | <code><a href="#time-picker-td-timepickerformat">TimePickerFormat</a></code>                               | '24'                                                         | Twelve- or twenty-four-hour clock.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| <ApiBadge label="meridiem" />          | <code><a href="#time-picker-td-timepickermeridiemplacement">TimePickerMeridiemPlacement</a></code>         | 'column'                                                     | Where AM/PM is picked. Only read under `timeFormat="12"`; a 24-hour clock has no meridiem to place.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| <ApiBadge label="hourStep" />          | <code>number</code>                                                                                        | 1                                                            | Distance between selectable hours.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| <ApiBadge label="minuteStep" />        | <code>number</code>                                                                                        | 1                                                            | Distance between selectable minutes.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| <ApiBadge label="secondStep" />        | <code>number</code>                                                                                        | 1                                                            | Distance between selectable seconds.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| <ApiBadge label="showSeconds" />       | <code>boolean</code>                                                                                       | false                                                        | Add a seconds column. `columns` only — the `dial` body has two fields by design and no third hand.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| <ApiBadge label="compact" />           | <code>boolean</code>                                                                                       | false                                                        | The shorter form of whichever body is rendering: `dial` stacks its face under the number fields instead of setting the two side by side, and `columns` drops the spinning columns for those same fields.                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| <ApiBadge label="minTime" />           | <code>Date</code>                                                                                          | -                                                            | Earliest selectable time, inclusive. Only the hour, minute and second are read — a bound is a time of day, not a moment, so the date part is ignored.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| <ApiBadge label="maxTime" />           | <code>Date</code>                                                                                          | -                                                            | Latest selectable time, inclusive. The date part is ignored, as with `minTime`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| <ApiBadge label="isTimeUnavailable" /> | <code>(time: Date, unit: <a href="#time-picker-td-timepickerunit">TimePickerUnit</a>) =&gt; boolean</code> | -                                                            | Rejects individual times the bounds allow — a closed lunch hour, a slot already taken. Called once per rendered cell with the time that cell would commit and the unit being asked about, so answering is a comparison rather than a scan: a column of hours asks 24 times, not 1440. A coarse unit is asked about itself only, so disabling 12:00–12:30 means answering `false` for the hour 12 (some of it is open) and `true` for the minutes inside it. Unlike `minTime` / `maxTime`, an unavailable time is only made unselectable — the finer units are not pulled onto a legal value, because there is no bound to pull them to. |
+| <ApiBadge label="name" />              | <code>string</code>                                                                                        | -                                                            | Submits the value with a surrounding form under this name, as `HH:mm` (or `HH:mm:ss` with `showSeconds`) — the shape a native `<input type="time">` submits. Without it the picker contributes no form data.                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| <ApiBadge label="form" />              | <code>string</code>                                                                                        | -                                                            | `id` of the form to submit with, when the picker is not inside it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| <ApiBadge label="labels" />            | <code><a href="#time-picker-td-timepickerlabels">TimePickerLabels</a></code>                               | -                                                            | Accessible names, and the `dial` body's visible field labels.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| <ApiBadge label="disabled" />          | <code>boolean</code>                                                                                       | -                                                            | Blocks interaction and dims the panel. Inherited from a surrounding `Field` when unset.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| <ApiBadge label="readOnly" />          | <code>boolean</code>                                                                                       | -                                                            | Renders the value but commits nothing. Inherited from a surrounding `Field` when unset.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| <ApiBadge label="invalid" />           | <code>boolean</code>                                                                                       | -                                                            | Marks the group invalid. Inherited from a surrounding `Field` when unset.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| <ApiBadge label="required" />          | <code>boolean</code>                                                                                       | -                                                            | Marks the group required. Inherited from a surrounding `Field` when unset.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| <ApiBadge label="classNames" />        | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                                   | -                                                            | Per-slot extra classes.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| <ApiBadge label="slotProps" />         | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>                  | -                                                            | Per-slot HTML-attribute overrides.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| <ApiBadge label="className" />         | <code>string</code>                                                                                        | -                                                            | Appends custom classes to the root slot.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+
+#### Events {#time-picker-events}
+
+| Name                               | Type                                  | Default | Description                                                                                                                  |
+| ---------------------------------- | ------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onValueChange" /> | <code>(value: Date) =&gt; void</code> | -       | Fires with the new time. Always a full `Date`: when nothing was selected yet, the first pick lands on `referenceDate`'s day. |
+
+#### Data attributes {#time-picker-data-attributes}
+
+| Attribute                                       | Applied when                                                      | Purpose                                                                                                                                                       |
+| ----------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                            | Stable selector for wrapper styling on the root slot.                                                                                                         |
+| <ApiBadge label="data-mode" />                  | Always                                                            | Reflects the resolved `mode` prop (`columns` \| `dial`) that decides which body renders.                                                                      |
+| <ApiBadge label="data-type" />                  | Always                                                            | Reflects the resolved `type` prop (`basic` \| `divided` \| `light` \| `dark` \| `primary`) — the panel treatment every colour in the recipe resolves through. |
+| <ApiBadge label="data-size" />                  | Always                                                            | Reflects the resolved `size` prop (`small` \| `base`) — the column scale. `small` is a 32px cell with 12px digits.                                            |
+| <ApiBadge label="data-compact" />               | When `compact` is set                                             | The shorter form of whichever body renders: the dial stacks under its fields, the column body drops the columns for those fields. Mirrored onto the body.     |
+| <ApiBadge label="data-time-format" />           | Always                                                            | Reflects the resolved `timeFormat` prop (`12` \| `24`).                                                                                                       |
+| <ApiBadge label="data-empty" />                 | While no time has been picked                                     | The body is showing the reference time rather than a committed one, so the recipe can mute an untouched panel.                                                |
+| <ApiBadge label="data-disabled" />              | When disabled (own prop or inherited from a surrounding `Field`)  | Mutes the panel and blocks every interaction; each unit also drops out of the tab order.                                                                      |
+| <ApiBadge label="data-readonly" />              | When read-only (own prop or inherited from a surrounding `Field`) | Renders and focuses the value while blocking value-changing interaction.                                                                                      |
+| <ApiBadge label="data-invalid" />               | When invalid (own prop or inherited from a surrounding `Field`)   | Applies the invalid treatment; each unit also exposes `aria-invalid`.                                                                                         |
+| <ApiBadge label="data-required" />              | When required (own prop or inherited from a surrounding `Field`)  | Marks the control as required; each unit also exposes `aria-required`.                                                                                        |
+| <ApiBadge label="role=&quot;group&quot;" />     | Always                                                            | Ties the unit spinbuttons together. Named by a surrounding `Field` label, or by an `aria-label` / `aria-labelledby` passed to the root.                       |
+
+### TimePicker.Header {#time-picker-header}
+
+#### Data attributes {#time-picker-header-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### TimePicker.Body {#time-picker-body}
+
+#### Data attributes {#time-picker-body-data-attributes}
+
+| Attribute                                        | Applied when                                  | Purpose                                                                                                                                                                                                                                |
+| ------------------------------------------------ | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />  | Always                                        | Stable selector for wrapper styling on the root slot.                                                                                                                                                                                  |
+| <ApiBadge label="data-mode" />                   | Always                                        | Mirrors the root’s `mode` so the two layouts can be styled from the body itself — a `Popover.Content` may sit between the two in the DOM.                                                                                              |
+| <ApiBadge label="data-slot=&quot;column&quot;    | &quot;input&quot;" />                         | On each rendered unit                                                                                                                                                                                                                  | The unit is the `role="spinbutton"` focus stop: a column in the `columns` body, a number field in the `dial` one. |
+| <ApiBadge label="data-unit" />                   | On each unit, and on each dial hand           | `hour` \| `minute` \| `second` \| `meridiem` — which part of the time the node belongs to.                                                                                                                                             |
+| <ApiBadge label="data-active" />                 | On the `dial` field the dial is editing       | One dial serves both fields; this marks the one a dial press writes to.                                                                                                                                                                |
+| <ApiBadge label="data-selected" />               | On the committed value cell and dial mark     | Gives the current value its full-contrast treatment while the neighbours recede.                                                                                                                                                       |
+| <ApiBadge label="data-disabled" />               | On a cell or dial mark the bounds forbid      | Mutes a value that `minTime` / `maxTime` or the step grid does not allow.                                                                                                                                                              |
+| <ApiBadge label="data-blank" />                  | On a padding cell past either end of a column | Holds the column’s height so the selection band stays centred at the ends of the list. Distinct from the root’s `data-empty`, which means nothing has been picked.                                                                     |
+| <ApiBadge label="role=&quot;spinbutton&quot;" /> | On every unit                                 | The unit is the accessibility owner: it carries `aria-valuenow` / `aria-valuemin` / `aria-valuemax` / `aria-valuetext` and the keyboard surface. The cells, arrows and dial marks are pointer affordances, hidden from assistive tech. |
+
+### TimePicker.Meridiem {#time-picker-meridiem}
+
+#### Data attributes {#time-picker-meridiem-data-attributes}
+
+| Attribute                                         | Applied when                  | Purpose                                                                                                     |
+| ------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />   | Always                        | Stable selector for wrapper styling on the root slot.                                                       |
+| <ApiBadge label="role=&quot;radiogroup&quot;" />  | Always, when the part renders | Two mutually exclusive choices: one tab stop, `role="radio"` options inside it, arrows moving between them. |
+| <ApiBadge label="data-slot=&quot;option&quot;" /> | On each of the two choices    | The AM and PM buttons; the chosen one carries `data-selected` and is the group’s single tab stop.           |
+| <ApiBadge label="data-selected" />                | On the chosen half-day        | Raises that option as the active segment.                                                                   |
+
+### TimePicker.Footer {#time-picker-footer}
+
+#### Data attributes {#time-picker-footer-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#time-picker-type-definitions}
+
+| Name                                                                                                          | Definition                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="time-picker-td-timepickermode"><ApiBadge label="TimePickerMode" /></span>                           | <code>'columns' &#124; 'dial'</code>                                                                                                                                                                                                                                                                                                                                                                           |
+| <span id="time-picker-td-timepickersize"><ApiBadge label="TimePickerSize" /></span>                           | <code>'small' &#124; 'base'</code>                                                                                                                                                                                                                                                                                                                                                                             |
+| <span id="time-picker-td-timepickertype"><ApiBadge label="TimePickerType" /></span>                           | <code>'basic' &#124; 'divided' &#124; 'light' &#124; 'dark' &#124; 'primary'</code>                                                                                                                                                                                                                                                                                                                            |
+| <span id="time-picker-td-timepickerformat"><ApiBadge label="TimePickerFormat" /></span>                       | <code>'12' &#124; '24'</code>                                                                                                                                                                                                                                                                                                                                                                                  |
+| <span id="time-picker-td-timepickermeridiemplacement"><ApiBadge label="TimePickerMeridiemPlacement" /></span> | <code>'column' &#124; 'toggle'</code>                                                                                                                                                                                                                                                                                                                                                                          |
+| <span id="time-picker-td-timepickerunit"><ApiBadge label="TimePickerUnit" /></span>                           | <code>'hour' &#124; 'minute' &#124; 'second' &#124; 'meridiem'</code>                                                                                                                                                                                                                                                                                                                                          |
+| <span id="time-picker-td-timepickerlabels"><ApiBadge label="TimePickerLabels" /></span>                       | <code>&#123; hour?: string; minute?: string; second?: string; meridiem?: string; am?: string; pm?: string &#125;</code>                                                                                                                                                                                                                                                                                        |
+| <span id="time-picker-td-timepickerbodyslot"><ApiBadge label="TimePickerBodySlot" /></span>                   | <code>&#124; 'root' &#124; 'columns' &#124; 'column' &#124; 'highlight' &#124; 'previousTrigger' &#124; 'nextTrigger' &#124; 'chevron' &#124; 'valueGroup' &#124; 'value' &#124; 'separator' &#124; 'inputGroup' &#124; 'input' &#124; 'inputValue' &#124; 'inputLabel' &#124; 'inputStack' &#124; 'inputOption' &#124; 'dial' &#124; 'dialFace' &#124; 'dialHand' &#124; 'dialCap' &#124; 'dialNumber'</code> |
+| <span id="time-picker-td-timepickermeridiemslot"><ApiBadge label="TimePickerMeridiemSlot" /></span>           | <code>'root' &#124; 'option'</code>                                                                                                                                                                                                                                                                                                                                                                            |
+
+{/* api-tables:end */}
