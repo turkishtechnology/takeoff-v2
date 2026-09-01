@@ -342,9 +342,11 @@ surrounding `Field`; a direct prop still wins.
   `99` minutes, `0` on a twelve-hour clock — falls back to its last digit rather
   than being dropped. <kbd>A</kbd> / <kbd>P</kbd> set the half-day, which has no
   digits of its own.
-- The columns read top-to-bottom as ascending — 09, **10**, 11 — so <kbd>↑</kbd>
-  selects the smaller value. This follows the layout rather than the APG
-  spinbutton wording.
+- The columns read top-to-bottom in clock order — 09, **10**, 11 — so
+  <kbd>↑</kbd> selects the earlier value. This follows the layout rather than
+  the APG spinbutton wording. A twelve-hour hour column runs 12, 1, 2 … 11: `12`
+  is midnight and noon, so it opens the half-day rather than closing it, and
+  every ordered reading — the bounds, Home / End, the arrows — depends on that.
 - The value cells, the arrows and the whole dial are pointer affordances: hidden
   from assistive tech and out of the tab order, because every value they offer
   is already reachable from the unit they drive.

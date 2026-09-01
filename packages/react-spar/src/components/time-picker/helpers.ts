@@ -151,12 +151,28 @@ export const unitValues = (unit: TimePickerUnit, format: TimePickerFormat, steps
   if (unit === 'meridiem') return [0, 1];
 
   const step = stepOf(unit, steps);
-  const first = unit === 'hour' && format === '12' ? 1 : 0;
-  const last = unit === 'hour' ? (format === '12' ? HOURS_PER_HALF_DAY : HOURS_PER_DAY - 1) : MINUTES_PER_HOUR - 1;
+
+  // A twelve-hour clock prints midnight and noon as `12`, so a column ordered
+  // 1…12 puts the first hour of the half-day last. Everything that reads the
+  // column as ordered — the bounds scan below, Home / End, the arrows — would
+  // then have midnight following 11pm. Build it on the underlying 0…11 instead
+  // and print the zero as `12`, which also lands the step grid on the same
+  // hours a 24-hour clock steps through.
+  if (unit === 'hour' && format === '12') {
+    const values: number[] = [];
+    for (let value = 0; value < HOURS_PER_HALF_DAY; value += step) values.push(value);
+
+    const currentInHalfDay = current % HOURS_PER_HALF_DAY;
+    if (!values.includes(currentInHalfDay)) values.push(currentInHalfDay);
+
+    return values.sort((left, right) => left - right).map(value => value || HOURS_PER_HALF_DAY);
+  }
+
+  const last = unit === 'hour' ? HOURS_PER_DAY - 1 : MINUTES_PER_HOUR - 1;
 
   const values: number[] = [];
-  for (let value = first; value <= last; value += step) values.push(value);
-  if (!values.includes(current) && current >= first && current <= last) values.push(current);
+  for (let value = 0; value <= last; value += step) values.push(value);
+  if (!values.includes(current) && current >= 0 && current <= last) values.push(current);
 
   return values.sort((left, right) => left - right);
 };

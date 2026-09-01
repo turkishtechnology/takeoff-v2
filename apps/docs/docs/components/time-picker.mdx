@@ -457,9 +457,10 @@ Each unit — a `columns` column or a `dial` field — is one tab stop.
 | <kbd>0</kbd>–<kbd>9</kbd>   | Type the value                               |
 | <kbd>A</kbd> / <kbd>P</kbd> | Set the half-day                             |
 
-Columns read top-to-bottom as ascending, so <kbd>↑</kbd> selects what is drawn
-above — the smaller value. Values the bounds forbid are stepped over rather than
-landed on.
+Columns read top-to-bottom in clock order, so <kbd>↑</kbd> selects what is drawn
+above — the earlier value. On a twelve-hour clock that column opens on `12`,
+which is where the half-day starts. Values the bounds forbid are stepped over
+rather than landed on.
 
 A typed digit lands straight away and waits a second for a second one, so `4`
 selects 4 and `45` selects 45. A pair that names no value starts over from its

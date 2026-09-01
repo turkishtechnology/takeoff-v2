@@ -2,6 +2,8 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { waitFor } from '@testing-library/dom';
+
 import { renderWithProvider as render, screen, within } from '../../test-utils';
 
 import { Field } from '../field';
@@ -368,13 +370,118 @@ describe('TimePicker (compound)', () => {
       expect(container.querySelectorAll('[data-slot="input"]')).toHaveLength(2);
     });
 
-    it('warns when the toggle is asked for but never composed', () => {
+    it('warns when the toggle is asked for but never composed', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       render(<Panel defaultValue={at(13, 45)} timeFormat="12" meridiem="toggle" />);
 
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining('TimePicker.Meridiem'));
+      // The check waits a task so a composed part has time to register.
+      await waitFor(() => expect(warn).toHaveBeenCalledWith(expect.stringContaining('TimePicker.Meridiem')));
       warn.mockRestore();
+    });
+
+    it('stays quiet when the toggle is composed', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      render(
+        <TimePicker referenceDate={DAY} aria-label="Timer" defaultValue={at(13, 45)} timeFormat="12" meridiem="toggle">
+          <TimePicker.Header>
+            <TimePicker.Meridiem />
+          </TimePicker.Header>
+          <TimePicker.Body />
+        </TimePicker>,
+      );
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+  });
+
+  describe('the step grid and the read-only group', () => {
+    it('locks the dial marks the step does not offer', async () => {
+      const user = userEvent.setup();
+      const { container } = render(<Panel mode="dial" defaultValue={at(10, 45)} minuteStep={15} />);
+
+      // The dial edits whichever field is active, so hand it the minutes.
+      await user.click(screen.getByRole('spinbutton', { name: 'Minute' }));
+
+      // The face still draws all twelve marks — it is a clock, not a grid — but
+      // only 00/15/30/45 are on the step.
+      const marks = [...container.querySelectorAll<HTMLButtonElement>('[data-slot="dial-number"]')];
+      expect(marks).toHaveLength(12);
+      expect(marks.filter(mark => !mark.disabled).map(mark => mark.textContent)).toEqual(['00', '15', '30', '45']);
+    });
+
+    it('keeps the read-only toggle in the tab order', async () => {
+      const user = userEvent.setup();
+      render(<TogglePanel defaultValue={at(13, 45)} readOnly />);
+
+      const pm = screen.getByRole('radio', { name: 'PM' });
+      // Read-only is not disabled: the value still has to be reachable and
+      // announceable, it just cannot be changed.
+      expect(pm).toBeEnabled();
+      expect(pm).toHaveAttribute('tabindex', '0');
+
+      pm.focus();
+      await user.keyboard('{ArrowLeft}');
+      expect(pm).toBeChecked();
+    });
+
+    it('moves focus with the selection inside the toggle', async () => {
+      const user = userEvent.setup();
+      render(<TogglePanel defaultValue={at(13, 45)} />);
+
+      const am = screen.getByRole('radio', { name: 'AM' });
+      screen.getByRole('radio', { name: 'PM' }).focus();
+      await user.keyboard('{ArrowLeft}');
+
+      // The tab stop roves to whichever radio is checked, so focus has to go
+      // with it or the group's one stop sits on an element nobody is on.
+      expect(am).toBeChecked();
+      expect(am).toHaveFocus();
+    });
+  });
+
+  describe('the twelve-hour clock reads chronologically', () => {
+    it('runs its hour column from 12 rather than to it', () => {
+      render(<Panel defaultValue={at(15, 0)} timeFormat="12" />);
+
+      // Midnight and noon print as `12` but come first in the half-day, so the
+      // column has to open on them — everything ordered reads it that way.
+      expect(cells('Hour').map(cell => cell.textContent)).toEqual(['02', '03', '04']);
+      expect(column('Hour')).toHaveAttribute('aria-valuemin', '12');
+      expect(column('Hour')).toHaveAttribute('aria-valuemax', '11');
+    });
+
+    it('sends Home to noon and End to eleven', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(<Panel value={at(15, 0)} timeFormat="12" onValueChange={onValueChange} />);
+
+      column('Hour').focus();
+      await user.keyboard('{Home}');
+      expect(onValueChange).toHaveBeenLastCalledWith(at(12, 0));
+
+      await user.keyboard('{End}');
+      expect(onValueChange).toHaveBeenLastCalledWith(at(23, 0));
+    });
+
+    it('steps the same hours a 24-hour clock steps', () => {
+      const { rerender } = render(<Panel defaultValue={at(0, 0)} timeFormat="12" hourStep={3} />);
+      expect(cells('Hour').map(cell => cell.textContent)).toEqual([null, '12', '03'].map(text => text ?? ''));
+
+      // The same grid, printed the other way: 0, 3, 6, 9 either side of noon.
+      rerender(<Panel defaultValue={at(0, 0)} timeFormat="24" hourStep={3} />);
+      expect(cells('Hour').map(cell => cell.textContent)).toEqual(['', '00', '03']);
+    });
+
+    it('keeps both halves of the day reachable under a bound', () => {
+      render(<TogglePanel defaultValue={at(10, 0)} minTime={at(10, 0)} />);
+
+      // 10 and 11 AM are inside the bound, so the morning has to stay pickable.
+      const am = screen.getByRole('radio', { name: 'AM' });
+      expect(am).toBeEnabled();
     });
   });
 
@@ -392,6 +499,14 @@ describe('TimePicker (compound)', () => {
     it('adds the seconds to the submitted value only when they are shown', () => {
       const { container } = render(<Panel defaultValue={at(10, 45, 30)} name="departure" showSeconds />);
       expect(container.querySelector('input[type="hidden"]')).toHaveValue('10:45:30');
+    });
+
+    it('leaves the seconds off a body that never renders them', () => {
+      // The dial has two fields and no seconds hand, so `showSeconds` renders
+      // nothing there — submitting a frozen, uneditable `:30` would post a value
+      // the picker never offered.
+      const { container } = render(<Panel mode="dial" defaultValue={at(10, 45, 30)} name="departure" showSeconds />);
+      expect(container.querySelector('input[type="hidden"]')).toHaveValue('10:45');
     });
 
     it('submits an empty value until something is picked', () => {
