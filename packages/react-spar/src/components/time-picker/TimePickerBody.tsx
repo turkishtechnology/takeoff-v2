@@ -278,14 +278,18 @@ export const TimePickerBody = <T extends ElementType = 'div'>(props: TimePickerB
    * — it has no digits, and renders as the stack below.
    */
   const field = (state: UnitState) => {
-    const unit = state.unit as 'hour' | 'minute';
+    const unit = state.unit;
+    // A compact column body with seconds renders a third field, and the dial
+    // only ever edits two — so a seconds field takes no turn rather than
+    // handing the dial a unit it cannot write back to.
+    const dialled = unit === 'hour' || unit === 'minute';
     // The committed value, unless the field is mid-edit: a `1` on its way to
     // `12` names no hour yet, and reverting it under the caret would make the
     // second digit impossible to reach.
     const shown = draft?.unit === unit ? draft.text : state.format(state.current);
 
     return (
-      <div key={unit} {...slot('input')} data-unit={unit} data-active={activeUnit === unit ? '' : undefined}>
+      <div key={unit} {...slot('input')} data-unit={unit} data-active={dialled && activeUnit === unit ? '' : undefined}>
         <input
           {...slot('inputValue')}
           {...spinButtonProps(state, false)}
@@ -296,7 +300,7 @@ export const TimePickerBody = <T extends ElementType = 'div'>(props: TimePickerB
           disabled={disabled}
           readOnly={readOnly}
           onFocus={event => {
-            setActiveUnit(unit);
+            if (dialled) setActiveUnit(unit);
             // Typing replaces rather than appends — a two-digit field has no
             // room to append into.
             event.currentTarget.select();
@@ -394,7 +398,10 @@ export const TimePickerBody = <T extends ElementType = 'div'>(props: TimePickerB
         ))}
         <div {...slot('dialCap')} />
         {dialMarks.map(({ value, position, ring }) => {
-          const enabled = activeState.isEnabled(value);
+          // The face is drawn from the clock, not from the grid, so a stepped
+          // picker still shows all twelve marks — but only the ones the step
+          // actually offers can be pressed.
+          const enabled = activeState.values.includes(value) && activeState.isEnabled(value);
 
           return (
             <button

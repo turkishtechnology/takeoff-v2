@@ -74,15 +74,29 @@ export const TimePickerMeridiem = <T extends ElementType = 'div'>(props: TimePic
             aria-checked={checked}
             // Roving: the group is one tab stop, and it lands on the chosen half.
             tabIndex={disabled || !checked ? -1 : 0}
-            disabled={disabled || readOnly || !isEnabled(value)}
+            // `readOnly` is not `disabled`: the group still announces its value
+            // and still takes the tab stop, it just refuses to change — the same
+            // call the columns body makes for its spinbuttons. Disabling both
+            // radios here would leave the group with no focusable element at all,
+            // since the roving tab stop lives on one of them.
+            disabled={disabled || !isEnabled(value)}
             data-selected={checked ? '' : undefined}
             onClick={() => select(value)}
             onKeyDown={event => {
               if (!ARROW_KEYS.includes(event.key)) return;
-              const next = values.find(candidate => candidate !== current);
-              // Selecting on arrow is the radio pattern's own behaviour.
-              if (next !== undefined) select(next);
               event.preventDefault();
+              if (readOnly) return;
+
+              const next = values.find(candidate => candidate !== current);
+              if (next === undefined) return;
+              // Selecting on arrow is the radio pattern's own behaviour.
+              select(next);
+
+              // The tab stop roves to whichever radio is checked, so focus has
+              // to rove with it — otherwise the group's one tab stop sits on an
+              // element nobody is on.
+              const radios = event.currentTarget.parentElement?.querySelectorAll<HTMLElement>('[role="radio"]');
+              radios?.[values.indexOf(next)]?.focus();
             }}
           >
             {value === 1 ? labels.pm : labels.am}

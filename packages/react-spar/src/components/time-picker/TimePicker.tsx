@@ -191,9 +191,19 @@ export const TimePicker = <T extends ElementType = 'div'>(props: TimePickerProps
 
   useEffect(() => {
     if (!isDevelopment() || !meridiemMissing || warnedMissingMeridiem) return;
-    warnedMissingMeridiem = true;
-    // eslint-disable-next-line no-console
-    console.warn('[TimePicker] `meridiem="toggle"` moves AM/PM out of the columns, but no `<TimePicker.Meridiem />` is composed — the half-day cannot be changed.');
+
+    // A composed `TimePicker.Meridiem` registers from its own effect. React
+    // flushes a child's effects before the parent's, but this effect already
+    // closed over the count from the render that mounted it — still zero. So
+    // the check waits a task: a registration lands first and flips
+    // `meridiemMissing`, whose cleanup cancels the warning before it fires.
+    const pending = setTimeout(() => {
+      warnedMissingMeridiem = true;
+      // eslint-disable-next-line no-console
+      console.warn('[TimePicker] `meridiem="toggle"` moves AM/PM out of the columns, but no `<TimePicker.Meridiem />` is composed — the half-day cannot be changed.');
+    }, 0);
+
+    return () => clearTimeout(pending);
   }, [meridiemMissing]);
 
   const Component = (as ?? 'div') as ElementType;
@@ -239,7 +249,7 @@ export const TimePicker = <T extends ElementType = 'div'>(props: TimePickerProps
             a bare <input> so every value this library submits goes through the
             same primitive. Empty until something is picked, so a `required`
             form field stays unsatisfied rather than silently posting midnight. */}
-        {name ? <SparInputField type="hidden" name={name} form={form} value={selected ? toFormValue(parts, showSeconds) : ''} readOnly /> : null}
+        {name ? <SparInputField type="hidden" name={name} form={form} value={selected ? toFormValue(parts, units.includes('second')) : ''} readOnly /> : null}
       </Component>
     </TimePickerProvider>
   );
