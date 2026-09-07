@@ -29,6 +29,7 @@ const gaps = new Set([
   'TkTreeView',
 ]);
 const direct = new Set(['TkButton', 'TkAlert', 'TkBadge', 'TkCheckbox', 'TkChips', 'TkDivider', 'TkInput', 'TkTextarea', 'TkSlider', 'TkSpinner', 'TkToggle']);
+const special = new Set(['TkIcon', 'TkToggleButton', 'TkToggleButtonGroup']);
 const compound = new Set([
   'TkAccordion',
   'TkAccordionItem',
@@ -49,8 +50,6 @@ const compound = new Set([
   'TkTabsItem',
   'TkTooltip',
   'TkUpload',
-  'TkToggleButton',
-  'TkToggleButtonGroup',
 ]);
 
 function filesIn(dir) {
@@ -181,7 +180,7 @@ if (jsonOnly) {
   process.exit(0);
 }
 
-const bucket = name => (gaps.has(name) ? 'gap' : direct.has(name) ? 'direct' : compound.has(name) ? 'compound' : 'unknown');
+const bucket = name => (gaps.has(name) ? 'gap' : direct.has(name) ? 'direct' : compound.has(name) ? 'compound' : special.has(name) ? 'special' : 'unknown');
 const lines = [
   `# Takeoff v1 usage inventory`,
   '',
