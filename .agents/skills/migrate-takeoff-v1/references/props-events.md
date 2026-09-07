@@ -39,46 +39,46 @@ V1 `onTk*` props are generated from custom DOM events. The callback receives a
 callbacks and passes the value directly. Map the intent, not the DOM event name,
 and confirm the final callback in the target skill.
 
-| v1 handler                           | v2 callback intent                                                       |
-| ------------------------------------ | ------------------------------------------------------------------------ |
-| `onTkActiveIndexChange`              | accordion active value callback                                          |
-| `onTkAccordionItemSelected`          | accordion item selection callback                                        |
-| `onTkActiveChange`                   | item open state callback                                                 |
-| `onTkClick`                          | `onClick`                                                                |
-| `onTkChange`                         | component-specific value callback (`onValueChange` where documented)     |
-| `onTkRemove`                         | chip removal callback                                                    |
-| `onTkOpen`, `onTkClose`              | open state callback or overlay lifecycle callback                        |
-| `onTkApply`, `onTkCancel`            | picker action callback; gap components stay v1                           |
-| `onTkBlur`, `onTkFocus`              | native `onBlur` / `onFocus`                                              |
-| `onTkInputChange`                    | input value callback; datepicker is a gap                                |
-| `onTkInvalid`                        | validation callback; datepicker is a gap                                 |
-| `onTkVisibleChange`                  | dialog open state callback                                               |
-| `onTkDrawerOpen`, `onTkDrawerClose`  | drawer open state callback                                               |
-| `onTkDrawerEnter`, `onTkDrawerLeave` | drawer lifecycle callback                                                |
-| `onTkDrawerChange`                   | drawer open state callback                                               |
-| `onTkItemClick`                      | dropdown/tree item callback; tree is a gap                               |
-| `onTkTaskClick`, `onTkTaskToggle`    | gantt callbacks; gap component stays v1                                  |
-| `onTkClearClick`                     | input clear callback                                                     |
-| `onTkNodeClick`                      | org chart callback; gap component stays v1                               |
-| `onTkNextPage`, `onTkPrevPage`       | table pagination or app-local pagination; standalone pagination is a gap |
-| `onTkPageChange`                     | table page callback                                                      |
-| `onTkRowsPerPageChange`              | table page-size callback                                                 |
-| `onTkSelectAll`                      | select all callback                                                      |
-| `onTkStepChange`, `onTkStepClick`    | stepper value/click callbacks                                            |
-| `onTkSelectionChange`                | table selection callback                                                 |
-| `onTkRequest`                        | table data request callback                                              |
-| `onTkExpandedRowsChange`             | table expanded rows callback                                             |
-| `onTkCellEdit`                       | table cell edit callback                                                 |
-| `onTkRowClick`                       | table row callback                                                       |
-| `onTkGroupByChange`                  | table grouping callback                                                  |
-| `onTkTabClick`, `onTkTabChange`      | tabs selection callback                                                  |
-| `onTkInput`                          | input event callback; use only if the target skill exposes it            |
-| `onTkToggle`                         | `onPressedChange`                                                        |
-| `onTkExpandChange`                   | tree expand callback; tree is a gap                                      |
-| `onTkFilesRejected`                  | upload rejection callback                                                |
-| `onTkUpload`                         | upload callback                                                          |
-| `onTkRemovedFile`                    | upload remove callback                                                   |
-| `onTkDownloadFile`                   | upload download callback                                                 |
+| v1 handler                           | v2 callback intent                                                            |
+| ------------------------------------ | ----------------------------------------------------------------------------- |
+| `onTkActiveIndexChange`              | accordion active value callback                                               |
+| `onTkAccordionItemSelected`          | accordion item selection callback                                             |
+| `onTkActiveChange`                   | item open state callback                                                      |
+| `onTkClick`                          | `onClick`                                                                     |
+| `onTkChange`                         | component-specific value callback (`onValueChange` where documented)          |
+| `onTkRemove`                         | chip removal callback                                                         |
+| `onTkOpen`, `onTkClose`              | open state callback or overlay lifecycle callback                             |
+| `onTkApply`, `onTkCancel`            | picker action callback; gap components stay v1                                |
+| `onTkBlur`, `onTkFocus`              | native `onBlur` / `onFocus`                                                   |
+| `onTkInputChange`                    | input value callback; datepicker is a gap                                     |
+| `onTkInvalid`                        | validation callback; datepicker is a gap                                      |
+| `onTkVisibleChange`                  | dialog open state callback                                                    |
+| `onTkDrawerOpen`, `onTkDrawerClose`  | drawer open state callback                                                    |
+| `onTkDrawerEnter`, `onTkDrawerLeave` | drawer lifecycle callback                                                     |
+| `onTkDrawerChange`                   | drawer open state callback                                                    |
+| `onTkItemClick`                      | dropdown/tree item callback; tree is a gap                                    |
+| `onTkTaskClick`, `onTkTaskToggle`    | gantt callbacks; gap component stays v1                                       |
+| `onTkClearClick`                     | input clear callback                                                          |
+| `onTkNodeClick`                      | org chart callback; gap component stays v1                                    |
+| `onTkNextPage`, `onTkPrevPage`       | table pagination or app-local pagination; standalone pagination is a gap      |
+| `onTkPageChange`                     | table page callback                                                           |
+| `onTkRowsPerPageChange`              | table page-size callback                                                      |
+| `onTkSelectAll`                      | select all callback                                                           |
+| `onTkStepChange`, `onTkStepClick`    | stepper value/click callbacks                                                 |
+| `onTkSelectionChange`                | table selection callback                                                      |
+| `onTkRequest`                        | table data request callback                                                   |
+| `onTkExpandedRowsChange`             | table expanded rows callback                                                  |
+| `onTkCellEdit`                       | table cell edit callback                                                      |
+| `onTkRowClick`                       | table row callback                                                            |
+| `onTkGroupByChange`                  | table grouping callback                                                       |
+| `onTkTabClick`, `onTkTabChange`      | tabs selection callback                                                       |
+| `onTkInput`                          | input event callback; use only if the target skill exposes it                 |
+| `onTkToggle`                         | `Switch` uses `onChange`; `TkToggleButton` maps to `Button` `onPressedChange` |
+| `onTkExpandChange`                   | tree expand callback; tree is a gap                                           |
+| `onTkFilesRejected`                  | upload rejection callback                                                     |
+| `onTkUpload`                         | upload callback                                                               |
+| `onTkRemovedFile`                    | upload remove callback                                                        |
+| `onTkDownloadFile`                   | upload download callback                                                      |
 
 The recurring controlled-control conversion is always:
 `onTkChange={(event) => setValue(event.detail.value)}` to the v2 control's

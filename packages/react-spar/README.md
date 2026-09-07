@@ -23,20 +23,26 @@ The package currently exports these component roots:
 - `Checkbox`
 - `Chip`
 - `Dialog`
+- `Divider`
 - `Drawer`
 - `Dropdown`
 - `Field`
 - `Input`
 - `Label`
 - `Popover`
+- `Progress`
 - `Radio`
 - `Select`
+- `Skeleton`
+- `Slider`
 - `Spinner`
+- `Stepper`
 - `Switch`
 - `Table`
 - `Tabs`
 - `Toast`
 - `Tooltip`
+- `Upload`
 
 The package root also exports `TakeoffSparProvider`, `useTheme`,
 `useComponentTheme`, and customization/theme types. Compound components expose

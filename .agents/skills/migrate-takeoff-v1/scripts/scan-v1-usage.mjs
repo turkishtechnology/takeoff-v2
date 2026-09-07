@@ -215,7 +215,7 @@ const files = filesIn(root);
 for (const absolute of files) {
   const relative = absolute.slice(root.length + 1);
   const text = readFileSync(absolute, 'utf8');
-  for (const match of text.matchAll(/(?:import|export)[\s\S]{0,300}?from\s*['"](@takeoff-ui\/(?:react|core|tailwind))['"]/gu)) {
+  for (const match of text.matchAll(/(?:import|export)[^;]*?from\s*['"](@takeoff-ui\/(?:react|core|tailwind))['"]/gu)) {
     imports.push({ file: relative, package: match[1] });
   }
   for (const tag of componentTags(text)) {
@@ -238,6 +238,7 @@ for (const entry of Object.values(components)) {
 }
 const sortedComponents = Object.fromEntries(Object.entries(components).sort((a, b) => b[1].count - a[1].count || a[0].localeCompare(b[0])));
 const react = packageReactVersion();
+const bucket = name => (gaps.has(name) ? 'gap' : direct.has(name) ? 'direct' : compound.has(name) ? 'compound' : special.has(name) ? 'special' : 'unknown');
 const result = {
   root,
   react,
@@ -246,7 +247,12 @@ const result = {
   handlers: Object.fromEntries(Object.entries(handlers).sort()),
   rawElements,
   cssFindings,
-  blockers: { react18: /(^|[^0-9])18([.-]|$)/u.test(react.version ?? ''), gaps: Object.keys(components).filter(name => gaps.has(name)), rawElements: rawElements.length > 0 },
+  blockers: {
+    react18: /(^|[^0-9])18([.-]|$)/u.test(react.version ?? ''),
+    gaps: Object.keys(components).filter(name => gaps.has(name)),
+    unknown: Object.keys(components).filter(name => bucket(name) === 'unknown'),
+    rawElements: rawElements.length > 0,
+  },
 };
 
 if (jsonOnly) {
@@ -254,7 +260,6 @@ if (jsonOnly) {
   process.exit(0);
 }
 
-const bucket = name => (gaps.has(name) ? 'gap' : direct.has(name) ? 'direct' : compound.has(name) ? 'compound' : special.has(name) ? 'special' : 'unknown');
 const lines = [
   `# Takeoff v1 usage inventory`,
   '',
@@ -291,6 +296,9 @@ lines.push(
   '',
   result.blockers.react18 ? '- React 18 detected: upgrade React before mounting v2.' : '- React 18 not detected.',
   result.blockers.gaps.length ? `- Gap components: ${result.blockers.gaps.map(name => `\`${name}\``).join(', ')}` : '- No known gap component detected.',
+  result.blockers.unknown.length
+    ? `- Unrecognized Tk* components (no mapping in this skill, verify against the component map): ${result.blockers.unknown.map(name => `\`${name}\``).join(', ')}`
+    : '- No unrecognized Tk* component detected.',
   result.blockers.rawElements ? '- Raw custom elements detected: migrate those call sites separately.' : '- No raw custom elements detected.',
   '',
   '## Suggested order',
