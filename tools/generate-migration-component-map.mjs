@@ -27,8 +27,9 @@ function shippedComponents() {
 
 function existingTargets(source) {
   const targets = new Set();
-  for (const match of source.matchAll(/^\|[^\n]*\|\s*`?([A-Z][A-Za-z]+)`?\s*\|/gmu)) targets.add(match[1]);
-  for (const match of source.matchAll(/^`([A-Z][A-Za-z]+)`/gmu)) targets.add(match[1]);
+  const sourceWithoutGeneratedSection = source.replace(new RegExp(`${START}[\\s\\S]*?${END}`, 'u'), '');
+  for (const match of sourceWithoutGeneratedSection.matchAll(/^\|[^\n]*\|\s*`?([A-Z][A-Za-z]+)`?\s*\|/gmu)) targets.add(match[1]);
+  for (const match of sourceWithoutGeneratedSection.matchAll(/`([A-Z][A-Za-z]+)`/gu)) targets.add(match[1]);
   return targets;
 }
 

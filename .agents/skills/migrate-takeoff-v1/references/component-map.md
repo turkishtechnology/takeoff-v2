@@ -63,18 +63,4 @@ are migration opportunities when v1 applications contain hand-rolled labels,
 loading states, progress indicators, skeletons, or notifications.
 
 <!-- BEGIN GENERATED V2 COMPONENT COVERAGE -->
-
-## Newly shipped v2 components
-
-These rows are generated from `packages/react-spar/src/components/`. They have
-no explicit v1 mapping yet; read the matching `takeoff-<name>` skill before
-deciding whether the component is a migration target or a v2-only opportunity.
-
-| v2 component | v1 mapping status                                    |
-| ------------ | ---------------------------------------------------- |
-| `Label`      | No v1 mapping recorded; inspect the component skill. |
-| `Progress`   | No v1 mapping recorded; inspect the component skill. |
-| `Skeleton`   | No v1 mapping recorded; inspect the component skill. |
-| `Toast`      | No v1 mapping recorded; inspect the component skill. |
-
 <!-- END GENERATED V2 COMPONENT COVERAGE -->
