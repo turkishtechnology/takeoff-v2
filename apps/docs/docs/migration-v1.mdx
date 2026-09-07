@@ -204,8 +204,10 @@ value directly:
 // v1
 <TkInput value={value} onTkChange={(event) => setValue(event.detail.value)} />
 
-// v2: use the callback documented by the Input skill
-<Input value={value} onValueChange={setValue} />
+// v2: use the field and native callback documented by the Input skill
+<Input>
+  <Input.Field value={value} onChange={(event) => setValue(event.target.value)} />
+</Input>
 ```
 
 For compound components such as `Table`, `Select`, `Dialog`, `Accordion`, and

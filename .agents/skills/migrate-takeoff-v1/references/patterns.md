@@ -20,7 +20,7 @@ children.
 ```tsx
 // v2 shape: consult the target skill for exact part names and props
 <Table>{/* table header, rows, and cells */}</Table>
-<Select value={value} onValueChange={handleChange}>{/* option children */}</Select>
+<Select value={value} onChange={handleChange}>{/* option children */}</Select>
 <Accordion>{/* trigger and content children */}</Accordion>
 <Dialog>{/* trigger, header, content, and footer children */}</Dialog>
 ```
@@ -38,7 +38,9 @@ Stencil bindings deliver a `CustomEvent`; v1 handlers usually read
 <TkInput value={value} onTkChange={(event) => setValue(event.detail.value)} />
 
 // v2 shape
-<Input value={value} onValueChange={setValue} />
+<Input>
+  <Input.Field value={value} onChange={(event) => setValue(event.target.value)} />
+</Input>
 ```
 
 Use the v2 component skill for the exact callback name and value type. Do not
