@@ -154,7 +154,7 @@ for (const absolute of files) {
   }
   for (const match of text.matchAll(/\bonTk[A-Z][A-Za-z0-9]*/gu)) add(handlers, match[0], relative);
   for (const match of text.matchAll(/<tk-[a-z0-9-]+\b[^>]*>/giu)) rawElements.push({ file: relative, tag: match[0].match(/^<([^\s>]+)/u)[1] });
-  if (/core\/core\.css|core\.css['"]?/u.test(text)) cssFindings.push({ file: relative, kind: 'v1 core.css import' });
+  if (/['"]@takeoff-ui\/core\/dist\/core\/core\.css['"]/u.test(text)) cssFindings.push({ file: relative, kind: 'v1 core.css import' });
   if (/--(?:tk|[a-z0-9-]*token)[a-z0-9-]*\s*:/iu.test(text)) cssFindings.push({ file: relative, kind: 'token or --tk override' });
   if (/containerStyle\s*=/u.test(text)) cssFindings.push({ file: relative, kind: 'containerStyle usage' });
 }
