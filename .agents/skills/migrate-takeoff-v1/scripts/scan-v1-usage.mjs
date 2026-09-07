@@ -91,6 +91,47 @@ function add(map, key, file, value, count = true) {
   if (value && !map[key].attributes.includes(value)) map[key].attributes.push(value);
 }
 
+function* componentTags(text) {
+  const startPattern = /<((?:Tk)[A-Z][A-Za-z0-9]*)\b/gu;
+  let match;
+  while ((match = startPattern.exec(text)) !== null) {
+    let index = startPattern.lastIndex;
+    let braceDepth = 0;
+    let quote = null;
+    let escaped = false;
+
+    for (; index < text.length; index += 1) {
+      const character = text[index];
+      if (quote) {
+        if (escaped) {
+          escaped = false;
+        } else if (character === '\\') {
+          escaped = true;
+        } else if (character === quote) {
+          quote = null;
+        }
+        continue;
+      }
+      if (character === "'" || character === '"' || character === '`') {
+        quote = character;
+      } else if (character === '{') {
+        braceDepth += 1;
+      } else if (character === '}' && braceDepth > 0) {
+        braceDepth -= 1;
+      } else if (character === '>' && braceDepth === 0) {
+        break;
+      }
+    }
+
+    if (index < text.length) {
+      yield { name: match[1], attributes: text.slice(startPattern.lastIndex, index) };
+      startPattern.lastIndex = index + 1;
+    } else {
+      break;
+    }
+  }
+}
+
 const components = {};
 const handlers = {};
 const imports = [];
@@ -104,10 +145,10 @@ for (const absolute of files) {
   for (const match of text.matchAll(/(?:import|export)[\s\S]{0,300}?from\s*['"](@takeoff-ui\/(?:react|core|tailwind))['"]/gu)) {
     imports.push({ file: relative, package: match[1] });
   }
-  for (const match of text.matchAll(/<((?:Tk)[A-Z][A-Za-z0-9]*)\b([\s\S]*?)(?:\/?)>/gu)) {
-    const name = match[1];
+  for (const tag of componentTags(text)) {
+    const name = tag.name;
     add(components, name, relative);
-    for (const attr of match[2].matchAll(/\s([A-Za-z][\w:-]*)(?:\s*=|\s|\/|$)/gu)) {
+    for (const attr of tag.attributes.matchAll(/\s([A-Za-z][\w:-]*)(?:\s*=|\s|\/|$)/gu)) {
       if (attr[1] !== name) add(components, name, relative, attr[1], false);
     }
   }

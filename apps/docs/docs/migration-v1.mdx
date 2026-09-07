@@ -101,13 +101,9 @@ edit the workspace. The component-specific v2 skills remain the API authority.
 
 ### 1. Inventory and setup
 
-The migration skill includes a zero-dependency scanner. Run it from a Takeoff v2
+The migration skill includes a zero-dependency scanner. It is not installed as a
+command by `@takeoff-ui/react-spar`, so invoke it by path from a Takeoff v2
 checkout against the consumer source directory:
-
-The scanner is not installed as a command by `@takeoff-ui/react-spar`, so invoke
-it by its path from a Takeoff v2 checkout:
-
-Keep the report next to the consumer project.
 
 ```bash
 cd /path/to/takeoff-v2
@@ -115,6 +111,8 @@ node .agents/skills/migrate-takeoff-v1/scripts/scan-v1-usage.mjs /path/to/consum
 node .agents/skills/migrate-takeoff-v1/scripts/scan-v1-usage.mjs \
   /path/to/consumer/src --json > /path/to/consumer/v1-usage.json
 ```
+
+The second command writes the optional JSON report next to the consumer project.
 
 The report groups usage by component and blast radius, lists the attributes and
 `onTk*` handlers actually used, finds v1 CSS and `containerStyle` usage, checks
