@@ -4,12 +4,12 @@
 /* global console, process */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, relative as toRelative, resolve } from 'node:path';
 
 const root = resolve(process.argv[2] ?? '.');
 const jsonOnly = process.argv.includes('--json');
 const ignored = new Set(['.git', 'node_modules', 'dist', 'build', '.next', '.turbo']);
-// `.html` is included for the React app entry point, which can still carry the v1 core.css link or raw tk-* markup.
+// `.html` is included for the app entry point, which can still carry the v1 core.css link or raw tk-* markup.
 const sourceExtensions = new Set(['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.css', '.scss', '.sass', '.less', '.html']);
 const gaps = new Set([
   'TkAvatar',
@@ -210,10 +210,19 @@ const handlers = {};
 const imports = [];
 const rawElements = [];
 const cssFindings = [];
+const react = packageReactVersion();
 const files = filesIn(root);
 
+// The documented scan root is usually `src`, but Vite/CRA keep the entry HTML beside package.json.
+if (react.packageJson) {
+  const appRoot = dirname(react.packageJson);
+  for (const candidate of [join(appRoot, 'index.html'), join(appRoot, 'public', 'index.html')]) {
+    if (existsSync(candidate) && !files.includes(candidate)) files.push(candidate);
+  }
+}
+
 for (const absolute of files) {
-  const relative = absolute.slice(root.length + 1);
+  const relative = toRelative(root, absolute);
   const text = readFileSync(absolute, 'utf8');
   for (const match of text.matchAll(/(?:import|export)[^;]*?from\s*['"](@takeoff-ui\/(?:react|core|tailwind))['"]/gu)) {
     imports.push({ file: relative, package: match[1] });
@@ -227,7 +236,7 @@ for (const absolute of files) {
   }
   for (const match of text.matchAll(/\bonTk[A-Z][A-Za-z0-9]*/gu)) add(handlers, match[0], relative);
   for (const match of text.matchAll(/<tk-[a-z0-9-]+\b[^>]*>/giu)) rawElements.push({ file: relative, tag: match[0].match(/^<([^\s>]+)/u)[1] });
-  if (/['"]@takeoff-ui\/core\/dist\/core\/core\.css['"]/u.test(text)) cssFindings.push({ file: relative, kind: 'v1 core.css import' });
+  if (/['"][^'"]*@takeoff-ui\/core\/dist\/core\/core\.css['"]/u.test(text)) cssFindings.push({ file: relative, kind: 'v1 core.css import' });
   if (/--(?:tk|[a-z0-9-]*token)[a-z0-9-]*\s*:/iu.test(text)) cssFindings.push({ file: relative, kind: 'token or --tk override' });
   if (/containerStyle\s*=/u.test(text)) cssFindings.push({ file: relative, kind: 'containerStyle usage' });
 }
@@ -237,7 +246,6 @@ for (const entry of Object.values(components)) {
   entry.attributes.sort();
 }
 const sortedComponents = Object.fromEntries(Object.entries(components).sort((a, b) => b[1].count - a[1].count || a[0].localeCompare(b[0])));
-const react = packageReactVersion();
 const bucket = name => (gaps.has(name) ? 'gap' : direct.has(name) ? 'direct' : compound.has(name) ? 'compound' : special.has(name) ? 'special' : 'unknown');
 const result = {
   root,
