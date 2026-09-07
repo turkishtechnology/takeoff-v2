@@ -84,9 +84,9 @@ function packageReactVersion() {
   }
 }
 
-function add(map, key, file, value) {
+function add(map, key, file, value, count = true) {
   if (!map[key]) map[key] = { count: 0, files: [], attributes: [] };
-  map[key].count += 1;
+  if (count) map[key].count += 1;
   if (!map[key].files.includes(file)) map[key].files.push(file);
   if (value && !map[key].attributes.includes(value)) map[key].attributes.push(value);
 }
@@ -108,7 +108,7 @@ for (const absolute of files) {
     const name = match[1];
     add(components, name, relative);
     for (const attr of match[2].matchAll(/\s([A-Za-z][\w:-]*)(?:\s*=|\s|\/|$)/gu)) {
-      if (attr[1] !== name) add(components, name, relative, attr[1]);
+      if (attr[1] !== name) add(components, name, relative, attr[1], false);
     }
   }
   for (const match of text.matchAll(/\bonTk[A-Z][A-Za-z0-9]*/gu)) add(handlers, match[0], relative);
