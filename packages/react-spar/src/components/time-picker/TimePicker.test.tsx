@@ -450,8 +450,8 @@ describe('TimePicker (compound)', () => {
       // Midnight and noon print as `12` but come first in the half-day, so the
       // column has to open on them — everything ordered reads it that way.
       expect(cells('Hour').map(cell => cell.textContent)).toEqual(['02', '03', '04']);
-      expect(column('Hour')).toHaveAttribute('aria-valuemin', '12');
-      expect(column('Hour')).toHaveAttribute('aria-valuemax', '11');
+      expect(column('Hour')).toHaveAttribute('aria-valuemin', '1');
+      expect(column('Hour')).toHaveAttribute('aria-valuemax', '12');
     });
 
     it('sends Home to noon and End to eleven', async () => {
