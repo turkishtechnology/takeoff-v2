@@ -174,8 +174,9 @@ function templateDoc() {
 # AGENTS.md — @takeoff-ui/react-spar
 
 > Copy this file to the root of the project that consumes
-> \`@takeoff-ui/react-spar\` and rename it \`AGENTS.md\`. GitHub Copilot,
-> Cursor, and Claude all read it automatically. Add your own project rules
+> \`@takeoff-ui/react-spar\` and rename it \`AGENTS.md\` for tools that support
+> that convention, such as Cursor and Claude. GitHub Copilot can use the same
+> content at \`.github/copilot-instructions.md\`. Add your own project rules
 > below the generated sections.
 
 This project uses \`@takeoff-ui/react-spar\`, a React 19 component library built
@@ -188,6 +189,14 @@ ${HOUSE_RULES}
 ${componentTable()}
 
 ${usageSection()}
+
+## Migrating from Takeoff UI v1
+
+For React applications moving from \`@takeoff-ui/react\` and \`Tk*\` components,
+use the repository's \`migrate-takeoff-v1\` skill. It provides the inventory
+scanner, setup order, v1-to-v2 component map, event/prop guidance, and known
+coverage gaps. The full skill is available in the v2 repository under
+\`.agents/skills/migrate-takeoff-v1/\`.
 `;
 }
 

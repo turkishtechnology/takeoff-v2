@@ -6,7 +6,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Getting started',
       collapsed: false,
-      items: ['intro', 'installation', 'ai-assistants'],
+      items: ['intro', 'installation', 'migration-v1', 'ai-assistants'],
     },
     {
       type: 'category',

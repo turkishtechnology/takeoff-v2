@@ -1,0 +1,269 @@
+---
+title: Migrating from Takeoff UI v1
+description:
+  Move a React application from @takeoff-ui/react v1 to @takeoff-ui/react-spar
+  v2 incrementally.
+sidebar_label: Migrating from v1
+sidebar_position: 3
+slug: /migration-v1
+---
+
+# Migrating from Takeoff UI v1
+
+`@takeoff-ui/react-spar` is not a drop-in replacement for v1. v1 uses
+Stencil-backed `Tk*` components and `CustomEvent` values; v2 uses React 19
+components, compound children, and direct-value callbacks. Migrate one screen at
+a time and keep the two packages installed together until the remaining v1 usage
+is intentional.
+
+For the product overview, component catalog, and current Takeoff UI resources,
+visit [takeoffui.com](https://www.takeoffui.com/).
+
+## React 19 required
+
+`@takeoff-ui/react-spar` throws at runtime on React 18. Upgrade `react` and
+`react-dom` before migrating the first component.
+
+## Choose a workflow
+
+Choose one path before continuing.
+
+:::tip AI-assisted migration
+
+Use this path when the assistant has access to the `migrate-takeoff-v1` skill
+and can edit the workspace. The assistant runs the inventory, applies the
+one-time package/provider/CSS setup, migrates screens, and runs validation. You
+review the diff and make the product decisions.
+
+:::
+
+:::note Manual migration
+
+Use this path when the assistant cannot access the migration skill or cannot
+edit the workspace. Follow the manual setup and component-reference sections
+below yourself. The component-specific v2 skills remain the API authority.
+
+:::
+
+Do not repeat the one-time setup manually after the AI-assisted workflow has
+completed it. Do not remove v1 packages until the remaining usage and gaps have
+been reviewed.
+
+:::info Migration routes
+
+**AI-assisted route:** Follow [AI-assisted migration](#ai-assisted-migration),
+then finish with the shared coverage and verification sections.
+
+**Manual route:** Follow [Manual migration](#manual-migration), then finish with
+the shared coverage and verification sections.
+
+Both routes begin with an inventory. The AI-assisted route runs it through the
+assistant; the manual route runs it in the terminal.
+
+:::
+
+## AI-assisted migration
+
+Use this route when the assistant has access to the `migrate-takeoff-v1` skill
+and can edit the consumer workspace. The assistant owns the setup and repetitive
+migration work; you review each diff and make the product decisions.
+
+### 1. Inventory and prepare
+
+Open the consumer repository in Chat or Agent mode and send the request below.
+The assistant should run the inventory, read the report, install v2 beside v1,
+and apply the provider and token CSS setup when it is missing.
+
+```text
+Migrate the React app at ./src from @takeoff-ui/react v1 to
+@takeoff-ui/react-spar v2. First inventory the app and read the report. If the
+v2 packages, provider, or token CSS are missing, apply the one-time setup before
+editing a screen. Keep v1 and v2 installed together.
+```
+
+### 2. Migrate screens and validate
+
+Continue in the same Agent session with a bounded route or screen:
+
+```text
+Migrate the /settings screen from the v1 inventory. Read each target component's
+v2 API docs before editing, run focused typecheck/tests, and report changed files
+and unresolved gaps.
+```
+
+The order of leaf controls and compound parents is an internal implementation
+choice for the assistant, not a separate manual setup step.
+
+## Manual migration
+
+Use this route when the assistant cannot access the migration skill or cannot
+edit the workspace. The component-specific v2 skills remain the API authority.
+
+### 1. Inventory and setup
+
+The migration skill includes a zero-dependency scanner. Run it from a Takeoff v2
+checkout against the consumer source directory:
+
+The migration skill includes a zero-dependency scanner. In the Takeoff v2
+repository, run it against the consumer source directory. The scanner is not
+installed as a command by `@takeoff-ui/react-spar`, so invoke it by its path
+from a Takeoff v2 checkout:
+
+Keep the report next to the consumer project.
+
+```bash
+cd /path/to/takeoff-v2
+node .agents/skills/migrate-takeoff-v1/scripts/scan-v1-usage.mjs /path/to/consumer/src
+node .agents/skills/migrate-takeoff-v1/scripts/scan-v1-usage.mjs \
+  /path/to/consumer/src --json > /path/to/consumer/v1-usage.json
+```
+
+The report groups usage by component and blast radius, lists the attributes and
+`onTk*` handlers actually used, finds v1 CSS and `containerStyle` usage, checks
+the nearest React version, and reports blockers:
+
+- React 18
+- v1-only components with no v2 target
+- raw `<tk-*>` custom elements
+
+The scanner is an inventory tool and exits successfully even when blockers are
+found. Resolve or record every blocker before removing the v1 packages.
+
+Continue with the one-time setup:
+
+```bash
+pnpm add @takeoff-ui/react-spar @takeoff-design/tokens
+```
+
+Keep `@takeoff-ui/react`, `@takeoff-ui/core`, and `@takeoff-ui/tailwind` while
+screens still use them. Add v2's provider at the application root and import the
+v2 theme after the v1 stylesheet:
+
+```tsx
+// main.tsx
+import { TakeoffSparProvider } from '@takeoff-ui/react-spar';
+import '@takeoff-ui/core/dist/core/core.css';
+import '@takeoff-design/tokens/css/default/theme.css';
+
+createRoot(document.getElementById('root')!).render(
+  <TakeoffSparProvider colorMode="light">
+    <App />
+  </TakeoffSparProvider>,
+);
+```
+
+The order matters. The two stylesheets share six global selectors: `.tk-font`,
+`.tk-display`, `.tk-text`, `.tk-toast`, `.tk-toaster`, and
+`.tk-table-filter-panel`. Loading the v2 theme second makes v2 the winner for
+newly migrated screens. Available theme bundles are `default`, `ajet`,
+`aviation`, `sarp`, and `technology`.
+
+### 2. Migrate screens and validate
+
+When migrating manually, use the
+[component map](https://github.com/turkishtechnology/takeoff-v2/blob/develop/.agents/skills/migrate-takeoff-v1/references/component-map.md)
+to find the v2 target, then open that component's skill for the current API. The
+component skill is authoritative for props, slots, accessibility, and examples;
+the migration skill only maps v1 intent to the target.
+
+Common direct mappings:
+
+| v1           | v2         |
+| ------------ | ---------- |
+| `TkButton`   | `Button`   |
+| `TkAlert`    | `Alert`    |
+| `TkBadge`    | `Badge`    |
+| `TkCheckbox` | `Checkbox` |
+| `TkInput`    | `Input`    |
+| `TkTextarea` | `Input`    |
+| `TkSlider`   | `Slider`   |
+| `TkSpinner`  | `Spinner`  |
+| `TkToggle`   | `Switch`   |
+
+Common structural mappings:
+
+| v1 pattern                            | v2 pattern                                                             |
+| ------------------------------------- | ---------------------------------------------------------------------- |
+| `label="Save"`                        | `children`: `<Button>Save</Button>`                                    |
+| `options`, `items`, `columns`, `data` | documented compound children                                           |
+| `icon="star"`                         | JSX icon in `startContent` or `endContent`                             |
+| `dataTestid`                          | native `data-testid`                                                   |
+| `containerStyle` and shadow selectors | `className`, `classNames`, `slotProps`, documented `data-*` attributes |
+
+For example:
+
+```tsx
+// v1
+<TkButton label="Save" type="filled" onTkClick={handleSave} />
+
+// v2: confirm the exact callback and props in takeoff-button/SKILL.md
+<Button appearance="filled" onClick={handleSave}>
+  Save
+</Button>
+```
+
+For controlled values, v1 commonly reads `event.detail` while v2 passes the
+value directly:
+
+```tsx
+// v1
+<TkInput value={value} onTkChange={(event) => setValue(event.detail.value)} />
+
+// v2: use the callback documented by the Input skill
+<Input value={value} onValueChange={setValue} />
+```
+
+For compound components such as `Table`, `Select`, `Dialog`, `Accordion`, and
+`Tabs`, follow the target component skill closely. These parents replace v1 data
+props with semantic child parts and cannot be migrated reliably by a string
+rename.
+
+After each screen, run the consumer typecheck and focused tests. Keep v1 and v2
+installed together until all remaining usage has been reviewed.
+
+## Shared reference: decide coverage gaps
+
+The gap list below describes the current v2 release, not a permanent product
+boundary. These areas are candidates for future v2 components and will be closed
+incrementally in later releases as their React API, accessibility behavior,
+design-token recipes, and documentation are completed. Keep the v1
+implementation or an app-local replacement in place for now, then revisit the
+decision when the corresponding v2 component is shipped.
+
+The following v1 components have no shipped v2 target:
+
+`TkAvatar`, `TkAvatarGroup`, `TkCarousel`, `TkChart`, `TkColorPicker`,
+`TkCurrencyInput`, `TkDatepicker`, `TkEditor`, `TkGanttChart`, `TkOrgChart`,
+`TkPagination`, `TkPhoneInput`, `TkRating`, `TkTextarea`, `TkTimeline`,
+`TkTimelineItem`, and `TkTreeView`.
+
+For each usage, choose one of these explicitly:
+
+- keep the v1 component beside v2;
+- build an app-local replacement;
+- defer migration for that screen.
+
+`Table` includes pagination for migrated tables, but standalone `TkPagination`
+is still a gap. `TkDatepicker` is contracted but not shipped yet. For
+`TkTextarea`, use the v2 `Input` compound component with
+`<Input.Field as="textarea" rows={...} />`; the `Input` skill is authoritative
+for the supported props and accessibility behavior.
+
+When a gap closes, the migration map and the component's own v2 skill become the
+source of truth. The scanner and migration documentation will continue to
+identify any remaining gap usage so teams can migrate without a breaking
+package-wide switch.
+
+## Shared finish: verify and remove v1
+
+After each screen, run the consumer's typecheck and focused tests. Exercise
+keyboard behavior, controlled values, validation, overlays, and light/dark mode.
+Then rerun the scanner:
+
+```bash
+node .agents/skills/migrate-takeoff-v1/scripts/scan-v1-usage.mjs ./src
+```
+
+Remove the v1 packages only when the report contains no remaining v1 imports,
+`Tk*` JSX, raw `tk-*` elements, or v1 styling dependencies outside the gap
+allowlist.
