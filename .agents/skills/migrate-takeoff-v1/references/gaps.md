@@ -1,6 +1,6 @@
 # Coverage gaps
 
-These 17 v1 exports have no shipped v2 target in the current release. This is a
+These 16 v1 exports have no shipped v2 target in the current release. This is a
 temporary coverage gap, not a permanent product boundary: the areas below are
 expected to close incrementally in future v2 releases as their React API,
 accessibility behavior, token recipes, and documentation are completed. Decide

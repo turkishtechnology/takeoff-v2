@@ -28,7 +28,7 @@ const gaps = new Set([
   'TkTimelineItem',
   'TkTreeView',
 ]);
-const direct = new Set(['TkButton', 'TkAlert', 'TkBadge', 'TkCheckbox', 'TkChips', 'TkDivider', 'TkInput', 'TkSlider', 'TkSpinner', 'TkToggle']);
+const direct = new Set(['TkButton', 'TkAlert', 'TkBadge', 'TkCheckbox', 'TkChips', 'TkDivider', 'TkInput', 'TkTextarea', 'TkSlider', 'TkSpinner', 'TkToggle']);
 const compound = new Set([
   'TkAccordion',
   'TkAccordionItem',
