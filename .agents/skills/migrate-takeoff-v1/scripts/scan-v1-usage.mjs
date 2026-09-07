@@ -9,7 +9,8 @@ import { dirname, join, resolve } from 'node:path';
 const root = resolve(process.argv[2] ?? '.');
 const jsonOnly = process.argv.includes('--json');
 const ignored = new Set(['.git', 'node_modules', 'dist', 'build', '.next', '.turbo']);
-const sourceExtensions = new Set(['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.css', '.scss', '.sass', '.less', '.html', '.vue']);
+// `.html` is included for the React app entry point, which can still carry the v1 core.css link or raw tk-* markup.
+const sourceExtensions = new Set(['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.css', '.scss', '.sass', '.less', '.html']);
 const gaps = new Set([
   'TkAvatar',
   'TkAvatarGroup',
@@ -124,11 +125,10 @@ function* componentTags(text) {
       }
     }
 
+    // Always resume just after `<` so an unterminated tag skips itself instead of truncating the file scan.
+    startPattern.lastIndex = tagStart + 1;
     if (index < text.length) {
-      startPattern.lastIndex = tagStart + 1;
       yield { name: match[1], attributes: text.slice(attributesStart, index) };
-    } else {
-      break;
     }
   }
 }

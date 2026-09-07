@@ -1,5 +1,5 @@
 ---
-'@takeoff-ui/react-spar': patch
+'@takeoff-ui/react-spar': minor
 ---
 
 TKP24605-83: Add the v1-to-v2 migration workflow, inventory scanner, and
