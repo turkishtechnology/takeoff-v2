@@ -94,7 +94,9 @@ function* componentTags(text) {
   const startPattern = /<((?:Tk)[A-Z][A-Za-z0-9]*)\b/gu;
   let match;
   while ((match = startPattern.exec(text)) !== null) {
-    let index = startPattern.lastIndex;
+    const tagStart = match.index;
+    const attributesStart = startPattern.lastIndex;
+    let index = attributesStart;
     let braceDepth = 0;
     let quote = null;
     let escaped = false;
@@ -123,11 +125,83 @@ function* componentTags(text) {
     }
 
     if (index < text.length) {
-      yield { name: match[1], attributes: text.slice(startPattern.lastIndex, index) };
-      startPattern.lastIndex = index + 1;
+      startPattern.lastIndex = tagStart + 1;
+      yield { name: match[1], attributes: text.slice(attributesStart, index) };
     } else {
       break;
     }
+  }
+}
+
+function skipQuoted(text, start) {
+  const quote = text[start];
+  let escaped = false;
+  for (let index = start + 1; index < text.length; index += 1) {
+    const character = text[index];
+    if (escaped) {
+      escaped = false;
+    } else if (character === '\\') {
+      escaped = true;
+    } else if (character === quote) {
+      return index + 1;
+    }
+  }
+  return text.length;
+}
+
+function skipBraced(text, start) {
+  let depth = 0;
+  let quote = null;
+  let escaped = false;
+  for (let index = start; index < text.length; index += 1) {
+    const character = text[index];
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (character === '\\') {
+        escaped = true;
+      } else if (character === quote) {
+        quote = null;
+      }
+      continue;
+    }
+    if (character === "'" || character === '"' || character === '`') {
+      quote = character;
+    } else if (character === '{') {
+      depth += 1;
+    } else if (character === '}' && depth > 0) {
+      depth -= 1;
+      if (depth === 0) return index + 1;
+    }
+  }
+  return text.length;
+}
+
+function* attributeNames(text) {
+  let index = 0;
+  while (index < text.length) {
+    while (index < text.length && /\s/u.test(text[index])) index += 1;
+    if (index >= text.length || text[index] === '/') break;
+    if (text[index] === '{') {
+      index = skipBraced(text, index);
+      continue;
+    }
+
+    const match = /^[A-Za-z][\w:-]*/u.exec(text.slice(index));
+    if (!match) {
+      index += 1;
+      continue;
+    }
+    yield match[0];
+    index += match[0].length;
+    while (index < text.length && /\s/u.test(text[index])) index += 1;
+    if (text[index] !== '=') continue;
+
+    index += 1;
+    while (index < text.length && /\s/u.test(text[index])) index += 1;
+    if (text[index] === '"' || text[index] === "'") index = skipQuoted(text, index);
+    else if (text[index] === '{') index = skipBraced(text, index);
+    else while (index < text.length && !/\s/u.test(text[index])) index += 1;
   }
 }
 
@@ -147,8 +221,8 @@ for (const absolute of files) {
   for (const tag of componentTags(text)) {
     const name = tag.name;
     add(components, name, relative);
-    for (const attr of tag.attributes.matchAll(/\s([A-Za-z][\w:-]*)(?:\s*=|\s|\/|$)/gu)) {
-      if (attr[1] !== name) add(components, name, relative, attr[1], false);
+    for (const attribute of attributeNames(tag.attributes)) {
+      if (attribute !== name) add(components, name, relative, attribute, false);
     }
   }
   for (const match of text.matchAll(/\bonTk[A-Z][A-Za-z0-9]*/gu)) add(handlers, match[0], relative);
