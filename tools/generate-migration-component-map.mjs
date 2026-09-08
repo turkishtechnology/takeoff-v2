@@ -12,6 +12,7 @@ const repoRoot = resolve(scriptDir, '..');
 const componentsDir = resolve(repoRoot, 'packages/react-spar/src/components');
 const mapPath = resolve(repoRoot, '.agents/skills/migrate-takeoff-v1/references/component-map.md');
 const gapsPath = resolve(repoRoot, '.agents/skills/migrate-takeoff-v1/references/gaps.md');
+const docsPath = resolve(repoRoot, 'apps/docs/docs/migration-v1.mdx');
 const checkMode = process.argv.includes('--check');
 
 const START = '<!-- BEGIN GENERATED V2 COMPONENT COVERAGE -->';
@@ -58,9 +59,23 @@ function existingTargets(source) {
   return targets;
 }
 
-// component-map.md is the list the migration inventory derives its gap bucket from, and gaps.md repeats the same
-// exports to carry the per-component guidance. Nothing else keeps the two lists honest, so a gap that
-// closes in one file cannot be left open in the other.
+function readOrExit(path, label) {
+  try {
+    return readFileSync(path, 'utf8');
+  } catch {
+    console.error(`Cannot read the ${label}: ${path}`);
+    process.exit(1);
+  }
+}
+
+// The v1-only gap list lives in three places: component-map.md (the bucket the migration inventory
+// reads), gaps.md (the per-gap guidance), and the public migration guide. Nothing else keeps them
+// honest, so a gap that closes in one file cannot be left open in the others.
+//
+// The second half of this check is the one that actually fires over time: when v2 finally ships a
+// component that closes a gap, every list above still says "no shipped v2 target" and agrees with
+// itself, so comparing them to each other proves nothing. They are compared against the shipped
+// directory too.
 function checkGapsInSync(source) {
   const declaredSection = section(source, 'v1-only gaps');
   if (declaredSection === null) {
@@ -70,18 +85,38 @@ function checkGapsInSync(source) {
   const tkNames = text => new Set([...text.matchAll(/`(Tk[A-Za-z0-9]*)`/gu)].map(match => match[1]));
   const declared = tkNames(declaredSection);
 
-  let gapsDoc;
-  try {
-    gapsDoc = readFileSync(gapsPath, 'utf8');
-  } catch {
-    console.error(`Cannot read the gap reference: ${gapsPath}`);
+  const gapsDoc = readOrExit(gapsPath, 'gap reference');
+  const documented = tkNames(gapsDoc);
+
+  // The guide restates the list for readers who never open the skill. Match the paragraph that
+  // follows the lead-in sentence rather than the whole page, so an unrelated `TkFoo` mention
+  // elsewhere in the guide is not read as a gap declaration.
+  const docsDoc = readOrExit(docsPath, 'migration guide');
+  const docsParagraph = /have no shipped v2 target:\s*\n\s*\n([\s\S]*?)\n\s*\n/u.exec(docsDoc);
+  if (docsParagraph === null) {
+    console.error(`Migration guide has no "have no shipped v2 target:" gap paragraph: ${docsPath}`);
     process.exit(1);
   }
-  const documented = tkNames(gapsDoc);
+  const published = tkNames(docsParagraph[1]);
+
+  const shipped = new Set(shippedComponents());
 
   const problems = [
     ...[...declared].filter(name => !documented.has(name)).map(name => `${name} is a gap in component-map.md but has no row in gaps.md`),
     ...[...documented].filter(name => !declared.has(name)).map(name => `${name} has a row in gaps.md but is not a gap in component-map.md`),
+    ...[...declared]
+      .filter(name => !published.has(name))
+      .map(name => `${name} is a gap in component-map.md but is missing from the gap list in ${docsPath.replace(`${repoRoot}/`, '')}`),
+    ...[...published].filter(name => !declared.has(name)).map(name => `${name} is listed as a gap in ${docsPath.replace(`${repoRoot}/`, '')} but is not a gap in component-map.md`),
+    // `TkRating` closes when `packages/react-spar/src/components/rating/` appears. The name match is
+    // a heuristic — a v1 export can map to a differently named v2 component — but it errs toward a
+    // false alarm a human clears by recording the mapping, never toward a gap that silently rots.
+    ...[...declared]
+      .filter(name => shipped.has(name.slice('Tk'.length)))
+      .map(
+        name =>
+          `${name} is still listed as a gap, but v2 ships \`${name.slice('Tk'.length)}\`. Give it a mapping row and drop it from gaps.md and the guide, or rename the v2 component.`,
+      ),
   ];
   const stated = /These (\d+) v1 exports/u.exec(gapsDoc);
   if (stated && Number(stated[1]) !== declared.size) {
@@ -139,8 +174,8 @@ if (checkMode) {
     console.error('Migration component map is out of date. Run `pnpm gen:migration-map`.');
     process.exit(1);
   }
-  console.log(`Migration component map is in sync (${gapCount} gaps consistent with gaps.md).`);
+  console.log(`Migration component map is in sync (${gapCount} gaps consistent with gaps.md, the guide, and the shipped components).`);
 } else {
   writeFileSync(mapPath, next);
-  console.log(`Updated ${mapPath.replace(`${repoRoot}/`, '')} (${gapCount} gaps consistent with gaps.md).`);
+  console.log(`Updated ${mapPath.replace(`${repoRoot}/`, '')} (${gapCount} gaps consistent with gaps.md, the guide, and the shipped components).`);
 }
