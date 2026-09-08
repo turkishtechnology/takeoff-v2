@@ -38,12 +38,28 @@
   max-width: none;
   width: max-content;
   padding: 0;
+  gap: 0;
   border-radius: var(--radius-xl);
 
   // The grid is the panel's whole content, so its standalone border would sit
   // just inside the panel's own edge.
   .tk-calendar {
     border: 0;
+    box-shadow: none;
+
+    .tk-calendar-footer {
+      border-top: var(--spacing-px) solid var(--border-light);
+      border-end-end-radius: var(--radius-xl);
+      border-end-start-radius: var(--radius-xl);
+    }
+  }
+
+  // A confirmation row rendered beside Calendar should read as its footer,
+  // not as a second surface separated by Popover's default gap.
+  .tk-calendar + * {
+    border-top: var(--spacing-px) solid var(--border-light);
+    border-end-end-radius: var(--radius-xl);
+    border-end-start-radius: var(--radius-xl);
   }
 
   // A floating panel may follow its content, so the day grid is unpinned here:

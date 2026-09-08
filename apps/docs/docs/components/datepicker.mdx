@@ -301,6 +301,60 @@ function PresetsDemo() {
 render(<PresetsDemo />);
 `;
 
+export const confirmDemo = String.raw`
+const format = value => (value ? String(value.getDate()).padStart(2, '0') + '/' + String(value.getMonth() + 1).padStart(2, '0') + '/' + value.getFullYear() : '');
+
+function ConfirmDemo() {
+  const [date, setDate] = React.useState();
+  // The panel edits a draft; nothing reaches the field until Apply promotes it.
+  const [draft, setDraft] = React.useState();
+  const [month, setMonth] = React.useState(new Date(2026, 7, 1));
+  const [open, setOpen] = React.useState(false);
+
+  // Opening re-seeds the draft, so a dismissed panel leaves no half-made edit
+  // behind and Cancel is just a close.
+  const toggle = next => {
+    if (next) {
+      setDraft(date);
+      if (date) setMonth(date);
+    }
+    setOpen(next);
+  };
+
+  const pending = draft && draft.getTime() !== (date ? date.getTime() : 0);
+
+  return (
+    <div className="mx-auto w-72">
+      <Field>
+        <Field.Label>Appointment</Field.Label>
+        <Popover open={open} onOpenChange={toggle}>
+          <Input>
+            <Input.Field readOnly placeholder="dd/mm/yyyy" value={format(date)} onClick={() => toggle(true)} />
+            <Popover.Trigger aria-label="Select date" classNames={{ root: 'tk-input-action' }}>
+              <CalendarIconOutlinedRounded width={20} height={20} />
+            </Popover.Trigger>
+          </Input>
+          <Popover.Content align="end" classNames={{ root: 'tk-datepicker-panel' }}>
+            <Calendar value={draft} month={month} onMonthChange={setMonth} onValueChange={setDraft} />
+            <div className="flex justify-end gap-1 p-3">
+              <Button variant="neutral" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button disabled={!pending} onClick={() => { setDate(draft); setOpen(false); }}>
+                Apply
+              </Button>
+            </div>
+          </Popover.Content>
+        </Popover>
+        <Field.Description>{pending ? 'Pending: ' + format(draft) : 'Picking a day does not commit it'}</Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<ConfirmDemo />);
+`;
+
 export const rangeDemo = String.raw`
 function RangeDemo() {
   const [range, setRange] = React.useState();
@@ -467,6 +521,27 @@ outside it.
   previewWrapper={ReactSparDemoRoot}
   scope={datePickerScope}
 />
+
+## Apply before committing
+
+`Calendar` commits on the click — `onValueChange` fires the moment a day is
+picked, and there is no Apply button to wait for. When the form needs an
+explicit confirmation step, hold two values: bind the grid to a draft, and let
+the panel's own button promote the draft to the value the field shows.
+
+<LiveCode
+  code={confirmDemo}
+  noInline
+  previewMinHeight={480}
+  previewWrapper={ReactSparDemoRoot}
+  scope={datePickerScope}
+/>
+
+Re-seeding the draft on open is what makes Cancel — and a dismissal by `Escape`
+or an outside click — a plain close: the next open starts from the applied value
+again, so an abandoned edit cannot leak into the field. Note the buttons sit
+beside the calendar rather than in `Calendar`'s `footer`, which the engine
+renders as a live region.
 
 ## Sizes
 
