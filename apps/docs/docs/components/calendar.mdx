@@ -15,9 +15,18 @@ import {
   ReactSparDemoRoot,
 } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
+import { StarIconOutlinedRounded } from '@takeoff-icons/react/star';
 import { arSA, de, enUS, tr } from 'react-day-picker/locale';
 
-export const calendarScope = { Button, Calendar, arSA, de, enUS, tr };
+export const calendarScope = {
+  Button,
+  Calendar,
+  StarIconOutlinedRounded,
+  arSA,
+  de,
+  enUS,
+  tr,
+};
 
 {/* prettier-ignore-start */}
 
@@ -240,37 +249,88 @@ function LocaleDemo() {
 render(<LocaleDemo />);
 `;
 
-export const stylingDemo = String.raw`
-const BRAND_CSS = [
-  '.brand-calendar.tk-calendar { border-radius: 24px; border-color: #c7d2fe; background: #eef2ff; box-shadow: none; }',
-  '.brand-calendar .tk-calendar-month-caption { border-bottom-color: #c7d2fe; }',
-  '.brand-calendar .tk-calendar-caption-label { font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #3730a3; }',
-  '.brand-calendar .tk-calendar-nav-previous-month, .brand-calendar .tk-calendar-nav-next-month { color: #6366f1; }',
-  '.brand-calendar .tk-calendar-weekday { color: #6366f1; }',
-  '.brand-calendar .tk-calendar-day-button { border-radius: 8px; }',
-  '.brand-calendar .tk-calendar-day[data-today]:not([data-selected]) .tk-calendar-day-button { border-color: #6366f1; background: #e0e7ff; }',
-  '.brand-calendar .tk-calendar-day[data-selected] .tk-calendar-day-button { background: #4338ca; }',
-  '.brand-calendar .tk-calendar-footer { border-top-color: #c7d2fe; color: #4338ca; }',
+export const customizationDemo = String.raw`
+const CUSTOMIZATION_CSS = [
+  '.custom-calendar.tk-calendar { border-radius: 20px; border-color: #b7c9c3; background: #f4f8f5; box-shadow: 0 12px 30px rgb(35 70 58 / 0.12); }',
+  '.custom-calendar .tk-calendar-month-caption { border-bottom-color: #b7c9c3; }',
+  '.custom-calendar .tk-calendar-caption-label { color: #1f5c4c; font-weight: 700; }',
+  '.custom-calendar .tk-calendar-weekday { color: #46796a; font-weight: 600; }',
+  '.custom-calendar .tk-calendar-day-button { border-radius: 10px; }',
+  '.custom-calendar .tk-calendar-day-button:hover { background: #dceee7; }',
+  '.custom-calendar .tk-calendar-day[data-selected] .tk-calendar-day-button { background: #1f6b56; color: white; }',
+  '.custom-calendar .tk-calendar-day[data-today]:not([data-selected]) .tk-calendar-day-button { border: 2px solid #d27b36; }',
+  '.custom-calendar .custom-day-content { position: relative; display: inline-flex; min-width: 34px; min-height: 34px; flex-direction: column; align-items: center; justify-content: center; gap: 2px; line-height: 1; }',
+  '.custom-calendar .custom-day-number { font-weight: 700; }',
+  '.custom-calendar .custom-day-price { color: #46796a; font-size: 9px; font-weight: 600; }',
+  '.custom-calendar .custom-day-star { position: absolute; top: 0; right: 0; color: #d27b36; }',
+  '.custom-calendar .tk-calendar-day[data-selected] .custom-day-price { color: inherit; }',
+  '.custom-calendar .tk-calendar-footer { color: #356b5b; }',
 ].join('\n');
 
-function StylingDemo() {
+const FEATURED_DAYS = [5, 12, 19, 26];
+
+function CustomizationDemo() {
   const [date, setDate] = React.useState();
+  const [showOutsideDays, setShowOutsideDays] = React.useState(true);
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <style>{BRAND_CSS}</style>
+      <style>{CUSTOMIZATION_CSS}</style>
+      <div className="flex flex-wrap justify-center gap-1" role="group" aria-label="Calendar options">
+        <Button
+          size="small"
+          variant={showOutsideDays ? 'primary' : 'neutral'}
+          onClick={() => setShowOutsideDays((visible) => !visible)}
+        >
+          {showOutsideDays ? 'Hide outside days' : 'Show outside days'}
+        </Button>
+      </div>
       <Calendar
         value={date}
         onValueChange={setDate}
-        classNames={{ root: 'brand-calendar' }}
-        slotProps={{ monthGrid: { 'aria-describedby': 'brand-hint' } }}
-        footer={<span id="brand-hint">Restyled entirely from the outside.</span>}
+        showOutsideDays={showOutsideDays}
+        classNames={{
+          root: 'custom-calendar',
+          monthCaption: 'custom-caption',
+          day: 'custom-day',
+          dayButton: 'custom-day-button',
+        }}
+        slotProps={{
+          monthGrid: { 'aria-describedby': 'custom-calendar-hint' },
+          nav: { 'aria-label': 'Calendar navigation' },
+        }}
+        renderDay={(day, modifiers) => {
+          const isOutside = Boolean(modifiers.outside);
+          const price = isOutside ? null : (80 + (day.getDate() % 6) * 15) + ' TL';
+          const isFeatured = !isOutside && FEATURED_DAYS.includes(day.getDate());
+
+          return (
+            <span className="custom-day-content">
+              <span className="custom-day-number">{day.getDate()}</span>
+              {price && <span className="custom-day-price">{price}</span>}
+              {isFeatured && (
+                <StarIconOutlinedRounded
+                  className="custom-day-star"
+                  width={10}
+                  height={10}
+                  aria-hidden="true"
+                  focusable="false"
+                />
+              )}
+            </span>
+          );
+        }}
+        footer={
+          <span id="custom-calendar-hint">
+            {date ? 'Selected: ' + date.toDateString() : 'Select a day. Prices appear below dates; stars mark featured days.'}
+          </span>
+        }
       />
     </div>
   );
 }
 
-render(<StylingDemo />);
+render(<CustomizationDemo />);
 `;
 
 {/* prettier-ignore-end */}
@@ -498,43 +558,39 @@ import { Calendar } from '@takeoff-ui/react-spar';
   scope={calendarScope}
 />
 
-## Styling
+## Customization
 
-Every class in the rendered tree is Takeoff-owned (`tk-calendar-*`) — no engine
-stylesheet is imported, and none is needed. Day state is read from the
-attributes the engine already emits, so recipes never need a wrapper mirror:
+Calendar exposes several customization surfaces without taking ownership of its
+selection or keyboard behavior. Use `classNames` for CSS hooks, `slotProps` for
+HTML attributes, `renderDay` for the content inside each day button, and
+`footer` for status or supporting content.
 
-```css
-.tk-calendar-day[data-selected] {
-  /* … */
-}
-.tk-calendar-day[data-today] .tk-calendar-day-button {
-  /* … */
-}
-```
-
-Per-slot overrides work the same way as everywhere else in the package:
-
-```tsx
-<Calendar
-  classNames={{ day: 'my-day', monthCaption: 'my-caption' }}
-  slotProps={{ monthGrid: { 'aria-describedby': 'hint' } }}
-/>
-```
-
-Putting the two together — one class on `root`, then plain CSS against the
-anatomy underneath it — is enough to re-skin the whole grid without touching the
-recipe:
+The following example combines all of them. The calendar gets a custom visual
+skin, event markers inside individual days, an accessible grid description, a
+custom navigation label, a live selection status, and a toggle for outside days:
 
 <LiveCode
-  code={stylingDemo}
+  code={customizationDemo}
   noInline
-  previewMinHeight={460}
+  previewMinHeight={560}
   previewWrapper={ReactSparDemoRoot}
   scope={calendarScope}
 />
 
-Note the selectors carry the `.brand-calendar` prefix. The recipe styles a
+Every class in the rendered tree is Takeoff-owned (`tk-calendar-*`) — no engine
+stylesheet is imported. Day state is read from the attributes the engine already
+emits, so recipes can target state without a wrapper mirror:
+
+```css
+.tk-calendar-day[data-selected] .tk-calendar-day-button {
+  /* ... */
+}
+.tk-calendar-day[data-today] .tk-calendar-day-button {
+  /* ... */
+}
+```
+
+When styling a slot, prefix selectors with the root class. The recipe styles a
 selected day through `.tk-calendar-day[data-selected] .tk-calendar-day-button`,
 so an override needs at least that much weight — which is also why a bare
 utility class on a slot can lose: utility frameworks usually emit into a cascade
@@ -587,6 +643,7 @@ See [react-day-picker docs](https://daypicker.dev) for primitive behavior.
 | <ApiBadge label="firstDayOfWeekIndex" /> | <code><a href="#calendar-td-calendarweekstart">CalendarWeekStart</a></code>                                                             | -                                                | First day of the week, `0` = Sunday. Defaults to the locale's own first day.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | <ApiBadge label="classNames" />          | <code>Partial&lt;Record&lt;<a href="#calendar-td-calendarslot">CalendarSlot</a>, string&gt;&gt;</code>                                  | -                                                | Per-slot class name overrides.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | <ApiBadge label="slotProps" />           | <code>Partial&lt;Record&lt;<a href="#calendar-td-calendarslot">CalendarSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -                                                | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| <ApiBadge label="renderDay" />           | <code><a href="#calendar-td-calendardayrenderer">CalendarDayRenderer</a></code>                                                         | -                                                | Custom content rendered inside each day button.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | <ApiBadge label="footer" />              | <code>React.ReactNode</code>                                                                                                            | -                                                | Add a footer to the calendar, acting as a live region. Use this prop to communicate the calendar's status to screen readers. Prefer strings over complex UI elements.                                                                                                                                                                                                                                                                                                                                                                                           |
 | <ApiBadge label="autoFocus" />           | <code>boolean</code>                                                                                                                    | -                                                | When a selection mode is set, DayPicker will focus the first selected day (if set) or today's date (if not disabled). Use this prop when you need to focus DayPicker after a user action, for improved accessibility.                                                                                                                                                                                                                                                                                                                                           |
 | <ApiBadge label="dir" />                 | <code>string</code>                                                                                                                     | -                                                | The text direction of the calendar. Use `ltr` for left-to-right (default) or `rtl` for right-to-left.                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -706,6 +763,7 @@ See [react-day-picker docs](https://daypicker.dev) for primitive behavior.
 | <span id="calendar-td-calendarview"><ApiBadge label="CalendarView" /></span>                       | <code>'day' &#124; 'month' &#124; 'year'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | <span id="calendar-td-calendarweekstart"><ApiBadge label="CalendarWeekStart" /></span>             | <code>0 &#124; 1 &#124; 2 &#124; 3 &#124; 4 &#124; 5 &#124; 6</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | <span id="calendar-td-calendarslot"><ApiBadge label="CalendarSlot" /></span>                       | <code>&#124; 'root' &#124; 'months' &#124; 'month' &#124; 'nav' &#124; 'previousMonthButton' &#124; 'nextMonthButton' &#124; 'previousYearButton' &#124; 'nextYearButton' &#124; 'chevron' &#124; 'monthCaption' &#124; 'captionLabel' &#124; 'captionTrigger' &#124; 'dropdowns' &#124; 'dropdownRoot' &#124; 'dropdown' &#124; 'monthGrid' &#124; 'monthYearGrid' &#124; 'monthYearCell' &#124; 'weekdays' &#124; 'weekday' &#124; 'weeks' &#124; 'week' &#124; 'weekNumber' &#124; 'weekNumberHeader' &#124; 'day' &#124; 'dayButton' &#124; 'footer'</code>                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| <span id="calendar-td-calendardayrenderer"><ApiBadge label="CalendarDayRenderer" /></span>         | <code>(date: Date, modifiers: Modifiers) =&gt; ReactNode</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | <span id="calendar-td-daypickerlocale"><ApiBadge label="DayPickerLocale" /></span>                 | <code>&#123; labels?: DayPickerLocaleLabels &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | <span id="calendar-td-numerals"><ApiBadge label="Numerals" /></span>                               | <code>"latn" &#124; "arab" &#124; "arabext" &#124; "deva" &#124; "geez" &#124; "beng" &#124; "guru" &#124; "gujr" &#124; "orya" &#124; "tamldec" &#124; "telu" &#124; "knda" &#124; "mlym" &#124; "thai" &#124; "mymr" &#124; "khmr" &#124; "laoo" &#124; "tibt"</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | <span id="calendar-td-formatters"><ApiBadge label="Formatters" /></span>                           | <code>&#123; /** Format the caption of a month grid. \*/ formatCaption: typeof formatCaption; /** Format the day in the day cell. _/ formatDay: typeof formatDay; /\*\* Format the label in the month dropdown. _/ formatMonthDropdown: typeof formatMonthDropdown; /** Format the week number. \*/ formatWeekNumber: typeof formatWeekNumber; /** Format the header of the week number column. _/ formatWeekNumberHeader: typeof formatWeekNumberHeader; /\*\* Format the week day name in the header. _/ formatWeekdayName: typeof formatWeekdayName; /\*_ Format the label in the year dropdown. _/ formatYearDropdown: typeof formatYearDropdown; &#125;</code>                                                                                                                                                                                                                                                                                                                |
