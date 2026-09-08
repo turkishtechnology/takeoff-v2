@@ -44,6 +44,7 @@ hand-rolling markup — every shipped component has one.
 ```txt
 contract <ComponentName>
 implement <ComponentName>
+migrate v1 <path>
 review current branch
 fix review blockers only
 final verify

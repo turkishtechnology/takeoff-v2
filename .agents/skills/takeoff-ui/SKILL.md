@@ -19,6 +19,9 @@ React-first wrapper layer over the headless **Spar** primitives, styled with
 install, provider, theming, the styling model, and a map to the per-component
 skills.
 
+Migrating from Takeoff UI v1? Use `migrate-takeoff-v1` for the inventory, setup,
+v1-to-v2 mapping, and gap decisions.
+
 **When to use:** project setup, provider/token wiring, theming, the
 slot/customization contract, or picking the right component. For a specific
 component's props and examples, jump to its `takeoff-<name>` skill.

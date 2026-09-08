@@ -23,20 +23,26 @@ The package currently exports these component roots:
 - `Checkbox`
 - `Chip`
 - `Dialog`
+- `Divider`
 - `Drawer`
 - `Dropdown`
 - `Field`
 - `Input`
 - `Label`
 - `Popover`
+- `Progress`
 - `Radio`
 - `Select`
+- `Skeleton`
+- `Slider`
 - `Spinner`
+- `Stepper`
 - `Switch`
 - `Table`
 - `Tabs`
 - `Toast`
 - `Tooltip`
+- `Upload`
 
 The package root also exports `TakeoffSparProvider`, `useTheme`,
 `useComponentTheme`, and customization/theme types. Compound components expose
@@ -90,9 +96,11 @@ cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
 
 > The `agents/` directory ships from 0.4.0 onward.
 
-`AGENTS.md` at the repository root is read automatically by GitHub Copilot,
-Cursor, and Claude. It lists every component with what it's for, plus the rules
-that matter (React 19 only, provider + token CSS, the slot/customization model).
+Cursor and Claude read `AGENTS.md` at the repository root. GitHub Copilot uses
+`.github/copilot-instructions.md` for repository instructions; copy the same
+template there when setting up Copilot. The file lists every component with what
+it's for, plus the rules that matter (React 19 only, provider + token CSS, the
+slot/customization model).
 
 For full API context, point the assistant at the Markdown docs — every page is
 available by appending `.md` to its URL, and the whole library is at
