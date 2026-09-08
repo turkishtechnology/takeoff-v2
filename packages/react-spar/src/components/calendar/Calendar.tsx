@@ -63,7 +63,7 @@ import { useComponentTheme } from '../../provider';
 import { CalendarBase, calendarRangeClassNames } from './base';
 import { DEFAULT_HEADER_TYPE, DEFAULT_MODE, DEFAULT_SIZE, DEFAULT_VIEW } from './defaults';
 import { assignRef, buildDisabledMatchers, isMonthInBounds, isYearInBounds, isYearPageInBounds, yearPageStart, YEARS_PER_PAGE } from './helpers';
-import type { CalendarHeaderType, CalendarMode, CalendarProps, CalendarSize, CalendarSlot, CalendarValue, CalendarView } from './types';
+import type { CalendarDayRenderer, CalendarHeaderType, CalendarMode, CalendarProps, CalendarSize, CalendarSlot, CalendarValue, CalendarView } from './types';
 
 /**
  * The wrapper's flattened view of the discriminated {@link CalendarProps} union.
@@ -229,6 +229,7 @@ const createEngineComponents = (
   attrsRef: RefObject<SlotAttrsMap>,
   refRef: RefObject<Ref<HTMLDivElement> | undefined>,
   viewRef: RefObject<CalendarViewState>,
+  renderDayRef: RefObject<CalendarDayRenderer | undefined>,
 ): Partial<DayPickerCustomComponents> => {
   const withSlot = <P extends object>(Component: ComponentType<P>, slot: CalendarSlot) => {
     const Slotted = (props: P) => <Component {...(mergeSlotAttrs(attrsRef.current[slot], props as Record<string, unknown>) as P)} />;
@@ -736,6 +737,17 @@ const createEngineComponents = (
   };
   Nav.displayName = 'Calendar.nav';
 
+  const DayButton = ({ day, modifiers, children, ...engineProps }: ComponentProps<typeof DayPickerDayButton>) => {
+    const slotProps = mergeSlotAttrs(attrsRef.current.dayButton, engineProps as Record<string, unknown>);
+
+    return (
+      <DayPickerDayButton {...(slotProps as unknown as ComponentProps<typeof DayPickerDayButton>)} day={day} modifiers={modifiers}>
+        {renderDayRef.current ? renderDayRef.current(day.date, modifiers) : children}
+      </DayPickerDayButton>
+    );
+  };
+  DayButton.displayName = 'Calendar.dayButton';
+
   return {
     Root,
     Chevron,
@@ -759,7 +771,7 @@ const createEngineComponents = (
     WeekNumber: withSlot(DayPickerWeekNumber, 'weekNumber'),
     WeekNumberHeader: withSlot(DayPickerWeekNumberHeader, 'weekNumberHeader'),
     Day: withSlot(DayPickerDay, 'day'),
-    DayButton: withSlot(DayPickerDayButton, 'dayButton'),
+    DayButton,
     Footer: withSlot(DayPickerFooter, 'footer'),
   };
 };
@@ -811,6 +823,7 @@ export const Calendar = (props: CalendarProps) => {
     min,
     max,
     excludeDisabled,
+    renderDay,
     ...engine
   } = rest as CalendarFlatProps;
 
@@ -908,8 +921,10 @@ export const Calendar = (props: CalendarProps) => {
   attrsRef.current = slotAttrs;
   const refRef = useRef(ref);
   refRef.current = ref;
+  const renderDayRef = useRef<CalendarDayRenderer | undefined>(renderDay);
+  renderDayRef.current = renderDay;
 
-  const components = useMemo(() => createEngineComponents(attrsRef, refRef, viewRef), []);
+  const components = useMemo(() => createEngineComponents(attrsRef, refRef, viewRef, renderDayRef), []);
 
   const disabled = buildDisabledMatchers({ minDate, maxDate, disabledDates, allowedDates, disabledWeekDays });
 

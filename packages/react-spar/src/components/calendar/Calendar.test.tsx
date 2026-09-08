@@ -448,6 +448,25 @@ describe('Calendar', () => {
       expect(dayButton(container, '2026-08-15')).toBe(before);
       expect(document.activeElement).toBe(dayButton(container, '2026-08-16'));
     });
+
+    it('renders custom day content without replacing day-button behavior', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      const { container } = render(
+        <Calendar
+          defaultMonth={AUGUST_2026}
+          renderDay={(date, modifiers) => (modifiers.selected ? `selected-${date.getDate()}` : `day-${date.getDate()}`)}
+          onValueChange={onValueChange}
+        />,
+      );
+
+      expect(dayButton(container, '2026-08-15')).toHaveTextContent('day-15');
+
+      await user.click(dayButton(container, '2026-08-15'));
+
+      expect(onValueChange).toHaveBeenCalledWith(new Date(2026, 7, 15));
+      expect(dayButton(container, '2026-08-15')).toHaveTextContent('selected-15');
+    });
   });
 
   describe('month and year panels', () => {

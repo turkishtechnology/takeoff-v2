@@ -23,6 +23,9 @@ grammar in the wrapper would be behavior, not visual wrapping. `locale` takes an
 object from `react-day-picker/locale`, since resolving a locale string would
 mean bundling every locale.
 
+Day contents can be customized with `renderDay`, which receives the date and
+active modifiers while leaving the engine-owned day-button behavior intact.
+
 ```tsx
 const [date, setDate] = useState<Date>();
 

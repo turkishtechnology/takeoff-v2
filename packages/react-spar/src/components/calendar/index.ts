@@ -1,6 +1,7 @@
 export { Calendar } from './Calendar';
 
 export type {
+  CalendarDayRenderer,
   CalendarHeaderType,
   CalendarMode,
   CalendarMultipleProps,

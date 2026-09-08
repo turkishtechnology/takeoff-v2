@@ -1,5 +1,5 @@
-import type { Ref } from 'react';
-import type { DateRange, PropsBase as DayPickerBaseProps } from 'react-day-picker';
+import type { ReactNode, Ref } from 'react';
+import type { DateRange, Modifiers, PropsBase as DayPickerBaseProps } from 'react-day-picker';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
 
@@ -52,6 +52,9 @@ export type CalendarView = 'day' | 'month' | 'year';
 
 /** A selected range. `to` is undefined while the range is half-picked. */
 export type CalendarRange = DateRange;
+
+/** Render the content inside a day button without replacing its behavior. */
+export type CalendarDayRenderer = (date: Date, modifiers: Modifiers) => ReactNode;
 
 /**
  * Slot vocabulary for `classNames` / `slotProps`. Calendar has a single public
@@ -205,6 +208,8 @@ export interface CalendarOwnProps extends Pick<
   classNames?: ClassNamesMap<CalendarSlot>;
   /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<CalendarSlot>;
+  /** Custom content rendered inside each day button. */
+  renderDay?: CalendarDayRenderer;
   /** Ref to the root element. */
   ref?: Ref<HTMLDivElement>;
 }

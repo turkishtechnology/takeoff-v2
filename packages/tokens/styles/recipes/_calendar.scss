@@ -142,21 +142,6 @@
   display: flex;
   flex-direction: column;
 
-  // The day grid and a month/year board take turns in this column, and a board
-  // is reachable on every calendar, so the body is pinned to one box —
-  // otherwise switching views would resize the card. It also fixes the height
-  // across months, which `fixedWeeks` would otherwise be needed for.
-  //
-  // The pin sits on the month rather than on the grid because the grid is a
-  // real `<table>`: a table given a height taller than its rows hands the
-  // difference *to the rows* (CSS 2.1 §17.5.3), so a five-week month would
-  // space its days further apart than a six-week one — plainly visible the
-  // moment two months sit side by side. On the column the leftover simply
-  // stays below the grid.
-  .tk-calendar[data-view] & {
-    min-height: calc(var(--datepicker-header-base-top-padding) + var(--tk-calendar-header-height) + var(--datepicker-header-base-bottom-padding) + var(--tk-calendar-body-height));
-  }
-
   // `navLayout="after"` renders the nav as a sibling between the caption and
   // the grid; the nav recipe lifts it back onto the caption row, so the month
   // has to be its containing block.

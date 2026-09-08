@@ -100,6 +100,7 @@ const sharedSurfaceProps = [
   'className',
   'classNames',
   'slotProps',
+  'renderDay',
   'size',
   'minDate',
   'maxDate',
