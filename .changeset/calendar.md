@@ -96,7 +96,15 @@ engine's, through `goToMonth`. A `dropdown*` caption keeps the engine's
 year `<select>` covers them; the boards still work there.
 
 One consequence worth calling out: since a board can replace the day grid on any
-calendar, the body box is now pinned — the grid keeps a constant height and
-width instead of growing a row in six-week months. Switching views no longer
-resizes the card, and `fixedWeeks` is no longer needed to stop the
-month-to-month jump.
+calendar, the body box is pinned on both — the day grid carries the same
+`min-height` the month/year board does, so a four- or five-week month keeps the
+six-week box instead of making the card shorter. Switching views does not resize
+the card, paging months does not either, and `fixedWeeks` is not needed to stop
+the month-to-month jump.
+
+The card's width comes from the grid rather than the caption. The caption label
+does not wrap, so a long month name would otherwise stretch the card and let it
+shrink again on the next arrow — visible as the whole card twitching as you
+page. A single-month calendar is therefore `width: min-content`; a
+`numberOfMonths > 1` row, which is legitimately wider than one grid, is left
+alone.

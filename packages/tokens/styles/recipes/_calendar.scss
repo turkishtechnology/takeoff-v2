@@ -56,6 +56,20 @@
   // is actually wanted.
   align-self: start;
 
+  // The grid decides the card's width, not the caption. The caption label is
+  // `white-space: nowrap`, so a long month name ("September") is wider than a
+  // short one ("May") — and without this the card would grow to fit it and then
+  // shrink again as you page, which in a popover moves the panel's edges on
+  // every arrow click. `min-content` is the grid's own width, since the grid is
+  // the widest thing that cannot be compressed; the caption then wraps its
+  // padding around that instead of setting it.
+  //
+  // Scoped to a single month: `numberOfMonths > 1` lays several side by side,
+  // where the row is legitimately wider than one grid.
+  &:not([data-multiple-months]) {
+    width: min-content;
+  }
+
   // Standalone, the grid is its own surface — Core's inline panel: a bordered
   // card with no shadow. A component that nests the grid inside its own surface
   // (a picker popover, say) resets these three from its own recipe.
@@ -502,10 +516,20 @@
   border-spacing: 0;
 
   // The board takes this slot's width as well, so the two views stay the same
-  // width. The *height* is pinned on the month instead — see the note there.
+  // width — and the same height, from the shared body box below.
   .tk-calendar[data-view] & {
     box-sizing: border-box;
     width: var(--tk-calendar-body-width);
+
+    // The body box is the day grid at its tallest: six week rows. A month that
+    // needs four or five would otherwise make the card shorter, so paging with
+    // the header arrows resizes it under the pointer — and in a popover, moves
+    // the panel's bottom edge between clicks. The floor is what makes every
+    // month, and both views, one box.
+    //
+    // `min-height` rather than `height`: a table cannot be shortened below its
+    // rows, so this only ever adds the missing rows' worth of space.
+    min-height: var(--tk-calendar-body-height);
   }
 }
 
