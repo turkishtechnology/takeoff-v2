@@ -10,18 +10,24 @@ description:
 
 **There is no `DatePicker` component.** A date picker is `Popover` + `Calendar`,
 composed in the consumer's own component. Do not look for one, and do not build
-a wrapper that hides the composition — the wiring is short, and it differs per
-form in ways a component would have to guess at.
+a wrapper that hides the composition — the wiring differs per form in ways a
+component would have to guess at.
 
 Both halves already own their behaviour: `Popover` the disclosure, positioning,
 dismissal and focus return; `Calendar` the grid, its keyboard model, the
 restriction matchers and all three selection modes. What you write is the join
-between them.
+between them — and for a typable field, `useDatePicker` writes most of it.
 
 ## Setup
 
 ```tsx
-import { Calendar, Field, Input, Popover } from '@takeoff-ui/react-spar';
+import {
+  Calendar,
+  Field,
+  Input,
+  Popover,
+  useDatePicker,
+} from '@takeoff-ui/react-spar';
 ```
 
 ## The shape
@@ -79,69 +85,25 @@ function DatePickerDemo() {
 
 ### Masked text field
 
-The field is an `Input.Field` with a date mask, so it only ever accepts a whole
-date in the shape asked for. Read `onValueChange`, not `onChange`: `meta.iso`
-hands over the date without a parse, and `meta.completed` says when one has
-arrived.
-
-Three things have to be kept in step, and each is a common miss:
-
-1. **Bound both halves from one pair of dates.** `minDate` / `maxDate` bound the
-   grid; the mask takes the same bounds as ISO through `dateMin` / `dateMax`.
-   Give them only to the grid and a date the calendar rejects can still be
-   typed.
-2. **Hold the calendar's `month` in state** so a typed date moves the panel. The
-   grid does not follow a value set from outside it.
-3. **Write the formatted date back on select**, or the field goes stale.
+`useDatePicker` owns the text/`Date` bridge: the field only ever accepts a whole
+date in the shape asked for, a completed one becomes a `Date`, a picked day is
+written back as text, and one pair of dates bounds the grid **and** the mask —
+give the bounds only to the grid and a date the calendar rejects can still be
+typed.
 
 ```tsx
-const MIN = new Date(2026, 7, 10);
-const MAX = new Date(2026, 7, 20);
-const iso = d =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-const format = v =>
-  v
-    ? `${String(v.getDate()).padStart(2, '0')}/${String(v.getMonth() + 1).padStart(2, '0')}/${v.getFullYear()}`
-    : '';
-
-const DATE_MASK = {
-  date: true,
-  datePattern: ['d', 'm', 'Y'],
-  delimiter: '/',
-  dateMin: iso(MIN),
-  dateMax: iso(MAX),
-};
-
 function MaskedDatePicker() {
-  const [date, setDate] = React.useState();
-  const [month, setMonth] = React.useState(MIN);
-  const [text, setText] = React.useState('');
-  const [open, setOpen] = React.useState(false);
+  const picker = useDatePicker({
+    min: new Date(2026, 7, 10),
+    max: new Date(2026, 7, 20),
+  });
 
   return (
     <Field>
       <Field.Label>Departure</Field.Label>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover {...picker.popoverProps}>
         <Input>
-          <Input.Field
-            placeholder="dd/mm/yyyy"
-            mask={DATE_MASK}
-            value={text}
-            onValueChange={(next, meta) => {
-              setText(next);
-              if (next === '') return setDate(undefined);
-              if (!meta.completed || !meta.iso) return;
-              const [y, m, d] = meta.iso.split('-').map(Number);
-              const picked = new Date(y, m - 1, d);
-              setDate(picked);
-              setMonth(picked);
-            }}
-            onKeyDown={event => {
-              if (event.key !== 'ArrowDown') return;
-              event.preventDefault();
-              setOpen(true);
-            }}
-          />
+          <Input.Field placeholder="dd/mm/yyyy" {...picker.inputProps} />
           <Input.ClearButton />
           <Popover.Trigger
             aria-label="Select date"
@@ -154,24 +116,23 @@ function MaskedDatePicker() {
           align="end"
           classNames={{ root: 'tk-datepicker-panel' }}
         >
-          <Calendar
-            value={date}
-            month={month}
-            onMonthChange={setMonth}
-            minDate={MIN}
-            maxDate={MAX}
-            onValueChange={next => {
-              setDate(next);
-              setText(format(next));
-              setOpen(false);
-            }}
-          />
+          <Calendar {...picker.calendarProps} />
         </Popover.Content>
       </Popover>
     </Field>
   );
 }
 ```
+
+Each group is an ordinary object — spread it, override one key of it, or ignore
+it. `picker.setValue(date)` drives the whole picker from outside (a preset, a
+reset, a value restored from a form), `format` and `delimiter` change the
+field's shape, and `onValueChange` reports every change from either half.
+
+`inputProps.onKeyDown` is what opens the panel on `ArrowDown`; drop it when the
+field is read-only. Without the hook, read `onValueChange` rather than
+`onChange` on a masked field — `meta.iso` hands over the date without a parse,
+and `meta.completed` says when one has arrived.
 
 ### Range
 
@@ -198,22 +159,20 @@ value. Let Escape or an outside click dismiss it.
 
 ### Presets
 
-`Calendar`'s `footer` takes any node, so shortcuts live inside the panel. A
-preset has to move the value, the field text **and** the month.
+`Calendar`'s `footer` takes any node, so shortcuts live inside the panel. Set
+the value and everything else follows: `picker.setValue` writes the field text,
+and the grid scrolls to a date that lands in another month.
 
 ```tsx
 <Calendar
-  value={date}
-  month={month}
-  onMonthChange={setMonth}
-  onValueChange={commit}
+  {...picker.calendarProps}
   footer={
     <div
       className="flex w-full flex-wrap justify-center gap-1"
       role="group"
       aria-label="Date presets"
     >
-      <Button variant="neutral" onClick={() => commit(new Date())}>
+      <Button variant="neutral" onClick={() => picker.setValue(new Date())}>
         Today
       </Button>
     </div>
@@ -227,18 +186,21 @@ No popover, no composition — use `Calendar` on its own.
 
 ## Key props
 
-Everything comes from the two components. Nothing on this page is picker-owned.
+Everything comes from the two components, plus the hook that joins them.
 
-| Prop                                                  | Owner       | Notes                                                                    |
-| ----------------------------------------------------- | ----------- | ------------------------------------------------------------------------ |
-| `open` / `defaultOpen` / `onOpenChange`               | Popover     | Control it when you need close-on-select or `ArrowDown` to open.         |
-| `side` / `align`                                      | Popover     | `bottom` / `end` suits a trigger at a field's inline end.                |
-| `mode`                                                | Calendar    | `single` (default), `multiple`, `range`.                                 |
-| `value` / `onValueChange`                             | Calendar    | Typed by `mode`: `Date`, `Date[]`, or `{ from, to }`.                    |
-| `month` / `onMonthChange` / `defaultMonth`            | Calendar    | Hold `month` in state to make typing move the panel.                     |
-| `minDate` / `maxDate`                                 | Calendar    | Mirror onto the mask as `dateMin` / `dateMax` when the field is typable. |
-| `disabledDates` / `allowedDates` / `disabledWeekDays` | Calendar    | Mirror any rule the mask cannot express onto the value too.              |
-| `mask` / `onValueChange`                              | Input.Field | See `takeoff-input` for the mask vocabulary.                             |
+| Prop                                                  | Owner         | Notes                                                                          |
+| ----------------------------------------------------- | ------------- | ------------------------------------------------------------------------------ |
+| `min` / `max` / `defaultValue`                        | useDatePicker | Bounds reach the grid and the mask from one pair of dates.                     |
+| `format` / `delimiter`                                | useDatePicker | The field's shape. Default `dd/mm/yyyy`.                                       |
+| `setValue` / `onValueChange`                          | useDatePicker | Drive the picker from outside; report every change from either half.           |
+| `open` / `defaultOpen` / `onOpenChange`               | Popover       | `popoverProps` covers it — control it yourself for close-on-select in a range. |
+| `side` / `align`                                      | Popover       | `bottom` / `end` suits a trigger at a field's inline end.                      |
+| `mode`                                                | Calendar      | `single` (default), `multiple`, `range`.                                       |
+| `value` / `onValueChange`                             | Calendar      | Typed by `mode`: `Date`, `Date[]`, or `{ from, to }`.                          |
+| `month` / `onMonthChange` / `defaultMonth`            | Calendar      | Only when the parent must own the displayed month; the grid follows the value. |
+| `minDate` / `maxDate`                                 | Calendar      | Mirror onto the mask as `dateMin` / `dateMax` when the field is typable.       |
+| `disabledDates` / `allowedDates` / `disabledWeekDays` | Calendar      | Mirror any rule the mask cannot express onto the value too.                    |
+| `mask` / `onValueChange`                              | Input.Field   | See `takeoff-input` for the mask vocabulary.                                   |
 
 ## Styling hooks
 
@@ -252,7 +214,7 @@ Everything comes from the two components. Nothing on this page is picker-owned.
 - The trigger is a real button — give it an `aria-label` when its content is
   only an icon.
 - `ArrowDown` in the field should open the panel, so the calendar is reachable
-  without leaving the keyboard.
+  without leaving the keyboard. `inputProps.onKeyDown` already does this.
 - Wrap the composition in `Field` for label, description and error wiring.
 - The panel is not modal: it does not trap focus, and Escape or an outside click
   dismisses it.

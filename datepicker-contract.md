@@ -57,6 +57,28 @@ and will come back:
   the only authoring model"). A pattern sits outside that model, which is why
   this ships as documentation and CSS rather than as a component.
 
+## What the wiring cost, and what was done about it
+
+The most expensive line above — "the text-field variant needs roughly forty
+lines, per usage" — was answered without reopening the shape. Two changes:
+
+- **`Calendar` follows a value set from outside the grid.** The displayed month
+  was separate state every caller had to hold and keep in step with the value,
+  or a preset selected a day that was off-screen. That was a Calendar gap, not a
+  picker one, and it is fixed there.
+- **`useDatePicker` owns the text/`Date` bridge.** It renders nothing and owns
+  no anatomy, so the composition is unchanged: `Popover`, `Input` and `Calendar`
+  stay the consumer's to place, and each returned group is an ordinary object to
+  spread, override, or ignore. It qualifies under the no-adapter-hook rule on
+  the same grounds as `useControllableState` — real React state, no Spar
+  behaviour hidden behind it, no prop mapping.
+
+This is deliberately the smaller move. A component would have had to own the
+anatomy and then guess at close-on-select, the field's format, and whether the
+field is typable at all; a hook answers only the part that was the same in every
+form. The distribution argument stands, but the wiring it multiplied is now one
+call rather than forty lines.
+
 ## If this is revisited
 
 The rejected component design is recoverable from this branch's history. The
