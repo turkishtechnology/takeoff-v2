@@ -241,21 +241,17 @@ const PRESETS = [
 
 function PresetCalendar() {
   const [date, setDate] = useState<Date>();
-  const [month, setMonth] = useState(new Date());
 
   const pick = (days: number) => {
     const next = new Date();
     next.setDate(next.getDate() + days);
     setDate(next);
-    setMonth(next);
   };
 
   return (
     <Calendar
       value={date}
       onValueChange={setDate}
-      month={month}
-      onMonthChange={setMonth}
       footer={
         <div
           className="flex flex-wrap gap-1"
