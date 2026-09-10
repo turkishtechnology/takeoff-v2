@@ -223,7 +223,7 @@ Everything comes from the two components, plus the hook that joins them.
 
 Full page with live demos: `apps/docs/docs/components/datepicker.mdx`. The
 decision record for why this is a pattern and not a component, including the
-arguments against, is `datepicker-contract.md` at the repo root.
+arguments against, is `docs/datepicker-contract.md`.
 
 Related skills: `takeoff-calendar` (the grid), `takeoff-popover` (the
 disclosure), `takeoff-input` (the field and its mask), `takeoff-field`.

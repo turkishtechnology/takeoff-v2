@@ -40,7 +40,8 @@ const routerSkill = resolve(skillsDir, 'takeoff-ui/SKILL.md');
  * would read that as an orphan. It still has to be a real skill rather than a
  * reference under `takeoff-ui`, because `apps/docs/scripts/generate-llms.mjs`
  * routes a docs page to `takeoff-<page-slug>/SKILL.md` and would otherwise
- * publish the page with no guidance attached. See `datepicker-contract.md`.
+ * publish the page with no guidance attached. See
+ * `docs/datepicker-contract.md`.
  */
 const NON_COMPONENT_SKILLS = new Set(['takeoff-ui', 'takeoff-component-workflow', 'takeoff-datepicker']);
 

@@ -60,5 +60,15 @@ and accessibility guidance where the component owns interaction behavior.
 | [Popover](/docs/components/popover)   | Displaying additional content or actions in a floating panel.    |
 | [Table](/docs/components/table)       | Scanning, sorting, filtering, and paginating structured data.    |
 
+## Patterns
+
+Composed from the components above rather than shipped as one. There is no
+component to import — the page shows the composition, and the design system
+supplies the pieces it needs.
+
+| Pattern                                   | Use it for                                                                                         |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| [DatePicker](/docs/components/datepicker) | Picking a date behind a trigger: `Popover` + `Calendar`, and for a typable field, `useDatePicker`. |
+
 Start with [Composition & styling](/docs/foundations/composition-styling) to
 learn the shared compound, slot, and customization model.

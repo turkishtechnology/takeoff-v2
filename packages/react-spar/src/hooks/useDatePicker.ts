@@ -5,7 +5,7 @@ import type { MaskDateOptions } from '@turkish-technology/spar';
  * The text/`Date` bridge a date picker needs, without a DatePicker component.
  *
  * A date picker is `Popover` + `Calendar` composed by the consumer (see
- * `datepicker-contract.md`). That decision stands: this hook owns no anatomy,
+ * `docs/datepicker-contract.md`). That decision stands: this hook owns no anatomy,
  * renders nothing, and every element stays the consumer's to place. What it
  * removes is the one part of the composition that was neither short nor
  * situational — keeping a typed string and a `Date` in step, in both
