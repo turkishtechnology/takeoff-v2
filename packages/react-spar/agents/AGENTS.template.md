@@ -3,8 +3,9 @@
 # AGENTS.md — @takeoff-ui/react-spar
 
 > Copy this file to the root of the project that consumes
-> `@takeoff-ui/react-spar` and rename it `AGENTS.md`. GitHub Copilot, Cursor,
-> and Claude all read it automatically. Add your own project rules below the
+> `@takeoff-ui/react-spar` and rename it `AGENTS.md` for tools that support that
+> convention, such as Cursor and Claude. GitHub Copilot can use the same content
+> at `.github/copilot-instructions.md`. Add your own project rules below the
 > generated sections.
 
 This project uses `@takeoff-ui/react-spar`, a React 19 component library built
@@ -67,3 +68,14 @@ and runnable examples, fetch its Markdown page:
 The entire library in one file (for pasting into a model's context) is at:
 
     https://takeoff-v2.app.turkishtechlab.com/llms-full.txt
+
+## Migrating from Takeoff UI v1
+
+For React applications moving from `@takeoff-ui/react` and `Tk*` components, the
+migration skill ships with this package:
+
+    node_modules/@takeoff-ui/react-spar/agents/migrate-takeoff-v1/SKILL.md
+
+Point your assistant at that file. It covers the inventory commands, setup
+order, v1-to-v2 component map, event/prop guidance, and the known coverage gaps,
+with the supporting detail in the `references/` directory beside it.
