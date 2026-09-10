@@ -62,7 +62,17 @@ import { useComponentTheme } from '../../provider';
 
 import { CalendarBase, calendarRangeClassNames } from './base';
 import { DEFAULT_HEADER_TYPE, DEFAULT_MODE, DEFAULT_SIZE, DEFAULT_VIEW } from './defaults';
-import { assignRef, buildDisabledMatchers, isMonthInBounds, isYearInBounds, isYearPageInBounds, yearPageStart, YEARS_PER_PAGE } from './helpers';
+import {
+  assignRef,
+  buildDisabledMatchers,
+  isMonthInBounds,
+  isSameCalendarMonth,
+  isYearInBounds,
+  isYearPageInBounds,
+  selectionAnchor,
+  yearPageStart,
+  YEARS_PER_PAGE,
+} from './helpers';
 import type { CalendarDayRenderer, CalendarHeaderType, CalendarMode, CalendarProps, CalendarSize, CalendarSlot, CalendarValue, CalendarView } from './types';
 
 /**
@@ -850,6 +860,52 @@ export const Calendar = (props: CalendarProps) => {
     onValueChange?.(next);
   };
 
+  // A value set from outside the grid scrolls the grid to it.
+  //
+  // The engine reads `defaultMonth` once and then owns the displayed month, so
+  // a preset button, a typed date or a value restored from a form would select
+  // a day that is off-screen. Following the selection is what a picker means by
+  // "show me this date", and it is the wiring every composition had to write by
+  // hand (`setValue` plus `setMonth`, kept in step).
+  //
+  // Deliberately narrow, so it cannot fight the two callers who already own the
+  // month:
+  // - A passed `month` wins outright — that parent is driving the grid, and
+  //   this would be a second writer to the same state.
+  // - Only a *different month* moves the grid. Picking another day in the
+  //   month on screen, or re-selecting the same one, changes nothing, so
+  //   paging away and clicking a day does not yank the view back.
+  // - The anchor is compared against what is displayed *now*, not against the
+  //   previous value: after the user pages the grid themselves the displayed
+  //   month is theirs, and re-running this effect (on an unrelated re-render)
+  //   must not undo that.
+  const isMonthControlled = engine.month !== undefined;
+  const anchor = selectionAnchor(selected);
+  const [followedMonth, setFollowedMonth] = useState<Date | undefined>(undefined);
+  const displayedMonthRef = useRef<Date | undefined>(undefined);
+
+  // Depended on as two integers rather than as the Date: a parent re-creating
+  // an equal Date each render must not re-trigger the scroll.
+  const anchorYear = anchor?.getFullYear();
+  const anchorMonth = anchor?.getMonth();
+
+  useEffect(() => {
+    if (isMonthControlled || anchorYear === undefined || anchorMonth === undefined) return;
+    const displayed = displayedMonthRef.current;
+    const target = new Date(anchorYear, anchorMonth, 1);
+    if (displayed && isSameCalendarMonth(displayed, target)) return;
+    displayedMonthRef.current = target;
+    setFollowedMonth(target);
+  }, [isMonthControlled, anchorYear, anchorMonth]);
+
+  // The engine reports every move (arrows, board, and the follow above), so the
+  // displayed month is tracked here and handed back as the controlled `month`.
+  const handleMonthChange = (next: Date) => {
+    displayedMonthRef.current = next;
+    setFollowedMonth(next);
+    engine.onMonthChange?.(next);
+  };
+
   // The caption triggers cannot coexist with the engine's `<select>`
   // navigation — that layout reuses the caption-label node — but the boards
   // themselves work in every layout.
@@ -940,6 +996,12 @@ export const Calendar = (props: CalendarProps) => {
     // navigation down with them: `navLayout="after"` and `"around"` render it
     // inside a month.
     numberOfMonths: view === 'day' ? engine.numberOfMonths : 1,
+    // A passed `month` stays in charge; otherwise the month the grid follows is
+    // whatever it was last moved to — by the user's own navigation or by the
+    // selection above. `defaultMonth` still seeds the first render, because
+    // `followedMonth` is undefined until something moves.
+    month: isMonthControlled ? engine.month : followedMonth,
+    onMonthChange: handleMonthChange,
     mode,
     selected,
     onSelect: setSelected,

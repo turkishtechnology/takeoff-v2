@@ -1,6 +1,8 @@
 import type { Ref } from 'react';
 import type { Matcher } from 'react-day-picker';
 
+import type { CalendarValue } from './types';
+
 /**
  * Same calendar day in local time. Deliberately not `date-fns`' `isSameDay`:
  * the comparison is three integer reads, and keeping it here means the wrapper
@@ -8,6 +10,26 @@ import type { Matcher } from 'react-day-picker';
  */
 export const isSameCalendarDay = (left: Date, right: Date): boolean =>
   left.getFullYear() === right.getFullYear() && left.getMonth() === right.getMonth() && left.getDate() === right.getDate();
+
+/** Same calendar month in local time. Two integer reads, same reasoning as {@link isSameCalendarDay}. */
+export const isSameCalendarMonth = (left: Date, right: Date): boolean => left.getFullYear() === right.getFullYear() && left.getMonth() === right.getMonth();
+
+/**
+ * The date a selection should scroll the grid to, or `undefined` when there is
+ * nothing to scroll to.
+ *
+ * Every mode reduces to a single anchor: a `single` value is its own anchor, a
+ * `range` anchors on `from` (the end the user picks first, and the one a
+ * half-picked range always has), and `multiple` anchors on the last entry —
+ * the one just added, which is what a caller setting the value from outside
+ * means by "show me this".
+ */
+export const selectionAnchor = (value: CalendarValue): Date | undefined => {
+  if (!value) return undefined;
+  if (value instanceof Date) return value;
+  if (Array.isArray(value)) return value.length ? value[value.length - 1] : undefined;
+  return value.from;
+};
 
 export interface CalendarRestrictions {
   minDate?: Date;

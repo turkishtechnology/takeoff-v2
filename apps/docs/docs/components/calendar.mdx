@@ -174,15 +174,13 @@ const PRESETS = [
 
 function PresetsDemo() {
   const [date, setDate] = React.useState();
-  // The displayed month is its own state: a value set from outside the grid
-  // does not move it, so the preset moves both.
-  const [month, setMonth] = React.useState(new Date());
 
+  // Setting the value is enough: the grid scrolls to a preset that lands in
+  // another month, so there is no second piece of state to keep in step.
   const pick = (days) => {
     const next = new Date();
     next.setDate(next.getDate() + days);
     setDate(next);
-    setMonth(next);
   };
 
   return (
@@ -190,8 +188,6 @@ function PresetsDemo() {
       <Calendar
         value={date}
         onValueChange={setDate}
-        month={month}
-        onMonthChange={setMonth}
         footer={
           <div className="flex flex-wrap items-center justify-start gap-1" role="group" aria-label="Date presets">
             {PRESETS.map((preset) => (
@@ -518,8 +514,8 @@ disabled, since picking one would move the displayed month.
 ## Presets
 
 `footer` takes any node, which makes it the place for shortcut controls under
-the grid. Pair them with the controlled `month` so a preset that lands outside
-the visible month brings the grid with it.
+the grid. Setting the value is all a preset has to do — a date that lands
+outside the visible month brings the grid with it.
 
 <LiveCode
   code={presetsDemo}

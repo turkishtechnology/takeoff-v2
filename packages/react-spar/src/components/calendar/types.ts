@@ -122,6 +122,13 @@ export type CalendarWeekStart = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export interface CalendarOwnProps extends Pick<
   DayPickerBaseProps,
   | 'id'
+  // `month` / `defaultMonth` / `onMonthChange` keep the engine's meaning, with
+  // one addition the wrapper makes: when `month` is **not** passed, a value set
+  // from outside the grid scrolls the grid to it, so a preset, a typed date or
+  // a restored form value cannot select a day that is off-screen. Passing
+  // `month` turns that off — the parent is then the only writer of the
+  // displayed month. Navigation the user performs is never overridden: only a
+  // selection landing in a different month than the one on screen moves it.
   | 'month'
   | 'defaultMonth'
   | 'onMonthChange'

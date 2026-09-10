@@ -26,6 +26,15 @@ mean bundling every locale.
 Day contents can be customized with `renderDay`, which receives the date and
 active modifiers while leaving the engine-owned day-button behavior intact.
 
+The grid follows a value set from outside it. The engine reads `defaultMonth`
+once and then owns the displayed month, so a preset button, a typed date or a
+value restored from a form would select a day that is off-screen — every caller
+had to hold a second piece of state and keep `setValue` and `setMonth` in step.
+Setting the value is now enough. It is deliberately narrow: a passed `month`
+wins outright (that parent is driving the grid), and only a selection landing in
+a different month than the one on screen moves it, so navigation the user
+performs is never undone.
+
 ```tsx
 const [date, setDate] = useState<Date>();
 

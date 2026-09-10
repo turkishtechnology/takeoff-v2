@@ -136,10 +136,122 @@ describe('Calendar', () => {
       expect(onValueChange).not.toHaveBeenCalled();
     });
 
-    // The value and the displayed month are separate state: the engine reads
-    // the month once, at mount, and only navigation moves it afterwards. A
-    // preset that lands outside the visible month therefore has to move both —
-    // the pattern the docs' preset row demonstrates.
+    // Without a `month` prop the grid follows a value set from outside it, so a
+    // preset does not select a day that is off-screen. This is what removes the
+    // `setValue` + `setMonth` pair every composition used to write by hand.
+    it('scrolls to a value set from outside when `month` is not passed', async () => {
+      const user = userEvent.setup();
+
+      const Presets = () => {
+        const [value, setValue] = useState<Date | undefined>();
+
+        return (
+          <Calendar
+            defaultMonth={AUGUST_2026}
+            value={value}
+            onValueChange={setValue}
+            footer={
+              <button type="button" onClick={() => setValue(new Date(2026, 8, 1))}>
+                Next month
+              </button>
+            }
+          />
+        );
+      };
+
+      const { container } = render(<Presets />);
+      expect(screen.getByRole('grid')).toHaveAccessibleName('August 2026');
+
+      await user.click(screen.getByRole('button', { name: 'Next month' }));
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('September 2026');
+      expect(dayCell(container, '2026-09-01')).toHaveAttribute('data-selected', 'true');
+    });
+
+    // The grid follows the *selection*, not every render: once the user has
+    // paged somewhere themselves, re-selecting a day on that page must not yank
+    // the view back to where the value happens to live.
+    it('leaves the user’s own navigation alone', async () => {
+      const user = userEvent.setup();
+
+      const Followed = () => {
+        const [value, setValue] = useState<Date | undefined>(new Date(2026, 7, 15));
+        return <Calendar defaultMonth={AUGUST_2026} value={value} onValueChange={setValue} />;
+      };
+
+      const { container } = render(<Followed />);
+
+      await user.click(container.querySelector('.tk-calendar-nav-next-month') as HTMLElement);
+      expect(screen.getByRole('grid')).toHaveAccessibleName('September 2026');
+
+      // Picking a day on the page the user navigated to keeps them there.
+      await user.click(dayButton(container, '2026-09-10'));
+      expect(screen.getByRole('grid')).toHaveAccessibleName('September 2026');
+    });
+
+    // `range` anchors on `from`, the end picked first and the one a half-picked
+    // range always has.
+    it('scrolls to the start of a range set from outside', async () => {
+      const user = userEvent.setup();
+
+      const Ranged = () => {
+        const [value, setValue] = useState<CalendarRange | undefined>();
+
+        return (
+          <Calendar
+            mode="range"
+            defaultMonth={AUGUST_2026}
+            value={value}
+            onValueChange={setValue}
+            footer={
+              <button type="button" onClick={() => setValue({ from: new Date(2026, 9, 5), to: new Date(2026, 9, 9) })}>
+                October
+              </button>
+            }
+          />
+        );
+      };
+
+      render(<Ranged />);
+      expect(screen.getByRole('grid')).toHaveAccessibleName('August 2026');
+
+      await user.click(screen.getByRole('button', { name: 'October' }));
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('October 2026');
+    });
+
+    // A passed `month` is the parent's to drive: the wrapper's own
+    // follow-the-selection behaviour stands down, so a preset moving both stays
+    // the supported pattern for a fully controlled grid.
+    it('leaves the displayed month to the parent when `month` is passed', async () => {
+      const user = userEvent.setup();
+
+      const Pinned = () => {
+        const [value, setValue] = useState<Date | undefined>();
+
+        return (
+          <Calendar
+            month={AUGUST_2026}
+            value={value}
+            onValueChange={setValue}
+            footer={
+              <button type="button" onClick={() => setValue(new Date(2026, 8, 1))}>
+                Next month
+              </button>
+            }
+          />
+        );
+      };
+
+      render(<Pinned />);
+
+      await user.click(screen.getByRole('button', { name: 'Next month' }));
+
+      // The parent pinned August and passed no `onMonthChange`, so the grid
+      // stays there rather than following the value.
+      expect(screen.getByRole('grid')).toHaveAccessibleName('August 2026');
+    });
+
     it('follows a preset into another month through the controlled `month`', async () => {
       const user = userEvent.setup();
       const SEPTEMBER_1 = new Date(2026, 8, 1);
