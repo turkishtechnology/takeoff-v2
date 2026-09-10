@@ -211,7 +211,7 @@ function MaskedDate() {
       <Input>
         <Input.Field
           placeholder="dd/mm/yyyy"
-          mask={{ date: true, datePattern: ['d', 'm', 'Y'], delimiter: '/' }}
+          mask={{ date: true, delimiter: '/' }}
           value={value}
           onValueChange={(next, meta) => {
             setValue(next);

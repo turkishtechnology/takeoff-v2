@@ -44,6 +44,7 @@ export {
   createNumberMask,
   createTimeMask,
   createToaster,
+  useDatePicker,
 } from '@takeoff-ui/react-spar';
 
 export function ReactSparDemoRoot({ children }: PropsWithChildren) {

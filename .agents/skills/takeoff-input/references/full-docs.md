@@ -376,7 +376,7 @@ that by diffing old and new value is where caret bugs live. The mask reads
 
 ```tsx
 <Input.Field
-  mask={{ date: true, datePattern: ['d', 'm', 'Y'], delimiter: '/' }}
+  mask={{ date: true, delimiter: '/' }}
   value={value}
   onValueChange={(next, meta) => {
     setValue(next);
