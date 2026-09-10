@@ -61,19 +61,4 @@
     border-end-end-radius: var(--radius-xl);
     border-end-start-radius: var(--radius-xl);
   }
-
-  // A floating panel may follow its content, so the day grid is unpinned here:
-  // a four- or five-week month makes the panel shorter instead of leaving dead
-  // space under the last row. `_calendar.scss` pins it for a standalone
-  // calendar on purpose — that one sits in a page layout, where a reflow on
-  // every month change would shove whatever is under it around. A panel has
-  // nothing under it to shove.
-  //
-  // Scoped to the day view so the month/year board keeps the full box. The
-  // board is three rows of cells; letting it size to its content would make it
-  // shorter than any day grid, and switching views would then jump further than
-  // navigating months ever does.
-  .tk-calendar[data-view='day'] .tk-calendar-month {
-    min-height: 0;
-  }
 }

@@ -37,9 +37,12 @@ import { Calendar, Field, Input, Popover } from '@takeoff-ui/react-spar';
 
 `tk-datepicker-panel` is **required**, not decoration. Popover's content box is
 a text bubble — capped at 296px with its own padding — so an unmodified panel
-clips a calendar. The class lifts the cap and the padding, drops the calendar's
-standalone border, and lets the panel follow a short month instead of holding a
-six-week box. Nothing emits it; apply it through `classNames`.
+clips a calendar. The class lifts the cap and the padding and drops the
+calendar's standalone border. Nothing emits it; apply it through `classNames`.
+
+The panel keeps the grid's own geometry: `Calendar` pins the body box, so a
+four-week month and a six-week one are the same height and the panel does not
+resize under the pointer as you page through months.
 
 ## Examples
 
@@ -241,7 +244,7 @@ Everything comes from the two components. Nothing on this page is picker-owned.
 
 | Class                 | Applies to        | What it does                                                                                                    |
 | --------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------- |
-| `tk-datepicker-panel` | `Popover.Content` | Required. Lifts the bubble's width cap and padding so a calendar fits; lets the panel follow a short month.     |
+| `tk-datepicker-panel` | `Popover.Content` | Required. Lifts the bubble's width cap and padding so a calendar fits, and drops the grid's standalone border.  |
 | `tk-input-action`     | `Popover.Trigger` | Owned by Input. Opts an in-field trigger into the Input action-button rules, so it matches `Input.ClearButton`. |
 
 ## Accessibility
