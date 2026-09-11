@@ -180,6 +180,27 @@ and the grid scrolls to a date that lands in another month.
 />
 ```
 
+### Localization
+
+Two halves, and they have to agree: the grid takes a `locale` object, the field
+takes the matching `delimiter` — which is both what the mask inserts and what is
+written back on select.
+
+```tsx
+import { tr } from 'react-day-picker/locale';
+
+const picker = useDatePicker({ delimiter: '.' });
+
+<Input.Field placeholder="gg.aa.yyyy" {...picker.inputProps} />
+<Calendar {...picker.calendarProps} locale={tr} />;
+```
+
+Import only the locales you use, so only those are bundled. The field writes
+`dd<delimiter>mm<delimiter>yyyy`; a locale that puts the month first needs
+`format` too, plus a mask whose `datePattern` matches. The rest of the grid's
+localization is `Calendar`'s — `firstDayOfWeekIndex`, `numerals`, `dir="rtl"` —
+see `takeoff-calendar`.
+
 ### Inline
 
 No popover, no composition — use `Calendar` on its own.

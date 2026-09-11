@@ -21,6 +21,7 @@ import {
 import { ApiBadge } from '@site/src/components/ApiBadge';
 import { CalendarIconOutlinedRounded } from '@takeoff-icons/react/calendar';
 import { DateRangeIconOutlinedRounded } from '@takeoff-icons/react/date-range';
+import { enUS, tr } from 'react-day-picker/locale';
 
 export const datePickerScope = {
   Button,
@@ -30,6 +31,8 @@ export const datePickerScope = {
   Field,
   Input,
   Popover,
+  enUS,
+  tr,
   useDatePicker,
 };
 
@@ -94,6 +97,50 @@ function BoundsDemo() {
 }
 
 render(<BoundsDemo />);
+`;
+
+export const localeDemo = String.raw`
+const LOCALES = {
+  en: { locale: enUS, delimiter: '/', placeholder: 'dd/mm/yyyy', label: 'Departure' },
+  tr: { locale: tr, delimiter: '.', placeholder: 'gg.aa.yyyy', label: 'Gidiş tarihi' },
+};
+
+function LocaleDemo() {
+  const [code, setCode] = React.useState('tr');
+  const active = LOCALES[code];
+
+  // Both halves take the same locale: the grid through \`locale\`, the field
+  // through the delimiter the mask inserts and the text it writes back.
+  const picker = useDatePicker({ delimiter: active.delimiter });
+
+  return (
+    <div className="mx-auto flex w-72 flex-col gap-3">
+      <div className="flex justify-center gap-1">
+        {Object.keys(LOCALES).map(entry => (
+          <Button key={entry} size="small" variant={entry === code ? 'primary' : 'neutral'} onClick={() => setCode(entry)}>
+            {entry}
+          </Button>
+        ))}
+      </div>
+      <Field key={code}>
+        <Field.Label>{active.label}</Field.Label>
+        <Popover {...picker.popoverProps}>
+          <Input>
+            <Input.Field placeholder={active.placeholder} {...picker.inputProps} />
+            <Popover.Trigger aria-label="Select date" classNames={{ root: 'tk-input-action' }}>
+              <CalendarIconOutlinedRounded width={20} height={20} />
+            </Popover.Trigger>
+          </Input>
+          <Popover.Content align="end" classNames={{ root: 'tk-datepicker-panel' }}>
+            <Calendar {...picker.calendarProps} locale={active.locale} />
+          </Popover.Content>
+        </Popover>
+      </Field>
+    </div>
+  );
+}
+
+render(<LocaleDemo />);
 `;
 
 export const validationDemo = String.raw`
@@ -430,6 +477,33 @@ onKeyDown={event => {
 Drop it when the field is read-only and the trigger is the only way in. The
 panel is not modal: it does not trap focus, and `Escape` or an outside click
 dismisses it.
+
+## Localization
+
+A picker has two halves to localize, and they have to agree. The grid takes a
+`locale` object from `react-day-picker/locale` — import only the ones you use,
+so only those are bundled. The field is the other half: `delimiter` sets both
+the separator the mask inserts as you type and the one written back on select,
+so `gg.aa.yyyy` is a mask that accepts what the field shows.
+
+<LiveCode
+  code={localeDemo}
+  noInline
+  previewMinHeight={460}
+  previewWrapper={ReactSparDemoRoot}
+  scope={datePickerScope}
+/>
+
+The day order is the field's own convention, not the grid's: `useDatePicker`
+writes `dd<delimiter>mm<delimiter>yyyy`, which suits both examples above. A
+locale that puts the month first needs `format` as well, and a mask whose
+`datePattern` matches it — see [Input](/docs/components/input) for the mask
+vocabulary.
+
+`Calendar` carries the rest of the grid's localization: `firstDayOfWeekIndex`
+overrides the locale's own first column, `numerals` switches the digit system,
+and `dir="rtl"` mirrors the grid. See
+[Calendar → Localization](/docs/components/calendar#localization).
 
 ## Validation
 
