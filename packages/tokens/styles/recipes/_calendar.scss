@@ -156,11 +156,33 @@
   // A row of months that has to wrap centres its last line, so the leftover
   // width is shared instead of leaving the card open on one side.
   justify-content: center;
+
+  // This is the box the nav is positioned against, so it has to be as steady as
+  // the card is. Without a width of its own it sizes to its content — the month
+  // below, and through it the caption — so a long month name widened it, a short
+  // one narrowed it, and since the card centres it the two edges moved in
+  // opposite directions. The arrows are inset from those edges, so they drifted
+  // horizontally on every click even with the card pinned.
+  //
+  // Single month only: a `numberOfMonths > 1` row is legitimately wider than one
+  // grid, and the card leaves it alone for the same reason.
+  .tk-calendar:not([data-multiple-months]) & {
+    width: var(--tk-calendar-body-width);
+  }
 }
 
 @mixin calendar-month {
   display: flex;
   flex-direction: column;
+
+  // The other link in the same chain: the caption's `width: 100%` is a
+  // percentage of this box, so leaving it to size to its content would hand the
+  // month name back the job of deciding the width. One grid wide, like the card
+  // and the row above it.
+  .tk-calendar:not([data-multiple-months]) & {
+    width: var(--tk-calendar-body-width);
+    box-sizing: border-box;
+  }
 
   // `navLayout="after"` renders the nav as a sibling between the caption and
   // the grid; the nav recipe lifts it back onto the caption row, so the month

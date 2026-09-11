@@ -118,3 +118,11 @@ Inside that caption the label takes the whole space between the arrows
 even with the card pinned: "September 2026" and "May 2026" are different widths,
 so the month and year buttons — and their hover boxes — shifted on every arrow
 click. The box now stays put and only the text inside it changes.
+
+The same width reaches the two boxes between the card and the caption. The nav
+is positioned against `.tk-calendar-months`, not against the card, and neither
+that element nor the month inside it had a width of its own — both sized to
+their content, so the month name still decided how wide they were. The card
+centres them, so a narrower month moved both edges inward and the arrows, inset
+from those edges, drifted with them. All four boxes now share
+`--tk-calendar-body-width`, and a `numberOfMonths > 1` row is exempt throughout.
