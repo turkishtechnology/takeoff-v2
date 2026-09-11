@@ -7,26 +7,34 @@ sidebar_label: TanStack Form
 slug: /forms/tanstack-form
 ---
 
+import { CalendarIconOutlinedRounded } from '@takeoff-icons/react/calendar';
 import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
 import LiveCode from '@site/src/components/LiveCode';
 import {
   Button,
+  Calendar,
   Checkbox,
   Field,
   Input,
+  Popover,
   ReactSparDemoRoot,
   Select,
+  useDatePicker,
 } from '@site/src/components/ReactSparDocs';
 import { useForm } from '@tanstack/react-form';
 import * as z from 'zod';
 
 export const formScope = {
   Button,
+  Calendar,
+  CalendarIconOutlinedRounded,
   Checkbox,
   CloseIconOutlinedRounded,
   Field,
   Input,
+  Popover,
   Select,
+  useDatePicker,
   useForm,
   z,
 };
@@ -34,12 +42,53 @@ export const formScope = {
 {/* prettier-ignore-start */}
 
 export const demoCode = String.raw`
+// A picker is composed and controlled, so it lives in its own component and
+// binds through the field render function. \`field.handleChange\` goes to the
+// hook, not to Input.Field: that is the one channel both halves report through,
+// and it carries a Date.
+function DepartureField({ field }) {
+  const invalid = field.state.meta.isTouched && !!field.state.meta.errors.length;
+  const error = field.state.meta.errors[0];
+  const message = typeof error === 'string' ? error : error?.message;
+
+  const picker = useDatePicker({
+    defaultValue: field.state.value,
+    onValueChange: field.handleChange,
+  });
+
+  return (
+    <Field invalid={invalid} required>
+      <Field.Label>Departure</Field.Label>
+      <Popover {...picker.popoverProps}>
+        <Input>
+          {/* handleBlur and name are the form's — inputProps carries neither. */}
+          <Input.Field
+            {...picker.inputProps}
+            name={field.name}
+            onBlur={field.handleBlur}
+            aria-invalid={invalid}
+            placeholder="dd/mm/yyyy"
+          />
+          <Popover.Trigger aria-label="Select date" classNames={{ root: 'tk-input-action' }}>
+            <CalendarIconOutlinedRounded width={20} height={20} />
+          </Popover.Trigger>
+        </Input>
+        <Popover.Content align="end" classNames={{ root: 'tk-datepicker-panel' }}>
+          <Calendar {...picker.calendarProps} />
+        </Popover.Content>
+      </Popover>
+      {invalid ? <Field.ErrorMessage>{message}</Field.ErrorMessage> : <Field.Description>Pick a date or type it.</Field.Description>}
+    </Field>
+  );
+}
+
 function BookingRequestDemo() {
   const formSchema = z.object({
     title: z
       .string()
       .min(5, 'Title must be at least 5 characters.')
       .max(48, 'Title must be at most 48 characters.'),
+    departure: z.date({ message: 'Select a departure date.' }),
     cabin: z.string().min(1, 'Select a cabin.'),
     accepted: z.boolean().refine(Boolean, 'You must accept the terms.'),
   });
@@ -47,6 +96,7 @@ function BookingRequestDemo() {
   const form = useForm({
     defaultValues: {
       title: '',
+      departure: undefined,
       cabin: '',
       accepted: false,
     },
@@ -91,6 +141,10 @@ function BookingRequestDemo() {
             </Field>
           );
         }}
+      </form.Field>
+
+      <form.Field name="departure">
+        {(field) => <DepartureField field={field} />}
       </form.Field>
 
       <form.Field name="cabin">

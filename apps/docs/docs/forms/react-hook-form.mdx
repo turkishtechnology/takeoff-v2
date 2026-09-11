@@ -7,28 +7,36 @@ sidebar_label: React Hook Form
 slug: /forms/react-hook-form
 ---
 
+import { CalendarIconOutlinedRounded } from '@takeoff-icons/react/calendar';
 import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
 import LiveCode from '@site/src/components/LiveCode';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
+  Calendar,
   Checkbox,
   Field,
   Input,
+  Popover,
   ReactSparDemoRoot,
   Select,
+  useDatePicker,
 } from '@site/src/components/ReactSparDocs';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 export const formScope = {
   Button,
+  Calendar,
+  CalendarIconOutlinedRounded,
   Checkbox,
   CloseIconOutlinedRounded,
   Controller,
   Field,
   Input,
+  Popover,
   Select,
+  useDatePicker,
   useFieldArray,
   useForm,
   z,
@@ -38,20 +46,61 @@ export const formScope = {
 {/* prettier-ignore-start */}
 
 export const demoCode = String.raw`
+// A picker is composed and controlled, so it lives in its own component and
+// binds through Controller. \`field.onChange\` goes to the hook, not to
+// Input.Field: that is the one channel both halves report through, and it
+// carries a Date.
+function DepartureField({ field, fieldState }) {
+  const picker = useDatePicker({
+    defaultValue: field.value,
+    onValueChange: field.onChange,
+  });
+
+  return (
+    <Field invalid={fieldState.invalid} required>
+      <Field.Label>Departure</Field.Label>
+      <Popover {...picker.popoverProps}>
+        <Input>
+          {/* onBlur and name are the form's — inputProps carries neither. */}
+          <Input.Field
+            {...picker.inputProps}
+            name={field.name}
+            onBlur={field.onBlur}
+            aria-invalid={fieldState.invalid}
+            placeholder="dd/mm/yyyy"
+          />
+          <Popover.Trigger aria-label="Select date" classNames={{ root: 'tk-input-action' }}>
+            <CalendarIconOutlinedRounded width={20} height={20} />
+          </Popover.Trigger>
+        </Input>
+        <Popover.Content align="end" classNames={{ root: 'tk-datepicker-panel' }}>
+          <Calendar {...picker.calendarProps} />
+        </Popover.Content>
+      </Popover>
+      {fieldState.invalid ? <Field.ErrorMessage>{fieldState.error?.message}</Field.ErrorMessage> : <Field.Description>Pick a date or type it.</Field.Description>}
+    </Field>
+  );
+}
+
 function BookingRequestDemo() {
   const formSchema = z.object({
     title: z
       .string()
       .min(5, 'Title must be at least 5 characters.')
       .max(48, 'Title must be at most 48 characters.'),
+    departure: z.date({ message: 'Select a departure date.' }),
     cabin: z.string().min(1, 'Select a cabin.'),
     accepted: z.boolean().refine(Boolean, 'You must accept the terms.'),
   });
 
   const form = useForm({
     resolver: zodResolver(formSchema),
+    // A half-typed date is undefined until it is whole, so onTouched suits a
+    // picker better than validating on every keystroke.
+    mode: 'onTouched',
     defaultValues: {
       title: '',
+      departure: undefined,
       cabin: '',
       accepted: false,
     },
@@ -81,6 +130,8 @@ function BookingRequestDemo() {
           </Field>
         )}
       />
+
+      <Controller name="departure" control={form.control} render={DepartureField} />
 
       <Controller
         name="cabin"
