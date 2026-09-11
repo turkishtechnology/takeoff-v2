@@ -23,7 +23,7 @@
 // only size token pair, which is why `data-size` has exactly those two values.
 // ---------------------------------------------------------------------------
 
-@mixin calendar-size($cell, $radius, $header-height, $font-size, $line-height) {
+@mixin calendar-size($cell, $radius, $header-height, $font-size, $line-height, $frame-inset) {
   --tk-calendar-cell-size: #{$cell};
   --tk-calendar-cell-radius: #{$radius};
   // No exported token: Figma ships the header as a fixed-height row per scale,
@@ -38,6 +38,16 @@
     var(--datepicker-body-base-day-v-padding) * 2 + #{$cell} + var(--datepicker-body-base-day-row-group-gap) + 6 * (#{$cell} + var(--datepicker-body-base-day-row-gap))
   );
   --tk-calendar-body-width: calc(var(--datepicker-body-base-day-h-padding) * 2 + 7 * #{$cell});
+
+  // The card is a little wider than the grid it holds, and the difference is
+  // the caption's: the header reserves `cell-size * 2 + h-padding` for arrows at
+  // each end, so at base a 312px grid leaves the month label only 120px —
+  // narrow enough that "September 2026" ellipsized its year away. The grid
+  // itself cannot absorb that: its width is divided between seven `table-layout:
+  // fixed` columns, so widening it would move the day cells off their exported
+  // size. So the frame gets its own value and the grid keeps its own, centred
+  // inside it.
+  --tk-calendar-frame-width: calc(var(--tk-calendar-body-width) + #{$frame-inset});
 
   font-size: $font-size;
   line-height: $line-height;
@@ -73,7 +83,7 @@
   // Scoped to a single month: `numberOfMonths > 1` lays several side by side,
   // where the row is legitimately wider than one grid.
   &:not([data-multiple-months]) {
-    width: var(--tk-calendar-body-width);
+    width: var(--tk-calendar-frame-width);
   }
 
   // Standalone, the grid is its own surface — Core's inline panel: a bordered
@@ -88,10 +98,16 @@
     0 6px 12px -2px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
     0 8px 20px 0 var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08));
 
-  @include calendar-size(var(--datepicker-items-base-size), var(--datepicker-items-base-radius), 52px, var(--desktop-body-s-size), var(--desktop-body-s-line-height));
+  // The frame inset is what the caption gets on top of the grid: 24px at base
+  // takes the card to 336px and the label's share from 120px to 144px, which is
+  // what a long month plus a four-digit year needs. Small runs a smaller font in
+  // a narrower card, so it takes the same 24px rather than a scaled one — its
+  // label goes from 64px to 88px, and anything more would leave the grid
+  // rattling inside the card.
+  @include calendar-size(var(--datepicker-items-base-size), var(--datepicker-items-base-radius), 52px, var(--desktop-body-s-size), var(--desktop-body-s-line-height), 24px);
 
   &[data-size='small'] {
-    @include calendar-size(var(--datepicker-items-small-size), var(--datepicker-items-small-radius), 46px, var(--desktop-body-xs-size), var(--desktop-body-xs-line-height));
+    @include calendar-size(var(--datepicker-items-small-size), var(--datepicker-items-small-radius), 46px, var(--desktop-body-xs-size), var(--desktop-body-xs-line-height), 24px);
   }
 
   // The week-number column is an eighth column, so the pinned body widens by one.
@@ -167,7 +183,7 @@
   // Single month only: a `numberOfMonths > 1` row is legitimately wider than one
   // grid, and the card leaves it alone for the same reason.
   .tk-calendar:not([data-multiple-months]) & {
-    width: var(--tk-calendar-body-width);
+    width: var(--tk-calendar-frame-width);
   }
 }
 
@@ -177,10 +193,10 @@
 
   // The other link in the same chain: the caption's `width: 100%` is a
   // percentage of this box, so leaving it to size to its content would hand the
-  // month name back the job of deciding the width. One grid wide, like the card
-  // and the row above it.
+  // month name back the job of deciding the width. Same frame as the card and
+  // the row above it; the grid inside keeps its own width and centres.
   .tk-calendar:not([data-multiple-months]) & {
-    width: var(--tk-calendar-body-width);
+    width: var(--tk-calendar-frame-width);
     box-sizing: border-box;
   }
 
