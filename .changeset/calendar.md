@@ -112,3 +112,9 @@ edges moved with it. A single-month calendar is therefore pinned to
 (`min-width: 0`, so its `nowrap` label is not its automatic minimum), and a
 label long enough to reach the arrows ellipsizes. A `numberOfMonths > 1` row,
 legitimately wider than one grid, is left alone.
+
+Inside that caption the label takes the whole space between the arrows
+(`flex: 1`) rather than sizing to its text. Otherwise the header stayed restless
+even with the card pinned: "September 2026" and "May 2026" are different widths,
+so the month and year buttons — and their hover boxes — shifted on every arrow
+click. The box now stays put and only the text inside it changes.

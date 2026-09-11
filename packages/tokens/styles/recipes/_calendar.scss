@@ -297,12 +297,18 @@
   padding-inline: var(--datepicker-header-base-date-text-h-padding);
   white-space: nowrap;
 
-  // The label still does not wrap, but it no longer sets the card's width: it
-  // is bounded by the caption and ellipsizes if a locale's month name is long
-  // enough to reach the arrows. `min-width: 0` for the same reason as on the
-  // caption — the automatic minimum of a flex item is its content.
+  // The label occupies the whole space the caption leaves between the arrows,
+  // whatever it says. Sizing to the text instead is what made the header
+  // restless: "September 2026" and "May 2026" are different widths, so the two
+  // caption buttons — and their hover boxes — shifted on every arrow click even
+  // once the card itself stopped resizing.
+  //
+  // `flex: 1` rather than a pixel value so the box follows the scale: the
+  // caption's own padding already reserves the arrows at each end, so what is
+  // left is exactly the room the label may have. A long locale's month name
+  // ellipsizes rather than pushing.
+  flex: 1;
   min-width: 0;
-  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
 
