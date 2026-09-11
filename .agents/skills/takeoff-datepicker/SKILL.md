@@ -180,6 +180,70 @@ and the grid scrolls to a date that lands in another month.
 />
 ```
 
+### Forms
+
+A picker is composed and controlled, so it binds through `Controller` (React
+Hook Form) or a field render function (TanStack Form) — the same route `Select`
+takes, never `register()`. `register` would bind the DOM input and collect the
+_masked text_, and a day picked in the grid never dispatches a DOM change event
+at all.
+
+Bind `field.onChange` to the **hook**, not to `Input.Field`: that is the one
+channel both halves report through, and it carries a `Date`.
+
+```tsx
+function DateField({ field, fieldState }) {
+  const picker = useDatePicker({
+    defaultValue: field.value,
+    onValueChange: field.onChange,
+  });
+
+  return (
+    <Field invalid={fieldState.invalid} required>
+      <Field.Label>Departure</Field.Label>
+      <Popover {...picker.popoverProps}>
+        <Input>
+          <Input.Field
+            {...picker.inputProps}
+            name={field.name}
+            onBlur={field.onBlur}
+            aria-invalid={fieldState.invalid}
+          />
+          <Popover.Trigger
+            aria-label="Select date"
+            classNames={{ root: 'tk-input-action' }}
+          >
+            <CalendarIconOutlinedRounded width={20} height={20} />
+          </Popover.Trigger>
+        </Input>
+        <Popover.Content
+          align="end"
+          classNames={{ root: 'tk-datepicker-panel' }}
+        >
+          <Calendar {...picker.calendarProps} />
+        </Popover.Content>
+      </Popover>
+      {fieldState.invalid ? (
+        <Field.ErrorMessage>{fieldState.error?.message}</Field.ErrorMessage>
+      ) : null}
+    </Field>
+  );
+}
+```
+
+Three things `inputProps` does not carry, because they are the form's:
+
+- **`onBlur`** — add `field.onBlur` yourself, or the `onTouched` / `onBlur`
+  validation modes never fire.
+- **`name`** — `inputProps` has no name of its own.
+- **A half-typed date is `undefined`.** The hook keeps the text but holds the
+  value at `undefined` until the date is whole, so a required-field error can
+  appear mid-typing. `mode: 'onTouched'` or `'onBlur'` suits it better than
+  `'onChange'`.
+
+Own component rather than an inline render function: a hook inside
+`render={...}` works, but lint rules read it as a conditional hook.
+
 ### Localization
 
 Two halves, and they have to agree: the grid takes a `locale` object, the field

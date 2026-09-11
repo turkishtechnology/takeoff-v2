@@ -533,6 +533,7 @@ The field anatomy stays the same. Only the value mapping changes:
 | `Checkbox`    | Use `checked={field.value}` and `onChange={field.onChange}`.                                                   |
 | `Switch`      | Use `checked={field.value}` and `onChange={field.onChange}`.                                                   |
 | `Radio`       | Use `value={field.value}` and `onChange={field.onChange}` on the `Radio` root.                                 |
+| Date picker   | Hold `useDatePicker` in the render function and give it `onValueChange={field.onChange}`.                      |
 
 ```tsx
 <Controller
@@ -566,6 +567,62 @@ The field anatomy stays the same. Only the value mapping changes:
   )}
 />
 ```
+
+A date picker is composed and controlled, so it takes the same `Controller`
+route — never `register()`, which would bind the DOM input and collect the
+_masked text_, while a day picked in the grid dispatches no DOM change event at
+all. Give `field.onChange` to the **hook** rather than to `Input.Field`: that is
+the one channel both halves report through, and it carries a `Date`.
+
+```tsx
+function DateField({ field, fieldState }) {
+  const picker = useDatePicker({
+    defaultValue: field.value,
+    onValueChange: field.onChange,
+  });
+
+  return (
+    <Field invalid={fieldState.invalid} required>
+      <Field.Label>Departure</Field.Label>
+      <Popover {...picker.popoverProps}>
+        <Input>
+          <Input.Field
+            {...picker.inputProps}
+            name={field.name}
+            onBlur={field.onBlur}
+            aria-invalid={fieldState.invalid}
+          />
+          <Popover.Trigger
+            aria-label="Select date"
+            classNames={{ root: 'tk-input-action' }}
+          >
+            …
+          </Popover.Trigger>
+        </Input>
+        <Popover.Content
+          align="end"
+          classNames={{ root: 'tk-datepicker-panel' }}
+        >
+          <Calendar {...picker.calendarProps} />
+        </Popover.Content>
+      </Popover>
+      {fieldState.invalid ? (
+        <Field.ErrorMessage>{fieldState.error?.message}</Field.ErrorMessage>
+      ) : null}
+    </Field>
+  );
+}
+
+<Controller name="departure" control={form.control} render={DateField} />;
+```
+
+Three things `inputProps` does not carry, because they belong to the form:
+`onBlur` (without `field.onBlur` the `onTouched` / `onBlur` validation modes
+never fire), `name`, and a settled value — the hook keeps the text but holds the
+value at `undefined` until the date is whole, so `mode: 'onTouched'` suits it
+better than `'onChange'`. Keep the field in its own component rather than an
+inline `render` function: a hook inside `render={...}` works, but lint rules
+read it as a conditional hook.
 
 ## Array Fields
 

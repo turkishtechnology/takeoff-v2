@@ -646,6 +646,57 @@ The field anatomy stays the same. Only the value mapping changes:
 | `Checkbox`    | Use `checked={field.state.value}` and `onChange={field.handleChange}`.                                                   |
 | `Switch`      | Use `checked={field.state.value}` and `onChange={field.handleChange}`.                                                   |
 | `Radio`       | Use `value={field.state.value}` and `onChange={field.handleChange}` on the `Radio` root.                                 |
+| Date picker   | Hold `useDatePicker` in the field's own component and give it `onValueChange={field.handleChange}`.                      |
+
+A date picker is composed and controlled, so it binds through the field render
+function rather than a DOM input. Give `field.handleChange` to the **hook**, not
+to `Input.Field`: that is the one channel both halves report through, and it
+carries a `Date`. `field.handleBlur` has to be added by hand — `inputProps` does
+not carry it — and a half-typed date holds the value at `undefined` until it is
+whole.
+
+```tsx
+function DateField({ field }) {
+  const invalid = field.state.meta.errors.length > 0;
+  const picker = useDatePicker({
+    defaultValue: field.state.value,
+    onValueChange: field.handleChange,
+  });
+
+  return (
+    <Field invalid={invalid}>
+      <Field.Label>Departure</Field.Label>
+      <Popover {...picker.popoverProps}>
+        <Input>
+          <Input.Field
+            {...picker.inputProps}
+            name={field.name}
+            onBlur={field.handleBlur}
+            aria-invalid={invalid}
+          />
+          <Popover.Trigger
+            aria-label="Select date"
+            classNames={{ root: 'tk-input-action' }}
+          >
+            …
+          </Popover.Trigger>
+        </Input>
+        <Popover.Content
+          align="end"
+          classNames={{ root: 'tk-datepicker-panel' }}
+        >
+          <Calendar {...picker.calendarProps} />
+        </Popover.Content>
+      </Popover>
+      {invalid ? (
+        <Field.ErrorMessage>
+          {field.state.meta.errors[0]?.message}
+        </Field.ErrorMessage>
+      ) : null}
+    </Field>
+  );
+}
+```
 
 ## Array Fields
 

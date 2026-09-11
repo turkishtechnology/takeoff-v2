@@ -429,6 +429,7 @@ The field anatomy stays the same. Only the value mapping changes:
 | `Checkbox`    | Use `checked={field.value}` and `onChange={field.onChange}`.                                                   |
 | `Switch`      | Use `checked={field.value}` and `onChange={field.onChange}`.                                                   |
 | `Radio`       | Use `value={field.value}` and `onChange={field.onChange}` on the `Radio` root.                                 |
+| Date picker   | Hold `useDatePicker` in the render function and give it `onValueChange={field.onChange}`.                      |
 
 ```tsx
 <Controller
