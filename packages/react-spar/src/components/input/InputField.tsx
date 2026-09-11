@@ -1,5 +1,5 @@
 import { useCallback, useEffect, type ChangeEvent, type ElementType, type FormEvent, type Ref, type RefObject } from 'react';
-import { InputField as SparInputField, type InputFieldProps as SparInputFieldProps } from '@turkish-technology/spar';
+import { InputField as SparInputField, type InputFieldProps as SparInputFieldProps, type MaskChangeMeta } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
@@ -13,6 +13,7 @@ type RenderedInputFieldProps = {
   type?: string;
   onInput?: (event: FormEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onValueChange?: (value: string, meta: MaskChangeMeta) => void;
   ref?: Ref<HTMLInputElement | HTMLTextAreaElement>;
 } & Record<string, unknown>;
 
@@ -22,7 +23,7 @@ export const InputField = <T extends ElementType = 'input'>(props: InputFieldPro
 
   const { rootAttrs, rest } = composeRootAttrs(InputFieldBase, props as InputFieldProps<'input'>, theme);
 
-  const { as, ref, type, onInput, onChange, ...spar } = rest as RenderedInputFieldProps;
+  const { as, ref, type, onInput, onChange, onValueChange, ...spar } = rest as RenderedInputFieldProps;
   const effectiveType = type === 'password' && revealed ? 'text' : type;
   const renderedType = as === 'textarea' ? undefined : effectiveType;
   const setFieldRef = useCallback(
@@ -66,6 +67,18 @@ export const InputField = <T extends ElementType = 'input'>(props: InputFieldPro
     setFieldValue(event.currentTarget.value);
   };
 
+  // A masked field needs its own mirror. Spar's mask applies deletes and
+  // undo/redo imperatively — it writes `element.value` and preventDefaults the
+  // event — so those edits never reach handleInput/handleChange. `onValueChange`
+  // is the only channel that sees every masked edit, which is why the context
+  // mirror is refreshed from here too; without it Input.ClearButton would keep
+  // showing after a backspace-to-empty and Input.Strength would freeze. Spar
+  // calls this only while `mask` is set, so an unmasked field is unaffected.
+  const handleValueChange = (value: string, meta: MaskChangeMeta) => {
+    setFieldValue(value);
+    onValueChange?.(value, meta);
+  };
+
   return (
     <SparInputField
       {...(spar as unknown as SparInputFieldProps)}
@@ -73,6 +86,7 @@ export const InputField = <T extends ElementType = 'input'>(props: InputFieldPro
       type={renderedType}
       onInput={handleInput}
       onChange={handleChange}
+      onValueChange={handleValueChange}
       ref={setFieldRef as Ref<HTMLInputElement>}
       {...rootAttrs}
     />

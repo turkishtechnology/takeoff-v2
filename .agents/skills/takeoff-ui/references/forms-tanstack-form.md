@@ -538,6 +538,15 @@ The field anatomy stays the same. Only the value mapping changes:
 | `Checkbox`    | Use `checked={field.state.value}` and `onChange={field.handleChange}`.                                                   |
 | `Switch`      | Use `checked={field.state.value}` and `onChange={field.handleChange}`.                                                   |
 | `Radio`       | Use `value={field.state.value}` and `onChange={field.handleChange}` on the `Radio` root.                                 |
+| Date picker   | Hold `useDatePicker` in the field's own component and give it `onValueChange={field.handleChange}`.                      |
+
+A date picker is composed and controlled, so it binds through the field render
+function rather than a DOM input — `register`-style binding would collect the
+masked text, and a day picked in the grid dispatches no DOM change event at all.
+Give `field.handleChange` to the hook rather than to `Input.Field`, add
+`field.handleBlur` by hand (`inputProps` does not carry it), and expect a
+half-typed date to hold the value at `undefined` until it is whole. See
+`takeoff-datepicker` → Forms.
 
 ## Array Fields
 

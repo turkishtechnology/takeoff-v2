@@ -7,9 +7,11 @@
 @use 'recipes/badge';
 @use 'recipes/breadcrumb';
 @use 'recipes/button';
+@use 'recipes/calendar';
 @use 'recipes/card';
 @use 'recipes/checkbox';
 @use 'recipes/chip';
+@use 'recipes/datepicker';
 @use 'recipes/dialog';
 @use 'recipes/divider';
 @use 'recipes/drawer';
@@ -74,6 +76,105 @@
 
 .tk-toast {
   @include toast.toast;
+}
+
+.tk-calendar {
+  @include calendar.calendar;
+}
+
+.tk-calendar-months {
+  @include calendar.calendar-months;
+}
+
+.tk-calendar-month {
+  @include calendar.calendar-month;
+}
+
+.tk-calendar-month-caption {
+  @include calendar.calendar-month-caption;
+}
+
+.tk-calendar-caption-label {
+  @include calendar.calendar-caption-label;
+}
+
+.tk-calendar-nav {
+  @include calendar.calendar-nav;
+}
+
+.tk-calendar-nav-previous-month,
+.tk-calendar-nav-next-month,
+.tk-calendar-nav-previous-year,
+.tk-calendar-nav-next-year {
+  @include calendar.calendar-nav-button;
+}
+
+.tk-calendar-chevron {
+  @include calendar.calendar-chevron;
+}
+
+.tk-calendar-dropdowns {
+  @include calendar.calendar-dropdowns;
+}
+
+.tk-calendar-dropdown-root {
+  @include calendar.calendar-dropdown-root;
+}
+
+.tk-calendar-dropdown {
+  @include calendar.calendar-dropdown;
+}
+
+.tk-calendar-month-grid {
+  @include calendar.calendar-month-grid;
+}
+
+.tk-calendar-caption-trigger {
+  @include calendar.calendar-caption-trigger;
+}
+
+.tk-calendar-month-year-grid {
+  @include calendar.calendar-month-year-grid;
+}
+
+.tk-calendar-month-year-cell {
+  @include calendar.calendar-month-year-cell;
+}
+
+.tk-calendar-weekdays {
+  @include calendar.calendar-weekdays;
+}
+
+.tk-calendar-weekday {
+  @include calendar.calendar-weekday;
+}
+
+.tk-calendar-weeks {
+  @include calendar.calendar-weeks;
+}
+
+.tk-calendar-week {
+  @include calendar.calendar-week;
+}
+
+.tk-calendar-week-number {
+  @include calendar.calendar-week-number;
+}
+
+.tk-calendar-week-number-header {
+  @include calendar.calendar-week-number-header;
+}
+
+.tk-calendar-day {
+  @include calendar.calendar-day;
+}
+
+.tk-calendar-day-button {
+  @include calendar.calendar-day-button;
+}
+
+.tk-calendar-footer {
+  @include calendar.calendar-footer;
 }
 
 .tk-card {
@@ -402,6 +503,15 @@
 
 .tk-breadcrumb {
   @include breadcrumb.breadcrumb;
+}
+
+// Opt-in, not emitted: there is no DatePicker component, so a consumer composing
+// Popover + Calendar applies these through `classNames` themselves. Both are
+// written against the popover class they sit on — `classNames` concatenates, so
+// the element carries both — because a single class ties with the Popover
+// recipe on specificity and would lose to it on source order.
+.tk-popover-content.tk-datepicker-panel {
+  @include datepicker.datepicker-panel;
 }
 
 .tk-popover-trigger {
