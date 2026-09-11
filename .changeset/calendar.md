@@ -104,23 +104,31 @@ the month-to-month jump.
 
 The card's width comes from the grid rather than the caption. The caption is the
 month label plus a reserve for the arrows laid over it —
-`cell-size * 2 + h-padding` at each end, 192px at base — so a label wider than
-what is left over stretched the card, which then shrank again on the next arrow.
-The whole card twitched as you paged, and in a popover the panel's edges moved
-with it. A single-month calendar is therefore pinned, the caption takes that
-width instead of setting it (`min-width: 0`, so its `nowrap` label is not its
-automatic minimum), and a label long enough to reach the arrows ellipsizes. A
+`nav-button * 2 + h-padding` at each end — so a label wider than what is left
+over stretched the card, which then shrank again on the next arrow. The whole
+card twitched as you paged, and in a popover the panel's edges moved with it. A
+single-month calendar is therefore pinned, the caption takes that width instead
+of setting it (`min-width: 0`, so its `nowrap` label is not its automatic
+minimum), and a label long enough to reach the arrows ellipsizes. A
 `numberOfMonths > 1` row, legitimately wider than one grid, is left alone.
 
 The card is pinned a little wider than the grid, through its own
-`--tk-calendar-frame-width` (`--tk-calendar-body-width + 24px`). Against the
-bare 312px grid the label's share was 120px, narrow enough that "September 2026"
-lost its year to the ellipsis; 336px takes that share to 144px. The grid cannot
-absorb the difference itself — its width is divided between seven
-`table-layout: fixed` columns, so widening it would move the day cells off their
-exported size — so the grid keeps `--tk-calendar-body-width` and centres inside
-the frame. Both scales take the same 24px: small goes from 64px of label to
-88px, and more would leave the grid rattling in the card.
+`--tk-calendar-frame-width` (`--tk-calendar-body-width + 24px`, 336px at base).
+The grid cannot absorb that difference itself — its width is divided between
+seven `table-layout: fixed` columns, so widening it would move the day cells off
+their exported size — so the grid keeps `--tk-calendar-body-width` and centres
+inside the frame. Both scales take the same 24px; more would leave the grid
+rattling in the card.
+
+The navigation is sized on its own rather than on the day cell, through
+`--tk-calendar-nav-button-size` (28px) and `--tk-calendar-nav-icon-size` (20px).
+The two only ever shared a value by coincidence: 40px is a comfortable day
+target and a needlessly wide arrow, and the header paid for it twice, since the
+caption reserves `nav-button * 2 + h-padding` at each end. Four 40px arrows took
+192px of a 336px card and left the label 144px; at 28px the reserve is 112px and
+the label gets 224px, which is what stopped a four-digit year disappearing
+behind the ellipsis on a long month. The day grid is untouched — `cell-size`
+still sizes the cells, the weekday row and the week-number column.
 
 Inside that caption the label takes the whole space between the arrows
 (`flex: 1`) rather than sizing to its text. Otherwise the header stayed restless

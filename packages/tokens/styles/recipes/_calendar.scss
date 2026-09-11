@@ -40,14 +40,26 @@
   --tk-calendar-body-width: calc(var(--datepicker-body-base-day-h-padding) * 2 + 7 * #{$cell});
 
   // The card is a little wider than the grid it holds, and the difference is
-  // the caption's: the header reserves `cell-size * 2 + h-padding` for arrows at
-  // each end, so at base a 312px grid leaves the month label only 120px —
-  // narrow enough that "September 2026" ellipsized its year away. The grid
-  // itself cannot absorb that: its width is divided between seven `table-layout:
-  // fixed` columns, so widening it would move the day cells off their exported
-  // size. So the frame gets its own value and the grid keeps its own, centred
-  // inside it.
+  // the caption's: the header reserves `nav-button * 2 + h-padding` for arrows
+  // at each end, so a bare 312px grid left the month label too little room and
+  // "September 2026" ellipsized its year away. The grid itself cannot absorb
+  // that: its width is divided between seven `table-layout: fixed` columns, so
+  // widening it would move the day cells off their exported size. So the frame
+  // gets its own value and the grid keeps its own, centred inside it.
   --tk-calendar-frame-width: calc(var(--tk-calendar-body-width) + #{$frame-inset});
+
+  // The nav is sized on its own rather than on the day cell. The two only ever
+  // shared a value by coincidence — a 40px cell is a comfortable day target and
+  // was a needlessly wide arrow — and the header pays for it twice over: the
+  // caption reserves `nav-button * 2 + h-padding` at each end, so four 40px
+  // arrows took 192px of a 336px card and left the label 144px. At 28px the
+  // reserve is 112px and the label gets 224px, which is what stopped the year
+  // ellipsizing behind a long month name.
+  //
+  // 20px glyph in a 28px box: the box keeps a comfortable target and the
+  // focus ring room to sit, while the glyph is the size the header wants.
+  --tk-calendar-nav-icon-size: 20px;
+  --tk-calendar-nav-button-size: 28px;
 
   font-size: $font-size;
   line-height: $line-height;
@@ -69,10 +81,10 @@
   // The grid decides the card's width, not the caption.
   //
   // The caption is the label plus a reserve for the arrows it is laid over:
-  // `cell-size * 2 + h-padding` at each end, which at base is 192px against a
-  // 312px grid. So any label wider than 120px pushes the card out — "September
-  // 2026" does, "May 2026" does not, and the card grew and shrank again as you
-  // paged. In a popover that moves the panel's edges on every arrow click.
+  // `nav-button * 2 + h-padding` at each end. So a label wider than what is
+  // left over pushes the card out — "September 2026" did, "May 2026" did not,
+  // and the card grew and shrank again as you paged. In a popover that moves
+  // the panel's edges on every arrow click.
   //
   // `min-content` does not fix it: the caption label is `white-space: nowrap`,
   // so the caption's own intrinsic width is part of the card's min-content and
@@ -99,11 +111,10 @@
     0 8px 20px 0 var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08));
 
   // The frame inset is what the caption gets on top of the grid: 24px at base
-  // takes the card to 336px and the label's share from 120px to 144px, which is
-  // what a long month plus a four-digit year needs. Small runs a smaller font in
-  // a narrower card, so it takes the same 24px rather than a scaled one — its
-  // label goes from 64px to 88px, and anything more would leave the grid
-  // rattling inside the card.
+  // takes the card to 336px, which with the 28px nav buttons leaves the label
+  // 224px — room for a long month plus a four-digit year. Small takes the same
+  // 24px rather than a scaled one: it runs a smaller font in a narrower card,
+  // and anything more would leave the grid rattling inside the card.
   @include calendar-size(var(--datepicker-items-base-size), var(--datepicker-items-base-radius), 52px, var(--desktop-body-s-size), var(--desktop-body-s-line-height), 24px);
 
   &[data-size='small'] {
@@ -246,20 +257,20 @@
   // edge, so the reserve is the arrows it holds on that side plus that inset.
   // Default layout: two arrows at each end.
   .tk-calendar:not([data-nav-layout]) & {
-    padding-inline: calc(var(--tk-calendar-cell-size) * 2 + var(--datepicker-header-base-h-padding));
+    padding-inline: calc(var(--tk-calendar-nav-button-size) * 2 + var(--datepicker-header-base-h-padding));
   }
 
   // A dropdown caption keeps the engine's two-button nav, and its `<select>`
   // pair needs the width back.
   .tk-calendar:not([data-nav-layout]) &:has(.tk-calendar-dropdowns) {
-    padding-inline: calc(var(--tk-calendar-cell-size) + var(--datepicker-header-base-h-padding));
+    padding-inline: calc(var(--tk-calendar-nav-button-size) + var(--datepicker-header-base-h-padding));
   }
 
   // `after` puts all four arrows at the end, so the label is start-aligned and
   // only that side is reserved.
   .tk-calendar[data-nav-layout='after'] & {
     justify-content: flex-start;
-    padding-inline-end: calc(var(--tk-calendar-cell-size) * 4);
+    padding-inline-end: calc(var(--tk-calendar-nav-button-size) * 4);
   }
 
   // ── Header types ────────────────────────────────────────────────────────
@@ -416,7 +427,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--tk-calendar-cell-size);
+  width: var(--tk-calendar-nav-button-size);
   height: var(--tk-calendar-header-height);
   padding: 0;
   border: 0;
@@ -475,8 +486,8 @@
 }
 
 @mixin calendar-chevron {
-  width: 24px;
-  height: 24px;
+  width: var(--tk-calendar-nav-icon-size);
+  height: var(--tk-calendar-nav-icon-size);
   flex-shrink: 0;
   fill: currentcolor;
 
