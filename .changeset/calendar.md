@@ -102,9 +102,13 @@ six-week box instead of making the card shorter. Switching views does not resize
 the card, paging months does not either, and `fixedWeeks` is not needed to stop
 the month-to-month jump.
 
-The card's width comes from the grid rather than the caption. The caption label
-does not wrap, so a long month name would otherwise stretch the card and let it
-shrink again on the next arrow — visible as the whole card twitching as you
-page. A single-month calendar is therefore `width: min-content`; a
-`numberOfMonths > 1` row, which is legitimately wider than one grid, is left
-alone.
+The card's width comes from the grid rather than the caption. The caption is the
+month label plus a reserve for the arrows laid over it —
+`cell-size * 2 + h-padding` at each end, 192px against a 312px grid at base — so
+any label wider than 120px stretched the card, which then shrank again on the
+next arrow. The whole card twitched as you paged, and in a popover the panel's
+edges moved with it. A single-month calendar is therefore pinned to
+`--tk-calendar-body-width`, the caption takes that width instead of setting it
+(`min-width: 0`, so its `nowrap` label is not its automatic minimum), and a
+label long enough to reach the arrows ellipsizes. A `numberOfMonths > 1` row,
+legitimately wider than one grid, is left alone.
