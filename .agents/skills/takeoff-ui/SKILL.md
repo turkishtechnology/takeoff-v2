@@ -116,8 +116,8 @@ but no component behind them.
 
 **`takeoff-datepicker`** — a date picker is `Popover` + `Calendar`; there is no
 `DatePicker` component. `useDatePicker` supplies the text/`Date` bridge for a
-typable field. Covers the masked-field variant, ranges, presets, and the two
-styling hooks the composition needs.
+typable field. Covers the masked-field variant, ranges, presets, localization
+across both halves, and the two styling hooks the composition needs.
 
 ## Forms
 
