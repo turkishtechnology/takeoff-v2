@@ -64,9 +64,8 @@ const manyUsers: User[] = Array.from({ length: 12 }, (_, index) => ({
 }));
 const nameColumns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name' }];
 const bodyRowTexts = (container: HTMLElement) => Array.from(container.querySelectorAll('tbody tr')).map(row => row.querySelector('td')?.textContent);
-// `Input.TrailingIcon` renders the page-jump submit button aria-hidden, so it is
-// reached through the Table-owned go-to-page slot rather than by accessible name.
-const goToPageButton = (container: HTMLElement) => within(container.querySelector('[data-slot="pagination-go-to-page"]') as HTMLElement).getByRole('button', { hidden: true });
+const goToPageButton = (container: HTMLElement) =>
+  within(container.querySelector('[data-slot="pagination-go-to-page"]') as HTMLElement).getByRole('button', { name: 'Go to page' });
 
 describe('Table (props-first)', () => {
   describe('rendering', () => {
@@ -1798,6 +1797,26 @@ describe('Table (props-first)', () => {
 
       expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('names every single-selection radio and passes axe', async () => {
+      const { container } = render(<Table data={users} columns={baseColumns} getRowId={getRowId} selection={{ mode: 'single' }} />);
+
+      expect(within(container.querySelector('tbody') as HTMLElement).getAllByRole('radio', { name: 'Select row' })).toHaveLength(3);
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('has no axe violations for an expandable table', async () => {
+      const { container } = render(<Table data={users} columns={baseColumns} getRowId={getRowId} expansion={{ render: row => <span>Detail for {row.name}</span> }} />);
+
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('exposes the go-to-page submit button by name and passes axe on a paginated table', async () => {
+      const { container } = render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination={{ pageSize: 5 }} />);
+
+      expect(screen.getByRole('button', { name: 'Go to page' })).not.toHaveAttribute('aria-hidden');
       expect(await axe(container)).toHaveNoViolations();
     });
   });

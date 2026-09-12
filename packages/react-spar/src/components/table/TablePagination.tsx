@@ -148,9 +148,19 @@ export const TablePagination = () => {
                 if (event.key === 'Enter') goToPage();
               }}
             />
-            <Input.TrailingIcon as="button" type="button" aria-label="Go to page" disabled={pageCount <= 0} onClick={goToPage}>
-              <ChevronRightIconOutlinedRounded />
-            </Input.TrailingIcon>
+            {/* A focusable submit, so a Button in the input's action hook rather than
+                Input.TrailingIcon, which is decorative and hides itself. */}
+            <Button
+              classNames={{ root: 'tk-input-action' }}
+              type="button"
+              appearance="text"
+              rounded
+              size="small"
+              aria-label="Go to page"
+              disabled={pageCount <= 0}
+              onClick={goToPage}
+              startContent={<ChevronRightIconOutlinedRounded />}
+            />
           </Input>
         </div>
       </div>
