@@ -378,6 +378,18 @@ describe('Select (compound)', () => {
       expect(screen.getByRole('combobox')).toHaveAttribute('data-invalid', '');
     });
 
+    it('marks the root invalid and hands invalid to Spar, so the trigger reports aria-invalid', () => {
+      const { container } = render(
+        <Select invalid>
+          <Select.Trigger placeholder={PLACEHOLDER} />
+          <Select.Content>{cabinItems}</Select.Content>
+        </Select>,
+      );
+
+      expect(rootOf(container)).toHaveAttribute('data-invalid', '');
+      expect(screen.getByRole('combobox')).toHaveAttribute('aria-invalid', 'true');
+    });
+
     it('shows the placeholder with data-placeholder until a value is selected, then the item label', () => {
       const { unmount } = render(
         <Select>
@@ -1433,6 +1445,30 @@ describe('Select (compound)', () => {
       expect(renderGlyph).toHaveBeenCalled();
       expect(indicator).toHaveTextContent('▾');
       expect(indicator?.querySelector('svg')).toBeNull();
+    });
+
+    it('flips the default chevron to the collapse glyph while the list is open', async () => {
+      const user = userEvent.setup();
+      const collapsePath = glyphPath(DEFAULT_DISCLOSURE_COLLAPSE_ICON);
+
+      renderWithStandaloneIndicator(<Select.Indicator />);
+      await openByClick(user);
+
+      const indicator = screen.getByRole('combobox').querySelector('.tk-select-indicator');
+      expect(indicator?.querySelector('path')).toHaveAttribute('d', collapsePath);
+    });
+
+    it('calls render-function children with the live { isOpen } state', async () => {
+      const user = userEvent.setup();
+      const renderGlyph = vi.fn(({ isOpen }: SelectIndicatorRenderState) => (isOpen ? '▴' : '▾'));
+
+      renderWithStandaloneIndicator(<Select.Indicator>{renderGlyph}</Select.Indicator>);
+      expect(renderGlyph).toHaveBeenLastCalledWith({ isOpen: false });
+
+      await openByClick(user);
+
+      expect(renderGlyph).toHaveBeenLastCalledWith({ isOpen: true });
+      expect(screen.getByRole('combobox').querySelector('.tk-select-indicator')).toHaveTextContent('▴');
     });
 
     it('renders as a custom element, forwards its ref and merges classNames and slotProps', () => {

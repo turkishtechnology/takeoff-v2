@@ -9,7 +9,9 @@ import type { SelectIndicatorProps } from './types';
 
 export const SelectIndicator = <T extends ElementType = 'span'>(props: SelectIndicatorProps<T>) => {
   const theme = useComponentTheme('SelectIndicator');
-  const { isOpen } = useSelectContext();
+  // Spar's select context calls the open state `open`; the render-prop state
+  // handed out below keeps the `{ isOpen }` shape `Select.Trigger` uses.
+  const { open: isOpen } = useSelectContext();
 
   const Component = (props.as ?? 'span') as ElementType;
 
