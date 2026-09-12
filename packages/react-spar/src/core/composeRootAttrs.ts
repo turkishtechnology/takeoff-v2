@@ -77,12 +77,16 @@ export const composeRootAttrs = <TProps extends RootSlotShape<TSlot>, TSlot exte
   const { className, classNames, slotProps, ...rest } = merged;
 
   const rootSlot = 'root' as TSlot;
-  const rootAttrs = buildSlotAttrs(base.getSlotProps(rootSlot, { className }), rootSlot, {
+  const rootAttrs = buildSlotAttrs(base.getSlotProps(rootSlot), rootSlot, {
     themeSlotProps: theme?.slotProps as SlotPropsMap<TSlot> | undefined,
     themeClassNames: theme?.classNames,
     themeClassName: theme?.className,
     instanceSlotProps: slotProps,
     instanceClassNames: classNames,
+    instanceClassName: className,
+    // The root element spreads the instance props before `rootAttrs`, so the
+    // theme must not bring a value for a key the instance already set.
+    instanceProps: props,
   });
 
   const stateAttrs = options?.stateAttrs ? dropUndefined(options.stateAttrs(merged)) : undefined;

@@ -179,13 +179,16 @@ attributes on the server to avoid first-paint mismatch.
 Every rendered component root and rendered component part exposes the same
 customization layers:
 
-- `className`: appended to the canonical root slot class.
+- `className`: appended to the canonical root slot class, after any provider
+  class.
 - `classNames`: per-slot extra classes, concatenated with canonical `tk-*`
   classes.
 - `slotProps`: per-slot HTML attributes, shallow-merged below canonical wrapper
   attributes.
 - provider `components`: global defaults, classes, and slot props keyed by
-  component name.
+  component name. They sit below the instance: an attribute the instance sets
+  wins, classes add up, and a provider `style` merges key by key under the
+  instance `style`.
 
 Canonical `tk-*` classes and `data-slot` attributes are always preserved.
 State-only roots (`Dialog`, `Drawer`, `Popover`, `Tooltip`) have no DOM target

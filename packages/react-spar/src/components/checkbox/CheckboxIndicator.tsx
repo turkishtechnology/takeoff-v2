@@ -13,11 +13,13 @@ export const CheckboxIndicator = (props: CheckboxIndicatorProps) => {
   const { classNames, slotProps, checked, indeterminate } = useCheckboxOwnContext('Checkbox.Indicator');
   const { className, children, ref, ...rest } = props;
 
-  const indicatorAttrs = buildSlotAttrs(CheckboxBase.getSlotProps('indicator', { className }), 'indicator', {
+  const indicatorAttrs = buildSlotAttrs(CheckboxBase.getSlotProps('indicator'), 'indicator', {
     themeSlotProps: theme?.slotProps,
     themeClassNames: theme?.classNames,
     instanceSlotProps: slotProps,
     instanceClassNames: classNames,
+    instanceClassName: className,
+    instanceProps: rest,
   });
 
   // The check / dash glyph used to live in a separate `Checkbox.Icon` compound.

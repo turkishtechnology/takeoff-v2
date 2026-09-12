@@ -1452,6 +1452,22 @@ describe('Dropdown', () => {
       expect(menu.style.width).toBe('');
     });
 
+    it('merges a theme slotProps style under the direct style prop and the computed width', () => {
+      render(
+        <TakeoffSparProvider components={{ DropdownContent: { slotProps: { root: { style: { backgroundColor: 'rgb(4, 5, 6)', color: 'rgb(7, 8, 9)' } } } } }}>
+          <Dropdown defaultOpen contentWidth={280}>
+            <Dropdown.Trigger>Actions</Dropdown.Trigger>
+            <Dropdown.Content style={{ width: '100px', color: 'rgb(1, 2, 3)' }}>
+              <Dropdown.Item>Edit</Dropdown.Item>
+            </Dropdown.Content>
+          </Dropdown>
+        </TakeoffSparProvider>,
+      );
+
+      // The direct style beats the theme and the computed width; the rest of the theme style still lands.
+      expect(screen.getByRole('menu')).toHaveStyle({ width: '100px', color: 'rgb(1, 2, 3)', backgroundColor: 'rgb(4, 5, 6)' });
+    });
+
     it('applies a direct style prop when contentWidth adds no width', () => {
       render(
         <Dropdown defaultOpen>

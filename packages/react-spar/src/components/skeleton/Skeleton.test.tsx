@@ -144,6 +144,16 @@ describe('Skeleton', () => {
       expect(container.querySelector('.tk-skeleton-shimmer')).toHaveAttribute('aria-hidden', 'true');
     });
 
+    it('merges a provider slotProps style under the instance style prop, key by key', () => {
+      const { container } = render(
+        <TakeoffSparProvider components={{ Skeleton: { slotProps: { root: { style: { color: 'rgb(4, 5, 6)', marginTop: '4px' } } } } }}>
+          <Skeleton style={{ color: 'rgb(1, 2, 3)' }} />
+        </TakeoffSparProvider>,
+      );
+
+      expect(container.querySelector('.tk-skeleton')).toHaveStyle({ color: 'rgb(1, 2, 3)', marginTop: '4px' });
+    });
+
     it('lets the size props win over a size custom property passed through slotProps', () => {
       const { container } = render(<Skeleton height={24} slotProps={{ root: { style: { '--tk-skeleton-height': '3rem' } as CSSProperties } }} />);
       const root = container.querySelector('.tk-skeleton') as HTMLElement;

@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -309,5 +310,39 @@ describe('useComponentTheme', () => {
     expect(save).toHaveAttribute('data-size', 'large');
     expect(cancel).toHaveClass('tk-button', 'product-button');
     expect(cancel).toHaveAttribute('data-size', 'small');
+  });
+
+  it('keeps what an instance sets directly over the provider slotProps, and still adds the rest', async () => {
+    const user = userEvent.setup();
+    const themeClick = vi.fn();
+    const instanceClick = vi.fn();
+
+    render(
+      <TakeoffSparProvider components={{ Button: { slotProps: { root: { title: 'Theme title', id: 'theme-id', className: 'theme-slot', onClick: themeClick } } } }}>
+        <Button title="Instance title" onClick={instanceClick}>
+          Save
+        </Button>
+      </TakeoffSparProvider>,
+    );
+
+    const save = screen.getByRole('button', { name: 'Save' });
+    await user.click(save);
+
+    expect(save).toHaveAttribute('title', 'Instance title');
+    expect(instanceClick).toHaveBeenCalledTimes(1);
+    expect(themeClick).not.toHaveBeenCalled();
+    // Keys the instance leaves unset still come from the provider.
+    expect(save).toHaveAttribute('id', 'theme-id');
+    expect(save).toHaveClass('tk-button', 'theme-slot');
+  });
+
+  it('merges a provider slotProps style under the instance style key by key', () => {
+    render(
+      <TakeoffSparProvider components={{ Button: { slotProps: { root: { style: { marginTop: '4px', color: 'rgb(0, 0, 1)' } } } } }}>
+        <Button style={{ color: 'rgb(0, 0, 2)' }}>Save</Button>
+      </TakeoffSparProvider>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Save' })).toHaveStyle({ marginTop: '4px', color: 'rgb(0, 0, 2)' });
   });
 });

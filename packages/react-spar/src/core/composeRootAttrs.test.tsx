@@ -127,6 +127,12 @@ describe('composeRootAttrs', () => {
       expect(classes.indexOf('theme-root')).toBeLessThan(classes.indexOf('instance-root'));
     });
 
+    it('orders the instance className after the provider className shortcut', () => {
+      const { rootAttrs } = compose({ className: 'instance-class' }, { className: 'provider-class' });
+
+      expect(rootAttrs.className).toBe('tk-demo provider-class instance-class');
+    });
+
     it('leaves className undefined when the root has no canonical class and no layer adds one', () => {
       const BareBase = createComponentBase<Pick<DemoProps, 'className' | 'classNames'>, 'root'>({ name: 'Bare', slots: ['root'], classes: { root: '' } });
 
@@ -149,6 +155,19 @@ describe('composeRootAttrs', () => {
       const { rootAttrs } = compose({ slotProps: { root: { title: 'Instance title' } } }, { slotProps: { root: { 'title': 'Theme title', 'aria-describedby': 'help' } } });
 
       expect(rootAttrs).toMatchObject({ 'title': 'Instance title', 'aria-describedby': 'help', 'data-slot': 'root' });
+    });
+
+    it('drops a theme slotProps.root key the instance sets as a prop', () => {
+      const { rootAttrs } = compose({ id: 'instance-id' }, { slotProps: { root: { id: 'theme-id', title: 'Theme title' } } });
+
+      expect(rootAttrs).not.toHaveProperty('id');
+      expect(rootAttrs).toMatchObject({ title: 'Theme title' });
+    });
+
+    it('renders the instance id over the theme slotProps id', () => {
+      const { container } = render(<Demo id="instance-id" theme={{ slotProps: { root: { id: 'theme-id' } } }} />);
+
+      expect(container.firstElementChild).toHaveAttribute('id', 'instance-id');
     });
 
     it('keeps data-slot="root" when theme or instance slotProps try to override it', () => {

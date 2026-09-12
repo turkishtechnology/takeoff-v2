@@ -73,6 +73,27 @@ describe('buildSlotAttrs', () => {
       expect(className).toBe('tk-card-icon');
     });
 
+    it('places the instance className after the theme classes', () => {
+      const { className } = buildSlotAttrs(CardBase.getSlotProps('root'), 'root', {
+        themeClassName: 'product-card',
+        instanceClassName: 'instance-class',
+        instanceClassNames: { root: 'instance-root' },
+      });
+
+      expect(className).toBe('tk-card product-card instance-class instance-root');
+    });
+
+    it('adds the className each layer contributes through slotProps after its own classes', () => {
+      const { className } = buildSlotAttrs(CardBase.getSlotProps('title'), 'title', {
+        themeClassNames: { title: 'theme-title' },
+        themeSlotProps: { title: { className: 'theme-slot' } },
+        instanceClassNames: { title: 'instance-title' },
+        instanceSlotProps: { title: { className: 'instance-slot' } },
+      });
+
+      expect(className).toBe('tk-card-title theme-title theme-slot instance-title instance-slot');
+    });
+
     it('ignores classes declared for other slots', () => {
       const themeClassNames: ClassNamesMap<CardSlot> = { root: 'theme-root', title: 'theme-title' };
       const instanceClassNames: ClassNamesMap<CardSlot> = { root: 'instance-root', title: 'instance-title' };
@@ -109,6 +130,27 @@ describe('buildSlotAttrs', () => {
 
       expect(result).toMatchObject({ style: { padding: 8 } });
       expect(result).not.toMatchObject({ style: { color: 'red' } });
+    });
+
+    it('leaves out a theme slotProps key the instance sets directly on the element', () => {
+      const result = buildSlotAttrs(CardBase.getSlotProps('root'), 'root', {
+        themeSlotProps: { root: { id: 'theme-id', title: 'Theme title', className: 'theme-slot' } },
+        instanceProps: { id: 'instance-id', title: undefined },
+      });
+
+      // The element spreads the instance props before these attrs, so a theme
+      // value left in would replace the instance's own. An undefined instance
+      // value does not count as set, and classes always add up.
+      expect(result).toEqual({ 'title': 'Theme title', 'data-slot': 'root', 'className': 'tk-card theme-slot' });
+    });
+
+    it('merges a theme slotProps style under the instance style prop key by key', () => {
+      const result = buildSlotAttrs(CardBase.getSlotProps('root'), 'root', {
+        themeSlotProps: { root: { style: { color: 'red', margin: 4 } } },
+        instanceProps: { style: { color: 'blue' } },
+      });
+
+      expect((result as { style?: object }).style).toEqual({ color: 'blue', margin: 4 });
     });
 
     it('keeps the canonical attrs authoritative over theme and instance slotProps', () => {

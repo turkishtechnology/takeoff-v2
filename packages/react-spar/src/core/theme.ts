@@ -16,7 +16,11 @@ export interface ComponentThemeConfig<TProps = unknown, TSlot extends string = '
   className?: string;
   /** Per-slot extra classes; concatenated, never replaces the canonical class. */
   classNames?: ClassNamesMap<TSlot>;
-  /** Per-slot HTML-attribute overrides; shallow-merged below the wrapper's canonical attrs. */
+  /**
+   * Per-slot HTML-attribute overrides. They sit below the instance's own props and
+   * the wrapper's canonical attrs: classes add up, and a style merges key by key
+   * under the instance style.
+   */
   slotProps?: TSlotProps;
 }
 

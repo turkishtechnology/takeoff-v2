@@ -95,6 +95,10 @@ then instance class. `slotProps` are shallow-merged, while canonical wrapper
 attributes such as `data-slot` and component-owned state hooks remain
 authoritative.
 
+Provider `slotProps` sit below the instance too: an attribute the instance sets
+directly wins, and a provider `style` merges key by key under the instance
+`style`.
+
 ## Preserve accessibility behavior
 
 Compound parts are not decorative wrappers. Triggers, labels, content panels,
