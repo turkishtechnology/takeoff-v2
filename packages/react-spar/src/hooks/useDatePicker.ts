@@ -132,15 +132,13 @@ export function useDatePicker({ min, max, defaultValue, delimiter = '/', format,
     (next: string, meta: { completed?: boolean; iso?: string }) => {
       setText(next);
 
-      // An emptied field clears the value; a half-typed one holds it at
-      // `undefined` without wiping what the user is still typing.
-      if (next === '') {
+      // An emptied or half-typed field holds the value at `undefined` without
+      // wiping what the user is still typing. Losing a whole date is a change
+      // like any other — a form bound to `onValueChange` must stop holding the
+      // stale one — but it is reported once, not on every keystroke after it.
+      if (next === '' || !meta.completed || !meta.iso) {
         setValueState(undefined);
-        onValueChange?.(undefined);
-        return;
-      }
-      if (!meta.completed || !meta.iso) {
-        setValueState(undefined);
+        if (value !== undefined) onValueChange?.(undefined);
         return;
       }
 
@@ -148,7 +146,7 @@ export function useDatePicker({ min, max, defaultValue, delimiter = '/', format,
       setValueState(parsed);
       onValueChange?.(parsed);
     },
-    [onValueChange],
+    [value, onValueChange],
   );
 
   const handleKeyDown = useCallback((event: KeyboardEvent<HTMLInputElement>) => {

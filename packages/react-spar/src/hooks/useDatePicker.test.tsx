@@ -186,6 +186,40 @@ describe('useDatePicker', () => {
       expect(result.current.value).toBeUndefined();
     });
 
+    it('reports undefined once when a whole date is edited back to half-typed', () => {
+      const onValueChange = vi.fn<(value: Date | undefined) => void>();
+      const { result } = renderHook(() => useDatePicker({ defaultValue: AUGUST_15, onValueChange }));
+
+      act(() => result.current.inputProps.onValueChange('15/08/202', { completed: false }));
+      act(() => result.current.inputProps.onValueChange('15/08/20', { completed: false }));
+
+      // A bound form has to drop the stale Date as soon as the date breaks, and
+      // hear about it once rather than on every keystroke after that.
+      expect(result.current.value).toBeUndefined();
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange).toHaveBeenCalledWith(undefined);
+    });
+
+    it('reports undefined when the mask completes without an iso date after a whole one', () => {
+      const onValueChange = vi.fn<(value: Date | undefined) => void>();
+      const { result } = renderHook(() => useDatePicker({ defaultValue: AUGUST_15, onValueChange }));
+
+      act(() => result.current.inputProps.onValueChange('15/08/2026', { completed: true }));
+
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange).toHaveBeenCalledWith(undefined);
+    });
+
+    it('stays silent while a picker with no value is half-typed or emptied again', () => {
+      const onValueChange = vi.fn<(value: Date | undefined) => void>();
+      const { result } = renderHook(() => useDatePicker({ onValueChange }));
+
+      act(() => result.current.inputProps.onValueChange('15/08', { completed: false }));
+      act(() => result.current.inputProps.onValueChange('', { completed: false }));
+
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+
     it('treats an unparseable iso date as no value and reports the change', () => {
       const onValueChange = vi.fn<(value: Date | undefined) => void>();
       const { result } = renderHook(() => useDatePicker({ defaultValue: AUGUST_15, onValueChange }));
@@ -477,6 +511,20 @@ describe('useDatePicker composed with Input.Field, Popover and Calendar', () => 
     await user.clear(field);
 
     expect(field).toHaveValue('');
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenCalledWith(undefined);
+  });
+
+  it('reports undefined once when the user breaks a filled date with Backspace', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn<(value: Date | undefined) => void>();
+    render(<DepartureField defaultValue={AUGUST_15} onValueChange={onValueChange} />);
+
+    const field = screen.getByRole('textbox', { name: 'Departure' });
+    await user.click(field);
+    await user.keyboard('{End}{Backspace}{Backspace}');
+
+    expect(field).toHaveValue('15/08/20');
     expect(onValueChange).toHaveBeenCalledTimes(1);
     expect(onValueChange).toHaveBeenCalledWith(undefined);
   });
