@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { TakeoffSparProvider } from '../../provider';
 import { renderWithProvider as render, screen } from '../../test-utils';
 
 import { Field } from '../field';
@@ -60,9 +61,12 @@ beforeEach(() => {
 });
 
 // The prototype spy below would otherwise outlive its case (no global
-// restoreMocks in the vitest config).
+// restoreMocks in the vitest config). Globals and fake timers are released here
+// too, so a case that fails before its own cleanup cannot leak into the next.
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+  vi.useRealTimers();
 });
 
 // Captures what the built-in download handed to the browser, without letting
@@ -320,6 +324,22 @@ describe('Upload (compound)', () => {
       expect(container.querySelectorAll('.tk-upload-item')).toHaveLength(1);
       expect(container.querySelector('.tk-upload-item-name')).toHaveTextContent('a.txt');
     });
+
+    it('renders plain row nodes as authored instead of one default row per file', () => {
+      // The non-function form: the consumer wrote the rows, so the list does not
+      // add a default row for every file the value holds.
+      const { container } = render(
+        <Upload multiple value={[uf('a.txt'), uf('b.txt')]}>
+          <Upload.List>
+            <Upload.Item file={uf('b.txt')} />
+          </Upload.List>
+        </Upload>,
+      );
+
+      const rows = container.querySelectorAll('.tk-upload-item');
+      expect(rows).toHaveLength(1);
+      expect(rows[0].querySelector('.tk-upload-item-name')).toHaveTextContent('b.txt');
+    });
   });
 
   describe('selection', () => {
@@ -514,13 +534,65 @@ describe('Upload (compound)', () => {
       expect(onValueChange).not.toHaveBeenCalled();
       expect(onFilesReject).not.toHaveBeenCalled();
     });
+
+    it('matches an extension token against the file name, whatever its case', () => {
+      // Dropped for the same reason as the type case above. The MIME type is
+      // blank, as browsers leave it for formats they do not recognise, so only
+      // the name can decide.
+      const onValueChange = vi.fn();
+      const onFilesReject = vi.fn();
+      const notes = makeFile('notes.txt');
+      render(<Anatomy multiple accept=".pdf" onValueChange={onValueChange} onFilesReject={onFilesReject} />);
+
+      fireEvent.drop(screen.getByTestId('dropzone'), {
+        dataTransfer: {
+          files: [makeFile('Report.PDF', { type: '' }), notes],
+          items: [
+            { kind: 'file', type: '' },
+            { kind: 'file', type: 'text/plain' },
+          ],
+          types: ['Files'],
+        },
+      });
+
+      expect((onValueChange.mock.calls[0][0] as UploadFile[]).map(entry => entry.name)).toEqual(['Report.PDF']);
+      expect(onFilesReject).toHaveBeenCalledTimes(1);
+      expect(onFilesReject.mock.calls[0][0]).toHaveLength(1);
+      expect(onFilesReject.mock.calls[0][0][0]).toMatchObject({ code: 'file-invalid-type', accept: '.pdf' });
+      expect(onFilesReject.mock.calls[0][0][0].file).toBe(notes);
+    });
+
+    it('matches a full MIME token exactly, ignoring case', () => {
+      const onValueChange = vi.fn();
+      const onFilesReject = vi.fn();
+      const photo = makeFile('photo.png', { type: 'image/png' });
+      render(<Anatomy multiple accept="Application/PDF" onValueChange={onValueChange} onFilesReject={onFilesReject} />);
+
+      fireEvent.drop(screen.getByTestId('dropzone'), {
+        dataTransfer: {
+          files: [makeFile('contract.pdf', { type: 'application/pdf' }), photo],
+          items: [
+            { kind: 'file', type: 'application/pdf' },
+            { kind: 'file', type: 'image/png' },
+          ],
+          types: ['Files'],
+        },
+      });
+
+      expect((onValueChange.mock.calls[0][0] as UploadFile[]).map(entry => entry.name)).toEqual(['contract.pdf']);
+      expect(onFilesReject.mock.calls[0][0]).toHaveLength(1);
+      // The limit is reported as the consumer wrote it, for their own message.
+      expect(onFilesReject.mock.calls[0][0][0]).toMatchObject({ code: 'file-invalid-type', accept: 'Application/PDF' });
+      expect(onFilesReject.mock.calls[0][0][0].file).toBe(photo);
+    });
   });
 
   describe('onFileAccept', () => {
     it('reports the entries that just landed, not the whole value', async () => {
       const user = userEvent.setup();
       const onFileAccept = vi.fn();
-      const { container } = render(<Anatomy multiple onFileAccept={onFileAccept} />);
+      const onValueChange = vi.fn();
+      const { container } = render(<Anatomy multiple onFileAccept={onFileAccept} onValueChange={onValueChange} />);
       const second = makeFile('b.txt');
 
       await user.upload(fileInput(container), makeFile('a.txt'));
@@ -531,6 +603,12 @@ describe('Upload (compound)', () => {
       // previous one to work it out.
       expect(onFileAccept).toHaveBeenCalledTimes(2);
       expect((onFileAccept.mock.calls[1][0] as UploadFile[]).map(f => f.name)).toEqual(['b.txt']);
+      // What arrives is the wrapped entry, not the raw File: the very object the
+      // value now holds, so its `id` is the row the consumer reports progress on.
+      const [landed] = onFileAccept.mock.calls[1][0] as UploadFile[];
+      expect(landed).toMatchObject({ file: second, status: 'idle' });
+      const value = onValueChange.mock.calls[onValueChange.mock.calls.length - 1]?.[0] as UploadFile[];
+      expect(value[value.length - 1]).toBe(landed);
 
       // Re-picking a file already held adds nothing, so it announces nothing.
       await user.upload(fileInput(container), second);
@@ -997,6 +1075,32 @@ describe('Upload (compound)', () => {
       expect(onError).toHaveBeenCalledTimes(1);
     });
 
+    it('retries the image once the entry points somewhere new, including at a source that failed before', () => {
+      const withThumb = (thumbUrl: string) => (
+        <Upload value={[uf('plan.pdf', { type: 'application/pdf', thumbUrl })]}>
+          <Upload.List />
+        </Upload>
+      );
+      const { container, rerender } = render(withThumb('/thumbs/v1.png'));
+      const image = () => previewRoot(container).querySelector('img');
+
+      fireEvent.error(image() as HTMLImageElement);
+      expect(image()).toBeNull();
+      expect(previewRoot(container).querySelector('.tk-upload-item-preview-icon')).toBeInTheDocument();
+
+      // A new thumbnail is not held against the old one's failure…
+      rerender(withThumb('/thumbs/v2.png'));
+      expect(image()).toHaveAttribute('src', '/thumbs/v2.png');
+
+      fireEvent.error(image() as HTMLImageElement);
+      expect(image()).toBeNull();
+
+      // …and a URL that failed once (a 503, an expired signature) gets another
+      // chance when the entry comes back to it.
+      rerender(withThumb('/thumbs/v1.png'));
+      expect(image()).toHaveAttribute('src', '/thumbs/v1.png');
+    });
+
     it('lets slotProps override the image defaults', () => {
       // `alt` and `loading` are defaults, not invariants — a meaningful alt or
       // an eager above-the-fold row has to be reachable from the call site.
@@ -1243,6 +1347,34 @@ describe('Upload (compound)', () => {
         </Upload>,
       );
       expect(contentRoot(container).tagName).toBe('SECTION');
+    });
+
+    it('hoists the regions written inside a fragment into their own positions', () => {
+      const { container } = render(
+        <Upload value={[uf('report.pdf', { type: 'application/pdf' })]}>
+          <Upload.List>
+            {files =>
+              files.map(file => (
+                <Upload.Item key={file.id} file={file}>
+                  <>
+                    <Upload.ItemAction action="remove" />
+                    <Upload.ItemContent className="own-content" />
+                    <Upload.ItemPreview className="own-preview" />
+                  </>
+                </Upload.Item>
+              ))
+            }
+          </Upload.List>
+        </Upload>,
+      );
+
+      // A fragment is a way of writing several children, not a child of its own:
+      // each composed region still replaces its default, in the fixed order.
+      const row = container.querySelector('.tk-upload-item') as HTMLElement;
+      expect(Array.from(row.children, child => child.className.split(' ')[0])).toEqual(['tk-upload-item-preview', 'tk-upload-item-content', 'tk-upload-item-actions']);
+      expect(row.children[0]).toHaveClass('own-preview');
+      expect(row.children[1]).toHaveClass('own-content');
+      expect(screen.getByRole('button', { name: 'Remove report.pdf' }).closest('.tk-upload-item-actions')).toBe(row.children[2]);
     });
   });
 
@@ -1819,6 +1951,53 @@ describe('Upload (compound)', () => {
       expect(action).toHaveAttribute('title', 'Remove this file');
       expect(action).toHaveAttribute('data-slot', 'root');
     });
+
+    it("renders an action's children as its glyph, replacing a built-in icon", () => {
+      render(
+        <Upload value={[uf('a.txt')]}>
+          <Upload.List>
+            {files =>
+              files.map(file => (
+                <Upload.Item key={file.id} file={file}>
+                  <Upload.ItemAction action="share" aria-label="Share a.txt">
+                    <span data-testid="share-glyph" />
+                  </Upload.ItemAction>
+                  <Upload.ItemAction action="remove">
+                    <span data-testid="remove-glyph" />
+                  </Upload.ItemAction>
+                </Upload.Item>
+              ))
+            }
+          </Upload.List>
+        </Upload>,
+      );
+
+      // A consumer action takes its glyph — and, with no `label`, its name — from
+      // the call site.
+      expect(screen.getByRole('button', { name: 'Share a.txt' })).toContainElement(screen.getByTestId('share-glyph'));
+
+      // On a built-in the children win over the shipped icon; the name stays.
+      const remove = screen.getByRole('button', { name: 'Remove a.txt' });
+      expect(remove).toContainElement(screen.getByTestId('remove-glyph'));
+      expect(remove.querySelector('svg')).toBeNull();
+    });
+
+    it('renders no actions container for a read-only row with nothing to save', () => {
+      const { container } = render(
+        <Upload readOnly multiple value={[uf('ghost.txt'), uf('kept.txt', { url: '/files/kept.txt' })]}>
+          <Upload.List />
+        </Upload>,
+      );
+
+      // Read-only takes the remove away and the first entry has neither bytes nor
+      // a url to download, so an empty box would only claim the row's trailing
+      // space.
+      const [ghost, kept] = Array.from(container.querySelectorAll('.tk-upload-item'));
+      expect(ghost.querySelector('.tk-upload-item-actions')).toBeNull();
+      expect(ghost.querySelector('.tk-upload-item-name')).toHaveTextContent('ghost.txt');
+      expect(kept.querySelector('.tk-upload-item-actions')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Download kept.txt' })).toBeInTheDocument();
+    });
   });
 
   describe('drag and drop', () => {
@@ -1950,6 +2129,86 @@ describe('Upload (compound)', () => {
 
       expect(onDragEnter).toHaveBeenCalledTimes(1);
       expect(onDrop).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([
+      ['disabled', { disabled: true }],
+      ['read-only', { readOnly: true }],
+    ])('still claims a drag over a %s zone, but paints no state and commits nothing', (_state, stateProps) => {
+      const onValueChange = vi.fn();
+      const onFilesReject = vi.fn();
+      render(<Anatomy {...stateProps} onValueChange={onValueChange} onFilesReject={onFilesReject} />);
+      const dropzone = screen.getByTestId('dropzone');
+      const payload = { dataTransfer: { files: [makeFile('a.txt')], items: [{ kind: 'file', type: 'text/plain' }], types: ['Files'] } };
+
+      // Every cancelable step is still prevented (`fireEvent` returns false): an
+      // unclaimed drop falls through to the browser, which navigates the tab to
+      // the dropped file.
+      expect(fireEvent.dragEnter(dropzone, payload)).toBe(false);
+      expect(fireEvent.dragOver(dropzone, payload)).toBe(false);
+      expect(dropzone).not.toHaveAttribute('data-drag-state');
+
+      expect(fireEvent.drop(dropzone, payload)).toBe(false);
+      expect(onValueChange).not.toHaveBeenCalled();
+      expect(onFilesReject).not.toHaveBeenCalled();
+    });
+
+    it('commits nothing for a drag that carries no files', () => {
+      const onValueChange = vi.fn();
+      const onFilesReject = vi.fn();
+      render(<Anatomy accept="image/*" onValueChange={onValueChange} onFilesReject={onFilesReject} />);
+      const dropzone = screen.getByTestId('dropzone');
+      // No item list to scan and no files to hand over.
+      const payload = { dataTransfer: { types: ['text/plain'] } };
+
+      // With nothing to judge, the zone does not paint the payload rejected.
+      fireEvent.dragEnter(dropzone, payload);
+      expect(dropzone).not.toHaveAttribute('data-drag-state', 'reject');
+
+      fireEvent.drop(dropzone, payload);
+      expect(dropzone).not.toHaveAttribute('data-drag-state');
+      expect(onValueChange).not.toHaveBeenCalled();
+      expect(onFilesReject).not.toHaveBeenCalled();
+    });
+
+    it('withholds the reject hint while an extension token cannot be judged, but judges a MIME-only list', () => {
+      const textPayload = { dataTransfer: { items: [{ kind: 'file', type: 'text/plain' }], types: ['Files'] } };
+      const { unmount } = render(<Anatomy accept="image/*,.pdf" />);
+
+      // Only the MIME type is known until the drop, and `.pdf` could still match
+      // this file's name — painting it rejected would be contradicted on release.
+      fireEvent.dragEnter(screen.getByTestId('dropzone'), textPayload);
+      expect(screen.getByTestId('dropzone')).toHaveAttribute('data-drag-state', 'accept');
+      unmount();
+
+      render(<Anatomy accept="application/pdf" />);
+      const dropzone = screen.getByTestId('dropzone');
+
+      fireEvent.dragEnter(dropzone, { dataTransfer: { items: [{ kind: 'file', type: 'image/png' }], types: ['Files'] } });
+      expect(dropzone).toHaveAttribute('data-drag-state', 'reject');
+
+      fireEvent.dragLeave(dropzone);
+      fireEvent.dragEnter(dropzone, { dataTransfer: { items: [{ kind: 'file', type: 'application/pdf' }], types: ['Files'] } });
+      expect(dropzone).toHaveAttribute('data-drag-state', 'accept');
+    });
+
+    it('holds the drag state while the pointer crosses the zone’s own children', () => {
+      render(<Anatomy accept="image/*" />);
+      const dropzone = screen.getByTestId('dropzone');
+      const trigger = screen.getByRole('button', { name: 'Choose file' });
+      const payload = { dataTransfer: { items: [{ kind: 'file', type: 'image/png' }], types: ['Files'] } };
+
+      // Enter and leave fire for every descendant, and moving onto the Trigger
+      // enters it before the zone itself is left — a reset on every leave would
+      // flicker the hint off mid-hover.
+      fireEvent.dragEnter(dropzone, payload);
+      fireEvent.dragEnter(trigger, payload);
+      fireEvent.dragLeave(dropzone, payload);
+      expect(dropzone).toHaveAttribute('data-drag-state', 'accept');
+
+      // Leaving the last node inside the zone lets go of it.
+      fireEvent.dragLeave(trigger, payload);
+      expect(dropzone).not.toHaveAttribute('data-drag-state');
     });
   });
 
@@ -2169,6 +2428,28 @@ describe('Upload (compound)', () => {
         ),
       ).toThrow();
     });
+
+    it.each([
+      ['Upload.List', <Upload.List key="list" />],
+      ['Upload.Dropzone', <Upload.Dropzone key="dropzone" />],
+      ['Upload.Submit', <Upload.Submit key="submit">Upload</Upload.Submit>],
+    ])('names %s and the missing root in the error', (name, element) => {
+      const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+      expect(() => render(element)).toThrow(`${name} must be used within UploadProvider`);
+      error.mockRestore();
+    });
+
+    it('names the row provider when Upload.ItemActions is used outside an Upload.Item', () => {
+      const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+      expect(() =>
+        render(
+          <Upload value={[uf('a.txt')]}>
+            <Upload.ItemActions />
+          </Upload>,
+        ),
+      ).toThrow('Upload.ItemActions must be used within UploadItemProvider');
+      error.mockRestore();
+    });
   });
 
   describe('accessibility', () => {
@@ -2222,6 +2503,23 @@ describe('Upload (compound)', () => {
           <Anatomy value={[uf('a.txt')]} />
           <Field.Description>Text files only</Field.Description>
         </Field>,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('has no a11y violations for rows that are uploading, failed, or previewed', async () => {
+      // The riskier row shapes: a named progress bar, an error support line, and
+      // an image thumbnail beside a file-type icon.
+      const { container } = render(
+        <Anatomy
+          aria-label="Attachments"
+          multiple
+          value={[
+            uf('scan.png', { type: 'image/png', url: '/files/scan.png', status: 'uploading', progress: 40 }),
+            uf('notes.txt', { status: 'error', error: 'Network error' }),
+            uf('report.pdf', { type: 'application/pdf', url: '/files/report.pdf', status: 'completed' }),
+          ]}
+        />,
       );
       expect(await axe(container)).toHaveNoViolations();
     });
@@ -2348,6 +2646,168 @@ describe('Upload (compound)', () => {
 
       await user.click(screen.getByRole('button', { name: 'Download ghost.txt' }));
       expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('still gives every picked file its own id where randomUUID refuses to run or is missing', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      const { container } = render(<Anatomy multiple onValueChange={onValueChange} />);
+
+      // Outside a secure context `randomUUID` throws…
+      vi.spyOn(globalThis.crypto, 'randomUUID').mockImplementation(() => {
+        throw new DOMException('Insecure context', 'SecurityError');
+      });
+      await user.upload(fileInput(container), [makeFile('a.txt'), makeFile('b.txt')]);
+
+      // …and an older runtime has no `randomUUID` at all.
+      vi.stubGlobal('crypto', {});
+      try {
+        await user.upload(fileInput(container), makeFile('c.txt'));
+      } finally {
+        vi.unstubAllGlobals();
+      }
+
+      const ids = (onValueChange.mock.lastCall?.[0] as UploadFile[]).map(entry => entry.id);
+      expect(ids).toHaveLength(3);
+      expect(ids.every(id => typeof id === 'string' && id.length > 0)).toBe(true);
+      expect(new Set(ids).size).toBe(3);
+    });
+  });
+  describe('anatomy and layering', () => {
+    it('stamps the canonical data-slot on the root, the zone, the list and every row region', () => {
+      const { container } = render(<Anatomy value={[uf('a.txt', { status: 'completed' })]} />);
+
+      for (const className of [
+        'tk-upload',
+        'tk-upload-dropzone',
+        'tk-upload-actions',
+        'tk-upload-list',
+        'tk-upload-item',
+        'tk-upload-item-preview',
+        'tk-upload-item-content',
+        'tk-upload-item-actions',
+      ]) {
+        expect(container.querySelector(`.${className}`), className).toHaveAttribute('data-slot', 'root');
+      }
+      expect(container.querySelector('.tk-upload-item-name')).toHaveAttribute('data-slot', 'name');
+      expect(container.querySelector('.tk-upload-item-size')).toHaveAttribute('data-slot', 'size');
+      expect(container.querySelector('.tk-upload-item-status')).toHaveAttribute('data-slot', 'status');
+    });
+
+    it('layers provider theme classNames and slotProps under the instance ones on each part', () => {
+      const { container } = render(
+        <TakeoffSparProvider
+          components={{
+            Upload: { classNames: { root: 'theme-root' }, slotProps: { root: { title: 'theme-title' } } },
+            UploadDropzone: { classNames: { root: 'theme-dropzone' } },
+            UploadTrigger: { classNames: { root: 'theme-trigger' } },
+            UploadList: { classNames: { root: 'theme-list' } },
+            UploadItem: { classNames: { root: 'theme-item' } },
+          }}
+        >
+          <Upload value={[uf('a.txt')]} className="instance-root" slotProps={{ root: { title: 'instance-title' } }}>
+            <Upload.Dropzone className="instance-dropzone">
+              <Upload.Trigger className="instance-trigger">Choose file</Upload.Trigger>
+            </Upload.Dropzone>
+            <Upload.List className="instance-list">{files => files.map(file => <Upload.Item key={file.id} file={file} className="instance-item" />)}</Upload.List>
+          </Upload>
+        </TakeoffSparProvider>,
+      );
+
+      const root = uploadRoot(container);
+      expect(root).toHaveClass('theme-root', 'instance-root');
+      expect(root).toHaveAttribute('title', 'instance-title');
+      expect(container.querySelector('.tk-upload-dropzone')).toHaveClass('theme-dropzone', 'instance-dropzone');
+      expect(screen.getByRole('button', { name: 'Choose file' })).toHaveClass('tk-button', 'tk-upload-trigger', 'theme-trigger', 'instance-trigger');
+      expect(container.querySelector('.tk-upload-list')).toHaveClass('theme-list', 'instance-list');
+      expect(container.querySelector('.tk-upload-item')).toHaveClass('theme-item', 'instance-item');
+    });
+
+    it('keeps the resolved state hooks on the root against slotProps overrides', () => {
+      const { container } = render(
+        <Anatomy disabled readOnly invalid slotProps={{ root: { 'data-disabled': 'no', 'data-readonly': 'no', 'data-invalid': 'no' } as HTMLAttributes<HTMLElement> }} />,
+      );
+
+      const root = uploadRoot(container);
+      expect(root).toHaveAttribute('data-disabled', '');
+      expect(root).toHaveAttribute('data-readonly', '');
+      expect(root).toHaveAttribute('data-invalid', '');
+    });
+
+    it('renders the list and its rows as the elements `as` names, with the list slotProps', () => {
+      render(
+        <Upload multiple value={[uf('a.txt'), uf('b.txt')]}>
+          <Upload.List as="ul" slotProps={{ root: { 'aria-label': 'Attached files' } }}>
+            {files => files.map(file => <Upload.Item key={file.id} file={file} as="li" />)}
+          </Upload.List>
+        </Upload>,
+      );
+
+      const list = screen.getByRole('list', { name: 'Attached files' });
+      expect(list).toHaveClass('tk-upload-list');
+      const rows = screen.getAllByRole('listitem');
+      expect(rows).toHaveLength(2);
+      expect(rows.every(row => row.classList.contains('tk-upload-item'))).toBe(true);
+    });
+  });
+
+  describe('submit and trigger interaction', () => {
+    it('holds Submit down until there is something to send, then reports each press', async () => {
+      const user = userEvent.setup();
+      const onSubmit = vi.fn();
+      const { container } = render(
+        <Upload>
+          <Upload.Trigger>Choose file</Upload.Trigger>
+          <Upload.Submit onClick={onSubmit}>Upload</Upload.Submit>
+        </Upload>,
+      );
+
+      const submit = screen.getByRole('button', { name: 'Upload' });
+      expect(submit).toBeDisabled();
+      await user.click(submit);
+      expect(onSubmit).not.toHaveBeenCalled();
+
+      await user.upload(fileInput(container), makeFile('a.txt'));
+
+      expect(submit).toBeEnabled();
+      await user.click(submit);
+      expect(onSubmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('opens the picker from Enter and Space on the default Trigger', async () => {
+      const user = userEvent.setup();
+      const { container } = render(<Anatomy />);
+      const clickSpy = vi.spyOn(fileInput(container), 'click');
+
+      // Submit is still disabled with nothing held, so the Trigger is the first stop.
+      await user.tab();
+      expect(screen.getByRole('button', { name: 'Choose file' })).toHaveFocus();
+
+      await user.keyboard('{Enter}');
+      expect(clickSpy).toHaveBeenCalledTimes(1);
+
+      await user.keyboard(' ');
+      expect(clickSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('context boundary messages', () => {
+    it.each([
+      ['Upload.Trigger', <Upload.Trigger key="trigger">Choose file</Upload.Trigger>],
+      ['Upload.Actions', <Upload.Actions key="actions" />],
+      ['Upload.ItemAction', <Upload.ItemAction key="action" action="remove" />],
+    ])('names %s and the missing root when it is used outside Upload', (name, element) => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      expect(() => render(element)).toThrow(`${name} must be used within UploadProvider`);
+    });
+
+    it.each([
+      ['Upload.ItemAction', <Upload.ItemAction key="action" action="remove" />],
+      ['Upload.ItemPreview', <Upload.ItemPreview key="preview" />],
+      ['Upload.ItemContent', <Upload.ItemContent key="content" />],
+    ])('names %s and the missing row provider when it is used inside Upload but outside an Upload.Item', (name, element) => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      expect(() => render(<Upload value={[uf('a.txt')]}>{element}</Upload>)).toThrow(`${name} must be used within UploadItemProvider`);
     });
   });
 });
