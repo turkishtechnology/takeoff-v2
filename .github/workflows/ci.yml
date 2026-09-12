@@ -93,9 +93,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Unit tests intentionally omitted — react-spar has no test files yet
-      # (vitest config exists but no *.test.* sources). Re-add this step the
-      # first time a real test lands.
+      # Unit tests are pure too: react-spar tests read source directly, and the
+      # tokens build-tokens test runs its own build in beforeAll — neither needs
+      # `turbo build` first. react-spar runs with coverage so the thresholds in
+      # its vitest.config.ts fail the job when coverage regresses.
+      - name: Unit tests (react-spar, with coverage thresholds)
+        run: pnpm --filter @takeoff-ui/react-spar test:coverage
+
+      - name: Unit tests (tokens)
+        run: pnpm --filter @takeoff-design/tokens test
 
       # ── Build runs codegen + package + site as preparation steps ──────────
       - name: Build (packages + docs site)

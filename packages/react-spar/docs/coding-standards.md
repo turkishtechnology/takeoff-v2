@@ -680,7 +680,8 @@ Before considering a component complete:
 - `pnpm check-types`
 - `pnpm lint`
 - `pnpm build`
-- `pnpm --filter @takeoff-ui/react-spar test`
+- `pnpm --filter @takeoff-ui/react-spar test:coverage` (the CI gate — fails
+  below the coverage thresholds in `vitest.config.ts`)
 - regenerate docs API output when public types changed
 - confirm the root is exported from `src/components/index.ts` (subcomponents are
   reached exclusively through the root)
