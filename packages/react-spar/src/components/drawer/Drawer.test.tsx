@@ -546,9 +546,6 @@ describe('Drawer (compound)', () => {
         expect(getPanel()).toHaveAttribute('data-state', 'open');
       });
 
-      // Only the payload and the default close are pinned for Escape: a veto via
-      // `event.preventDefault()` in onEscapeKeyDown is documented but not honoured
-      // by the underlying Spar DialogContent yet, so it is intentionally unasserted.
       it('hands the Escape KeyboardEvent to onEscapeKeyDown before closing', async () => {
         const user = userEvent.setup();
         const onOpenChange = vi.fn();
@@ -565,6 +562,29 @@ describe('Drawer (compound)', () => {
         expect(seen).toEqual(['keydown:Escape']);
         expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
         expect(getPanel()).toHaveAttribute('data-state', 'closed');
+      });
+
+      it('lets onEscapeKeyDown veto the close with preventDefault', async () => {
+        const user = userEvent.setup();
+        const onOpenChange = vi.fn();
+        renderDrawer({ defaultOpen: true, onOpenChange, parts: { Panel: { onEscapeKeyDown: event => event.preventDefault() } } });
+
+        await user.keyboard('{Escape}');
+
+        expect(onOpenChange).not.toHaveBeenCalled();
+        expect(getPanel()).toHaveAttribute('data-state', 'open');
+      });
+
+      it('returns focus to the trigger after closing', async () => {
+        const user = userEvent.setup();
+        renderDrawer();
+
+        await user.click(getTrigger());
+        expect(getPanel()).toHaveAttribute('data-state', 'open');
+        await user.keyboard('{Escape}');
+
+        expect(getPanel()).toHaveAttribute('data-state', 'closed');
+        expect(getTrigger()).toHaveFocus();
       });
 
       it('ignores keys other than Escape', async () => {
@@ -607,21 +627,32 @@ describe('Drawer (compound)', () => {
     });
 
     describe('when dismissible={false}', () => {
-      // The wrapper's half of the contract: the consumer handler is preserved and
-      // receives an event that is already prevented. Whether Escape then stays
-      // blocked depends on Spar honouring that veto, which it does not yet.
-      it('still calls onEscapeKeyDown once with an already-prevented event', async () => {
+      it('ignores Escape but still calls onEscapeKeyDown once with an already-prevented event', async () => {
         const user = userEvent.setup();
+        const onOpenChange = vi.fn();
         const seen: Array<{ key: string; prevented: boolean }> = [];
         const onEscapeKeyDown = vi.fn((event: KeyboardEvent) => {
           seen.push({ key: event.key, prevented: event.defaultPrevented });
         });
-        renderDrawer({ defaultOpen: true, dismissible: false, parts: { Panel: { onEscapeKeyDown } } });
+        renderDrawer({ defaultOpen: true, dismissible: false, onOpenChange, parts: { Panel: { onEscapeKeyDown } } });
 
         await user.keyboard('{Escape}');
 
         expect(onEscapeKeyDown).toHaveBeenCalledTimes(1);
         expect(seen).toEqual([{ key: 'Escape', prevented: true }]);
+        expect(onOpenChange).not.toHaveBeenCalled();
+        expect(getPanel()).toHaveAttribute('data-state', 'open');
+      });
+
+      it('blocks Escape without a consumer handler', async () => {
+        const user = userEvent.setup();
+        const onOpenChange = vi.fn();
+        renderDrawer({ defaultOpen: true, dismissible: false, onOpenChange });
+
+        await user.keyboard('{Escape}');
+
+        expect(onOpenChange).not.toHaveBeenCalled();
+        expect(getPanel()).toHaveAttribute('data-state', 'open');
       });
 
       it('ignores outside presses but still calls both outside handlers with an already-prevented event', async () => {
