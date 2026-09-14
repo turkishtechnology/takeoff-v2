@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { createRef, useState } from 'react';
+import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { axe } from 'vitest-axe';
@@ -554,7 +555,7 @@ describe('Calendar', () => {
       const { container } = render(<Calendar defaultMonth={AUGUST_2026} classNames={{ day: 'day-extra' }} />);
 
       const before = dayButton(container, '2026-08-15');
-      before.focus();
+      act(() => before.focus());
       await user.keyboard('{ArrowRight}');
 
       expect(dayButton(container, '2026-08-15')).toBe(before);
@@ -578,6 +579,17 @@ describe('Calendar', () => {
 
       expect(onValueChange).toHaveBeenCalledWith(new Date(2026, 7, 15));
       expect(dayButton(container, '2026-08-15')).toHaveTextContent('selected-15');
+    });
+
+    it('forwards a ref to the root element in either ref form', () => {
+      const objectRef = createRef<HTMLDivElement>();
+      const { container, unmount } = render(<Calendar ref={objectRef} defaultMonth={AUGUST_2026} />);
+      expect(objectRef.current).toBe(container.querySelector('.tk-calendar'));
+      unmount();
+
+      const callbackRef = vi.fn();
+      const { container: again } = render(<Calendar ref={callbackRef} defaultMonth={AUGUST_2026} />);
+      expect(callbackRef).toHaveBeenCalledWith(again.querySelector('.tk-calendar'));
     });
   });
 
@@ -846,6 +858,42 @@ describe('Calendar', () => {
       expect(document.activeElement).toBe(screen.getByRole('button', { name: /Choose the Month/ }));
     });
 
+    // A calendar usually sits inside a picker popover that closes on Escape
+    // itself; the board's Escape is spent closing the board, so it must not
+    // bubble up and dismiss the surface holding the calendar as well.
+    it('keeps a board-closing Escape from reaching the surface that holds the calendar', async () => {
+      const user = userEvent.setup();
+      const keydown = vi.fn<(key: string) => void>();
+      render(
+        <div onKeyDown={event => keydown(event.key)}>
+          <Calendar defaultMonth={AUGUST_2026} />
+        </div>,
+      );
+
+      await user.click(screen.getByRole('button', { name: /Choose the Month/ }));
+      await user.keyboard('{Escape}');
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('August 2026');
+      expect(keydown).not.toHaveBeenCalledWith('Escape');
+    });
+
+    // The caption trigger is a disclosure: while its board is open it names that
+    // board through `aria-controls`, and a trigger whose board is closed points
+    // at nothing.
+    it('points the open caption trigger at its board through aria-controls', async () => {
+      const user = userEvent.setup();
+      render(<Calendar defaultMonth={AUGUST_2026} />);
+
+      expect(screen.getByRole('button', { name: /Choose the Month/ })).not.toHaveAttribute('aria-controls');
+
+      await user.click(screen.getByRole('button', { name: /Choose the Month/ }));
+
+      const board = screen.getByRole('grid');
+      expect(board.id).not.toBe('');
+      expect(screen.getByRole('button', { name: /Choose the Month/ })).toHaveAttribute('aria-controls', board.id);
+      expect(screen.getByRole('button', { name: /Choose the Year/ })).not.toHaveAttribute('aria-controls');
+    });
+
     it('opens on the board `defaultView` names', () => {
       render(<Calendar defaultMonth={AUGUST_2026} defaultView="year" />);
 
@@ -959,6 +1007,53 @@ describe('Calendar', () => {
       expect(container.querySelector('.tk-calendar-nav-previous-month')).toHaveAttribute('aria-disabled', 'true');
     });
 
+    it.each<[string, { navLayout?: 'around' }]>([
+      ['the default nav', {}],
+      ['`navLayout="around"`', { navLayout: 'around' }],
+    ])('steps the day grid back a month from the previous arrow of %s', async (_layout, layoutProps) => {
+      const user = userEvent.setup();
+      const onMonthChange = vi.fn();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} onMonthChange={onMonthChange} {...layoutProps} />);
+
+      await user.click(container.querySelector('.tk-calendar-nav-previous-month') as HTMLElement);
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('July 2026');
+      expect(onMonthChange).toHaveBeenCalledExactlyOnceWith(new Date(2026, 6, 1));
+    });
+
+    it('refuses a click on an arrow that points past the bounds', async () => {
+      const user = userEvent.setup();
+      const onMonthChange = vi.fn();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} maxDate={new Date(2026, 11, 31)} onMonthChange={onMonthChange} />);
+
+      // August 2027 is out of range. `aria-disabled` leaves the button clickable,
+      // so the click itself has to be refused — the engine would otherwise clamp
+      // the jump to December and move the grid anyway.
+      const nextYear = container.querySelector('.tk-calendar-nav-next-year') as HTMLElement;
+      expect(nextYear).toHaveAttribute('aria-disabled', 'true');
+      await user.click(nextYear);
+
+      expect(screen.getByRole('grid')).toHaveAccessibleName('August 2026');
+      expect(onMonthChange).not.toHaveBeenCalled();
+    });
+
+    it('bounds the year board arrows `navLayout="around"` renders itself', async () => {
+      const user = userEvent.setup();
+      const onMonthChange = vi.fn();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} navLayout="around" defaultView="year" maxDate={new Date(2026, 11, 31)} onMonthChange={onMonthChange} />);
+
+      const next = container.querySelector('.tk-calendar-nav-next-month') as HTMLElement;
+      expect(next).toHaveAttribute('aria-label', '2027');
+      expect(next).toHaveAttribute('aria-disabled', 'true');
+      expect(next).toHaveAttribute('tabindex', '-1');
+
+      await user.click(next);
+      expect(onMonthChange).not.toHaveBeenCalled();
+
+      // Only the arrow that leaves the range goes inert.
+      expect(container.querySelector('.tk-calendar-nav-previous-month')).not.toHaveAttribute('aria-disabled');
+    });
+
     it('leaves the caption and the year arrows to the engine under a dropdown layout, but still shows the boards', () => {
       const { container } = render(<Calendar defaultMonth={AUGUST_2026} captionLayout="dropdown" defaultView="month" />);
 
@@ -982,6 +1077,96 @@ describe('Calendar', () => {
       const { container } = render(<Calendar defaultMonth={AUGUST_2026} defaultValue={new Date(2026, 7, 15)} />);
 
       expect(await axe(container)).toHaveNoViolations();
+    });
+  });
+  describe('interaction contract', () => {
+    it('clears a single selection when the selected day is pressed again', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn<(value: Date | undefined) => void>();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} onValueChange={onValueChange} />);
+
+      await user.click(dayButton(container, '2026-08-15'));
+      await user.click(dayButton(container, '2026-08-15'));
+
+      expect(onValueChange).toHaveBeenCalledTimes(2);
+      expect(onValueChange).toHaveBeenNthCalledWith(1, new Date(2026, 7, 15));
+      expect(onValueChange).toHaveBeenLastCalledWith(undefined);
+      expect(dayCell(container, '2026-08-15')).not.toHaveAttribute('data-selected');
+    });
+
+    it('moves focus through the day grid with the keyboard and selects the focused day with Enter', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn<(value: Date | undefined) => void>();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} onValueChange={onValueChange} />);
+
+      act(() => dayButton(container, '2026-08-15').focus());
+
+      await user.keyboard('{ArrowDown}');
+      expect(dayButton(container, '2026-08-22')).toHaveFocus();
+
+      await user.keyboard('{ArrowLeft}');
+      expect(dayButton(container, '2026-08-21')).toHaveFocus();
+
+      await user.keyboard('{Enter}');
+      expect(onValueChange).toHaveBeenCalledExactlyOnceWith(new Date(2026, 7, 21));
+      expect(dayCell(container, '2026-08-21')).toHaveAttribute('data-selected', 'true');
+
+      await user.keyboard('{PageDown}');
+      expect(screen.getByRole('grid')).toHaveAccessibleName('September 2026');
+      expect(dayButton(container, '2026-09-21')).toHaveFocus();
+    });
+
+    it('refuses a disabled day: its button is inert and pressing it reports nothing', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} disabledDates={[new Date(2026, 7, 5)]} onValueChange={onValueChange} />);
+
+      const disabled = dayButton(container, '2026-08-05');
+      expect(disabled).toBeDisabled();
+
+      await user.click(disabled);
+
+      expect(onValueChange).not.toHaveBeenCalled();
+      expect(dayCell(container, '2026-08-05')).not.toHaveAttribute('data-selected');
+    });
+
+    it('reports a range press while controlled without moving the drawn range', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn<(value: CalendarRange | undefined) => void>();
+      const { container } = render(
+        <Calendar mode="range" defaultMonth={AUGUST_2026} value={{ from: new Date(2026, 7, 10), to: new Date(2026, 7, 12) }} onValueChange={onValueChange} />,
+      );
+
+      await user.click(dayButton(container, '2026-08-20'));
+
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange.mock.lastCall?.[0]).toEqual(expect.objectContaining({ from: expect.any(Date) }));
+      expect(dayCell(container, '2026-08-10')).toHaveClass('tk-calendar-day-range-start');
+      expect(dayCell(container, '2026-08-12')).toHaveClass('tk-calendar-day-range-end');
+      expect(dayCell(container, '2026-08-20')).not.toHaveAttribute('data-selected');
+    });
+
+    it('merges theme and instance classNames and slotProps on the same slot, instance last', () => {
+      const theme = { Calendar: { classNames: { root: 'theme-root', day: 'theme-day' }, slotProps: { day: { title: 'theme-cell' } } } };
+      const { container } = render(
+        <TakeoffSparProvider components={theme}>
+          <Calendar defaultMonth={AUGUST_2026} className="instance-root" classNames={{ day: 'instance-day' }} slotProps={{ day: { title: 'instance-cell' } }} />
+        </TakeoffSparProvider>,
+      );
+
+      expect(container.querySelector('[data-slot="root"]')).toHaveClass('tk-calendar', 'theme-root', 'instance-root');
+      const cell = dayCell(container, '2026-08-15');
+      expect(cell).toHaveClass('tk-calendar-day', 'theme-day', 'instance-day');
+      expect(cell).toHaveAttribute('title', 'instance-cell');
+    });
+
+    it('reflects non-default size, header type and opening board on the root', () => {
+      const { container } = render(<Calendar defaultMonth={AUGUST_2026} size="small" headerType="primary" defaultView="month" />);
+
+      const root = container.querySelector('.tk-calendar');
+      expect(root).toHaveAttribute('data-size', 'small');
+      expect(root).toHaveAttribute('data-header-type', 'primary');
+      expect(root).toHaveAttribute('data-view', 'month');
     });
   });
 });

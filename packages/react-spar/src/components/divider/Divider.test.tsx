@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from 'react';
+import { createRef, type HTMLAttributes } from 'react';
 import { axe } from 'vitest-axe';
 import { describe, expect, it } from 'vitest';
 
@@ -140,6 +140,30 @@ describe('Divider', () => {
       const divider = screen.getByRole('separator');
       expect(divider).toHaveAttribute('data-orientation', 'vertical');
       expect(divider).toHaveAttribute('data-align', 'start');
+    });
+  });
+
+  describe('refs and theme layering', () => {
+    it('forwards a ref to the root div', () => {
+      const ref = createRef<HTMLDivElement>();
+      render(<Divider ref={ref} />);
+
+      expect(ref.current).toBe(screen.getByRole('separator'));
+    });
+
+    it('layers theme classNames and slotProps under the instance ones on both slots', () => {
+      render(
+        <TakeoffSparProvider components={{ Divider: { classNames: { root: 'theme-root', label: 'theme-label' }, slotProps: { label: { title: 'theme-title' } } } }}>
+          <Divider className="instance-root" classNames={{ label: 'instance-label' }} slotProps={{ label: { title: 'instance-title' } }}>
+            OR
+          </Divider>
+        </TakeoffSparProvider>,
+      );
+
+      expect(screen.getByRole('separator')).toHaveClass('tk-divider', 'theme-root', 'instance-root');
+      const label = screen.getByText('OR');
+      expect(label).toHaveClass('tk-divider-label', 'theme-label', 'instance-label');
+      expect(label).toHaveAttribute('title', 'instance-title');
     });
   });
 

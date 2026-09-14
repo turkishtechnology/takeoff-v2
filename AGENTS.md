@@ -88,7 +88,7 @@ Component work should run:
 pnpm --filter @takeoff-ui/react-spar check-types
 pnpm --filter @takeoff-ui/react-spar lint
 pnpm --filter @takeoff-ui/react-spar build
-pnpm --filter @takeoff-ui/react-spar test
+pnpm --filter @takeoff-ui/react-spar test:coverage
 ```
 
 The full merge checklist lives in

@@ -12,6 +12,21 @@ import { EXPAND_COLUMN_KEY, resolveStickyCell, SELECTION_COLUMN_KEY } from './he
 
 const mergeStyle = (...styles: (CSSProperties | undefined)[]): CSSProperties => Object.assign({}, ...styles);
 
+// The design system ships no sr-only utility and the recipe must stay a purely
+// visual dependency, so header text meant only for assistive technology hides
+// itself inline.
+const visuallyHidden: CSSProperties = {
+  position: 'absolute',
+  width: 1,
+  height: 1,
+  margin: -1,
+  padding: 0,
+  overflow: 'hidden',
+  clip: 'rect(0 0 0 0)',
+  whiteSpace: 'nowrap',
+  border: 0,
+};
+
 // ── Selection ───────────────────────────────────────────────────────────────
 
 export const SelectionHeaderCell = () => {
@@ -22,8 +37,9 @@ export const SelectionHeaderCell = () => {
 
   return (
     <th {...attrs} scope="col" data-sticky={sticky.dataSticky} data-selection-mode={selectionMode} style={mergeStyle(attrs.style, sticky.style, { width: UTILITY_COLUMN_WIDTH })}>
-      {/* Select-all is a multi-select concept only (RFC §5). */}
-      {selectionMode === 'multiple' && (
+      {/* Select-all is a multi-select concept only (RFC §5). Single mode still
+          names the column, or the header reads as empty. */}
+      {selectionMode === 'multiple' ? (
         <Checkbox
           aria-label="Select all rows"
           checked={allSelected}
@@ -32,6 +48,8 @@ export const SelectionHeaderCell = () => {
         >
           <Checkbox.Indicator />
         </Checkbox>
+      ) : (
+        <span style={visuallyHidden}>Row selection</span>
       )}
     </th>
   );
@@ -55,10 +73,14 @@ export const SelectionBodyCell = ({ row }: { row: Row<any> }) => {
           row, so each control reads as "1 of 1" and arrow keys can't move
           between rows; selection also can't be cleared within its own group.
           Move to a single table-wide radio group (one `name`, arrow-navigable)
-          so the rows form one logical radiogroup. Tracked off PR #120 review. */}
+          so the rows form one logical radiogroup. Tracked off PR #120 review.
+
+          The name sits on the radio, which is what gets announced, not on its
+          group. The item renders as a span because Spar's default
+          `<label role="radio">` gives a label a role it is not allowed. */}
       {selectionMode === 'single' ? (
-        <Radio aria-label="Select row" value={row.getIsSelected() ? row.id : ''} onChange={() => row.toggleSelected(true)}>
-          <Radio.Item value={row.id} disabled={!row.getCanSelect()}>
+        <Radio value={row.getIsSelected() ? row.id : ''} onChange={() => row.toggleSelected(true)}>
+          <Radio.Item as="span" value={row.id} aria-label="Select row" disabled={!row.getCanSelect()}>
             <Radio.Indicator />
           </Radio.Item>
         </Radio>
@@ -80,7 +102,11 @@ export const ExpandHeaderCell = () => {
   const sticky = resolveStickyCell(stickyLayout, EXPAND_COLUMN_KEY, { isHeader: true, stickyHeader });
   const attrs = slotAttrs('expandCell');
 
-  return <th {...attrs} scope="col" data-sticky={sticky.dataSticky} style={mergeStyle(attrs.style, sticky.style, { width: UTILITY_COLUMN_WIDTH })} />;
+  return (
+    <th {...attrs} scope="col" data-sticky={sticky.dataSticky} style={mergeStyle(attrs.style, sticky.style, { width: UTILITY_COLUMN_WIDTH })}>
+      <span style={visuallyHidden}>Row details</span>
+    </th>
+  );
 };
 
 ExpandHeaderCell.displayName = 'Table.ExpandHeaderCell';

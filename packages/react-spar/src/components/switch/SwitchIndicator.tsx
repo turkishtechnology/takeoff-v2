@@ -10,11 +10,13 @@ export const SwitchIndicator = (props: SwitchIndicatorProps) => {
   const { classNames, slotProps, checked, disabled, readOnly } = useSwitchOwnContext('Switch.Indicator');
   const { className, children, ref, ...rest } = props;
 
-  const indicatorAttrs = buildSlotAttrs(SwitchBase.getSlotProps('indicator', { className }), 'indicator', {
+  const indicatorAttrs = buildSlotAttrs(SwitchBase.getSlotProps('indicator'), 'indicator', {
     themeSlotProps: theme?.slotProps,
     themeClassNames: theme?.classNames,
     instanceSlotProps: slotProps,
     instanceClassNames: classNames,
+    instanceClassName: className,
+    instanceProps: rest,
   });
 
   // Sliding thumb glyph used to live in a separate `Switch.Thumb` compound.

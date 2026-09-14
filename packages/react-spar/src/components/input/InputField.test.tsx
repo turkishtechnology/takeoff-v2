@@ -1,9 +1,16 @@
+import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRef, useState } from 'react';
+import { axe } from 'vitest-axe';
 import { describe, expect, it, vi } from 'vitest';
 
+import { TakeoffSparProvider } from '../../provider';
 import { render, screen } from '../../test-utils';
+import { Field } from '../field';
 
 import { Input, createDateMask, createNumberMask, type MaskChangeMeta, type MaskResolver } from './index';
+
+const strengthLevels = (container: HTMLElement) => Array.from(container.querySelectorAll('.tk-input-strength-segment')).map(segment => segment.getAttribute('data-level'));
 
 describe('Input.Field mask', () => {
   it('forwards a shape mask and reports masked edits through onValueChange', async () => {
@@ -184,5 +191,250 @@ describe('Input.Field mask', () => {
 
     expect(screen.getByLabelText('Plain')).toHaveValue('4242abc');
     expect(onValueChange).not.toHaveBeenCalled();
+  });
+});
+
+describe('Input.Field', () => {
+  describe('rendering', () => {
+    it('renders the native control with the root slot contract inside the Input root', () => {
+      const { container } = render(
+        <Input>
+          <Input.Field aria-label="Passenger name" placeholder="Ada Lovelace" />
+        </Input>,
+      );
+
+      const field = screen.getByRole('textbox', { name: 'Passenger name' });
+      expect(field.tagName).toBe('INPUT');
+      expect(field).toHaveClass('tk-input-field');
+      expect(field).toHaveAttribute('data-slot', 'root');
+      expect(field).toHaveAttribute('placeholder', 'Ada Lovelace');
+      expect(container.querySelector('.tk-input')).toContainElement(field);
+    });
+
+    it('passes native attributes through to the control', () => {
+      render(
+        <Input>
+          <Input.Field aria-label="Email" type="email" name="email" inputMode="email" maxLength={64} autoComplete="email" />
+        </Input>,
+      );
+
+      const field = screen.getByRole('textbox', { name: 'Email' });
+      expect(field).toHaveAttribute('type', 'email');
+      expect(field).toHaveAttribute('name', 'email');
+      expect(field).toHaveAttribute('inputmode', 'email');
+      expect(field).toHaveAttribute('maxlength', '64');
+      expect(field).toHaveAttribute('autocomplete', 'email');
+    });
+
+    it('renders a textarea without a type attribute through as="textarea"', () => {
+      render(
+        <Input>
+          <Input.Field as="textarea" aria-label="Notes" rows={4} defaultValue="Window seat" />
+        </Input>,
+      );
+
+      const field = screen.getByRole('textbox', { name: 'Notes' });
+      expect(field.tagName).toBe('TEXTAREA');
+      expect(field).toHaveClass('tk-input-field');
+      expect(field).toHaveAttribute('rows', '4');
+      expect(field).not.toHaveAttribute('type');
+      expect(field).toHaveValue('Window seat');
+    });
+
+    it('lands className, classNames.root and slotProps.root on the control, not the Input root', () => {
+      const { container } = render(
+        <Input>
+          <Input.Field
+            aria-label="Search"
+            className="instance-class"
+            classNames={{ root: 'slot-class' }}
+            slotProps={{ root: { title: 'Where to?', style: { fontWeight: 500 } } }}
+          />
+        </Input>,
+      );
+
+      const field = screen.getByRole('textbox', { name: 'Search' });
+      expect(field).toHaveClass('tk-input-field', 'instance-class', 'slot-class');
+      expect(field).toHaveAttribute('title', 'Where to?');
+      expect(field).toHaveStyle({ fontWeight: 500 });
+      expect(container.querySelector('.tk-input')).not.toHaveClass('slot-class');
+      expect(container.querySelector('.tk-input')).not.toHaveAttribute('title');
+    });
+
+    it('layers the provider theme under the instance classes', () => {
+      render(
+        <TakeoffSparProvider components={{ InputField: { className: 'theme-class', slotProps: { root: { title: 'from theme' } } } }}>
+          <Input>
+            <Input.Field aria-label="Search" classNames={{ root: 'instance-class' }} />
+          </Input>
+        </TakeoffSparProvider>,
+      );
+
+      const field = screen.getByRole('textbox', { name: 'Search' });
+      expect(field).toHaveClass('tk-input-field', 'theme-class', 'instance-class');
+      expect(field).toHaveAttribute('title', 'from theme');
+    });
+
+    it('focuses the control on mount with autoFocus', async () => {
+      render(
+        <Input>
+          <Input.Field aria-label="Name" autoFocus />
+        </Input>,
+      );
+
+      // Spar defers the mount focus to the next animation frame.
+      await waitFor(() => expect(screen.getByRole('textbox', { name: 'Name' })).toHaveFocus());
+    });
+
+    it('forwards an object ref to the control', () => {
+      const ref = createRef<HTMLInputElement>();
+      render(
+        <Input>
+          <Input.Field aria-label="Name" ref={ref} />
+        </Input>,
+      );
+
+      expect(ref.current).toBe(screen.getByRole('textbox', { name: 'Name' }));
+    });
+
+    it('forwards a callback ref and releases it on unmount', () => {
+      const ref = vi.fn();
+      const { unmount } = render(
+        <Input>
+          <Input.Field aria-label="Name" ref={ref} />
+        </Input>,
+      );
+
+      expect(ref).toHaveBeenCalledWith(screen.getByRole('textbox', { name: 'Name' }));
+
+      unmount();
+      expect(ref).toHaveBeenLastCalledWith(null);
+    });
+  });
+
+  describe('value mirroring', () => {
+    it('calls the consumer onInput and onChange for every keystroke', async () => {
+      const user = userEvent.setup();
+      const onInput = vi.fn();
+      const onChange = vi.fn();
+      render(
+        <Input>
+          <Input.Field aria-label="Name" onInput={onInput} onChange={onChange} />
+        </Input>,
+      );
+
+      await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Ada');
+
+      expect(onInput).toHaveBeenCalledTimes(3);
+      expect(onChange).toHaveBeenCalledTimes(3);
+      expect(onInput.mock.lastCall?.[0].target).toHaveValue('Ada');
+      expect(onChange.mock.lastCall?.[0].target).toHaveValue('Ada');
+    });
+
+    it('mirrors a controlled value changed from outside into dependent parts', () => {
+      const noop = () => undefined;
+      const { container, rerender } = render(
+        <Input>
+          <Input.Field aria-label="Password" type="password" value="" onChange={noop} />
+          <Input.ClearButton />
+          <Input.Strength />
+        </Input>,
+      );
+      expect(strengthLevels(container)).toEqual([null, null, null, null]);
+      expect(screen.queryByRole('button', { name: 'Clear input' })).not.toBeInTheDocument();
+
+      rerender(
+        <Input>
+          <Input.Field aria-label="Password" type="password" value="Abcdefg1" onChange={noop} />
+          <Input.ClearButton />
+          <Input.Strength />
+        </Input>,
+      );
+
+      expect(strengthLevels(container)).toEqual(['strong', 'strong', 'strong', 'strong']);
+      expect(screen.getByRole('button', { name: 'Clear input' })).toBeInTheDocument();
+    });
+
+    it('keeps a controlled field and its dependent parts in sync while typing', async () => {
+      const user = userEvent.setup();
+      const ControlledName = () => {
+        const [value, setValue] = useState('');
+        return (
+          <>
+            <Input>
+              <Input.Field aria-label="Name" value={value} onChange={event => setValue(event.target.value)} />
+              <Input.ClearButton />
+            </Input>
+            <span data-testid="mirror">{value}</span>
+          </>
+        );
+      };
+      render(<ControlledName />);
+      expect(screen.queryByRole('button', { name: 'Clear input' })).not.toBeInTheDocument();
+
+      await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Ada');
+
+      expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Ada');
+      expect(screen.getByTestId('mirror')).toHaveTextContent('Ada');
+      expect(screen.getByRole('button', { name: 'Clear input' })).toBeInTheDocument();
+    });
+  });
+
+  describe('data-* styling hooks', () => {
+    it('emits data-mask while a mask is set and data-mask-completed once the value fills it', async () => {
+      const user = userEvent.setup();
+      render(
+        <Input>
+          <Input.Field aria-label="Expiry" mask={{ blocks: [2, 2], delimiter: '/', numericOnly: true }} />
+        </Input>,
+      );
+
+      const field = screen.getByRole('textbox', { name: 'Expiry' });
+      expect(field).toHaveAttribute('data-mask', '');
+      expect(field).not.toHaveAttribute('data-mask-completed');
+
+      await user.type(field, '12');
+      expect(field).not.toHaveAttribute('data-mask-completed');
+
+      await user.type(field, '28');
+      expect(field).toHaveValue('12/28');
+      expect(field).toHaveAttribute('data-mask-completed', '');
+    });
+
+    it('omits the mask hooks on an unmasked field', () => {
+      render(
+        <Input>
+          <Input.Field aria-label="Plain" defaultValue="1228" />
+        </Input>,
+      );
+
+      const field = screen.getByRole('textbox', { name: 'Plain' });
+      expect(field).not.toHaveAttribute('data-mask');
+      expect(field).not.toHaveAttribute('data-mask-completed');
+    });
+  });
+
+  describe('accessibility', () => {
+    it('has no axe violations for a labelled textarea and a masked field', async () => {
+      const { container } = render(
+        <>
+          <Field>
+            <Field.Label>Special assistance note</Field.Label>
+            <Input>
+              <Input.Field as="textarea" rows={4} placeholder="Add any details." />
+            </Input>
+            <Field.Description>Shared with the ground team.</Field.Description>
+          </Field>
+          <Field>
+            <Field.Label>Date of birth</Field.Label>
+            <Input>
+              <Input.Field placeholder="dd/mm/yyyy" mask={{ date: true, delimiter: '/' }} />
+            </Input>
+          </Field>
+        </>,
+      );
+
+      expect(await axe(container)).toHaveNoViolations();
+    });
   });
 });

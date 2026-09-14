@@ -1,11 +1,19 @@
+import type { HTMLAttributes } from 'react';
 import { axe } from 'vitest-axe';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { TakeoffSparProvider } from '../../provider';
 import { renderWithProvider as render, screen } from '../../test-utils';
 
 import { Field } from '../field';
 
 import { Progress } from './index';
+
+// The console spies below restore themselves, but only if the case reaches that
+// line — this keeps a failing case from leaking its spy into the next one.
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('Progress (compound)', () => {
   describe('rendering', () => {
@@ -204,6 +212,17 @@ describe('Progress (compound)', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       warn.mockRestore();
+    });
+
+    it('falls back to the default min when min is not finite', () => {
+      const { container } = render(<Progress value={50} min={Number.NaN} />);
+      const root = container.querySelector('.tk-progress') as HTMLElement;
+
+      // A NaN bound would otherwise poison the max, the clamp, and the width.
+      expect(root).toHaveAttribute('aria-valuemin', '0');
+      expect(root).toHaveAttribute('aria-valuemax', '100');
+      expect(root).toHaveAttribute('aria-valuenow', '50');
+      expect((container.querySelector('.tk-progress-indicator') as HTMLElement).style.width).toBe('50%');
     });
 
     it('marks the root complete when the clamped value reaches max', () => {
@@ -581,6 +600,150 @@ describe('Progress (compound)', () => {
 
     it('throws a descriptive error when Progress.Value renders outside the root', () => {
       expect(() => render(<Progress.Value>%60</Progress.Value>)).toThrow(/Progress\.Value must be used within ProgressProvider/);
+    });
+  });
+  describe('theme, refs and invariants', () => {
+    it('layers provider theme classNames and defaults under instance props on every part', () => {
+      const { container } = render(
+        <TakeoffSparProvider
+          components={{
+            Progress: { defaultProps: { variant: 'danger', size: 'small' }, classNames: { root: 'theme-root' } },
+            ProgressTrack: { classNames: { root: 'theme-track', rail: 'theme-rail' } },
+            ProgressIndicator: { classNames: { root: 'theme-indicator' } },
+            ProgressValue: { classNames: { root: 'theme-value' } },
+          }}
+        >
+          <Progress appearance="circular" value={50} size="large" className="instance-root">
+            <Progress.Track className="instance-track">
+              <Progress.Indicator className="instance-indicator" />
+            </Progress.Track>
+            <Progress.Value className="instance-value">%50</Progress.Value>
+          </Progress>
+        </TakeoffSparProvider>,
+      );
+
+      const root = container.querySelector('.tk-progress');
+      expect(root).toHaveClass('theme-root', 'instance-root');
+      expect(root).toHaveAttribute('data-variant', 'danger');
+      expect(root).toHaveAttribute('data-size', 'large');
+
+      expect(container.querySelector('svg.tk-progress-track')).toHaveClass('theme-track', 'instance-track');
+      expect(container.querySelector('circle.tk-progress-rail')).toHaveClass('theme-rail');
+      expect(container.querySelector('circle.tk-progress-indicator')).toHaveClass('theme-indicator', 'instance-indicator');
+      expect(container.querySelector('.tk-progress-value')).toHaveClass('theme-value', 'instance-value');
+    });
+
+    it('keeps the state data attributes on every part when slotProps try to override them', () => {
+      const { container } = render(
+        <Progress
+          value={100}
+          disabled
+          variant="success"
+          slotProps={{ root: { 'data-variant': 'danger', 'data-disabled': 'no', 'data-complete': 'no', 'data-type': 'circular' } as HTMLAttributes<HTMLElement> }}
+        >
+          <Progress.Track slotProps={{ root: { 'data-type': 'circular' } as HTMLAttributes<HTMLElement> }}>
+            <Progress.Indicator slotProps={{ root: { 'data-type': 'circular' } as HTMLAttributes<HTMLElement> }} />
+          </Progress.Track>
+          <Progress.Value slotProps={{ root: { 'data-type': 'circular' } as HTMLAttributes<HTMLElement> }}>%100</Progress.Value>
+        </Progress>,
+      );
+
+      const root = container.querySelector('.tk-progress');
+      expect(root).toHaveAttribute('data-variant', 'success');
+      expect(root).toHaveAttribute('data-disabled', '');
+      expect(root).toHaveAttribute('data-complete', '');
+      expect(root).toHaveAttribute('data-type', 'linear');
+
+      expect(container.querySelector('.tk-progress-track')).toHaveAttribute('data-type', 'linear');
+      expect(container.querySelector('.tk-progress-indicator')).toHaveAttribute('data-type', 'linear');
+      expect(container.querySelector('.tk-progress-value')).toHaveAttribute('data-type', 'linear');
+    });
+
+    it('keeps the track and indicator decorative against consumer overrides, in both appearances', () => {
+      const { container: linear } = render(
+        <Progress value={40}>
+          <Progress.Track>
+            <Progress.Indicator aria-hidden={false} />
+          </Progress.Track>
+        </Progress>,
+      );
+      expect(linear.querySelector('.tk-progress-indicator')).toHaveAttribute('aria-hidden', 'true');
+
+      const { container: circular } = render(
+        <Progress appearance="circular" value={40}>
+          <Progress.Track aria-hidden={false} slotProps={{ root: { 'aria-hidden': false } }} />
+        </Progress>,
+      );
+      const ring = circular.querySelector('svg.tk-progress-track');
+      expect(ring).toHaveAttribute('aria-hidden', 'true');
+      expect(ring).toHaveAttribute('focusable', 'false');
+      expect(ring).toHaveAttribute('viewBox', '0 0 40 40');
+    });
+
+    it('falls back to a min-based max without warning when max is not finite', () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { container } = render(
+        <>
+          <Progress value={50} max={Number.POSITIVE_INFINITY} />
+          <Progress value={50} min={20} max={Number.NaN} />
+        </>,
+      );
+
+      const [infinite, notANumber] = Array.from(container.querySelectorAll('.tk-progress'));
+      expect(infinite).toHaveAttribute('aria-valuemax', '100');
+      expect(infinite).toHaveAttribute('aria-valuenow', '50');
+      expect(notANumber).toHaveAttribute('aria-valuemin', '20');
+      expect(notANumber).toHaveAttribute('aria-valuemax', '120');
+      // A non-finite max is an unset one, not an inverted range the consumer wrote.
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('announces the disabled state it inherits from a Field', () => {
+      render(
+        <>
+          <Field disabled>
+            <Progress value={40} aria-label="Inherited" />
+          </Field>
+          <Progress value={40} aria-label="Standalone" />
+        </>,
+      );
+
+      expect(screen.getByRole('progressbar', { name: 'Inherited' })).toHaveAttribute('aria-disabled', 'true');
+      expect(screen.getByRole('progressbar', { name: 'Standalone' })).not.toHaveAttribute('aria-disabled');
+    });
+
+    it('forwards refs to every part, on the element the appearance renders', () => {
+      const rootRef = vi.fn();
+      const trackRef = vi.fn();
+      const indicatorRef = vi.fn();
+      const valueRef = vi.fn();
+      const { container, unmount } = render(
+        <Progress value={40} ref={rootRef}>
+          <Progress.Track ref={trackRef}>
+            <Progress.Indicator ref={indicatorRef} />
+          </Progress.Track>
+          <Progress.Value ref={valueRef}>%40</Progress.Value>
+        </Progress>,
+      );
+
+      expect(rootRef).toHaveBeenCalledWith(container.querySelector('div.tk-progress'));
+      expect(trackRef).toHaveBeenCalledWith(container.querySelector('div.tk-progress-track'));
+      expect(indicatorRef).toHaveBeenCalledWith(container.querySelector('span.tk-progress-indicator'));
+      expect(valueRef).toHaveBeenCalledWith(container.querySelector('span.tk-progress-value'));
+      unmount();
+
+      const ringRef = vi.fn();
+      const arcRef = vi.fn();
+      const { container: circular } = render(
+        <Progress appearance="circular" value={40}>
+          <Progress.Track ref={ringRef}>
+            <Progress.Indicator ref={arcRef} />
+          </Progress.Track>
+        </Progress>,
+      );
+
+      expect(ringRef).toHaveBeenCalledWith(circular.querySelector('svg.tk-progress-track'));
+      expect(arcRef).toHaveBeenCalledWith(circular.querySelector('circle.tk-progress-indicator'));
     });
   });
 });
