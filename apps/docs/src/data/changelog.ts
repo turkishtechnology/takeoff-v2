@@ -67,6 +67,59 @@ export type ChangelogEntry = {
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: 'v0-5-0-calendar-and-date-picker',
+    date: '2026-09-14',
+    version: '0.5.0',
+    title: 'Calendar and the date picker composition, plus Input masking',
+    packageVersions: {
+      'react-spar': '0.5.0',
+      'tokens': '0.5.0',
+      'tailwind': '0.1.4',
+    },
+    summary:
+      '`Calendar` lands as the catalog’s first date component: a month grid over `react-day-picker@10` where the wrapper owns everything visual, and the grid now follows a value set from outside it. Alongside it, `useDatePicker` bridges a masked text field and a `Date` for the Popover + Calendar composition — it owns no anatomy, so every element stays yours to place. `Input.Field` gains masking, and `Drawer` opens up `modal`, `forceMount`, and the panel `role`.',
+    sections: [
+      {
+        title: 'Highlights',
+        items: [
+          '**Calendar** — a month grid over `react-day-picker@10`, speaking Takeoff vocabulary: `mode` (`single` | `range` | `multiple`), `minDate` / `maxDate`, `disabledDates`, `allowedDates`, `disabledWeekDays`, and `size`. `headerType` adds month and year boards to the caption, and `renderDay` customizes day contents while the engine keeps the day-button behavior. No `rdp-*` class reaches the DOM and no library stylesheet is imported.',
+          '**The grid follows a value set from outside it.** Previously the engine owned the displayed month after first render, so a preset button or a value restored from a form could select a day that was off-screen. Setting the value is now enough — a passed `month` still wins outright, and navigation the user performs is never undone.',
+          '**useDatePicker** — the text/`Date` bridge for the Popover + Calendar composition. It renders nothing and owns no anatomy: `inputProps`, `calendarProps`, and `popoverProps` are ordinary objects you spread, override one key of, or ignore.',
+          '**Input.Field masking** — `mask` takes a shape (`blocks`, delimiters, `numericOnly`), a `regex`, one of the `date` / `time` / `number` presets, or a custom resolver. `onValueChange(value, meta)` reports every edit with `raw`, `completed`, and `iso` — including delimiter-aware deletes and undo, which never surface as a change event.',
+          '**Drawer** — `modal={false}` leaves the page live behind the panel, `forceMount` matches what `Dialog` already offered, and `Drawer.Panel` accepts `role` for an interrupting drawer.',
+        ],
+      },
+      {
+        title: 'Fixes',
+        collapsible: true,
+        items: [
+          '`Calendar` header and grid no longer shift: the caption label, the day grid, and the card each sit in a pinned box, so a long month name cannot resize the card and paging months cannot resize the grid.',
+          'The `Calendar` card is wider than the grid, so the year in the caption stops ellipsizing, and the nav is sized on its own rather than on the day cell.',
+          'Arrow keys on the month and year boards are mirrored for RTL, with `minDate` / `maxDate` and disabled dates covered.',
+          'The range-end corner is guarded the way range-start already was.',
+          'The auto margin between an `Input` action and a picker trigger is cancelled, so the action group sits flush.',
+          'Icon gallery: tiles are centred, labels cut to one line, and the drawer height is pinned.',
+        ],
+      },
+      {
+        title: 'Docs',
+        collapsible: true,
+        items: [
+          'A datepicker page documenting the Popover + Calendar composition, and the contract behind it.',
+          'Binding a date picker to a form, with a live field in both form demos.',
+          'Localization for `Calendar` and the date picker composition.',
+          'Input masking: the contract, the data attributes Spar emits, and what a resolver’s omitted meta fields default to.',
+          'Agent skills for the datepicker composition and for masking.',
+        ],
+      },
+      {
+        title: 'Infrastructure',
+        collapsible: true,
+        items: ['The `@turkish-technology/spar` dependency was updated.', 'Mask tests are named after the component under test.', 'The Claude PR review workflow was removed.'],
+      },
+    ],
+  },
+  {
     id: 'v0-2-0-component-catalog-expansion',
     date: '2026-06-29',
     version: '0.2.0',
