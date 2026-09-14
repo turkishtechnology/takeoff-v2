@@ -781,11 +781,20 @@ pre,
 
 /* --- Tables -------------------------------------------------------------- */
 
+/*
+ * The markdown table treatment below is opted out of by the two components that
+ * render a real `<table>` of their own: `Table` (.tk-table-table) and
+ * `Calendar` (.tk-calendar-month-grid). Both ship their own recipe, and this
+ * block's `width: 100%` / `table-layout: fixed` / card chrome would otherwise
+ * stretch their cells and paint a second surface around them. Chained `:not()`
+ * rather than a selector list, so the transform pipeline cannot alter it.
+ */
+
 .tk-table-table {
   margin-bottom: 0;
 }
 
-.theme-doc-markdown table:not(.tk-table-table) {
+.theme-doc-markdown table:not(.tk-table-table):not(.tk-calendar-month-grid) {
   background: var(--docs-surface-1);
   border: 1px solid var(--docs-border-subtle);
   border-radius: 10px;
@@ -797,13 +806,13 @@ pre,
   word-break: break-word;
 }
 
-.theme-doc-markdown table:not(.tk-table-table) th,
-.theme-doc-markdown table:not(.tk-table-table) td {
+.theme-doc-markdown table:not(.tk-table-table):not(.tk-calendar-month-grid) th,
+.theme-doc-markdown table:not(.tk-table-table):not(.tk-calendar-month-grid) td {
   overflow-wrap: break-word;
   word-break: break-word;
 }
 
-.theme-doc-markdown table:not(.tk-table-table) th {
+.theme-doc-markdown table:not(.tk-table-table):not(.tk-calendar-month-grid) th {
   background: var(--docs-surface-2);
   color: var(--docs-ink-strong);
   font-family: var(--docs-mono-family);
@@ -814,11 +823,11 @@ pre,
   border-bottom: 1px solid var(--docs-border-subtle);
 }
 
-.theme-doc-markdown table:not(.tk-table-table) td {
+.theme-doc-markdown table:not(.tk-table-table):not(.tk-calendar-month-grid) td {
   border-color: var(--docs-border-subtle);
 }
 
-[data-theme='dark'] .theme-doc-markdown table:not(.tk-table-table) tr:nth-child(even) {
+[data-theme='dark'] .theme-doc-markdown table:not(.tk-table-table):not(.tk-calendar-month-grid) tr:nth-child(even) {
   background: rgba(23, 23, 29, 0.4);
 }
 

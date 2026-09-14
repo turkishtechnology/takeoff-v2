@@ -33,6 +33,7 @@
     "clsx": "^2.1.1",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.2.7",
+    "react-day-picker": "10.0.1",
     "react-dom": "^19.2.7",
     "react-hook-form": "^7.82.0",
     "react-live": "^4.1.8",

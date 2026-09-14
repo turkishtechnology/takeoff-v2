@@ -3,6 +3,7 @@ import { AlertActionsBase, AlertBase, AlertCloseBase, AlertContentBase, AlertDes
 import { BadgeBase } from './components/badge/base';
 import { BreadcrumbBase, BreadcrumbItemBase, BreadcrumbLinkBase, BreadcrumbListBase, BreadcrumbPageBase, BreadcrumbSeparatorBase } from './components/breadcrumb/base';
 import { ButtonBase } from './components/button/base';
+import { CalendarBase } from './components/calendar/base';
 import { CardBase, CardBodyBase, CardDescriptionBase, CardFooterBase, CardHeaderBase, CardTitleBase } from './components/card/base';
 import { CheckboxBase } from './components/checkbox/base';
 import { ChipBase } from './components/chip/base';
@@ -126,6 +127,7 @@ export const slotClassRegistry = {
   breadcrumbPage: { slots: BreadcrumbPageBase.classes },
   breadcrumbSeparator: { slots: BreadcrumbSeparatorBase.classes },
   button: { slots: ButtonBase.classes },
+  calendar: { slots: CalendarBase.classes },
   card: { slots: CardBase.classes },
   cardHeader: { slots: CardHeaderBase.classes },
   cardTitle: { slots: CardTitleBase.classes },

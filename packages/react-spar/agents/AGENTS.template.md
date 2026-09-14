@@ -32,9 +32,11 @@ on headless Spar primitives and styled with Takeoff design tokens.
 | `Badge`      | Inline status pills, category tags, count bubbles, notification dots, and overlay indicators on icons/avatars.                                                           |
 | `Breadcrumb` | Render a hierarchical "where am I" trail of ancestor links ending in the current page.                                                                                   |
 | `Button`     | Any clickable action — submit, CTA, toolbar action, icon-only action, or a two-state toggle (via `pressed`/`onPressedChange`).                                           |
+| `Calendar`   | Inline date selection — booking grids, availability views, filters with a permanently visible month.                                                                     |
 | `Card`       | You need a bordered surface that bundles a heading, body content, and an optional action footer.                                                                         |
 | `Checkbox`   | Boolean opt-in/opt-out controls, accept-terms gates, multi-select lists, and tri-state "select all" parents.                                                             |
 | `Chip`       | Filter tags, entered/selected values, and short status metadata.                                                                                                         |
+| `Datepicker` | **There is no `DatePicker` component.** A date picker is `Popover` + `Calendar`, composed in the consumer's own component.                                               |
 | `Dialog`     | A modal layer that interrupts the flow for content, forms, or confirmations.                                                                                             |
 | `Divider`    | Separating sections of a page, groups in a list or menu, or items in a horizontal toolbar — optionally with a label ("OR") in the middle.                                |
 | `Drawer`     | Content that slides in from an edge and overlays the page.                                                                                                               |

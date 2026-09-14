@@ -13,6 +13,7 @@ export {
   Badge,
   Breadcrumb,
   Button,
+  Calendar,
   Card,
   Checkbox,
   Chip,
@@ -39,7 +40,11 @@ export {
   Toaster,
   Tooltip,
   Upload,
+  createDateMask,
+  createNumberMask,
+  createTimeMask,
   createToaster,
+  useDatePicker,
 } from '@takeoff-ui/react-spar';
 
 export function ReactSparDemoRoot({ children }: PropsWithChildren) {

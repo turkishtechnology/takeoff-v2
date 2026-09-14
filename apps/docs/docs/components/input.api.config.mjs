@@ -95,7 +95,19 @@ export default {
       propOverrides: {
         className: classNameOverride,
       },
-      dataAttributes: [dataSlotRoot],
+      dataAttributes: [
+        dataSlotRoot,
+        {
+          attribute: 'data-mask',
+          appliedWhen: '`mask` is set',
+          purpose: 'Emitted by Spar. Presence only — never the pattern itself. The sanctioned hook for styling a masked field without reading its `mask` prop.',
+        },
+        {
+          attribute: 'data-mask-completed',
+          appliedWhen: '`mask` is set and the value fills it',
+          purpose: 'Emitted by Spar. Mirrors `meta.completed` from `onValueChange`, so a field can be styled as finished without lifting that state into React.',
+        },
+      ],
     },
     {
       sourceFile: inputTypesFile,
