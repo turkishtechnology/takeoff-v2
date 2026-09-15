@@ -115,9 +115,8 @@ decision when the corresponding v2 component is shipped.
 The following v1 components have no shipped v2 target:
 
 `TkAvatar`, `TkAvatarGroup`, `TkCarousel`, `TkChart`, `TkColorPicker`,
-`TkCurrencyInput`, `TkDatepicker`, `TkEditor`, `TkGanttChart`, `TkOrgChart`,
-`TkPagination`, `TkPhoneInput`, `TkRating`, `TkTimeline`, `TkTimelineItem`, and
-`TkTreeView`.
+`TkCurrencyInput`, `TkEditor`, `TkGanttChart`, `TkOrgChart`, `TkPagination`,
+`TkPhoneInput`, `TkRating`, `TkTimeline`, `TkTimelineItem`, and `TkTreeView`.
 
 For each usage, choose one of these explicitly:
 
@@ -126,10 +125,16 @@ For each usage, choose one of these explicitly:
 - defer migration for that screen.
 
 `Table` includes pagination for migrated tables, but standalone `TkPagination`
-is still a gap. `TkDatepicker` is contracted but not shipped yet. For
-`TkTextarea`, use the v2 `Input` compound component with
-`<Input.Field as="textarea" rows={...} />`; the `Input` skill is authoritative
-for the supported props and accessibility behavior.
+is still a gap. `TkDatepicker` is no longer a gap, but it is not a rename
+either: v2 ships no `DatePicker` component by decision, and a date field is
+`Popover` + `Calendar` composed in your own component, with the `useDatePicker`
+hook for a typable field. Core's `tk-datepicker` prop surface is not reproduced
+— `dateFormat`, `headerType`, `allowApplyButton`, `footerType`, `inline` and the
+time-picker props have no v2 equivalent — so treat each date field as a rewrite
+and keep v1 where a screen depends on time selection. For `TkTextarea`, use the
+v2 `Input` compound component with `<Input.Field as="textarea" rows={...} />`;
+the `Input` skill is authoritative for the supported props and accessibility
+behavior.
 
 When a gap closes, the migration map and the component's own v2 skill become the
 source of truth. The inventory commands keep identifying any remaining gap usage

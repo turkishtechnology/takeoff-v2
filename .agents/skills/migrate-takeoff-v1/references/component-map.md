@@ -42,19 +42,28 @@ writing code.
 
 ## Special mappings
 
-| v1 export             | v2 approach                                                                        |
-| --------------------- | ---------------------------------------------------------------------------------- |
-| `TkIcon`              | Not a v2 component. Import the named JSX icon from `@takeoff-icons/react/<name>`.  |
-| `TkToggleButton`      | `Button` with `pressed` and `onPressedChange`.                                     |
-| `TkToggleButtonGroup` | `Button` instances with the v2 pressed state; preserve group behavior in app code. |
+| v1 export             | v2 approach                                                                                                                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TkIcon`              | Not a v2 component. Import the named JSX icon from `@takeoff-icons/react/<name>`.                                                                                                                 |
+| `TkDatepicker`        | Not a v2 component, by decision. Compose `Popover` + `Calendar`, with `useDatePicker` for a typable field. Read the `takeoff-datepicker` skill first; Core prop parity is not claimed. See below. |
+| `TkToggleButton`      | `Button` with `pressed` and `onPressedChange`.                                                                                                                                                    |
+| `TkToggleButtonGroup` | `Button` instances with the v2 pressed state; preserve group behavior in app code.                                                                                                                |
+
+`TkDatepicker` is the one special mapping that replaces a single v1 element with
+a composition the consumer owns. `docs/datepicker-contract.md` records why there
+is no `DatePicker` component, and the trade-off it accepts: Core's
+`tk-datepicker` carries 38 props, so `dateFormat`, `headerType`,
+`allowApplyButton`, `footerType`, `inline` and the whole time-picker family have
+no v2 home. Budget a per-usage rewrite, not a rename, and treat a v1 date field
+that depends on the time picker as still-open work rather than a finished
+migration.
 
 ## v1-only gaps
 
 `TkAvatar`, `TkAvatarGroup`, `TkCarousel`, `TkChart`, `TkColorPicker`,
-`TkCurrencyInput`, `TkDatepicker`, `TkEditor`, `TkGanttChart`, `TkOrgChart`,
-`TkPagination`, `TkPhoneInput`, `TkRating`, `TkTimeline`, `TkTimelineItem`,
-`TkTreeView` have no shipped v2 target. See [references/gaps.md](gaps.md) before
-changing them.
+`TkCurrencyInput`, `TkEditor`, `TkGanttChart`, `TkOrgChart`, `TkPagination`,
+`TkPhoneInput`, `TkRating`, `TkTimeline`, `TkTimelineItem`, `TkTreeView` have no
+shipped v2 target. See [references/gaps.md](gaps.md) before changing them.
 
 ## v2 opportunities
 
