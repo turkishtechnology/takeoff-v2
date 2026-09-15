@@ -95,12 +95,24 @@ imported above — override CSS custom properties at the app root to rebrand.
 
 ## One more step, if you use an AI assistant
 
-Copilot, Cursor, and Claude don't know this library and will invent props unless
-you tell them about it. Copying one file into your repository root fixes that:
+Copilot, Cursor, and Claude do not know this library's component contracts by
+default. Add the generated guidance to the location used by your tool. For
+Cursor or Claude, copy it to the consumer repository root:
 
 ```bash
 cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md ./AGENTS.md
 ```
+
+For GitHub Copilot, use `.github/copilot-instructions.md` instead:
+
+```bash
+mkdir -p .github
+cp node_modules/@takeoff-ui/react-spar/agents/AGENTS.template.md \
+  .github/copilot-instructions.md
+```
+
+If either destination already exists, merge the generated sections instead of
+overwriting the project's existing instructions.
 
 See [Using AI assistants](./ai-assistants) for tool-specific paths and how to
 give an assistant the full component API.
