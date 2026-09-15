@@ -67,6 +67,40 @@ export type ChangelogEntry = {
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: 'v0-5-1-test-coverage-and-fixes',
+    date: '2026-09-15',
+    version: '0.5.1',
+    title: 'The package gets a test suite, a coverage gate, and the six fixes it surfaced',
+    packageVersions: {
+      'react-spar': '0.5.1',
+    },
+    summary:
+      'Every component, core helper and hook is now covered by tests — 517 to 2414 of them — and CI runs them behind coverage thresholds, so a component can no longer land untested. Writing those tests surfaced six bugs, each fixed here: provider `slotProps` overriding instance props, `Select` never marking itself invalid, `Dialog` and `Drawer` ignoring `dismissible={false}` for Escape, `Table` utility columns unreachable by assistive technology, and `useDatePicker` keeping a stale `Date`.',
+    sections: [
+      {
+        title: 'Fixes',
+        items: [
+          '**Provider layering** — a theme `slotProps.root` value replaced an attribute or handler the instance set itself; a `title` or `onClick` passed to a component lost to the theme’s. Fixed once in `buildSlotAttrs`, which also restores the documented class order (canonical, provider, instance) and stops dropping a `className` passed through `slotProps`.',
+          '**`Select`** — `invalid` never reached Spar, so `<Select invalid>` rendered no `data-invalid` on the root and no `aria-invalid` on the trigger. The standalone `Select.Indicator` read the open state under a name Spar’s context does not use, so its chevron never flipped.',
+          '**`Dialog` / `Drawer`** — `dismissible={false}` did not block Escape, and a consumer’s own `onEscapeKeyDown` veto was ignored. Closing also returns focus to the trigger again. Both were Spar bugs, fixed upstream in `@turkish-technology/spar@0.2.3`, which this release pins.',
+          '**`Table` accessibility** — the single-mode selection column and the expansion column had empty headers, so every such table failed axe’s empty-table-header rule. Single-mode row radios had no accessible name, and the “Go to page” submit was an `Input.TrailingIcon`, which hides itself from assistive technology.',
+          '**`useDatePicker`** — a filled date edited back to half-typed left the value at `undefined` without calling `onValueChange`, so a bound form kept submitting the stale `Date`.',
+        ],
+      },
+      {
+        title: 'Testing and CI',
+        collapsible: true,
+        items: [
+          'The 16 components that had no tests now have colocated suites, and the thin ones (`input`, `dialog`, `dropdown`, `switch`, `checkbox`, `label`, `table`) were deepened. `core`, the hooks, the provider and the slot registry are tested directly.',
+          'Coverage went from 76.3% to 99.55% of statements and 75.6% to 97.59% of branches. The old numbers flattered the package: components with no tests of their own showed high coverage only because other components rendered them.',
+          'CI runs react-spar through `test:coverage` and the tokens suite before the build. The unit-test step had been dropped when the package had no tests and never came back.',
+          '`vitest.config.ts` gains v8 coverage with thresholds just under the measured totals, so a component that lands without tests fails the job.',
+          'Every suite was mutation-checked against its source: 68 mutants, 66 killed.',
+        ],
+      },
+    ],
+  },
+  {
     id: 'v0-5-0-calendar-and-date-picker',
     date: '2026-09-14',
     version: '0.5.0',
