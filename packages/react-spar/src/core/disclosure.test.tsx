@@ -84,6 +84,16 @@ describe('disclosure indicator', () => {
       expect(resolveDisclosureIndicator('Toggle', true)).toBe('Toggle');
     });
 
+    it('falls back to the chevron for every empty node, not only undefined', () => {
+      // `null`, the `cond && <Icon />` idiom collapsing to `false`, and `''`
+      // all mean "no override"; the part never renders empty.
+      expect(resolveDisclosureIndicator(null, false)).toBe(DEFAULT_DISCLOSURE_EXPAND_ICON);
+      expect(resolveDisclosureIndicator(null, true)).toBe(DEFAULT_DISCLOSURE_COLLAPSE_ICON);
+      expect(resolveDisclosureIndicator(false, false)).toBe(DEFAULT_DISCLOSURE_EXPAND_ICON);
+      expect(resolveDisclosureIndicator(true, true)).toBe(DEFAULT_DISCLOSURE_COLLAPSE_ICON);
+      expect(resolveDisclosureIndicator('', false)).toBe(DEFAULT_DISCLOSURE_EXPAND_ICON);
+    });
+
     it('keeps a falsy but renderable node such as 0 instead of swapping in the chevron', () => {
       expect(resolveDisclosureIndicator(0, false)).toBe(0);
       expect(resolveDisclosureIndicator(0, true)).toBe(0);

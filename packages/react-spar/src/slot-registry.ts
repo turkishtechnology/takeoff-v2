@@ -1,4 +1,4 @@
-import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionItemBase, AccordionTriggerBase } from './components/accordion/base';
+import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionIndicatorBase, AccordionItemBase, AccordionTriggerBase } from './components/accordion/base';
 import { AlertActionsBase, AlertBase, AlertCloseBase, AlertContentBase, AlertDescriptionBase, AlertTitleBase } from './components/alert/base';
 import { BadgeBase } from './components/badge/base';
 import { BreadcrumbBase, BreadcrumbItemBase, BreadcrumbLinkBase, BreadcrumbListBase, BreadcrumbPageBase, BreadcrumbSeparatorBase } from './components/breadcrumb/base';
@@ -58,6 +58,7 @@ import {
   InputSuffixBase,
   InputTrailingIconBase,
 } from './components/input/base';
+import { LabelBase } from './components/label/base';
 import { ProgressBase, ProgressIndicatorBase, ProgressTrackBase, ProgressValueBase } from './components/progress/base';
 import {
   SelectArrowBase,
@@ -77,10 +78,11 @@ import { StepperBase, StepperDescriptionBase, StepperItemBase, StepperTitleBase 
 import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
 import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
-import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverTriggerBase } from './components/popover/base';
+import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverDescriptionBase, PopoverHeaderBase, PopoverTriggerBase } from './components/popover/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 import { SkeletonBase } from './components/skeleton/base';
+import { ToastBase, ToasterBase } from './components/toast/base';
 import {
   UploadActionsBase,
   UploadBase,
@@ -113,6 +115,7 @@ export const slotClassRegistry = {
   accordionHeader: { slots: AccordionHeaderBase.classes },
   accordionTrigger: { slots: AccordionTriggerBase.classes },
   accordionContent: { slots: AccordionContentBase.classes },
+  accordionIndicator: { slots: AccordionIndicatorBase.classes },
   alert: { slots: AlertBase.classes },
   alertContent: { slots: AlertContentBase.classes },
   alertTitle: { slots: AlertTitleBase.classes },
@@ -182,6 +185,7 @@ export const slotClassRegistry = {
   inputDecrement: { slots: InputDecrementBase.classes },
   inputIncrement: { slots: InputIncrementBase.classes },
   inputChips: { slots: InputChipsBase.classes },
+  label: { slots: LabelBase.classes },
   progress: { slots: ProgressBase.classes },
   progressTrack: { slots: ProgressTrackBase.classes },
   progressIndicator: { slots: ProgressIndicatorBase.classes },
@@ -215,6 +219,8 @@ export const slotClassRegistry = {
   tabsContent: { slots: TabsContentBase.classes },
   popoverTrigger: { slots: PopoverTriggerBase.classes },
   popoverContent: { slots: PopoverContentBase.classes },
+  popoverHeader: { slots: PopoverHeaderBase.classes },
+  popoverDescription: { slots: PopoverDescriptionBase.classes },
   popoverArrow: { slots: PopoverArrowBase.classes },
   popoverClose: { slots: PopoverCloseBase.classes },
   radio: { slots: RadioBase.classes },
@@ -227,6 +233,8 @@ export const slotClassRegistry = {
   tooltipDescription: { slots: TooltipDescriptionBase.classes },
   tooltipArrow: { slots: TooltipArrowBase.classes },
   skeleton: { slots: SkeletonBase.classes },
+  toaster: { slots: ToasterBase.classes },
+  toast: { slots: ToastBase.classes },
   upload: { slots: UploadBase.classes },
   uploadDropzone: { slots: UploadDropzoneBase.classes },
   uploadActions: { slots: UploadActionsBase.classes },

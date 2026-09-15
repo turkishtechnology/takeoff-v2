@@ -7,10 +7,13 @@ import { useComponentTheme } from '../../provider';
 
 import { AccordionIndicator } from './AccordionIndicator';
 import { AccordionTriggerBase } from './base';
+import { useAccordionOwnContext } from './context';
 import type { AccordionTriggerProps } from './types';
 
 export const AccordionTrigger = <T extends ElementType = 'button'>(props: AccordionTriggerProps<T>) => {
   const theme = useComponentTheme('AccordionTrigger');
+  // Boundary guard only: names the part when rendered outside the root.
+  useAccordionOwnContext('Accordion.Trigger');
 
   const { rootAttrs, rest } = composeRootAttrs(AccordionTriggerBase, props as AccordionTriggerProps<'button'>, theme);
   const { children, startContent, ref, ...spar } = rest;

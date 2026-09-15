@@ -75,6 +75,26 @@ export type DropdownTriggerProps<T extends ElementType = 'button'> = Polymorphic
 >;
 
 export interface DropdownContentOwnProps {
+  /**
+   * Fired when Escape is pressed while the menu is open. The menu always
+   * closes afterwards — unlike Spar's own JSDoc claims, `preventDefault()`
+   * does not keep it open (Spar closes unconditionally). Use it to observe,
+   * not to veto.
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+  /**
+   * Fired on a pointer press outside the menu and its trigger. The menu
+   * always closes afterwards — `preventDefault()` does not keep it open
+   * (Spar closes unconditionally). Use it to observe, not to veto.
+   */
+  onPointerDownOutside?: (event: PointerEvent) => void;
+  /**
+   * Fired when focus moves outside the menu and its trigger. A modal menu
+   * (the default) stays open and pulls focus back; a non-modal menu always
+   * closes — `preventDefault()` does not change either outcome. Use it to
+   * observe, not to veto.
+   */
+  onFocusOutside?: (event: FocusEvent) => void;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<DropdownContentSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -85,9 +105,11 @@ export type DropdownContentProps<T extends ElementType = 'div'> = PolymorphicPro
   'div',
   T,
   DropdownContentOwnProps &
-    // Positioning, portal container, and dismiss/focus event hooks are exposed
-    // for integration with surrounding overlays and focus orchestration.
-    Pick<SparDropdownMenuContentProps, 'side' | 'align' | 'container' | 'onEscapeKeyDown' | 'onPointerDownOutside' | 'onFocusOutside'>
+    // Positioning and portal container from Spar. The dismiss callbacks
+    // (`onEscapeKeyDown`, `onPointerDownOutside`, `onFocusOutside`) are
+    // redeclared on DropdownContentOwnProps with the same signatures because
+    // Spar's JSDoc for them is wrong (preventDefault does not veto the close).
+    Pick<SparDropdownMenuContentProps, 'side' | 'align' | 'container'>
 >;
 
 export interface DropdownViewportOwnProps {

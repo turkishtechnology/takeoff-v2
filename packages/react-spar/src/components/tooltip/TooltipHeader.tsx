@@ -10,12 +10,13 @@ export const TooltipHeader = <T extends ElementType = 'div'>(props: TooltipHeade
   const theme = useComponentTheme('TooltipHeader');
 
   const { rootAttrs, rest } = composeRootAttrs<TooltipHeaderProps, TooltipHeaderSlot>(TooltipHeaderBase, props as TooltipHeaderProps<'div'>, theme);
-  const { children, ref, ...nativeProps } = rest;
+  const { as, children, ref, ...nativeProps } = rest;
+  const Component = (as ?? 'div') as ElementType;
 
   return (
-    <div {...nativeProps} {...rootAttrs} ref={ref}>
+    <Component {...nativeProps} {...rootAttrs} ref={ref}>
       {children}
-    </div>
+    </Component>
   );
 };
 

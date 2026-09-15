@@ -350,11 +350,16 @@ just outside the content box.
 
 ## Accessibility & Keyboard
 
-- Trigger uses `aria-expanded` and `aria-controls` pointing to the content.
-- Content has `role="dialog"` (or `role="popover"`).
-- Focus is trapped inside the content when `modal` is `true`.
+- Trigger uses `aria-expanded`, `aria-controls` pointing to the content and
+  `aria-haspopup="dialog"`.
+- Non-modal content is a plain focusable container with no `role`; label it
+  yourself (`aria-label` / `aria-labelledby`) when it needs a name. With
+  `modal`, the content gets `role="dialog"` and `aria-modal="true"`.
+- Focus is trapped inside the content when `modal` is `true` (or `trapFocus` is
+  set on `Popover.Content`). No backdrop is rendered.
 - Escape key dismisses the popover and returns focus to the trigger.
-- Click outside the popover dismisses it (non-modal mode).
+- Pointer down outside the popover dismisses it in both modal and non-modal
+  mode. Moving focus outside dismisses it only when focus is not trapped.
 
 | Key               | Behavior                         |
 | ----------------- | -------------------------------- |
@@ -374,14 +379,14 @@ for primitive behavior.
 
 #### Props {#popover-props}
 
-| Name                             | Type                         | Default | Description                                                                                                                                                      |
-| -------------------------------- | ---------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="children" />    | <code>React.ReactNode</code> | -       | PopoverTrigger and PopoverContent components                                                                                                                     |
-| <ApiBadge label="id" />          | <code>string</code>          | -       | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
-| <ApiBadge label="disabled" />    | <code>boolean</code>         | false   | Disables all popover triggers (prevents opening)                                                                                                                 |
-| <ApiBadge label="open" />        | <code>boolean</code>         | -       | Controlled state for popover visibility                                                                                                                          |
-| <ApiBadge label="defaultOpen" /> | <code>boolean</code>         | false   | Initial open state for uncontrolled mode                                                                                                                         |
-| <ApiBadge label="modal" />       | <code>boolean</code>         | false   | Whether popover should behave modally (focus trap + backdrop)                                                                                                    |
+| Name                             | Type                         | Default | Description                                                                                                                                                                                                                                                                                         |
+| -------------------------------- | ---------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code> | -       | PopoverTrigger and PopoverContent components                                                                                                                                                                                                                                                        |
+| <ApiBadge label="id" />          | <code>string</code>          | -       | Base id for ARIA wiring. When omitted one is generated. Only the content derives an id from it (`${id}-content`); the trigger receives no `id` and points at the content through `aria-controls`.                                                                                                   |
+| <ApiBadge label="modal" />       | <code>boolean</code>         | false   | Modal mode: the open content gets `role="dialog"` + `aria-modal="true"` and focus is trapped inside it (same as `trapFocus` on `Popover.Content`). No backdrop is rendered. A pointer down outside still dismisses the popover; because focus cannot leave, focus-outside dismissal does not apply. |
+| <ApiBadge label="disabled" />    | <code>boolean</code>         | false   | Disables every `Popover.Trigger` (native `disabled`, click ignored) so the user cannot open the popover. It does not lock the state: `defaultOpen` / `open` still show the content, and the render-prop `open()` / `toggle()` still open it and call `onOpenChange(true)`.                          |
+| <ApiBadge label="open" />        | <code>boolean</code>         | -       | Controlled state for popover visibility                                                                                                                                                                                                                                                             |
+| <ApiBadge label="defaultOpen" /> | <code>boolean</code>         | false   | Initial open state for uncontrolled mode                                                                                                                                                                                                                                                            |
 
 #### Events {#popover-events}
 
@@ -407,14 +412,14 @@ for primitive behavior.
 
 #### Events {#popover-content-events}
 
-| Name                                      | Type                                                            | Default | Description                                             |
-| ----------------------------------------- | --------------------------------------------------------------- | ------- | ------------------------------------------------------- |
-| <ApiBadge label="onOpenAutoFocus" />      | <code>(event: Event) =&gt; void</code>                          | -       | Called when popover opens and focus moves inside        |
-| <ApiBadge label="onCloseAutoFocus" />     | <code>(event: Event) =&gt; void</code>                          | -       | Called when popover closes and focus returns to trigger |
-| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code>                  | -       | Called when escape is pressed                           |
-| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>                   | -       | Called when pointer down occurs outside the content     |
-| <ApiBadge label="onInteractOutside" />    | <code>(event: PointerEvent &#124; FocusEvent) =&gt; void</code> | -       | Called when interaction occurs outside the content      |
-| <ApiBadge label="onFocusOutside" />       | <code>(event: FocusEvent) =&gt; void</code>                     | -       | Called when focus moves outside the content             |
+| Name                                      | Type                                                            | Default | Description                                                                                                                                                                                                               |
+| ----------------------------------------- | --------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onOpenAutoFocus" />      | <code>(event: Event) =&gt; void</code>                          | -       | Called after the popover opens and focus has moved inside (to the first focusable element, else the content itself). Notification only: the event is not cancelable, so `preventDefault` does not prevent the auto-focus. |
+| <ApiBadge label="onFocusOutside" />       | <code>(event: FocusEvent) =&gt; void</code>                     | -       | Called when focus moves outside the content (non-modal, non-trapped popovers only). The popover always closes afterwards: `focusin` is not cancelable, so `preventDefault` has no effect on this path.                    |
+| <ApiBadge label="onInteractOutside" />    | <code>(event: PointerEvent &#124; FocusEvent) =&gt; void</code> | -       | Called for any outside interaction, after `onPointerDownOutside` or `onFocusOutside`. `preventDefault` keeps the popover open only on the pointer path; a focus move outside always closes it.                            |
+| <ApiBadge label="onCloseAutoFocus" />     | <code>(event: Event) =&gt; void</code>                          | -       | Called when popover closes and focus returns to trigger                                                                                                                                                                   |
+| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code>                  | -       | Called when escape is pressed                                                                                                                                                                                             |
+| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>                   | -       | Called when pointer down occurs outside the content                                                                                                                                                                       |
 
 #### Data attributes {#popover-content-data-attributes}
 

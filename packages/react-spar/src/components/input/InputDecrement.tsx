@@ -23,7 +23,9 @@ export const InputDecrement = <T extends ElementType = 'button'>(props: InputDec
     onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   };
 
-  const { children, onClick, ref, 'type': _type, 'disabled': _disabled, 'aria-label': ariaLabel = 'Decrement value', ...buttonProps } = rest;
+  // A consumer `disabled` composes with the Input state (like Input.ClearButton)
+  // so a single action can be disabled, e.g. at the field's min/max.
+  const { children, onClick, ref, 'type': _type, 'disabled': consumerDisabled, 'aria-label': ariaLabel = 'Decrement value', ...buttonProps } = rest;
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);
@@ -41,7 +43,7 @@ export const InputDecrement = <T extends ElementType = 'button'>(props: InputDec
       appearance="text"
       rounded
       size={size}
-      disabled={disabled || readOnly}
+      disabled={consumerDisabled || disabled || readOnly}
       aria-label={ariaLabel}
       onClick={handleClick}
       startContent={children ?? <ChevronBottomIconOutlinedRounded />}

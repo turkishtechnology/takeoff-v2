@@ -1,14 +1,20 @@
 import type { ElementType } from 'react';
-import { AccordionContent as SparAccordionContent } from '@turkish-technology/spar';
+import { AccordionContent as SparAccordionContent, useAccordionItemContext } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { AccordionContentBase } from './base';
+import { useAccordionOwnContext } from './context';
 import type { AccordionContentProps } from './types';
 
 export const AccordionContent = <T extends ElementType = 'div'>(props: AccordionContentProps<T>) => {
   const theme = useComponentTheme('AccordionContent');
+  // Boundary guards only — no state is read. Spar's `AccordionContent` reads
+  // the Collapsible context, so without these an `Accordion.Content` placed
+  // outside its root/item would fail with a Collapsible-branded error.
+  useAccordionOwnContext('Accordion.Content');
+  useAccordionItemContext();
   const { rootAttrs, rest } = composeRootAttrs(AccordionContentBase, props as AccordionContentProps<'div'>, theme);
   const { children, ref, ...spar } = rest;
 

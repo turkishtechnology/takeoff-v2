@@ -144,31 +144,36 @@ function ControlledPopover() {
 
 ## Key props
 
-| Prop           | Type                      | Default         | Notes                                                                               |
-| -------------- | ------------------------- | --------------- | ----------------------------------------------------------------------------------- |
-| `open`         | `boolean`                 | -               | Controlled open state (pair with `onOpenChange`). On `Popover`.                     |
-| `defaultOpen`  | `boolean`                 | `false`         | Initial open state for uncontrolled mode. On `Popover`.                             |
-| `onOpenChange` | `(open: boolean) => void` | -               | Fired when open state changes. On `Popover`.                                        |
-| `disabled`     | `boolean`                 | `false`         | Disables all triggers (prevents opening). On `Popover`.                             |
-| `modal`        | `boolean`                 | `false`         | Modal behavior: focus trap + backdrop. On `Popover`.                                |
-| `id`           | `string`                  | auto            | Base ID for ARIA; sub-IDs derived as `${id}-trigger`/`${id}-content`. On `Popover`. |
-| `variant`      | `PopoverVariant`          | `'white'`       | Color variant. On `Popover.Content`.                                                |
-| `side`         | `Side`                    | `'bottom'`      | Side of trigger to position against. On `Popover.Content`.                          |
-| `align`        | `Align`                   | `'center'`      | Alignment relative to trigger. On `Popover.Content`.                                |
-| `trapFocus`    | `boolean`                 | `false`         | Trap focus within content. On `Popover.Content`.                                    |
-| `container`    | `HTMLElement \| null`     | `document.body` | Portal target for content. On `Popover.Content`.                                    |
-| `as`           | component                 | -               | Render the trigger as another component (e.g. `Button`). On `Popover.Trigger`.      |
+| Prop           | Type                      | Default         | Notes                                                                                                                                |
+| -------------- | ------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `open`         | `boolean`                 | -               | Controlled open state (pair with `onOpenChange`). On `Popover`.                                                                      |
+| `defaultOpen`  | `boolean`                 | `false`         | Initial open state for uncontrolled mode. On `Popover`.                                                                              |
+| `onOpenChange` | `(open: boolean) => void` | -               | Fired when open state changes. On `Popover`.                                                                                         |
+| `disabled`     | `boolean`                 | `false`         | Disables all triggers (native `disabled`); `open`/`defaultOpen` and the render-prop `open()`/`toggle()` still open it. On `Popover`. |
+| `modal`        | `boolean`                 | `false`         | `role="dialog"` + `aria-modal` + focus trap; no backdrop; outside pointer down still dismisses. On `Popover`.                        |
+| `id`           | `string`                  | auto            | Base ID for ARIA; only the content id is derived (`${id}-content`), the trigger gets no id. On `Popover`.                            |
+| `variant`      | `PopoverVariant`          | `'white'`       | Color variant. On `Popover.Content`.                                                                                                 |
+| `side`         | `Side`                    | `'bottom'`      | Side of trigger to position against. On `Popover.Content`.                                                                           |
+| `align`        | `Align`                   | `'center'`      | Alignment relative to trigger. On `Popover.Content`.                                                                                 |
+| `trapFocus`    | `boolean`                 | `false`         | Trap focus within content. On `Popover.Content`.                                                                                     |
+| `container`    | `HTMLElement \| null`     | `document.body` | Portal target for content. On `Popover.Content`.                                                                                     |
+| `as`           | component                 | -               | Render the trigger as another component (e.g. `Button`). On `Popover.Trigger`.                                                       |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
 
 ## Accessibility
 
-- Trigger exposes `aria-expanded` and `aria-controls` pointing at the content.
-- Content has `role="dialog"` (or `role="popover"`).
-- Focus is trapped inside the content when `modal` is `true`.
+- Trigger exposes `aria-expanded`, `aria-controls` pointing at the content and
+  `aria-haspopup="dialog"`.
+- Non-modal content has no `role`; give it an `aria-label` / `aria-labelledby`
+  when it needs a name. With `modal` it becomes `role="dialog"` +
+  `aria-modal="true"`.
+- Focus is trapped inside the content when `modal` is `true` (or `trapFocus` is
+  set on `Popover.Content`). No backdrop is rendered.
 - `Escape` dismisses the popover and returns focus to the trigger.
-- Click outside dismisses it in non-modal mode.
+- Pointer down outside dismisses it in both modes; focus moving outside
+  dismisses it only when focus is not trapped.
 - Keyboard: `Escape` dismisses; `Tab` navigates focusable content; `Enter`
   activates trigger / close button.
 

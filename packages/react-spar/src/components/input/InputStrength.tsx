@@ -31,6 +31,9 @@ export const InputStrength = <T extends ElementType = 'div'>(props: InputStrengt
 
   const { rootAttrs, rest } = composeRootAttrs(InputStrengthBase, props as InputStrengthProps<'div'>, theme);
 
+  // The four segments are the whole anatomy: `children` is not a public prop
+  // (see InputStrengthOwnProps) and anything reaching here via the native
+  // element props is deliberately not rendered.
   const { as: _as, children: _children, ref, ...rendered } = rest;
 
   const strength = computeStrength(fieldValue);

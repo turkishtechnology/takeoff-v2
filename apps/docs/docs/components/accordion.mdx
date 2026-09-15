@@ -455,8 +455,9 @@ rules. The prop is set on the root and cascades to every item via `data-type`.
   via `aria-labelledby`.
 - `Accordion.Header` renders an `h1`–`h6` heading; pick the level that fits the
   surrounding document outline.
-- Stable trigger / panel ids derive from the `id` set on `Accordion.Item`;
-  override there if you need deterministic markup.
+- Stable trigger / panel ids (`${id}-trigger` / `${id}-content`) derive from the
+  `id` set on `Accordion.Item`; override there if you need deterministic markup.
+  The item element itself does not receive that `id`.
 
 | Key                                 | Behavior                                                                |
 | ----------------------------------- | ----------------------------------------------------------------------- |
@@ -518,14 +519,15 @@ for primitive behavior.
 
 #### Props {#accordion-item-props}
 
-| Name                            | Type                                                                                      | Default | Description                                                                |
-| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -       | `Accordion.Header` and `Accordion.Content` elements that compose the item. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                             |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                         |
-| <ApiBadge label="value" />      | <code><a href="#accordion-td-accordionvalue">AccordionValue</a></code>                    | -       | Stable identity for this item.                                             |
-| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                      | false   | Disables this item.                                                        |
-| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.                      |
+| Name                            | Type                                                                                      | Default | Description                                                                                                                                                                                                    |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -       | `Accordion.Header` and `Accordion.Content` elements that compose the item.                                                                                                                                     |
+| <ApiBadge label="id" />         | <code>string</code>                                                                       | -       | Base id for the item's ARIA wiring. Spar consumes it to derive the trigger (`${id}-trigger`) and panel (`${id}-content`) ids; it is **not** rendered on the item element itself. Omit it to get generated ids. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                                                                 |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                                             |
+| <ApiBadge label="value" />      | <code><a href="#accordion-td-accordionvalue">AccordionValue</a></code>                    | -       | Stable identity for this item.                                                                                                                                                                                 |
+| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                      | false   | Disables this item.                                                                                                                                                                                            |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.                                                                                                                                                          |
 
 #### Data attributes {#accordion-item-data-attributes}
 
@@ -546,13 +548,13 @@ for primitive behavior.
 
 #### Props {#accordion-header-props}
 
-| Name                            | Type                                                                                      | Default | Description                                                  |
-| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------ |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -       | `Accordion.Trigger` element rendered inside the heading tag. |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                               |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                           |
-| <ApiBadge label="level" />      | <code>number</code>                                                                       | 3       | Heading level (1-6) for document hierarchy                   |
-| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.        |
+| Name                            | Type                                                                                      | Default | Description                                                                                                                                                                                                     |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -       | `Accordion.Trigger` element rendered inside the heading tag.                                                                                                                                                    |
+| <ApiBadge label="level" />      | <code><a href="#accordion-td-accordionheadinglevel">AccordionHeadingLevel</a></code>      | 3       | Semantic heading level for the document outline; the rendered tag follows (`h1`–`h6`) unless `as` overrides it. Narrowed from Spar's `number` to `AccordionHeadingLevel` so an invalid level cannot type-check. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                                                                  |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                                              |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.                                                                                                                                                           |
 
 #### Data attributes {#accordion-header-data-attributes}
 
@@ -626,6 +628,7 @@ for primitive behavior.
 | <span id="accordion-td-accordioncurrentvalue"><ApiBadge label="AccordionCurrentValue" /></span> | <code><a href="#accordion-td-accordionvalue">AccordionValue</a> &#124; <a href="#accordion-td-accordionvalue">AccordionValue</a>[]</code> |
 | <span id="accordion-td-orientation"><ApiBadge label="Orientation" /></span>                     | <code>'vertical' &#124; 'horizontal'</code>                                                                                               |
 | <span id="accordion-td-accordionvalue"><ApiBadge label="AccordionValue" /></span>               | <code>string &#124; number</code>                                                                                                         |
+| <span id="accordion-td-accordionheadinglevel"><ApiBadge label="AccordionHeadingLevel" /></span> | <code>1 &#124; 2 &#124; 3 &#124; 4 &#124; 5 &#124; 6</code>                                                                               |
 | <span id="accordion-td-accordiontriggerslot"><ApiBadge label="AccordionTriggerSlot" /></span>   | <code>'root' &#124; 'startContent' &#124; 'title'</code>                                                                                  |
 
 {/* api-tables:end */}

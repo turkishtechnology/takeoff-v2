@@ -9,15 +9,9 @@ import { Popover } from '../popover';
 import { Radio } from '../radio';
 import { Select } from '../select';
 
-import { TableBase } from './base';
 import { useTableContext } from './context';
 import { isEmptyFilterValue } from './helpers';
 import type { TableColumnFilter as TableColumnFilterConfig, TableColumnFilterContext, TableColumnFilterOption } from './types';
-
-// `Popover.Trigger` owns its node (emits its own `data-slot`), so the Table
-// `data-slot` can't ride along — but the class still comes from `base.ts`, the
-// single source of truth for `tk-*` names.
-const FILTER_BUTTON_CLASS = TableBase.getSlotProps('filterButton').className;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyHeader = Header<any, unknown>;
@@ -39,6 +33,10 @@ const defaultIsActive = (value: unknown): boolean => !isEmptyFilterValue(value);
 export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   const { slotAttrs } = useTableContext('Table.ColumnFilter');
   const [open, setOpen] = useState(false);
+  // The panel node is held in state (not a ref) because it is the portal
+  // `container` for the `select` preset's listbox, and that prop is read during
+  // render — a ref would still be `null` on the render that mounts the panel.
+  const [panel, setPanel] = useState<HTMLDivElement | null>(null);
   const column = header.column;
   // `meta.filter` is normalized to an object upstream (string presets too).
   const filter = column.columnDef.meta?.filter as TableColumnFilterConfig | undefined;
@@ -56,15 +54,21 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   };
 
   // `Popover.Trigger` / `Popover.Content` are owner nodes (each emits its own
-  // `data-slot="root"`), so the Table `data-slot` can't ride along — the trigger
-  // is styled by class. The panel wrapper IS a Table-owned slot node.
+  // `data-slot="root"`), so the Table `data-slot` is dropped from the trigger
+  // attrs — but the class and the theme/instance `classNames.filterButton` /
+  // `slotProps.filterButton` layers still go through `slotAttrs`, like every
+  // other slot. The panel wrapper IS a Table-owned slot node.
+  const { 'data-slot': _filterButtonSlot, ...filterButtonAttrs } = slotAttrs('filterButton');
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <Popover.Trigger className={FILTER_BUTTON_CLASS} aria-label="Filter column" data-active={active ? '' : undefined}>
+      <Popover.Trigger aria-label="Filter column" {...filterButtonAttrs} data-active={active ? '' : undefined}>
         <SearchIconOutlinedRounded aria-hidden="true" />
       </Popover.Trigger>
       <Popover.Content className="tk-table-filter-panel">
-        <div {...slotAttrs('filterPanel')}>{filter.render ? filter.render(ctx) : <PresetFilterControl filter={filter} ctx={ctx} />}</div>
+        <div {...slotAttrs('filterPanel')} ref={setPanel}>
+          {filter.render ? filter.render(ctx) : <PresetFilterControl filter={filter} ctx={ctx} container={panel} />}
+        </div>
         {active && (
           <Button size="small" appearance="text" onClick={ctx.clear}>
             Clear
@@ -84,7 +88,7 @@ TableColumnFilter.displayName = 'Table.ColumnFilter';
  * `radio` / `checkbox`). The matching predicate is wired upstream in
  * `helpers.ts`; this only renders the v2 control and reads/writes the value.
  */
-const PresetFilterControl = ({ filter, ctx }: { filter: TableColumnFilterConfig; ctx: TableColumnFilterContext }) => {
+const PresetFilterControl = ({ filter, ctx, container }: { filter: TableColumnFilterConfig; ctx: TableColumnFilterContext; container: HTMLElement | null }) => {
   const { type, options = [], placeholder } = filter;
   const { value, setValue } = ctx;
 
@@ -102,7 +106,15 @@ const PresetFilterControl = ({ filter, ctx }: { filter: TableColumnFilterConfig;
   }
 
   if (type === 'select') {
-    return <SelectFilter options={options} placeholder={placeholder} value={typeof value === 'string' ? value : ''} onChange={next => setValue(next || undefined)} />;
+    return (
+      <SelectFilter
+        options={options}
+        placeholder={placeholder}
+        value={typeof value === 'string' ? value : ''}
+        onChange={next => setValue(next || undefined)}
+        container={container}
+      />
+    );
   }
 
   if (type === 'radio') {
@@ -133,17 +145,25 @@ const SelectFilter = ({
   placeholder,
   value,
   onChange,
+  container,
 }: {
   options: TableColumnFilterOption[];
   placeholder?: string;
   value: string;
   onChange: (value: string) => void;
+  container: HTMLElement | null;
 }) => {
   const selected = options.find(option => option.value === value);
+  // The listbox is portalled INTO the filter panel rather than `document.body`.
+  // Spar's Popover treats any pointer-down or focus outside its content node as
+  // a dismiss, and the focus path cannot be vetoed (`focusin` is not
+  // cancelable), so a body-portalled listbox closed the popover the moment the
+  // Select opened and focused it. Keeping the listbox inside the panel makes it
+  // an "inside" interaction with no wrapper-side dismiss logic.
   return (
     <Select value={value} onChange={onChange}>
       <Select.Trigger>{selected ? selected.label : (placeholder ?? 'Select')}</Select.Trigger>
-      <Select.Content>
+      <Select.Content container={container}>
         {options.map(option => (
           <Select.Item key={option.value} value={option.value}>
             {option.label}

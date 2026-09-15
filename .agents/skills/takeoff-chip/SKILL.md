@@ -131,7 +131,7 @@ function FareFilter() {
 | `appearance`  | `ChipAppearance`                    | `'filled'`  | `'filled' \| 'filledLight' \| 'outlined'`.                              |
 | `size`        | `ChipSize`                          | `'base'`    | `'small' \| 'base' \| 'large'`.                                         |
 | `removable`   | `boolean`                           | `false`     | Renders a labeled remove button in the tab sequence.                    |
-| `clickable`   | `boolean`                           | `false`     | Makes the root keyboard-focusable and button-like.                      |
+| `clickable`   | `boolean`                           | `false`     | Button-like click action; on the root, or the label when `removable`.   |
 | `disabled`    | `boolean`                           | `false`     | Disables interaction and remove actions; removed from tab order.        |
 | `autoDismiss` | `boolean`                           | `true`      | Self-dismiss after remove. Set `false` when the parent owns the list.   |
 | `onRemove`    | `() => void`                        | -           | Fires on remove button press or focused-clickable `Backspace`/`Delete`. |
@@ -146,10 +146,14 @@ Full props, events, data attributes & type definitions: see
 - Static (non-interactive) chip roots are not focusable.
 - Clickable chips use a button-like root and respond to `Enter` and `Space`.
 - The remove button is a labeled control in the tab sequence, activated with
-  `Enter` or `Space`.
-- Clickable removable chips also accept `Delete` and `Backspace` while the root
-  is focused.
-- Disabled chips do not receive focus and ignore remove actions.
+  `Enter` or `Space`; its click reports through `onRemove` only, never
+  `onClick`.
+- Clickable removable chips keep the root a plain container and put the click
+  action on the label (`role="button"`), a sibling of the remove button, so both
+  controls stay reachable; they also accept `Delete` and `Backspace` while that
+  action is focused.
+- Disabled chips do not receive focus (an explicit `tabIndex` becomes `-1`) and
+  ignore remove actions.
 
 ## Reference
 

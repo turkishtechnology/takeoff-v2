@@ -219,6 +219,11 @@ Full props, events, data attributes & type definitions: see
 - Keyboard: `Tab` enters the group (lands on the checked or first item); `↓`/`→`
   next + select; `↑`/`←` previous + select; `Space` selects the focused item.
   Disabled items are skipped.
+- Do NOT pass `onKeyDown` to `Radio`, or `onClick` / `onKeyDown` / `onFocus` to
+  `Radio.Item`: Spar currently spreads consumer props after its own handlers, so
+  these REPLACE the roving keyboard / selection / focus handlers. Use the
+  `*Capture` variants (`onKeyDownCapture`, `onClickCapture`) or put `onClick` on
+  the `Radio` root (item clicks bubble to it).
 
 ## Reference
 

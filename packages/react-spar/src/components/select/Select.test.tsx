@@ -156,10 +156,12 @@ describe('Select (compound)', () => {
       }
       expect(group).not.toContainElement(london);
 
-      const separator = within(listbox).getByRole('separator');
-      expect(separator).toHaveClass('tk-select-separator');
+      const separator = listbox.querySelector('.tk-select-separator');
       expect(separator).toHaveAttribute('data-slot', 'root');
-      expect(separator).toHaveAttribute('aria-orientation', 'horizontal');
+      // Presentational: a listbox may only own option / group children.
+      expect(separator).toHaveAttribute('role', 'presentation');
+      expect(separator).toHaveAttribute('aria-hidden', 'true');
+      expect(separator).not.toHaveAttribute('aria-orientation');
 
       const arrow = listbox.querySelector('.tk-select-arrow');
       expect(arrow?.tagName.toLowerCase()).toBe('svg');
@@ -292,9 +294,8 @@ describe('Select (compound)', () => {
       expect(option.tagName).toBe('SECTION');
       expect(option).toHaveClass('tk-select-item');
 
-      const separator = screen.getByRole('separator');
-      expect(separator.tagName).toBe('SECTION');
-      expect(separator).toHaveClass('tk-select-separator');
+      const separator = listbox.querySelector('.tk-select-separator');
+      expect(separator?.tagName).toBe('SECTION');
     });
 
     it('forwards refs to the DOM node each part renders', () => {
@@ -334,7 +335,7 @@ describe('Select (compound)', () => {
       expect(groupRef.current).toBe(screen.getByRole('group'));
       expect(labelRef.current).toBe(screen.getByText('Cabins'));
       expect(itemRef.current).toBe(screen.getByRole('option', { name: 'Economy' }));
-      expect(separatorRef.current).toBe(screen.getByRole('separator'));
+      expect(separatorRef.current).toBe(listbox.querySelector('.tk-select-separator'));
       expect(arrowRef.current).toBe(listbox.querySelector('.tk-select-arrow'));
     });
   });
@@ -1428,6 +1429,15 @@ describe('Select (compound)', () => {
       expect(indicator?.querySelector('path')).toHaveAttribute('d', expandPath);
     });
 
+    it('keeps aria-hidden when slotProps.root tries to lift it', () => {
+      // The indicator is decorative; neither the instance nor a provider theme
+      // can expose it to assistive tech through slotProps.
+      renderWithStandaloneIndicator(<Select.Indicator slotProps={{ root: { 'aria-hidden': 'false' } }} />);
+
+      const indicator = screen.getByRole('combobox').querySelector('.tk-select-indicator');
+      expect(indicator).toHaveAttribute('aria-hidden', 'true');
+    });
+
     it('renders static children in place of the chevron', () => {
       renderWithStandaloneIndicator(<Select.Indicator>▼</Select.Indicator>);
 
@@ -1756,7 +1766,7 @@ describe('Select (compound)', () => {
       expect(screen.getByRole('group')).toHaveClass('tk-select-group', 'i-group', 'slot-group');
       expect(screen.getByText('Cabins')).toHaveClass('tk-select-label', 'i-label', 'slot-label');
       expect(screen.getByRole('option', { name: 'Economy' })).toHaveClass('tk-select-item', 'i-item', 'slot-item');
-      expect(screen.getByRole('separator')).toHaveClass('tk-select-separator', 'i-separator', 'slot-separator');
+      expect(document.querySelector('.tk-select-separator')).toHaveClass('tk-select-separator', 'i-separator', 'slot-separator');
       expect(listbox.querySelector('.tk-select-arrow')).toHaveClass('i-arrow', 'slot-arrow');
     });
 
@@ -1787,7 +1797,7 @@ describe('Select (compound)', () => {
       expect(screen.getByRole('group')).toHaveAttribute('title', 'group');
       expect(screen.getByText('Cabins')).toHaveAttribute('title', 'label');
       expect(screen.getByRole('option', { name: 'Economy' })).toHaveAttribute('title', 'item');
-      expect(screen.getByRole('separator')).toHaveAttribute('title', 'separator');
+      expect(document.querySelector('.tk-select-separator')).toHaveAttribute('title', 'separator');
       expect(listbox.querySelector('.tk-select-arrow')).toHaveAttribute('title', 'arrow');
     });
 
@@ -1900,7 +1910,7 @@ describe('Select (compound)', () => {
       expect(item).toHaveClass('tk-select-item', 'theme-item', 'instance-item');
       expect(item).toHaveAttribute('title', 'Theme item');
 
-      expect(screen.getByRole('separator')).toHaveClass('tk-select-separator', 'theme-separator');
+      expect(document.querySelector('.tk-select-separator')).toHaveClass('tk-select-separator', 'theme-separator');
       expect(listbox.querySelector('.tk-select-arrow')).toHaveClass('theme-arrow');
     });
 
@@ -2067,6 +2077,43 @@ describe('Select (compound)', () => {
       );
 
       expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('has no axe violations for the documented anatomy with a Select.Separator inside the viewport', async () => {
+      const user = userEvent.setup();
+      render(
+        <Field>
+          <Field.Label>Origin</Field.Label>
+          <Select defaultValue="ist">
+            <Select.Trigger placeholder="Choose origin" />
+            <Select.Content>
+              <Select.Viewport>
+                <Select.Group>
+                  <Select.Label>Türkiye</Select.Label>
+                  <Select.Item value="ist" label="Istanbul">
+                    Istanbul
+                  </Select.Item>
+                </Select.Group>
+                <Select.Separator />
+                <Select.Item value="lhr" label="London Heathrow">
+                  London Heathrow
+                </Select.Item>
+              </Select.Viewport>
+              <Select.Arrow />
+            </Select.Content>
+          </Select>
+        </Field>,
+      );
+
+      const listbox = await openByClick(user);
+      const separator = listbox.querySelector('.tk-select-separator');
+
+      // Presentational and hidden so the listbox only owns option / group children.
+      expect(separator).toHaveAttribute('role', 'presentation');
+      expect(separator).toHaveAttribute('aria-hidden', 'true');
+      expect(separator).not.toHaveAttribute('aria-orientation');
+      expect(screen.queryByRole('separator', { hidden: true })).toBeNull();
+      expect(await axe(listbox)).toHaveNoViolations();
     });
 
     it('has no axe violations for the open listbox with groups, a disabled item and an arrow', async () => {

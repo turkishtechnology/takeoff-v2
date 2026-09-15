@@ -172,6 +172,29 @@ describe('Popover (compound)', () => {
       expect(getContent()?.tagName).toBe('SECTION');
     });
 
+    it('renders Header and Description as custom elements through the as prop', () => {
+      render(
+        <Popover defaultOpen>
+          <Popover.Trigger>Open</Popover.Trigger>
+          <Popover.Content>
+            <Popover.Header as="h2">Account settings</Popover.Header>
+            <Popover.Description as="div">Manage your profile.</Popover.Description>
+          </Popover.Content>
+        </Popover>,
+      );
+
+      const header = screen.getByRole('heading', { level: 2, name: 'Account settings' });
+      expect(header).toHaveClass('tk-popover-header');
+      expect(header).toHaveAttribute('data-slot', 'root');
+      expect(header).not.toHaveAttribute('as');
+
+      const description = screen.getByText('Manage your profile.');
+      expect(description.tagName).toBe('DIV');
+      expect(description).toHaveClass('tk-popover-description');
+      expect(description).toHaveAttribute('data-slot', 'root');
+      expect(description).not.toHaveAttribute('as');
+    });
+
     it('forwards refs to the DOM node of every part', () => {
       const triggerRef = createRef<HTMLButtonElement>();
       const contentRef = createRef<HTMLDivElement>();
@@ -667,6 +690,47 @@ describe('Popover (compound)', () => {
       const dialog = screen.getByRole('dialog', { name: 'Filters' });
       expect(dialog).toBe(getContent());
       expect(dialog).toHaveAttribute('aria-modal', 'true');
+    });
+
+    it('renders non-modal content as a plain container while the trigger advertises a dialog popup', () => {
+      render(
+        <Popover defaultOpen>
+          <Popover.Trigger>Open</Popover.Trigger>
+          <Popover.Content>
+            <Popover.Description>Body</Popover.Description>
+          </Popover.Content>
+        </Popover>,
+      );
+
+      const content = getContent() as HTMLElement;
+      expect(content).not.toHaveAttribute('role');
+      expect(content).not.toHaveAttribute('aria-modal');
+      expect(screen.getByRole('button', { name: 'Open' })).toHaveAttribute('aria-haspopup', 'dialog');
+    });
+
+    it('still dismisses a modal popover on pointer down outside and renders no backdrop', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+
+      render(
+        <>
+          <Popover modal defaultOpen onOpenChange={onOpenChange}>
+            <Popover.Trigger>Open</Popover.Trigger>
+            <Popover.Content aria-label="Filters">
+              <Popover.Description>Body</Popover.Description>
+            </Popover.Content>
+          </Popover>
+          <button type="button">Outside</button>
+        </>,
+      );
+
+      // The portal holds only the content: no overlay/backdrop element is added.
+      expect(document.body.lastElementChild).toBe(getContent());
+
+      await user.pointer({ keys: '[MouseLeft>]', target: screen.getByRole('button', { name: 'Outside' }) });
+
+      expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
+      expect(getContent()).toBeNull();
     });
 
     const trapCases: { label: string; modal?: boolean; trapFocus?: boolean }[] = [

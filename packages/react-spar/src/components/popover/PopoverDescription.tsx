@@ -10,12 +10,13 @@ export const PopoverDescription = <T extends ElementType = 'p'>(props: PopoverDe
   const theme = useComponentTheme('PopoverDescription');
 
   const { rootAttrs, rest } = composeRootAttrs<PopoverDescriptionProps, PopoverDescriptionSlot>(PopoverDescriptionBase, props as PopoverDescriptionProps<'p'>, theme);
-  const { children, ref, ...nativeProps } = rest;
+  const { as, children, ref, ...nativeProps } = rest;
+  const Component = (as ?? 'p') as ElementType;
 
   return (
-    <p {...nativeProps} {...rootAttrs} ref={ref}>
+    <Component {...nativeProps} {...rootAttrs} ref={ref}>
       {children}
-    </p>
+    </Component>
   );
 };
 

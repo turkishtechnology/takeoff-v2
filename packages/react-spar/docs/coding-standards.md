@@ -330,10 +330,13 @@ Canonical examples:
 - **Compound-in-react over a leaf upstream** — `Button` and `Checkbox`.
   `SparButton` and `SparCheckbox` are leaves; every `.Label` / `.Icon` /
   `.Indicator` / `.Spinner` part is react-enhancement.
-- **Bypass with documented rationale** — `Button` link-mode renders a bare `<a>`
-  rather than `<SparButton as="a">` because the upstream keyboard handler
-  preventDefaults Enter/Space on non-native elements, which would block a native
-  anchor's navigation. The rationale lives in `ButtonBase.ts`.
+- **Bypass with documented rationale** — `Calendar` renders its own `Nav`,
+  `Chevron` and `MonthGrid` parts instead of the `react-day-picker` engine's,
+  because the engine hard-codes the chevron orientation, draws inline polygons
+  instead of Takeoff icons, and has no month/year view. Each carries a `@bypass`
+  line in `calendar/base.ts`. (`Button` link-mode is _not_ a bypass: it renders
+  `<SparButton as="a">` and only removes `href` plus cancels the click while the
+  anchor is disabled or loading, which Spar does not do.)
 
 ### Upstream-first wrapper responsibility
 

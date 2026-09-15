@@ -61,6 +61,18 @@ describe('Input.RevealButton', () => {
       expect(button).toHaveAttribute('title', 'Show or hide');
     });
 
+    it('accepts a custom accessible name in place of the default', () => {
+      render(
+        <Input>
+          <Input.Field aria-label="Password" type="password" />
+          <Input.RevealButton aria-label="Şifreyi göster" />
+        </Input>,
+      );
+
+      expect(screen.getByRole('button', { name: 'Şifreyi göster' })).toHaveClass('tk-input-reveal-button');
+      expect(screen.queryByRole('button', { name: 'Toggle password visibility' })).not.toBeInTheDocument();
+    });
+
     it('forwards the ref to the button element', () => {
       const ref = createRef<HTMLButtonElement>();
       render(
@@ -246,6 +258,35 @@ describe('Input.RevealButton', () => {
 
       expect(getPasswordField()).toHaveAttribute('type', 'password');
       expect(getRevealButton()).toHaveAttribute('aria-pressed', 'false');
+    });
+  });
+
+  describe('consumer disabled', () => {
+    it('disables the button on its own while the field stays editable', async () => {
+      const user = userEvent.setup();
+      render(
+        <Input>
+          <Input.Field aria-label="Password" type="password" defaultValue="s3cret" />
+          <Input.RevealButton disabled />
+        </Input>,
+      );
+
+      expect(getRevealButton()).toBeDisabled();
+      expect(getPasswordField()).toBeEnabled();
+
+      await user.click(getRevealButton());
+      expect(getPasswordField()).toHaveAttribute('type', 'password');
+    });
+
+    it('cannot re-enable the button in a disabled Input', () => {
+      render(
+        <Input disabled>
+          <Input.Field aria-label="Password" type="password" />
+          <Input.RevealButton disabled={false} />
+        </Input>,
+      );
+
+      expect(getRevealButton()).toBeDisabled();
     });
   });
 

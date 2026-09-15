@@ -1,4 +1,4 @@
-import type { ElementType, ReactNode } from 'react';
+import type { ElementType, FocusEventHandler, KeyboardEventHandler, MouseEventHandler, ReactNode } from 'react';
 import type {
   PolymorphicProps,
   RadioProps as SparRadioProps,
@@ -52,6 +52,16 @@ export interface RadioOwnProps {
    * @defaultValue 'left'
    */
   position?: RadioPosition;
+  /**
+   * Native keydown handler on the radiogroup root.
+   *
+   * **Warning:** Spar's Radio currently spreads consumer props *after* its own
+   * handlers, so a consumer `onKeyDown` **replaces** Spar's roving keyboard
+   * handler — Arrow / Home / End navigation stops working. Until Spar composes
+   * the two, observe key presses with `onKeyDownCapture` (which Spar does not
+   * own) or on an ancestor element instead.
+   */
+  onKeyDown?: KeyboardEventHandler<HTMLElement>;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<RadioSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -75,6 +85,31 @@ export interface RadioItemOwnProps {
    * @defaultValue inherited from group
    */
   position?: RadioPosition;
+  /**
+   * Native click handler on the item.
+   *
+   * **Warning:** Spar's RadioItem currently spreads consumer props *after* its
+   * own handlers, so a consumer `onClick` **replaces** Spar's selection
+   * handler — clicking the item no longer selects it. Until Spar composes the
+   * two, attach the handler to the `Radio` root instead (the click bubbles
+   * from the item) or use `onClickCapture`.
+   */
+  onClick?: MouseEventHandler<HTMLElement>;
+  /**
+   * Native keydown handler on the item.
+   *
+   * **Warning:** replaces Spar's Space-to-select handler for the same reason
+   * as `onClick`. Prefer the `Radio` root or `onKeyDownCapture`.
+   */
+  onKeyDown?: KeyboardEventHandler<HTMLElement>;
+  /**
+   * Native focus handler on the item.
+   *
+   * **Warning:** replaces Spar's focus tracking (roving tabindex and
+   * `data-focus`) for the same reason as `onClick`. Prefer the `Radio` root's
+   * `onFocus` (which Spar composes) or `onFocusCapture`.
+   */
+  onFocus?: FocusEventHandler<HTMLElement>;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<RadioItemSlot>;
   /** Per-slot HTML attribute overrides. */

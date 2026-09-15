@@ -144,6 +144,17 @@ describe('Card (compound)', () => {
     });
   });
 
+  describe('displayName', () => {
+    it('names the root and every sub-part in dotted compound form', () => {
+      expect(Card.displayName).toBe('Card');
+      expect(Card.Header.displayName).toBe('Card.Header');
+      expect(Card.Title.displayName).toBe('Card.Title');
+      expect(Card.Description.displayName).toBe('Card.Description');
+      expect(Card.Body.displayName).toBe('Card.Body');
+      expect(Card.Footer.displayName).toBe('Card.Footer');
+    });
+  });
+
   describe('Card.Header', () => {
     it.each<CardHeaderType>(['basic', 'divided', 'light', 'dark', 'primary'])('reflects headerType="%s" into data-header-type', headerType => {
       const { container } = render(

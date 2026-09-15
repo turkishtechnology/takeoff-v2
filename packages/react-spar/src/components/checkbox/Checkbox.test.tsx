@@ -517,6 +517,44 @@ describe('Checkbox', () => {
       expect(handleChange).toHaveBeenCalledWith(true);
     });
 
+    it('leaves the mixed state with a single click when an uncontrolled checkbox clears indeterminate from onChange', async () => {
+      const user = userEvent.setup();
+      const handleChange = vi.fn();
+
+      const UncontrolledParent = () => {
+        const [indeterminate, setIndeterminate] = useState(true);
+        return (
+          <Checkbox
+            aria-label="All extras"
+            indeterminate={indeterminate}
+            onChange={next => {
+              handleChange(next);
+              setIndeterminate(false);
+            }}
+          >
+            <Checkbox.Indicator />
+          </Checkbox>
+        );
+      };
+
+      render(<UncontrolledParent />);
+      const checkbox = screen.getByRole('checkbox');
+      expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
+
+      await user.click(checkbox);
+
+      expect(handleChange).toHaveBeenCalledTimes(1);
+      expect(handleChange).toHaveBeenCalledWith(true);
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+      expect(checkbox).toHaveAttribute('data-checked', '');
+      expect(checkbox).not.toHaveAttribute('data-indeterminate');
+      expect(showsGlyph(checkbox, CheckIconOutlinedRounded)).toBe(true);
+
+      await user.click(checkbox);
+      expect(handleChange).toHaveBeenLastCalledWith(false);
+      expect(checkbox).toHaveAttribute('aria-checked', 'false');
+    });
+
     it('drives a controlled select-all parent in and out of the mixed state', async () => {
       const user = userEvent.setup();
       const handleParentChange = vi.fn();

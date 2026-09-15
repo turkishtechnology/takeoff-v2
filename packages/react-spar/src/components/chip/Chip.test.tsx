@@ -9,6 +9,9 @@ import { render, screen } from '../../test-utils';
 import { Chip, type ChipAppearance, type ChipProps, type ChipSize, type ChipVariant } from './index';
 
 const chipRoot = (container: HTMLElement) => container.querySelector('.tk-chip') as HTMLElement | null;
+// A clickable + removable chip carries its click action on the label slot (a
+// sibling of the remove button) rather than on the root.
+const chipLabel = (container: HTMLElement) => container.querySelector('.tk-chip-label') as HTMLElement | null;
 
 const asAttrs = (attrs: Record<string, unknown>) => attrs as HTMLAttributes<HTMLElement>;
 
@@ -258,12 +261,15 @@ describe('Chip', () => {
       expect(screen.queryByText('Cabin bag')).not.toBeInTheDocument();
     });
 
-    it('lets a remove click bubble to ancestor handlers', async () => {
+    it('keeps a remove click from reaching the chip onClick or ancestor handlers on a removable-only chip', async () => {
       const user = userEvent.setup();
+      const onClick = vi.fn();
+      const onSlotClick = vi.fn();
+      const onRemove = vi.fn();
       const onListClick = vi.fn();
       render(
         <div onClick={onListClick}>
-          <Chip autoDismiss={false} removable>
+          <Chip autoDismiss={false} onClick={onClick} onRemove={onRemove} removable slotProps={{ root: { onClick: onSlotClick } }}>
             Cabin bag
           </Chip>
         </div>,
@@ -271,7 +277,10 @@ describe('Chip', () => {
 
       await user.click(screen.getByRole('button', { name: 'Remove' }));
 
-      expect(onListClick).toHaveBeenCalledTimes(1);
+      expect(onRemove).toHaveBeenCalledTimes(1);
+      expect(onClick).not.toHaveBeenCalled();
+      expect(onSlotClick).not.toHaveBeenCalled();
+      expect(onListClick).not.toHaveBeenCalled();
     });
 
     it('does not submit an enclosing form', async () => {
@@ -467,7 +476,7 @@ describe('Chip', () => {
       );
 
       await user.tab();
-      expect(chipRoot(container)).toHaveFocus();
+      expect(chipLabel(container)).toHaveFocus();
 
       await user.keyboard('{Enter} {Backspace}{Delete}');
 
@@ -554,7 +563,7 @@ describe('Chip', () => {
       );
 
       await user.tab();
-      expect(chipRoot(container)).toHaveFocus();
+      expect(chipLabel(container)).toHaveFocus();
 
       await user.keyboard(key);
 
@@ -586,10 +595,10 @@ describe('Chip', () => {
       expect(onRemove).toHaveBeenNthCalledWith(2);
       expect(onClick).not.toHaveBeenCalled();
       expect(chipRoot(container)).toBeInTheDocument();
-      expect(chipRoot(container)).toHaveFocus();
+      expect(chipLabel(container)).toHaveFocus();
     });
 
-    it('puts the clickable root and then its remove button in the tab sequence', async () => {
+    it('puts the click action (label) and then its remove button in the tab sequence', async () => {
       const user = userEvent.setup();
       const { container } = render(
         <>
@@ -601,7 +610,7 @@ describe('Chip', () => {
       );
 
       await user.tab();
-      expect(chipRoot(container)).toHaveFocus();
+      expect(chipLabel(container)).toHaveFocus();
 
       await user.tab();
       expect(screen.getByRole('button', { name: 'Remove' })).toHaveFocus();
@@ -622,7 +631,7 @@ describe('Chip', () => {
       );
 
       await user.tab();
-      expect(chipRoot(container)).toHaveFocus();
+      expect(chipLabel(container)).toHaveFocus();
 
       await user.keyboard('{Enter} {Backspace}{Delete}a{ArrowRight}{Escape}');
 
@@ -700,6 +709,174 @@ describe('Chip', () => {
     });
   });
 
+  describe('clickable + removable', () => {
+    it('keeps the root a plain container and puts the click action on the label beside the remove button', () => {
+      const { container } = render(
+        <Chip clickable removable>
+          Economy
+        </Chip>,
+      );
+
+      const root = chipRoot(container) as HTMLElement;
+      expect(root).not.toHaveAttribute('role');
+      expect(root).not.toHaveAttribute('tabindex');
+      expect(root).toHaveAttribute('data-clickable', '');
+      expect(root).toHaveAttribute('data-removable', '');
+
+      const action = screen.getByRole('button', { name: 'Economy' });
+      expect(action).toBe(chipLabel(container));
+      expect(action).toHaveAttribute('tabindex', '0');
+      expect(action.parentElement).toBe(root);
+
+      const removeButton = screen.getByRole('button', { name: 'Remove' });
+      expect(removeButton.parentElement).toBe(root);
+      expect(action).not.toContainElement(removeButton);
+    });
+
+    it('renders the label slot as the action even without renderable children', () => {
+      const { container } = render(<Chip clickable removable />);
+
+      const action = chipLabel(container) as HTMLElement;
+      expect(action).toHaveAttribute('role', 'button');
+      expect(action).toHaveAttribute('tabindex', '0');
+    });
+
+    it.each([
+      ['Enter', '{Enter}'],
+      ['Space', ' '],
+    ])('activates onClick, not onRemove, when %s is pressed on the focused label action', async (_, key) => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const onRemove = vi.fn();
+      const { container } = render(
+        <Chip autoDismiss={false} clickable onClick={onClick} onRemove={onRemove} removable>
+          Economy
+        </Chip>,
+      );
+
+      await user.tab();
+      expect(chipLabel(container)).toHaveFocus();
+      await user.keyboard(key);
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+      expect(onClick.mock.calls[0][0]).toMatchObject({ type: 'click' });
+      expect(onRemove).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['Enter', '{Enter}'],
+      ['Space', ' '],
+    ])('activates the remove button, not the chip, when %s is pressed on the focused remove button', async (_, key) => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const onRemove = vi.fn();
+      const { container } = render(
+        <Chip clickable onClick={onClick} onRemove={onRemove} removable>
+          Economy
+        </Chip>,
+      );
+
+      await user.tab();
+      await user.tab();
+      expect(screen.getByRole('button', { name: 'Remove' })).toHaveFocus();
+
+      await user.keyboard(key);
+
+      expect(onRemove).toHaveBeenCalledTimes(1);
+      expect(onRemove).toHaveBeenCalledWith();
+      expect(onClick).not.toHaveBeenCalled();
+      expect(chipRoot(container)).not.toBeInTheDocument();
+    });
+
+    it.each([
+      ['Backspace', '{Backspace}'],
+      ['Delete', '{Delete}'],
+    ])('ignores %s on the focused remove button — only the click action handles it', async (_, key) => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const onKeyDown = vi.fn();
+      const onRemove = vi.fn();
+      const { container } = render(
+        <Chip autoDismiss={false} clickable onClick={onClick} onKeyDown={onKeyDown} onRemove={onRemove} removable>
+          Economy
+        </Chip>,
+      );
+
+      await user.tab();
+      await user.tab();
+      expect(screen.getByRole('button', { name: 'Remove' })).toHaveFocus();
+      // The Tab that left the label action is the only keydown the chip saw.
+      onKeyDown.mockClear();
+
+      await user.keyboard(key);
+
+      expect(onRemove).not.toHaveBeenCalled();
+      expect(onClick).not.toHaveBeenCalled();
+      expect(onKeyDown).not.toHaveBeenCalled();
+      expect(chipRoot(container)).toBeInTheDocument();
+    });
+
+    it('activates onClick with a pointer click on the label action or the root padding', async () => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const { container } = render(
+        <Chip autoDismiss={false} clickable onClick={onClick} removable>
+          Economy
+        </Chip>,
+      );
+
+      await user.click(chipLabel(container) as HTMLElement);
+      await user.click(chipRoot(container) as HTMLElement);
+
+      expect(onClick).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('role and tabIndex resolution', () => {
+    it('honours slotProps.root role and tabIndex on a clickable chip when the instance sets none', () => {
+      render(
+        <Chip aria-checked={false} clickable slotProps={{ root: { role: 'switch', tabIndex: -1 } }}>
+          Window seat
+        </Chip>,
+      );
+
+      const toggle = screen.getByRole('switch', { name: 'Window seat' });
+      expect(toggle).toHaveClass('tk-chip');
+      expect(toggle).toHaveAttribute('tabindex', '-1');
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    });
+
+    it('lets the instance role and tabIndex win over slotProps.root', () => {
+      render(
+        <Chip aria-checked={false} clickable role="switch" slotProps={{ root: { role: 'link', tabIndex: -1 } }} tabIndex={2}>
+          Window seat
+        </Chip>,
+      );
+
+      const toggle = screen.getByRole('switch', { name: 'Window seat' });
+      expect(toggle).toHaveAttribute('tabindex', '2');
+      expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    });
+
+    it('moves slotProps.root role and tabIndex onto the label action of a clickable removable chip', () => {
+      const { container } = render(
+        <Chip aria-checked={false} clickable removable slotProps={{ root: { role: 'switch' } }}>
+          Window seat
+        </Chip>,
+      );
+
+      expect(screen.getByRole('switch', { name: 'Window seat' })).toBe(chipLabel(container));
+      expect(chipRoot(container)).not.toHaveAttribute('role');
+    });
+
+    it('applies a slotProps.root tabIndex to a static chip', () => {
+      const { container } = render(<Chip slotProps={{ root: { tabIndex: 0 } }}>Metadata</Chip>);
+
+      expect(chipRoot(container)).toHaveAttribute('tabindex', '0');
+      expect(chipRoot(container)).not.toHaveAttribute('role');
+    });
+  });
+
   describe('disabled', () => {
     it('marks a disabled chip with aria-disabled and data-disabled', () => {
       const { container } = render(<Chip disabled>Economy</Chip>);
@@ -707,6 +884,33 @@ describe('Chip', () => {
       const root = chipRoot(container);
       expect(root).toHaveAttribute('aria-disabled', 'true');
       expect(root).toHaveAttribute('data-disabled', '');
+      expect(root).not.toHaveAttribute('tabindex');
+    });
+
+    it.each([
+      ['an instance tabIndex', { tabIndex: 0 }],
+      ['a slotProps.root tabIndex', { slotProps: { root: { tabIndex: 0 } } }],
+    ])('keeps a disabled static chip out of the tab order despite %s', async (_, props: Partial<ChipProps>) => {
+      const user = userEvent.setup();
+      const onKeyDown = vi.fn();
+      const { container } = render(
+        <>
+          <Chip disabled onKeyDown={onKeyDown} {...props}>
+            Metadata
+          </Chip>
+          <button type="button">After</button>
+        </>,
+      );
+
+      const root = chipRoot(container) as HTMLElement;
+      expect(root).toHaveAttribute('tabindex', '-1');
+
+      await user.tab();
+      expect(screen.getByRole('button', { name: 'After' })).toHaveFocus();
+
+      await user.click(root);
+      await user.keyboard('{Enter}');
+      expect(onKeyDown).not.toHaveBeenCalled();
     });
 
     it('removes a disabled clickable chip from the tab order and blocks pointer and keyboard handlers', async () => {
@@ -770,9 +974,9 @@ describe('Chip', () => {
         </Chip>,
       );
 
-      const chip = chipRoot(container) as HTMLElement;
-      await user.click(chip);
-      expect(chip).toHaveFocus();
+      const action = chipLabel(container) as HTMLElement;
+      await user.click(action);
+      expect(action).toHaveFocus();
 
       await user.keyboard('{Backspace}{Delete}');
 
@@ -827,7 +1031,8 @@ describe('Chip', () => {
       expect(root).toHaveAttribute('data-disabled', '');
       expect(root).toHaveAttribute('data-removable', '');
       expect(root).toHaveAttribute('aria-disabled', 'true');
-      expect(root).toHaveAttribute('tabindex', '-1');
+      expect(root).not.toHaveAttribute('tabindex');
+      expect(chipLabel(container)).toHaveAttribute('tabindex', '-1');
     });
 
     it('applies disabled from provider defaultProps to semantics and interaction', async () => {
@@ -845,10 +1050,11 @@ describe('Chip', () => {
       const root = chipRoot(container) as HTMLElement;
       expect(root).toHaveAttribute('aria-disabled', 'true');
       expect(root).toHaveAttribute('data-disabled', '');
-      expect(root).toHaveAttribute('tabindex', '-1');
+      expect(chipLabel(container)).toHaveAttribute('tabindex', '-1');
+      expect(chipLabel(container)).toHaveAttribute('aria-disabled', 'true');
       expect(screen.getByRole('button', { name: 'Remove' })).toBeDisabled();
 
-      await user.click(root);
+      await user.click(chipLabel(container) as HTMLElement);
       await user.keyboard('{Enter} {Backspace}{Delete}');
 
       expect(onClick).not.toHaveBeenCalled();
@@ -965,8 +1171,10 @@ describe('Chip', () => {
       );
 
       const root = chipRoot(container) as HTMLElement;
-      expect(root).toHaveAttribute('role', 'button');
-      expect(root).toHaveAttribute('tabindex', '0');
+      expect(root).not.toHaveAttribute('role');
+      expect(root).not.toHaveAttribute('tabindex');
+      expect(chipLabel(container)).toHaveAttribute('role', 'button');
+      expect(chipLabel(container)).toHaveAttribute('tabindex', '0');
 
       await user.click(screen.getByRole('button', { name: 'Remove' }));
 
@@ -1059,6 +1267,8 @@ describe('Chip', () => {
       ['removable', { removable: true }],
       ['disabled clickable', { clickable: true, disabled: true }],
       ['disabled removable', { disabled: true, removable: true }],
+      ['clickable removable', { clickable: true, removable: true }],
+      ['disabled clickable removable', { clickable: true, disabled: true, removable: true }],
     ])('has no axe violations for a %s chip', async (_, props) => {
       const { container } = render(<Chip {...props}>Cabin bag</Chip>);
 

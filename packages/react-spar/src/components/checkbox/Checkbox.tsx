@@ -1,4 +1,4 @@
-import type { ElementType } from 'react';
+import { useState, type ElementType } from 'react';
 import {
   Checkbox as SparCheckbox,
   type CheckboxProps as SparCheckboxProps,
@@ -56,19 +56,36 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
     ...sparProps
   } = rest;
 
+  // Spar has no separate indeterminate prop — the mixed state is a value of
+  // its controlled `checked: CheckedState`. Driving Spar through `checked`
+  // while `indeterminate` is set would freeze Spar's own uncontrolled state at
+  // its initial value, so clearing `indeterminate` from `onChange` would fall
+  // back to the stale mixed state and cost a second click. The wrapper
+  // therefore mirrors the uncontrolled `CheckedState` here (seeded from
+  // `defaultChecked`, written back from Spar's `onChange`) and always hands
+  // Spar an explicit `checked`. This is a one-line mirror of the tri-state
+  // translation, not a re-implementation of Spar's toggle behavior.
+  const [uncontrolledChecked, setUncontrolledChecked] = useState<CheckedState>(defaultChecked ?? false);
+  const isControlled = checked !== undefined;
+
   // `indeterminate` wins over `checked` / `defaultChecked` per
   // `packages/react-spar/docs/coding-standards.md` line 209. The mapping is
   // inline — a pure shape translation, not an adapter hook.
-  const sparChecked: CheckedState | undefined = indeterminate ? 'indeterminate' : checked;
-  const sparDefaultChecked: CheckedState | undefined = indeterminate ? 'indeterminate' : defaultChecked;
+  const sparChecked: CheckedState = indeterminate ? 'indeterminate' : isControlled ? checked : uncontrolledChecked;
 
   // Spar's user-toggle path always transitions to `true | false` (never
-  // re-emits `'indeterminate'`), so flattening the callback signature to
-  // boolean is safe. The strict cast keeps the public API simple.
-  const handleSparChange = onChange ? (next: CheckedState) => onChange(next === true) : undefined;
+  // re-emits `'indeterminate'`), so flattening the public callback signature
+  // to boolean is safe. The mirror keeps Spar's raw `CheckedState` so a
+  // render-prop `setChecked('indeterminate')` still works in uncontrolled mode.
+  const handleSparChange = (next: CheckedState) => {
+    if (!isControlled) {
+      setUncontrolledChecked(next);
+    }
+    onChange?.(next === true);
+  };
 
   return (
-    <SparCheckbox {...(sparProps as unknown as SparCheckboxProps)} checked={sparChecked} defaultChecked={sparDefaultChecked} onChange={handleSparChange} ref={ref} {...rootAttrs}>
+    <SparCheckbox {...(sparProps as unknown as SparCheckboxProps)} checked={sparChecked} onChange={handleSparChange} ref={ref} {...rootAttrs}>
       {(state: SparCheckboxRenderProps) => (
         <CheckboxProvider
           value={{

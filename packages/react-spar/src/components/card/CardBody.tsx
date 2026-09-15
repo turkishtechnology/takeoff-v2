@@ -21,4 +21,4 @@ export const CardBody = <T extends ElementType = 'div'>(props: CardBodyProps<T>)
   );
 };
 
-CardBody.displayName = 'CardBody';
+CardBody.displayName = 'Card.Body';

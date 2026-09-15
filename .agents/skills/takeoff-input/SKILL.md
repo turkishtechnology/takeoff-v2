@@ -252,7 +252,7 @@ reimplemented.
 | `onClear` (Input.ClearButton)                            | `() => void`                    | —                   | Fires after the value is cleared.                                                                                |
 | `value` / `defaultValue` (Input.Chips)                   | `string[]`                      | —                   | Controlled / uncontrolled tag list.                                                                              |
 | `onValueChange` (Input.Chips)                            | `(value: string[]) => void`     | —                   | Next tag array after a commit or removal.                                                                        |
-| `separator` / `max` / `allowDuplicates` (Input.Chips)    | `string` / `number` / `boolean` | `—` / `—` / `false` | Commit char, tag cap, allow repeats.                                                                             |
+| `separator` / `max` / `allowDuplicates` (Input.Chips)    | `string` / `number` / `boolean` | `—` / `—` / `false` | Commit char, tag cap, allow repeats. An ignored commit keeps the typed text.                                     |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.

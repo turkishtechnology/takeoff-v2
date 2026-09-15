@@ -10,12 +10,13 @@ export const PopoverHeader = <T extends ElementType = 'div'>(props: PopoverHeade
   const theme = useComponentTheme('PopoverHeader');
 
   const { rootAttrs, rest } = composeRootAttrs<PopoverHeaderProps, PopoverHeaderSlot>(PopoverHeaderBase, props as PopoverHeaderProps<'div'>, theme);
-  const { children, ref, ...nativeProps } = rest;
+  const { as, children, ref, ...nativeProps } = rest;
+  const Component = (as ?? 'div') as ElementType;
 
   return (
-    <div {...nativeProps} {...rootAttrs} ref={ref}>
+    <Component {...nativeProps} {...rootAttrs} ref={ref}>
       {children}
-    </div>
+    </Component>
   );
 };
 

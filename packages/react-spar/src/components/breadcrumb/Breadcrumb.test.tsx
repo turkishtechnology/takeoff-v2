@@ -954,15 +954,14 @@ describe('Breadcrumb (compound)', () => {
   });
 
   describe('context boundaries', () => {
-    it('throws a descriptive error when Breadcrumb.Link renders outside the root', () => {
-      expect(() => render(<Breadcrumb.Link href="#home">Home</Breadcrumb.Link>)).toThrow(/must be used within a Breadcrumb/);
-      // The loose pattern above also matches the list-boundary error, so pin the root-boundary message.
-      expect(() => render(<Breadcrumb.Link href="#home">Home</Breadcrumb.Link>)).toThrow(/^Breadcrumb components must be used within a Breadcrumb$/);
-    });
-
-    it('throws a descriptive error when Breadcrumb.Item renders outside the root', () => {
-      expect(() => render(<Breadcrumb.Item>Home</Breadcrumb.Item>)).toThrow(/must be used within a Breadcrumb/);
-      expect(() => render(<Breadcrumb.Item>Home</Breadcrumb.Item>)).toThrow(/^Breadcrumb components must be used within a Breadcrumb$/);
+    it.each([
+      ['Breadcrumb.List', () => <Breadcrumb.List>{null}</Breadcrumb.List>],
+      ['Breadcrumb.Item', () => <Breadcrumb.Item>Home</Breadcrumb.Item>],
+      ['Breadcrumb.Link', () => <Breadcrumb.Link href="#home">Home</Breadcrumb.Link>],
+      ['Breadcrumb.Page', () => <Breadcrumb.Page>Home</Breadcrumb.Page>],
+      ['Breadcrumb.Separator', () => <Breadcrumb.Separator />],
+    ])('throws the Breadcrumb safe-context error naming %s when it renders outside the root', (name, renderLoose) => {
+      expect(() => render(renderLoose())).toThrow(`${name} must be used within BreadcrumbProvider`);
     });
 
     it('throws a descriptive error when Breadcrumb.Item renders outside Breadcrumb.List', () => {

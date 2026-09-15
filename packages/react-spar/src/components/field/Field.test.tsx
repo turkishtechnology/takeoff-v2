@@ -239,6 +239,7 @@ describe('Field (compound)', () => {
       ['no children', undefined],
       ['an empty string', ''],
       ['null', null],
+      ['a false boolean (`cond && message` collapsing)', false],
     ])('renders no leading icon for %s', (_case, children) => {
       const { container } = render(
         <Field>
@@ -283,6 +284,7 @@ describe('Field (compound)', () => {
       ['no children', undefined],
       ['an empty string', ''],
       ['null', null],
+      ['a false boolean (`cond && message` collapsing)', false],
     ])('renders no leading icon for %s', (_case, children) => {
       render(
         <Field invalid>

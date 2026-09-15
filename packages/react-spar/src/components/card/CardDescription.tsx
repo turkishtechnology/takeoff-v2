@@ -21,4 +21,4 @@ export const CardDescription = <T extends ElementType = 'p'>(props: CardDescript
   );
 };
 
-CardDescription.displayName = 'CardDescription';
+CardDescription.displayName = 'Card.Description';
