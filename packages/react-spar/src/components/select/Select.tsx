@@ -22,11 +22,14 @@ export const Select = <T extends ElementType = 'div'>(props: SelectProps<T>) => 
     }),
   });
 
-  const { size = DEFAULT_SIZE, invalid = false, contentWidth = DEFAULT_CONTENT_WIDTH, children, ref, ...sparProps } = rest;
+  // `invalid` reaches Spar as given. Spar's root writes `data-invalid` after the
+  // props it spreads and falls back to a wrapping Field when the prop is unset,
+  // so dropping it — or defaulting it to `false` — erases the state.
+  const { size = DEFAULT_SIZE, invalid, contentWidth = DEFAULT_CONTENT_WIDTH, children, ref, ...sparProps } = rest;
 
   return (
-    <SelectProvider value={{ size, invalid, contentWidth }}>
-      <SparSelect {...(sparProps as unknown as SparSelectProps)} ref={ref} {...rootAttrs}>
+    <SelectProvider value={{ size, invalid: invalid ?? false, contentWidth }}>
+      <SparSelect {...(sparProps as unknown as SparSelectProps)} invalid={invalid} ref={ref} {...rootAttrs}>
         {children}
       </SparSelect>
     </SelectProvider>

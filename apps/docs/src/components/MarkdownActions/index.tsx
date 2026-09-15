@@ -8,12 +8,17 @@ import { ChevronBottomIconOutlinedRounded } from '@takeoff-icons/react/chevron-b
 import styles from './styles.module.css';
 
 /**
- * "Copy page" menu button shown next to a docs page title.
+ * "Copy page" menu button — the docs' single page-actions control.
  *
- * Each page is mirrored to a clean Markdown file by `scripts/generate-llms.mjs`
- * (served from `static/`). The URL mapping here MUST match `mdPathFor()` in that
- * script: a trailing-slash route (the docs landing page) maps to `index.md`,
- * everything else to `<path>.md`.
+ * Every page in both docs trees is mirrored to a clean Markdown file by
+ * `scripts/generate-llms.mjs` (served from `static/`). The URL mapping here MUST
+ * match `mdPathFor()` in that script: a trailing-slash route (a tree's landing
+ * page) maps to `index.md`, everything else to `<path>.md`.
+ *
+ * Lives in `src/components` rather than beside the swizzled `DocItem/Content`
+ * because two callers need it: that wrapper, which floats it beside the page
+ * title, and the icon gallery's hero, which renders it inline as a primary
+ * action. Placement is the caller's (`className`); only the actions live here.
  *
  * A single trigger owns every page action, copy included. The split-button
  * variant buys copy one fewer click, but only by butting two differently
@@ -30,6 +35,13 @@ type CopyState = 'idle' | 'copied' | 'error';
 const RESET_MS = 2000;
 const ICON_SIZE = 16;
 
+export interface MarkdownActionsProps {
+  /** Wrapper class, for callers that need to place the group. */
+  className?: string;
+  /** Trigger size. Doc headers use the quieter `small`; heroes use `base`. */
+  size?: 'small' | 'base';
+}
+
 /**
  * Prompt used by the "Open in ..." handoffs. The assistant fetches the Markdown
  * itself, so the deep link stays short enough to survive URL length limits that
@@ -39,7 +51,7 @@ function handoffPrompt(url: string): string {
   return `Read ${url} and help me with questions about it.`;
 }
 
-export default function MarkdownActions(): JSX.Element {
+export default function MarkdownActions({ className, size = 'small' }: MarkdownActionsProps = {}): JSX.Element {
   const { pathname } = useLocation();
   const [state, setState] = useState<CopyState>('idle');
 
@@ -64,13 +76,13 @@ export default function MarkdownActions(): JSX.Element {
   const copyVariant = state === 'copied' ? 'success' : state === 'error' ? 'danger' : 'neutral';
 
   return (
-    <div className={styles.actions}>
+    <div className={className ? `${styles.actions} ${className}` : styles.actions}>
       <Dropdown size="small" contentWidth="content">
         <Dropdown.Trigger
           as={Button}
           variant={copyVariant}
           appearance="outlined"
-          size="small"
+          size={size}
           startContent={state === 'copied' ? <CheckIconOutlinedRounded width={ICON_SIZE} height={ICON_SIZE} /> : <CopyIconOutlinedRounded width={ICON_SIZE} height={ICON_SIZE} />}
           endContent={<ChevronBottomIconOutlinedRounded width={ICON_SIZE} height={ICON_SIZE} />}
           title="Copy this page as Markdown for an LLM"

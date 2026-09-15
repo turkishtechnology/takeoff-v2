@@ -1,5 +1,343 @@
 # @takeoff-ui/react-spar
 
+## 0.5.1
+
+### Patch Changes
+
+- [#229](https://github.com/turkishtechnology/takeoff-v2/pull/229)
+  [`efa25ad`](https://github.com/turkishtechnology/takeoff-v2/commit/efa25ad8d64a53506288672b24a70ff1a2b08640)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Provider `slotProps`
+  no longer override what an instance sets itself, and classes land in the
+  documented order.
+
+  The provider's layers are documented to sit below the instance, but a theme
+  `slotProps.root` value replaced the instance's own attribute or handler of the
+  same name: a `title` or `onClick` passed to the component lost to the theme's.
+  Every component root spreads its props before the composed attrs, so this is
+  fixed once in `buildSlotAttrs`. A theme key the instance sets is left out, a
+  theme `style` merges key by key under the instance `style`, and classes still
+  add up.
+
+  Two class bugs on the same path are fixed with it. The instance `className`
+  now follows the provider's classes (canonical, provider, instance, as
+  documented), and a `className` passed through `slotProps` is added instead of
+  silently dropped.
+
+- [#229](https://github.com/turkishtechnology/takeoff-v2/pull/229)
+  [`31886fe`](https://github.com/turkishtechnology/takeoff-v2/commit/31886fe8e20e00dc6ca19804ed25e6400b06de78)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - `Select` now marks
+  itself invalid, and `Select.Indicator` follows the open state.
+
+  `<Select invalid>` set `data-invalid` on the trigger and nowhere else. The
+  prop never reached Spar, whose root writes `data-invalid` after the props it
+  spreads, so the root lost the attribute and the trigger never got
+  `aria-invalid`. It is now passed through as given, so an unset `invalid` still
+  falls back to a wrapping `Field`.
+
+  The standalone `Select.Indicator` read the open state under a name Spar's
+  context does not use. Its default chevron never flipped, and render-function
+  children always received `{ isOpen: undefined }`. Both now track the list.
+
+- [#229](https://github.com/turkishtechnology/takeoff-v2/pull/229)
+  [`4bd6bb2`](https://github.com/turkishtechnology/takeoff-v2/commit/4bd6bb22cd93892bca22d779dd6eff898f4225bb)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - `Dialog` and `Drawer`
+  honour `dismissible={false}` for Escape, and closing returns focus to the
+  trigger.
+
+  Both were Spar bugs, fixed upstream in `@turkish-technology/spar@0.2.3`, which
+  this release pins.
+
+  `Dialog.Panel` and `Drawer.Panel` already blocked the dismissal by calling
+  `preventDefault()` on the event Spar hands to `onEscapeKeyDown`, but Spar read
+  the veto from the React event, which never sees a `preventDefault()` made on
+  the native one. Escape therefore closed a non-dismissible dialog or drawer,
+  and a consumer's own `onEscapeKeyDown` veto was ignored too. Spar also cleared
+  the stored trigger before its root could restore focus, so `restoreFocus` (on
+  by default) never moved focus back on close.
+
+- [#229](https://github.com/turkishtechnology/takeoff-v2/pull/229)
+  [`ba34aa5`](https://github.com/turkishtechnology/takeoff-v2/commit/ba34aa58e22f5beb9f14b9887b0385cf665f6d9f)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - `Table` utility
+  columns and the page jump are now reachable by assistive technology.
+
+  - The selection column in single mode and the expansion column had empty
+    header cells, so every such table failed axe's empty-table-header rule. Both
+    now carry a visually hidden name: "Row selection" and "Row details".
+  - In single selection mode the row radios had no accessible name, because the
+    label sat on each one-item radio group instead of the radio. It is now on
+    the radio, which also renders as a span so Spar's `<label role="radio">` no
+    longer trips aria-allowed-role.
+  - The "Go to page" submit was an `Input.TrailingIcon`, which hides itself from
+    assistive technology, so a focusable button had no accessible presence. It
+    is now a text `Button` in the input's `tk-input-action` hook.
+
+## 0.5.0
+
+### Minor Changes
+
+- [#206](https://github.com/turkishtechnology/takeoff-v2/pull/206)
+  [`f8b94f3`](https://github.com/turkishtechnology/takeoff-v2/commit/f8b94f385b03fbc9d390fbbe6c39da57e0c3a4a9)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - New
+  component: `Calendar`.
+
+  A month grid over `react-day-picker@10`. Spar ships no date primitive, so —
+  like `Table` over TanStack — the engine here is third-party and the wrapper
+  owns everything visual: a complete `classNames` map replaces the library's
+  own, so no `rdp-*` class reaches the DOM and no library stylesheet is
+  imported. `data-slot` anchors and `slotProps` reach the engine's internal
+  nodes through a `components` override map whose component identities are
+  stable, so the grid is not remounted between renders. Date arithmetic,
+  selection, keyboard navigation and ARIA stay upstream.
+
+  Its API speaks Takeoff Core's vocabulary rather than the engine's: `mode`
+  (`single` | `range` | `multiple`), `minDate` / `maxDate`, `disabledDates`,
+  `allowedDates`, `disabledWeekDays`, `firstDayOfWeekIndex` and `size`, each
+  mapped to the engine's `Matcher` / navigation props by a pure helper. `value`
+  is `Date`-based rather than Core's string: parsing and formatting a
+  `dateFormat` grammar in the wrapper would be behavior, not visual wrapping.
+  `locale` takes an object from `react-day-picker/locale`, since resolving a
+  locale string would mean bundling every locale.
+
+  Day contents can be customized with `renderDay`, which receives the date and
+  active modifiers while leaving the engine-owned day-button behavior intact.
+
+  The grid follows a value set from outside it. The engine reads `defaultMonth`
+  once and then owns the displayed month, so a preset button, a typed date or a
+  value restored from a form would select a day that is off-screen — every
+  caller had to hold a second piece of state and keep `setValue` and `setMonth`
+  in step. Setting the value is now enough. It is deliberately narrow: a passed
+  `month` wins outright (that parent is driving the grid), and only a selection
+  landing in a different month than the one on screen moves it, so navigation
+  the user performs is never undone.
+
+  ```tsx
+  const [date, setDate] = useState<Date>();
+
+  <Calendar value={date} onValueChange={setDate} minDate={new Date()} />;
+  ```
+
+  `@takeoff-design/tokens` ships the `tk-calendar-*` recipe. It is built on the
+  Figma `datepicker.*` token family — the one that describes a picking grid
+  (`-items-*` day cells, `-header-*` month row, `-body-*` grid, `-footer-*`) —
+  so day size, cell radius and every inset come from the design system rather
+  than from local values. The separate `calendar.*` family is left alone:
+  `calendar-activity-*` / `calendar-week-cell-*` belong to the activity
+  calendar, which is a different component.
+
+  That family is also why `size` has two values rather than three:
+  `datepicker-items-base-size` and `-small-size` are the only grid scales the
+  design defines — an input row has a `large`, a month grid does not.
+
+  Controlled-ness is decided by whether `value` is **passed**, not by whether it
+  currently holds a date — a picker's controlled value is `undefined` until
+  something is picked, so reading the value would make the ordinary
+  `const [date, setDate] = useState<Date>()` call site silently uncontrolled and
+  drop every parent-driven change after mount (a preset button, a reset, a saved
+  value arriving late).
+
+  Cells keep their own size rather than stretching: the grid is exactly as wide
+  as its seven columns, each one `datepicker-items-*-size` wide, with the
+  exported row gap between rows.
+
+  Day state is read from the attributes the engine already emits, with one
+  subtlety the design forced: in range mode the engine marks _every_ day of the
+  span `data-selected`, so the filled pill is scoped to the two ends and the
+  middle keeps the light band. The band itself is painted on a pseudo-element
+  rather than the cell, because `border-radius` is ignored on a table cell under
+  `border-collapse: collapse` — the layout the flush-column design needs.
+
+  Two Core header features have no `react-day-picker` counterpart, so the
+  wrapper supplies them. `headerType` (`basic` | `divided` | `light` | `primary`
+  | `dark`) is Core's `tk-datepicker` header vocabulary: `basic` divides the
+  month row from the grid, the rest drop that divider for a boxed surface, and
+  the two filled ones flip the label and arrows to white. The header also
+  carries Core's second pair of arrows: each pair steps one rung of the board it
+  is on — the single ones move a month, or a year on the year board; the double
+  ones move a year, or a whole twelve-year page.
+
+  `view` (`day` | `month` | `year`) is Core's view switch: the month and the
+  year in the caption are buttons that swap the day grid for a twelve-month or
+  twelve-year board. Which board shows is a third controlled pair — `view` +
+  `onViewChange`, with `defaultView` for the uncontrolled case, alongside the
+  ones for the selection and the displayed month. The boards are the one part of
+  the anatomy the engine does not render, so they are wrapper-owned —
+  `role="grid"` with one tab stop, arrow-key roving focus, `aria-selected` on
+  the current cell, focus moving into a board as it opens and back to the
+  trigger once a month is picked. Their accessible names come from the engine's
+  own `labels.labelMonthDropdown` / `labelYearDropdown`, so translating the
+  calendar translates the boards. Only the body is replaced: the displayed month
+  stays the engine's, through `goToMonth`. A `dropdown*` caption keeps the
+  engine's `<select>` pair instead of switch buttons and drops the year arrows,
+  since the year `<select>` covers them; the boards still work there.
+
+  One consequence worth calling out: since a board can replace the day grid on
+  any calendar, the body box is pinned on both — the day grid carries the same
+  `min-height` the month/year board does, so a four- or five-week month keeps
+  the six-week box instead of making the card shorter. Switching views does not
+  resize the card, paging months does not either, and `fixedWeeks` is not needed
+  to stop the month-to-month jump.
+
+  The card's width comes from the grid rather than the caption. The caption is
+  the month label plus a reserve for the arrows laid over it —
+  `nav-button * 2 + h-padding` at each end — so a label wider than what is left
+  over stretched the card, which then shrank again on the next arrow. The whole
+  card twitched as you paged, and in a popover the panel's edges moved with it.
+  A single-month calendar is therefore pinned, the caption takes that width
+  instead of setting it (`min-width: 0`, so its `nowrap` label is not its
+  automatic minimum), and a label long enough to reach the arrows ellipsizes. A
+  `numberOfMonths > 1` row, legitimately wider than one grid, is left alone.
+
+  The card is pinned a little wider than the grid, through its own
+  `--tk-calendar-frame-width` (`--tk-calendar-body-width + 24px`, 336px at
+  base). The grid cannot absorb that difference itself — its width is divided
+  between seven `table-layout: fixed` columns, so widening it would move the day
+  cells off their exported size — so the grid keeps `--tk-calendar-body-width`
+  and centres inside the frame. Both scales take the same 24px; more would leave
+  the grid rattling in the card.
+
+  The navigation is sized on its own rather than on the day cell, through
+  `--tk-calendar-nav-button-size` (28px) and `--tk-calendar-nav-icon-size`
+  (20px). The two only ever shared a value by coincidence: 40px is a comfortable
+  day target and a needlessly wide arrow, and the header paid for it twice,
+  since the caption reserves `nav-button * 2 + h-padding` at each end. Four 40px
+  arrows took 192px of a 336px card and left the label 144px; at 28px the
+  reserve is 112px and the label gets 224px, which is what stopped a four-digit
+  year disappearing behind the ellipsis on a long month. The day grid is
+  untouched — `cell-size` still sizes the cells, the weekday row and the
+  week-number column.
+
+  Inside that caption the label takes the whole space between the arrows
+  (`flex: 1`) rather than sizing to its text. Otherwise the header stayed
+  restless even with the card pinned: "September 2026" and "May 2026" are
+  different widths, so the month and year buttons — and their hover boxes —
+  shifted on every arrow click. The box now stays put and only the text inside
+  it changes.
+
+  The same width reaches the two boxes between the card and the caption. The nav
+  is positioned against `.tk-calendar-months`, not against the card, and neither
+  that element nor the month inside it had a width of its own — both sized to
+  their content, so the month name still decided how wide they were. The card
+  centres them, so a narrower month moved both edges inward and the arrows,
+  inset from those edges, drifted with them. All four boxes now share
+  `--tk-calendar-body-width`, and a `numberOfMonths > 1` row is exempt
+  throughout.
+
+- [#196](https://github.com/turkishtechnology/takeoff-v2/pull/196)
+  [`eab6345`](https://github.com/turkishtechnology/takeoff-v2/commit/eab634549921dcd37676bc1c0c9b8ac8b29525bc)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - `Drawer`
+  accepts `modal` and `forceMount`, and `Drawer.Panel` accepts `role`.
+
+  A modal drawer takes the page over: it traps focus, locks body scroll, and
+  puts a pointer-swallowing overlay between the reader and everything behind the
+  panel. That is right for a drawer that interrupts — a form, a confirmation —
+  and wrong for one that inspects something still on screen. Until now modality
+  was fixed, so the second kind had no way to exist.
+
+  `modal={false}` leaves the page live behind the panel: the reader keeps
+  scrolling, and a click on the content behind reaches it. Escape and
+  `Drawer.Close` still dismiss, and `dismissible` still governs click-away. Pair
+  it with omitting `Drawer.Overlay` — the overlay is what swallows pointer
+  events, and the scroll lock comes from the root, so both have to go for the
+  page to stay interactive.
+
+  `role` defaults to `'dialog'` and was already exposed by `Dialog.Panel`; the
+  drawer's omission was an oversight rather than a decision, so the two panels
+  now offer the same surface. Pass `role="alertdialog"` for a drawer that
+  interrupts and must be acknowledged.
+
+  `forceMount` is exposed too, defaulting to `true`. The root turns it on so the
+  panel outlives the open -> closed boundary and the slide-out can run; passing
+  `false` unmounts on close and trades that animation away, which is worth it
+  only for a panel heavy enough to be worth the swap. `Dialog` already offered
+  exactly this opt-out — the drawer pinning it was an inconsistency, not a
+  decision.
+
+  All three are picked from Spar's dialog types alongside the rest of the root's
+  state.
+
+  Existing drawers are untouched: the defaults are the behaviour they already
+  had.
+
+- [#206](https://github.com/turkishtechnology/takeoff-v2/pull/206)
+  [`c359c7f`](https://github.com/turkishtechnology/takeoff-v2/commit/c359c7f3a55531d83662aac9677ea858dda7ef22)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! -
+  `Input.Field` accepts `mask` and `onValueChange`.
+
+  Masking is a Spar capability, and this exposes it rather than reimplementing
+  it: `mask` and `onValueChange` are picked straight from Spar's field types, so
+  the contract a consumer writes against is the one Spar validates. Formatting
+  used to be something each app wired into `onChange` by hand, which meant every
+  app also inherited the caret bugs that come with rewriting a controlled
+  input's value.
+
+  A mask is one of four things. A shape lays characters into blocks and puts a
+  delimiter between them
+  (`{ blocks: [4, 4, 4, 4], delimiter: ' ', numericOnly: true }`). The `date` /
+  `time` / `number` presets additionally interpret the value — clamping a month
+  to 12, a minute to 59, or regrouping an integer as it grows. A `regex` is
+  matched one character at a time, so a pattern written for the final value also
+  accepts every legal prefix. Anything else is a resolver function.
+
+  `number` derives its separators and group sizes from `Intl.NumberFormat`, so
+  `numberLocale: 'tr-TR'` gives `1.234.567,89` and `'en-IN'` gives lakh grouping
+  without a second option, and `meta.iso` is always a `Number()`-parseable
+  string.
+
+  Prefer `onValueChange(value, meta)` over `onChange` on a masked field: Spar
+  applies deletions and undo/redo directly to the control, so those edits never
+  surface as a React change event. `meta` carries `raw`, `completed` and — when
+  the mask defines a canonical form — `iso`.
+
+  `createDateMask`, `createTimeMask`, `createNumberMask` and the `Mask*` types
+  are re-exported from the package, so a resolver that wraps a built-in is an
+  ordinary typed function. The presets are themselves resolvers, so a built-in
+  has no capability your own mask lacks.
+
+  Omitting `mask` leaves the field exactly as it was.
+
+- [#206](https://github.com/turkishtechnology/takeoff-v2/pull/206)
+  [`500cbcb`](https://github.com/turkishtechnology/takeoff-v2/commit/500cbcba46c96cdb81f6cf5542539f9a41667233)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! -
+  `useDatePicker` — the text/`Date` bridge for the date picker composition.
+
+  There is still no `DatePicker` component: a date picker is `Popover` +
+  `Calendar`, composed by the consumer. This hook owns no anatomy and renders
+  nothing, so every element stays the consumer's to place. What it removes is
+  the one part of the composition that was neither short nor situational —
+  keeping a typed string and a `Date` in step in both directions, and deriving
+  the mask bounds from the same pair of dates the grid gets, so a date the
+  calendar rejects cannot be typed either.
+
+  ```tsx
+  const picker = useDatePicker({ min: MIN, max: MAX });
+
+  <Popover {...picker.popoverProps}>
+    <Input>
+      <Input.Field placeholder="dd/mm/yyyy" {...picker.inputProps} />
+      <Popover.Trigger classNames={{ root: 'tk-input-action' }}>
+        …
+      </Popover.Trigger>
+    </Input>
+    <Popover.Content classNames={{ root: 'tk-datepicker-panel' }}>
+      <Calendar {...picker.calendarProps} />
+    </Popover.Content>
+  </Popover>;
+  ```
+
+  Each group is an ordinary object a caller may spread, override one key of, or
+  ignore. `setValue` drives the whole picker from outside — a preset button, a
+  reset, a value restored from a form — and `format` / `delimiter` cover the
+  field's shape without a formatter wired into `onChange`.
+
+  The displayed month is deliberately not part of it: `Calendar` now follows a
+  value set from outside the grid, so a third piece of state would be a second
+  writer to a month the grid already moves.
+
+  It is the only hook the package publishes. `createSafeContext`,
+  `useControllableState` and `useContentWidthStyle` stay internal — they are
+  authoring tools for components in this package, where `useDatePicker` exists
+  precisely because this pattern has no component to put it inside.
+
 ## 0.4.0
 
 ### Minor Changes

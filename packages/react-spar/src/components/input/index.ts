@@ -31,6 +31,31 @@ const Input = Object.assign(InputRoot, {
 
 export { Input };
 
+// Spar's masking vocabulary, re-exported here rather than re-declared. `mask` is
+// a Spar-owned contract, so a consumer writing a resolver (or composing one of
+// the built-ins) must reach the exact same types the primitive validates
+// against — a parallel copy in takeoff-v2 would be a second source of truth.
+// Scoped to the Input barrel because Input is the only surface that takes it.
+export { createDateMask, createNumberMask, createTimeMask } from '@turkish-technology/spar';
+
+export type {
+  Mask,
+  MaskChangeMeta,
+  MaskCommonOptions,
+  MaskDateOptions,
+  MaskDateToken,
+  MaskNumberOptions,
+  MaskPattern,
+  MaskPreset,
+  MaskRegexOptions,
+  MaskResolver,
+  MaskResolverContext,
+  MaskResolverResult,
+  MaskShapeOptions,
+  MaskTimeOptions,
+  MaskTimeToken,
+} from '@turkish-technology/spar';
+
 export type {
   InputChipsProps,
   InputChipsSlot,

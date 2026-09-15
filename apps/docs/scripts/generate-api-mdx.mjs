@@ -95,6 +95,7 @@ const PRIMITIVE_TYPE_NAMES = new Set([
   'Element',
   'ComponentPropsWithoutRef',
   'ComponentPropsWithRef',
+  'Date',
   'Event',
   'EventTarget',
   'MouseEvent',

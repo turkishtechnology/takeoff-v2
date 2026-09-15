@@ -1,226 +1,419 @@
+/* ==========================================================================
+   ICON GALLERY — Showroom layout
+   --------------------------------------------------------------------------
+   Three bands stacked on the docs container: a centred hero, a filter card,
+   and category sections of fixed-size cells. Every colour resolves through the
+   `--docs-*` aliases in `docusaurus-overrides.css`, so light and dark share one
+   skeleton and only the token values flex.
+   ========================================================================== */
+
 .root {
   display: grid;
-  gap: 20px;
+  /* Page rhythm, taken from the Showroom frame: hero -> filter bar -> sections
+     are 24 apart (264 - 240, and 470 - 446 in the design's coordinates). */
+  gap: 24px;
 }
 
-.controls {
+/* ---- Hero ------------------------------------------------------------- */
+
+.hero {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 12px;
+  flex-direction: column;
+  align-items: center;
+  /* 32 between the text block, the actions and the trait pills — the design's
+     108 - 76 and 200 - 168. */
+  gap: 32px;
+  text-align: center;
 }
 
-.search {
-  flex: 1 1 240px;
-  min-width: 200px;
-  padding: 10px 14px;
-  border: 1px solid var(--docs-border-subtle);
-  border-radius: var(--radius-l, 12px);
-  background: var(--docs-surface-2);
-  color: inherit;
-  font-size: 0.95rem;
-}
-
-.search:focus-visible {
-  outline: none;
-  border-color: var(--docs-border-strong);
-}
-
-.field {
-  display: grid;
+.heroText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 4px;
 }
 
-.fieldLabel {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--docs-text-muted, #888);
-}
-
-.select {
-  padding: 9px 12px;
-  border: 1px solid var(--docs-border-subtle);
-  border-radius: var(--radius-l, 12px);
-  background: var(--docs-surface-2);
-  color: inherit;
-  font-size: 0.9rem;
-  text-transform: capitalize;
-}
-
-.count {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--docs-text-muted, #888);
-}
-
-.count code {
-  font-size: 0.8rem;
-}
-
-.empty {
-  padding: 32px;
+.heroEyebrow {
+  color: var(--text-darkest);
   text-align: center;
-  color: var(--docs-text-muted, #888);
+  font-family: var(--desktop-subheading-m-base-font);
+  font-size: var(--desktop-subheading-s-size);
+  font-style: normal;
+  font-weight: 300;
+  line-height: var(--desktop-subheading-m-base-line-height);
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  color: var(--text-darkest);
+  text-align: center;
+  font-family: var(--desktop-title-h2-font);
+  font-size: var(--desktop-title-h2-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 60px;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.heroActions :is(button, a) {
+  height: 40px;
+  padding-block: 0;
+}
+
+.heroTraits {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* ---- Filter bar -------------------------------------------------------- */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  background: var(--static-light);
+}
+
+.toolbar > * {
+  flex: 1 1 140px;
+  min-width: 0;
+  max-width: 220px;
+}
+
+.toolbar > * > * {
+  width: 100%;
+}
+
+.segmented {
+  display: flex;
+  gap: 2px;
+  height: 40px;
+  padding: 3px;
+  border: 1px solid var(--docs-border-subtle);
+  border-radius: var(--radius-m-base, 8px);
+  background: var(--docs-surface-1);
+}
+
+/* Scoped to the track on purpose: a bare `.segment` ties with `.tk-button`'s own
+   `padding` and `min-height`, and the recipe wins the tie — which leaves a 40px
+   button inside a 32px track, clipped top and bottom. The extra class clears the
+   tie without `!important`; `min-height: 0` is what lets the percentage height
+   actually resolve against the track's content box. */
+.segmented .segment {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  padding-block: 0;
+}
+
+/* ---- Sections + grid --------------------------------------------------- */
+
+.sections {
+  display: grid;
+  /* Section to section is 24 in the design (420 - 396), heading to grid is 12
+     (36 - 24). */
+  gap: 24px;
+  color: var(--text-darkest);
+}
+
+.section {
+  display: grid;
+  gap: 12px;
+}
+
+.sectionTitle {
+  color: var(--text-darkest);
+  font-family: var(--desktop-body-l-font);
+  font-size: var(--desktop-body-l-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--desktop-body-l-line-height);
+}
+
+/* Empty state. Reachable in more ways than a bad search now: a category and a
+   type can be individually fine yet have nothing in common. */
+.empty {
+  padding: 48px;
+  color: var(--text-base);
+  text-align: center;
+  font-family: var(--desktop-body-s-font);
+  font-size: var(--desktop-body-s-size);
+  line-height: var(--desktop-body-s-line-height);
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 12px;
 }
 
 .cell {
   display: flex;
+  padding: 12px 8px;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 16px 8px 12px;
-  border: 1px solid var(--docs-border-subtle);
-  border-radius: var(--radius-l, 12px);
-  background: var(--docs-surface-1);
+  gap: 10px;
+  width: 108px;
+  height: 108px;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  background: var(--static-light);
   color: inherit;
   cursor: pointer;
   transition:
     border-color 150ms ease,
-    background 150ms ease,
-    transform 150ms ease;
+    box-shadow 150ms ease;
 }
 
 .cell:hover {
-  border-color: var(--docs-border-strong);
+  box-shadow: var(--docs-shadow-card);
   transform: translateY(-1px);
 }
 
-.glyph {
-  font-size: 28px;
-  color: inherit;
+/* Selected tile. The glyph paints with `currentColor`, so setting `color` once
+   turns it; the label needs its own rule only because it declares a colour of
+   its own, and `inherit` is what defers back rather than repeating the token. */
+.cell[data-selected] {
+  background: var(--background-lightest);
+  border-color: var(--primary-base);
+  color: var(--primary-base);
+  box-shadow: var(--docs-shadow-card);
 }
 
-.glyphPlaceholder {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: var(--docs-surface-2);
+.cell[data-selected] .cellName {
+  color: inherit;
 }
 
 .cellName {
   max-width: 100%;
-  overflow: hidden;
-  font-size: 0.72rem;
-  line-height: 1.2;
-  text-align: center;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--docs-text-muted, #888);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-darkest);
+  text-align: center;
+  font-family: var(--desktop-body-s-font);
+  font-size: var(--desktop-body-s-size);
+  font-style: normal;
+  font-weight: 300;
+  line-height: var(--desktop-body-s-line-height);
 }
 
-/* ---- Detail dialog --------------------------------------------------- */
-/* The shell (overlay, panel chrome, header/footer dividers, close button,
-   scroll, focus trap) comes from takeoff-v2 `Dialog`; code blocks come from
-   Docusaurus `@theme/CodeBlock`. Only the in-panel layout lives here.
-   `min-width: 0` on the flex/grid children is what lets CodeBlock scroll long
-   import paths INSIDE the block instead of widening the dialog. */
-
-.dialogPanel {
-  width: min(560px, calc(100vw - 32px));
-  max-width: 100%;
+/* ---- Detail sheet ------------------------------------------------------ */
+@keyframes sheetIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
 }
 
-.dialogHeading {
+.sheetPanel.sheetPanel.sheetPanel {
+  display: inline-flex;
+  animation: sheetIn 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  flex-direction: column;
+  align-items: flex-start;
+  border-radius: 16px;
+  border: 1px solid var(--border-sub-base);
+  height: 345px;
+  width: min(969px, calc(100vw - 32px));
+  bottom: 20px;
+  inset-inline: 0;
+  margin-inline: auto;
+}
+
+@media (min-width: 997px) {
+  .sheetPanel.sheetPanel.sheetPanel {
+    width: min(969px, calc(100vw - var(--doc-sidebar-width, 264px)));
+    inset-inline-start: var(--doc-sidebar-width, 264px);
+  }
+}
+
+.sheetTitle {
+  color: var(--text-darkest);
+  font-family: var(--desktop-body-m-base-font);
+  font-size: var(--desktop-body-m-base-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--desktop-body-m-base-line-height);
+}
+
+.sheetBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.sheetInspectCol {
   display: flex;
-  align-items: center;
+  min-width: 0;
+}
+
+.sheetDivider {
+  align-self: stretch;
+}
+
+.sheetCode {
+  min-width: 0;
+}
+
+.sheetInspect {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 16px;
   min-width: 0;
 }
 
-.dialogPreview {
+.previewRow {
+  display: grid;
+  grid-template-columns: 188px minmax(0, 280px);
+  align-items: start;
+  gap: 16px;
+  width: 100%;
+}
+
+.previewBox {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  flex: none;
-  border: 1px solid var(--docs-border-subtle);
-  border-radius: var(--radius-l, 12px);
-  background: var(--docs-surface-2);
+  height: 188px;
+  border-radius: 12px;
+  background: var(--frames-light);
+  color: var(--text-darkest);
 }
 
-.dialogGlyph {
-  font-size: 32px;
+/* The inverted swatch. These three tokens all flip with `data-scheme`, so the
+   box lands on the opposite surface from whatever theme the reader is in —
+   which is the point of the toggle — without a literal that only works in one
+   of them. */
+.previewBox[data-inverted] {
+  border-color: var(--border-darkest);
+  background: var(--background-darkest);
+  color: var(--text-lightest);
+}
+
+.previewGlyph {
   color: inherit;
 }
 
-.dialogTitleBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
+.previewToggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
-.dialogTitle {
-  margin: 0;
-  font-size: 1.1rem;
+.previewControls {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 20px;
+}
+
+.previewControlRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 8px;
+}
+
+.checkboxField {
+  align-self: flex-start;
+  box-sizing: border-box;
+  height: 32px;
+  padding-inline: 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--card-switcher-container-radius, 8px);
+}
+
+/* The checkbox row sits inline, so its label drops to body-xs rather than the
+   Field label's default stacked size. */
+.checkboxLabel {
+  font-family: var(--desktop-body-xs-font) !important;
+  font-size: var(--desktop-body-xs-size) !important;
+  line-height: var(--desktop-body-xs-line-height) !important;
+}
+
+.metaBlock {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.blockLabel {
+  color: var(--text-darkest);
+  font-family: var(--desktop-body-xs-font);
+  font-size: var(--desktop-body-xs-size);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--desktop-body-xs-line-height);
+}
+
+.metaValue {
+  flex: 1 1 200px;
+  min-width: 0;
+  color: var(--text-base);
+  font-family: var(--desktop-body-xs-font);
+  font-size: var(--desktop-body-xs-size);
+  font-style: normal;
+  font-weight: 300;
+  line-height: var(--desktop-body-xs-line-height);
   overflow-wrap: anywhere;
 }
 
-.dialogMeta {
+/* Below the two-column threshold the code column stacks under the preview and
+   trades its rule for a top border. */
+@media (max-width: 996px) {
+  .sheetBody {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .sheetDivider {
+    align-self: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .previewRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheetPanel.sheetPanel.sheetPanel {
+    animation: none;
+  }
+}
+
+.downloadBlock {
   display: flex;
   align-items: center;
+  justify-self: flex-end;
+  flex-wrap: wrap;
   gap: 8px;
-  font-size: 0.85rem;
-  color: var(--docs-text-muted, #888);
 }
 
-.dialogCategory {
-  text-transform: capitalize;
-}
-
-.dialogClose {
-  flex: none;
-  cursor: pointer;
-}
-
-.dialogBody {
-  display: grid;
-  gap: 16px;
-  min-width: 0;
-}
-
-.dialogVariantRow {
+.downloadActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-}
-
-.formatPanel {
-  display: grid;
-  gap: 12px;
-  min-width: 0;
-  padding-top: 16px;
-}
-
-/* Keep CodeBlock from stretching the panel: each block scrolls within itself. */
-.formatPanel :global(.theme-code-block),
-.formatPanel pre {
-  min-width: 0;
-  max-width: 100%;
-}
-
-/* Reserve a constant height for the code block sized to the tallest snippet
-   longest usage snippet so switching tabs never resizes the dialog. The
-   inner CodeBlock stretches to fill, keeping every panel the same height. */
-.codeSlot {
-  min-width: 0;
-  min-height: 11.5em;
-  display: flex;
-}
-
-.codeSlot > :global(.theme-code-block) {
-  flex: 1 1 auto;
-  margin: 0;
-}
-
-.codeSlot :global(pre) {
-  height: 100%;
+  gap: 8px;
 }

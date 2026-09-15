@@ -1,18 +1,17 @@
 ---
-title: Gallery
+title: Icon Gallery
+description:
+  Browse every Takeoff icon, filter by category, switch style and type, then
+  copy the React, icon-font, or raw-SVG snippet for the one you picked.
 sidebar_label: Gallery
 sidebar_position: 3
 slug: /gallery
+hide_title: true
+hide_table_of_contents: true
 ---
 
 import IconGallery from '@site/src/components/IconGallery';
 
-# Icon Gallery
-
-Search, filter by category, switch variants, and click any icon to open its
-usage dialog — copy the install command, import, and usage snippet for React,
-the icon font, or the raw SVG. The gallery is generated from
-`@takeoff-icons/core` metadata — run `pnpm --filter docs gen:icons` after adding
-or removing icons.
+{/* Title is hidden above: the gallery renders its own hero. Run `pnpm --filter docs gen:icons` after adding or removing icons. */}
 
 <IconGallery />

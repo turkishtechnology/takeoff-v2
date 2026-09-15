@@ -1,7 +1,9 @@
-import type { CSSProperties } from 'react';
+import { createRef, type CSSProperties, type HTMLAttributes } from 'react';
+import { axe } from 'vitest-axe';
 
 import { describe, expect, it } from 'vitest';
 
+import { TakeoffSparProvider } from '../../provider';
 import { renderWithProvider as render } from '../../test-utils';
 
 import { Skeleton } from './index';
@@ -53,6 +55,27 @@ describe('Skeleton', () => {
       expect(shimmer.className).toContain('custom-shimmer');
       expect(shimmer).toHaveAttribute('id', 'shimmer-override');
     });
+
+    it('layers provider theme defaults and classNames under instance props', () => {
+      const { container } = render(
+        <TakeoffSparProvider components={{ Skeleton: { defaultProps: { shape: 'circle', animation: 'none' }, classNames: { root: 'theme-root', shimmer: 'theme-shimmer' } } }}>
+          <Skeleton animation="shimmer" className="instance-root" />
+        </TakeoffSparProvider>,
+      );
+      const root = container.querySelector('.tk-skeleton') as HTMLElement;
+
+      expect(root).toHaveAttribute('data-type', 'circle');
+      expect(root).toHaveAttribute('data-animation', 'shimmer');
+      expect(root).toHaveClass('tk-skeleton', 'theme-root', 'instance-root');
+      expect(container.querySelector('.tk-skeleton-shimmer')).toHaveClass('tk-skeleton-shimmer', 'theme-shimmer');
+    });
+
+    it('forwards a ref to the root span', () => {
+      const ref = createRef<HTMLSpanElement>();
+      const { container } = render(<Skeleton ref={ref} />);
+
+      expect(ref.current).toBe(container.querySelector('span.tk-skeleton'));
+    });
   });
 
   describe('sizing', () => {
@@ -95,12 +118,67 @@ describe('Skeleton', () => {
     });
   });
 
+  describe('root layers and invariants', () => {
+    it('lands root classNames and slotProps on the root span', () => {
+      const { container } = render(<Skeleton classNames={{ root: 'root-extra' }} slotProps={{ root: { id: 'loading-bar', style: { opacity: 0.5 } } }} width={10} />);
+      const root = container.querySelector('span.tk-skeleton') as HTMLElement;
+
+      expect(root).toHaveClass('tk-skeleton', 'root-extra');
+      expect(root).toHaveAttribute('id', 'loading-bar');
+      expect(root.style.opacity).toBe('0.5');
+      expect(root.style.getPropertyValue('--tk-skeleton-width')).toBe('10px');
+    });
+
+    it('keeps the variant hooks and the hidden shimmer strip against slotProps overrides', () => {
+      const { container } = render(
+        <Skeleton
+          shape="circle"
+          animation="none"
+          slotProps={{ root: { 'data-type': 'rectangle', 'data-animation': 'shimmer' } as HTMLAttributes<HTMLElement>, shimmer: { 'aria-hidden': false } }}
+        />,
+      );
+
+      const root = container.querySelector('.tk-skeleton');
+      expect(root).toHaveAttribute('data-type', 'circle');
+      expect(root).toHaveAttribute('data-animation', 'none');
+      expect(container.querySelector('.tk-skeleton-shimmer')).toHaveAttribute('aria-hidden', 'true');
+    });
+
+    it('merges a provider slotProps style under the instance style prop, key by key', () => {
+      const { container } = render(
+        <TakeoffSparProvider components={{ Skeleton: { slotProps: { root: { style: { color: 'rgb(4, 5, 6)', marginTop: '4px' } } } } }}>
+          <Skeleton style={{ color: 'rgb(1, 2, 3)' }} />
+        </TakeoffSparProvider>,
+      );
+
+      expect(container.querySelector('.tk-skeleton')).toHaveStyle({ color: 'rgb(1, 2, 3)', marginTop: '4px' });
+    });
+
+    it('lets the size props win over a size custom property passed through slotProps', () => {
+      const { container } = render(<Skeleton height={24} slotProps={{ root: { style: { '--tk-skeleton-height': '3rem' } as CSSProperties } }} />);
+      const root = container.querySelector('.tk-skeleton') as HTMLElement;
+
+      expect(root.style.getPropertyValue('--tk-skeleton-height')).toBe('24px');
+    });
+  });
+
   describe('accessibility', () => {
     it('stays out of the accessibility tree by default but honors an override', () => {
       const { container } = render(<Skeleton aria-hidden={false} />);
       const root = container.querySelector('.tk-skeleton') as HTMLElement;
 
       expect(root).toHaveAttribute('aria-hidden', 'false');
+    });
+
+    it('has no a11y violations for either shape', async () => {
+      const { container } = render(
+        <div>
+          <Skeleton height={16} width={200} />
+          <Skeleton shape="circle" height={40} />
+        </div>,
+      );
+
+      expect(await axe(container)).toHaveNoViolations();
     });
   });
 });

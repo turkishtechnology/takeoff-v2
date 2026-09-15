@@ -208,6 +208,8 @@ Examples of explicit precedence that should be documented and tested:
 - `indeterminate` overrides `value` / `defaultValue` on `Checkbox`
 - instance `slotProps` / `classNames` override theme-level counterparts of the
   same slot
+- instance props override the same attribute in theme-level `slotProps`; a theme
+  `style` merges key by key under the instance `style`
 
 ### `slotProps` scope — what it is and isn't for
 
@@ -680,7 +682,8 @@ Before considering a component complete:
 - `pnpm check-types`
 - `pnpm lint`
 - `pnpm build`
-- `pnpm --filter @takeoff-ui/react-spar test`
+- `pnpm --filter @takeoff-ui/react-spar test:coverage` (the CI gate — fails
+  below the coverage thresholds in `vitest.config.ts`)
 - regenerate docs API output when public types changed
 - confirm the root is exported from `src/components/index.ts` (subcomponents are
   reached exclusively through the root)

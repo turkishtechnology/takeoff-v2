@@ -1,5 +1,5 @@
 import userEvent from '@testing-library/user-event';
-import type { HTMLAttributes } from 'react';
+import type { HTMLAttributes, KeyboardEvent, MouseEvent } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { axe } from 'vitest-axe';
 import { describe, expect, it, vi } from 'vitest';
@@ -314,6 +314,26 @@ describe('Stepper (compound)', () => {
 
       expect(screen.getByRole('button', { name: 'Only' })).toHaveAttribute('aria-describedby', 'custom-description');
     });
+
+    it('follows the description as its id changes and drops the link once it unmounts', () => {
+      const Steps = ({ descriptionId }: { descriptionId?: string }) => (
+        <Stepper>
+          <Stepper.Item>
+            <Stepper.Title>Only</Stepper.Title>
+            {descriptionId ? <Stepper.Description id={descriptionId}>Details</Stepper.Description> : null}
+          </Stepper.Item>
+        </Stepper>
+      );
+      const { rerender } = render(<Steps descriptionId="first-description" />);
+      expect(screen.getByRole('button', { name: 'Only' })).toHaveAttribute('aria-describedby', 'first-description');
+
+      rerender(<Steps descriptionId="second-description" />);
+      expect(screen.getByRole('button', { name: 'Only' })).toHaveAttribute('aria-describedby', 'second-description');
+
+      // A reference to a node that is no longer in the document is invalid ARIA.
+      rerender(<Steps />);
+      expect(screen.getByRole('button', { name: 'Only' })).not.toHaveAttribute('aria-describedby');
+    });
   });
 
   describe('indicator glyphs', () => {
@@ -561,6 +581,30 @@ describe('Stepper (compound)', () => {
       expect(onStepClick).toHaveBeenLastCalledWith({ index: 2, status: 'inactive' });
     });
 
+    it('lets a slotProps.trigger onClick veto the press before it emits or selects', async () => {
+      const user = userEvent.setup();
+      const onActiveChange = vi.fn();
+      const onStepClick = vi.fn();
+      const veto = vi.fn((event: MouseEvent<HTMLElement>) => event.preventDefault());
+      render(
+        <Stepper defaultActive={0} onActiveChange={onActiveChange} onStepClick={onStepClick}>
+          <Stepper.Item>
+            <Stepper.Title>One</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item slotProps={{ trigger: { onClick: veto } }}>
+            <Stepper.Title>Two</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Two' }));
+
+      expect(veto).toHaveBeenCalledTimes(1);
+      expect(onStepClick).not.toHaveBeenCalled();
+      expect(onActiveChange).not.toHaveBeenCalled();
+      expect(screen.getByRole('button', { name: 'One' })).toHaveAttribute('aria-current', 'step');
+    });
+
     it('blocks disabled steps natively: unfocusable, silent, and unselectable', async () => {
       const user = userEvent.setup();
       const onActiveChange = vi.fn();
@@ -759,12 +803,17 @@ describe('Stepper (compound)', () => {
       expect(screen.getByRole('button', { name: 'Shipping' })).toHaveFocus();
     });
 
-    it('scopes arrow-key navigation to the nearest Stepper, ignoring a nested Stepper rendered inside a step', async () => {
+    it('scopes arrow-key navigation to the nearest Stepper, ignoring a nested Stepper rendered inside the list', async () => {
       const user = userEvent.setup();
       render(
         <Stepper>
           <Stepper.Item>
             <Stepper.Title>Outer One</Stepper.Title>
+          </Stepper.Item>
+          {/* Hosted beside the steps rather than inside one: a step's children
+              render inside its <button>, and a nested list there would put a
+              button inside a button (invalid HTML React reports). */}
+          <li>
             <Stepper>
               <Stepper.Item>
                 <Stepper.Title>Inner One</Stepper.Title>
@@ -773,7 +822,7 @@ describe('Stepper (compound)', () => {
                 <Stepper.Title>Inner Two</Stepper.Title>
               </Stepper.Item>
             </Stepper>
-          </Stepper.Item>
+          </li>
           <Stepper.Item>
             <Stepper.Title>Outer Two</Stepper.Title>
           </Stepper.Item>
@@ -790,6 +839,81 @@ describe('Stepper (compound)', () => {
       await user.keyboard('{ArrowRight}');
       // No wrap into the outer stepper's triggers at the inner list's edge.
       expect(screen.getByRole('button', { name: 'Inner Two' })).toHaveFocus();
+    });
+
+    it('holds focus on a non-clickable trigger for the arrows, but still jumps to the ends with Home and End', async () => {
+      const user = userEvent.setup();
+      const onWrapperKeyDown = vi.fn();
+      render(
+        <div onKeyDown={event => onWrapperKeyDown(event.key, event.defaultPrevented)}>
+          <Stepper>
+            <Stepper.Item>
+              <Stepper.Title>One</Stepper.Title>
+            </Stepper.Item>
+            <Stepper.Item isClickable={false}>
+              <Stepper.Title>Two</Stepper.Title>
+            </Stepper.Item>
+            <Stepper.Item>
+              <Stepper.Title>Three</Stepper.Title>
+            </Stepper.Item>
+          </Stepper>
+        </div>,
+      );
+      const two = screen.getByRole('button', { name: 'Two' });
+
+      // Out of the arrow sequence, so there is no neighbour to step to — but the
+      // key is still consumed rather than scrolling the page.
+      two.focus();
+      await user.keyboard('{ArrowRight}');
+      expect(two).toHaveFocus();
+      expect(onWrapperKeyDown).toHaveBeenLastCalledWith('ArrowRight', true);
+
+      await user.keyboard('{End}');
+      expect(screen.getByRole('button', { name: 'Three' })).toHaveFocus();
+
+      two.focus();
+      await user.keyboard('{Home}');
+      expect(screen.getByRole('button', { name: 'One' })).toHaveFocus();
+    });
+
+    it('does not claim a key pressed on a nested Stepper trigger, even one only the outer list maps', async () => {
+      const user = userEvent.setup();
+      const onWrapperKeyDown = vi.fn();
+      render(
+        <div onKeyDown={event => onWrapperKeyDown(event.key, event.defaultPrevented)}>
+          <Stepper>
+            <Stepper.Item>
+              <Stepper.Title>Outer One</Stepper.Title>
+            </Stepper.Item>
+            {/* Hosted beside the steps rather than inside one: a step's children
+                render inside its <button>, and a nested list there would put a
+                button inside a button (invalid HTML React reports). */}
+            <li>
+              <Stepper orientation="vertical">
+                <Stepper.Item>
+                  <Stepper.Title>Inner One</Stepper.Title>
+                </Stepper.Item>
+                <Stepper.Item>
+                  <Stepper.Title>Inner Two</Stepper.Title>
+                </Stepper.Item>
+              </Stepper>
+            </li>
+            <Stepper.Item>
+              <Stepper.Title>Outer Two</Stepper.Title>
+            </Stepper.Item>
+          </Stepper>
+        </div>,
+      );
+
+      // ArrowRight is cross-axis for the vertical inner list, so it bubbles up
+      // unhandled; the horizontal outer list must not treat a trigger that is not
+      // its own as one of its steps.
+      const inner = screen.getByRole('button', { name: 'Inner One' });
+      inner.focus();
+      await user.keyboard('{ArrowRight}');
+
+      expect(inner).toHaveFocus();
+      expect(onWrapperKeyDown).toHaveBeenCalledWith('ArrowRight', false);
     });
   });
 
@@ -928,6 +1052,275 @@ describe('Stepper (compound)', () => {
         </Stepper>,
       );
       expect(await axe(container)).toHaveNoViolations();
+    });
+  });
+  describe('text parts and layering', () => {
+    it('renders Title and Description as spans inside the content slot, with their class, data-slot and customization layers', () => {
+      const { container } = render(
+        <Stepper>
+          <Stepper.Item>
+            <Stepper.Title className="title-extra" slotProps={{ root: { title: 'title-slot' } }}>
+              Shipping
+            </Stepper.Title>
+            <Stepper.Description classNames={{ root: 'description-extra' }} slotProps={{ root: { title: 'description-slot' } }}>
+              Address details
+            </Stepper.Description>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      const content = container.querySelector('.tk-stepper-content');
+
+      const title = screen.getByText('Shipping');
+      expect(title.tagName).toBe('SPAN');
+      expect(title).toHaveClass('tk-stepper-title', 'title-extra');
+      expect(title).toHaveAttribute('data-slot', 'root');
+      expect(title).toHaveAttribute('title', 'title-slot');
+      expect(title.parentElement).toBe(content);
+
+      const description = screen.getByText('Address details');
+      expect(description.tagName).toBe('SPAN');
+      expect(description).toHaveClass('tk-stepper-description', 'description-extra');
+      expect(description).toHaveAttribute('data-slot', 'root');
+      expect(description).toHaveAttribute('title', 'description-slot');
+      expect(description.parentElement).toBe(content);
+    });
+
+    it('renders Title and Description as the elements `as` names, keeping the description linked', () => {
+      render(
+        <Stepper>
+          <Stepper.Item>
+            <Stepper.Title as="strong">Shipping</Stepper.Title>
+            <Stepper.Description as="em">Address details</Stepper.Description>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      expect(screen.getByText('Shipping').tagName).toBe('STRONG');
+      const description = screen.getByText('Address details');
+      expect(description.tagName).toBe('EM');
+      expect(screen.getByRole('button', { name: 'Shipping' })).toHaveAttribute('aria-describedby', description.id);
+    });
+
+    it('keeps the description linked to the trigger and out of its name against slotProps overrides', () => {
+      render(
+        <Stepper>
+          <Stepper.Item>
+            <Stepper.Title>Only</Stepper.Title>
+            <Stepper.Description slotProps={{ root: { 'id': 'hijacked', 'aria-hidden': false } }}>Details</Stepper.Description>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      const description = screen.getByText('Details');
+      expect(description).toHaveAttribute('aria-hidden', 'true');
+
+      // Named by the title alone, and described by the node that really carries the id.
+      const trigger = screen.getByRole('button', { name: 'Only' });
+      expect(trigger).toHaveAttribute('aria-describedby', description.id);
+      expect(trigger).toHaveAccessibleDescription('Details');
+    });
+
+    it('keeps the trigger state attributes locked against slotProps overrides', () => {
+      render(
+        <Stepper defaultActive={0}>
+          <Stepper.Item slotProps={{ trigger: { 'tabIndex': -1, 'aria-current': 'false', 'disabled': true } as HTMLAttributes<HTMLElement> }}>
+            <Stepper.Title>One</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      const trigger = screen.getByRole('button', { name: 'One' });
+      expect(trigger).toBeEnabled();
+      expect(trigger).not.toHaveAttribute('tabindex');
+      expect(trigger).toHaveAttribute('aria-current', 'step');
+    });
+
+    it('layers provider theme classNames and defaults under instance props on every part', () => {
+      const { container } = render(
+        <TakeoffSparProvider
+          components={{
+            Stepper: { defaultProps: { size: 'small', orientation: 'vertical' }, classNames: { root: 'theme-root' } },
+            StepperItem: { classNames: { root: 'theme-item', trigger: 'theme-trigger', indicator: 'theme-indicator' } },
+            StepperTitle: { classNames: { root: 'theme-title' } },
+            StepperDescription: { classNames: { root: 'theme-description' } },
+          }}
+        >
+          <Stepper className="instance-root" orientation="horizontal">
+            <Stepper.Item classNames={{ trigger: 'instance-trigger' }}>
+              <Stepper.Title className="instance-title">One</Stepper.Title>
+              <Stepper.Description>Details</Stepper.Description>
+            </Stepper.Item>
+          </Stepper>
+        </TakeoffSparProvider>,
+      );
+
+      const root = container.querySelector('.tk-stepper');
+      expect(root).toHaveClass('theme-root', 'instance-root');
+      expect(root).toHaveAttribute('data-size', 'small');
+      expect(root).toHaveAttribute('data-orientation', 'horizontal');
+
+      expect(container.querySelector('.tk-stepper-item')).toHaveClass('theme-item');
+      expect(container.querySelector('.tk-stepper-trigger')).toHaveClass('theme-trigger', 'instance-trigger');
+      expect(container.querySelector('.tk-stepper-indicator')).toHaveClass('theme-indicator');
+      expect(container.querySelector('.tk-stepper-title')).toHaveClass('theme-title', 'instance-title');
+      expect(container.querySelector('.tk-stepper-description')).toHaveClass('theme-description');
+    });
+
+    it('forwards refs to the root, the item and the text parts', () => {
+      const rootRef = vi.fn();
+      const itemRef = vi.fn();
+      const titleRef = vi.fn();
+      const descriptionRef = vi.fn();
+      const { container } = render(
+        <Stepper ref={rootRef}>
+          <Stepper.Item ref={itemRef}>
+            <Stepper.Title ref={titleRef}>One</Stepper.Title>
+            <Stepper.Description ref={descriptionRef}>Details</Stepper.Description>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      expect(rootRef).toHaveBeenCalledWith(container.querySelector('ol.tk-stepper'));
+      expect(itemRef).toHaveBeenCalledWith(container.querySelector('li.tk-stepper-item'));
+      expect(titleRef).toHaveBeenCalledWith(screen.getByText('One'));
+      expect(descriptionRef).toHaveBeenCalledWith(screen.getByText('Details'));
+    });
+  });
+
+  describe('selection and keyboard edge cases', () => {
+    it('blocks the next linear step while the current one is disabled, but keeps earlier steps reachable', async () => {
+      const user = userEvent.setup();
+      const onActiveChange = vi.fn();
+      const onStepClick = vi.fn();
+      const { container } = render(
+        <Stepper defaultActive={1} linear onActiveChange={onActiveChange} onStepClick={onStepClick}>
+          <Stepper.Item>
+            <Stepper.Title>One</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item disabled>
+            <Stepper.Title>Two</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item>
+            <Stepper.Title>Three</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      const three = screen.getByRole('button', { name: 'Three' });
+      expect(three).toHaveAttribute('aria-disabled', 'true');
+      expect(container.querySelectorAll('.tk-stepper-item')[2]).not.toHaveAttribute('data-clickable');
+
+      await user.click(three);
+      expect(onStepClick).not.toHaveBeenCalled();
+      expect(onActiveChange).not.toHaveBeenCalled();
+
+      await user.click(screen.getByRole('button', { name: 'One, completed' }));
+      expect(onStepClick).toHaveBeenCalledExactlyOnceWith({ index: 0, status: 'completed' });
+      expect(onActiveChange).toHaveBeenCalledExactlyOnceWith(0);
+    });
+
+    it('emits onStepClick with the pressed step and its status while controlled, leaving the selection to the parent', async () => {
+      const user = userEvent.setup();
+      const onActiveChange = vi.fn();
+      const onStepClick = vi.fn();
+      render(
+        <Stepper active={2} onActiveChange={onActiveChange} onStepClick={onStepClick}>
+          <Stepper.Item>
+            <Stepper.Title>One</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item>
+            <Stepper.Title>Two</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item>
+            <Stepper.Title>Three</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'One, completed' }));
+
+      expect(onStepClick).toHaveBeenCalledExactlyOnceWith({ index: 0, status: 'completed' });
+      expect(onActiveChange).toHaveBeenCalledExactlyOnceWith(0);
+      expect(screen.getByRole('button', { name: 'Three' })).toHaveAttribute('aria-current', 'step');
+      expect(screen.getByRole('button', { name: 'One, completed' })).not.toHaveAttribute('aria-current');
+    });
+
+    it('leaves disabled and non-clickable steps out of the Tab sequence, and activates a step with Space', async () => {
+      const user = userEvent.setup();
+      const onActiveChange = vi.fn();
+      render(
+        <Stepper onActiveChange={onActiveChange}>
+          <Stepper.Item>
+            <Stepper.Title>One</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item disabled>
+            <Stepper.Title>Two</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item isClickable={false}>
+            <Stepper.Title>Three</Stepper.Title>
+          </Stepper.Item>
+          <Stepper.Item>
+            <Stepper.Title>Four</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      await user.tab();
+      expect(screen.getByRole('button', { name: 'One' })).toHaveFocus();
+      await user.tab();
+      expect(screen.getByRole('button', { name: 'Four' })).toHaveFocus();
+
+      await user.keyboard(' ');
+      expect(onActiveChange).toHaveBeenCalledExactlyOnceWith(3);
+    });
+
+    it('keeps an outer list’s arrow sequence off the triggers of a Stepper nested inside it', async () => {
+      const user = userEvent.setup();
+      render(
+        <Stepper>
+          <Stepper.Item>
+            <Stepper.Title>Outer One</Stepper.Title>
+          </Stepper.Item>
+          {/* Hosted beside the steps rather than inside one: a step's children
+              render inside its <button>, so nesting a list there is invalid HTML. */}
+          <li>
+            <Stepper>
+              <Stepper.Item>
+                <Stepper.Title>Inner One</Stepper.Title>
+              </Stepper.Item>
+              <Stepper.Item>
+                <Stepper.Title>Inner Two</Stepper.Title>
+              </Stepper.Item>
+            </Stepper>
+          </li>
+          <Stepper.Item>
+            <Stepper.Title>Outer Two</Stepper.Title>
+          </Stepper.Item>
+        </Stepper>,
+      );
+
+      screen.getByRole('button', { name: 'Outer One' }).focus();
+
+      // The inner triggers sit between the two in document order, but belong to
+      // their own list — the outer arrow steps straight past them.
+      await user.keyboard('{ArrowRight}');
+      expect(screen.getByRole('button', { name: 'Outer Two' })).toHaveFocus();
+
+      await user.keyboard('{ArrowLeft}');
+      expect(screen.getByRole('button', { name: 'Outer One' })).toHaveFocus();
+    });
+
+    it('runs a slotProps.root onKeyDown and yields to its preventDefault', async () => {
+      const user = userEvent.setup();
+      const onKeyDown = vi.fn((event: KeyboardEvent<HTMLElement>) => event.preventDefault());
+      renderSteps({ slotProps: { root: { onKeyDown } } });
+
+      await user.tab();
+      await user.keyboard('{ArrowRight}');
+
+      expect(onKeyDown).toHaveBeenLastCalledWith(expect.objectContaining({ key: 'ArrowRight' }));
+      expect(screen.getByRole('button', { name: 'Shipping' })).toHaveFocus();
     });
   });
 });

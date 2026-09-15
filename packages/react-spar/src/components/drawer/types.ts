@@ -34,10 +34,11 @@ export type DrawerCloseSlot = 'root';
  * children, which read shared values from context).
  */
 export interface DrawerProps
-  // Dialog root identity, controlled state, and trigger disable. Other Spar
-  // Dialog root props (e.g. `modal`) are intentionally not exposed — the
-  // Drawer's modality is part of its visual contract, not a consumer knob.
-  extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled'> {
+  // Dialog root identity, controlled state, modality and trigger disable are
+  // consumer knobs. `forceMount` is exposed for the same reason `Dialog` exposes
+  // it: the root turns it on by default so the exit transition can run, and a
+  // consumer with a heavy panel may want to opt out (see `Drawer.tsx`).
+  extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled' | 'modal' | 'forceMount'> {
   /** Side the drawer slides in from. */
   placement?: DrawerPlacement;
   /** Whether the drawer can be dismissed by clicking outside or pressing Escape. @defaultValue true */
@@ -90,12 +91,15 @@ export type DrawerPanelProps<T extends ElementType = 'div'> = PolymorphicProps<
   'div',
   T,
   DrawerPanelOwnProps &
-    // Focus management (trap/restore/initial/final + auto-focus hooks) and
-    // dismiss event hooks. Consumers need these to integrate with their own
-    // focus orchestration and to veto dismissal. Spar's visual content props
-    // (e.g. forceMount) are not exposed — takeoff-v2 sets them internally.
+    // Panel role, focus management (trap/restore/initial/final + auto-focus
+    // hooks) and dismiss event hooks — the same surface `Dialog.Panel` exposes,
+    // since consumers need them to integrate with their own focus orchestration
+    // and to veto dismissal. `forceMount` stays out: the panel has to outlive
+    // the open -> closed boundary for the slide-out to run, so it is pinned in
+    // `Drawer.tsx` rather than offered as a knob.
     Pick<
       SparDialogContentProps,
+      | 'role'
       | 'container'
       | 'trapFocus'
       | 'restoreFocus'

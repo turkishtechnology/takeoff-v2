@@ -1,9 +1,10 @@
-import type { KeyboardEvent, PointerEvent } from 'react';
-import { fireEvent } from '@testing-library/react';
+import { createRef, type KeyboardEvent, type PointerEvent } from 'react';
+import { act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { TakeoffSparProvider } from '../../provider';
 import { renderWithProvider as render, screen } from '../../test-utils';
 
 import { Field } from '../field';
@@ -160,6 +161,75 @@ describe('Slider (compound)', () => {
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('at most'));
       warn.mockRestore();
     });
+
+    it('floors an off-grid max to the last whole step rather than rounding past it', () => {
+      const { container } = render(
+        <Slider min={0} max={10} step={4}>
+          <Slider.Ticks />
+        </Slider>,
+      );
+
+      // 10 / 4 = 2.5 steps: only 0, 4 and 8 sit on the grid, so no mark is drawn
+      // past the last reachable step (a rounded count would add a fourth at 12).
+      const ticks = container.querySelectorAll<HTMLElement>('.tk-slider-tick');
+      expect(Array.from(ticks, tick => tick.style.insetInlineStart)).toEqual(['0%', '40%', '80%']);
+    });
+
+    it('warns about a too-dense grid once, however often the slider re-renders', () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { container, rerender } = render(
+        <Slider min={0} max={100} step={0.1}>
+          <Slider.Ticks />
+        </Slider>,
+      );
+      rerender(
+        <Slider min={0} max={100} step={0.05}>
+          <Slider.Ticks />
+        </Slider>,
+      );
+
+      expect(container.querySelectorAll('.tk-slider-tick')).toHaveLength(0);
+      expect(warn).toHaveBeenCalledTimes(1);
+      warn.mockRestore();
+    });
+
+    it('forwards refs to the track and thumb without detaching the internal wiring', () => {
+      const trackRef = createRef<HTMLDivElement>();
+      const thumbRef = vi.fn();
+      const onChange = vi.fn();
+      const { container, unmount } = render(
+        <Slider min={0} max={100} step={1} defaultValue={0} onValueChange={onChange}>
+          <Slider.Track ref={trackRef}>
+            <Slider.Range />
+            <Slider.Thumb ref={thumbRef} />
+          </Slider.Track>
+        </Slider>,
+      );
+
+      expect(trackRef.current).toBe(container.querySelector('.tk-slider-track'));
+      expect(thumbRef).toHaveBeenCalledWith(screen.getByRole('slider'));
+
+      // The consumer ref sits beside the root's own measurement ref rather than
+      // replacing it: press-to-seek still reads the rail.
+      fireEvent.pointerDown(measureTrack(container), { clientX: 150, button: 0 });
+      fireEvent.pointerUp(document);
+      expect(onChange).toHaveBeenCalledWith(75);
+      unmount();
+
+      // The other ref form on each part.
+      const trackCallback = vi.fn();
+      const thumbObject = createRef<HTMLSpanElement>();
+      const { container: swapped } = render(
+        <Slider defaultValue={10}>
+          <Slider.Track ref={trackCallback}>
+            <Slider.Thumb ref={thumbObject} />
+          </Slider.Track>
+        </Slider>,
+      );
+
+      expect(trackCallback).toHaveBeenCalledWith(swapped.querySelector('.tk-slider-track'));
+      expect(thumbObject.current).toBe(screen.getByRole('slider'));
+    });
   });
 
   describe('value model', () => {
@@ -188,7 +258,7 @@ describe('Slider (compound)', () => {
       expect(thumbs).toHaveLength(3);
       expect(thumbs.map(t => t.getAttribute('aria-valuenow'))).toEqual(['20', '50', '80']);
 
-      thumbs[1].focus();
+      act(() => thumbs[1].focus());
       await user.keyboard('{ArrowRight}');
 
       // The middle handle's value must survive the commit — the whole array is
@@ -201,7 +271,7 @@ describe('Slider (compound)', () => {
       render(<Slider range min={0} max={100} step={10} defaultValue={[30, 40, 50]} />);
 
       const [, middle] = screen.getAllByRole('slider');
-      middle.focus();
+      act(() => middle.focus());
 
       await user.keyboard('{End}');
       expect(middle).toHaveAttribute('aria-valuenow', '50');
@@ -256,6 +326,57 @@ describe('Slider (compound)', () => {
       warn.mockRestore();
     });
 
+    it('warns about an inverted range once, however often the slider re-renders', () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { rerender } = render(<Slider min={50} max={10} />);
+      rerender(<Slider min={50} max={20} />);
+      rerender(<Slider min={50} max={30} />);
+
+      expect(screen.getByRole('slider')).toHaveAttribute('aria-valuemax', '150');
+      expect(warn).toHaveBeenCalledTimes(1);
+      warn.mockRestore();
+    });
+
+    it('falls back to the defaults for a non-finite min, a non-positive step, and a non-finite value', async () => {
+      const user = userEvent.setup();
+      const { unmount } = render(<Slider min={Number.NaN} max={50} step={0} defaultValue={7.4} />);
+
+      const thumb = screen.getByRole('slider');
+      expect(thumb).toHaveAttribute('aria-valuemin', '0');
+      expect(thumb).toHaveAttribute('aria-valuemax', '50');
+      // Snapped onto the default step of 1, which the keyboard then moves by.
+      expect(thumb).toHaveAttribute('aria-valuenow', '7');
+      act(() => thumb.focus());
+      await user.keyboard('{ArrowRight}');
+      expect(thumb).toHaveAttribute('aria-valuenow', '8');
+      unmount();
+
+      // A non-finite value never reaches the ARIA surface or the offsets.
+      render(<Slider min={10} max={50} defaultValue={Number.NaN} />);
+      expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '10');
+      expect(screen.getByRole('slider').style.insetInlineStart).toBe('0%');
+    });
+
+    it('keeps the precision of a tiny step that stringifies in exponent form', async () => {
+      const user = userEvent.setup();
+      render(
+        <>
+          <Slider aria-label="Coarse" min={0} max={0.000001} step={1e-7} defaultValue={3e-7} />
+          <Slider aria-label="Fine" min={0} max={0.000001} step={2.5e-7} defaultValue={5e-7} />
+        </>,
+      );
+
+      // `1e-7` has no decimal point to count, so reading the precision off the
+      // plain notation alone would round every value on this grid down to 0.
+      expect(screen.getByRole('slider', { name: 'Coarse' })).toHaveAttribute('aria-valuenow', '3e-7');
+
+      const fine = screen.getByRole('slider', { name: 'Fine' });
+      expect(fine).toHaveAttribute('aria-valuenow', '5e-7');
+      act(() => fine.focus());
+      await user.keyboard('{ArrowRight}');
+      expect(fine).toHaveAttribute('aria-valuenow', '7.5e-7');
+    });
+
     it('renders the committed value through Slider.Value', () => {
       const { container } = render(
         <Slider defaultValue={40}>
@@ -297,7 +418,7 @@ describe('Slider (compound)', () => {
 
       // The readout tracks an uncontrolled slider without the consumer
       // holding the value — the gap this part exists to close.
-      screen.getByRole('slider').focus();
+      act(() => screen.getByRole('slider').focus());
       await user.keyboard('{ArrowRight}');
       expect(screen.getByText('40 of 100')).toBeInTheDocument();
     });
@@ -399,7 +520,7 @@ describe('Slider (compound)', () => {
       render(<Slider range min={0} max={100} step={10} defaultValue={[40, 50]} />);
 
       const [first] = screen.getAllByRole('slider');
-      first.focus();
+      act(() => first.focus());
 
       await user.keyboard('{ArrowRight}');
       expect(first).toHaveAttribute('aria-valuenow', '50');
@@ -417,13 +538,13 @@ describe('Slider (compound)', () => {
       const onChange = vi.fn();
 
       const { unmount } = render(<Slider defaultValue={30} disabled onValueChange={onChange} />);
-      screen.getByRole('slider').focus();
+      act(() => screen.getByRole('slider').focus());
       await user.keyboard('{ArrowRight}');
       expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '30');
       unmount();
 
       render(<Slider defaultValue={30} readOnly onValueChange={onChange} />);
-      screen.getByRole('slider').focus();
+      act(() => screen.getByRole('slider').focus());
       await user.keyboard('{ArrowRight}');
       expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '30');
       expect(onChange).not.toHaveBeenCalled();
@@ -434,7 +555,7 @@ describe('Slider (compound)', () => {
       render(<Slider min={0} max={100} step={5} defaultValue={50} />);
 
       const thumb = screen.getByRole('slider');
-      thumb.focus();
+      act(() => thumb.focus());
 
       await user.keyboard('{ArrowUp}');
       expect(thumb).toHaveAttribute('aria-valuenow', '55');
@@ -456,7 +577,7 @@ describe('Slider (compound)', () => {
       );
 
       const thumb = screen.getByRole('slider');
-      thumb.focus();
+      act(() => thumb.focus());
       await user.keyboard('{ArrowRight}');
 
       // The consumer handler ran, and because it preventDefault-ed, the slider's
@@ -478,11 +599,31 @@ describe('Slider (compound)', () => {
       );
 
       const thumb = screen.getByRole('slider');
-      thumb.focus();
+      act(() => thumb.focus());
       await user.keyboard('{ArrowRight}');
 
       expect(onKeyDown).toHaveBeenCalled();
       expect(thumb).toHaveAttribute('aria-valuenow', '40');
+    });
+
+    it('leaves keys it does not map to the page, value untouched', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const onWrapperKeyDown = vi.fn();
+      render(
+        <div onKeyDown={event => onWrapperKeyDown(event.key, event.defaultPrevented)}>
+          <Slider min={0} max={100} step={10} defaultValue={30} onValueChange={onChange} />
+        </div>,
+      );
+
+      const thumb = screen.getByRole('slider');
+      act(() => thumb.focus());
+      await user.keyboard('{Enter}a');
+
+      expect(onWrapperKeyDown).toHaveBeenCalledWith('Enter', false);
+      expect(onWrapperKeyDown).toHaveBeenCalledWith('a', false);
+      expect(thumb).toHaveAttribute('aria-valuenow', '30');
+      expect(onChange).not.toHaveBeenCalled();
     });
   });
 
@@ -492,7 +633,7 @@ describe('Slider (compound)', () => {
       const onChange = vi.fn();
       render(<Slider min={0} max={100} step={10} defaultValue={20} onValueChange={onChange} />);
 
-      screen.getByRole('slider').focus();
+      act(() => screen.getByRole('slider').focus());
       await user.keyboard('{ArrowRight}');
 
       expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '30');
@@ -505,7 +646,7 @@ describe('Slider (compound)', () => {
       const onChange = vi.fn();
       render(<Slider range min={0} max={100} step={10} defaultValue={[20, 80]} onValueChange={onChange} />);
 
-      screen.getAllByRole('slider')[1].focus();
+      act(() => screen.getAllByRole('slider')[1].focus());
       await user.keyboard('{ArrowLeft}');
 
       expect(onChange).toHaveBeenCalledWith([20, 70]);
@@ -516,7 +657,7 @@ describe('Slider (compound)', () => {
       const onChange = vi.fn();
       render(<Slider min={0} max={100} step={10} value={40} onValueChange={onChange} />);
 
-      screen.getByRole('slider').focus();
+      act(() => screen.getByRole('slider').focus());
       await user.keyboard('{ArrowRight}');
 
       expect(onChange).toHaveBeenCalledWith(50);
@@ -528,7 +669,7 @@ describe('Slider (compound)', () => {
       const onChange = vi.fn();
       render(<Slider min={0} max={100} step={10} defaultValue={100} onValueChange={onChange} />);
 
-      screen.getByRole('slider').focus();
+      act(() => screen.getByRole('slider').focus());
       await user.keyboard('{ArrowRight}{End}');
 
       expect(onChange).not.toHaveBeenCalled();
@@ -696,6 +837,68 @@ describe('Slider (compound)', () => {
       expect(onChange).not.toHaveBeenCalled();
       expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '10');
     });
+
+    it('swaps downward when the upper handle is dragged below its neighbour, carrying focus with it', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Slider range min={0} max={100} step={1} defaultValue={[20, 80]} onValueChange={onChange} />);
+      measureTrack(container);
+
+      const [, upper] = screen.getAllByRole('slider');
+      fireEvent.pointerDown(upper, { clientX: 160, button: 0 });
+      fireEvent.pointerMove(document, { clientX: 20, buttons: 1 });
+
+      expect(onChange).toHaveBeenLastCalledWith([10, 20]);
+      // The pointer now drives the lower handle, and so does the keyboard.
+      const [lower] = screen.getAllByRole('slider');
+      expect(lower).toHaveAttribute('aria-valuenow', '10');
+      expect(lower).toHaveAttribute('data-dragging', '');
+      expect(lower).toHaveFocus();
+      fireEvent.pointerUp(document);
+    });
+
+    it('keeps the drag alive when a pointer that does not own it is released', () => {
+      const { container } = render(<Slider min={0} max={100} step={1} defaultValue={10} />);
+      measureTrack(container);
+
+      const thumb = screen.getByRole('slider');
+      fireEvent.pointerDown(thumb, { clientX: 20, button: 0, pointerId: 1 });
+
+      // A second finger lifting must not end the gesture the first one runs.
+      fireEvent.pointerUp(document, { pointerId: 2 });
+      expect(thumb).toHaveAttribute('data-dragging', '');
+      fireEvent.pointerMove(document, { clientX: 120, buttons: 1, pointerId: 1 });
+      expect(thumb).toHaveAttribute('aria-valuenow', '60');
+
+      fireEvent.pointerUp(document, { pointerId: 1 });
+      expect(thumb).not.toHaveAttribute('data-dragging');
+    });
+
+    it('does not grab a thumb on a non-primary or consumer-vetoed press', () => {
+      const onPointerDown = vi.fn((event: PointerEvent) => event.preventDefault());
+      const { container } = render(
+        <Slider range min={0} max={100} step={1} defaultValue={[20, 80]}>
+          <Slider.Track>
+            <Slider.Range />
+            <Slider.Thumb index={0} />
+            <Slider.Thumb index={1} onPointerDown={onPointerDown} />
+          </Slider.Track>
+        </Slider>,
+      );
+      measureTrack(container);
+      const [first, second] = screen.getAllByRole('slider');
+
+      fireEvent.pointerDown(first, { clientX: 40, button: 2 });
+      expect(first).not.toHaveAttribute('data-dragging');
+
+      fireEvent.pointerDown(second, { clientX: 160, button: 0 });
+      expect(onPointerDown).toHaveBeenCalledTimes(1);
+      expect(second).not.toHaveAttribute('data-dragging');
+
+      // Nothing was grabbed, so a following move drives neither handle.
+      fireEvent.pointerMove(document, { clientX: 100, buttons: 1 });
+      expect(first).toHaveAttribute('aria-valuenow', '20');
+      expect(second).toHaveAttribute('aria-valuenow', '80');
+    });
   });
 
   describe('state and styling hooks', () => {
@@ -843,6 +1046,18 @@ describe('Slider (compound)', () => {
       expect(() => render(element)).toThrow();
       error.mockRestore();
     });
+
+    it.each([
+      ['Slider.Track', <Slider.Track key="track" />],
+      ['Slider.Range', <Slider.Range key="range" />],
+      ['Slider.Thumb', <Slider.Thumb key="thumb" />],
+      ['Slider.Ticks', <Slider.Ticks key="ticks" />],
+      ['Slider.Value', <Slider.Value key="value" />],
+    ])('%s names itself and the missing provider in the error', (name, element) => {
+      const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+      expect(() => render(element)).toThrow(`${name} must be used within SliderProvider`);
+      error.mockRestore();
+    });
   });
 
   describe('vertical orientation', () => {
@@ -880,7 +1095,7 @@ describe('Slider (compound)', () => {
       render(<Slider orientation="vertical" min={0} max={100} step={5} defaultValue={50} />);
 
       const thumb = screen.getByRole('slider');
-      thumb.focus();
+      act(() => thumb.focus());
 
       await user.keyboard('{ArrowUp}');
       expect(thumb).toHaveAttribute('aria-valuenow', '55');
@@ -1061,7 +1276,7 @@ describe('Slider (compound)', () => {
       const onValueChangeEnd = vi.fn();
       render(<Slider min={0} max={100} step={10} defaultValue={20} onValueChange={onValueChange} onValueChangeEnd={onValueChangeEnd} />);
 
-      screen.getByRole('slider').focus();
+      act(() => screen.getByRole('slider').focus());
       await user.keyboard('{ArrowRight}');
 
       expect(onValueChange).toHaveBeenCalledWith(30);
@@ -1074,7 +1289,7 @@ describe('Slider (compound)', () => {
       const onValueChangeEnd = vi.fn();
       render(<Slider min={0} max={100} step={10} defaultValue={100} onValueChangeEnd={onValueChangeEnd} />);
 
-      screen.getByRole('slider').focus();
+      act(() => screen.getByRole('slider').focus());
       await user.keyboard('{ArrowRight}{End}');
       expect(onValueChangeEnd).not.toHaveBeenCalled();
     });
@@ -1116,7 +1331,7 @@ describe('Slider (compound)', () => {
       render(<Slider range min={0} max={100} step={5} defaultValue={[20, 50]} minDistance={20} />);
 
       const [first] = screen.getAllByRole('slider');
-      first.focus();
+      act(() => first.focus());
       // End targets the max, but the thumb stops 20 below its neighbour (50).
       await user.keyboard('{End}');
       expect(first).toHaveAttribute('aria-valuenow', '30');
@@ -1161,7 +1376,7 @@ describe('Slider (compound)', () => {
 
       // A keyboard nudge stays inside [2, 8] and keeps the array ascending —
       // never the [2, -2, 8] the unguarded clamp produced.
-      middle.focus();
+      act(() => middle.focus());
       await user.keyboard('{ArrowRight}');
       expect(middle).toHaveAttribute('aria-valuenow', '6');
       const values = screen.getAllByRole('slider').map(thumb => Number(thumb.getAttribute('aria-valuenow')));
@@ -1188,12 +1403,12 @@ describe('Slider (compound)', () => {
       expect(first).toHaveAttribute('tabindex', '-1');
       expect(first).toHaveAttribute('data-disabled', '');
 
-      first.focus();
+      act(() => first.focus());
       await user.keyboard('{ArrowRight}');
       expect(first).toHaveAttribute('aria-valuenow', '20');
       expect(onValueChangeEnd).not.toHaveBeenCalled();
 
-      second.focus();
+      act(() => second.focus());
       await user.keyboard('{ArrowLeft}');
       expect(second).toHaveAttribute('aria-valuenow', '70');
     });
@@ -1240,6 +1455,31 @@ describe('Slider (compound)', () => {
       expect(first).toHaveAttribute('aria-valuenow', '20');
       expect(second).toHaveAttribute('aria-valuenow', '25');
     });
+
+    it('ignores a track press when every thumb is individually disabled', () => {
+      const onChange = vi.fn();
+      const { container } = render(
+        <Slider range min={0} max={100} step={1} defaultValue={[20, 80]} onValueChange={onChange}>
+          <Slider.Track>
+            <Slider.Range />
+            <Slider.Thumb index={0} disabled />
+            <Slider.Thumb index={1} disabled />
+          </Slider.Track>
+        </Slider>,
+      );
+      const track = measureTrack(container);
+
+      // No movable handle to fall back on: the press lands on the nearest one,
+      // whose own disabled state turns it into a no-op.
+      fireEvent.pointerDown(track, { clientX: 150, button: 0 });
+      fireEvent.pointerMove(document, { clientX: 180, buttons: 1 });
+
+      const [first, second] = screen.getAllByRole('slider');
+      expect(first).toHaveAttribute('aria-valuenow', '20');
+      expect(second).toHaveAttribute('aria-valuenow', '80');
+      expect(second).not.toHaveAttribute('data-dragging');
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 
   describe('runtime bounds changes', () => {
@@ -1253,6 +1493,235 @@ describe('Slider (compound)', () => {
       const thumb = screen.getByRole('slider');
       expect(thumb).toHaveAttribute('aria-valuemax', '50');
       expect(thumb).toHaveAttribute('aria-valuenow', '50');
+    });
+  });
+  describe('state semantics on the thumbs', () => {
+    it('exposes read-only, invalid and required on every thumb, and none of them by default', () => {
+      const { unmount } = render(<Slider range defaultValue={[20, 80]} readOnly invalid required />);
+      const thumbs = screen.getAllByRole('slider');
+      expect(thumbs).toHaveLength(2);
+      for (const thumb of thumbs) {
+        expect(thumb).toHaveAttribute('aria-readonly', 'true');
+        expect(thumb).toHaveAttribute('aria-invalid', 'true');
+        expect(thumb).toHaveAttribute('aria-required', 'true');
+        // Read-only keeps the handle reachable; only disabled drops it from the tab order.
+        expect(thumb).toHaveAttribute('tabindex', '0');
+        expect(thumb).not.toHaveAttribute('aria-disabled');
+      }
+      unmount();
+
+      render(<Slider defaultValue={20} />);
+      const thumb = screen.getByRole('slider');
+      for (const attribute of ['aria-readonly', 'aria-invalid', 'aria-required', 'aria-disabled', 'data-disabled']) {
+        expect(thumb).not.toHaveAttribute(attribute);
+      }
+    });
+
+    it('marks the root and every thumb disabled and takes the thumbs out of the tab order', async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <>
+          <Slider range disabled defaultValue={[20, 80]} />
+          <button type="button">After</button>
+        </>,
+      );
+
+      expect(container.querySelector('.tk-slider')).toHaveAttribute('data-disabled', '');
+      for (const thumb of screen.getAllByRole('slider')) {
+        expect(thumb).toHaveAttribute('aria-disabled', 'true');
+        expect(thumb).toHaveAttribute('data-disabled', '');
+        expect(thumb).toHaveAttribute('tabindex', '-1');
+      }
+
+      await user.tab();
+      expect(screen.getByRole('button', { name: 'After' })).toHaveFocus();
+    });
+
+    it('inherits invalid and required from a Field and describes the thumb with the error message', () => {
+      const { container } = render(
+        <Field invalid required>
+          <Field.Label>Budget</Field.Label>
+          <Slider defaultValue={30} />
+          <Field.Description>Pick an amount.</Field.Description>
+          <Field.ErrorMessage>Too high</Field.ErrorMessage>
+        </Field>,
+      );
+
+      const root = container.querySelector('.tk-slider');
+      expect(root).toHaveAttribute('data-invalid', '');
+      expect(root).toHaveAttribute('data-required', '');
+
+      const thumb = screen.getByRole('slider');
+      expect(thumb).toHaveAttribute('aria-invalid', 'true');
+      expect(thumb).toHaveAttribute('aria-required', 'true');
+      // While invalid the error message replaces the description.
+      expect(thumb).toHaveAccessibleDescription('Too high');
+    });
+  });
+
+  describe('controlled updates', () => {
+    it('follows a controlled value when the parent changes it', () => {
+      const { rerender } = render(<Slider min={0} max={100} step={10} value={40} />);
+      expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '40');
+
+      rerender(<Slider min={0} max={100} step={10} value={70} />);
+      expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '70');
+      expect(screen.getByRole('slider').style.insetInlineStart).toBe('70%');
+    });
+
+    it('reports a keyboard move on a controlled range but moves nothing until the parent commits it', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      const { rerender } = render(<Slider range min={0} max={100} step={10} value={[20, 80]} onValueChange={onValueChange} />);
+      const values = () => screen.getAllByRole('slider').map(thumb => thumb.getAttribute('aria-valuenow'));
+
+      act(() => screen.getAllByRole('slider')[0].focus());
+      await user.keyboard('{ArrowRight}');
+
+      expect(onValueChange).toHaveBeenCalledExactlyOnceWith([30, 80]);
+      expect(values()).toEqual(['20', '80']);
+
+      rerender(<Slider range min={0} max={100} step={10} value={[30, 80]} onValueChange={onValueChange} />);
+      expect(values()).toEqual(['30', '80']);
+    });
+  });
+
+  describe('gesture settling', () => {
+    it('settles a rail press once on release, with the value it sought', () => {
+      const onValueChange = vi.fn();
+      const onValueChangeEnd = vi.fn();
+      const { container } = render(<Slider min={0} max={100} step={1} defaultValue={0} onValueChange={onValueChange} onValueChangeEnd={onValueChangeEnd} />);
+
+      fireEvent.pointerDown(measureTrack(container), { clientX: 150, button: 0 });
+
+      const thumb = screen.getByRole('slider');
+      expect(onValueChange).toHaveBeenCalledExactlyOnceWith(75);
+      expect(onValueChangeEnd).not.toHaveBeenCalled();
+      // The press hands focus to the handle it grabbed, so the arrow keys drive it next.
+      expect(thumb).toHaveFocus();
+      expect(thumb).toHaveAttribute('data-dragging', '');
+
+      fireEvent.pointerUp(document);
+      expect(onValueChangeEnd).toHaveBeenCalledExactlyOnceWith(75);
+      expect(thumb).not.toHaveAttribute('data-dragging');
+    });
+
+    it('ends a drag on pointercancel and stops following the pointer', () => {
+      const onValueChangeEnd = vi.fn();
+      const { container } = render(<Slider min={0} max={100} step={1} defaultValue={10} onValueChangeEnd={onValueChangeEnd} />);
+      measureTrack(container);
+      const thumb = screen.getByRole('slider');
+
+      fireEvent.pointerDown(thumb, { clientX: 20, button: 0 });
+      fireEvent.pointerMove(document, { clientX: 120, buttons: 1 });
+      fireEvent.pointerCancel(document);
+
+      expect(thumb).not.toHaveAttribute('data-dragging');
+      expect(onValueChangeEnd).toHaveBeenCalledExactlyOnceWith(60);
+
+      fireEvent.pointerMove(document, { clientX: 180, buttons: 1 });
+      expect(thumb).toHaveAttribute('aria-valuenow', '60');
+    });
+
+    it('still reports the settled value when the slider unmounts mid-drag', () => {
+      const onValueChangeEnd = vi.fn();
+      const { container, unmount } = render(<Slider min={0} max={100} step={1} defaultValue={10} onValueChangeEnd={onValueChangeEnd} />);
+      measureTrack(container);
+
+      fireEvent.pointerDown(screen.getByRole('slider'), { clientX: 20, button: 0 });
+      fireEvent.pointerMove(document, { clientX: 120, buttons: 1 });
+      expect(onValueChangeEnd).not.toHaveBeenCalled();
+
+      unmount();
+      expect(onValueChangeEnd).toHaveBeenCalledExactlyOnceWith(60);
+    });
+
+    it('reports nothing on unmount when the interrupted drag never moved the value', () => {
+      const onValueChangeEnd = vi.fn();
+      const { container, unmount } = render(<Slider min={0} max={100} step={1} defaultValue={10} onValueChangeEnd={onValueChangeEnd} />);
+      measureTrack(container);
+
+      fireEvent.pointerDown(screen.getByRole('slider'), { clientX: 20, button: 0 });
+      unmount();
+
+      expect(onValueChangeEnd).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('part customization', () => {
+    it('layers provider theme classNames and defaults under instance props on the root and the thumb slots', () => {
+      const { container } = render(
+        <TakeoffSparProvider
+          components={{
+            Slider: { defaultProps: { size: 'small', variant: 'danger' }, classNames: { root: 'theme-root' } },
+            SliderThumb: { classNames: { root: 'theme-thumb', tooltip: 'theme-tooltip', arrow: 'theme-arrow' } },
+          }}
+        >
+          <Slider defaultValue={40} variant="success" className="instance-root">
+            <Slider.Track>
+              <Slider.Thumb className="instance-thumb" classNames={{ arrow: 'instance-arrow' }} />
+            </Slider.Track>
+          </Slider>
+        </TakeoffSparProvider>,
+      );
+
+      const root = container.querySelector('.tk-slider');
+      expect(root).toHaveClass('tk-slider', 'theme-root', 'instance-root');
+      expect(root).toHaveAttribute('data-size', 'small');
+      expect(root).toHaveAttribute('data-variant', 'success');
+
+      const thumb = screen.getByRole('slider');
+      expect(thumb).toHaveClass('tk-slider-thumb', 'theme-thumb', 'instance-thumb');
+      expect(thumb.querySelector('.tk-slider-tooltip')).toHaveClass('theme-tooltip');
+
+      const arrow = thumb.querySelector('.tk-slider-arrow');
+      expect(arrow).toHaveAttribute('data-slot', 'arrow');
+      expect(arrow).toHaveAttribute('aria-hidden', 'true');
+      expect(arrow).toHaveClass('theme-arrow', 'instance-arrow');
+    });
+
+    it('lands classNames and slotProps on the track, range, ticks and value parts without breaking their invariants', () => {
+      const { container } = render(
+        <Slider min={0} max={40} step={10} defaultValue={20}>
+          <Slider.Track className="track-extra" slotProps={{ root: { title: 'track-slot' } }}>
+            <Slider.Range className="range-extra" slotProps={{ root: { 'title': 'range-slot', 'aria-hidden': false, 'style': { width: '5%' } } }} />
+            <Slider.Thumb />
+          </Slider.Track>
+          <Slider.Ticks classNames={{ root: 'ticks-extra', tick: 'tick-extra' }} slotProps={{ tick: { title: 'tick-slot' } }} />
+          <Slider.Value className="value-extra" slotProps={{ root: { 'title': 'value-slot', 'aria-hidden': false } }} />
+        </Slider>,
+      );
+
+      const track = container.querySelector('.tk-slider-track');
+      expect(track).toHaveAttribute('data-slot', 'root');
+      expect(track).toHaveClass('track-extra');
+      expect(track).toHaveAttribute('title', 'track-slot');
+
+      const range = container.querySelector('.tk-slider-range') as HTMLElement;
+      expect(range).toHaveClass('range-extra');
+      expect(range).toHaveAttribute('title', 'range-slot');
+      // Decorative and drawn from the value: neither layer can override those.
+      expect(range).toHaveAttribute('aria-hidden', 'true');
+      expect(range.style.width).toBe('50%');
+
+      const ticks = container.querySelector('.tk-slider-ticks');
+      expect(ticks).toHaveAttribute('data-slot', 'root');
+      expect(ticks).toHaveClass('ticks-extra');
+      expect(ticks).toHaveAttribute('aria-hidden', 'true');
+      const marks = container.querySelectorAll('.tk-slider-tick');
+      expect(marks).toHaveLength(5);
+      for (const mark of marks) {
+        expect(mark).toHaveAttribute('data-slot', 'tick');
+        expect(mark).toHaveClass('tick-extra');
+        expect(mark).toHaveAttribute('title', 'tick-slot');
+      }
+
+      const readout = container.querySelector('.tk-slider-value');
+      expect(readout).toHaveAttribute('data-slot', 'root');
+      expect(readout).toHaveClass('value-extra');
+      expect(readout).toHaveAttribute('title', 'value-slot');
+      expect(readout).toHaveAttribute('aria-hidden', 'true');
+      expect(readout).toHaveTextContent('20');
     });
   });
 });
