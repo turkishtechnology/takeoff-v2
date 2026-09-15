@@ -1,5 +1,76 @@
 # @takeoff-ui/react-spar
 
+## 0.5.1
+
+### Patch Changes
+
+- [#229](https://github.com/turkishtechnology/takeoff-v2/pull/229)
+  [`efa25ad`](https://github.com/turkishtechnology/takeoff-v2/commit/efa25ad8d64a53506288672b24a70ff1a2b08640)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Provider `slotProps`
+  no longer override what an instance sets itself, and classes land in the
+  documented order.
+
+  The provider's layers are documented to sit below the instance, but a theme
+  `slotProps.root` value replaced the instance's own attribute or handler of the
+  same name: a `title` or `onClick` passed to the component lost to the theme's.
+  Every component root spreads its props before the composed attrs, so this is
+  fixed once in `buildSlotAttrs`. A theme key the instance sets is left out, a
+  theme `style` merges key by key under the instance `style`, and classes still
+  add up.
+
+  Two class bugs on the same path are fixed with it. The instance `className`
+  now follows the provider's classes (canonical, provider, instance, as
+  documented), and a `className` passed through `slotProps` is added instead of
+  silently dropped.
+
+- [#229](https://github.com/turkishtechnology/takeoff-v2/pull/229)
+  [`31886fe`](https://github.com/turkishtechnology/takeoff-v2/commit/31886fe8e20e00dc6ca19804ed25e6400b06de78)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - `Select` now marks
+  itself invalid, and `Select.Indicator` follows the open state.
+
+  `<Select invalid>` set `data-invalid` on the trigger and nowhere else. The
+  prop never reached Spar, whose root writes `data-invalid` after the props it
+  spreads, so the root lost the attribute and the trigger never got
+  `aria-invalid`. It is now passed through as given, so an unset `invalid` still
+  falls back to a wrapping `Field`.
+
+  The standalone `Select.Indicator` read the open state under a name Spar's
+  context does not use. Its default chevron never flipped, and render-function
+  children always received `{ isOpen: undefined }`. Both now track the list.
+
+- [#229](https://github.com/turkishtechnology/takeoff-v2/pull/229)
+  [`4bd6bb2`](https://github.com/turkishtechnology/takeoff-v2/commit/4bd6bb22cd93892bca22d779dd6eff898f4225bb)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - `Dialog` and `Drawer`
+  honour `dismissible={false}` for Escape, and closing returns focus to the
+  trigger.
+
+  Both were Spar bugs, fixed upstream in `@turkish-technology/spar@0.2.3`, which
+  this release pins.
+
+  `Dialog.Panel` and `Drawer.Panel` already blocked the dismissal by calling
+  `preventDefault()` on the event Spar hands to `onEscapeKeyDown`, but Spar read
+  the veto from the React event, which never sees a `preventDefault()` made on
+  the native one. Escape therefore closed a non-dismissible dialog or drawer,
+  and a consumer's own `onEscapeKeyDown` veto was ignored too. Spar also cleared
+  the stored trigger before its root could restore focus, so `restoreFocus` (on
+  by default) never moved focus back on close.
+
+- [#229](https://github.com/turkishtechnology/takeoff-v2/pull/229)
+  [`ba34aa5`](https://github.com/turkishtechnology/takeoff-v2/commit/ba34aa58e22f5beb9f14b9887b0385cf665f6d9f)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - `Table` utility
+  columns and the page jump are now reachable by assistive technology.
+
+  - The selection column in single mode and the expansion column had empty
+    header cells, so every such table failed axe's empty-table-header rule. Both
+    now carry a visually hidden name: "Row selection" and "Row details".
+  - In single selection mode the row radios had no accessible name, because the
+    label sat on each one-item radio group instead of the radio. It is now on
+    the radio, which also renders as a span so Spar's `<label role="radio">` no
+    longer trips aria-allowed-role.
+  - The "Go to page" submit was an `Input.TrailingIcon`, which hides itself from
+    assistive technology, so a focusable button had no accessible presence. It
+    is now a text `Button` in the input's `tk-input-action` hook.
+
 ## 0.5.0
 
 ### Minor Changes
