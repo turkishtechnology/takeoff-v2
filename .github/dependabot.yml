@@ -42,6 +42,19 @@ updates:
       # flow through. Drop this entry to adopt 7.x once the ecosystem catches up.
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
+      # The test toolchain moves together: `vitest-axe` has no release compatible
+      # with Vitest 5 (`latest` is 0.1.0; only `1.0.0-pre.5` exists) and its type
+      # augmentation breaks `tsc` there, while jsdom 30 resolves `rem` to `px` in
+      # `getComputedStyle`, which rewrites what `toHaveStyle` sees. Every a11y test
+      # in react-spar depends on vitest-axe, so hold these three on their current
+      # majors and revisit once vitest-axe ships a stable 1.0. Minor/patch updates
+      # still flow through.
+      - dependency-name: "vitest"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@vitest/coverage-v8"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "jsdom"
+        update-types: ["version-update:semver-major"]
     groups:
       # Group all @turkish-technology/* (spar primitives) into one PR so the
       # wrapper and its underlying primitives bump together — mirrors the
