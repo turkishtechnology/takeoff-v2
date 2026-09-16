@@ -20,13 +20,19 @@
  *     read — so projects that only ever install the package still get the
  *     component map and the house rules.
  *
+ *   packages/react-spar/agents/migrate-takeoff-v1/**
+ *     A verbatim copy of the migration skill, so a v1 consumer can point its
+ *     assistant at its own node_modules instead of cloning this repository.
+ *     Copied rather than linked because the relative links inside the skill
+ *     only resolve when SKILL.md and references/ stay siblings.
+ *
  * The two repo-workflow skills are deliberately excluded: they hard-require
  * files that exist only in this monorepo and would dead-end elsewhere.
  *
  * Run via: pnpm gen:agent-instructions  (verify in CI with --check)
  */
 
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import prettier from 'prettier';
@@ -38,9 +44,12 @@ const skillsDir = join(repoRoot, '.agents/skills');
 const DOCS_URL = 'https://takeoff-v2.app.turkishtechlab.com';
 const NON_COMPONENT_SKILLS = new Set(['takeoff-ui', 'takeoff-component-workflow']);
 
+const MIGRATION_SKILL = 'migrate-takeoff-v1';
+
 const OUTPUTS = {
   copilot: join(repoRoot, '.github/copilot-instructions.md'),
   template: join(repoRoot, 'packages/react-spar/agents/AGENTS.template.md'),
+  migrationDir: join(repoRoot, 'packages/react-spar/agents', MIGRATION_SKILL),
 };
 
 const checkMode = process.argv.includes('--check');
@@ -174,8 +183,9 @@ function templateDoc() {
 # AGENTS.md — @takeoff-ui/react-spar
 
 > Copy this file to the root of the project that consumes
-> \`@takeoff-ui/react-spar\` and rename it \`AGENTS.md\`. GitHub Copilot,
-> Cursor, and Claude all read it automatically. Add your own project rules
+> \`@takeoff-ui/react-spar\` and rename it \`AGENTS.md\` for tools that support
+> that convention, such as Cursor and Claude. GitHub Copilot can use the same
+> content at \`.github/copilot-instructions.md\`. Add your own project rules
 > below the generated sections.
 
 This project uses \`@takeoff-ui/react-spar\`, a React 19 component library built
@@ -188,6 +198,17 @@ ${HOUSE_RULES}
 ${componentTable()}
 
 ${usageSection()}
+
+## Migrating from Takeoff UI v1
+
+For React applications moving from \`@takeoff-ui/react\` and \`Tk*\` components,
+the migration skill ships with this package:
+
+    node_modules/@takeoff-ui/react-spar/agents/${MIGRATION_SKILL}/SKILL.md
+
+Point your assistant at that file. It covers the inventory commands, setup
+order, v1-to-v2 component map, event/prop guidance, and the known coverage gaps,
+with the supporting detail in the \`references/\` directory beside it.
 `;
 }
 
@@ -201,9 +222,52 @@ async function formatMarkdown(content, filepath) {
   return prettier.format(content, { ...config, filepath, parser: 'markdown' });
 }
 
+/** Markdown already shipped under agents/<skill>/ that the source no longer has. */
+function orphanedMigrationFiles() {
+  const expected = new Set(migrationFiles.map(file => file.path));
+  const found = [];
+  const walk = dir => {
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return; // not generated yet
+    }
+    for (const entry of entries) {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) walk(path);
+      else if (entry.name.endsWith('.md') && !expected.has(path)) found.push(path);
+    }
+  };
+  walk(OUTPUTS.migrationDir);
+  return found.sort();
+}
+
+/**
+ * The migration skill, copied byte-for-byte so its relative links keep working.
+ * Returns [{ path, content }] for the shipped destinations.
+ */
+function migrationBundle() {
+  const sourceDir = join(skillsDir, MIGRATION_SKILL);
+  const relativePaths = [
+    'SKILL.md',
+    ...readdirSync(join(sourceDir, 'references'))
+      .filter(name => name.endsWith('.md'))
+      .sort()
+      .map(name => join('references', name)),
+  ];
+  return relativePaths.map(relativePath => ({
+    path: join(OUTPUTS.migrationDir, relativePath),
+    content: readFileSync(join(sourceDir, relativePath), 'utf8'),
+  }));
+}
+
+const migrationFiles = migrationBundle();
+
 const artifacts = [
   { path: OUTPUTS.copilot, content: await formatMarkdown(copilotDoc(), OUTPUTS.copilot) },
   { path: OUTPUTS.template, content: await formatMarkdown(templateDoc(), OUTPUTS.template) },
+  ...migrationFiles,
 ];
 
 if (checkMode) {
@@ -217,14 +281,21 @@ if (checkMode) {
     }
     if (current !== content) stale.push(path.replace(`${repoRoot}/`, ''));
   }
+  // A reference deleted from the skill has to disappear from the shipped copy
+  // too, otherwise consumers keep reading guidance the repo has retired.
+  for (const path of orphanedMigrationFiles()) stale.push(`${path.replace(`${repoRoot}/`, '')} (no longer in the skill)`);
   if (stale.length > 0) {
     console.error('Agent instruction files are out of date with .agents/skills:');
     for (const path of stale) console.error(`  - ${path}`);
     console.error('\nFix: run `pnpm gen:agent-instructions` and commit the result.');
     process.exit(1);
   }
-  console.log(`Agent instructions are in sync (${components.length} components).`);
+  console.log(`Agent instructions are in sync (${components.length} components, ${migrationFiles.length} migration files).`);
 } else {
+  for (const path of orphanedMigrationFiles()) {
+    rmSync(path);
+    console.log(`removed ${path.replace(`${repoRoot}/`, '')}`);
+  }
   for (const { path, content } of artifacts) {
     mkdirSync(dirname(path), { recursive: true });
     writeFileSync(path, content);
