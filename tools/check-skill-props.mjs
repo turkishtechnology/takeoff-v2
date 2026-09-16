@@ -60,7 +60,7 @@ const BASELINE = {
   dropdown: ['align', 'disabled', 'onEscapeKeyDown', 'onFocusOutside', 'onPointerDownOutside', 'side'],
   input: ['autoFocus'],
   popover: ['onCloseAutoFocus', 'onEscapeKeyDown', 'onFocusOutside', 'onInteractOutside', 'onOpenAutoFocus', 'onPointerDownOutside'],
-  radio: ['name', 'readOnly'],
+  radio: ['name'],
   select: ['autoFocus', 'container', 'name', 'onCloseAutoFocus', 'onEscapeKeyDown', 'onPointerDownOutside'],
   switch: ['autoFocus', 'form'],
   tabs: ['autoFocus'],
