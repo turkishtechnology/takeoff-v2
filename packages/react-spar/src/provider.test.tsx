@@ -113,6 +113,51 @@ describe('TakeoffSparProvider', () => {
       expect(html).not.toHaveAttribute('data-theme');
     });
 
+    it('keeps the theme of a still-mounted sibling and restores the original only after the last one leaves', () => {
+      // Two independent islands on one page (e.g. micro-frontends). Whatever
+      // order they unmount in, the document must never lose the theme while
+      // one is still mounted, nor keep a stale one after both are gone.
+      const { unmount: unmountFirst } = render(<TakeoffSparProvider colorMode="dark">first</TakeoffSparProvider>);
+      const { unmount: unmountSecond } = render(<TakeoffSparProvider colorMode="light">second</TakeoffSparProvider>);
+
+      expect(html).toHaveAttribute('data-theme', 'light');
+
+      unmountFirst();
+      expect(html).toHaveAttribute('data-theme', 'light');
+
+      unmountSecond();
+      expect(html).not.toHaveAttribute('data-theme');
+    });
+
+    it('restores a server-rendered data-theme when siblings unmount out of mount order', () => {
+      html.dataset.theme = 'dark';
+      const { unmount: unmountFirst } = render(<TakeoffSparProvider colorMode="light">first</TakeoffSparProvider>);
+      const { unmount: unmountSecond } = render(<TakeoffSparProvider colorMode="light">second</TakeoffSparProvider>);
+
+      unmountFirst();
+      unmountSecond();
+
+      expect(html).toHaveAttribute('data-theme', 'dark');
+    });
+
+    it('lets only the outermost provider write the document theme when providers nest', () => {
+      const { unmount } = render(
+        <TakeoffSparProvider colorMode="light">
+          <TakeoffSparProvider colorMode="dark">
+            <ThemeReadout />
+          </TakeoffSparProvider>
+        </TakeoffSparProvider>,
+      );
+
+      // The nested provider scopes the hook value; the document stays with the outer one.
+      expect(screen.getByRole('status')).toHaveTextContent('dark');
+      expect(html).toHaveAttribute('data-theme', 'light');
+
+      unmount();
+
+      expect(html).not.toHaveAttribute('data-theme');
+    });
+
     it('restores a server-rendered data-theme after colorMode changed while mounted', () => {
       html.dataset.theme = 'dark';
       const { rerender, unmount } = render(<TakeoffSparProvider colorMode="light">content</TakeoffSparProvider>);
@@ -162,6 +207,26 @@ describe('TakeoffSparProvider', () => {
       rerender(<TakeoffSparProvider locale="en-GB">content</TakeoffSparProvider>);
 
       expect(html).toHaveAttribute('lang', 'en-GB');
+    });
+
+    it('removes lang on unmount when the document had none', () => {
+      const { unmount } = render(<TakeoffSparProvider locale="tr">content</TakeoffSparProvider>);
+
+      expect(html).toHaveAttribute('lang', 'tr');
+
+      unmount();
+
+      expect(html).not.toHaveAttribute('lang');
+    });
+
+    it('lets only the outermost provider write the document lang when providers nest', () => {
+      render(
+        <TakeoffSparProvider locale="en">
+          <TakeoffSparProvider locale="tr">content</TakeoffSparProvider>
+        </TakeoffSparProvider>,
+      );
+
+      expect(html).toHaveAttribute('lang', 'en');
     });
 
     it('restores the previous lang on unmount', () => {
@@ -310,6 +375,17 @@ describe('useComponentTheme', () => {
     expect(save).toHaveAttribute('data-size', 'large');
     expect(cancel).toHaveClass('tk-button', 'product-button');
     expect(cancel).toHaveAttribute('data-size', 'small');
+  });
+
+  it('applies a provider default when the instance passes the prop as an explicit undefined', () => {
+    const size: 'small' | undefined = undefined;
+    render(
+      <TakeoffSparProvider components={{ Button: { defaultProps: { size: 'large' } } }}>
+        <Button size={size}>Save</Button>
+      </TakeoffSparProvider>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Save' })).toHaveAttribute('data-size', 'large');
   });
 
   it('keeps what an instance sets directly over the provider slotProps, and still adds the rest', async () => {

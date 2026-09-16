@@ -22,15 +22,21 @@ const resolveStaticWidth = (mode: ContentWidthMode): string | undefined => {
  * Compute the `style` a portalled panel needs to honor a `contentWidth`
  * contract. Extracted from Select/Dropdown so both share one implementation.
  *
- * In `'trigger'` mode the trigger is measured at open time and kept in sync via
- * a ResizeObserver. Every read — the initial one and every observer callback —
- * goes through the same `getBoundingClientRect().width` (border-box) path, so
- * the panel does not jump between the first paint and the first resize. Observer
- * callbacks are coalesced into a single animation frame, so a burst of resize
- * events (font load, container reflow, drag) triggers at most one state update
- * per frame instead of one per event.
+ * In `'trigger'` mode the trigger is measured when the hook mounts and again
+ * every time `open` flips (the panel's Spar part stays mounted while closed, so
+ * this is what guarantees a fresh value at open time), and kept in sync in
+ * between via a ResizeObserver watching the trigger's **border box**. Every
+ * read — mount, open, and every observer callback — goes through the same
+ * `getBoundingClientRect().width` (border-box) path, so a padding or border
+ * change re-measures just like a content change and the panel does not jump
+ * between the first paint and the first resize. Observer callbacks are
+ * coalesced into a single animation frame, so a burst of resize events (font
+ * load, container reflow, drag) triggers at most one state update per frame
+ * instead of one per event.
+ *
+ * @param open - The owning overlay's open state; a rising edge re-measures.
  */
-export const useContentWidthStyle = (mode: ContentWidthMode, triggerRef: RefObject<HTMLElement | null>): CSSProperties | undefined => {
+export const useContentWidthStyle = (mode: ContentWidthMode, triggerRef: RefObject<HTMLElement | null>, open: boolean): CSSProperties | undefined => {
   const [triggerWidth, setTriggerWidth] = useState<number | null>(null);
 
   useEffect(() => {
@@ -46,13 +52,17 @@ export const useContentWidthStyle = (mode: ContentWidthMode, triggerRef: RefObje
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(measure);
     });
-    observer.observe(node);
+    // Border box, to match the `getBoundingClientRect` read above — the default
+    // content box would miss padding/border changes.
+    observer.observe(node, { box: 'border-box' });
 
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, [mode, triggerRef]);
+    // `open` is a deliberate dependency: re-running on every open/close is what
+    // re-measures at open time.
+  }, [mode, triggerRef, open]);
 
   return useMemo<CSSProperties | undefined>(() => {
     if (mode === 'trigger') {

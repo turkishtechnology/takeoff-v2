@@ -131,7 +131,10 @@ chip from the DOM.
 
 Static chips are not keyboard-focusable. A clickable chip makes its root
 focusable and button-like. A removable chip exposes its remove button as the tab
-stop. Disabled chips are removed from the tab order.
+stop. A chip that is both clickable and removable keeps its root as a plain
+container and moves the click action onto the label, so the label and the remove
+button are two sibling controls in the tab sequence. Disabled chips are removed
+from the tab order.
 
 ## Usage
 
@@ -187,8 +190,10 @@ import { Chip } from '@takeoff-ui/react-spar';
 
 The remove button is a real, labeled `<button>` in the tab sequence, so keyboard
 and assistive-tech users can reach it directly and activate it with `Enter` or
-`Space`. A chip that is also `clickable` additionally accepts `Backspace` or
-`Delete` while its root is focused to request removal.
+`Space`. Its click reports through `onRemove` only — it never doubles as the
+chip's `onClick`. A chip that is also `clickable` additionally accepts
+`Backspace` or `Delete` while its click action (the label, in that layout) is
+focused to request removal; those keys do nothing on the remove button itself.
 
 Use `onRemove` to sync removal with application state. By default, a removable
 chip dismisses itself after a remove action. Set `autoDismiss={false}` when the
@@ -207,7 +212,9 @@ the parent's list become two sources of truth.
 
 Use `clickable` when the chip performs an action, such as selecting a filter.
 Clickable chips are keyboard-focusable and trigger their `onClick` handler with
-`Enter` or `Space`.
+`Enter` or `Space`. When a clickable chip is also `removable`, the label carries
+the action (`role="button"`) next to the remove button — a remove `<button>`
+nested inside a `role="button"` root would be hidden from assistive tech.
 
 <LiveCode
   code={clickableDemo}
@@ -223,9 +230,11 @@ Clickable chips are keyboard-focusable and trigger their `onClick` handler with
 - Clickable chips use a button-like root and support `Enter` and `Space`.
 - The remove button is a labeled control in the tab sequence and is activated
   with `Enter` or `Space`.
-- Clickable removable chips also support `Delete` and `Backspace` while the root
-  is focused.
-- Disabled chips do not receive focus and do not respond to remove actions.
+- Clickable removable chips place the click action on the label, beside the
+  remove button, so both controls are reachable; they also support `Delete` and
+  `Backspace` while that action is focused.
+- Disabled chips do not receive focus (an explicit `tabIndex` resolves to `-1`)
+  and do not respond to remove actions.
 
 ## API Reference
 
@@ -241,19 +250,19 @@ Clickable chips are keyboard-focusable and trigger their `onClick` handler with
 | <ApiBadge label="variant" />     | <code><a href="#chip-td-chipvariant">ChipVariant</a></code>                                                                 | 'primary' | Color variant.                                                                                                                                                                                                                                                                                                                   |
 | <ApiBadge label="appearance" />  | <code><a href="#chip-td-chipappearance">ChipAppearance</a></code>                                                           | 'filled'  | Visual appearance.                                                                                                                                                                                                                                                                                                               |
 | <ApiBadge label="size" />        | <code><a href="#chip-td-chipsize">ChipSize</a></code>                                                                       | 'base'    | Size scale.                                                                                                                                                                                                                                                                                                                      |
-| <ApiBadge label="disabled" />    | <code>boolean</code>                                                                                                        | false     | Disables interactive affordances and remove actions.                                                                                                                                                                                                                                                                             |
+| <ApiBadge label="disabled" />    | <code>boolean</code>                                                                                                        | false     | Disables interactive affordances and remove actions, and keeps the chip out of the tab order (a `tabIndex` given to a disabled chip resolves to `-1`).                                                                                                                                                                           |
 | <ApiBadge label="removable" />   | <code>boolean</code>                                                                                                        | false     | Renders a remove button that dismisses the chip from the DOM when pressed.                                                                                                                                                                                                                                                       |
-| <ApiBadge label="clickable" />   | <code>boolean</code>                                                                                                        | false     | Makes the chip root keyboard-focusable and button-like for click actions.                                                                                                                                                                                                                                                        |
+| <ApiBadge label="clickable" />   | <code>boolean</code>                                                                                                        | false     | Makes the chip keyboard-focusable and button-like for click actions. The root carries the action; when the chip is also `removable`, the action moves onto the label slot so the remove button stays a sibling control that keyboard and assistive-tech users can reach separately.                                              |
 | <ApiBadge label="autoDismiss" /> | <code>boolean</code>                                                                                                        | true      | Whether the chip removes itself from the DOM after a remove action. Removal is tracked in internal state, so set `autoDismiss={false}` when the parent owns the chip list (e.g. renders chips from an array) and let `onRemove` drive the parent's state — otherwise the chip and the parent's list become two sources of truth. |
 | <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;<a href="#chip-td-chipslot">ChipSlot</a>, string&gt;&gt;</code>                                  | -         | Per-slot extra classes.                                                                                                                                                                                                                                                                                                          |
-| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;<a href="#chip-td-chipslot">ChipSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                                                                                                                                                                                                                                                                               |
+| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;<a href="#chip-td-chipslot">ChipSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides. `root.role` / `root.tabIndex` describe the click action and follow it onto whichever node carries it (the root, or the label of a clickable removable chip); they resolve as instance `role` / `tabIndex` → `slotProps.root` → wrapper default.                                               |
 | <ApiBadge label="className" />   | <code>string</code>                                                                                                         | -         | Appends custom classes to the root slot.                                                                                                                                                                                                                                                                                         |
 
 #### Events {#chip-events}
 
-| Name                          | Type                       | Default | Description                                                                                     |
-| ----------------------------- | -------------------------- | ------- | ----------------------------------------------------------------------------------------------- |
-| <ApiBadge label="onRemove" /> | <code>() =&gt; void</code> | -       | Called when the remove button is pressed or a focused clickable chip receives Backspace/Delete. |
+| Name                          | Type                       | Default | Description                                                                                                                                                      |
+| ----------------------------- | -------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onRemove" /> | <code>() =&gt; void</code> | -       | Called when the remove button is pressed or a focused clickable chip receives Backspace/Delete. The remove button's click never doubles as the chip's `onClick`. |
 
 #### Data attributes {#chip-data-attributes}
 

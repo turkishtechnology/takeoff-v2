@@ -6,10 +6,15 @@ import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { BreadcrumbSeparatorBase } from './base';
+import { useBreadcrumbOwnContext } from './context';
 import type { BreadcrumbSeparatorProps } from './types';
 
 export const BreadcrumbSeparator = <T extends ElementType = 'li'>(props: BreadcrumbSeparatorProps<T>) => {
   const theme = useComponentTheme('BreadcrumbSeparator');
+  // Read for the boundary only: `size` / `type` are emitted as `data-size` /
+  // `data-type` on the root <nav> and the recipe scopes every part from there,
+  // so no part-level hook is needed. Rendering outside <Breadcrumb> throws.
+  useBreadcrumbOwnContext('Breadcrumb.Separator');
 
   const { rootAttrs, rest } = composeRootAttrs(BreadcrumbSeparatorBase, props as BreadcrumbSeparatorProps<'li'>, theme);
   const { children, ref, ...spar } = rest;

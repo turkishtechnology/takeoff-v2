@@ -602,11 +602,11 @@ for primitive behavior.
 
 #### Events {#dropdown-content-events}
 
-| Name                                      | Type                                           | Default | Description           |
-| ----------------------------------------- | ---------------------------------------------- | ------- | --------------------- |
-| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code> | -       | Escape key handler    |
-| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>  | -       | Outside click handler |
-| <ApiBadge label="onFocusOutside" />       | <code>(event: FocusEvent) =&gt; void</code>    | -       | Outside focus handler |
+| Name                                      | Type                                           | Default | Description                                                                                                                                                                                                                              |
+| ----------------------------------------- | ---------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code> | -       | Fired when Escape is pressed while the menu is open. The menu always closes afterwards — unlike Spar's own JSDoc claims, `preventDefault()` does not keep it open (Spar closes unconditionally). Use it to observe, not to veto.         |
+| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>  | -       | Fired on a pointer press outside the menu and its trigger. The menu always closes afterwards — `preventDefault()` does not keep it open (Spar closes unconditionally). Use it to observe, not to veto.                                   |
+| <ApiBadge label="onFocusOutside" />       | <code>(event: FocusEvent) =&gt; void</code>    | -       | Fired when focus moves outside the menu and its trigger. A modal menu (the default) stays open and pulls focus back; a non-modal menu always closes — `preventDefault()` does not change either outcome. Use it to observe, not to veto. |
 
 #### Data attributes {#dropdown-content-data-attributes}
 

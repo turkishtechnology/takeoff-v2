@@ -501,6 +501,37 @@ describe('Radio (compound)', () => {
 
       await waitFor(() => expect(getRadio('Business')).toHaveFocus());
     });
+
+    // Spar spreads consumer props after its own handlers, so `onKeyDown` on the
+    // root would replace roving navigation (documented on the prop). These pin
+    // the documented alternatives so they keep working.
+    it('keeps arrow navigation when key presses are observed with onKeyDownCapture', async () => {
+      const user = userEvent.setup();
+      const onKeyDownCapture = vi.fn();
+      render(cabinGroup({ defaultValue: 'economy', onKeyDownCapture }));
+      await user.tab();
+
+      await user.keyboard('{ArrowDown}');
+
+      expect(getRadio('Business')).toHaveFocus();
+      expect(getRadio('Business')).toHaveAttribute('aria-checked', 'true');
+      expect(onKeyDownCapture).toHaveBeenCalledTimes(1);
+      expect(onKeyDownCapture).toHaveBeenLastCalledWith(expect.objectContaining({ key: 'ArrowDown' }));
+    });
+
+    it('keeps selecting on click when a consumer onClick is attached to the group root', async () => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const onChange = vi.fn();
+      render(cabinGroup({ onChange, onClick }));
+
+      await user.click(getRadio('Business'));
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith('business');
+      expect(getRadio('Business')).toHaveAttribute('aria-checked', 'true');
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('states', () => {

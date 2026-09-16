@@ -1409,6 +1409,31 @@ describe('Dropdown', () => {
       expect(menu).toHaveStyle({ width: '311px' });
     });
 
+    it('re-measures the trigger when the menu opens, not only when Dropdown.Content mounts', async () => {
+      const user = userEvent.setup();
+      let triggerWidth = 120;
+      vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+        const width = this.classList.contains('tk-dropdown-trigger') ? triggerWidth : 0;
+        return { x: 0, y: 0, top: 0, left: 0, right: width, bottom: 0, width, height: 0, toJSON: () => ({}) } as DOMRect;
+      });
+
+      render(
+        <Dropdown contentWidth="trigger">
+          <Dropdown.Trigger>Actions</Dropdown.Trigger>
+          <Dropdown.Content>
+            <Dropdown.Item>Edit</Dropdown.Item>
+          </Dropdown.Content>
+        </Dropdown>,
+      );
+
+      // The trigger's border box changes while the menu is closed and the
+      // ResizeObserver stub never reports it — only the open-time read can see it.
+      triggerWidth = 200;
+      await user.click(screen.getByRole('button', { name: 'Actions' }));
+
+      expect(screen.getByRole('menu')).toHaveStyle({ width: '200px' });
+    });
+
     it('lets a slotProps style width override the computed contentWidth', () => {
       render(
         <Dropdown defaultOpen contentWidth={280}>

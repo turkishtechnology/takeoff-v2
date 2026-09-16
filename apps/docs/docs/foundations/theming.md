@@ -59,6 +59,13 @@ For server-rendered applications, set the initial `data-theme` and `lang` on
 `<html>` before hydration. This avoids a light-theme flash while the provider
 effect starts.
 
+Only a provider with no provider ancestor writes to `<html>`. A nested
+`TakeoffSparProvider` scopes `colorMode`, `locale` and `components` for its own
+subtree through context (what `useTheme` and `useComponentTheme` report), but
+the document keeps the outer provider's attributes — so content portalled out of
+a nested provider paints with the outer theme. The original attributes are
+restored once every top-level provider has unmounted.
+
 ## Override design tokens
 
 Token values are CSS custom properties, so product-level overrides belong in

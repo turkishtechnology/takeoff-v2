@@ -847,6 +847,15 @@ describe('Alert (compound)', () => {
     it('throws a descriptive error when Alert.Close renders outside the root', () => {
       expect(() => render(<Alert.Close />)).toThrow(/Alert\.Close must be used within AlertProvider/);
     });
+
+    it.each([
+      ['Alert.Content', () => <Alert.Content>Loose</Alert.Content>],
+      ['Alert.Title', () => <Alert.Title>Loose</Alert.Title>],
+      ['Alert.Description', () => <Alert.Description>Loose</Alert.Description>],
+      ['Alert.Actions', () => <Alert.Actions>Loose</Alert.Actions>],
+    ])('throws a descriptive error when %s renders outside the root', (name, renderLoose) => {
+      expect(() => render(renderLoose())).toThrow(`${name} must be used within AlertProvider`);
+    });
   });
 
   describe('accessibility', () => {

@@ -26,4 +26,4 @@ export const CardHeader = <T extends ElementType = 'div'>(props: CardHeaderProps
   );
 };
 
-CardHeader.displayName = 'CardHeader';
+CardHeader.displayName = 'Card.Header';

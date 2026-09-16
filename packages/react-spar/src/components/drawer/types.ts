@@ -38,8 +38,14 @@ export interface DrawerProps
   // consumer knobs. `forceMount` is exposed for the same reason `Dialog` exposes
   // it: the root turns it on by default so the exit transition can run, and a
   // consumer with a heavy panel may want to opt out (see `Drawer.tsx`).
-  extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled' | 'modal' | 'forceMount'> {
-  /** Side the drawer slides in from. */
+  extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled' | 'modal'> {
+  /**
+   * Keep the overlay and panel mounted while closed so the exit transition can
+   * run. Pass `false` to unmount a heavy panel on close. The wrapper flips
+   * Spar's default. @defaultValue true
+   */
+  forceMount?: boolean;
+  /** Side the drawer slides in from. @defaultValue 'right' */
   placement?: DrawerPlacement;
   /** Whether the drawer can be dismissed by clicking outside or pressing Escape. @defaultValue true */
   dismissible?: boolean;

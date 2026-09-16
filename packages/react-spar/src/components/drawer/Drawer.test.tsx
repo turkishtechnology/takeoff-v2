@@ -1364,8 +1364,8 @@ describe('Drawer (compound)', () => {
       consoleErrorSpy.mockRestore();
     });
 
-    it('throws the Drawer safe-context error when Drawer.Panel renders outside the root', () => {
-      expect(() => render(<Drawer.Panel>Loose</Drawer.Panel>)).toThrow(/must be used within DrawerProvider/);
+    it('throws the Drawer safe-context error naming Drawer.Panel when it renders outside the root', () => {
+      expect(() => render(<Drawer.Panel>Loose</Drawer.Panel>)).toThrow('Drawer.Panel must be used within DrawerProvider');
     });
 
     it.each([

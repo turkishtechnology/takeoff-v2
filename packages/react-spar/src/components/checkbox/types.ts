@@ -40,9 +40,9 @@ interface CheckboxOwnProps {
    * Indeterminate (mixed) visual + ARIA state. Overrides `checked` /
    * `defaultChecked` when `true`; emits `aria-checked="mixed"`.
    *
-   * Dynamic toggling of `indeterminate` is only fully reactive in controlled
-   * mode. In uncontrolled mode, set it at the initial render and clear it
-   * from your own state in response to `onChange`.
+   * In uncontrolled mode, clear it from your own state in response to
+   * `onChange`; the checkbox then shows the toggled value from that single
+   * interaction.
    * @defaultValue false
    */
   indeterminate?: boolean;

@@ -61,6 +61,15 @@ describe('buildSlotAttrs', () => {
       expect(className).toBe('tk-card product-card instance-card');
     });
 
+    it('adds the provider className shortcut to classNames.root instead of dropping one of them', () => {
+      const { className } = buildSlotAttrs(CardBase.getSlotProps('root'), 'root', {
+        themeClassName: 'product-card',
+        themeClassNames: { root: 'theme-root' },
+      });
+
+      expect(className).toBe('tk-card theme-root product-card');
+    });
+
     it('still adds the theme and instance classes when the canonical class is empty', () => {
       const { className } = buildSlotAttrs({ className: undefined }, 'root', { themeClassName: 'product-card', instanceClassNames: { root: 'instance-card' } });
 

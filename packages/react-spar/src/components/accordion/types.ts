@@ -2,7 +2,6 @@ import type { ElementType, ReactNode } from 'react';
 import type {
   AccordionProps as SparAccordionProps,
   AccordionItemProps as SparAccordionItemProps,
-  AccordionHeaderProps as SparAccordionHeaderProps,
   AccordionContentProps as SparAccordionContentProps,
   PolymorphicProps,
 } from '@turkish-technology/spar';
@@ -92,6 +91,12 @@ export type AccordionProps<T extends ElementType = 'div'> = PolymorphicProps<
 >;
 
 export interface AccordionItemOwnProps {
+  /**
+   * Base id for the item's ARIA wiring. Spar consumes it to derive the
+   * trigger (`${id}-trigger`) and panel (`${id}-content`) ids; it is **not**
+   * rendered on the item element itself. Omit it to get generated ids.
+   */
+  id?: string;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionItemSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -108,19 +113,23 @@ export type AccordionItemProps<T extends ElementType = 'div'> = PolymorphicProps
 >;
 
 export interface AccordionHeaderOwnProps {
+  /**
+   * Semantic heading level for the document outline; the rendered tag
+   * follows (`h1`–`h6`) unless `as` overrides it. Narrowed from Spar's
+   * `number` to {@link AccordionHeadingLevel} so an invalid level cannot
+   * type-check.
+   * @defaultValue 3
+   */
+  level?: AccordionHeadingLevel;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<AccordionHeaderSlot>;
   /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<AccordionHeaderSlot>;
 }
 
-export type AccordionHeaderProps<T extends ElementType = 'h3'> = PolymorphicProps<
-  'h3',
-  T,
-  AccordionHeaderOwnProps &
-    // Semantic heading level for a11y; rendered tag follows.
-    Pick<SparAccordionHeaderProps, 'level'>
->;
+// Spar's AccordionHeader only adds `level`, which is redeclared above with the
+// narrower `AccordionHeadingLevel` type, so nothing is picked from Spar here.
+export type AccordionHeaderProps<T extends ElementType = 'h3'> = PolymorphicProps<'h3', T, AccordionHeaderOwnProps>;
 
 export interface AccordionTriggerOwnProps {
   /**

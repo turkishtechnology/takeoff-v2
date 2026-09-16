@@ -4,9 +4,11 @@ import { useComponentTheme } from '../../provider';
 
 import type { PopoverProps } from './types';
 
-// State-only root: renders no DOM, only provides state context via Spar.
-// `composeRootAttrs` is intentionally skipped — there is no rendered element
-// to receive `className` / `data-*` / `slotProps.root`.
+// State root. Spar's Popover wraps `children` in a plain block
+// `<div data-state="open" | "closed">` that it owns; the wrapper exposes no
+// `as`, `className`, `classNames` or `slotProps` for it, so `composeRootAttrs`
+// is intentionally skipped — there is no takeoff-owned root slot to compose.
+// Style the parts (`Popover.Trigger`, `Popover.Content`, …) instead.
 export const Popover = (props: PopoverProps) => {
   const theme = useComponentTheme('Popover');
   const merged = { ...theme?.defaultProps, ...props };

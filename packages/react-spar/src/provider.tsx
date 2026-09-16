@@ -17,6 +17,64 @@ export interface ThemeValue {
 
 const TakeoffSparContext = createContext<TakeoffSparProviderValue | undefined>(undefined);
 
+interface DocumentAttributeHandle {
+  release: () => void;
+}
+
+/**
+ * Ownership of one `document.documentElement` attribute shared by every
+ * mounted top-level provider. The original value is captured when the first
+ * provider claims the attribute and restored (or removed, when it was absent)
+ * once the last one releases it, whatever order they unmount in — a per-effect
+ * snapshot could not tell a sibling's value from the server-rendered one. The
+ * most recently claimed value is the one written, so siblings behave as they
+ * always did (last mount wins) and the restore is still correct.
+ */
+const createDocumentAttribute = (read: () => string | undefined, write: (value: string) => void, remove: () => void) => {
+  const writers: { value: string }[] = [];
+  let original: string | undefined;
+
+  const apply = () => {
+    const top = writers[writers.length - 1];
+    if (top) write(top.value);
+    else if (original === undefined) remove();
+    else write(original);
+  };
+
+  return {
+    claim(value: string): DocumentAttributeHandle {
+      if (writers.length === 0) original = read();
+      const writer = { value };
+      writers.push(writer);
+      apply();
+      return {
+        release: () => {
+          writers.splice(writers.indexOf(writer), 1);
+          apply();
+        },
+      };
+    },
+  };
+};
+
+const documentTheme = createDocumentAttribute(
+  () => document.documentElement.dataset.theme,
+  value => {
+    document.documentElement.dataset.theme = value;
+  },
+  () => {
+    delete document.documentElement.dataset.theme;
+  },
+);
+
+const documentLang = createDocumentAttribute(
+  () => (document.documentElement.hasAttribute('lang') ? document.documentElement.lang : undefined),
+  value => {
+    document.documentElement.lang = value;
+  },
+  () => document.documentElement.removeAttribute('lang'),
+);
+
 export interface TakeoffSparProviderProps extends Partial<TakeoffSparProviderValue> {
   children: ReactNode;
 }
@@ -25,7 +83,15 @@ export interface TakeoffSparProviderProps extends Partial<TakeoffSparProviderVal
  * Top-level provider for Takeoff React components. Writes `data-theme` and
  * `lang` to `document.documentElement` so styling and language attributes
  * propagate to portal-mounted descendants (Dialog, Popover, Tooltip, …) and
- * are picked up by global CSS selectors.
+ * are picked up by global CSS selectors. The previous values are restored
+ * once every provider has unmounted, whatever order they leave in.
+ *
+ * Only a provider with no provider ancestor writes to the document: `<html>`
+ * carries one theme and one language, so a nested provider scopes
+ * `colorMode`, `locale` and `components` for its subtree through context
+ * (what `useTheme` / `useComponentTheme` report) without fighting the outer
+ * one over the document attributes. Portalled content inside a nested
+ * provider therefore still paints with the outer provider's tokens.
  *
  * Renders no DOM of its own — only a React context. For SSR apps, set
  * `<html data-theme="…" lang="…">` on the server (e.g. with a small inline
@@ -33,28 +99,17 @@ export interface TakeoffSparProviderProps extends Partial<TakeoffSparProviderVal
  * the provider's effect runs.
  */
 export const TakeoffSparProvider = ({ children, colorMode = 'light', locale, components }: TakeoffSparProviderProps) => {
-  useEffect(() => {
-    const html = document.documentElement;
-    const previous = html.dataset.theme;
-    html.dataset.theme = colorMode;
-    return () => {
-      if (previous === undefined) {
-        delete html.dataset.theme;
-      } else {
-        html.dataset.theme = previous;
-      }
-    };
-  }, [colorMode]);
+  const ownsDocument = useContext(TakeoffSparContext) === undefined;
 
   useEffect(() => {
-    if (!locale) return;
-    const html = document.documentElement;
-    const previous = html.lang;
-    html.lang = locale;
-    return () => {
-      html.lang = previous;
-    };
-  }, [locale]);
+    if (!ownsDocument) return;
+    return documentTheme.claim(colorMode).release;
+  }, [colorMode, ownsDocument]);
+
+  useEffect(() => {
+    if (!ownsDocument || !locale) return;
+    return documentLang.claim(locale).release;
+  }, [locale, ownsDocument]);
 
   const value = useMemo(() => ({ colorMode, locale, components }), [colorMode, locale, components]);
 

@@ -12,6 +12,7 @@ class ResizeObserverStub {
   static instances: ResizeObserverStub[] = [];
 
   readonly observed: Element[] = [];
+  readonly observeOptions: (ResizeObserverOptions | undefined)[] = [];
   disconnected = false;
   private readonly callback: ResizeObserverCallback;
 
@@ -20,8 +21,9 @@ class ResizeObserverStub {
     ResizeObserverStub.instances.push(this);
   }
 
-  observe(target: Element) {
+  observe(target: Element, options?: ResizeObserverOptions) {
     this.observed.push(target);
+    this.observeOptions.push(options);
   }
 
   unobserve() {}
@@ -96,7 +98,7 @@ describe('useContentWidthStyle', () => {
   describe('static modes', () => {
     it('sets no width in content mode so the panel shrink-wraps its content', () => {
       const { ref, measure } = createTrigger(120);
-      const { result } = renderHook(() => useContentWidthStyle('content', ref));
+      const { result } = renderHook(() => useContentWidthStyle('content', ref, true));
 
       expect(result.current).toBeUndefined();
       expect(measure).not.toHaveBeenCalled();
@@ -105,7 +107,7 @@ describe('useContentWidthStyle', () => {
 
     it('turns a number into an explicit pixel width', () => {
       const { ref, measure } = createTrigger(120);
-      const { result } = renderHook(() => useContentWidthStyle(280, ref));
+      const { result } = renderHook(() => useContentWidthStyle(280, ref, true));
 
       expect(result.current).toEqual({ width: '280px' });
       expect(measure).not.toHaveBeenCalled();
@@ -114,14 +116,14 @@ describe('useContentWidthStyle', () => {
 
     it('keeps a zero pixel width rather than dropping it as falsy', () => {
       const { ref } = createTrigger(120);
-      const { result } = renderHook(() => useContentWidthStyle(0, ref));
+      const { result } = renderHook(() => useContentWidthStyle(0, ref, true));
 
       expect(result.current).toEqual({ width: '0px' });
     });
 
     it('passes any CSS width string through unchanged', () => {
       const { ref } = createTrigger(120);
-      const { result } = renderHook(() => useContentWidthStyle('min(20rem, 90vw)', ref));
+      const { result } = renderHook(() => useContentWidthStyle('min(20rem, 90vw)', ref, true));
 
       expect(result.current).toEqual({ width: 'min(20rem, 90vw)' });
       expect(ResizeObserverStub.instances).toHaveLength(0);
@@ -131,23 +133,40 @@ describe('useContentWidthStyle', () => {
   describe('trigger mode', () => {
     it("matches the trigger's measured border-box width, rounded", () => {
       const { ref, measure } = createTrigger(120.6);
-      const { result } = renderHook(() => useContentWidthStyle('trigger', ref));
+      const { result } = renderHook(() => useContentWidthStyle('trigger', ref, true));
 
       expect(measure).toHaveBeenCalledTimes(1);
       expect(result.current).toEqual({ width: 121 });
     });
 
-    it('observes the trigger for size changes', () => {
+    it('observes the trigger border box for size changes', () => {
       const { ref, trigger } = createTrigger(120);
-      renderHook(() => useContentWidthStyle('trigger', ref));
+      renderHook(() => useContentWidthStyle('trigger', ref, true));
 
       expect(ResizeObserverStub.instances).toHaveLength(1);
       expect(observer().observed).toEqual([trigger]);
+      // The measurement is a border-box read, so padding/border changes must notify too.
+      expect(observer().observeOptions).toEqual([{ box: 'border-box' }]);
+    });
+
+    it('re-measures when the overlay opens, even without a resize notification', () => {
+      const { ref, measure, setWidth } = createTrigger(120);
+      const { result, rerender } = renderHook((props: { open: boolean }) => useContentWidthStyle('trigger', ref, props.open), { initialProps: { open: false } });
+
+      expect(result.current).toEqual({ width: 120 });
+      measure.mockClear();
+
+      // A border-box change while closed that the observer never reported.
+      setWidth(200);
+      rerender({ open: true });
+
+      expect(measure).toHaveBeenCalledTimes(1);
+      expect(result.current).toEqual({ width: 200 });
     });
 
     it('sets no width while the trigger is not mounted', () => {
       const ref = createRef<HTMLElement>();
-      const { result } = renderHook(() => useContentWidthStyle('trigger', ref));
+      const { result } = renderHook(() => useContentWidthStyle('trigger', ref, true));
 
       expect(result.current).toBeUndefined();
       expect(ResizeObserverStub.instances).toHaveLength(0);
@@ -155,7 +174,7 @@ describe('useContentWidthStyle', () => {
 
     it('applies a resize on the next animation frame through the same rounded measurement', () => {
       const { ref, setWidth } = createTrigger(120);
-      const { result } = renderHook(() => useContentWidthStyle('trigger', ref));
+      const { result } = renderHook(() => useContentWidthStyle('trigger', ref, true));
 
       setWidth(200.2);
       act(() => observer().resize());
@@ -169,7 +188,7 @@ describe('useContentWidthStyle', () => {
 
     it('coalesces a burst of resize callbacks into one measurement per frame', () => {
       const { ref, measure, setWidth } = createTrigger(120);
-      const { result } = renderHook(() => useContentWidthStyle('trigger', ref));
+      const { result } = renderHook(() => useContentWidthStyle('trigger', ref, true));
       measure.mockClear();
 
       setWidth(180);
@@ -186,7 +205,7 @@ describe('useContentWidthStyle', () => {
 
     it('stops observing and drops a pending measurement on unmount', () => {
       const { ref, measure } = createTrigger(120);
-      const { unmount } = renderHook(() => useContentWidthStyle('trigger', ref));
+      const { unmount } = renderHook(() => useContentWidthStyle('trigger', ref, true));
       const instance = observer();
 
       act(() => instance.resize());
@@ -204,7 +223,7 @@ describe('useContentWidthStyle', () => {
 
   describe('mode changes', () => {
     const renderWithMode = (mode: ContentWidthMode, ref: ReturnType<typeof createTrigger>['ref']) =>
-      renderHook((props: { mode: ContentWidthMode }) => useContentWidthStyle(props.mode, ref), { initialProps: { mode } });
+      renderHook((props: { mode: ContentWidthMode }) => useContentWidthStyle(props.mode, ref, true), { initialProps: { mode } });
 
     it('disconnects the observer and applies the static width when leaving trigger mode', () => {
       const { ref } = createTrigger(120);

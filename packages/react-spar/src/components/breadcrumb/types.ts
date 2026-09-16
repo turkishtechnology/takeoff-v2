@@ -36,12 +36,14 @@ export type BreadcrumbSeparatorSlot = 'root';
 
 export interface BreadcrumbOwnProps {
   /**
-   * Density scale cascaded to every part through context.
+   * Density scale. Emitted as `data-size` on the root `<nav>`; the recipe
+   * scopes every part from there. Shared with every part through context.
    * @defaultValue 'base'
    */
   size?: BreadcrumbSize;
   /**
-   * Visual style cascaded to every part through context.
+   * Visual style. Emitted as `data-type` on the root `<nav>`; the recipe
+   * scopes every part from there. Shared with every part through context.
    * @defaultValue 'basic'
    */
   type?: BreadcrumbType;

@@ -2,7 +2,7 @@ import type { ElementType } from 'react';
 import { InfoIconFilledRounded } from '@takeoff-icons/react/info';
 import { FieldDescription as SparFieldDescription } from '@turkish-technology/spar';
 
-import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { buildSlotAttrs, composeRootAttrs, isRenderableNode } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { FieldDescriptionBase } from './base';
@@ -26,7 +26,7 @@ export const FieldDescription = <T extends ElementType = 'div'>(props: FieldDesc
     instanceClassNames: props.classNames,
   });
 
-  const hasContent = children != null && children !== '';
+  const hasContent = isRenderableNode(children);
 
   return (
     <SparFieldDescription {...spar} ref={ref} {...rootAttrs}>

@@ -28,13 +28,41 @@ export type PopoverArrowSlot = 'root';
 export type PopoverCloseSlot = 'root';
 
 /**
- * Public props for the Popover root. State-only — renders no DOM, so no
- * polymorphic `as` and no native HTML props.
+ * Public props for the Popover root. Spar renders a plain, unstyled
+ * `<div data-state="open" | "closed">` around the children; the wrapper adds
+ * no slot to it, so there is no polymorphic `as`, no `className` /
+ * `classNames` / `slotProps`, and no native HTML props here. Style the parts
+ * instead.
  */
-// Spar Popover root: identity, controlled state, modal mode, disable, and
-// children. Popover root is state-only and renders no DOM, so no native HTML
-// props beyond `children` are exposed.
-export type PopoverProps = Pick<SparPopoverProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'modal' | 'disabled' | 'children'>;
+export interface PopoverProps
+  // Spar Popover root: controlled state and children. `id`, `modal` and
+  // `disabled` are redeclared below (same Spar types) because Spar's own JSDoc
+  // for them does not match what it renders.
+  extends Pick<SparPopoverProps, 'open' | 'defaultOpen' | 'onOpenChange' | 'children'> {
+  /**
+   * Base id for ARIA wiring. When omitted one is generated. Only the content
+   * derives an id from it (`${id}-content`); the trigger receives no `id` and
+   * points at the content through `aria-controls`.
+   */
+  id?: string;
+  /**
+   * Modal mode: the open content gets `role="dialog"` + `aria-modal="true"`
+   * and focus is trapped inside it (same as `trapFocus` on `Popover.Content`).
+   * No backdrop is rendered. A pointer down outside still dismisses the
+   * popover; because focus cannot leave, focus-outside dismissal does not
+   * apply.
+   * @defaultValue false
+   */
+  modal?: boolean;
+  /**
+   * Disables every `Popover.Trigger` (native `disabled`, click ignored) so the
+   * user cannot open the popover. It does not lock the state: `defaultOpen` /
+   * `open` still show the content, and the render-prop `open()` / `toggle()`
+   * still open it and call `onOpenChange(true)`.
+   * @defaultValue false
+   */
+  disabled?: boolean;
+}
 
 export interface PopoverTriggerOwnProps {
   /** Per-slot extra classes. */
@@ -59,6 +87,25 @@ export interface PopoverContentOwnProps {
    * @defaultValue 'white'
    */
   variant?: PopoverVariant;
+  /**
+   * Called after the popover opens and focus has moved inside (to the first
+   * focusable element, else the content itself). Notification only: the
+   * event is not cancelable, so `preventDefault` does not prevent the
+   * auto-focus.
+   */
+  onOpenAutoFocus?: (event: Event) => void;
+  /**
+   * Called when focus moves outside the content (non-modal, non-trapped
+   * popovers only). The popover always closes afterwards: `focusin` is not
+   * cancelable, so `preventDefault` has no effect on this path.
+   */
+  onFocusOutside?: (event: FocusEvent) => void;
+  /**
+   * Called for any outside interaction, after `onPointerDownOutside` or
+   * `onFocusOutside`. `preventDefault` keeps the popover open only on the
+   * pointer path; a focus move outside always closes it.
+   */
+  onInteractOutside?: (event: PointerEvent | FocusEvent) => void;
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<PopoverContentSlot>;
   /** Per-slot HTML-attribute overrides. */
@@ -69,13 +116,11 @@ export type PopoverContentProps<T extends ElementType = 'div'> = PolymorphicProp
   'div',
   T,
   PopoverContentOwnProps &
-    // Positioning (side/align), portal container, focus management, and dismiss
-    // event hooks. These are the consumer-facing knobs for integration with
-    // their own focus and dismiss orchestration.
-    Pick<
-      SparPopoverContentProps,
-      'side' | 'align' | 'container' | 'trapFocus' | 'onOpenAutoFocus' | 'onCloseAutoFocus' | 'onEscapeKeyDown' | 'onPointerDownOutside' | 'onFocusOutside' | 'onInteractOutside'
-    >
+    // Positioning (side/align), portal container, focus trap, and the dismiss
+    // hooks whose Spar JSDoc is accurate. `onOpenAutoFocus`, `onFocusOutside`
+    // and `onInteractOutside` are redeclared in PopoverContentOwnProps (same
+    // Spar signatures) with corrected cancelability docs.
+    Pick<SparPopoverContentProps, 'side' | 'align' | 'container' | 'trapFocus' | 'onCloseAutoFocus' | 'onEscapeKeyDown' | 'onPointerDownOutside'>
 >;
 
 export interface PopoverHeaderOwnProps {

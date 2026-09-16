@@ -27,4 +27,4 @@ export const CardTitle = <T extends ElementType = 'h5'>(props: CardTitleProps<T>
   );
 };
 
-CardTitle.displayName = 'CardTitle';
+CardTitle.displayName = 'Card.Title';

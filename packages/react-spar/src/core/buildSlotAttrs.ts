@@ -39,7 +39,8 @@ const belowInstance = (themeAttrs: object | undefined, instanceProps: object | u
  *
  *   theme slotProps → instance props → instance slotProps → wrapper canonical attrs
  *   className: canonical → theme → instance (concatenated; each layer's
- *   `slotProps` className follows its `classNames` entry)
+ *   `slotProps` className follows its `classNames` entry, and on the root
+ *   slot the theme `className` shortcut follows `classNames.root`)
  *   style: a theme slotProps style merges key by key under the instance's own style
  *
  * Canonical attrs always win on conflict so `data-slot` and `tk-*` classes
@@ -55,8 +56,9 @@ export const buildSlotAttrs = <TSlot extends string, TAttrs extends { className?
   const instanceForSlot = instanceSlotProps?.[slotKey];
 
   // The provider's `className` shortcut is documented as an alias for
-  // `classNames.root`, so it only kicks in on the root slot.
-  const resolvedThemeClass = themeClassNames?.[slotKey] ?? (slotKey === ('root' as TSlot) ? themeClassName : undefined);
+  // `classNames.root`, so it only kicks in on the root slot. Both are theme
+  // classes, so when a theme sets the two they add up rather than compete.
+  const resolvedThemeClass = clsx(themeClassNames?.[slotKey], slotKey === ('root' as TSlot) ? themeClassName : undefined) || undefined;
   const resolvedInstanceClass = instanceClassNames?.[slotKey];
 
   const composedClassName =

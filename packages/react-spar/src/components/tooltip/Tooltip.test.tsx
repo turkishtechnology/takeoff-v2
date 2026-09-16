@@ -1,6 +1,6 @@
 import { act, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRef, useState, type ReactElement } from 'react';
+import { createRef, isValidElement, useState, type ReactElement } from 'react';
 import { axe } from 'vitest-axe';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -165,6 +165,30 @@ describe('Tooltip (compound)', () => {
       expect(trigger.tagName).toBe('SPAN');
       expect(trigger).toHaveClass('tk-tooltip-trigger');
       expect(screen.getByRole('tooltip').tagName).toBe('SECTION');
+    });
+
+    it('renders Header and Description as custom elements through the as prop', () => {
+      render(
+        <Tooltip defaultOpen>
+          <Tooltip.Trigger>Save</Tooltip.Trigger>
+          <Tooltip.Content>
+            <Tooltip.Header as="h2">Important</Tooltip.Header>
+            <Tooltip.Description as="div">Unsaved changes will be lost.</Tooltip.Description>
+          </Tooltip.Content>
+        </Tooltip>,
+      );
+
+      const tooltip = screen.getByRole('tooltip');
+      const header = within(tooltip).getByRole('heading', { level: 2, name: 'Important' });
+      expect(header).toHaveClass('tk-tooltip-header');
+      expect(header).toHaveAttribute('data-slot', 'root');
+      expect(header).not.toHaveAttribute('as');
+
+      const description = within(tooltip).getByText('Unsaved changes will be lost.');
+      expect(description.tagName).toBe('DIV');
+      expect(description).toHaveClass('tk-tooltip-description');
+      expect(description).toHaveAttribute('data-slot', 'root');
+      expect(description).not.toHaveAttribute('as');
     });
 
     it('forwards refs to the DOM node of every part', () => {
@@ -334,6 +358,22 @@ describe('Tooltip (compound)', () => {
       expect(event).toMatchObject({ key: 'Escape' });
       expect(onOpenChange).toHaveBeenCalledWith(false);
       expect(screen.getByRole('button', { name: 'Save' })).toHaveFocus();
+    });
+
+    it('does not expose the Spar dismiss/auto-focus hooks the tooltip never fires', () => {
+      // Type-level contract: Spar never calls these on a tooltip and would
+      // spread them onto the DOM, so the wrapper does not pick them. The
+      // elements are only created, never rendered.
+      const elements = [
+        // @ts-expect-error onPointerDownOutside is not a Tooltip.Content prop
+        <Tooltip.Content key="pointer" onPointerDownOutside={() => {}} />,
+        // @ts-expect-error onOpenAutoFocus is not a Tooltip.Content prop
+        <Tooltip.Content key="open" onOpenAutoFocus={() => {}} />,
+        // @ts-expect-error onCloseAutoFocus is not a Tooltip.Content prop
+        <Tooltip.Content key="close" onCloseAutoFocus={() => {}} />,
+      ];
+
+      expect(elements.every(isValidElement)).toBe(true);
     });
 
     it('follows the controlled open prop and only requests changes through onOpenChange', async () => {
@@ -723,6 +763,19 @@ describe('Tooltip (compound)', () => {
 
     afterEach(() => {
       vi.useRealTimers();
+    });
+
+    it('also disables the trigger control itself, as documented', () => {
+      render(
+        <Tooltip disabled>
+          <Tooltip.Trigger>Save</Tooltip.Trigger>
+          <Tooltip.Content>
+            <Tooltip.Description>Saves the draft</Tooltip.Description>
+          </Tooltip.Content>
+        </Tooltip>,
+      );
+
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
     });
 
     it('stays closed after the delay elapses on hover, focus or programmatic show()', async () => {

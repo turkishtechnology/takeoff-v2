@@ -121,6 +121,20 @@ describe('createComponentBase', () => {
       expect(base.resolveProps({ variant: 'secondary' }, { size: 'large' })).toEqual({ variant: 'secondary', size: 'large', tone: 'neutral' });
     });
 
+    it('treats an explicit undefined instance prop as not set, so the theme default survives', () => {
+      // The usual forwarding pattern `<Badge variant={props.variant}>` hands
+      // the wrapper an explicit `undefined`; the provider default must win.
+      const base = createDemoBase({ variant: 'primary', size: 'medium' });
+
+      expect(base.resolveProps({ variant: undefined, size: 'small' }, { variant: 'secondary' })).toEqual({ variant: 'secondary', size: 'small' });
+    });
+
+    it('treats an explicit undefined theme default as not set, so the author default survives', () => {
+      const base = createDemoBase({ variant: 'primary' });
+
+      expect(base.resolveProps({}, { variant: undefined })).toEqual({ variant: 'primary' });
+    });
+
     it('keeps instance props that have no default in any layer', () => {
       expect(createDemoBase().resolveProps({ className: 'extra' })).toEqual({ className: 'extra' });
     });

@@ -2,7 +2,7 @@ import type { ElementType } from 'react';
 import { AlertCircleIconFilledRounded } from '@takeoff-icons/react/alert-circle';
 import { FieldErrorMessage as SparFieldErrorMessage } from '@turkish-technology/spar';
 
-import { buildSlotAttrs, composeRootAttrs } from '../../core';
+import { buildSlotAttrs, composeRootAttrs, isRenderableNode } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { FieldErrorMessageBase } from './base';
@@ -25,7 +25,7 @@ export const FieldErrorMessage = <T extends ElementType = 'div'>(props: FieldErr
     instanceClassNames: props.classNames,
   });
 
-  const hasContent = children != null && children !== '';
+  const hasContent = isRenderableNode(children);
 
   return (
     <SparFieldErrorMessage {...spar} ref={ref} {...rootAttrs}>

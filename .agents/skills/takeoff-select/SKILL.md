@@ -42,7 +42,9 @@ import { Field, Select } from '@takeoff-ui/react-spar';
   for typeahead + trigger display).
 - `Select.Group` — groups related items under a label.
 - `Select.Label` — section heading inside a `Select.Group`.
-- `Select.Separator` — visual divider between groups/items.
+- `Select.Separator` — visual divider between groups/items. Rendered as a hidden
+  presentational node (`role="presentation"`, `aria-hidden`) so the listbox only
+  owns options/groups.
 - `Select.Arrow` — optional pointer from the panel toward the trigger.
 - `Select.Indicator` — standalone disclosure glyph for full render-prop layouts.
 

@@ -1,5 +1,6 @@
+import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRef, useState, type FormEvent } from 'react';
+import { createRef, useState, type FormEvent, type HTMLAttributes } from 'react';
 import { axe } from 'vitest-axe';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -411,6 +412,36 @@ describe('Button', () => {
       expect(link).not.toHaveAttribute('disabled');
       expect(link).not.toHaveAttribute('type');
     });
+
+    it('removes navigation from a disabled or loading anchor and restores it once interactive', () => {
+      const onClick = vi.fn();
+      const onClickCapture = vi.fn();
+      const anchor = (state: { disabled?: boolean; loading?: boolean }) => (
+        <Button as="a" href="#flights" onClick={onClick} onClickCapture={onClickCapture} {...state}>
+          Flights
+        </Button>
+      );
+      const { rerender } = render(anchor({ disabled: true }));
+      const link = screen.getByRole('button', { name: 'Flights' });
+
+      expect(link).not.toHaveAttribute('href');
+      // `fireEvent` returns false when the click's default action was cancelled.
+      expect(fireEvent.click(link)).toBe(false);
+      expect(onClick).not.toHaveBeenCalled();
+      expect(onClickCapture).toHaveBeenCalledTimes(1);
+
+      rerender(anchor({ loading: true }));
+      expect(link).not.toHaveAttribute('href');
+      expect(fireEvent.click(link)).toBe(false);
+      expect(onClick).not.toHaveBeenCalled();
+      expect(onClickCapture).toHaveBeenCalledTimes(2);
+
+      rerender(anchor({}));
+      expect(link).toHaveAttribute('href', '#flights');
+      expect(fireEvent.click(link)).toBe(true);
+      expect(onClick).toHaveBeenCalledTimes(1);
+      expect(onClickCapture).toHaveBeenCalledTimes(3);
+    });
   });
 
   describe('interaction', () => {
@@ -643,6 +674,28 @@ describe('Button', () => {
   });
 
   describe('classNames and slotProps', () => {
+    it('keeps the documented state hooks when slotProps.root tries to override them', () => {
+      const hijack = { 'data-loading': 'hijacked', 'data-disabled': 'hijacked', 'data-variant': 'hijacked' } as HTMLAttributes<HTMLElement>;
+      const { rerender } = render(
+        <Button loading slotProps={{ root: hijack }}>
+          Save
+        </Button>,
+      );
+      const button = screen.getByRole('button');
+
+      expect(button).toHaveAttribute('data-loading', '');
+      expect(button).toHaveAttribute('data-variant', 'primary');
+      expect(button).toHaveAttribute('aria-busy', 'true');
+
+      rerender(
+        <Button disabled slotProps={{ root: hijack }}>
+          Save
+        </Button>,
+      );
+      expect(button).toHaveAttribute('data-disabled', '');
+      expect(button).toBeDisabled();
+    });
+
     it('merges className and classNames onto their owner nodes', () => {
       const classNames = { root: 'custom-root', content: 'custom-content', label: 'custom-label', spinner: 'custom-spinner' };
 

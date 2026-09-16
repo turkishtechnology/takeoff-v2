@@ -4,10 +4,14 @@ import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { AlertContentBase } from './base';
+import { useAlertContext } from './context';
 import type { AlertContentProps, AlertContentSlot } from './types';
 
 export const AlertContent = <T extends ElementType = 'div'>(props: AlertContentProps<T>) => {
   const theme = useComponentTheme('AlertContent');
+  // Presentational part; read for the boundary only so rendering outside
+  // <Alert> throws the descriptive safe-context error.
+  useAlertContext('Alert.Content');
 
   const { rootAttrs, rest } = composeRootAttrs<AlertContentProps, AlertContentSlot>(AlertContentBase, props as AlertContentProps<'div'>, theme);
 
