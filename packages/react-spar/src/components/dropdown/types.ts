@@ -76,23 +76,24 @@ export type DropdownTriggerProps<T extends ElementType = 'button'> = Polymorphic
 
 export interface DropdownContentOwnProps {
   /**
-   * Fired when Escape is pressed while the menu is open. The menu always
-   * closes afterwards — unlike Spar's own JSDoc claims, `preventDefault()`
-   * does not keep it open (Spar closes unconditionally). Use it to observe,
-   * not to veto.
+   * Fired when Escape is pressed while the menu is open, before the menu acts
+   * on the key. Receives the native keyboard event; call `preventDefault()`
+   * on it to keep the menu open.
    */
   onEscapeKeyDown?: (event: KeyboardEvent) => void;
   /**
-   * Fired on a pointer press outside the menu and its trigger. The menu
-   * always closes afterwards — `preventDefault()` does not keep it open
-   * (Spar closes unconditionally). Use it to observe, not to veto.
+   * Fired on a pointer press outside the menu and its trigger, before the
+   * menu closes. Call `preventDefault()` on the event to keep the menu open.
    */
   onPointerDownOutside?: (event: PointerEvent) => void;
   /**
-   * Fired when focus moves outside the menu and its trigger. A modal menu
-   * (the default) stays open and pulls focus back; a non-modal menu always
-   * closes — `preventDefault()` does not change either outcome. Use it to
-   * observe, not to veto.
+   * Fired when focus moves outside the menu and its trigger. Receives a
+   * cancelable `focusoutside` `FocusEvent` dispatched on the newly focused
+   * element (native `focusin` is not cancelable); `event.target` is the
+   * element that received focus. A non-modal menu closes afterwards — call
+   * `preventDefault()` to keep it open. A modal menu (the default) stays open
+   * and pulls focus back to its first item — `preventDefault()` skips that
+   * focus recapture.
    */
   onFocusOutside?: (event: FocusEvent) => void;
   /** Per-slot class name overrides. */
@@ -107,8 +108,9 @@ export type DropdownContentProps<T extends ElementType = 'div'> = PolymorphicPro
   DropdownContentOwnProps &
     // Positioning and portal container from Spar. The dismiss callbacks
     // (`onEscapeKeyDown`, `onPointerDownOutside`, `onFocusOutside`) are
-    // redeclared on DropdownContentOwnProps with the same signatures because
-    // Spar's JSDoc for them is wrong (preventDefault does not veto the close).
+    // redeclared on DropdownContentOwnProps with the same signatures so the
+    // wrapper docs spell out the veto semantics and the `focusoutside` event
+    // shape in one place.
     Pick<SparDropdownMenuContentProps, 'side' | 'align' | 'container'>
 >;
 

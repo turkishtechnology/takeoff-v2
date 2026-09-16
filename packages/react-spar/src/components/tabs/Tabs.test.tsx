@@ -314,6 +314,33 @@ describe('Tabs (compound)', () => {
       expect(screen.getByRole('tabpanel')).toHaveTextContent('Istanbul to London');
     });
 
+    it('selects the first tab on mount without calling onValueChange, then reports the first user activation once', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn<(value: string) => void>();
+      render(
+        <Tabs onValueChange={onValueChange}>
+          <Tabs.List aria-label="Booking details">
+            <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+            <Tabs.Trigger value="passengers">Passengers</Tabs.Trigger>
+          </Tabs.List>
+          <Tabs.Content value="overview">Istanbul to London</Tabs.Content>
+          <Tabs.Content value="passengers">2 passengers</Tabs.Content>
+        </Tabs>,
+      );
+
+      expect(getTab('Overview')).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByRole('tabpanel')).toHaveTextContent('Istanbul to London');
+      expect(onValueChange).not.toHaveBeenCalled();
+
+      // Re-activating the already selected tab is not a change.
+      await user.click(getTab('Overview'));
+      expect(onValueChange).not.toHaveBeenCalled();
+
+      await user.click(getTab('Passengers'));
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange).toHaveBeenCalledWith('passengers');
+    });
+
     it('selects a tab on click, swaps the mounted panel and reports the new value once', async () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn<(value: string) => void>();

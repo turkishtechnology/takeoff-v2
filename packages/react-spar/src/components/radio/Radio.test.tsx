@@ -10,13 +10,6 @@ import { Field } from '../field';
 
 import { Radio, type RadioProps, type RadioRenderProps } from './index';
 
-// Spar renders the default `Radio.Item` as `<label role="radio">`. ARIA in HTML
-// allows no role override on `<label>`, so axe's best-practice rule
-// `aria-allowed-role` flags every item of the documented anatomy. That is an
-// upstream Spar defect (reported separately); every other axe rule stays on,
-// and the `as="div"` regression check below runs the full rule set.
-const AXE_WITHOUT_LABEL_ROLE_RULE = { rules: { 'aria-allowed-role': { enabled: false } } };
-
 const cabinItems = (
   <>
     <Radio.Item value="economy">
@@ -57,7 +50,7 @@ describe('Radio (compound)', () => {
 
       const item = getRadio('Economy');
       expect(item).toBe(radios[0]);
-      expect(item.tagName).toBe('LABEL');
+      expect(item.tagName).toBe('SPAN');
       expect(item).toHaveClass('tk-radio-item');
       expect(item).toHaveAttribute('data-slot', 'root');
 
@@ -161,7 +154,7 @@ describe('Radio (compound)', () => {
 
     it('forwards refs to the DOM node of every part', () => {
       const rootRef = createRef<HTMLDivElement>();
-      const itemRef = createRef<HTMLLabelElement>();
+      const itemRef = createRef<HTMLSpanElement>();
       const indicatorRef = createRef<HTMLSpanElement>();
       const labelRef = createRef<HTMLSpanElement>();
 
@@ -502,21 +495,120 @@ describe('Radio (compound)', () => {
       await waitFor(() => expect(getRadio('Business')).toHaveFocus());
     });
 
-    // Spar spreads consumer props after its own handlers, so `onKeyDown` on the
-    // root would replace roving navigation (documented on the prop). These pin
-    // the documented alternatives so they keep working.
-    it('keeps arrow navigation when key presses are observed with onKeyDownCapture', async () => {
+    // Spar composes consumer handlers with its own (consumer first), and a
+    // `preventDefault()` from the consumer vetoes the built-in behaviour. These
+    // pin that contract through the wrapper's redeclared handler props.
+    it('keeps arrow navigation when a consumer onKeyDown is attached to the group root', async () => {
       const user = userEvent.setup();
-      const onKeyDownCapture = vi.fn();
-      render(cabinGroup({ defaultValue: 'economy', onKeyDownCapture }));
+      const onKeyDown = vi.fn();
+      render(cabinGroup({ defaultValue: 'economy', onKeyDown }));
       await user.tab();
 
       await user.keyboard('{ArrowDown}');
 
       expect(getRadio('Business')).toHaveFocus();
       expect(getRadio('Business')).toHaveAttribute('aria-checked', 'true');
-      expect(onKeyDownCapture).toHaveBeenCalledTimes(1);
-      expect(onKeyDownCapture).toHaveBeenLastCalledWith(expect.objectContaining({ key: 'ArrowDown' }));
+      expect(onKeyDown).toHaveBeenCalledTimes(1);
+      expect(onKeyDown).toHaveBeenLastCalledWith(expect.objectContaining({ key: 'ArrowDown' }));
+    });
+
+    it('lets a consumer onKeyDown on the group root veto arrow navigation with preventDefault', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const onKeyDown = vi.fn((event: KeyboardEvent) => {
+        if (event.key === 'ArrowDown') event.preventDefault();
+      });
+      render(cabinGroup({ defaultValue: 'economy', onChange, onKeyDown: onKeyDown as unknown as RadioProps['onKeyDown'] }));
+      await user.tab();
+
+      await user.keyboard('{ArrowDown}');
+      expect(getRadio('Economy')).toHaveFocus();
+      expect(getRadio('Economy')).toHaveAttribute('aria-checked', 'true');
+      expect(onChange).not.toHaveBeenCalled();
+
+      // Keys the consumer leaves alone still navigate.
+      await user.keyboard('{End}');
+      expect(getRadio('First')).toHaveFocus();
+      expect(onChange).toHaveBeenCalledWith('first');
+    });
+
+    it('keeps selecting on click when a consumer onClick is attached to the item', async () => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const onChange = vi.fn();
+      render(
+        <Radio aria-label="Cabin class" onChange={onChange}>
+          <Radio.Item value="economy" onClick={onClick}>
+            <Radio.Indicator />
+            <Radio.Label>Economy</Radio.Label>
+          </Radio.Item>
+          <Radio.Item value="business">
+            <Radio.Indicator />
+            <Radio.Label>Business</Radio.Label>
+          </Radio.Item>
+        </Radio>,
+      );
+
+      await user.click(getRadio('Economy'));
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith('economy');
+      expect(getRadio('Economy')).toHaveAttribute('aria-checked', 'true');
+    });
+
+    it('lets a consumer onClick on the item veto the selection with preventDefault', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(
+        <Radio aria-label="Cabin class" onChange={onChange}>
+          <Radio.Item value="economy" onClick={event => event.preventDefault()}>
+            <Radio.Indicator />
+            <Radio.Label>Economy</Radio.Label>
+          </Radio.Item>
+          <Radio.Item value="business">
+            <Radio.Indicator />
+            <Radio.Label>Business</Radio.Label>
+          </Radio.Item>
+        </Radio>,
+      );
+
+      await user.click(getRadio('Economy'));
+      expect(onChange).not.toHaveBeenCalled();
+      expect(getRadio('Economy')).toHaveAttribute('aria-checked', 'false');
+
+      await user.click(getRadio('Business'));
+      expect(onChange).toHaveBeenCalledWith('business');
+    });
+
+    it('composes consumer onKeyDown and onFocus on the item with Space selection and focus tracking', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const onKeyDown = vi.fn();
+      const onFocus = vi.fn();
+      render(
+        <Radio aria-label="Cabin class" selectOnFocus={false} onChange={onChange}>
+          <Radio.Item value="economy" onKeyDown={onKeyDown} onFocus={onFocus}>
+            <Radio.Indicator />
+            <Radio.Label>Economy</Radio.Label>
+          </Radio.Item>
+          <Radio.Item value="business">
+            <Radio.Indicator />
+            <Radio.Label>Business</Radio.Label>
+          </Radio.Item>
+        </Radio>,
+      );
+
+      await user.tab();
+      expect(onFocus).toHaveBeenCalledTimes(1);
+      expect(getRadio('Economy')).toHaveFocus();
+      expect(getRadio('Economy')).toHaveAttribute('data-focus', '');
+
+      await user.keyboard(' ');
+      expect(onKeyDown).toHaveBeenCalledTimes(1);
+      expect(onKeyDown).toHaveBeenLastCalledWith(expect.objectContaining({ key: ' ' }));
+      expect(onChange).toHaveBeenCalledWith('economy');
+      expect(getRadio('Economy')).toHaveAttribute('aria-checked', 'true');
     });
 
     it('keeps selecting on click when a consumer onClick is attached to the group root', async () => {
@@ -837,10 +929,10 @@ describe('Radio (compound)', () => {
         </>,
       );
 
-      expect(await axe(container, AXE_WITHOUT_LABEL_ROLE_RULE)).toHaveNoViolations();
+      expect(await axe(container)).toHaveNoViolations();
     });
 
-    it('passes every axe rule when items render as a non-label element', async () => {
+    it('keeps passing every axe rule when items render as another element through as', async () => {
       const { container } = render(
         <Radio aria-label="Cabin class" defaultValue="economy">
           <Radio.Item as="div" value="economy">

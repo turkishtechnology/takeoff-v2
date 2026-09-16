@@ -158,7 +158,7 @@ describe('Select (compound)', () => {
 
       const separator = listbox.querySelector('.tk-select-separator');
       expect(separator).toHaveAttribute('data-slot', 'root');
-      // Presentational: a listbox may only own option / group children.
+      // Presentational (Spar default): a listbox may only own option / group children.
       expect(separator).toHaveAttribute('role', 'presentation');
       expect(separator).toHaveAttribute('aria-hidden', 'true');
       expect(separator).not.toHaveAttribute('aria-orientation');
@@ -679,6 +679,24 @@ describe('Select (compound)', () => {
       expect(onOpenChange).not.toHaveBeenCalled();
     });
 
+    it('focuses the listbox of an initially open select so keyboard dismissal works without reopening', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      render(
+        <Select defaultOpen onOpenChange={onOpenChange}>
+          <Select.Trigger placeholder={PLACEHOLDER} />
+          <Select.Content>{cabinItems}</Select.Content>
+        </Select>,
+      );
+
+      await waitFor(() => expect(screen.getByRole('listbox')).toHaveFocus());
+
+      await user.keyboard('{Escape}');
+
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+
     it('controlled open: stays open after a selection until the parent flips the open prop', async () => {
       const user = userEvent.setup();
       const onOpenChange = vi.fn();
@@ -789,6 +807,77 @@ describe('Select (compound)', () => {
       expect(onChange).not.toHaveBeenCalled();
       expect(screen.getByRole('combobox')).toHaveFocus();
       expect(triggerSlot('value')).toHaveTextContent('Economy');
+    });
+
+    it('stays open when onEscapeKeyDown prevents default', async () => {
+      const user = userEvent.setup();
+      const onEscapeKeyDown = vi.fn((event: KeyboardEvent) => event.preventDefault());
+      const onOpenChange = vi.fn();
+      render(
+        <Select defaultOpen onOpenChange={onOpenChange}>
+          <Select.Trigger placeholder={PLACEHOLDER} />
+          <Select.Content onEscapeKeyDown={onEscapeKeyDown}>{cabinItems}</Select.Content>
+        </Select>,
+      );
+
+      await user.keyboard('{Escape}');
+
+      expect(onEscapeKeyDown).toHaveBeenCalledTimes(1);
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+    });
+
+    it('calls onCloseAutoFocus before focus returns to the trigger on Escape and on item selection', async () => {
+      const user = userEvent.setup();
+      const onCloseAutoFocus = vi.fn();
+      render(
+        <Select>
+          <Select.Trigger placeholder={PLACEHOLDER} />
+          <Select.Content onCloseAutoFocus={onCloseAutoFocus}>{cabinItems}</Select.Content>
+        </Select>,
+      );
+
+      await openByClick(user);
+      await user.keyboard('{Escape}');
+
+      expect(onCloseAutoFocus).toHaveBeenCalledTimes(1);
+      expect(onCloseAutoFocus).toHaveBeenCalledWith(expect.any(FocusEvent));
+      expect(screen.getByRole('combobox')).toHaveFocus();
+
+      await openByClick(user);
+      await user.click(screen.getByRole('option', { name: 'First class' }));
+
+      expect(onCloseAutoFocus).toHaveBeenCalledTimes(2);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      expect(screen.getByRole('combobox')).toHaveFocus();
+    });
+
+    it('keeps focus where it is when onCloseAutoFocus prevents default, and skips it for outside-pointer dismissal', async () => {
+      const user = userEvent.setup();
+      const onCloseAutoFocus = vi.fn((event: FocusEvent) => event.preventDefault());
+      render(
+        <>
+          <button type="button">Elsewhere</button>
+          <Select>
+            <Select.Trigger placeholder={PLACEHOLDER} />
+            <Select.Content onCloseAutoFocus={onCloseAutoFocus}>{cabinItems}</Select.Content>
+          </Select>
+        </>,
+      );
+
+      await openByClick(user);
+      await user.keyboard('{Escape}');
+
+      expect(onCloseAutoFocus).toHaveBeenCalledTimes(1);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      expect(screen.getByRole('combobox')).not.toHaveFocus();
+
+      await openByClick(user);
+      await user.click(screen.getByRole('button', { name: 'Elsewhere' }));
+
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      // Outside dismissal moves no focus, so the close-focus hook is not consulted.
+      expect(onCloseAutoFocus).toHaveBeenCalledTimes(1);
     });
 
     it('closes when Tab leaves the panel', async () => {
@@ -2114,6 +2203,29 @@ describe('Select (compound)', () => {
       expect(separator).not.toHaveAttribute('aria-orientation');
       expect(screen.queryByRole('separator', { hidden: true })).toBeNull();
       expect(await axe(listbox)).toHaveNoViolations();
+    });
+
+    it('lets a consumer restore separator semantics with role="separator"', () => {
+      render(
+        <Select defaultOpen>
+          <Select.Trigger placeholder={PLACEHOLDER} />
+          <Select.Content>
+            <Select.Viewport>
+              <Select.Item value="economy" label="Economy">
+                Economy
+              </Select.Item>
+              <Select.Separator role="separator" aria-hidden={false} />
+              <Select.Item value="first" label="First class">
+                First class
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select>,
+      );
+
+      const separator = screen.getByRole('separator');
+      expect(separator).toHaveClass('tk-select-separator');
+      expect(separator).not.toHaveAttribute('aria-hidden', 'true');
     });
 
     it('has no axe violations for the open listbox with groups, a disabled item and an arrow', async () => {

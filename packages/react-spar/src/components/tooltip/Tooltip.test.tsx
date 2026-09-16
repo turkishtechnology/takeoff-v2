@@ -335,6 +335,60 @@ describe('Tooltip (compound)', () => {
       expect(onOpenChange).toHaveBeenLastCalledWith(false);
     });
 
+    it('fires onEscapeKeyDown for Escape on the trigger and closes the tooltip', async () => {
+      const user = userEvent.setup();
+      const onEscapeKeyDown = vi.fn();
+      const onOpenChange = vi.fn();
+
+      render(
+        <Tooltip delay={0} onOpenChange={onOpenChange}>
+          <Tooltip.Trigger>Save</Tooltip.Trigger>
+          <Tooltip.Content onEscapeKeyDown={onEscapeKeyDown}>
+            <Tooltip.Description>Saves the draft</Tooltip.Description>
+          </Tooltip.Content>
+        </Tooltip>,
+      );
+
+      await user.tab();
+      await screen.findByRole('tooltip');
+      expect(screen.getByRole('button', { name: 'Save' })).toHaveFocus();
+
+      await user.keyboard('{Escape}');
+
+      expect(onEscapeKeyDown).toHaveBeenCalledTimes(1);
+      const [event] = onEscapeKeyDown.mock.calls[0];
+      expect(event).toBeInstanceOf(KeyboardEvent);
+      expect(event).toMatchObject({ key: 'Escape' });
+      await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());
+      expect(onOpenChange).toHaveBeenLastCalledWith(false);
+      expect(screen.getByRole('button', { name: 'Save' })).toHaveFocus();
+    });
+
+    it('keeps the tooltip open when onEscapeKeyDown prevents default', async () => {
+      const user = userEvent.setup();
+      const onEscapeKeyDown = vi.fn((event: KeyboardEvent) => event.preventDefault());
+      const onOpenChange = vi.fn();
+
+      render(
+        <Tooltip delay={0} onOpenChange={onOpenChange}>
+          <Tooltip.Trigger>Save</Tooltip.Trigger>
+          <Tooltip.Content onEscapeKeyDown={onEscapeKeyDown}>
+            <Tooltip.Description>Saves the draft</Tooltip.Description>
+          </Tooltip.Content>
+        </Tooltip>,
+      );
+
+      await user.tab();
+      await screen.findByRole('tooltip');
+      onOpenChange.mockClear();
+
+      await user.keyboard('{Escape}');
+
+      expect(onEscapeKeyDown).toHaveBeenCalledTimes(1);
+      expect(screen.getByRole('tooltip')).toBeInTheDocument();
+      expect(onOpenChange).not.toHaveBeenCalled();
+    });
+
     it('fires onEscapeKeyDown with the native keyboard event when Escape is pressed inside the content', async () => {
       const user = userEvent.setup();
       const onEscapeKeyDown = vi.fn();
@@ -360,10 +414,10 @@ describe('Tooltip (compound)', () => {
       expect(screen.getByRole('button', { name: 'Save' })).toHaveFocus();
     });
 
-    it('does not expose the Spar dismiss/auto-focus hooks the tooltip never fires', () => {
-      // Type-level contract: Spar never calls these on a tooltip and would
-      // spread them onto the DOM, so the wrapper does not pick them. The
-      // elements are only created, never rendered.
+    it('does not expose the dismiss/auto-focus hooks a tooltip never fires', () => {
+      // Type-level contract: a tooltip has no outside-dismiss or auto-focus
+      // path (Spar removed these never-called props), so the wrapper exposes
+      // none of them. The elements are only created, never rendered.
       const elements = [
         // @ts-expect-error onPointerDownOutside is not a Tooltip.Content prop
         <Tooltip.Content key="pointer" onPointerDownOutside={() => {}} />,

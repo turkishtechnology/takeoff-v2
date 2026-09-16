@@ -307,24 +307,32 @@ render(<RenderPropDemo />);
 ## Accessibility & Keyboard
 
 - The root renders `role="radiogroup"`; each `Radio.Item` is a
-  `<label role="radio">` wrapping a hidden `<input type="radio">` so the group
-  participates in native form submission.
+  `<span role="radio">` wrapping a visually hidden `<input type="radio">` so the
+  group participates in native form submission. (`<label>` allows no ARIA role,
+  so it is not the default — pass `as` for another element if you need one.)
 - Provide a group label via `aria-label` or `aria-labelledby`. `Radio.Label`
   labels the individual item — compose helper text or richer markup directly
   inside it.
 - `Radio.Indicator` is decorative (`aria-hidden`); the checked state is surfaced
   to assistive tech via `aria-checked` on the item.
 
-| Key   | Behavior                                                             |
-| ----- | -------------------------------------------------------------------- |
-| Tab   | Move focus into the group (lands on the checked item, or the first). |
-| ↓ / → | Move focus to the next item and select it.                           |
-| ↑ / ← | Move focus to the previous item and select it.                       |
-| Space | Select the focused item.                                             |
+| Key           | Behavior                                                             |
+| ------------- | -------------------------------------------------------------------- |
+| Tab           | Move focus into the group (lands on the checked item, or the first). |
+| ↓ / →         | Move focus to the next item and select it.                           |
+| ↑ / ←         | Move focus to the previous item and select it.                       |
+| Space / Enter | Select the focused item.                                             |
 
-Disabled items skip both pointer and keyboard activation. Set `selectOnFocus` to
-`false` if you want focus and selection to decouple, and `autoFocus` to move
-focus into the group on mount.
+Disabled items skip both pointer and keyboard activation, and the first enabled
+item becomes the tab stop when the checked one is disabled. Set `selectOnFocus`
+to `false` if you want focus and selection to decouple, and `autoFocus` to move
+focus into the group on mount. A `readOnly` group still moves focus with the
+keyboard but never changes its value.
+
+Consumer `onKeyDown` / `onFocus` / `onBlur` on `Radio`, and `onClick` /
+`onKeyDown` / `onFocus` on `Radio.Item`, run before the built-in handler and do
+not replace it. Call `event.preventDefault()` inside your handler to veto the
+built-in navigation or selection for that event.
 
 ## API Reference
 

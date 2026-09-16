@@ -8,7 +8,7 @@ import { RadioItemBase } from './base';
 import { RADIO_ITEM_CONTEXT_VALUE, RadioItemProvider, useRadioGroupOwnContext } from './context';
 import type { RadioItemProps } from './types';
 
-export const RadioItem = <T extends ElementType = 'label'>(props: RadioItemProps<T>) => {
+export const RadioItem = <T extends ElementType = 'span'>(props: RadioItemProps<T>) => {
   const theme = useComponentTheme('RadioItem');
   const group = useRadioGroupOwnContext('Radio.Item');
 
@@ -21,7 +21,7 @@ export const RadioItem = <T extends ElementType = 'label'>(props: RadioItemProps
   // radiogroup root (resolving from `invalid` + Field context), and the
   // recipe styles items via an ancestor selector (`.tk-radio[data-invalid]
   // .tk-radio-item`). Per-item invalid does not exist as a concept.
-  const { rootAttrs, rest } = composeRootAttrs(RadioItemBase, props as RadioItemProps<'label'>, theme, {
+  const { rootAttrs, rest } = composeRootAttrs(RadioItemBase, props as RadioItemProps<'span'>, theme, {
     stateAttrs: ({ position }) => ({
       'data-size': group.size,
       'data-position': position ?? group.position,
@@ -29,7 +29,7 @@ export const RadioItem = <T extends ElementType = 'label'>(props: RadioItemProps
   });
 
   // `position` is consumed only as a data-attr above; drop it before spreading
-  // onto the underlying label element so the DOM doesn't see an unknown attr.
+  // onto the underlying item element so the DOM doesn't see an unknown attr.
   const { position: _position, children, ref, ...spar } = rest;
 
   return (

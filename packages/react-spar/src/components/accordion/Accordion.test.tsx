@@ -995,6 +995,61 @@ describe('Accordion (compound)', () => {
   });
 
   describe('keyboard interaction', () => {
+    it('skips a disabled middle item with the arrow keys and lands Home/End on the enabled edges', async () => {
+      const user = userEvent.setup();
+      render(
+        <Accordion>
+          <Accordion.Item value="fare">
+            <Accordion.Header>
+              <Accordion.Trigger>Fare conditions</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Refund windows and change fees.</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item value="upgrades" disabled>
+            <Accordion.Header>
+              <Accordion.Trigger>Upgrades</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Not available on this fare.</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item value="check-in">
+            <Accordion.Header>
+              <Accordion.Trigger>Online check-in</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Check in from 24 hours before departure.</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item value="baggage" disabled>
+            <Accordion.Header>
+              <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Carry-on and checked baggage.</Accordion.Content>
+          </Accordion.Item>
+        </Accordion>,
+      );
+      const fare = screen.getByRole('button', { name: 'Fare conditions' });
+      const upgrades = screen.getByRole('button', { name: 'Upgrades' });
+      const checkIn = screen.getByRole('button', { name: 'Online check-in' });
+
+      await user.tab();
+      expect(fare).toHaveFocus();
+
+      await user.keyboard('{ArrowDown}');
+      expect(checkIn).toHaveFocus();
+      expect(upgrades).not.toHaveFocus();
+
+      // Wraps past the disabled last item back to the first enabled trigger.
+      await user.keyboard('{ArrowDown}');
+      expect(fare).toHaveFocus();
+
+      await user.keyboard('{ArrowUp}');
+      expect(checkIn).toHaveFocus();
+
+      await user.keyboard('{Home}');
+      expect(fare).toHaveFocus();
+
+      await user.keyboard('{End}');
+      expect(checkIn).toHaveFocus();
+    });
+
     it('moves focus between triggers with the vertical arrow keys, Home and End', async () => {
       const user = userEvent.setup();
       renderSections();

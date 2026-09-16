@@ -12,8 +12,8 @@ export const RadioBase = createComponentBase<RadioProps, 'root'>({
   classes: { root: 'tk-radio' },
 });
 
-// @archetype inherited — wraps SparRadioItem (the <label> root with hidden
-// <input type="radio">). Wrapper layers cascade-driven visual data hooks
+// @archetype inherited — wraps SparRadioItem (the <span role="radio"> root with
+// a hidden <input type="radio">). Wrapper layers cascade-driven visual data hooks
 // (`data-size`, `data-position`) and adds the `tk-radio-item` class.
 // `data-invalid` is deliberately NOT mirrored onto items — Spar emits it on the
 // radiogroup root and the recipe reaches items via an ancestor selector (see
