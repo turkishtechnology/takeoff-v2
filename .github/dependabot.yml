@@ -55,6 +55,22 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "jsdom"
         update-types: ["version-update:semver-major"]
+      # TanStack Table 9 is an API rewrite (`useReactTable` → `useTable` with a
+      # mandatory `features` option, `TFeatures` as the first generic on every
+      # exported type, `sortingFn` → `sortFn`). react-spar's Table re-exports
+      # `Table`, `CellContext`, `Column` and `FilterFn` types on its public
+      # surface, so the bump is a breaking change for consumers and needs a
+      # planned migration, not a routine merge. Hold on 8.x; 8.x updates flow.
+      - dependency-name: "@tanstack/react-table"
+        update-types: ["version-update:semver-major"]
+      # Changesets 3 requires pnpm >= 10 (`engines`), and this repo pins
+      # `packageManager: pnpm@9.15.0`. It also renames `changeset tag` and
+      # replaces the `prettier` config key with `format`. Move together with a
+      # pnpm 10 upgrade; hold both packages on their current majors until then.
+      - dependency-name: "@changesets/cli"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@changesets/changelog-github"
+        update-types: ["version-update:semver-major"]
     groups:
       # Group all @turkish-technology/* (spar primitives) into one PR so the
       # wrapper and its underlying primitives bump together — mirrors the
