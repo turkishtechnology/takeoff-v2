@@ -335,8 +335,8 @@ Canonical examples:
   because the engine hard-codes the chevron orientation, draws inline polygons
   instead of Takeoff icons, and has no month/year view. Each carries a `@bypass`
   line in `calendar/base.ts`. (`Button` link-mode is _not_ a bypass: it renders
-  `<SparButton as="a">` and only removes `href` plus cancels the click while the
-  anchor is disabled or loading, which Spar does not do.)
+  `<SparButton as="a">` and relies on Spar to drop `href` and cancel the click
+  while the anchor is disabled or loading.)
 
 ### Upstream-first wrapper responsibility
 

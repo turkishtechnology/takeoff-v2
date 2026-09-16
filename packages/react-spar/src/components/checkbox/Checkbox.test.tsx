@@ -763,6 +763,28 @@ describe('Checkbox', () => {
       expect(showsGlyph(root, RemoveIconOutlinedRounded)).toBe(true);
     });
 
+    it('lets the render-prop setChecked drive the uncontrolled tri-state through Spar and reports it as a boolean', () => {
+      const handleChange = vi.fn();
+      const renderRoot = vi.fn((_state: CheckboxRenderProps) => <Checkbox.Indicator />);
+
+      render(
+        <Checkbox aria-label="All extras" onChange={handleChange}>
+          {renderRoot}
+        </Checkbox>,
+      );
+      const latest = () => renderRoot.mock.lastCall?.[0];
+      const checkbox = screen.getByRole('checkbox');
+
+      act(() => latest()?.setChecked('indeterminate'));
+      expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
+      expect(latest()?.checked).toBe('indeterminate');
+      expect(handleChange).toHaveBeenLastCalledWith(false);
+
+      act(() => latest()?.setChecked(true));
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+      expect(handleChange).toHaveBeenLastCalledWith(true);
+    });
+
     it('re-renders function children with the toggled boolean state', async () => {
       const user = userEvent.setup();
       const renderRoot = vi.fn((state: CheckboxRenderProps) => <span>{String(state.checked)}</span>);

@@ -105,7 +105,10 @@ export type BreadcrumbLinkProps<T extends ElementType = 'a'> = PolymorphicProps<
   BreadcrumbLinkOwnProps &
     // Spar Breadcrumb link surface: destination, per-link disable, external
     // affordances, and the press handler that overrides the routing path.
-    // Native click/keydown stay on the anchor and are not redeclared.
+    // Native click/keydown stay on the anchor and are not redeclared: Spar
+    // composes a consumer `onClick` / `onKeyDown` with `onPress` / `onNavigate`
+    // (consumer first; `preventDefault()` skips the press), and a disabled
+    // link blocks only Enter/Space — other keys still reach `onKeyDown`.
     Pick<SparBreadcrumbLinkProps, 'href' | 'disabled' | 'isExternal' | 'target' | 'rel' | 'onPress'>
 >;
 

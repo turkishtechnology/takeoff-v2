@@ -238,6 +238,30 @@ describe('Popover (compound)', () => {
       expect(screen.getByRole('button', { name: 'Open' })).toHaveAttribute('aria-controls', 'account-content');
     });
 
+    it('derives the trigger id from the root id and lets a consumer id win', () => {
+      const { rerender } = render(
+        <Popover id="account">
+          <Popover.Trigger>Open</Popover.Trigger>
+          <Popover.Content>
+            <Popover.Description>Body</Popover.Description>
+          </Popover.Content>
+        </Popover>,
+      );
+
+      expect(screen.getByRole('button', { name: 'Open' })).toHaveAttribute('id', 'account-trigger');
+
+      rerender(
+        <Popover id="account">
+          <Popover.Trigger id="custom-trigger">Open</Popover.Trigger>
+          <Popover.Content>
+            <Popover.Description>Body</Popover.Description>
+          </Popover.Content>
+        </Popover>,
+      );
+
+      expect(screen.getByRole('button', { name: 'Open' })).toHaveAttribute('id', 'custom-trigger');
+    });
+
     it('positions against the documented side/align defaults and forwards overrides to Spar', async () => {
       const { rerender } = render(
         <Popover defaultOpen>
@@ -606,6 +630,88 @@ describe('Popover (compound)', () => {
       expect(screen.getByRole('textbox', { name: 'Name' })).toHaveFocus();
       expect(onOpenAutoFocus).toHaveBeenCalledTimes(1);
       expect(onOpenAutoFocus.mock.calls[0][0]).toBeInstanceOf(Event);
+    });
+
+    it('skips the open-time auto-focus when onOpenAutoFocus prevents default', async () => {
+      const user = userEvent.setup();
+      const onOpenAutoFocus = vi.fn((event: Event) => {
+        // Fired before focus moves: the trigger still has focus here.
+        expect(screen.getByRole('button', { name: 'Open' })).toHaveFocus();
+        expect(event.cancelable).toBe(true);
+        event.preventDefault();
+      });
+
+      render(
+        <Popover>
+          <Popover.Trigger>Open</Popover.Trigger>
+          <Popover.Content onOpenAutoFocus={onOpenAutoFocus}>
+            <input aria-label="Name" />
+            <Popover.Close />
+          </Popover.Content>
+        </Popover>,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Open' }));
+
+      expect(onOpenAutoFocus).toHaveBeenCalledTimes(1);
+      expect(getContent()).toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: 'Name' })).not.toHaveFocus();
+      expect(screen.getByRole('button', { name: 'Open' })).toHaveFocus();
+    });
+
+    it('keeps a non-modal popover open when onFocusOutside prevents default', () => {
+      const onFocusOutside = vi.fn((event: FocusEvent) => event.preventDefault());
+      const onInteractOutside = vi.fn();
+      const onOpenChange = vi.fn();
+
+      render(
+        <>
+          <Popover defaultOpen onOpenChange={onOpenChange}>
+            <Popover.Trigger>Open</Popover.Trigger>
+            <Popover.Content onFocusOutside={onFocusOutside} onInteractOutside={onInteractOutside}>
+              <Popover.Description>Body</Popover.Description>
+            </Popover.Content>
+          </Popover>
+          <button type="button">Outside</button>
+        </>,
+      );
+
+      const outside = screen.getByRole('button', { name: 'Outside' });
+      act(() => outside.focus());
+
+      expect(onFocusOutside).toHaveBeenCalledTimes(1);
+      const [event] = onFocusOutside.mock.calls[0];
+      expect(event).toBeInstanceOf(FocusEvent);
+      expect(event.type).toBe('focusoutside');
+      expect(event.target).toBe(outside);
+      expect(onInteractOutside).toHaveBeenCalledTimes(1);
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(getContent()).toBeInTheDocument();
+      expect(outside).toHaveFocus();
+    });
+
+    it('keeps a non-modal popover open when onInteractOutside prevents default on the focus path', () => {
+      const onInteractOutside = vi.fn((event: PointerEvent | FocusEvent) => event.preventDefault());
+      const onOpenChange = vi.fn();
+
+      render(
+        <>
+          <Popover defaultOpen onOpenChange={onOpenChange}>
+            <Popover.Trigger>Open</Popover.Trigger>
+            <Popover.Content onInteractOutside={onInteractOutside}>
+              <Popover.Description>Body</Popover.Description>
+            </Popover.Content>
+          </Popover>
+          <button type="button">Outside</button>
+        </>,
+      );
+
+      act(() => screen.getByRole('button', { name: 'Outside' }).focus());
+
+      expect(onInteractOutside).toHaveBeenCalledTimes(1);
+      expect(onInteractOutside.mock.calls[0][0]).toMatchObject({ type: 'focusoutside' });
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(getContent()).toBeInTheDocument();
     });
 
     it('reports onCloseAutoFocus on close and skips restoring trigger focus when it is prevented', async () => {

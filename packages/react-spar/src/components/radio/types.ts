@@ -53,13 +53,10 @@ export interface RadioOwnProps {
    */
   position?: RadioPosition;
   /**
-   * Native keydown handler on the radiogroup root.
-   *
-   * **Warning:** Spar's Radio currently spreads consumer props *after* its own
-   * handlers, so a consumer `onKeyDown` **replaces** Spar's roving keyboard
-   * handler — Arrow / Home / End navigation stops working. Until Spar composes
-   * the two, observe key presses with `onKeyDownCapture` (which Spar does not
-   * own) or on an ancestor element instead.
+   * Native keydown handler on the radiogroup root. Composed with Spar's roving
+   * keyboard handler: the consumer handler runs first, then Arrow / Home / End
+   * navigation (and selection when `selectOnFocus` is on) proceeds as usual.
+   * Call `event.preventDefault()` to veto the built-in navigation for that key.
    */
   onKeyDown?: KeyboardEventHandler<HTMLElement>;
   /** Per-slot class name overrides. */
@@ -86,28 +83,21 @@ export interface RadioItemOwnProps {
    */
   position?: RadioPosition;
   /**
-   * Native click handler on the item.
-   *
-   * **Warning:** Spar's RadioItem currently spreads consumer props *after* its
-   * own handlers, so a consumer `onClick` **replaces** Spar's selection
-   * handler — clicking the item no longer selects it. Until Spar composes the
-   * two, attach the handler to the `Radio` root instead (the click bubbles
-   * from the item) or use `onClickCapture`.
+   * Native click handler on the item. Composed with Spar's selection handler:
+   * the consumer handler runs first, then the item is selected. Call
+   * `event.preventDefault()` to veto the selection for that click.
    */
   onClick?: MouseEventHandler<HTMLElement>;
   /**
-   * Native keydown handler on the item.
-   *
-   * **Warning:** replaces Spar's Space-to-select handler for the same reason
-   * as `onClick`. Prefer the `Radio` root or `onKeyDownCapture`.
+   * Native keydown handler on the item. Composed with Spar's Space / Enter
+   * selection handler (consumer first); `event.preventDefault()` vetoes the
+   * selection. Arrow / Home / End navigation is handled on the `Radio` root.
    */
   onKeyDown?: KeyboardEventHandler<HTMLElement>;
   /**
-   * Native focus handler on the item.
-   *
-   * **Warning:** replaces Spar's focus tracking (roving tabindex and
-   * `data-focus`) for the same reason as `onClick`. Prefer the `Radio` root's
-   * `onFocus` (which Spar composes) or `onFocusCapture`.
+   * Native focus handler on the item. Composed with Spar's focus tracking
+   * (roving tabindex, `data-focus`, and select-on-focus); the consumer handler
+   * runs first and `event.preventDefault()` vetoes the built-in behaviour.
    */
   onFocus?: FocusEventHandler<HTMLElement>;
   /** Per-slot class name overrides. */
@@ -118,8 +108,8 @@ export interface RadioItemOwnProps {
   children?: ReactNode | ((state: RadioRenderProps) => ReactNode);
 }
 
-export type RadioItemProps<T extends ElementType = 'label'> = PolymorphicProps<
-  'label',
+export type RadioItemProps<T extends ElementType = 'span'> = PolymorphicProps<
+  'span',
   T,
   RadioItemOwnProps &
     // Spar item identity + per-item disable. `children` is declared on

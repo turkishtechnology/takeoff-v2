@@ -1,4 +1,4 @@
-import type { ElementType, MouseEvent } from 'react';
+import type { ElementType } from 'react';
 import { Button as SparButton, type ButtonProps as SparButtonProps } from '@turkish-technology/spar';
 
 import { buildSlotAttrs, composeRootAttrs, isRenderableNode } from '../../core';
@@ -48,27 +48,13 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
     disabled = false,
     children,
     ref,
-    onClickCapture,
     ...sparProps
   } = rest;
 
-  // Spar's Button only skips the `onClick` callback while disabled/loading; it
-  // neither drops `href` nor cancels the click, so `<Button as="a" href>` would
-  // still navigate. coding-standards.md requires an inert anchor to lose its
-  // navigation, so the wrapper compensates here — `aria-disabled`, `tabIndex`
-  // and Enter/Space blocking stay Spar-owned. The click is cancelled in the
-  // capture phase because Spar never invokes a consumer `onClick` while inert,
-  // so there is no bubbling handler the wrapper could hook into.
-  const isInertAnchor = (sparProps as { as?: ElementType }).as === 'a' && (disabled || loading);
-  const inertAnchorProps = isInertAnchor
-    ? {
-        href: undefined,
-        onClickCapture: (event: MouseEvent<HTMLButtonElement>) => {
-          event.preventDefault();
-          onClickCapture?.(event);
-        },
-      }
-    : { onClickCapture };
+  // Inert anchors are Spar-owned: while `disabled` / `isLoading`, Spar's
+  // Button cancels the click's default action on non-native elements and
+  // drops `href` from `as="a"`, alongside `aria-disabled`, `tabIndex` and
+  // Enter/Space blocking. The wrapper adds nothing on top.
 
   const contentSlotAttrs = buildSlotAttrs(ButtonBase.getSlotProps('content'), 'content' as ButtonSlot, {
     themeSlotProps: theme?.slotProps,
@@ -92,7 +78,7 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
   });
 
   return (
-    <SparButton {...(sparProps as unknown as SparButtonProps)} {...inertAnchorProps} disabled={disabled} isLoading={loading} isPressed={pressed} ref={ref} {...rootAttrs}>
+    <SparButton {...(sparProps as unknown as SparButtonProps)} disabled={disabled} isLoading={loading} isPressed={pressed} ref={ref} {...rootAttrs}>
       {loading && <span {...spinnerSlotAttrs} />}
       {isRenderableNode(startContent) && !loading && <span {...contentSlotAttrs}>{startContent}</span>}
       {isRenderableNode(children) && <span {...labelSlotAttrs}>{children}</span>}

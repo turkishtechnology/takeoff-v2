@@ -209,21 +209,22 @@ Full props, events, data attributes & type definitions: see
 
 ## Accessibility
 
-- Root renders `role="radiogroup"`; each `Radio.Item` is a
-  `<label role="radio">` wrapping a hidden `<input type="radio">`, so the group
-  participates in native form submission.
+- Root renders `role="radiogroup"`; each `Radio.Item` is a `<span role="radio">`
+  wrapping a visually hidden `<input type="radio">`, so the group participates
+  in native form submission. Query items with `[role="radio"]`, not
+  `label[role="radio"]`.
 - Always provide a group label via `aria-label` or `aria-labelledby`.
   `Radio.Label` labels the individual item.
 - `Radio.Indicator` is decorative (`aria-hidden`); checked state is surfaced via
   `aria-checked` on the item.
-- Keyboard: `Tab` enters the group (lands on the checked or first item); `↓`/`→`
-  next + select; `↑`/`←` previous + select; `Space` selects the focused item.
-  Disabled items are skipped.
-- Do NOT pass `onKeyDown` to `Radio`, or `onClick` / `onKeyDown` / `onFocus` to
-  `Radio.Item`: Spar currently spreads consumer props after its own handlers, so
-  these REPLACE the roving keyboard / selection / focus handlers. Use the
-  `*Capture` variants (`onKeyDownCapture`, `onClickCapture`) or put `onClick` on
-  the `Radio` root (item clicks bubble to it).
+- Keyboard: `Tab` enters the group (lands on the checked or first enabled item);
+  `↓`/`→` next + select; `↑`/`←` previous + select; `Space` / `Enter` selects
+  the focused item. Disabled items are skipped; a `readOnly` group moves focus
+  but never changes its value.
+- Consumer `onKeyDown` / `onFocus` / `onBlur` on `Radio` and `onClick` /
+  `onKeyDown` / `onFocus` on `Radio.Item` are composed with the built-in
+  handlers (consumer first). Call `event.preventDefault()` in your handler to
+  veto the built-in navigation or selection for that event.
 
 ## Reference
 

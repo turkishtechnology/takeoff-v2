@@ -44,7 +44,7 @@ import { Field, Select } from '@takeoff-ui/react-spar';
 - `Select.Label` — section heading inside a `Select.Group`.
 - `Select.Separator` — visual divider between groups/items. Rendered as a hidden
   presentational node (`role="presentation"`, `aria-hidden`) so the listbox only
-  owns options/groups.
+  owns options/groups; pass `role="separator"` to restore separator semantics.
 - `Select.Arrow` — optional pointer from the panel toward the trigger.
 - `Select.Indicator` — standalone disclosure glyph for full render-prop layouts.
 

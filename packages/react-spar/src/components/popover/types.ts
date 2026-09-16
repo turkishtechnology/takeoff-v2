@@ -88,22 +88,25 @@ export interface PopoverContentOwnProps {
    */
   variant?: PopoverVariant;
   /**
-   * Called after the popover opens and focus has moved inside (to the first
-   * focusable element, else the content itself). Notification only: the
-   * event is not cancelable, so `preventDefault` does not prevent the
-   * auto-focus.
+   * Called when the popover opens, right before focus moves inside (to the
+   * first focusable element, else the content itself). Receives a cancelable
+   * `openautofocus` event; call `preventDefault()` to skip the auto-focus and
+   * leave focus where it is.
    */
   onOpenAutoFocus?: (event: Event) => void;
   /**
-   * Called when focus moves outside the content (non-modal, non-trapped
-   * popovers only). The popover always closes afterwards: `focusin` is not
-   * cancelable, so `preventDefault` has no effect on this path.
+   * Called when focus moves outside the content and trigger (non-modal,
+   * non-trapped popovers only). Receives a cancelable `focusoutside`
+   * `FocusEvent` dispatched on the newly focused element (native `focusin`
+   * is not cancelable); `event.target` is the element that received focus.
+   * Call `preventDefault()` to keep the popover open.
    */
   onFocusOutside?: (event: FocusEvent) => void;
   /**
    * Called for any outside interaction, after `onPointerDownOutside` or
-   * `onFocusOutside`. `preventDefault` keeps the popover open only on the
-   * pointer path; a focus move outside always closes it.
+   * `onFocusOutside`, with the `pointerdown` event or the cancelable
+   * `focusoutside` `FocusEvent` described on `onFocusOutside`. Call
+   * `preventDefault()` on either to keep the popover open.
    */
   onInteractOutside?: (event: PointerEvent | FocusEvent) => void;
   /** Per-slot extra classes. */
@@ -116,10 +119,11 @@ export type PopoverContentProps<T extends ElementType = 'div'> = PolymorphicProp
   'div',
   T,
   PopoverContentOwnProps &
-    // Positioning (side/align), portal container, focus trap, and the dismiss
-    // hooks whose Spar JSDoc is accurate. `onOpenAutoFocus`, `onFocusOutside`
+    // Positioning (side/align), portal container, focus trap, and the
+    // remaining dismiss / focus hooks. `onOpenAutoFocus`, `onFocusOutside`
     // and `onInteractOutside` are redeclared in PopoverContentOwnProps (same
-    // Spar signatures) with corrected cancelability docs.
+    // Spar signatures) so the wrapper docs spell out the cancelable event
+    // shapes and vetoes in one place.
     Pick<SparPopoverContentProps, 'side' | 'align' | 'container' | 'trapFocus' | 'onCloseAutoFocus' | 'onEscapeKeyDown' | 'onPointerDownOutside'>
 >;
 

@@ -156,7 +156,8 @@ export type SelectContentProps<T extends ElementType = 'div'> = PolymorphicProps
   SelectContentOwnProps &
     // Positioning (side/align), portal container, and dismiss/focus event hooks.
     // Consumers need these to integrate with their own focus orchestration and
-    // veto dismissal.
+    // veto dismissal (`preventDefault` on the Escape / outside-pointer event
+    // keeps the listbox open; on `onCloseAutoFocus` it skips the focus return).
     Pick<SparSelectContentProps, 'side' | 'align' | 'container' | 'onEscapeKeyDown' | 'onPointerDownOutside' | 'onCloseAutoFocus'>
 >;
 
@@ -237,7 +238,8 @@ export type SelectSeparatorProps<T extends ElementType = 'div'> = PolymorphicPro
   'div',
   T,
   SelectSeparatorOwnProps &
-    // Inherit separator surface; role/aria are wired by Spar.
+    // Inherit separator surface; role/aria are wired by Spar (presentational
+    // and hidden by default; pass `role="separator"` to restore semantics).
     Pick<SparSelectSeparatorProps, 'children'>
 >;
 

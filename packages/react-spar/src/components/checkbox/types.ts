@@ -38,7 +38,8 @@ interface CheckboxOwnProps {
   defaultChecked?: boolean;
   /**
    * Indeterminate (mixed) visual + ARIA state. Overrides `checked` /
-   * `defaultChecked` when `true`; emits `aria-checked="mixed"`.
+   * `defaultChecked` when `true` without owning the value; emits
+   * `aria-checked="mixed"`. Passed straight through to Spar's `indeterminate`.
    *
    * In uncontrolled mode, clear it from your own state in response to
    * `onChange`; the checkbox then shows the toggled value from that single
@@ -83,12 +84,12 @@ export type CheckboxProps<T extends ElementType = 'span'> = PolymorphicProps<
   T,
   CheckboxOwnProps &
     // Behavior surface owned by Spar. `checked` / `defaultChecked` / `onChange`
-    // are intentionally NOT picked here — takeoff-spar splits Spar's
-    // `CheckedState` tri-state into a `boolean` + separate `indeterminate`
-    // prop (matching Takeoff Core vocabulary), and the mapping happens
-    // inline at the `<SparCheckbox>` call site. `children` is owned by
-    // `CheckboxOwnProps` above so the render-prop union type wins over the
-    // inherited HTML `children: ReactNode`.
+    // / `indeterminate` are intentionally NOT picked here — takeoff-spar
+    // narrows Spar's `CheckedState` tri-state to a `boolean` (matching Takeoff
+    // Core vocabulary) and flattens `onChange` to a boolean; `indeterminate`
+    // is redeclared with Spar's own `boolean` shape and passes straight
+    // through. `children` is owned by `CheckboxOwnProps` above so the
+    // render-prop union type wins over the inherited HTML `children: ReactNode`.
     Pick<SparCheckboxProps, 'disabled' | 'readOnly' | 'required' | 'name' | 'value' | 'form' | 'autoFocus'>
 >;
 

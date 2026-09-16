@@ -76,11 +76,10 @@ export interface TooltipContentOwnProps {
    */
   variant?: TooltipVariant;
   /**
-   * Called when Escape is pressed while focus is **inside** the content
-   * (the content is not focusable by default; pass `tabIndex={-1}` to make
-   * it a target). Escape pressed on the trigger — the usual case — closes the
-   * tooltip without calling this. Notification only: the tooltip always
-   * closes and refocuses the trigger; `preventDefault` does not keep it open.
+   * Called when Escape is pressed while the tooltip is open — with focus on
+   * the trigger (the usual case), inside the content, or anywhere else in the
+   * document. Runs before the internal close with the native keyboard event;
+   * call `preventDefault()` on it to keep the tooltip open.
    */
   onEscapeKeyDown?: (event: KeyboardEvent) => void;
   /** Per-slot extra classes. */
@@ -95,10 +94,11 @@ export type TooltipContentProps<T extends ElementType = 'div'> = PolymorphicProp
   TooltipContentOwnProps &
     // Positioning (side/align) and portal container. `variant` is takeoff-v2's
     // own visual token and `onEscapeKeyDown` is redeclared (same Spar
-    // signature) with accurate docs — both in TooltipContentOwnProps above.
-    // Spar's `onPointerDownOutside`, `onOpenAutoFocus` and `onCloseAutoFocus`
-    // are deliberately not picked: Spar never calls them (a tooltip has no
-    // outside-dismiss or auto-focus path) and would spread them onto the DOM.
+    // signature) with the veto documented — both in TooltipContentOwnProps
+    // above. Spar's Tooltip.Content has no `onPointerDownOutside`,
+    // `onOpenAutoFocus` or `onCloseAutoFocus` (a tooltip has no outside-dismiss
+    // or auto-focus path; Spar 0.3.0 removed the never-called props), so the
+    // wrapper exposes none either.
     Pick<SparTooltipContentProps, 'side' | 'align' | 'container'>
 >;
 
