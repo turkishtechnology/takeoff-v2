@@ -47,7 +47,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "sass": "^1.104.1",
+    "sass": "^1.105.0",
     "style-dictionary": "5",
     "vitest": "^4.1.11"
   }
