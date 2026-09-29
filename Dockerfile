@@ -37,6 +37,12 @@ COPY . .
 # Ensure build directory exists for Dokploy's .env file creation
 RUN mkdir -p /app/apps/docs/build
 
+# Algolia search key, passed as a Dokploy build-time argument. The deployed
+# site must have search, so the image build fails without it.
+ARG ALGOLIA_SEARCH_API_KEY
+RUN test -n "$ALGOLIA_SEARCH_API_KEY" || (echo "ALGOLIA_SEARCH_API_KEY build argument is required" >&2 && exit 1)
+ENV ALGOLIA_SEARCH_API_KEY=$ALGOLIA_SEARCH_API_KEY
+
 # Build docs (prebuild script handles tokens + react-spar + api generation)
 RUN pnpm --filter docs build
 
