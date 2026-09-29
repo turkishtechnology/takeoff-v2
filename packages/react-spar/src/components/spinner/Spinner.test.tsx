@@ -142,6 +142,13 @@ describe('Spinner', () => {
       expect(status).not.toHaveAttribute('aria-label');
     });
 
+    it('keeps the default status role and "Loading" name when role / aria-label are explicitly undefined', () => {
+      const maybeLabel: string | undefined = undefined;
+      render(<Spinner role={undefined} aria-label={maybeLabel} />);
+
+      expect(screen.getByRole('status', { name: 'Loading' })).toHaveAttribute('aria-label', 'Loading');
+    });
+
     it('lets a consumer-provided role replace the default status role', () => {
       render(<Spinner role="progressbar" />);
 

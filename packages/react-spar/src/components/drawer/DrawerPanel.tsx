@@ -10,7 +10,7 @@ import type { DrawerPanelProps } from './types';
 
 export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelProps<T>) => {
   const theme = useComponentTheme('DrawerPanel');
-  const { placement, dismissible } = useDrawerOwnContext();
+  const { placement, dismissible } = useDrawerOwnContext('Drawer.Panel');
 
   const { rootAttrs, rest } = composeRootAttrs(DrawerPanelBase, props as DrawerPanelProps<'div'>, theme, {
     stateAttrs: () => ({

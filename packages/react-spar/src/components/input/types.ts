@@ -145,12 +145,15 @@ export interface InputRevealButtonOwnProps {
 
 export type InputRevealButtonProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, InputRevealButtonOwnProps>;
 
+/**
+ * `Input.Strength` renders its four segments itself and takes no children —
+ * customize it through `classNames` / `slotProps`.
+ */
 export interface InputStrengthOwnProps {
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<InputStrengthSlot>;
   /** Per-slot HTML attribute overrides. */
   slotProps?: SlotPropsMap<InputStrengthSlot>;
-  children?: ReactNode;
 }
 
 /**
@@ -203,9 +206,16 @@ export interface InputChipsOwnProps {
   onValueChange?: (value: string[]) => void;
   /** Optional character that commits the field text as a tag (Enter always commits). */
   separator?: string;
-  /** Maximum number of tags. Further commits are ignored once reached. */
+  /**
+   * Maximum number of tags. Further commits are ignored once reached and the
+   * typed text stays in the field.
+   */
   max?: number;
-  /** Allow committing a tag that already exists. @defaultValue false */
+  /**
+   * Allow committing a tag that already exists. A rejected duplicate stays in
+   * the field as typed text.
+   * @defaultValue false
+   */
   allowDuplicates?: boolean;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<InputChipsSlot>;

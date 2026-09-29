@@ -26,4 +26,4 @@ export const CardFooter = <T extends ElementType = 'div'>(props: CardFooterProps
   );
 };
 
-CardFooter.displayName = 'CardFooter';
+CardFooter.displayName = 'Card.Footer';

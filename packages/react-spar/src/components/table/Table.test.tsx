@@ -841,6 +841,46 @@ describe('Table (props-first)', () => {
       expect(trigger).toHaveAttribute('aria-expanded', 'false');
     });
 
+    it('picks a value from the `select` preset without dismissing the filter popover', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const columns: TableColumnDef<User>[] = [
+        {
+          id: 'role',
+          header: 'Role',
+          accessor: 'role',
+          filter: {
+            type: 'select',
+            options: [
+              { label: 'Admin', value: 'admin' },
+              { label: 'User', value: 'user' },
+            ],
+          },
+        },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} filtering={{ onChange }} />);
+      const trigger = screen.getByRole('button', { name: 'Filter column' });
+
+      await user.click(trigger);
+      const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
+      await user.click(within(panel).getByRole('combobox'));
+
+      // The listbox is portalled into the panel, so opening and focusing it is
+      // not an outside interaction for the surrounding Popover.
+      const listbox = await screen.findByRole('listbox');
+      expect(panel).toContainElement(listbox);
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+      await user.click(within(listbox).getByRole('option', { name: 'User' }));
+
+      expect(onChange).toHaveBeenLastCalledWith([{ id: 'role', value: 'user' }]);
+      expect(bodyRowTexts(container)).toEqual(['user']);
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      expect(trigger).toHaveAttribute('data-active', '');
+      expect(within(panel).getByRole('combobox')).toHaveTextContent('User');
+      expect(screen.getByRole('button', { name: 'Clear' })).toBeInTheDocument();
+    });
+
     it('prefers an explicit filterFn over the value-shape default', () => {
       const columns: TableColumnDef<User>[] = [
         { id: 'name', header: 'Name', accessor: 'name' },
@@ -1681,6 +1721,38 @@ describe('Table (props-first)', () => {
         expect(cell).toHaveClass('tk-table-selection-cell', 'instance-selection-cell');
         expect(cell).not.toHaveClass('theme-header-cell');
       }
+    });
+
+    it('routes classNames.filterButton and slotProps.filterButton (theme + instance) onto the filter trigger', () => {
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
+      renderPlain(
+        <TakeoffSparProvider
+          components={{
+            Table: {
+              classNames: { filterButton: 'theme-filter-button' },
+              slotProps: { filterButton: { title: 'Theme title', lang: 'en' } },
+            },
+          }}
+        >
+          <Table
+            data={users}
+            columns={columns}
+            getRowId={getRowId}
+            classNames={{ filterButton: 'instance-filter-button' }}
+            slotProps={{ filterButton: { 'title': 'Instance title', 'aria-label': 'Filter names' } }}
+          />
+        </TakeoffSparProvider>,
+      );
+
+      // The instance `aria-label` replaces the built-in "Filter column" label.
+      const trigger = screen.getByRole('button', { name: 'Filter names' });
+      expect(trigger).toHaveClass('tk-table-filter-button', 'theme-filter-button', 'instance-filter-button');
+      expect(trigger).toHaveAttribute('title', 'Instance title');
+      expect(trigger).toHaveAttribute('lang', 'en');
+      // `Popover.Trigger` owns the node: it keeps its own data-slot; the Table
+      // slot name does not ride along, and the Table state hook still lands.
+      expect(trigger).toHaveAttribute('data-slot', 'root');
+      expect(trigger).not.toHaveAttribute('data-active');
     });
 
     it('composes slotProps.tableViewport (style + onScroll) with the built-in data-scrolled hook', () => {

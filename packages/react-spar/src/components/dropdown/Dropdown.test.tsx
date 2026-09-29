@@ -1134,7 +1134,7 @@ describe('Dropdown', () => {
       await user.tab();
 
       expect(onFocusOutside).toHaveBeenCalledTimes(1);
-      expect(onFocusOutside.mock.lastCall?.[0].type).toBe('focusin');
+      expect(onFocusOutside.mock.lastCall?.[0].type).toBe('focusoutside');
       expect(screen.getByRole('menu')).toBeInTheDocument();
       expectHighlighted('Edit');
     });
@@ -1148,9 +1148,74 @@ describe('Dropdown', () => {
       await user.tab();
 
       expect(onFocusOutside).toHaveBeenCalledTimes(1);
-      expect(onFocusOutside.mock.lastCall?.[0].type).toBe('focusin');
+      expect(onFocusOutside.mock.lastCall?.[0].type).toBe('focusoutside');
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Outside' })).toHaveFocus();
+    });
+
+    it('keeps a non-modal menu open when onFocusOutside prevents default', async () => {
+      const user = userEvent.setup();
+      const onFocusOutside = vi.fn((event: FocusEvent) => event.preventDefault());
+      const onOpenChange = vi.fn();
+      render(<ActionsMenu modal={false} onOpenChange={onOpenChange} onFocusOutside={onFocusOutside} />);
+
+      await user.click(screen.getByRole('button', { name: 'Actions' }));
+      onOpenChange.mockClear();
+      await user.tab();
+
+      expect(onFocusOutside).toHaveBeenCalledTimes(1);
+      const event = onFocusOutside.mock.lastCall?.[0];
+      expect(event).toBeInstanceOf(FocusEvent);
+      expect(event?.type).toBe('focusoutside');
+      expect(event?.target).toBe(screen.getByRole('button', { name: 'Outside' }));
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(screen.getByRole('button', { name: 'Outside' })).toHaveFocus();
+    });
+
+    it('skips the focus recapture of a modal menu when onFocusOutside prevents default', async () => {
+      const user = userEvent.setup();
+      const onFocusOutside = vi.fn((event: FocusEvent) => event.preventDefault());
+      render(<ActionsMenu onFocusOutside={onFocusOutside} />);
+
+      await user.click(screen.getByRole('button', { name: 'Actions' }));
+      await user.tab();
+
+      expect(onFocusOutside).toHaveBeenCalledTimes(1);
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Outside' })).toHaveFocus();
+      expect(screen.getAllByRole('menuitem').filter(item => item.hasAttribute('data-highlighted'))).toEqual([]);
+    });
+
+    it('keeps the menu open when onPointerDownOutside prevents default', async () => {
+      const user = userEvent.setup();
+      const onPointerDownOutside = vi.fn((event: PointerEvent) => event.preventDefault());
+      const onOpenChange = vi.fn();
+      render(<ActionsMenu defaultOpen onOpenChange={onOpenChange} onPointerDownOutside={onPointerDownOutside} />);
+
+      await user.click(screen.getByRole('button', { name: 'Outside' }));
+
+      expect(onPointerDownOutside).toHaveBeenCalledTimes(1);
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+    });
+
+    it('keeps the menu open when onEscapeKeyDown prevents default', async () => {
+      const user = userEvent.setup();
+      const onEscapeKeyDown = vi.fn((event: KeyboardEvent) => event.preventDefault());
+      const onOpenChange = vi.fn();
+      render(<ActionsMenu onEscapeKeyDown={onEscapeKeyDown} onOpenChange={onOpenChange} />);
+
+      await user.tab();
+      await user.keyboard('{ArrowDown}');
+      onOpenChange.mockClear();
+      await user.keyboard('{Escape}');
+
+      expect(onEscapeKeyDown).toHaveBeenCalledTimes(1);
+      expect(onEscapeKeyDown.mock.lastCall?.[0]).toBeInstanceOf(KeyboardEvent);
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+      expectHighlighted('Edit');
     });
 
     it('traps Tab inside a modal menu', async () => {
@@ -1407,6 +1472,31 @@ describe('Dropdown', () => {
       });
 
       expect(menu).toHaveStyle({ width: '311px' });
+    });
+
+    it('re-measures the trigger when the menu opens, not only when Dropdown.Content mounts', async () => {
+      const user = userEvent.setup();
+      let triggerWidth = 120;
+      vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+        const width = this.classList.contains('tk-dropdown-trigger') ? triggerWidth : 0;
+        return { x: 0, y: 0, top: 0, left: 0, right: width, bottom: 0, width, height: 0, toJSON: () => ({}) } as DOMRect;
+      });
+
+      render(
+        <Dropdown contentWidth="trigger">
+          <Dropdown.Trigger>Actions</Dropdown.Trigger>
+          <Dropdown.Content>
+            <Dropdown.Item>Edit</Dropdown.Item>
+          </Dropdown.Content>
+        </Dropdown>,
+      );
+
+      // The trigger's border box changes while the menu is closed and the
+      // ResizeObserver stub never reports it — only the open-time read can see it.
+      triggerWidth = 200;
+      await user.click(screen.getByRole('button', { name: 'Actions' }));
+
+      expect(screen.getByRole('menu')).toHaveStyle({ width: '200px' });
     });
 
     it('lets a slotProps style width override the computed contentWidth', () => {

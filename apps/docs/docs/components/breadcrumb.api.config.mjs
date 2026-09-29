@@ -103,13 +103,12 @@ export default {
           attribute: 'data-position',
           appliedWhen: 'Always',
           purpose:
-            '`"first"`, `"middle"`, or `"last"`. Emitted by Spar — with the pinned 0.2.0-beta.1 it always resolves to `"middle"` through this wrapper (position derivation is type-matched on Spar’s own item); the real values arrive with the Spar context-registration release.',
+            '`"first"`, `"middle"`, or `"last"` in list order. Emitted by Spar: items register with `Breadcrumb.List` through context, so positions recompute as crumbs mount and unmount.',
         },
         {
           attribute: 'data-current',
-          appliedWhen: 'Reserved — not emitted at item level with the pinned Spar.',
-          purpose:
-            'Will mark the current crumb once the Spar context-registration release lands. Until then, style the current crumb via `Breadcrumb.Page`’s always-emitted `data-current`.',
+          appliedWhen: 'On the last item.',
+          purpose: 'Marks the current crumb; emitted by Spar on the last registered item, alongside `Breadcrumb.Page`’s own `data-current`.',
         },
       ],
     },

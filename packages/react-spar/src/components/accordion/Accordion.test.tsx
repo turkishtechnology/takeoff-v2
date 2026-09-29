@@ -2,14 +2,14 @@ import { ChevronBottomIconOutlinedRounded } from '@takeoff-icons/react/chevron-b
 import { ChevronTopIconOutlinedRounded } from '@takeoff-icons/react/chevron-top';
 import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRef, useState, type HTMLAttributes, type ReactElement } from 'react';
+import { createRef, isValidElement, useState, type HTMLAttributes, type ReactElement } from 'react';
 import { axe } from 'vitest-axe';
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 
 import { TakeoffSparProvider } from '../../provider';
 import { renderWithProvider as render, screen, within } from '../../test-utils';
 
-import { Accordion, type AccordionCurrentValue, type AccordionIndicatorRenderState, type AccordionProps } from './index';
+import { Accordion, type AccordionCurrentValue, type AccordionHeadingLevel, type AccordionIndicatorRenderState, type AccordionProps } from './index';
 
 const sections = (rootProps: AccordionProps = {}) => (
   <Accordion {...rootProps}>
@@ -216,6 +216,24 @@ describe('Accordion (compound)', () => {
       }
     });
 
+    it('uses id only to derive the trigger and panel ids, never on the item element', () => {
+      const { container } = render(
+        <Accordion defaultValue="fare">
+          <Accordion.Item value="fare" id="fare-item">
+            <Accordion.Header>
+              <Accordion.Trigger>Fare conditions</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Refund windows and change fees.</Accordion.Content>
+          </Accordion.Item>
+        </Accordion>,
+      );
+
+      expect(screen.getByRole('button', { name: 'Fare conditions' })).toHaveAttribute('id', 'fare-item-trigger');
+      expect(screen.getByRole('region', { name: 'Fare conditions' })).toHaveAttribute('id', 'fare-item-content');
+      expect(getItems(container)[0]).not.toHaveAttribute('id');
+      expect(container.querySelector('#fare-item')).toBeNull();
+    });
+
     it('stamps data-state="open" on the expanded item only', () => {
       const { container } = renderSections({ defaultValue: 'baggage' });
       const [fare, baggage, checkIn] = getItems(container);
@@ -337,6 +355,31 @@ describe('Accordion (compound)', () => {
 
       expect(screen.getByRole('heading', { level: 2, name: 'Fare conditions' })).toBeInTheDocument();
       expect(screen.queryByRole('heading', { level: 3 })).not.toBeInTheDocument();
+    });
+
+    it('only accepts the AccordionHeadingLevel union for level', () => {
+      // Type-level contract: `level` is narrowed from Spar's `number` to 1..6 so
+      // an invalid heading tag (e.g. <h7>) cannot type-check. The invalid
+      // element is only created, never rendered.
+      const valid: AccordionHeadingLevel = 6;
+      const invalid = (
+        // @ts-expect-error 7 is not a valid heading level
+        <Accordion.Header level={7}>Invalid</Accordion.Header>
+      );
+      expect(isValidElement(invalid)).toBe(true);
+
+      render(
+        <Accordion>
+          <Accordion.Item value="fare">
+            <Accordion.Header level={valid}>
+              <Accordion.Trigger>Fare conditions</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Refund windows and change fees.</Accordion.Content>
+          </Accordion.Item>
+        </Accordion>,
+      );
+
+      expect(screen.getByRole('heading', { level: 6, name: 'Fare conditions' })).toBeInTheDocument();
     });
 
     it('mirrors the item open state on data-state', async () => {
@@ -643,6 +686,30 @@ describe('Accordion (compound)', () => {
       expect(getIndicator(container)).toHaveAttribute('aria-hidden', 'true');
     });
 
+    it('keeps aria-hidden locked to true when instance or provider slotProps.root try to override it', () => {
+      const { container } = render(
+        <TakeoffSparProvider components={{ AccordionIndicator: { slotProps: { root: { 'aria-hidden': false } } } }}>
+          <Accordion>
+            <Accordion.Item value="fare">
+              <Accordion.Header>
+                <Accordion.Trigger>
+                  Fare conditions
+                  <Accordion.Indicator slotProps={{ root: { 'aria-hidden': false, 'title': 'indicator-slot' } }}>Show details</Accordion.Indicator>
+                </Accordion.Trigger>
+              </Accordion.Header>
+              <Accordion.Content>Refund windows and change fees.</Accordion.Content>
+            </Accordion.Item>
+          </Accordion>
+        </TakeoffSparProvider>,
+      );
+
+      const indicator = getIndicator(container);
+      // Other slotProps still land; only the decorative invariant is protected.
+      expect(indicator).toHaveAttribute('title', 'indicator-slot');
+      expect(indicator).toHaveAttribute('aria-hidden', 'true');
+      expect(screen.getByRole('button')).toHaveAccessibleName('Fare conditions');
+    });
+
     it('renders as a custom element through the as prop', () => {
       const { container } = renderSingleItem(
         <Accordion.Trigger>
@@ -928,6 +995,61 @@ describe('Accordion (compound)', () => {
   });
 
   describe('keyboard interaction', () => {
+    it('skips a disabled middle item with the arrow keys and lands Home/End on the enabled edges', async () => {
+      const user = userEvent.setup();
+      render(
+        <Accordion>
+          <Accordion.Item value="fare">
+            <Accordion.Header>
+              <Accordion.Trigger>Fare conditions</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Refund windows and change fees.</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item value="upgrades" disabled>
+            <Accordion.Header>
+              <Accordion.Trigger>Upgrades</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Not available on this fare.</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item value="check-in">
+            <Accordion.Header>
+              <Accordion.Trigger>Online check-in</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Check in from 24 hours before departure.</Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item value="baggage" disabled>
+            <Accordion.Header>
+              <Accordion.Trigger>Baggage allowance</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>Carry-on and checked baggage.</Accordion.Content>
+          </Accordion.Item>
+        </Accordion>,
+      );
+      const fare = screen.getByRole('button', { name: 'Fare conditions' });
+      const upgrades = screen.getByRole('button', { name: 'Upgrades' });
+      const checkIn = screen.getByRole('button', { name: 'Online check-in' });
+
+      await user.tab();
+      expect(fare).toHaveFocus();
+
+      await user.keyboard('{ArrowDown}');
+      expect(checkIn).toHaveFocus();
+      expect(upgrades).not.toHaveFocus();
+
+      // Wraps past the disabled last item back to the first enabled trigger.
+      await user.keyboard('{ArrowDown}');
+      expect(fare).toHaveFocus();
+
+      await user.keyboard('{ArrowUp}');
+      expect(checkIn).toHaveFocus();
+
+      await user.keyboard('{Home}');
+      expect(fare).toHaveFocus();
+
+      await user.keyboard('{End}');
+      expect(checkIn).toHaveFocus();
+    });
+
     it('moves focus between triggers with the vertical arrow keys, Home and End', async () => {
       const user = userEvent.setup();
       renderSections();
@@ -1226,7 +1348,11 @@ describe('Accordion (compound)', () => {
       ).toThrow(/Accordion\.Item must be used within AccordionProvider/);
     });
 
-    it('throws when Accordion.Header renders outside an item', () => {
+    it('throws when Accordion.Header renders outside the root', () => {
+      expect(() => render(<Accordion.Header>Loose</Accordion.Header>)).toThrow(/Accordion\.Header must be used within AccordionProvider/);
+    });
+
+    it('throws when Accordion.Header renders inside the root but outside an item', () => {
       expect(() =>
         render(
           <Accordion>
@@ -1237,7 +1363,7 @@ describe('Accordion (compound)', () => {
     });
 
     it('throws when Accordion.Trigger renders outside the root', () => {
-      expect(() => render(<Accordion.Trigger>Loose</Accordion.Trigger>)).toThrow('Accordion components must be used within an Accordion');
+      expect(() => render(<Accordion.Trigger>Loose</Accordion.Trigger>)).toThrow(/Accordion\.Trigger must be used within AccordionProvider/);
     });
 
     it('throws when Accordion.Trigger renders inside the root but outside an item', () => {
@@ -1250,18 +1376,32 @@ describe('Accordion (compound)', () => {
       ).toThrow('AccordionItem components must be used within an AccordionItem');
     });
 
-    it('throws when Accordion.Indicator renders outside an item', () => {
-      expect(() => render(<Accordion.Indicator />)).toThrow('AccordionItem components must be used within an AccordionItem');
+    it('throws when Accordion.Indicator renders outside the root', () => {
+      expect(() => render(<Accordion.Indicator />)).toThrow(/Accordion\.Indicator must be used within AccordionProvider/);
     });
 
-    it('throws when Accordion.Content renders outside an item', () => {
+    it('throws when Accordion.Indicator renders inside the root but outside an item', () => {
+      expect(() =>
+        render(
+          <Accordion>
+            <Accordion.Indicator />
+          </Accordion>,
+        ),
+      ).toThrow('AccordionItem components must be used within an AccordionItem');
+    });
+
+    it('throws when Accordion.Content renders outside the root', () => {
+      expect(() => render(<Accordion.Content>Loose</Accordion.Content>)).toThrow(/Accordion\.Content must be used within AccordionProvider/);
+    });
+
+    it('throws an Accordion-branded error when Accordion.Content renders inside the root but outside an item', () => {
       expect(() =>
         render(
           <Accordion>
             <Accordion.Content>Loose</Accordion.Content>
           </Accordion>,
         ),
-      ).toThrow(/must be used within/);
+      ).toThrow('AccordionItem components must be used within an AccordionItem');
     });
   });
 

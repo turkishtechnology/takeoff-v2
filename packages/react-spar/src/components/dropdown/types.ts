@@ -75,6 +75,27 @@ export type DropdownTriggerProps<T extends ElementType = 'button'> = Polymorphic
 >;
 
 export interface DropdownContentOwnProps {
+  /**
+   * Fired when Escape is pressed while the menu is open, before the menu acts
+   * on the key. Receives the native keyboard event; call `preventDefault()`
+   * on it to keep the menu open.
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+  /**
+   * Fired on a pointer press outside the menu and its trigger, before the
+   * menu closes. Call `preventDefault()` on the event to keep the menu open.
+   */
+  onPointerDownOutside?: (event: PointerEvent) => void;
+  /**
+   * Fired when focus moves outside the menu and its trigger. Receives a
+   * cancelable `focusoutside` `FocusEvent` dispatched on the newly focused
+   * element (native `focusin` is not cancelable); `event.target` is the
+   * element that received focus. A non-modal menu closes afterwards — call
+   * `preventDefault()` to keep it open. A modal menu (the default) stays open
+   * and pulls focus back to its first item — `preventDefault()` skips that
+   * focus recapture.
+   */
+  onFocusOutside?: (event: FocusEvent) => void;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<DropdownContentSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -85,9 +106,12 @@ export type DropdownContentProps<T extends ElementType = 'div'> = PolymorphicPro
   'div',
   T,
   DropdownContentOwnProps &
-    // Positioning, portal container, and dismiss/focus event hooks are exposed
-    // for integration with surrounding overlays and focus orchestration.
-    Pick<SparDropdownMenuContentProps, 'side' | 'align' | 'container' | 'onEscapeKeyDown' | 'onPointerDownOutside' | 'onFocusOutside'>
+    // Positioning and portal container from Spar. The dismiss callbacks
+    // (`onEscapeKeyDown`, `onPointerDownOutside`, `onFocusOutside`) are
+    // redeclared on DropdownContentOwnProps with the same signatures so the
+    // wrapper docs spell out the veto semantics and the `focusoutside` event
+    // shape in one place.
+    Pick<SparDropdownMenuContentProps, 'side' | 'align' | 'container'>
 >;
 
 export interface DropdownViewportOwnProps {

@@ -535,6 +535,98 @@ describe('Breadcrumb (compound)', () => {
       expect(onNavigate).not.toHaveBeenCalled();
     });
 
+    it('composes a consumer onClick and onKeyDown with onPress, running the consumer first', async () => {
+      const user = userEvent.setup();
+      const calls: string[] = [];
+      const onClick = vi.fn(() => calls.push('click'));
+      const onKeyDown = vi.fn(() => calls.push('keydown'));
+      const onPress = vi.fn<(event: BreadcrumbPressEvent) => void>(() => calls.push('press'));
+      render(
+        <Breadcrumb>
+          <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link href="#booking" onClick={onClick} onKeyDown={onKeyDown} onPress={onPress}>
+                Booking
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
+          </Breadcrumb.List>
+        </Breadcrumb>,
+      );
+
+      await user.click(screen.getByRole('link', { name: 'Booking' }));
+      expect(calls).toEqual(['click', 'press']);
+
+      await user.keyboard('{Enter}');
+      expect(calls).toEqual(['click', 'press', 'keydown', 'press']);
+      expect(onPress).toHaveBeenCalledTimes(2);
+    });
+
+    it('skips onPress and onNavigate when the consumer onClick or onKeyDown prevents default', async () => {
+      const user = userEvent.setup();
+      const onNavigate = vi.fn<BreadcrumbNavigationHandler>();
+      const onPress = vi.fn<(event: BreadcrumbPressEvent) => void>();
+      render(
+        <Breadcrumb onNavigate={onNavigate}>
+          <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link href="#home" onClick={event => event.preventDefault()} onKeyDown={event => event.preventDefault()}>
+                Home
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Separator />
+            <Breadcrumb.Item>
+              <Breadcrumb.Link href="#booking" onPress={onPress} onClick={event => event.preventDefault()}>
+                Booking
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
+          </Breadcrumb.List>
+        </Breadcrumb>,
+      );
+
+      await user.click(screen.getByRole('link', { name: 'Home' }));
+      await user.keyboard('{Enter}');
+      expect(onNavigate).not.toHaveBeenCalled();
+
+      await user.click(screen.getByRole('link', { name: 'Booking' }));
+      expect(onPress).not.toHaveBeenCalled();
+    });
+
+    it('blocks only Enter and Space on a disabled link while other keys still reach the consumer onKeyDown', async () => {
+      const user = userEvent.setup();
+      const onNavigate = vi.fn<BreadcrumbNavigationHandler>();
+      const onKeyDown = vi.fn();
+      render(
+        <Breadcrumb onNavigate={onNavigate}>
+          <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link href="#checkout" disabled onKeyDown={onKeyDown}>
+                Checkout
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
+          </Breadcrumb.List>
+        </Breadcrumb>,
+      );
+      const disabledLink = screen.getByText('Checkout');
+
+      await user.click(disabledLink);
+      expect(disabledLink).toHaveFocus();
+
+      // The activation keys are swallowed (prevented, never forwarded)...
+      await user.keyboard('{Enter}');
+      await user.keyboard(' ');
+      expect(onNavigate).not.toHaveBeenCalled();
+      expect(onKeyDown).not.toHaveBeenCalled();
+
+      // ...while every other key still reaches the consumer handler.
+      await user.keyboard('{ArrowRight}');
+      await user.keyboard('{Escape}');
+      expect(onKeyDown.mock.calls.map(([event]) => [event.key, event.defaultPrevented])).toEqual([
+        ['ArrowRight', false],
+        ['Escape', false],
+      ]);
+      expect(onNavigate).not.toHaveBeenCalled();
+    });
+
     it('drives a crumb rendered as a button through onPress', async () => {
       const user = userEvent.setup();
       const onPress = vi.fn<(event: BreadcrumbPressEvent) => void>();
@@ -954,15 +1046,14 @@ describe('Breadcrumb (compound)', () => {
   });
 
   describe('context boundaries', () => {
-    it('throws a descriptive error when Breadcrumb.Link renders outside the root', () => {
-      expect(() => render(<Breadcrumb.Link href="#home">Home</Breadcrumb.Link>)).toThrow(/must be used within a Breadcrumb/);
-      // The loose pattern above also matches the list-boundary error, so pin the root-boundary message.
-      expect(() => render(<Breadcrumb.Link href="#home">Home</Breadcrumb.Link>)).toThrow(/^Breadcrumb components must be used within a Breadcrumb$/);
-    });
-
-    it('throws a descriptive error when Breadcrumb.Item renders outside the root', () => {
-      expect(() => render(<Breadcrumb.Item>Home</Breadcrumb.Item>)).toThrow(/must be used within a Breadcrumb/);
-      expect(() => render(<Breadcrumb.Item>Home</Breadcrumb.Item>)).toThrow(/^Breadcrumb components must be used within a Breadcrumb$/);
+    it.each([
+      ['Breadcrumb.List', () => <Breadcrumb.List>{null}</Breadcrumb.List>],
+      ['Breadcrumb.Item', () => <Breadcrumb.Item>Home</Breadcrumb.Item>],
+      ['Breadcrumb.Link', () => <Breadcrumb.Link href="#home">Home</Breadcrumb.Link>],
+      ['Breadcrumb.Page', () => <Breadcrumb.Page>Home</Breadcrumb.Page>],
+      ['Breadcrumb.Separator', () => <Breadcrumb.Separator />],
+    ])('throws the Breadcrumb safe-context error naming %s when it renders outside the root', (name, renderLoose) => {
+      expect(() => render(renderLoose())).toThrow(`${name} must be used within BreadcrumbProvider`);
     });
 
     it('throws a descriptive error when Breadcrumb.Item renders outside Breadcrumb.List', () => {

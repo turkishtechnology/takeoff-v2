@@ -12,9 +12,9 @@ import type { SelectContentProps } from './types';
 export const SelectContent = <T extends ElementType = 'div'>(props: SelectContentProps<T>) => {
   const theme = useComponentTheme('SelectContent');
   const { size, contentWidth } = useSelectOwnContext('Select.Content');
-  const { triggerRef } = useSelectContext();
+  const { triggerRef, open } = useSelectContext();
 
-  const widthStyle = useContentWidthStyle(contentWidth, triggerRef);
+  const widthStyle = useContentWidthStyle(contentWidth, triggerRef, open);
 
   // Content is portaled outside the root, so the cascading size data-attr has
   // to be re-emitted here for styles to find it via CSS variables / selectors.

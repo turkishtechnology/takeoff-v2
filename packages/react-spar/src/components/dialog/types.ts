@@ -45,7 +45,13 @@ export interface DialogProps
   // can opt out of the persistent mount that the root enables by default for
   // exit animations (see `Dialog.tsx`). Spar's content-level props (focus,
   // dismiss, portal) are exposed on `Dialog.Panel`, not here.
-  extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'modal' | 'disabled' | 'forceMount' | 'children'> {
+  extends Pick<SparDialogProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'modal' | 'disabled' | 'children'> {
+  /**
+   * Keep the overlay and panel mounted while closed so the exit transition can
+   * run. Pass `false` to unmount the panel on close. The wrapper flips Spar's
+   * default. @defaultValue true
+   */
+  forceMount?: boolean;
   /** Whether the dialog can be dismissed by clicking outside or pressing Escape. @defaultValue true */
   dismissible?: boolean;
 }

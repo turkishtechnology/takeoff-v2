@@ -23,8 +23,11 @@ export const SelectIndicator = <T extends ElementType = 'span'>(props: SelectInd
   // recipe drives its size/color (the glyph is `1em` + `currentColor`).
   const resolved = resolveDisclosureIndicator(children, isOpen);
 
+  // The indicator is decorative chrome next to the value; `aria-hidden` is an
+  // invariant, so it lands after `rootAttrs` where a `slotProps.root` (instance
+  // or provider theme) cannot lift it.
   return (
-    <Component {...rendered} ref={ref} aria-hidden="true" {...rootAttrs}>
+    <Component {...rendered} ref={ref} {...rootAttrs} aria-hidden="true">
       {resolved}
     </Component>
   );

@@ -12,9 +12,9 @@ import type { DropdownContentProps } from './types';
 export const DropdownContent = <T extends ElementType = 'div'>(props: DropdownContentProps<T>) => {
   const theme = useComponentTheme('DropdownContent');
   const { size, contentWidth } = useDropdownOwnContext('Dropdown.Content');
-  const { triggerRef } = useDropdownMenuContext() as { triggerRef: RefObject<HTMLElement | null> };
+  const { triggerRef, open } = useDropdownMenuContext() as { triggerRef: RefObject<HTMLElement | null>; open: boolean };
 
-  const widthStyle = useContentWidthStyle(contentWidth, triggerRef);
+  const widthStyle = useContentWidthStyle(contentWidth, triggerRef, open);
 
   // Content is portaled outside the root, so the cascading size data-attr has
   // to be re-emitted here for styles to find it via CSS variables / selectors.

@@ -22,13 +22,20 @@ export const Chip = (props: ChipProps) => {
       'data-removable': removable ? '' : undefined,
     }),
   });
+  // `role` / `tabIndex` / the action handlers from `slotProps.root` describe
+  // the click action, so they are resolved together with the instance props
+  // below and land on the action node rather than being spread verbatim.
   const {
     onClick: rootSlotOnClick,
     onKeyDown: rootSlotOnKeyDown,
+    role: rootSlotRole,
+    tabIndex: rootSlotTabIndex,
     ...chipRootAttrs
   } = rootAttrs as typeof rootAttrs & {
     onClick?: (event: MouseEvent<HTMLSpanElement>) => void;
     onKeyDown?: (event: KeyboardEvent<HTMLSpanElement>) => void;
+    role?: string;
+    tabIndex?: number;
   };
 
   const {
@@ -45,6 +52,7 @@ export const Chip = (props: ChipProps) => {
     role,
     tabIndex,
     onClick,
+    onKeyDown,
     ...nativeProps
   } = rest;
 
@@ -65,12 +73,26 @@ export const Chip = (props: ChipProps) => {
     onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   };
 
-  // Only a clickable chip turns the root into a focusable widget. A
+  // Only a clickable chip turns the chip into a focusable widget. A
   // removable-only chip keeps the root non-interactive and exposes the
   // labeled remove <button> as the tab stop, so assistive tech reaches a
   // control that announces the remove affordance.
-  const resolvedTabIndex = clickable ? (disabled ? -1 : (tabIndex ?? 0)) : tabIndex;
-  const resolvedRole = role ?? (clickable ? 'button' : undefined);
+  //
+  // A chip that is both clickable and removable must not nest that <button>
+  // inside a role="button" root: ARIA treats a button's children as
+  // presentational (assistive tech may never expose the remove control) and
+  // axe reports nested-interactive. The click action therefore moves onto the
+  // label slot, which sits next to the remove button as a sibling control,
+  // while the root stays a plain visual container.
+  const actionOnLabel = clickable && removable;
+
+  // `role` / `tabIndex` describe the action node wherever it lives: instance
+  // prop → `slotProps.root` → wrapper default. A disabled chip is always kept
+  // out of the tab order, even when a static chip was opted in with a tabIndex.
+  const requestedTabIndex = tabIndex ?? rootSlotTabIndex;
+  const enabledTabIndex = clickable ? (requestedTabIndex ?? 0) : requestedTabIndex;
+  const resolvedTabIndex = disabled && enabledTabIndex !== undefined ? -1 : enabledTabIndex;
+  const resolvedRole = role ?? rootSlotRole ?? (clickable ? 'button' : undefined);
 
   if (dismissed) {
     return null;
@@ -84,11 +106,10 @@ export const Chip = (props: ChipProps) => {
   };
 
   const handleRemoveClick = (event: MouseEvent<HTMLButtonElement>) => {
-    // Keep a click on the remove button from also reaching a clickable
-    // chip's root onClick (which would both remove and activate the chip).
-    // A removable-only chip has no root onClick to protect, so let the click
-    // bubble so ancestor delegation (e.g. a list's onClick) still sees it.
-    if (clickable) event.stopPropagation();
+    // The remove button reports through `onRemove` only. Stop the click here
+    // so it never doubles as the chip's own onClick (root or slot handler) or
+    // reaches ancestor delegation as if the chip itself had been clicked.
+    event.stopPropagation();
     removeSlotOnClick?.(event);
     if (event.defaultPrevented) return;
     remove();
@@ -104,11 +125,16 @@ export const Chip = (props: ChipProps) => {
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLSpanElement>) => {
+    // Only keys pressed on the action node itself belong to the chip. A
+    // keydown bubbling up from nested content — e.g. an interactive element a
+    // consumer placed in the label — must keep its own default (Enter/Space
+    // activating that element) rather than being re-routed to the chip.
+    if (event.target !== event.currentTarget) return;
     // Gate on `disabled` before any handler so a disabled chip never runs the
     // consumer's slot/native keydown handler — symmetric with `handleRootClick`.
     if (disabled) return;
 
-    nativeProps.onKeyDown?.(event);
+    onKeyDown?.(event);
     rootSlotOnKeyDown?.(event);
     // Only an explicit cancel by the consumer's own keydown handlers blocks the
     // built-in activation. The chip's keys (Enter/Space/Backspace/Delete) are
@@ -124,22 +150,25 @@ export const Chip = (props: ChipProps) => {
 
     if (clickable && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
+      // The click bubbles to the root, which owns `onClick` in both layouts.
       event.currentTarget.click();
     }
   };
 
+  const actionAttrs = {
+    'role': resolvedRole,
+    'tabIndex': resolvedTabIndex,
+    'aria-disabled': disabled || undefined,
+    'onKeyDown': handleKeyDown,
+  };
+
   return (
-    <span
-      {...nativeProps}
-      {...chipRootAttrs}
-      aria-disabled={disabled || undefined}
-      onClick={handleRootClick}
-      onKeyDown={handleKeyDown}
-      ref={ref}
-      role={resolvedRole}
-      tabIndex={resolvedTabIndex}
-    >
-      {isRenderableNode(children) && <span {...labelSlotAttrs}>{children}</span>}
+    <span {...nativeProps} {...chipRootAttrs} aria-disabled={disabled || undefined} onClick={handleRootClick} ref={ref} {...(actionOnLabel ? undefined : actionAttrs)}>
+      {(isRenderableNode(children) || actionOnLabel) && (
+        <span {...labelSlotAttrs} {...(actionOnLabel ? actionAttrs : undefined)}>
+          {children}
+        </span>
+      )}
       {removable && (
         // The icon-only remove control needs an accessible name. Default it,
         // but let `slotProps.remove` (spread after) override via `aria-label`.

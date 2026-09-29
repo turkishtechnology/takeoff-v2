@@ -5,9 +5,11 @@
 //
 // Slots produced by the wrapper:
 //
-//   .tk-chip               — root (span, visual container)
-//   .tk-chip-label         — text content
-//   .tk-chip-remove — dismiss action
+//   .tk-chip               — root (span, visual container; the click action
+//                            of a clickable-only chip)
+//   .tk-chip-label         — text content (the click action of a clickable
+//                            + removable chip, sibling of the remove button)
+//   .tk-chip-remove        — dismiss action
 //
 // State/variant attributes on root:
 //   data-variant   — color variant
@@ -97,6 +99,20 @@
 
   @include mixins.focus-ring(var(--secondary-focus));
 
+  // A clickable + removable chip carries its click action on `.tk-chip-label`
+  // (a sibling of the remove button, never its parent), so keyboard focus
+  // lands on the label. Paint the ring on the whole chip in that case and
+  // keep the label's own outline transparent so it does not double up.
+  > .tk-chip-label:focus-visible {
+    outline: 2px solid transparent;
+  }
+
+  &:has(> .tk-chip-label:focus-visible) {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: var(--secondary-focus);
+  }
+
   .tk-chip-label {
     display: inline-flex;
     align-items: center;
@@ -175,7 +191,8 @@
   }
 
   &[data-variant='primary'] {
-    &:focus-visible {
+    &:focus-visible,
+    &:has(> .tk-chip-label:focus-visible) {
       box-shadow: var(--primary-focus);
     }
 

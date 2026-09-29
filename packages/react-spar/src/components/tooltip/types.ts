@@ -25,10 +25,23 @@ export type TooltipArrowSlot = 'root';
  * Public props for the Tooltip root. State-only — renders no DOM, so no
  * polymorphic `as` and no native HTML props.
  */
-// Spar Tooltip root: identity, controlled state, timing, disable, and the
-// trigger+content children. Tooltip root is state-only and renders no DOM,
-// so no native HTML props beyond `children` are exposed.
-export type TooltipProps = Pick<SparTooltipProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'delay' | 'hideDelay' | 'disabled' | 'children'>;
+export interface TooltipProps
+  // Spar Tooltip root: identity, controlled state, timing, and the
+  // trigger+content children. Tooltip root is state-only and renders no DOM,
+  // so no native HTML props beyond `children` are exposed. `disabled` is
+  // redeclared below (same Spar type) to document its effect on the trigger.
+  extends Pick<SparTooltipProps, 'id' | 'open' | 'defaultOpen' | 'onOpenChange' | 'delay' | 'hideDelay' | 'children'> {
+  /**
+   * Disables the tooltip: it never opens (hover, focus, the render-prop
+   * `show()` and `defaultOpen` / `open` are all ignored) and the trigger loses
+   * `aria-describedby`. Spar also sets native `disabled` on the trigger
+   * control, so a `<Tooltip.Trigger as={Button} onClick>` cannot be clicked
+   * or focused while the tooltip is disabled. To keep the control usable
+   * while hiding the hint, unmount the tooltip instead.
+   * @defaultValue false
+   */
+  disabled?: boolean;
+}
 
 /**
  * Public props for the Tooltip provider. State-only — renders no DOM.
@@ -62,6 +75,13 @@ export interface TooltipContentOwnProps {
    * @defaultValue 'white'
    */
   variant?: TooltipVariant;
+  /**
+   * Called when Escape is pressed while the tooltip is open — with focus on
+   * the trigger (the usual case), inside the content, or anywhere else in the
+   * document. Runs before the internal close with the native keyboard event;
+   * call `preventDefault()` on it to keep the tooltip open.
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<TooltipContentSlot>;
   /** Per-slot HTML-attribute overrides. */
@@ -72,10 +92,14 @@ export type TooltipContentProps<T extends ElementType = 'div'> = PolymorphicProp
   'div',
   T,
   TooltipContentOwnProps &
-    // Positioning (side/align), portal container, and dismiss/focus event hooks.
-    // `variant` is takeoff-v2's own visual token — in TooltipContentOwnProps
-    // above, not picked.
-    Pick<SparTooltipContentProps, 'side' | 'align' | 'container' | 'onEscapeKeyDown' | 'onPointerDownOutside' | 'onOpenAutoFocus' | 'onCloseAutoFocus'>
+    // Positioning (side/align) and portal container. `variant` is takeoff-v2's
+    // own visual token and `onEscapeKeyDown` is redeclared (same Spar
+    // signature) with the veto documented — both in TooltipContentOwnProps
+    // above. Spar's Tooltip.Content has no `onPointerDownOutside`,
+    // `onOpenAutoFocus` or `onCloseAutoFocus` (a tooltip has no outside-dismiss
+    // or auto-focus path; Spar 0.3.0 removed the never-called props), so the
+    // wrapper exposes none either.
+    Pick<SparTooltipContentProps, 'side' | 'align' | 'container'>
 >;
 
 export interface TooltipHeaderOwnProps {

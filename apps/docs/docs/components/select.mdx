@@ -628,11 +628,11 @@ for primitive behavior.
 
 #### Events {#select-content-events}
 
-| Name                                      | Type                                           | Default | Description            |
-| ----------------------------------------- | ---------------------------------------------- | ------- | ---------------------- |
-| <ApiBadge label="onCloseAutoFocus" />     | <code>(event: FocusEvent) =&gt; void</code>    | -       | Focus handler on close |
-| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code> | -       | Escape key handler     |
-| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>  | -       | Outside click handler  |
+| Name                                      | Type                                           | Default | Description                                                                                                                                                                                                                        |
+| ----------------------------------------- | ---------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onCloseAutoFocus" />     | <code>(event: FocusEvent) =&gt; void</code>    | -       | Called when the select closes from inside the listbox (Escape, Enter/Space, Tab or an item click) and focus is about to return to the trigger. Not called for outside pointer dismissal, where focus stays where the user clicked. |
+| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code> | -       | Escape key handler. Receives the native keyboard event; calling `preventDefault()` on it keeps the select open.                                                                                                                    |
+| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>  | -       | Outside click handler                                                                                                                                                                                                              |
 
 #### Data attributes {#select-content-data-attributes}
 

@@ -78,6 +78,9 @@ export const Spinner = (props: SpinnerProps) => {
   });
 
   const isDecorative = nativeProps['aria-hidden'] === true || nativeProps['aria-hidden'] === 'true';
+  // Spread after nativeProps: an explicit `role={undefined}` / `aria-label={undefined}`
+  // (the `aria-label={maybeLabel}` forwarding idiom) must fall back to the defaults
+  // instead of erasing them.
   const accessibilityAttrs = isDecorative
     ? {}
     : {
@@ -86,7 +89,7 @@ export const Spinner = (props: SpinnerProps) => {
       };
 
   return (
-    <span {...accessibilityAttrs} {...nativeProps} {...rootAttrs} ref={ref}>
+    <span {...nativeProps} {...accessibilityAttrs} {...rootAttrs} ref={ref}>
       <span {...indicatorSlotAttrs} aria-hidden="true">
         {renderIndicatorContent(appearance)}
       </span>

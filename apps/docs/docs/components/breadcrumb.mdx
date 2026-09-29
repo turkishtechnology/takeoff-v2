@@ -614,14 +614,14 @@ for primitive behavior.
 
 #### Props {#breadcrumb-props}
 
-| Name                            | Type                                                                                      | Default | Description                                             |
-| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------- |
-| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -       | `Breadcrumb.List` rendered inside the `<nav>` landmark. |
-| <ApiBadge label="size" />       | <code><a href="#breadcrumb-td-breadcrumbsize">BreadcrumbSize</a></code>                   | 'base'  | Density scale cascaded to every part through context.   |
-| <ApiBadge label="type" />       | <code><a href="#breadcrumb-td-breadcrumbtype">BreadcrumbType</a></code>                   | 'basic' | Visual style cascaded to every part through context.    |
-| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                          |
-| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                      |
-| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.   |
+| Name                            | Type                                                                                      | Default | Description                                                                                                                                 |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -       | `Breadcrumb.List` rendered inside the `<nav>` landmark.                                                                                     |
+| <ApiBadge label="size" />       | <code><a href="#breadcrumb-td-breadcrumbsize">BreadcrumbSize</a></code>                   | 'base'  | Density scale. Emitted as `data-size` on the root `<nav>`; the recipe scopes every part from there. Shared with every part through context. |
+| <ApiBadge label="type" />       | <code><a href="#breadcrumb-td-breadcrumbtype">BreadcrumbType</a></code>                   | 'basic' | Visual style. Emitted as `data-type` on the root `<nav>`; the recipe scopes every part from there. Shared with every part through context.  |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                              |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                          |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.                                                                                       |
 
 #### Data attributes {#breadcrumb-data-attributes}
 
@@ -652,11 +652,11 @@ for primitive behavior.
 
 #### Data attributes {#breadcrumb-item-data-attributes}
 
-| Attribute                                       | Applied when                                               | Purpose                                                                                                                                                                                                                                                               |
-| ----------------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                     | Stable selector for wrapper styling on the root slot.                                                                                                                                                                                                                 |
-| <ApiBadge label="data-position" />              | Always                                                     | `"first"`, `"middle"`, or `"last"`. Emitted by Spar — with the pinned 0.2.0-beta.1 it always resolves to `"middle"` through this wrapper (position derivation is type-matched on Spar’s own item); the real values arrive with the Spar context-registration release. |
-| <ApiBadge label="data-current" />               | Reserved — not emitted at item level with the pinned Spar. | Will mark the current crumb once the Spar context-registration release lands. Until then, style the current crumb via `Breadcrumb.Page`’s always-emitted `data-current`.                                                                                              |
+| Attribute                                       | Applied when      | Purpose                                                                                                                                                                       |
+| ----------------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always            | Stable selector for wrapper styling on the root slot.                                                                                                                         |
+| <ApiBadge label="data-position" />              | Always            | `"first"`, `"middle"`, or `"last"` in list order. Emitted by Spar: items register with `Breadcrumb.List` through context, so positions recompute as crumbs mount and unmount. |
+| <ApiBadge label="data-current" />               | On the last item. | Marks the current crumb; emitted by Spar on the last registered item, alongside `Breadcrumb.Page`’s own `data-current`.                                                       |
 
 ### Breadcrumb.Link {#breadcrumb-link}
 

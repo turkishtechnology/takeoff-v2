@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { ChevronBottomIconOutlinedRounded } from '@takeoff-icons/react/chevron-bottom';
 import { ChevronTopIconOutlinedRounded } from '@takeoff-icons/react/chevron-top';
 
+import { isRenderableNode } from './isRenderableNode';
+
 /**
  * Shared disclosure-indicator primitives for the open/closed chevron used by
  * `Select` (trigger + standalone `Select.Indicator`) and `Accordion.Indicator`.
@@ -24,10 +26,14 @@ export interface DisclosureIndicatorRenderState {
 /**
  * Resolve a disclosure indicator's content: a render-function `children` is
  * called with `{ isOpen }`, an explicit node is used verbatim, and otherwise the
- * open-state default chevron is shown. Mirrors the (formerly duplicated) logic
- * in `Select.Indicator` and `Accordion.Indicator`.
+ * open-state default chevron is shown. "Otherwise" covers every empty node the
+ * same way — `undefined`, `null`, booleans (the `cond && <Icon />` idiom) and
+ * `''` — so an indicator part never renders empty; omit the part to hide it.
+ * Mirrors the (formerly duplicated) logic in `Select.Indicator` and
+ * `Accordion.Indicator`.
  */
 export const resolveDisclosureIndicator = (children: ReactNode | ((state: DisclosureIndicatorRenderState) => ReactNode) | undefined, isOpen: boolean): ReactNode => {
   if (typeof children === 'function') return children({ isOpen });
-  return children ?? (isOpen ? DEFAULT_DISCLOSURE_COLLAPSE_ICON : DEFAULT_DISCLOSURE_EXPAND_ICON);
+  if (isRenderableNode(children)) return children;
+  return isOpen ? DEFAULT_DISCLOSURE_COLLAPSE_ICON : DEFAULT_DISCLOSURE_EXPAND_ICON;
 };

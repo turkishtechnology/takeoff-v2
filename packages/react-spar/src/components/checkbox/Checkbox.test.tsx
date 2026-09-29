@@ -517,6 +517,44 @@ describe('Checkbox', () => {
       expect(handleChange).toHaveBeenCalledWith(true);
     });
 
+    it('leaves the mixed state with a single click when an uncontrolled checkbox clears indeterminate from onChange', async () => {
+      const user = userEvent.setup();
+      const handleChange = vi.fn();
+
+      const UncontrolledParent = () => {
+        const [indeterminate, setIndeterminate] = useState(true);
+        return (
+          <Checkbox
+            aria-label="All extras"
+            indeterminate={indeterminate}
+            onChange={next => {
+              handleChange(next);
+              setIndeterminate(false);
+            }}
+          >
+            <Checkbox.Indicator />
+          </Checkbox>
+        );
+      };
+
+      render(<UncontrolledParent />);
+      const checkbox = screen.getByRole('checkbox');
+      expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
+
+      await user.click(checkbox);
+
+      expect(handleChange).toHaveBeenCalledTimes(1);
+      expect(handleChange).toHaveBeenCalledWith(true);
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+      expect(checkbox).toHaveAttribute('data-checked', '');
+      expect(checkbox).not.toHaveAttribute('data-indeterminate');
+      expect(showsGlyph(checkbox, CheckIconOutlinedRounded)).toBe(true);
+
+      await user.click(checkbox);
+      expect(handleChange).toHaveBeenLastCalledWith(false);
+      expect(checkbox).toHaveAttribute('aria-checked', 'false');
+    });
+
     it('drives a controlled select-all parent in and out of the mixed state', async () => {
       const user = userEvent.setup();
       const handleParentChange = vi.fn();
@@ -723,6 +761,28 @@ describe('Checkbox', () => {
       expect(root).toHaveTextContent('indeterminate');
       expect(iconOf(root)?.parentElement).toBe(indicatorOf(root));
       expect(showsGlyph(root, RemoveIconOutlinedRounded)).toBe(true);
+    });
+
+    it('lets the render-prop setChecked drive the uncontrolled tri-state through Spar and reports it as a boolean', () => {
+      const handleChange = vi.fn();
+      const renderRoot = vi.fn((_state: CheckboxRenderProps) => <Checkbox.Indicator />);
+
+      render(
+        <Checkbox aria-label="All extras" onChange={handleChange}>
+          {renderRoot}
+        </Checkbox>,
+      );
+      const latest = () => renderRoot.mock.lastCall?.[0];
+      const checkbox = screen.getByRole('checkbox');
+
+      act(() => latest()?.setChecked('indeterminate'));
+      expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
+      expect(latest()?.checked).toBe('indeterminate');
+      expect(handleChange).toHaveBeenLastCalledWith(false);
+
+      act(() => latest()?.setChecked(true));
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+      expect(handleChange).toHaveBeenLastCalledWith(true);
     });
 
     it('re-renders function children with the toggled boolean state', async () => {

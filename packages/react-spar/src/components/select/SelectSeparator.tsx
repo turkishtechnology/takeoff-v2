@@ -14,6 +14,10 @@ export const SelectSeparator = <T extends ElementType = 'div'>(props: SelectSepa
 
   const { children, ref, ...spar } = rest;
 
+  // Spar renders the separator as a presentational, hidden node by default
+  // (`role="presentation"` + `aria-hidden`) so a `listbox` only owns `option` /
+  // `group` children. A consumer `role="separator"` / `aria-*` in `spar` still
+  // overrides that default.
   return (
     <SparSelectSeparator {...spar} ref={ref} {...rootAttrs}>
       {children}

@@ -38,10 +38,11 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
     // Visual props are consumed via `stateAttrs`; destructured to keep them
     // off the rendered DOM where they would leak as raw HTML attributes.
     size: _size,
-    // takeoff-spar tri-state vocabulary; mapped to Spar's `CheckedState` below.
+    // takeoff-spar narrows `checked` / `defaultChecked` to `boolean` and
+    // flattens `onChange`; `indeterminate` is Spar's own prop and passes through.
     checked,
     defaultChecked,
-    indeterminate = false,
+    indeterminate,
     onChange,
     children,
     ref,
@@ -56,19 +57,32 @@ export const Checkbox = <T extends ElementType = 'span'>(props: CheckboxProps<T>
     ...sparProps
   } = rest;
 
-  // `indeterminate` wins over `checked` / `defaultChecked` per
-  // `packages/react-spar/docs/coding-standards.md` line 209. The mapping is
-  // inline — a pure shape translation, not an adapter hook.
-  const sparChecked: CheckedState | undefined = indeterminate ? 'indeterminate' : checked;
-  const sparDefaultChecked: CheckedState | undefined = indeterminate ? 'indeterminate' : defaultChecked;
-
-  // Spar's user-toggle path always transitions to `true | false` (never
-  // re-emits `'indeterminate'`), so flattening the callback signature to
-  // boolean is safe. The strict cast keeps the public API simple.
-  const handleSparChange = onChange ? (next: CheckedState) => onChange(next === true) : undefined;
+  // Spar owns the controlled/uncontrolled reconciliation and layers its own
+  // `indeterminate` prop over `checked` / `defaultChecked` without taking
+  // ownership of the value (`indeterminate` wins while set, per
+  // `packages/react-spar/docs/coding-standards.md`). A user toggle out of the
+  // mixed state advances Spar's internal boolean and fires `onChange(true)`,
+  // so clearing `indeterminate` from `onChange` lands on the new boolean state
+  // in a single interaction. The wrapper only narrows the public `checked` /
+  // `defaultChecked` types to `boolean` and flattens `onChange`: Spar's
+  // user-toggle path always transitions to `true | false` (it never re-emits
+  // `'indeterminate'`), so the boolean callback signature is safe. A
+  // render-prop `setChecked('indeterminate')` still reaches Spar unchanged and
+  // is reported here as `false`.
+  const handleSparChange = (next: CheckedState) => {
+    onChange?.(next === true);
+  };
 
   return (
-    <SparCheckbox {...(sparProps as unknown as SparCheckboxProps)} checked={sparChecked} defaultChecked={sparDefaultChecked} onChange={handleSparChange} ref={ref} {...rootAttrs}>
+    <SparCheckbox
+      {...(sparProps as unknown as SparCheckboxProps)}
+      checked={checked}
+      defaultChecked={defaultChecked}
+      indeterminate={indeterminate}
+      onChange={handleSparChange}
+      ref={ref}
+      {...rootAttrs}
+    >
       {(state: SparCheckboxRenderProps) => (
         <CheckboxProvider
           value={{

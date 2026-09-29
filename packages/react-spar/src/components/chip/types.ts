@@ -27,7 +27,9 @@ export interface ChipProps extends Omit<TakeoffHTMLProps<'span'>, 'children'> {
    */
   size?: ChipSize;
   /**
-   * Disables interactive affordances and remove actions.
+   * Disables interactive affordances and remove actions, and keeps the chip
+   * out of the tab order (a `tabIndex` given to a disabled chip resolves to
+   * `-1`).
    * @defaultValue false
    */
   disabled?: boolean;
@@ -37,7 +39,10 @@ export interface ChipProps extends Omit<TakeoffHTMLProps<'span'>, 'children'> {
    */
   removable?: boolean;
   /**
-   * Makes the chip root keyboard-focusable and button-like for click actions.
+   * Makes the chip keyboard-focusable and button-like for click actions. The
+   * root carries the action; when the chip is also `removable`, the action
+   * moves onto the label slot so the remove button stays a sibling control
+   * that keyboard and assistive-tech users can reach separately.
    * @defaultValue false
    */
   clickable?: boolean;
@@ -53,7 +58,8 @@ export interface ChipProps extends Omit<TakeoffHTMLProps<'span'>, 'children'> {
   autoDismiss?: boolean;
   /**
    * Called when the remove button is pressed or a focused clickable chip
-   * receives Backspace/Delete.
+   * receives Backspace/Delete. The remove button's click never doubles as the
+   * chip's `onClick`.
    */
   onRemove?: () => void;
   /** Chip content. */
@@ -62,7 +68,12 @@ export interface ChipProps extends Omit<TakeoffHTMLProps<'span'>, 'children'> {
   ref?: Ref<HTMLSpanElement>;
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<ChipSlot>;
-  /** Per-slot HTML-attribute overrides. */
+  /**
+   * Per-slot HTML-attribute overrides. `root.role` / `root.tabIndex` describe
+   * the click action and follow it onto whichever node carries it (the root,
+   * or the label of a clickable removable chip); they resolve as instance
+   * `role` / `tabIndex` → `slotProps.root` → wrapper default.
+   */
   slotProps?: SlotPropsMap<ChipSlot>;
 }
 

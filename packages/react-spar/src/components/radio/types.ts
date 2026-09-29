@@ -1,4 +1,4 @@
-import type { ElementType, ReactNode } from 'react';
+import type { ElementType, FocusEventHandler, KeyboardEventHandler, MouseEventHandler, ReactNode } from 'react';
 import type {
   PolymorphicProps,
   RadioProps as SparRadioProps,
@@ -52,6 +52,13 @@ export interface RadioOwnProps {
    * @defaultValue 'left'
    */
   position?: RadioPosition;
+  /**
+   * Native keydown handler on the radiogroup root. Composed with Spar's roving
+   * keyboard handler: the consumer handler runs first, then Arrow / Home / End
+   * navigation (and selection when `selectOnFocus` is on) proceeds as usual.
+   * Call `event.preventDefault()` to veto the built-in navigation for that key.
+   */
+  onKeyDown?: KeyboardEventHandler<HTMLElement>;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<RadioSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -75,6 +82,24 @@ export interface RadioItemOwnProps {
    * @defaultValue inherited from group
    */
   position?: RadioPosition;
+  /**
+   * Native click handler on the item. Composed with Spar's selection handler:
+   * the consumer handler runs first, then the item is selected. Call
+   * `event.preventDefault()` to veto the selection for that click.
+   */
+  onClick?: MouseEventHandler<HTMLElement>;
+  /**
+   * Native keydown handler on the item. Composed with Spar's Space / Enter
+   * selection handler (consumer first); `event.preventDefault()` vetoes the
+   * selection. Arrow / Home / End navigation is handled on the `Radio` root.
+   */
+  onKeyDown?: KeyboardEventHandler<HTMLElement>;
+  /**
+   * Native focus handler on the item. Composed with Spar's focus tracking
+   * (roving tabindex, `data-focus`, and select-on-focus); the consumer handler
+   * runs first and `event.preventDefault()` vetoes the built-in behaviour.
+   */
+  onFocus?: FocusEventHandler<HTMLElement>;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<RadioItemSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -83,8 +108,8 @@ export interface RadioItemOwnProps {
   children?: ReactNode | ((state: RadioRenderProps) => ReactNode);
 }
 
-export type RadioItemProps<T extends ElementType = 'label'> = PolymorphicProps<
-  'label',
+export type RadioItemProps<T extends ElementType = 'span'> = PolymorphicProps<
+  'span',
   T,
   RadioItemOwnProps &
     // Spar item identity + per-item disable. `children` is declared on

@@ -374,24 +374,36 @@ own selection without reading context manually.
 ## Accessibility & Keyboard
 
 - The root renders `role="radiogroup"`; each `Radio.Item` is a
-  `<label role="radio">` wrapping a hidden `<input type="radio">` so the group
-  participates in native form submission.
+  `<span role="radio">` wrapping a visually hidden `<input type="radio">` so the
+  group participates in native form submission. (`<label>` allows no ARIA role,
+  so it is not the default — pass `as` for another element if you need one.)
 - Provide a group label via `aria-label` or `aria-labelledby`. `Radio.Label`
   labels the individual item — compose helper text or richer markup directly
   inside it.
 - `Radio.Indicator` is decorative (`aria-hidden`); the checked state is surfaced
   to assistive tech via `aria-checked` on the item.
 
-| Key                         | Behavior                                                             |
-| --------------------------- | -------------------------------------------------------------------- |
-| <kbd>Tab</kbd>              | Move focus into the group (lands on the checked item, or the first). |
-| <kbd>↓</kbd> / <kbd>→</kbd> | Move focus to the next item and select it.                           |
-| <kbd>↑</kbd> / <kbd>←</kbd> | Move focus to the previous item and select it.                       |
-| <kbd>Space</kbd>            | Select the focused item.                                             |
+| Key                                 | Behavior                                                             |
+| ----------------------------------- | -------------------------------------------------------------------- |
+| <kbd>Tab</kbd>                      | Move focus into the group (lands on the checked item, or the first). |
+| <kbd>↓</kbd> / <kbd>→</kbd>         | Move focus to the next item and select it.                           |
+| <kbd>↑</kbd> / <kbd>←</kbd>         | Move focus to the previous item and select it.                       |
+| <kbd>Space</kbd> / <kbd>Enter</kbd> | Select the focused item.                                             |
 
-Disabled items skip both pointer and keyboard activation. Set `selectOnFocus` to
-`false` if you want focus and selection to decouple, and `autoFocus` to move
-focus into the group on mount.
+Disabled items skip both pointer and keyboard activation, and the first enabled
+item becomes the tab stop when the checked one is disabled. Set `selectOnFocus`
+to `false` if you want focus and selection to decouple, and `autoFocus` to move
+focus into the group on mount. A `readOnly` group still moves focus with the
+keyboard but never changes its value.
+
+:::info Consumer event handlers are composed with Spar's
+
+A consumer `onKeyDown` / `onFocus` / `onBlur` on `Radio`, and `onClick` /
+`onKeyDown` / `onFocus` on `Radio.Item`, run _before_ the built-in handler and
+do not replace it. Call `event.preventDefault()` inside your handler to veto the
+built-in navigation or selection for that event.
+
+:::
 
 ## API Reference
 
@@ -414,6 +426,12 @@ for primitive behavior.
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                                                                                                                |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                                                            |
 | <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.                                                                                                                                                                                                         |
+
+#### Events {#radio-events}
+
+| Name                           | Type                                                 | Default | Description                                                                                                                                                                                                                                                                                                |
+| ------------------------------ | ---------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onKeyDown" /> | <code>KeyboardEventHandler&lt;HTMLElement&gt;</code> | -       | Native keydown handler on the radiogroup root. Composed with Spar's roving keyboard handler: the consumer handler runs first, then Arrow / Home / End navigation (and selection when `selectOnFocus` is on) proceeds as usual. Call `event.preventDefault()` to veto the built-in navigation for that key. |
 
 #### Data attributes {#radio-data-attributes}
 
@@ -442,6 +460,14 @@ for primitive behavior.
 | <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -                    | Per-slot class name overrides.                                                                                                                  |
 | <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -                    | Per-slot HTML attribute overrides.                                                                                                              |
 | <ApiBadge label="className" />  | <code>string</code>                                                                       | -                    | Appends custom classes to the root slot of this part.                                                                                           |
+
+#### Events {#radio-item-events}
+
+| Name                           | Type                                                 | Default | Description                                                                                                                                                                                                             |
+| ------------------------------ | ---------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onClick" />   | <code>MouseEventHandler&lt;HTMLElement&gt;</code>    | -       | Native click handler on the item. Composed with Spar's selection handler: the consumer handler runs first, then the item is selected. Call `event.preventDefault()` to veto the selection for that click.               |
+| <ApiBadge label="onKeyDown" /> | <code>KeyboardEventHandler&lt;HTMLElement&gt;</code> | -       | Native keydown handler on the item. Composed with Spar's Space / Enter selection handler (consumer first); `event.preventDefault()` vetoes the selection. Arrow / Home / End navigation is handled on the `Radio` root. |
+| <ApiBadge label="onFocus" />   | <code>FocusEventHandler&lt;HTMLElement&gt;</code>    | -       | Native focus handler on the item. Composed with Spar's focus tracking (roving tabindex, `data-focus`, and select-on-focus); the consumer handler runs first and `event.preventDefault()` vetoes the built-in behaviour. |
 
 #### Data attributes {#radio-item-data-attributes}
 

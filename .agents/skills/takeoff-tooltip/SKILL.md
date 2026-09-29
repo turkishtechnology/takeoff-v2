@@ -162,7 +162,7 @@ function ControlledTooltip() {
 | `open`                                | `boolean`                 | –               | Controlled visibility (pair with `onOpenChange`). On `Tooltip`.                    |
 | `defaultOpen`                         | `boolean`                 | `false`         | Uncontrolled initial open state. On `Tooltip`.                                     |
 | `onOpenChange`                        | `(open: boolean) => void` | –               | Fires when open state changes. On `Tooltip`.                                       |
-| `disabled`                            | `boolean`                 | `false`         | Disables the tooltip. On `Tooltip`.                                                |
+| `disabled`                            | `boolean`                 | `false`         | Never opens and also sets native `disabled` on the trigger control. On `Tooltip`.  |
 | `delay` / `hideDelay`                 | `number`                  | – / `0`         | Override provider show/hide delay for this tooltip.                                |
 | `variant`                             | `TooltipVariant`          | `'white'`       | Color: white, dark, info, success, warning, danger, neutral. On `Tooltip.Content`. |
 | `side`                                | `Side`                    | `'top'`         | Preferred placement: top, right, bottom, left. On `Tooltip.Content`.               |

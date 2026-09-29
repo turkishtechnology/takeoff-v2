@@ -197,6 +197,34 @@ describe('Input.Stepper actions', () => {
 
       expect(getBagsField()).toHaveValue(5);
     });
+
+    it('composes a consumer disabled with the Input state so a single action can be disabled', async () => {
+      const user = userEvent.setup();
+      render(
+        <Input>
+          <Input.Field aria-label="Bags" type="number" defaultValue={5} />
+          <Part disabled />
+        </Input>,
+      );
+
+      expect(getButton()).toBeDisabled();
+      expect(getBagsField()).toBeEnabled();
+
+      await user.click(getButton());
+
+      expect(getBagsField()).toHaveValue(5);
+    });
+
+    it('cannot re-enable the action in a disabled Input', () => {
+      render(
+        <Input disabled>
+          <Input.Field aria-label="Bags" type="number" defaultValue={5} />
+          <Part disabled={false} />
+        </Input>,
+      );
+
+      expect(getButton()).toBeDisabled();
+    });
   });
 
   describe('native stepping bounds', () => {

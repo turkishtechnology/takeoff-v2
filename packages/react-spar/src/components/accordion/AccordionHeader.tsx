@@ -5,10 +5,13 @@ import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { AccordionHeaderBase } from './base';
+import { useAccordionOwnContext } from './context';
 import type { AccordionHeaderProps } from './types';
 
 export const AccordionHeader = <T extends ElementType = 'h3'>(props: AccordionHeaderProps<T>) => {
   const theme = useComponentTheme('AccordionHeader');
+  // Boundary guard only: names the part when rendered outside the root.
+  useAccordionOwnContext('Accordion.Header');
   const { rootAttrs, rest } = composeRootAttrs(AccordionHeaderBase, props as AccordionHeaderProps<'h3'>, theme);
   const { children, level, ref, ...spar } = rest;
 

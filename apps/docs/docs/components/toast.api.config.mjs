@@ -8,8 +8,8 @@
 
 const toastTypesFile = 'packages/react-spar/src/components/toast/types.ts';
 
-const childrenOverride = description => ({
-  type: 'React.ReactNode',
+const childrenOverride = (description, type = 'React.ReactNode') => ({
+  type,
   description,
 });
 
@@ -38,7 +38,10 @@ export default {
           type: 'ToasterController',
           description: 'Toast controller returned by `createToaster`.',
         },
-        children: childrenOverride('Optional render function for custom toast item rendering.'),
+        children: childrenOverride(
+          'Optional render function for custom toast item rendering. Called once per visible toast; a plain node is not accepted.',
+          '(toast: ToastData) => React.ReactNode',
+        ),
         appearance: {
           type: 'ToastAppearance',
           default: "'filled'",

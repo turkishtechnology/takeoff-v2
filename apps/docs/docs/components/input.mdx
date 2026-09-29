@@ -851,7 +851,10 @@ and renders each tag as a removable [`Chip`](./chip) (in the neutral / outlined
 parity look). Place it next to `Input.Field`: Enter (or the optional `separator`
 character) commits the trimmed field text and Backspace on an empty field
 removes the last tag. `max` caps the tag count — commits past the cap are
-ignored — and `allowDuplicates` permits repeats.
+ignored — and `allowDuplicates` permits repeats. An ignored commit (cap reached,
+or a duplicate while `allowDuplicates` is off) leaves the typed text in the
+field. Removing a tag from its remove button moves focus to the neighbouring
+tag's remove button, or back to the field when it was the last one.
 
 <LiveCode
   code={chipsDemo}
@@ -1074,8 +1077,8 @@ for primitive behavior.
 | <ApiBadge label="value" />           | <code>string[]</code>                                                                     | -       | Committed tags (controlled). Pair with `onValueChange`. Spar's Input is a scalar primitive with no array model, so the chips value is owned here as a react-enhancement rather than picked from Spar. |
 | <ApiBadge label="defaultValue" />    | <code>string[]</code>                                                                     | -       | Initial tags for uncontrolled usage.                                                                                                                                                                  |
 | <ApiBadge label="separator" />       | <code>string</code>                                                                       | -       | Optional character that commits the field text as a tag (Enter always commits).                                                                                                                       |
-| <ApiBadge label="max" />             | <code>number</code>                                                                       | -       | Maximum number of tags. Further commits are ignored once reached.                                                                                                                                     |
-| <ApiBadge label="allowDuplicates" /> | <code>boolean</code>                                                                      | false   | Allow committing a tag that already exists.                                                                                                                                                           |
+| <ApiBadge label="max" />             | <code>number</code>                                                                       | -       | Maximum number of tags. Further commits are ignored once reached and the typed text stays in the field.                                                                                               |
+| <ApiBadge label="allowDuplicates" /> | <code>boolean</code>                                                                      | false   | Allow committing a tag that already exists. A rejected duplicate stays in the field as typed text.                                                                                                    |
 | <ApiBadge label="classNames" />      | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                                                        |
 | <ApiBadge label="slotProps" />       | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                                    |
 | <ApiBadge label="className" />       | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.                                                                                                                                                 |

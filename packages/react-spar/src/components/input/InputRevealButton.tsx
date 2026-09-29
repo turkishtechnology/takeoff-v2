@@ -23,7 +23,19 @@ export const InputRevealButton = <T extends ElementType = 'button'>(props: Input
     onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   };
 
-  const { children, onClick, ref, 'type': _type, 'aria-label': _ariaLabel, 'aria-pressed': _ariaPressed, ...buttonProps } = rest;
+  // `aria-label` is an overridable default (localizable), like the other
+  // action buttons. A consumer `disabled` composes with the Input state so a
+  // single action can be disabled without disabling the field.
+  const {
+    children,
+    onClick,
+    ref,
+    'type': _type,
+    'disabled': consumerDisabled,
+    'aria-label': ariaLabel = 'Toggle password visibility',
+    'aria-pressed': _ariaPressed,
+    ...buttonProps
+  } = rest;
 
   // Re-hide the password on form submit. Re-running on every `revealed` change
   // re-resolves the form, so a form/field that mounts after this button (or
@@ -54,8 +66,8 @@ export const InputRevealButton = <T extends ElementType = 'button'>(props: Input
       appearance="text"
       rounded
       size={size}
-      disabled={disabled || readOnly}
-      aria-label="Toggle password visibility"
+      disabled={consumerDisabled || disabled || readOnly}
+      aria-label={ariaLabel}
       aria-pressed={revealed}
       onClick={handleClick}
       startContent={children ?? (revealed ? <EyeClosedIconOutlinedRounded /> : <EyeOpenIconOutlinedRounded />)}

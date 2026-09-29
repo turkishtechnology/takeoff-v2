@@ -214,7 +214,7 @@ trigger renders disabled and ignores pointer/keyboard activation):
 | `orientation`          | `'vertical' \| 'horizontal'`         | `'vertical'` | Root: keyboard nav direction.                                         |
 | `value` (Item)         | `string \| number`                   | -            | `Accordion.Item`: stable identity (required).                         |
 | `disabled` (Item)      | `boolean`                            | `false`      | `Accordion.Item`: disable this section.                               |
-| `level` (Header)       | `number`                             | `3`          | `Accordion.Header`: heading level 1-6.                                |
+| `level` (Header)       | `1 \| 2 \| 3 \| 4 \| 5 \| 6`         | `3`          | `Accordion.Header`: heading level 1-6.                                |
 | `forceMount` (Content) | `boolean`                            | `false`      | `Accordion.Content`: keep mounted when closed (e.g. in-page search).  |
 
 Full props, events, data attributes & type definitions: see
@@ -228,8 +228,9 @@ Full props, events, data attributes & type definitions: see
   `aria-labelledby`.
 - `Accordion.Header` renders an `h1`–`h6`; pick the `level` that fits the
   document outline.
-- Stable trigger/panel ids derive from the `id` on `Accordion.Item`; set it for
-  deterministic markup.
+- Stable trigger/panel ids (`${id}-trigger` / `${id}-content`) derive from the
+  `id` on `Accordion.Item`; set it for deterministic markup. The item element
+  itself does not receive that `id`.
 - Keyboard: Enter/Space toggles the focused trigger; ↓/↑ (or →/← when
   `orientation="horizontal"`) move between triggers; Home/End jump to
   first/last. Disabled items skip pointer and keyboard activation and expose

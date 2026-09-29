@@ -258,6 +258,26 @@ describe('Input.Chips', () => {
 
       expect(onValueChange).not.toHaveBeenCalled();
       expect(chipLabels(container)).toEqual(['Rome', 'Oslo']);
+      // The ignored commit leaves the user's text in place.
+      expect(getTagsField()).toHaveValue('Nice');
+    });
+
+    it('keeps an ignored commit from submitting an enclosing form', async () => {
+      const user = userEvent.setup();
+      const onSubmit = vi.fn((event: FormEvent<HTMLFormElement>) => event.preventDefault());
+      render(
+        <form aria-label="Trip" onSubmit={onSubmit}>
+          <Input>
+            <Input.Chips defaultValue={['Rome']} max={1} />
+            <Input.Field aria-label="Destinations" />
+          </Input>
+        </form>,
+      );
+
+      await user.type(getTagsField(), 'Nice{Enter}');
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(getTagsField()).toHaveValue('Nice');
     });
 
     it('ignores a duplicate tag by default', async () => {
@@ -274,6 +294,23 @@ describe('Input.Chips', () => {
 
       expect(onValueChange).not.toHaveBeenCalled();
       expect(chipLabels(container)).toEqual(['Rome']);
+      expect(getTagsField()).toHaveValue('Rome');
+    });
+
+    it('keeps a rejected duplicate in the field when committed through the separator', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(
+        <Input>
+          <Input.Chips defaultValue={['Rome']} separator="," onValueChange={onValueChange} />
+          <Input.Field aria-label="Destinations" />
+        </Input>,
+      );
+
+      await user.type(getTagsField(), 'Rome,');
+
+      expect(onValueChange).not.toHaveBeenCalled();
+      expect(getTagsField()).toHaveValue('Rome');
     });
 
     it('commits a duplicate tag when allowDuplicates is set', async () => {
@@ -370,6 +407,58 @@ describe('Input.Chips', () => {
       expect(onValueChange).toHaveBeenCalledWith(['Oslo']);
       expect(chipLabels(container)).toEqual(['Oslo']);
     });
+
+    it('moves focus to the previous remove button after removing a tag from the keyboard', async () => {
+      const user = userEvent.setup();
+      render(
+        <Input>
+          <Input.Chips defaultValue={['Rome', 'Oslo', 'Nice']} />
+          <Input.Field aria-label="Destinations" />
+        </Input>,
+      );
+
+      await user.tab();
+      await user.tab();
+      expect(screen.getByRole('button', { name: 'Remove Oslo' })).toHaveFocus();
+
+      await user.keyboard('{Enter}');
+
+      expect(screen.getByRole('button', { name: 'Remove Rome' })).toHaveFocus();
+    });
+
+    it('moves focus to the next remove button, then to the field, as the leading tags are removed', async () => {
+      const user = userEvent.setup();
+      render(
+        <Input>
+          <Input.Chips defaultValue={['Rome', 'Oslo']} />
+          <Input.Field aria-label="Destinations" />
+        </Input>,
+      );
+
+      await user.tab();
+      expect(screen.getByRole('button', { name: 'Remove Rome' })).toHaveFocus();
+
+      await user.keyboard('{Enter}');
+      expect(screen.getByRole('button', { name: 'Remove Oslo' })).toHaveFocus();
+
+      await user.keyboard('{Enter}');
+      expect(screen.queryByRole('button', { name: /^Remove/ })).not.toBeInTheDocument();
+      expect(getTagsField()).toHaveFocus();
+    });
+
+    it('moves focus to a neighbour after a pointer removal that focused the remove button', async () => {
+      const user = userEvent.setup();
+      render(
+        <Input>
+          <Input.Chips defaultValue={['Rome', 'Oslo']} />
+          <Input.Field aria-label="Destinations" />
+        </Input>,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Remove Oslo' }));
+
+      expect(screen.getByRole('button', { name: 'Remove Rome' })).toHaveFocus();
+    });
   });
 
   describe('controlled', () => {
@@ -457,13 +546,14 @@ describe('Input.Chips', () => {
       expect(chipLabels(container)).toEqual(['Rome']);
     });
 
-    it('does not commit a tag on Enter in a read-only Input', async () => {
+    it('does not commit a tag on Enter in a read-only Input, and leaves the field text and onChange alone', async () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn();
+      const onChange = vi.fn();
       const { container } = render(
         <Input readOnly>
           <Input.Chips defaultValue={['Rome']} onValueChange={onValueChange} />
-          <Input.Field aria-label="Destinations" defaultValue="Oslo" />
+          <Input.Field aria-label="Destinations" defaultValue="Oslo" onChange={onChange} />
         </Input>,
       );
 
@@ -471,7 +561,47 @@ describe('Input.Chips', () => {
       await user.keyboard('{Enter}');
 
       expect(onValueChange).not.toHaveBeenCalled();
+      expect(onChange).not.toHaveBeenCalled();
       expect(chipLabels(container)).toEqual(['Rome']);
+      expect(getTagsField()).toHaveValue('Oslo');
+    });
+
+    it('does not prevent the native Enter (form submit) in a read-only Input', async () => {
+      const user = userEvent.setup();
+      const onSubmit = vi.fn((event: FormEvent<HTMLFormElement>) => event.preventDefault());
+      render(
+        <form aria-label="Trip" onSubmit={onSubmit}>
+          <Input readOnly>
+            <Input.Chips defaultValue={['Rome']} />
+            <Input.Field aria-label="Destinations" defaultValue="Oslo" />
+          </Input>
+        </form>,
+      );
+
+      await user.click(getTagsField());
+      await user.keyboard('{Enter}');
+
+      expect(onSubmit).toHaveBeenCalledTimes(1);
+      expect(getTagsField()).toHaveValue('Oslo');
+    });
+
+    it('ignores the separator in a read-only Input without touching the field', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      const onChange = vi.fn();
+      render(
+        <Input readOnly>
+          <Input.Chips defaultValue={['Rome']} separator="," onValueChange={onValueChange} />
+          <Input.Field aria-label="Destinations" defaultValue="Oslo" onChange={onChange} />
+        </Input>,
+      );
+
+      await user.click(getTagsField());
+      await user.keyboard(',');
+
+      expect(onValueChange).not.toHaveBeenCalled();
+      expect(onChange).not.toHaveBeenCalled();
+      expect(getTagsField()).toHaveValue('Oslo');
     });
   });
 
@@ -501,6 +631,26 @@ describe('Input.Chips', () => {
       expect(getTagsField()).toHaveFocus();
       expect(onClear).toHaveBeenCalledTimes(1);
       expect(screen.queryByRole('button', { name: 'Clear input' })).not.toBeInTheDocument();
+    });
+
+    it('does not report a chips change when clearing typed text while there are no tags', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      const onClear = vi.fn();
+      render(
+        <Input>
+          <Input.Chips onValueChange={onValueChange} />
+          <Input.Field aria-label="Destinations" />
+          <Input.ClearButton onClear={onClear} />
+        </Input>,
+      );
+
+      await user.type(getTagsField(), 'Lon');
+      await user.click(screen.getByRole('button', { name: 'Clear input' }));
+
+      expect(getTagsField()).toHaveValue('');
+      expect(onClear).toHaveBeenCalledTimes(1);
+      expect(onValueChange).not.toHaveBeenCalled();
     });
 
     it('hides the clear button once the last tag is removed from an empty field', async () => {

@@ -169,10 +169,12 @@ export const Stepper = <T extends ElementType = 'ol'>(props: StepperProps<T>) =>
     const backwardKey = orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
     if (event.key !== forwardKey && event.key !== backwardKey && event.key !== 'Home' && event.key !== 'End') return;
     const pressedTrigger = event.target instanceof HTMLElement ? event.target.closest('.tk-stepper-trigger') : null;
-    // A step's children can render an arbitrarily nested Stepper of its own;
-    // only react when the pressed trigger's nearest `.tk-stepper` ancestor is
-    // this list, so a descendant stepper's keydown (bubbling up) doesn't get
-    // mistaken for one of this list's own triggers.
+    // A Stepper may be hosted inside this list beside the steps (e.g. in a
+    // plain <li>); nesting one inside a step's *children* is not supported —
+    // those render inside the trigger <button>, so it would be a button inside
+    // a button. Only react when the pressed trigger's nearest `.tk-stepper`
+    // ancestor is this list, so a descendant stepper's keydown (bubbling up)
+    // doesn't get mistaken for one of this list's own triggers.
     if (!pressedTrigger || pressedTrigger.closest('.tk-stepper') !== event.currentTarget) return;
 
     // Consumed even when focus cannot move (list edges, focus on a

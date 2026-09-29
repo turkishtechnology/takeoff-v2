@@ -955,6 +955,43 @@ describe('Dialog (compound)', () => {
       expect(onOpenChange.mock.calls).toEqual([[true], [false], [true], [false]]);
     });
 
+    it('turns the open and toggle render props into no-ops while disabled, keeping close available', () => {
+      const onOpenChange = vi.fn();
+      const renderTrigger = vi.fn((_props: TriggerRenderProps) => 'Open dialog');
+      const { rerender } = render(
+        <Dialog modal={false} disabled onOpenChange={onOpenChange}>
+          <Dialog.Trigger>{renderTrigger}</Dialog.Trigger>
+          <Dialog.Panel>
+            <Dialog.Title>{TITLE}</Dialog.Title>
+          </Dialog.Panel>
+        </Dialog>,
+      );
+      const latest = () => {
+        const props = renderTrigger.mock.lastCall?.[0];
+        if (!props) throw new Error('trigger render prop was never called');
+        return props;
+      };
+
+      expect(latest().disabled).toBe(true);
+
+      act(() => latest().open());
+      expect(getPanel()).toHaveAttribute('data-state', 'closed');
+      act(() => latest().toggle());
+      expect(getPanel()).toHaveAttribute('data-state', 'closed');
+      expect(onOpenChange).not.toHaveBeenCalled();
+
+      rerender(
+        <Dialog modal={false} disabled defaultOpen onOpenChange={onOpenChange}>
+          <Dialog.Trigger>{renderTrigger}</Dialog.Trigger>
+          <Dialog.Panel>
+            <Dialog.Title>{TITLE}</Dialog.Title>
+          </Dialog.Panel>
+        </Dialog>,
+      );
+      act(() => latest().close());
+      expect(getPanel()).toHaveAttribute('data-state', 'closed');
+    });
+
     it('renders as a custom element through the as prop and still opens the dialog', async () => {
       const user = userEvent.setup();
       render(

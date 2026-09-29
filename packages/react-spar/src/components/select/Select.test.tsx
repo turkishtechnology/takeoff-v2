@@ -156,10 +156,12 @@ describe('Select (compound)', () => {
       }
       expect(group).not.toContainElement(london);
 
-      const separator = within(listbox).getByRole('separator');
-      expect(separator).toHaveClass('tk-select-separator');
+      const separator = listbox.querySelector('.tk-select-separator');
       expect(separator).toHaveAttribute('data-slot', 'root');
-      expect(separator).toHaveAttribute('aria-orientation', 'horizontal');
+      // Presentational (Spar default): a listbox may only own option / group children.
+      expect(separator).toHaveAttribute('role', 'presentation');
+      expect(separator).toHaveAttribute('aria-hidden', 'true');
+      expect(separator).not.toHaveAttribute('aria-orientation');
 
       const arrow = listbox.querySelector('.tk-select-arrow');
       expect(arrow?.tagName.toLowerCase()).toBe('svg');
@@ -292,9 +294,8 @@ describe('Select (compound)', () => {
       expect(option.tagName).toBe('SECTION');
       expect(option).toHaveClass('tk-select-item');
 
-      const separator = screen.getByRole('separator');
-      expect(separator.tagName).toBe('SECTION');
-      expect(separator).toHaveClass('tk-select-separator');
+      const separator = listbox.querySelector('.tk-select-separator');
+      expect(separator?.tagName).toBe('SECTION');
     });
 
     it('forwards refs to the DOM node each part renders', () => {
@@ -334,7 +335,7 @@ describe('Select (compound)', () => {
       expect(groupRef.current).toBe(screen.getByRole('group'));
       expect(labelRef.current).toBe(screen.getByText('Cabins'));
       expect(itemRef.current).toBe(screen.getByRole('option', { name: 'Economy' }));
-      expect(separatorRef.current).toBe(screen.getByRole('separator'));
+      expect(separatorRef.current).toBe(listbox.querySelector('.tk-select-separator'));
       expect(arrowRef.current).toBe(listbox.querySelector('.tk-select-arrow'));
     });
   });
@@ -678,6 +679,24 @@ describe('Select (compound)', () => {
       expect(onOpenChange).not.toHaveBeenCalled();
     });
 
+    it('focuses the listbox of an initially open select so keyboard dismissal works without reopening', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      render(
+        <Select defaultOpen onOpenChange={onOpenChange}>
+          <Select.Trigger placeholder={PLACEHOLDER} />
+          <Select.Content>{cabinItems}</Select.Content>
+        </Select>,
+      );
+
+      await waitFor(() => expect(screen.getByRole('listbox')).toHaveFocus());
+
+      await user.keyboard('{Escape}');
+
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+
     it('controlled open: stays open after a selection until the parent flips the open prop', async () => {
       const user = userEvent.setup();
       const onOpenChange = vi.fn();
@@ -788,6 +807,77 @@ describe('Select (compound)', () => {
       expect(onChange).not.toHaveBeenCalled();
       expect(screen.getByRole('combobox')).toHaveFocus();
       expect(triggerSlot('value')).toHaveTextContent('Economy');
+    });
+
+    it('stays open when onEscapeKeyDown prevents default', async () => {
+      const user = userEvent.setup();
+      const onEscapeKeyDown = vi.fn((event: KeyboardEvent) => event.preventDefault());
+      const onOpenChange = vi.fn();
+      render(
+        <Select defaultOpen onOpenChange={onOpenChange}>
+          <Select.Trigger placeholder={PLACEHOLDER} />
+          <Select.Content onEscapeKeyDown={onEscapeKeyDown}>{cabinItems}</Select.Content>
+        </Select>,
+      );
+
+      await user.keyboard('{Escape}');
+
+      expect(onEscapeKeyDown).toHaveBeenCalledTimes(1);
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+    });
+
+    it('calls onCloseAutoFocus before focus returns to the trigger on Escape and on item selection', async () => {
+      const user = userEvent.setup();
+      const onCloseAutoFocus = vi.fn();
+      render(
+        <Select>
+          <Select.Trigger placeholder={PLACEHOLDER} />
+          <Select.Content onCloseAutoFocus={onCloseAutoFocus}>{cabinItems}</Select.Content>
+        </Select>,
+      );
+
+      await openByClick(user);
+      await user.keyboard('{Escape}');
+
+      expect(onCloseAutoFocus).toHaveBeenCalledTimes(1);
+      expect(onCloseAutoFocus).toHaveBeenCalledWith(expect.any(FocusEvent));
+      expect(screen.getByRole('combobox')).toHaveFocus();
+
+      await openByClick(user);
+      await user.click(screen.getByRole('option', { name: 'First class' }));
+
+      expect(onCloseAutoFocus).toHaveBeenCalledTimes(2);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      expect(screen.getByRole('combobox')).toHaveFocus();
+    });
+
+    it('keeps focus where it is when onCloseAutoFocus prevents default, and skips it for outside-pointer dismissal', async () => {
+      const user = userEvent.setup();
+      const onCloseAutoFocus = vi.fn((event: FocusEvent) => event.preventDefault());
+      render(
+        <>
+          <button type="button">Elsewhere</button>
+          <Select>
+            <Select.Trigger placeholder={PLACEHOLDER} />
+            <Select.Content onCloseAutoFocus={onCloseAutoFocus}>{cabinItems}</Select.Content>
+          </Select>
+        </>,
+      );
+
+      await openByClick(user);
+      await user.keyboard('{Escape}');
+
+      expect(onCloseAutoFocus).toHaveBeenCalledTimes(1);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      expect(screen.getByRole('combobox')).not.toHaveFocus();
+
+      await openByClick(user);
+      await user.click(screen.getByRole('button', { name: 'Elsewhere' }));
+
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      // Outside dismissal moves no focus, so the close-focus hook is not consulted.
+      expect(onCloseAutoFocus).toHaveBeenCalledTimes(1);
     });
 
     it('closes when Tab leaves the panel', async () => {
@@ -1428,6 +1518,15 @@ describe('Select (compound)', () => {
       expect(indicator?.querySelector('path')).toHaveAttribute('d', expandPath);
     });
 
+    it('keeps aria-hidden when slotProps.root tries to lift it', () => {
+      // The indicator is decorative; neither the instance nor a provider theme
+      // can expose it to assistive tech through slotProps.
+      renderWithStandaloneIndicator(<Select.Indicator slotProps={{ root: { 'aria-hidden': 'false' } }} />);
+
+      const indicator = screen.getByRole('combobox').querySelector('.tk-select-indicator');
+      expect(indicator).toHaveAttribute('aria-hidden', 'true');
+    });
+
     it('renders static children in place of the chevron', () => {
       renderWithStandaloneIndicator(<Select.Indicator>▼</Select.Indicator>);
 
@@ -1756,7 +1855,7 @@ describe('Select (compound)', () => {
       expect(screen.getByRole('group')).toHaveClass('tk-select-group', 'i-group', 'slot-group');
       expect(screen.getByText('Cabins')).toHaveClass('tk-select-label', 'i-label', 'slot-label');
       expect(screen.getByRole('option', { name: 'Economy' })).toHaveClass('tk-select-item', 'i-item', 'slot-item');
-      expect(screen.getByRole('separator')).toHaveClass('tk-select-separator', 'i-separator', 'slot-separator');
+      expect(document.querySelector('.tk-select-separator')).toHaveClass('tk-select-separator', 'i-separator', 'slot-separator');
       expect(listbox.querySelector('.tk-select-arrow')).toHaveClass('i-arrow', 'slot-arrow');
     });
 
@@ -1787,7 +1886,7 @@ describe('Select (compound)', () => {
       expect(screen.getByRole('group')).toHaveAttribute('title', 'group');
       expect(screen.getByText('Cabins')).toHaveAttribute('title', 'label');
       expect(screen.getByRole('option', { name: 'Economy' })).toHaveAttribute('title', 'item');
-      expect(screen.getByRole('separator')).toHaveAttribute('title', 'separator');
+      expect(document.querySelector('.tk-select-separator')).toHaveAttribute('title', 'separator');
       expect(listbox.querySelector('.tk-select-arrow')).toHaveAttribute('title', 'arrow');
     });
 
@@ -1900,7 +1999,7 @@ describe('Select (compound)', () => {
       expect(item).toHaveClass('tk-select-item', 'theme-item', 'instance-item');
       expect(item).toHaveAttribute('title', 'Theme item');
 
-      expect(screen.getByRole('separator')).toHaveClass('tk-select-separator', 'theme-separator');
+      expect(document.querySelector('.tk-select-separator')).toHaveClass('tk-select-separator', 'theme-separator');
       expect(listbox.querySelector('.tk-select-arrow')).toHaveClass('theme-arrow');
     });
 
@@ -2067,6 +2166,66 @@ describe('Select (compound)', () => {
       );
 
       expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('has no axe violations for the documented anatomy with a Select.Separator inside the viewport', async () => {
+      const user = userEvent.setup();
+      render(
+        <Field>
+          <Field.Label>Origin</Field.Label>
+          <Select defaultValue="ist">
+            <Select.Trigger placeholder="Choose origin" />
+            <Select.Content>
+              <Select.Viewport>
+                <Select.Group>
+                  <Select.Label>Türkiye</Select.Label>
+                  <Select.Item value="ist" label="Istanbul">
+                    Istanbul
+                  </Select.Item>
+                </Select.Group>
+                <Select.Separator />
+                <Select.Item value="lhr" label="London Heathrow">
+                  London Heathrow
+                </Select.Item>
+              </Select.Viewport>
+              <Select.Arrow />
+            </Select.Content>
+          </Select>
+        </Field>,
+      );
+
+      const listbox = await openByClick(user);
+      const separator = listbox.querySelector('.tk-select-separator');
+
+      // Presentational and hidden so the listbox only owns option / group children.
+      expect(separator).toHaveAttribute('role', 'presentation');
+      expect(separator).toHaveAttribute('aria-hidden', 'true');
+      expect(separator).not.toHaveAttribute('aria-orientation');
+      expect(screen.queryByRole('separator', { hidden: true })).toBeNull();
+      expect(await axe(listbox)).toHaveNoViolations();
+    });
+
+    it('lets a consumer restore separator semantics with role="separator"', () => {
+      render(
+        <Select defaultOpen>
+          <Select.Trigger placeholder={PLACEHOLDER} />
+          <Select.Content>
+            <Select.Viewport>
+              <Select.Item value="economy" label="Economy">
+                Economy
+              </Select.Item>
+              <Select.Separator role="separator" aria-hidden={false} />
+              <Select.Item value="first" label="First class">
+                First class
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select>,
+      );
+
+      const separator = screen.getByRole('separator');
+      expect(separator).toHaveClass('tk-select-separator');
+      expect(separator).not.toHaveAttribute('aria-hidden', 'true');
     });
 
     it('has no axe violations for the open listbox with groups, a disabled item and an arrow', async () => {

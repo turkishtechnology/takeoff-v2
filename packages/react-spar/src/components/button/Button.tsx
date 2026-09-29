@@ -12,11 +12,13 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
   const theme = useComponentTheme('Button');
 
   const { rootAttrs, rest } = composeRootAttrs<ButtonProps, ButtonSlot>(ButtonBase, props as ButtonProps<'button'>, theme, {
-    // `data-disabled` and `data-loading` are intentionally NOT set here —
-    // Spar's Button already emits them (see SparButton dataAttributes), so
-    // setting them again would create two sources of truth that drift the
-    // moment Spar renames or extends its vocabulary.
-    stateAttrs: ({ variant = DEFAULT_VARIANT, appearance = DEFAULT_APPEARANCE, size = DEFAULT_SIZE, rounded, startContent, endContent, children }) => {
+    // `data-disabled` / `data-loading` are also emitted by Spar's Button, with
+    // the same `''` / absent values. They are re-emitted here on purpose: the
+    // Button docs list them as styling hooks, and only `stateAttrs` lands above
+    // `slotProps.root` (Spar spreads consumer props after its own attrs), so
+    // this is what stops a consumer from hijacking them. Keep the values
+    // byte-identical to Spar's so the two sources can never disagree.
+    stateAttrs: ({ variant = DEFAULT_VARIANT, appearance = DEFAULT_APPEARANCE, size = DEFAULT_SIZE, rounded, startContent, endContent, children, loading, disabled }) => {
       const hasIcon = isRenderableNode(startContent) || isRenderableNode(endContent);
       const isIconOnly = hasIcon && !isRenderableNode(children);
       return {
@@ -25,6 +27,8 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
         'data-size': size,
         'data-rounded': rounded ? '' : undefined,
         'data-icon-only': isIconOnly ? '' : undefined,
+        'data-loading': loading ? '' : undefined,
+        'data-disabled': disabled ? '' : undefined,
       };
     },
   });
@@ -46,6 +50,11 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
     ref,
     ...sparProps
   } = rest;
+
+  // Inert anchors are Spar-owned: while `disabled` / `isLoading`, Spar's
+  // Button cancels the click's default action on non-native elements and
+  // drops `href` from `as="a"`, alongside `aria-disabled`, `tabIndex` and
+  // Enter/Space blocking. The wrapper adds nothing on top.
 
   const contentSlotAttrs = buildSlotAttrs(ButtonBase.getSlotProps('content'), 'content' as ButtonSlot, {
     themeSlotProps: theme?.slotProps,

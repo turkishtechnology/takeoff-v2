@@ -17,10 +17,9 @@ export const BreadcrumbListBase = createComponentBase<BreadcrumbListProps, 'root
   classes: { root: 'tk-breadcrumb-list' },
 });
 
-// @archetype inherited — wraps SparBreadcrumbItem. How the Spar list derives
-// each item's position/isCurrent is version-dependent (the pinned release
-// type-matches its own item element; newer Spar self-registers via context),
-// so the takeoff layer assumes neither.
+// @archetype inherited — wraps SparBreadcrumbItem. The Spar list derives each
+// item's position/isCurrent through context registration, so the wrapper
+// element neither computes nor duplicates them.
 export const BreadcrumbItemBase = createComponentBase<BreadcrumbItemProps, 'root'>({
   name: 'BreadcrumbItem',
   slots: ['root'] as const,

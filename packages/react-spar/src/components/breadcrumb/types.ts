@@ -36,12 +36,14 @@ export type BreadcrumbSeparatorSlot = 'root';
 
 export interface BreadcrumbOwnProps {
   /**
-   * Density scale cascaded to every part through context.
+   * Density scale. Emitted as `data-size` on the root `<nav>`; the recipe
+   * scopes every part from there. Shared with every part through context.
    * @defaultValue 'base'
    */
   size?: BreadcrumbSize;
   /**
-   * Visual style cascaded to every part through context.
+   * Visual style. Emitted as `data-type` on the root `<nav>`; the recipe
+   * scopes every part from there. Shared with every part through context.
    * @defaultValue 'basic'
    */
   type?: BreadcrumbType;
@@ -103,7 +105,10 @@ export type BreadcrumbLinkProps<T extends ElementType = 'a'> = PolymorphicProps<
   BreadcrumbLinkOwnProps &
     // Spar Breadcrumb link surface: destination, per-link disable, external
     // affordances, and the press handler that overrides the routing path.
-    // Native click/keydown stay on the anchor and are not redeclared.
+    // Native click/keydown stay on the anchor and are not redeclared: Spar
+    // composes a consumer `onClick` / `onKeyDown` with `onPress` / `onNavigate`
+    // (consumer first; `preventDefault()` skips the press), and a disabled
+    // link blocks only Enter/Space — other keys still reach `onKeyDown`.
     Pick<SparBreadcrumbLinkProps, 'href' | 'disabled' | 'isExternal' | 'target' | 'rel' | 'onPress'>
 >;
 

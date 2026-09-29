@@ -355,9 +355,9 @@ field control through shared IDs.
 
 `indeterminate` overrides `checked` and `defaultChecked` while set, and emits
 `aria-checked="mixed"`. The first user toggle transitions out of the mixed state
-— `onChange` is always called with a plain `boolean`. In uncontrolled mode, set
-`indeterminate` only on the initial render and clear it from your own state
-after the first change.
+— `onChange` is always called with a plain `boolean`. In uncontrolled mode,
+clear `indeterminate` from your own state in response to `onChange`; the
+checkbox then shows the toggled value from that single interaction.
 
 <LiveCode
   code={indeterminateDemo}

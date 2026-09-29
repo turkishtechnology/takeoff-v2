@@ -10,12 +10,13 @@ export const TooltipDescription = <T extends ElementType = 'p'>(props: TooltipDe
   const theme = useComponentTheme('TooltipDescription');
 
   const { rootAttrs, rest } = composeRootAttrs<TooltipDescriptionProps, TooltipDescriptionSlot>(TooltipDescriptionBase, props as TooltipDescriptionProps<'p'>, theme);
-  const { children, ref, ...nativeProps } = rest;
+  const { as, children, ref, ...nativeProps } = rest;
+  const Component = (as ?? 'p') as ElementType;
 
   return (
-    <p {...nativeProps} {...rootAttrs} ref={ref}>
+    <Component {...nativeProps} {...rootAttrs} ref={ref}>
       {children}
-    </p>
+    </Component>
   );
 };
 

@@ -10,9 +10,9 @@ import type { ClassNamesMap, SlotPropsMap } from './types';
  * @typeParam TSlotProps  Per-slot attribute map; narrow per element type when needed.
  */
 export interface ComponentThemeConfig<TProps = unknown, TSlot extends string = 'root', TSlotProps extends SlotPropsMap<TSlot, object> = SlotPropsMap<TSlot>> {
-  /** Applied only when the instance does not set the prop. */
+  /** Applied only when the instance does not set the prop (an explicit `undefined` counts as not set). */
   defaultProps?: Partial<TProps>;
-  /** Shortcut equivalent to `classNames.root`; concatenated, never replaces the canonical class. */
+  /** Shortcut for `classNames.root`; concatenated with it and the canonical class, never replacing either. */
   className?: string;
   /** Per-slot extra classes; concatenated, never replaces the canonical class. */
   classNames?: ClassNamesMap<TSlot>;
@@ -37,7 +37,7 @@ export interface ComponentThemeConfig<TProps = unknown, TSlot extends string = '
  * @typeParam TProps  Public props of the state-only root.
  */
 export interface StateOnlyComponentThemeConfig<TProps = unknown> {
-  /** Applied only when the instance does not set the prop. */
+  /** Applied only when the instance does not set the prop (an explicit `undefined` counts as not set). */
   defaultProps?: Partial<TProps>;
 }
 

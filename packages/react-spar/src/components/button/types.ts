@@ -37,11 +37,13 @@ export interface ButtonOwnProps {
   rounded?: boolean;
   /**
    * Content rendered before children — typically an icon, but accepts any node
-   * (spinner, badge, kbd, etc.). Wrapped in the `icon` slot.
+   * (spinner, badge, kbd, etc.). Wrapped in the `content` slot (there is no
+   * `icon` slot — target it via `classNames.content` / `slotProps.content`).
    */
   startContent?: ReactNode;
   /**
-   * Content rendered after children. Same shape as `startContent`.
+   * Content rendered after children. Same shape as `startContent`, also
+   * wrapped in the `content` slot.
    */
   endContent?: ReactNode;
   /** Whether the button shows a loading spinner. */

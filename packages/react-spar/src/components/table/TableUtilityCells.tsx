@@ -76,11 +76,10 @@ export const SelectionBodyCell = ({ row }: { row: Row<any> }) => {
           so the rows form one logical radiogroup. Tracked off PR #120 review.
 
           The name sits on the radio, which is what gets announced, not on its
-          group. The item renders as a span because Spar's default
-          `<label role="radio">` gives a label a role it is not allowed. */}
+          group. */}
       {selectionMode === 'single' ? (
         <Radio value={row.getIsSelected() ? row.id : ''} onChange={() => row.toggleSelected(true)}>
-          <Radio.Item as="span" value={row.id} aria-label="Select row" disabled={!row.getCanSelect()}>
+          <Radio.Item value={row.id} aria-label="Select row" disabled={!row.getCanSelect()}>
             <Radio.Indicator />
           </Radio.Item>
         </Radio>
