@@ -42,6 +42,14 @@ function loadEnvFile(fileName: string): void {
 loadEnvFile('.env.local');
 loadEnvFile('.env');
 
+// The Algolia search key is supplied at build time and never committed. Builds
+// without it (local dev, CI) ship without the search box.
+const algoliaSearchApiKey = process.env.ALGOLIA_SEARCH_API_KEY;
+
+if (!algoliaSearchApiKey) {
+  console.warn('[docs] ALGOLIA_SEARCH_API_KEY is not set; building without Algolia search.');
+}
+
 const config: Config = {
   title: 'Takeoff Spar',
   tagline: 'Product docs for the React-first Spar wrapper layer.',
@@ -160,14 +168,18 @@ const config: Config = {
         },
       ],
     },
-    algolia: {
-      appId: process.env.ALGOLIA_APP_ID || 'UG7TKIU7YU',
-      apiKey: process.env.ALGOLIA_SEARCH_API_KEY || 'f1abf465a04595b184b1a733794c2553',
-      indexName: process.env.ALGOLIA_INDEX_NAME || 'takeoff_v2_docs',
-      contextualSearch: true,
-      searchPagePath: 'search',
-      insights: false,
-    },
+    ...(algoliaSearchApiKey
+      ? {
+          algolia: {
+            appId: process.env.ALGOLIA_APP_ID || 'UG7TKIU7YU',
+            apiKey: algoliaSearchApiKey,
+            indexName: process.env.ALGOLIA_INDEX_NAME || 'takeoff_v2_docs',
+            contextualSearch: true,
+            searchPagePath: 'search',
+            insights: false,
+          },
+        }
+      : {}),
   } satisfies Preset.ThemeConfig,
 };
 
