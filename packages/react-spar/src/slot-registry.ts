@@ -58,6 +58,8 @@ import {
   InputSuffixBase,
   InputTrailingIconBase,
 } from './components/input/base';
+import { FlightLoaderBase, FlightLoaderLogoBase, FlightLoaderStatusBase, FlightLoaderTaglineBase } from './components/flight-loader/base';
+import { GlobeSpinnerBase, GlobeSpinnerLabelBase } from './components/globe-spinner/base';
 import { LabelBase } from './components/label/base';
 import { ProgressBase, ProgressIndicatorBase, ProgressTrackBase, ProgressValueBase } from './components/progress/base';
 import {
@@ -171,6 +173,12 @@ export const slotClassRegistry = {
   fieldLabel: { slots: FieldLabelBase.classes },
   fieldDescription: { slots: FieldDescriptionBase.classes },
   fieldErrorMessage: { slots: FieldErrorMessageBase.classes },
+  flightLoader: { slots: FlightLoaderBase.classes },
+  flightLoaderLogo: { slots: FlightLoaderLogoBase.classes },
+  flightLoaderTagline: { slots: FlightLoaderTaglineBase.classes },
+  flightLoaderStatus: { slots: FlightLoaderStatusBase.classes },
+  globeSpinner: { slots: GlobeSpinnerBase.classes },
+  globeSpinnerLabel: { slots: GlobeSpinnerLabelBase.classes },
   input: { slots: InputBase.classes },
   inputField: { slots: InputFieldBase.classes },
   inputPrefix: { slots: InputPrefixBase.classes },

@@ -1,5 +1,6 @@
 import { buildSlotAttrs, composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
+import { getStatusAttrs } from '../../utils';
 
 import { SpinnerBase } from './base';
 import { DEFAULT_APPEARANCE, DEFAULT_ARIA_LABEL, DEFAULT_SIZE, DEFAULT_VARIANT } from './defaults';
@@ -77,16 +78,10 @@ export const Spinner = (props: SpinnerProps) => {
     instanceClassNames: props.classNames,
   });
 
-  const isDecorative = nativeProps['aria-hidden'] === true || nativeProps['aria-hidden'] === 'true';
   // Spread after nativeProps: an explicit `role={undefined}` / `aria-label={undefined}`
   // (the `aria-label={maybeLabel}` forwarding idiom) must fall back to the defaults
   // instead of erasing them.
-  const accessibilityAttrs = isDecorative
-    ? {}
-    : {
-        'role': nativeProps.role ?? 'status',
-        'aria-label': nativeProps['aria-label'] ?? (nativeProps['aria-labelledby'] ? undefined : DEFAULT_ARIA_LABEL),
-      };
+  const accessibilityAttrs = getStatusAttrs(nativeProps, DEFAULT_ARIA_LABEL);
 
   return (
     <span {...nativeProps} {...accessibilityAttrs} {...rootAttrs} ref={ref}>
