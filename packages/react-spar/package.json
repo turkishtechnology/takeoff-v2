@@ -60,7 +60,7 @@
     "@tanstack/react-table": "8.21.3",
     "@turkish-technology/spar": "0.3.0",
     "clsx": "^2.1.1",
-    "react-day-picker": "10.0.1"
+    "react-day-picker": "10.0.2"
   },
   "peerDependencies": {
     "@takeoff-design/tokens": ">=0.3.0 <1.0.0",
