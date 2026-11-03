@@ -1,8 +1,9 @@
 import { isValidElement, type CSSProperties, type ReactNode } from 'react';
-import type { CellContext, Column, ColumnDef, FilterFn, Table as TanStackTable } from '@tanstack/react-table';
+import type { CellContext, Column, ColumnDef, ColumnSizingState, FilterFn, Table as TanStackTable } from '@tanstack/react-table';
 
 import { isDevelopment } from '../../utils';
 
+import type { TableGrowPlan } from './context';
 import { DEFAULT_COLUMN_WIDTH, DEFAULT_MIN_COLUMN_WIDTH, UTILITY_COLUMN_WIDTH } from './defaults';
 import type { TableColumnDef, TableColumnFilter, TableColumnFilterType, TableStickySide } from './types';
 
@@ -440,6 +441,9 @@ export const measureColumnContentWidth = (headerCell: HTMLElement | undefined, s
     // Break only between words: the fixed layout's `overflow-wrap: anywhere`
     // would make every cell's min-content a single character.
     clone.style.overflowWrap = 'normal';
+    // For the narrowest width, let the cell wrap like body text does (a header
+    // cell is `nowrap`, and in the fixed layout its text ends in an ellipsis).
+    if (sizing === 'min-content') clone.style.whiteSpace = 'normal';
     // Connecting a copy must not touch the real content: a named radio would
     // join (and uncheck) the live group, and embedded documents / media would
     // load. Stand-ins of the same width keep the measurement.
@@ -464,4 +468,29 @@ export const measureColumnContentWidth = (headerCell: HTMLElement | undefined, s
 export const clampColumnWidth = (column: Column<any, unknown>, width: number): number => {
   const [min, max] = getColumnResizeBounds(column);
   return Math.round(Math.min(max, Math.max(min, width)));
+};
+
+export interface ResolvedGrowth {
+  width: number;
+  donors?: ColumnSizingState;
+}
+
+/**
+ * Grow `startWidth` toward `desired` within `plan`: the absorber's spare width
+ * goes first, then each donor's, nearest first. Shrinking is never limited.
+ */
+export const resolveGrowth = (startWidth: number, desired: number, plan: TableGrowPlan): ResolvedGrowth => {
+  if (desired <= startWidth) return { width: desired };
+  const budget = plan.donors.reduce((sum, donor) => sum + donor.spare, plan.absorberSpare);
+  const width = Math.min(desired, startWidth + budget);
+  let remaining = width - startWidth - plan.absorberSpare;
+  if (remaining <= 0) return { width };
+  const donors: ColumnSizingState = {};
+  for (const donor of plan.donors) {
+    const take = Math.min(donor.spare, remaining);
+    donors[donor.id] = donor.width - take;
+    remaining -= take;
+    if (remaining <= 0) break;
+  }
+  return { width, donors };
 };

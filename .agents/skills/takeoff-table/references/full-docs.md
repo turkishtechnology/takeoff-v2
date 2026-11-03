@@ -672,11 +672,13 @@ The table keeps its natural auto layout until the first resize. From then on
 every column carries an explicit width under `table-layout: fixed`
 (`data-fixed-layout` on the root), so a column can shrink below its content. The
 table itself never changes width: the last unpinned column has no handle and
-takes up whatever the others leave. A column can only grow by what that last
-column can give up before it is narrower than its min width or its longest word,
-so a resize never pushes the table past its container (a table that already
-overflows, e.g. with widths stored on a wider screen, scrolls horizontally). The
-last column has no handle either, since its edge is the table's edge.
+takes up whatever the others leave. A growing column takes its room from that
+last column first, then from the resizable, unpinned columns to its right
+(nearest first), each down to its min width or the narrowest its content fits
+without breaking a word. So a resize never pushes the table past its container;
+a table that already overflows (e.g. widths stored on a wider screen) scrolls
+horizontally. The last column has no handle either, since its edge is the
+table's edge.
 
 ```tsx
 function ResizeDemo() {

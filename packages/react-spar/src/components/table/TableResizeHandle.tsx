@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react';
 import type { Column } from '@tanstack/react-table';
 
-import { useTableContext } from './context';
+import { useTableContext, type TableGrowPlan } from './context';
 import { RESIZE_KEYBOARD_STEP, RESIZE_KEYBOARD_STEP_LARGE } from './defaults';
-import { clampColumnWidth, getColumnResizeBounds } from './helpers';
+import { clampColumnWidth, getColumnResizeBounds, resolveGrowth, type ResolvedGrowth } from './helpers';
 import type { TableColumnSizing } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -13,8 +13,11 @@ interface DragSession {
   pointerId: number;
   startX: number;
   startWidth: number;
-  /** The widest this drag may go: the absorber's spare width on top of `startWidth`. */
-  limit: number;
+  /**
+   * Where growing takes room from. Measured on the first move that grows the
+   * column, so a click or a shrinking drag never measures.
+   */
+  plan?: TableGrowPlan;
   base: TableColumnSizing;
   /** `-1` in RTL, where dragging toward the inline end means moving left. */
   direction: 1 | -1;
@@ -84,11 +87,14 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
   // layout ignores the bounds until the first resize).
   const now = Math.min(max, Math.max(min, renderedWidth || Math.round(column.getSize())));
 
-  // Growing stops where the absorber runs out of spare width (never below the
-  // width the drag started from, so an already-overflowing table can still shrink).
-  const withinLimit = (width: number, startWidth: number, limit: number) => (width > startWidth ? Math.min(width, Math.max(startWidth, limit)) : width);
-  const widthAt = (session: DragSession, clientX: number) =>
-    withinLimit(clampColumnWidth(column, session.startWidth + (clientX - session.startX) * session.direction), session.startWidth, session.limit);
+  // A growing column takes its room from the absorber and then from the
+  // columns to its right, so the table never grows past its container.
+  const widthAt = (session: DragSession, clientX: number): ResolvedGrowth => {
+    const desired = clampColumnWidth(column, session.startWidth + (clientX - session.startX) * session.direction);
+    if (desired <= session.startWidth) return { width: desired };
+    session.plan ??= columnResizing.getGrowPlan(column.id, session.base);
+    return resolveGrowth(session.startWidth, desired, session.plan);
+  };
 
   const handlePointerDown = (event: PointerEvent<HTMLElement>) => {
     attrs.onPointerDown?.(event);
@@ -99,8 +105,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
 
     const base = columnResizing.getBaseSizing();
     const startWidth = base[column.id] ?? column.getSize();
-    const limit = startWidth + columnResizing.getGrowLimit(column.id);
-    sessionRef.current = { pointerId: event.pointerId, startX: event.clientX, startWidth, limit, base, direction: readDirection(event.currentTarget), moved: false };
+    sessionRef.current = { pointerId: event.pointerId, startX: event.clientX, startWidth, base, direction: readDirection(event.currentTarget), moved: false };
     event.currentTarget.setPointerCapture?.(event.pointerId);
     setDragging(true);
   };
@@ -110,7 +115,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
     const session = sessionRef.current;
     if (!session || event.pointerId !== session.pointerId) return;
     session.moved = true;
-    columnResizing.setDraft({ base: session.base, columnId: column.id, width: widthAt(session, event.clientX) });
+    columnResizing.setDraft({ base: session.base, columnId: column.id, ...widthAt(session, event.clientX) });
   };
 
   const endSession = (event: PointerEvent<HTMLElement>, commit: boolean) => {
@@ -123,8 +128,8 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
     // A press without movement is a click (or half of a double-click): it must
     // not freeze the auto layout.
     if (!commit || !session.moved) return;
-    const width = widthAt(session, event.clientX);
-    if (width !== session.startWidth) columnResizing.commit({ ...session.base, [column.id]: width });
+    const { width, donors } = widthAt(session, event.clientX);
+    if (width !== session.startWidth) columnResizing.commit({ ...session.base, ...donors, [column.id]: width });
   };
 
   const handlePointerUp = (event: PointerEvent<HTMLElement>) => {
@@ -152,8 +157,9 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
     const sign = (event.key === 'ArrowRight' ? 1 : -1) * readDirection(event.currentTarget);
     const base = columnResizing.getBaseSizing();
     const current = base[column.id] ?? column.getSize();
-    const width = withinLimit(clampColumnWidth(column, current + sign * step), current, current + columnResizing.getGrowLimit(column.id));
-    if (width !== current) columnResizing.commit({ ...base, [column.id]: width });
+    const stepped = clampColumnWidth(column, current + sign * step);
+    const { width, donors } = stepped > current ? resolveGrowth(current, stepped, columnResizing.getGrowPlan(column.id, base)) : { width: stepped, donors: undefined };
+    if (width !== current) columnResizing.commit({ ...base, ...donors, [column.id]: width });
   };
 
   const handleDoubleClick = (event: MouseEvent<HTMLElement>) => {

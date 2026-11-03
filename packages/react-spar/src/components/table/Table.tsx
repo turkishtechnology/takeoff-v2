@@ -136,7 +136,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const paginationValue = paginationStateRaw ?? initialPagination;
   const committedSizing = (resizingEnabled ? sizingState : undefined) ?? EMPTY_SIZING;
   const columnSizing = useMemo<ColumnSizingState>(
-    () => (resizeDraft ? { ...resizeDraft.base, [resizeDraft.columnId]: resizeDraft.width } : committedSizing),
+    () => (resizeDraft ? { ...resizeDraft.base, ...resizeDraft.donors, [resizeDraft.columnId]: resizeDraft.width } : committedSizing),
     [resizeDraft, committedSizing],
   );
 
@@ -340,32 +340,57 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         }
         return base;
       },
-      getGrowLimit: columnId => {
+      getGrowPlan: (columnId, base) => {
+        const visible = table.getVisibleLeafColumns();
         const absorberId = absorberColumnIdRef.current;
-        const absorber = absorberId == null ? undefined : table.getVisibleLeafColumns().find(candidate => candidate.id === absorberId);
-        const absorberCell = absorberId == null ? undefined : headerCellsRef.current.get(absorberId);
+        const absorber = visible.find(candidate => candidate.id === absorberId);
+        const absorberCell = absorber ? headerCellsRef.current.get(absorber.id) : undefined;
         const available = absorberCell?.getBoundingClientRect().width ?? 0;
-        if (!absorber || !absorberCell || absorberId === columnId || available <= 0) return Number.POSITIVE_INFINITY;
-        const floor = Math.max(getColumnResizeBounds(absorber)[0], measureColumnContentWidth(absorberCell, 'min-content'));
-        return Math.max(0, Math.floor(available - floor));
+        if (!absorber || !absorberCell || absorber.id === columnId || available <= 0) return { absorberSpare: Number.POSITIVE_INFINITY, donors: [] };
+        // Narrowest a column may get: its min width, or what its content needs
+        // without breaking inside a word.
+        const floorOf = (column: (typeof visible)[number]) =>
+          Math.max(getColumnResizeBounds(column)[0], measureColumnContentWidth(headerCellsRef.current.get(column.id), 'min-content'));
+        const donors = visible
+          .slice(visible.findIndex(candidate => candidate.id === columnId) + 1)
+          .filter(candidate => candidate.id !== absorber.id && candidate.getCanResize() && !stickyLayoutRef.current.has(candidate.id) && base[candidate.id] != null)
+          .map(candidate => {
+            const width = base[candidate.id] as number;
+            return { id: candidate.id, width, spare: Math.max(0, Math.floor(width - floorOf(candidate))) };
+          })
+          .filter(donor => donor.spare > 0);
+        return { absorberSpare: Math.max(0, Math.floor(available - floorOf(absorber))), donors };
       },
       setDraft: draft => {
         const rendered = renderedDraftRef.current;
         const cell = rendered ? headerCellsRef.current.get(rendered.columnId) : undefined;
         const tableElement = cell?.closest('table');
-        // Fast path: a later move of the same drag. Only the dragged header
-        // cell (`table-layout: fixed` sizes columns from the first row) and the
-        // min-width floor change; an unpinned column moves no sticky offset.
+        // Width of a column in a draft: the dragged one, a donor, or its base.
+        const widthIn = (source: TableResizeDraft, id: string) => (id === source.columnId ? source.width : (source.donors?.[id] ?? source.base[id] ?? 0));
+        const live = liveDraftRef.current;
+        const touched = (source: TableResizeDraft | null) => (source ? [source.columnId, ...Object.keys(source.donors ?? {})] : []);
+        // Fast path: a later move of the same drag. Only the affected header
+        // cells (`table-layout: fixed` sizes columns from the first row) and the
+        // min-width floor change; unpinned columns move no sticky offset.
         if (draft && rendered && cell && tableElement && draft.base === rendered.base && draft.columnId === rendered.columnId && !stickyLayoutRef.current.has(draft.columnId)) {
-          cell.style.width = `${draft.width}px`;
-          tableElement.style.minWidth = `${(tableMinWidthRef.current ?? 0) + draft.width - rendered.width}px`;
+          const ids = new Set([...touched(rendered), ...touched(live), ...touched(draft)]);
+          let delta = 0;
+          for (const id of ids) {
+            const target = headerCellsRef.current.get(id);
+            if (target) target.style.width = `${widthIn(draft, id)}px`;
+            delta += widthIn(draft, id) - widthIn(rendered, id);
+          }
+          tableElement.style.minWidth = `${(tableMinWidthRef.current ?? 0) + delta}px`;
           liveDraftRef.current = draft;
           return;
         }
         // Hand the styles back to React as it last rendered them, so its next
         // render (which may not touch them) starts from what it believes is there.
-        if (liveDraftRef.current && rendered && cell && tableElement) {
-          cell.style.width = `${rendered.width}px`;
+        if (live && rendered && tableElement) {
+          for (const id of new Set([...touched(rendered), ...touched(live)])) {
+            const target = headerCellsRef.current.get(id);
+            if (target) target.style.width = `${widthIn(rendered, id)}px`;
+          }
           tableElement.style.minWidth = `${tableMinWidthRef.current ?? 0}px`;
         }
         liveDraftRef.current = null;

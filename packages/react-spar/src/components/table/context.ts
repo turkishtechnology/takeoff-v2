@@ -14,6 +14,16 @@ export interface TableResizeDraft {
   base: ColumnSizingState;
   columnId: string;
   width: number;
+  /** Narrowed widths of the columns to its right that gave up room for it. */
+  donors?: ColumnSizingState;
+}
+
+/** Where a growing column takes its room from (see `getGrowPlan`). */
+export interface TableGrowPlan {
+  /** What the absorber can give up; `Infinity` when there is none or nothing can be measured. */
+  absorberSpare: number;
+  /** Then the sized columns to its right, nearest first: their width and what each can give up. */
+  donors: Array<{ id: string; width: number; spare: number }>;
 }
 
 /**
@@ -42,12 +52,12 @@ export interface TableColumnResizingContext {
    */
   reset: (columnId: string) => void;
   /**
-   * How many px a column may still grow: what the absorber column can give up
-   * before it is narrower than its min width or its longest word, so a resize
-   * never pushes the table past its container. `Infinity` when there is no
-   * absorber or nothing can be measured.
+   * Where a column can take room from when it grows, so a resize never pushes
+   * the table past its container: first the absorber, then the resizable,
+   * unpinned columns to its right (nearest first), each down to its min width
+   * or its content's min-content, whichever is wider.
    */
-  getGrowLimit: (columnId: string) => number;
+  getGrowPlan: (columnId: string, base: ColumnSizingState) => TableGrowPlan;
   /** Header cells register their `<th>` so a first resize can measure the auto layout. */
   registerHeaderCell: (columnId: string, element: HTMLElement | null) => void;
 }
