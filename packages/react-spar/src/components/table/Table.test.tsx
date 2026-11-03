@@ -1582,9 +1582,12 @@ describe('Table (props-first)', () => {
 
     // jsdom lays nothing out; give every header cell a measurable width so the
     // first resize has an auto layout to freeze.
-    const mockHeaderWidth = (width: number) =>
+    // Measuring clones (`width: min-/max-content`) read 0 unless a test says otherwise.
+    const mockHeaderWidth = (width: number, byHeader: Record<string, number> = {}) =>
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        return { width: this.tagName === 'TH' ? width : 0, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+        const isLiveHeader = this.tagName === 'TH' && !this.style.width.endsWith('-content');
+        const measured = isLiveHeader ? (byHeader[this.textContent ?? ''] ?? width) : 0;
+        return { width: measured, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
 
     const handleFor = (name: string) => screen.getByRole('separator', { name: `Resize ${name} column` });
@@ -1686,7 +1689,8 @@ describe('Table (props-first)', () => {
     });
 
     it('clamps a drag to the default min width and to minWidth / maxWidth', () => {
-      mockHeaderWidth(120);
+      // A wide absorber, so its spare width is not what stops the drag here.
+      mockHeaderWidth(120, { Age: 1000 });
       const onChange = vi.fn();
       const columns: TableColumnDef<User>[] = [
         { id: 'name', header: 'Name', accessor: 'name' },
@@ -1701,6 +1705,38 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 200 });
       drag(handleFor('Role'), 500, 0);
       expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 100 });
+    });
+
+    it('stops growing a column where the absorber runs out of spare width', () => {
+      const onChange = vi.fn();
+      // The absorber (Age) renders 200px wide; its longest word needs 80px.
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.style.width === 'min-content' ? (this.tagName === 'TH' ? 40 : 80) : this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // 200 - 80 = 120px to give: Name can grow from 120 to 240, not to 420.
+      drag(handleFor('Name'), 0, 300);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 120 });
+      // Shrinking is never limited.
+      drag(handleFor('Name'), 0, -100);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 140, role: 120 });
+    });
+
+    it('applies the same limit to a keyboard step', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      // The absorber renders 200px wide and its longest word needs 180px.
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.style.width === 'min-content' ? 180 : this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      handleFor('Name').focus();
+      await user.keyboard('{Shift>}{ArrowRight}{/Shift}');
+      expect(onChange).toHaveBeenLastCalledWith({ name: 140, role: 120 });
     });
 
     it('lets the min win over an inverted maxWidth', () => {

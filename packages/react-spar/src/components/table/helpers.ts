@@ -409,12 +409,13 @@ export const getColumnResizeBounds = (column: Column<any, unknown>): [number, nu
 const PROBE_REPLACED = 'iframe, video, audio, object, embed';
 
 /**
- * The width a column's content wants on one line: the widest `max-content` of
- * its header cell and its rendered body cells, measured on hidden clones next
+ * The width a column's content wants: the widest `max-content` (on one line)
+ * or `min-content` (its longest word) of its header cell and its rendered body
+ * cells, measured on hidden clones next
  * to the table so the size / density styles still apply. `0` when nothing can
  * be measured (no header cell, or a non-layout environment).
  */
-export const measureColumnContentWidth = (headerCell: HTMLElement | undefined): number => {
+export const measureColumnContentWidth = (headerCell: HTMLElement | undefined, sizing: 'max-content' | 'min-content' = 'max-content'): number => {
   const headerRow = headerCell?.parentElement as HTMLTableRowElement | null | undefined;
   const tableElement = headerCell?.closest('table');
   const host = tableElement?.parentElement;
@@ -435,7 +436,10 @@ export const measureColumnContentWidth = (headerCell: HTMLElement | undefined): 
     const clone = cell.cloneNode(true) as HTMLElement;
     clone.style.position = 'static';
     clone.style.display = 'block';
-    clone.style.width = 'max-content';
+    clone.style.width = sizing;
+    // Break only between words: the fixed layout's `overflow-wrap: anywhere`
+    // would make every cell's min-content a single character.
+    clone.style.overflowWrap = 'normal';
     // Connecting a copy must not touch the real content: a named radio would
     // join (and uncheck) the live group, and embedded documents / media would
     // load. Stand-ins of the same width keep the measurement.

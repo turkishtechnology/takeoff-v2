@@ -13,6 +13,8 @@ interface DragSession {
   pointerId: number;
   startX: number;
   startWidth: number;
+  /** The widest this drag may go: the absorber's spare width on top of `startWidth`. */
+  limit: number;
   base: TableColumnSizing;
   /** `-1` in RTL, where dragging toward the inline end means moving left. */
   direction: 1 | -1;
@@ -82,7 +84,11 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
   // layout ignores the bounds until the first resize).
   const now = Math.min(max, Math.max(min, renderedWidth || Math.round(column.getSize())));
 
-  const widthAt = (session: DragSession, clientX: number) => clampColumnWidth(column, session.startWidth + (clientX - session.startX) * session.direction);
+  // Growing stops where the absorber runs out of spare width (never below the
+  // width the drag started from, so an already-overflowing table can still shrink).
+  const withinLimit = (width: number, startWidth: number, limit: number) => (width > startWidth ? Math.min(width, Math.max(startWidth, limit)) : width);
+  const widthAt = (session: DragSession, clientX: number) =>
+    withinLimit(clampColumnWidth(column, session.startWidth + (clientX - session.startX) * session.direction), session.startWidth, session.limit);
 
   const handlePointerDown = (event: PointerEvent<HTMLElement>) => {
     attrs.onPointerDown?.(event);
@@ -93,7 +99,8 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
 
     const base = columnResizing.getBaseSizing();
     const startWidth = base[column.id] ?? column.getSize();
-    sessionRef.current = { pointerId: event.pointerId, startX: event.clientX, startWidth, base, direction: readDirection(event.currentTarget), moved: false };
+    const limit = startWidth + columnResizing.getGrowLimit(column.id);
+    sessionRef.current = { pointerId: event.pointerId, startX: event.clientX, startWidth, limit, base, direction: readDirection(event.currentTarget), moved: false };
     event.currentTarget.setPointerCapture?.(event.pointerId);
     setDragging(true);
   };
@@ -145,7 +152,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
     const sign = (event.key === 'ArrowRight' ? 1 : -1) * readDirection(event.currentTarget);
     const base = columnResizing.getBaseSizing();
     const current = base[column.id] ?? column.getSize();
-    const width = clampColumnWidth(column, current + sign * step);
+    const width = withinLimit(clampColumnWidth(column, current + sign * step), current, current + columnResizing.getGrowLimit(column.id));
     if (width !== current) columnResizing.commit({ ...base, [column.id]: width });
   };
 

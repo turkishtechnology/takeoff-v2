@@ -340,6 +340,15 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         }
         return base;
       },
+      getGrowLimit: columnId => {
+        const absorberId = absorberColumnIdRef.current;
+        const absorber = absorberId == null ? undefined : table.getVisibleLeafColumns().find(candidate => candidate.id === absorberId);
+        const absorberCell = absorberId == null ? undefined : headerCellsRef.current.get(absorberId);
+        const available = absorberCell?.getBoundingClientRect().width ?? 0;
+        if (!absorber || !absorberCell || absorberId === columnId || available <= 0) return Number.POSITIVE_INFINITY;
+        const floor = Math.max(getColumnResizeBounds(absorber)[0], measureColumnContentWidth(absorberCell, 'min-content'));
+        return Math.max(0, Math.floor(available - floor));
+      },
       setDraft: draft => {
         const rendered = renderedDraftRef.current;
         const cell = rendered ? headerCellsRef.current.get(rendered.columnId) : undefined;

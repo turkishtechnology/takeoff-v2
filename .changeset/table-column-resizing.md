@@ -16,8 +16,9 @@ Table: user-controlled column resizing.
 - The table keeps its auto layout until the first resize, then switches to
   `table-layout: fixed` (`data-fixed-layout` on the root), so a column can
   shrink below its content. The last unpinned column has no handle and absorbs
-  the leftover width, so the table's own width never changes; the last column
-  never gets a handle.
+  the leftover width, so the table's own width never changes; a column can only
+  grow by what that column can give up down to its min width or longest word;
+  the last column never gets a handle.
 - Header text is now wrapped in a new `headerLabel` slot
   (`.tk-table-header-label`) on every table, so a narrowed header of a resized
   table ends in an ellipsis.

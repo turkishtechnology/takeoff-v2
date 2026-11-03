@@ -41,6 +41,13 @@ export interface TableColumnResizingContext {
    * fit it to its content when it declares none and other columns stay sized.
    */
   reset: (columnId: string) => void;
+  /**
+   * How many px a column may still grow: what the absorber column can give up
+   * before it is narrower than its min width or its longest word, so a resize
+   * never pushes the table past its container. `Infinity` when there is no
+   * absorber or nothing can be measured.
+   */
+  getGrowLimit: (columnId: string) => number;
   /** Header cells register their `<th>` so a first resize can measure the auto layout. */
   registerHeaderCell: (columnId: string, element: HTMLElement | null) => void;
 }
