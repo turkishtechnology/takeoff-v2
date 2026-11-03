@@ -24,7 +24,7 @@ import { Spinner } from '../spinner';
 import { TableBase } from './base';
 import { TableProvider, type SlotAttrs, type TableColumnResizingContext, type TableContextValue, type TableResizeDraft } from './context';
 import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE, UTILITY_COLUMN_WIDTH } from './defaults';
-import { buildOrderedColumns, computeStickyLayout, getAbsorberColumnId, getColumnResizeBounds, toTanStackColumns } from './helpers';
+import { buildOrderedColumns, clampColumnWidth, computeStickyLayout, getAbsorberColumnId, getColumnResizeBounds, measureColumnContentWidth, toTanStackColumns } from './helpers';
 import { TableBody } from './TableBody';
 import { TableHeader } from './TableHeader';
 import { TablePagination } from './TablePagination';
@@ -313,6 +313,14 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   committedSizingRef.current = committedSizing;
   const fixedLayoutRef = useRef(fixedLayout);
   fixedLayoutRef.current = fixedLayout;
+  const stickyLayoutRef = useRef(stickyLayout);
+  stickyLayoutRef.current = stickyLayout;
+  const tableMinWidthRef = useRef(tableMinWidth);
+  tableMinWidthRef.current = tableMinWidth;
+  // The draft React last rendered, and the newer one written straight to the
+  // DOM on top of it (see `setDraft`).
+  const renderedDraftRef = useRef<TableResizeDraft | null>(null);
+  const liveDraftRef = useRef<TableResizeDraft | null>(null);
 
   const columnResizingContext = useMemo<TableColumnResizingContext | undefined>(() => {
     if (!resizingEnabled) return undefined;
@@ -332,12 +340,42 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         }
         return base;
       },
-      setDraft: setResizeDraft,
+      setDraft: draft => {
+        const rendered = renderedDraftRef.current;
+        const cell = rendered ? headerCellsRef.current.get(rendered.columnId) : undefined;
+        const tableElement = cell?.closest('table');
+        // Fast path: a later move of the same drag. Only the dragged header
+        // cell (`table-layout: fixed` sizes columns from the first row) and the
+        // min-width floor change; an unpinned column moves no sticky offset.
+        if (draft && rendered && cell && tableElement && draft.base === rendered.base && draft.columnId === rendered.columnId && !stickyLayoutRef.current.has(draft.columnId)) {
+          cell.style.width = `${draft.width}px`;
+          tableElement.style.minWidth = `${(tableMinWidthRef.current ?? 0) + draft.width - rendered.width}px`;
+          liveDraftRef.current = draft;
+          return;
+        }
+        // Hand the styles back to React as it last rendered them, so its next
+        // render (which may not touch them) starts from what it believes is there.
+        if (liveDraftRef.current && rendered && cell && tableElement) {
+          cell.style.width = `${rendered.width}px`;
+          tableElement.style.minWidth = `${tableMinWidthRef.current ?? 0}px`;
+        }
+        liveDraftRef.current = null;
+        renderedDraftRef.current = draft;
+        setResizeDraft(draft);
+      },
       commit: sizing => setSizing(sizing),
       reset: columnId => {
-        if (committedSizingRef.current[columnId] == null) return;
-        const { [columnId]: _dropped, ...rest } = committedSizingRef.current;
-        setSizing(rest);
+        const committed = committedSizingRef.current;
+        if (committed[columnId] == null) return;
+        const { [columnId]: _dropped, ...rest } = committed;
+        const column = table.getVisibleLeafColumns().find(candidate => candidate.id === columnId);
+        // Dropping the width returns the column to its declared `width`, or —
+        // when nothing else stays sized — the whole table to its natural auto
+        // layout. Otherwise an undeclared column would fall to the 150px
+        // default, so fit it to its content instead.
+        const staysFixed = table.getVisibleLeafColumns().some(candidate => candidate.id !== absorberColumnIdRef.current && rest[candidate.id] != null);
+        const fitted = column && staysFixed && column.columnDef.meta?.width == null ? measureColumnContentWidth(headerCellsRef.current.get(columnId)) : 0;
+        setSizing(column && fitted > 0 ? { ...rest, [columnId]: clampColumnWidth(column, fitted) } : rest);
       },
       registerHeaderCell: (columnId, element) => {
         if (element) headerCellsRef.current.set(columnId, element);

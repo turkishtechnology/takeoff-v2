@@ -35,7 +35,9 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
   const attrs = slotAttrs('headerCell', { className: meta?.headerClassName });
 
   const ariaSort = canSort ? (sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : 'none') : undefined;
-  const content = header.isPlaceholder ? null : flexRender(column.columnDef.header, header.getContext());
+  // Wrapped so a header narrower than its text truncates with an ellipsis (a
+  // bare text node inside the flex header can't).
+  const content = header.isPlaceholder ? null : <span {...slotAttrs('headerLabel')}>{flexRender(column.columnDef.header, header.getContext())}</span>;
 
   return (
     <th

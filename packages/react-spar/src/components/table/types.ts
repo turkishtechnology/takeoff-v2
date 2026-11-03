@@ -46,6 +46,7 @@ export type TableSlot =
   | 'headerRow'
   | 'headerCell'
   | 'headerContent'
+  | 'headerLabel'
   | 'sortTrigger'
   | 'sortIcon'
   | 'resizeHandle'

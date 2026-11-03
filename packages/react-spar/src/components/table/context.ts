@@ -27,11 +27,19 @@ export interface TableColumnResizingContext {
    * still auto-laid-out, so the first resize freezes the layout without a jump.
    */
   getBaseSizing: () => ColumnSizingState;
-  /** Show (or clear, with `null`) a live drag width without committing it. */
+  /**
+   * Show (or clear, with `null`) a live drag width without committing it. The
+   * first draft of a drag renders (it freezes the layout); later drafts of the
+   * same drag on an unpinned column are written straight to the header cell and
+   * the table's min-width, so a large body is not re-rendered per pointer move.
+   */
   setDraft: (draft: TableResizeDraft | null) => void;
   /** Commit a new layout → `columnResizing.onChange`. */
   commit: (sizing: ColumnSizingState) => void;
-  /** Drop one column's user width so it falls back to its declared `width`. */
+  /**
+   * Drop one column's user width so it falls back to its declared `width`, or
+   * fit it to its content when it declares none and other columns stay sized.
+   */
   reset: (columnId: string) => void;
   /** Header cells register their `<th>` so a first resize can measure the auto layout. */
   registerHeaderCell: (columnId: string, element: HTMLElement | null) => void;

@@ -566,6 +566,10 @@
   @include table.table-header-content;
 }
 
+.tk-table-header-label {
+  @include table.table-header-label;
+}
+
 .tk-table-sort-trigger {
   @include table.table-sort-trigger;
 }

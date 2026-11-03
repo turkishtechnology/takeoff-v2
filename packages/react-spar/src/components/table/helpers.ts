@@ -405,6 +405,43 @@ export const getColumnResizeBounds = (column: Column<any, unknown>): [number, nu
   return [min, max];
 };
 
+/**
+ * The width a column's content wants on one line: the widest `max-content` of
+ * its header cell and its rendered body cells, measured on hidden clones next
+ * to the table so the size / density styles still apply. `0` when nothing can
+ * be measured (no header cell, or a non-layout environment).
+ */
+export const measureColumnContentWidth = (headerCell: HTMLElement | undefined): number => {
+  const headerRow = headerCell?.parentElement as HTMLTableRowElement | null | undefined;
+  const tableElement = headerCell?.closest('table');
+  const host = tableElement?.parentElement;
+  if (!headerCell || !headerRow || !tableElement || !host) return 0;
+  const index = (headerCell as HTMLTableCellElement).cellIndex;
+  const cells: HTMLElement[] = [headerCell];
+  for (const body of Array.from(tableElement.tBodies)) {
+    for (const row of Array.from(body.rows)) {
+      // Skip rows that don't line up with the header (detail panels, empty / loading rows).
+      const cell = row.cells.length === headerRow.cells.length ? row.cells[index] : undefined;
+      if (cell) cells.push(cell);
+    }
+  }
+  const probe = document.createElement('div');
+  probe.setAttribute('aria-hidden', 'true');
+  probe.style.cssText = 'position:absolute;top:0;left:0;visibility:hidden;pointer-events:none;';
+  for (const cell of cells) {
+    const clone = cell.cloneNode(true) as HTMLElement;
+    clone.style.position = 'static';
+    clone.style.display = 'block';
+    clone.style.width = 'max-content';
+    probe.appendChild(clone);
+  }
+  host.appendChild(probe);
+  let width = 0;
+  for (const clone of Array.from(probe.children)) width = Math.max(width, clone.getBoundingClientRect().width);
+  probe.remove();
+  return Math.ceil(width);
+};
+
 /** Clamp a resized width into the column's bounds and round it to whole px. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const clampColumnWidth = (column: Column<any, unknown>, width: number): number => {

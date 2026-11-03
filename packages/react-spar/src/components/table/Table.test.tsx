@@ -1807,6 +1807,45 @@ describe('Table (props-first)', () => {
       expect(onChange).not.toHaveBeenCalled();
     });
 
+    it('moves an unpinned column without re-rendering the body, and hands the styles back on cancel', () => {
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200, role: 140 } }} />);
+      const handle = handleFor('Name');
+      const bodyCell = within(container.querySelector('tbody') as HTMLElement)
+        .getByText('Ada')
+        .closest('td') as HTMLElement;
+      const tableElement = container.querySelector('table') as HTMLElement;
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      // The first move renders the draft (here at the stored width)…
+      fireEvent.pointerMove(handle, { clientX: 0, pointerId: 1 });
+      expect(tableElement.style.minWidth).toBe('390px');
+      // …later moves only touch the header cell and the min-width floor.
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 1 });
+      expect(headerFor(container, 'Name').style.width).toBe('240px');
+      expect(tableElement.style.minWidth).toBe('430px');
+      expect(bodyCell.style.width).toBe('200px');
+
+      fireEvent.pointerCancel(handle, { clientX: 40, pointerId: 1 });
+      expect(headerFor(container, 'Name').style.width).toBe('200px');
+      expect(tableElement.style.minWidth).toBe('390px');
+    });
+
+    it('re-renders every move of a pinned column so later sticky offsets follow it', () => {
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', sticky: 'left', width: 120 },
+        { id: 'role', header: 'Role', accessor: 'role', sticky: 'left', width: 100 },
+        { id: 'city', header: 'City', accessor: 'profile.city' },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 10, pointerId: 1 });
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 1 });
+      expect(headerFor(container, 'Role').style.left).toBe('160px');
+      fireEvent.pointerUp(handle, { clientX: 40, pointerId: 1 });
+    });
+
     it('drops the draft when the window loses focus mid-drag', () => {
       const onChange = vi.fn();
       const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
@@ -1941,6 +1980,70 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({});
       // Nothing user-sized anymore → back to the natural auto layout.
       expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+    });
+
+    it('fits an undeclared column to its content on double-click while others stay sized', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      // Clones measured at max-content: a header and a body cell, the body one wider.
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.style.width === 'max-content' ? (this.tagName === 'TH' ? 90 : 233.4) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const { container } = render(
+        <Table
+          data={users}
+          columns={resizeColumns}
+          getRowId={getRowId}
+          columnResizing={{ defaultValue: { name: 400, role: 300 }, onChange }}
+          expansion={{ render: row => <span>Detail {row.name}</span> }}
+        />,
+      );
+      // An expanded detail row does not line up with the header and is skipped.
+      await user.click(within(container.querySelector('tbody') as HTMLElement).getAllByRole('button', { name: 'Expand row' })[0] as HTMLElement);
+
+      await user.dblClick(handleFor('Name'));
+      expect(onChange).toHaveBeenLastCalledWith({ role: 300, name: 234 });
+      // The probe is gone again.
+      expect(container.querySelector('[aria-hidden="true"][style*="visibility"]')).toBeNull();
+    });
+
+    it('drops the width instead when the content cannot be measured', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 400, role: 300 }, onChange }} />);
+
+      await user.dblClick(handleFor('Name'));
+      expect(onChange).toHaveBeenLastCalledWith({ role: 300 });
+      expect(headerFor(container, 'Name').style.width).toBe('150px');
+    });
+
+    it('reports the rendered header width to assistive tech', () => {
+      mockHeaderWidth(120);
+      const observers: Array<() => void> = [];
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(private readonly callback: () => void) {}
+          observe() {
+            observers.push(this.callback);
+          }
+          disconnect() {}
+        },
+      );
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      act(() => observers.forEach(callback => callback()));
+
+      expect(handleFor('Name')).toHaveAttribute('aria-valuenow', '120');
+      expect(handleFor('Name')).toHaveAttribute('aria-valuetext', '120 px');
+      vi.unstubAllGlobals();
+    });
+
+    it('wraps the header text so a narrow column can end it in an ellipsis', () => {
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      const label = headerFor(container, 'Name').querySelector('.tk-table-header-label');
+      expect(label).toHaveTextContent('Name');
+      expect(label).toHaveAttribute('data-slot', 'header-label');
     });
 
     it('does not fire onChange when a double-click has nothing to reset', async () => {

@@ -157,13 +157,17 @@
       table-layout: fixed;
     }
 
-    .tk-table-header-cell {
+    // `clip` rather than `hidden`: the cell is not a scroll container (focusing
+    // a control inside cannot scroll it), and where `overflow-clip-margin` is
+    // supported the focus ring of a control flush with the edge stays whole.
+    .tk-table-header-cell,
+    .tk-table-cell {
       overflow: hidden;
-      text-overflow: ellipsis;
+      overflow: clip;
+      overflow-clip-margin: 4px;
     }
 
     .tk-table-cell {
-      overflow: hidden;
       overflow-wrap: anywhere;
     }
   }
@@ -280,6 +284,14 @@
   .tk-table-header-cell[data-align='end'] & {
     justify-content: flex-end;
   }
+}
+
+// Header text. A flex item with `min-width: 0` so it can shrink below its
+// content and end in an ellipsis when its column is sized narrower.
+@mixin table-header-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // Sort affordance — a real button so Enter/Space toggle sorting.

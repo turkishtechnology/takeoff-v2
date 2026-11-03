@@ -8,8 +8,9 @@ Table: user-controlled column resizing.
 - New `columnResizing` prop (`true`, or `{ value, defaultValue, onChange }` over
   `{ [columnId]: px }`) puts a drag handle on each header edge. It works with a
   mouse, pen or touch, and with Left/Right arrows (Shift for 50px steps). A
-  double-click returns the column to its declared `width`. `onChange` fires once
-  per resize, not on every pointer move, so it can be persisted directly.
+  double-click returns the column to its declared `width`, or fits it to its
+  content when it declares none. `onChange` fires once per resize, not on every
+  pointer move, so it can be persisted directly.
 - New column options: `resizable` (default `true`), `minWidth` (default `50`)
   and `maxWidth`.
 - The table keeps its auto layout until the first resize, then switches to
@@ -17,6 +18,8 @@ Table: user-controlled column resizing.
   shrink below its content. The last unpinned column has no handle and absorbs
   the leftover width, so the table's own width never changes; the last column
   never gets a handle.
+- Header text is wrapped in a new `headerLabel` slot (`.tk-table-header-label`)
+  so a narrowed header ends in an ellipsis.
 - New `resizeHandle` slot, `TableColumnSizing` and `TableColumnResizingConfig`
   types, and the matching `.tk-table-resize-handle` recipe styles in
   `@takeoff-design/tokens`.

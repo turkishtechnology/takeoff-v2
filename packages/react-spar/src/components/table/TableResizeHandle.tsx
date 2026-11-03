@@ -26,7 +26,7 @@ const readDirection = (element: HTMLElement): 1 | -1 => (getComputedStyle(elemen
  * `role="separator"` (the WAI-ARIA window-splitter pattern): pointer drag —
  * mouse, pen, and touch through pointer capture — or Left/Right arrows resize
  * the column, Shift takes a larger step, and a double-click returns the column
- * to its declared `width`.
+ * to its declared `width` (or fits it to its content when it declares none).
  *
  * The handle never commits mid-drag: it renders a draft through context and
  * commits once on release, so `columnResizing.onChange` fires per resize.
@@ -37,6 +37,18 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
   const [dragging, setDragging] = useState(false);
   const setDraftRef = useRef(columnResizing?.setDraft);
   setDraftRef.current = columnResizing?.setDraft;
+
+  // The header cell's rendered width, so assistive tech hears the width on
+  // screen — before the first resize `getSize()` is only the 150px default.
+  const handleRef = useRef<HTMLDivElement>(null);
+  const [renderedWidth, setRenderedWidth] = useState<number>();
+  useEffect(() => {
+    const cell = handleRef.current?.parentElement;
+    if (!cell || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => setRenderedWidth(Math.round(cell.getBoundingClientRect().width)));
+    observer.observe(cell);
+    return () => observer.disconnect();
+  }, []);
 
   // Abandon an in-flight drag without committing. The draft lives in Table
   // state, so a drag that never sees its pointerup (window blur, capture taken
@@ -66,6 +78,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
   const header = column.columnDef.header;
   const label = typeof header === 'string' ? `Resize ${header} column` : 'Resize column';
   const attrs = slotAttrs('resizeHandle');
+  const now = renderedWidth || Math.round(column.getSize());
 
   const widthAt = (session: DragSession, clientX: number) => clampColumnWidth(column, session.startWidth + (clientX - session.startX) * session.direction);
 
@@ -143,12 +156,14 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
   return (
     <div
       {...attrs}
+      ref={handleRef}
       role="separator"
       aria-orientation="vertical"
       aria-label={attrs['aria-label'] ?? label}
-      aria-valuenow={Math.round(column.getSize())}
+      aria-valuenow={now}
       aria-valuemin={min}
       aria-valuemax={Number.isFinite(max) ? max : undefined}
+      aria-valuetext={`${now} px`}
       tabIndex={0}
       data-resizing={dragging ? '' : undefined}
       onPointerDown={handlePointerDown}
