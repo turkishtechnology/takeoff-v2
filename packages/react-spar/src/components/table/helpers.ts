@@ -3,7 +3,7 @@ import type { CellContext, Column, ColumnDef, FilterFn, Table as TanStackTable }
 
 import { isDevelopment } from '../../utils';
 
-import { DEFAULT_COLUMN_WIDTH, UTILITY_COLUMN_WIDTH } from './defaults';
+import { DEFAULT_COLUMN_WIDTH, DEFAULT_MIN_COLUMN_WIDTH, UTILITY_COLUMN_WIDTH } from './defaults';
 import type { TableColumnDef, TableColumnFilter, TableColumnFilterType, TableStickySide } from './types';
 
 /** Synthetic keys for the manually-rendered leading utility cells. */
@@ -124,7 +124,7 @@ const resolveFilterFn = <TData>(filter: TableColumnFilter<TData>): FilterFn<unkn
  */
 export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): ColumnDef<TData>[] =>
   columns.map(col => {
-    const { id, header, accessor, cell, sortable, filter, sticky, width, align, meta } = col;
+    const { id, header, accessor, cell, sortable, filter, sticky, width, resizable, minWidth, maxWidth, align, meta } = col;
 
     // Collapse the two-tier filter (string preset | object) to one object shape
     // so the renderer + filterFn resolution never branch on the input form.
@@ -138,10 +138,15 @@ export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): Colu
       header,
       enableSorting: sortable ?? false,
       enableColumnFilter: normalizedFilter != null,
+      // Per-column gate; TanStack ANDs it with the table-level `enableColumnResizing`.
+      enableResizing: resizable ?? true,
       meta: {
         align,
         sticky,
         width,
+        resizable,
+        minWidth,
+        maxWidth,
         className: meta?.className,
         headerClassName: meta?.headerClassName,
         headerAlign: meta?.headerAlign,
@@ -154,6 +159,11 @@ export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): Colu
     // which renders object values as `[object Object]`.
     def.cell = cell ?? defaultCell;
     if (width != null) def.size = width;
+    // Only forward explicit bounds: TanStack clamps `getSize()` by them, and
+    // defaulting `minSize` here would widen a narrow declared `width` on tables
+    // that never resize.
+    if (minWidth != null) def.minSize = minWidth;
+    if (maxWidth != null) def.maxSize = maxWidth;
 
     if (typeof accessor === 'function') {
       def.accessorFn = accessor;
@@ -351,12 +361,31 @@ export const resolveStickyCell = (layout: StickyLayout, key: string, options: { 
 
 /**
  * Resolve a cell's explicit width style. A column gets a fixed `width` only when
- * it declares one (`meta.width`) or is sticky (pinned columns must be measured
- * for the offset math). Shared by the body and header cell renderers so the two
- * stay in lockstep. Returns `undefined` when the column is auto-width.
+ * it declares one (`meta.width`), is sticky (pinned columns must be measured
+ * for the offset math), or the table is in its user-sized `fixedLayout` (every
+ * column then carries its width so `table-layout: fixed` honors it). Shared by
+ * the body and header cell renderers so the two stay in lockstep. Returns
+ * `undefined` when the column is auto-width.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: StickyLayout): CSSProperties | undefined => {
-  const hasWidth = column.columnDef.meta?.width != null || stickyLayout.has(column.id);
+export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: StickyLayout, fixedLayout = false): CSSProperties | undefined => {
+  const hasWidth = fixedLayout || column.columnDef.meta?.width != null || stickyLayout.has(column.id);
   return hasWidth ? { width: column.getSize() } : undefined;
+};
+
+/** The `[min, max]` px range a user resize of this column is clamped to. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getColumnResizeBounds = (column: Column<any, unknown>): [number, number] => {
+  const meta = column.columnDef.meta;
+  const min = meta?.minWidth ?? DEFAULT_MIN_COLUMN_WIDTH;
+  // A `maxWidth` below the effective min would invert the range; the min wins.
+  const max = Math.max(min, meta?.maxWidth ?? Number.POSITIVE_INFINITY);
+  return [min, max];
+};
+
+/** Clamp a resized width into the column's bounds and round it to whole px. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const clampColumnWidth = (column: Column<any, unknown>, width: number): number => {
+  const [min, max] = getColumnResizeBounds(column);
+  return Math.round(Math.min(max, Math.max(min, width)));
 };

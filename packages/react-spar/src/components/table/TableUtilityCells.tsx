@@ -135,3 +135,18 @@ export const ExpandBodyCell = ({ row }: { row: Row<any> }) => {
 };
 
 ExpandBodyCell.displayName = 'Table.ExpandBodyCell';
+
+// ── Filler ──────────────────────────────────────────────────────────────────
+
+/**
+ * Trailing cell of every header and body row once columns are user-sized. Under
+ * `table-layout: fixed` it is the only auto-width column, so it absorbs the
+ * space the sized columns leave (shrinking a column never stretches its
+ * neighbours) and collapses to zero once they overflow. Presentational only.
+ */
+export const TableFillerCell = () => {
+  const { slotAttrs } = useTableContext('Table.FillerCell');
+  return <td {...slotAttrs('fillerCell')} aria-hidden="true" />;
+};
+
+TableFillerCell.displayName = 'Table.FillerCell';

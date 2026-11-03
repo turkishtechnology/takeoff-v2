@@ -16,6 +16,8 @@ export type {
   TableColumnFilterOption,
   TableColumnFilterType,
   TableColumnMeta,
+  TableColumnResizingConfig,
+  TableColumnSizing,
   TableDataRequest,
   TableExpansionConfig,
   TableFilteringConfig,

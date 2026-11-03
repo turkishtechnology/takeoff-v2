@@ -3,7 +3,7 @@ import type { Row } from '@tanstack/react-table';
 
 import { useTableContext } from './context';
 import { TableCell } from './TableCell';
-import { ExpandBodyCell, SelectionBodyCell } from './TableUtilityCells';
+import { ExpandBodyCell, SelectionBodyCell, TableFillerCell } from './TableUtilityCells';
 
 /**
  * One body `<tr>`. In detail-panel mode it also renders a disclosure `<tr>` when
@@ -14,7 +14,7 @@ import { ExpandBodyCell, SelectionBodyCell } from './TableUtilityCells';
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const TableRow = ({ row }: { row: Row<any> }) => {
-  const { slotAttrs, hasSelection, hasExpansion, treeMode, expansionRender, totalColumnCount } = useTableContext('Table.Row');
+  const { slotAttrs, hasSelection, hasExpansion, treeMode, expansionRender, totalColumnCount, fixedLayout } = useTableContext('Table.Row');
   const selected = row.getIsSelected();
 
   // Detail panel only outside tree mode — the two expansion shapes are
@@ -29,6 +29,7 @@ export const TableRow = ({ row }: { row: Row<any> }) => {
         {row.getVisibleCells().map(cell => (
           <TableCell key={cell.id} cell={cell} />
         ))}
+        {fixedLayout && <TableFillerCell />}
       </tr>
       {showDetailPanel && (
         <tr {...slotAttrs('expandedRow')}>

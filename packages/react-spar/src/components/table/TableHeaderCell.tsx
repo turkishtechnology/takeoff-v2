@@ -6,6 +6,7 @@ import { SwapIconOutlinedRounded } from '@takeoff-icons/react/swap';
 import { useTableContext } from './context';
 import { resolveCellWidth, resolveStickyCell } from './helpers';
 import { TableColumnFilter } from './TableColumnFilter';
+import { TableResizeHandle } from './TableResizeHandle';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyHeader = Header<any, unknown>;
@@ -17,13 +18,14 @@ type AnyHeader = Header<any, unknown>;
  * `<button>` so Enter/Space toggle sorting natively (RFC §3.5).
  */
 export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
-  const { slotAttrs, stickyLayout, stickyHeader } = useTableContext('Table.HeaderCell');
+  const { slotAttrs, stickyLayout, stickyHeader, fixedLayout, columnResizing } = useTableContext('Table.HeaderCell');
   const column = header.column;
   const meta = column.columnDef.meta;
   const align = meta?.headerAlign ?? meta?.align;
   const canSort = column.getCanSort();
   const canFilter = column.getCanFilter() && !!meta?.filter;
   const sorted = column.getIsSorted();
+  const canResize = !!columnResizing && column.getCanResize();
 
   const sticky = resolveStickyCell(stickyLayout, column.id, { isHeader: true, stickyHeader });
   const attrs = slotAttrs('headerCell', { className: meta?.headerClassName });
@@ -34,13 +36,14 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
   return (
     <th
       {...attrs}
+      ref={columnResizing ? element => columnResizing.registerHeaderCell(column.id, element) : undefined}
       scope="col"
       colSpan={header.colSpan}
       aria-sort={ariaSort}
       data-align={align}
       data-sticky={sticky.dataSticky}
       data-sortable={canSort ? '' : undefined}
-      style={{ ...attrs.style, ...sticky.style, ...resolveCellWidth(column, stickyLayout) }}
+      style={{ ...attrs.style, ...sticky.style, ...resolveCellWidth(column, stickyLayout, fixedLayout) }}
     >
       <div {...slotAttrs('headerContent')}>
         {canSort ? (
@@ -55,6 +58,7 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
         )}
         {canFilter && <TableColumnFilter header={header} />}
       </div>
+      {canResize && <TableResizeHandle column={column} />}
     </th>
   );
 };

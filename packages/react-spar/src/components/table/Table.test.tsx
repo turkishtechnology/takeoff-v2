@@ -1,5 +1,5 @@
 import type { Table as TanStackTable } from '@tanstack/react-table';
-import { fireEvent } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef, useState } from 'react';
 import { axe } from 'vitest-axe';
@@ -1569,6 +1569,383 @@ describe('Table (props-first)', () => {
       expect(nameTd.style.position).toBe('');
       expect(roleTh.style.width).toBe('');
       expect(roleTd.style.width).toBe('');
+    });
+  });
+
+  describe('column resizing', () => {
+    const resizeColumns: TableColumnDef<User>[] = [
+      { id: 'name', header: 'Name', accessor: 'name' },
+      { id: 'role', header: 'Role', accessor: 'role', width: 140 },
+      { id: 'age', header: 'Age', accessor: 'age', resizable: false },
+    ];
+
+    // jsdom lays nothing out; give every header cell a measurable width so the
+    // first resize has an auto layout to freeze.
+    const mockHeaderWidth = (width: number) =>
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        return { width: this.tagName === 'TH' ? width : 0, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+
+    const handleFor = (name: string) => screen.getByRole('separator', { name: `Resize ${name} column` });
+    const headerFor = (container: HTMLElement, name: string) =>
+      within(container.querySelector('thead') as HTMLElement)
+        .getByText(name)
+        .closest('th') as HTMLElement;
+
+    const drag = (handle: HTMLElement, from: number, to: number, pointerId = 1) => {
+      fireEvent.pointerDown(handle, { clientX: from, pointerId, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: to, pointerId });
+      fireEvent.pointerUp(handle, { clientX: to, pointerId });
+    };
+
+    it('renders no handles and keeps the auto layout without columnResizing', () => {
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} />);
+
+      expect(screen.queryByRole('separator')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      expect(container.querySelector('.tk-table-filler-cell')).not.toBeInTheDocument();
+    });
+
+    it('puts a labelled separator on every resizable header and skips resizable: false', () => {
+      const header = () => <span>Custom</span>;
+      const { container } = render(
+        <Table data={users} columns={[...resizeColumns, { id: 'city', header, accessor: 'profile.city', minWidth: 80, maxWidth: 300 }]} getRowId={getRowId} columnResizing />,
+      );
+
+      const separators = screen.getAllByRole('separator');
+      expect(separators).toHaveLength(3);
+      expect(handleFor('Name')).toHaveAttribute('aria-orientation', 'vertical');
+      expect(handleFor('Name')).toHaveAttribute('tabindex', '0');
+      expect(handleFor('Name')).toHaveAttribute('aria-valuemin', '50');
+      expect(handleFor('Name')).not.toHaveAttribute('aria-valuemax');
+      expect(handleFor('Role')).toHaveAttribute('aria-valuenow', '140');
+      // A non-string header falls back to a generic name.
+      const custom = screen.getByRole('separator', { name: 'Resize column' });
+      expect(custom).toHaveAttribute('aria-valuemin', '80');
+      expect(custom).toHaveAttribute('aria-valuemax', '300');
+      expect(headerFor(container, 'Age').querySelector('.tk-table-resize-handle')).toBeNull();
+      expect(handleFor('Name')).toHaveClass('tk-table-resize-handle');
+      expect(handleFor('Name')).toHaveAttribute('data-slot', 'resize-handle');
+    });
+
+    it('freezes the measured layout on the first drag and commits once on release', () => {
+      mockHeaderWidth(120);
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const root = container.querySelector('[data-slot="root"]') as HTMLElement;
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 100, pointerId: 1, button: 0 });
+      expect(handle).toHaveAttribute('data-resizing', '');
+      fireEvent.pointerMove(handle, { clientX: 130, pointerId: 1 });
+      fireEvent.pointerMove(handle, { clientX: 160, pointerId: 1 });
+
+      // Live: the column follows the pointer, nothing is committed yet.
+      expect(onChange).not.toHaveBeenCalled();
+      expect(headerFor(container, 'Name').style.width).toBe('180px');
+      expect(root).toHaveAttribute('data-fixed-layout', '');
+      // Every other column is frozen at its measured width.
+      expect(headerFor(container, 'Role').style.width).toBe('120px');
+      expect(headerFor(container, 'Age').style.width).toBe('120px');
+      expect(container.querySelectorAll('.tk-table-filler-cell')).toHaveLength(4);
+      expect(container.querySelector('.tk-table-filler-cell')).toHaveAttribute('aria-hidden', 'true');
+
+      fireEvent.pointerUp(handle, { clientX: 160, pointerId: 1 });
+      expect(handle).not.toHaveAttribute('data-resizing');
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith({ name: 180, role: 120, age: 120 });
+      expect(headerFor(container, 'Name').style.width).toBe('180px');
+      expect(
+        within(container.querySelector('tbody') as HTMLElement)
+          .getByText('Ada')
+          .closest('td'),
+      ).toHaveStyle({ width: '180px' });
+    });
+
+    it('falls back to the column size when nothing can be measured', () => {
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Role'), 0, 10);
+      // jsdom measures 0 → declared width (140) / TanStack's default size (150).
+      expect(onChange).toHaveBeenCalledWith({ name: 150, role: 150, age: 150 });
+    });
+
+    it('clamps a drag to the default min width and to minWidth / maxWidth', () => {
+      mockHeaderWidth(120);
+      const onChange = vi.fn();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'role', header: 'Role', accessor: 'role', minWidth: 100, maxWidth: 200 },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 200, 0);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 120 });
+      drag(handleFor('Role'), 0, 500);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 200 });
+      drag(handleFor('Role'), 500, 0);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 100 });
+    });
+
+    it('lets the min win over an inverted maxWidth', () => {
+      const onChange = vi.fn();
+      render(
+        <Table
+          data={users}
+          columns={[{ id: 'name', header: 'Name', accessor: 'name', width: 90, minWidth: 80, maxWidth: 60 }]}
+          getRowId={getRowId}
+          columnResizing={{ onChange }}
+        />,
+      );
+
+      expect(handleFor('Name')).toHaveAttribute('aria-valuemax', '80');
+      drag(handleFor('Name'), 0, 100);
+      expect(onChange).toHaveBeenCalledWith({ name: 80 });
+    });
+
+    it('treats a press without movement as a click and leaves the layout alone', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 100, pointerId: 1, button: 0 });
+      fireEvent.pointerUp(handle, { clientX: 100, pointerId: 1 });
+
+      expect(onChange).not.toHaveBeenCalled();
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+    });
+
+    it('ignores secondary buttons, foreign pointers and moves without a press', () => {
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerMove(handle, { clientX: 50, pointerId: 1 });
+      fireEvent.pointerUp(handle, { clientX: 50, pointerId: 1 });
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 2 });
+      expect(handle).not.toHaveAttribute('data-resizing');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 2 });
+      fireEvent.pointerUp(handle, { clientX: 40, pointerId: 2 });
+      expect(handle).toHaveAttribute('data-resizing', '');
+      fireEvent.pointerUp(handle, { clientX: 0, pointerId: 1 });
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('discards the draft on pointercancel', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 1 });
+      expect(headerFor(container, 'Name').style.width).toBe('190px');
+      fireEvent.pointerCancel(handle, { clientX: 40, pointerId: 1 });
+
+      expect(onChange).not.toHaveBeenCalled();
+      expect(handle).not.toHaveAttribute('data-resizing');
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+    });
+
+    it('captures and releases the pointer when the platform supports it', () => {
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      const handle = handleFor('Name');
+      const captured = new Set<number>();
+      handle.setPointerCapture = vi.fn((id: number) => void captured.add(id));
+      handle.hasPointerCapture = vi.fn((id: number) => captured.has(id));
+      handle.releasePointerCapture = vi.fn((id: number) => void captured.delete(id));
+
+      drag(handle, 0, 20, 7);
+
+      expect(handle.setPointerCapture).toHaveBeenCalledWith(7);
+      expect(handle.releasePointerCapture).toHaveBeenCalledWith(7);
+    });
+
+    it('resizes from the keyboard with Left/Right arrows and Shift for a larger step', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 }, onChange }} />);
+
+      await user.click(document.body);
+      handleFor('Name').focus();
+      await user.keyboard('{ArrowRight}');
+      expect(onChange).toHaveBeenLastCalledWith({ name: 210, role: 140, age: 150 });
+      await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
+      expect(onChange).toHaveBeenLastCalledWith({ name: 160, role: 140, age: 150 });
+      await user.keyboard('{ArrowUp}');
+      expect(onChange).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not commit a keyboard step that the bounds swallow', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<Table data={users} columns={[{ id: 'name', header: 'Name', accessor: 'name' }]} getRowId={getRowId} columnResizing={{ defaultValue: { name: 50 }, onChange }} />);
+
+      handleFor('Name').focus();
+      await user.keyboard('{ArrowLeft}');
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('flips the drag and arrow direction in RTL', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const realGetComputedStyle = window.getComputedStyle;
+      vi.spyOn(window, 'getComputedStyle').mockImplementation((element, pseudo) => {
+        const style = realGetComputedStyle(element, pseudo);
+        if ((element as HTMLElement).classList.contains('tk-table-resize-handle')) style.direction = 'rtl';
+        return style;
+      });
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 }, onChange }} />);
+
+      drag(handleFor('Name'), 100, 70);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 230, role: 140, age: 150 });
+      handleFor('Name').focus();
+      // ArrowLeft points at the inline end in RTL, so it widens.
+      await user.keyboard('{ArrowLeft}');
+      expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 140, age: 150 });
+    });
+
+    it('double-click returns a column to its declared width', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200, role: 300 }, onChange }} />);
+
+      await user.dblClick(handleFor('Role'));
+      expect(onChange).toHaveBeenLastCalledWith({ name: 200 });
+      expect(headerFor(container, 'Role').style.width).toBe('140px');
+
+      await user.dblClick(handleFor('Name'));
+      expect(onChange).toHaveBeenLastCalledWith({});
+      // Nothing user-sized anymore → back to the natural auto layout.
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+    });
+
+    it('starts in the fixed layout from defaultValue and widens colSpans for the filler', () => {
+      const { container } = render(
+        <Table data={[]} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 220 } }} selection={{ mode: 'multiple' }} />,
+      );
+
+      expect(container.querySelector('[data-slot="root"]')).toHaveAttribute('data-fixed-layout', '');
+      expect(headerFor(container, 'Name').style.width).toBe('220px');
+      // Unsized columns render at their declared / default size.
+      expect(headerFor(container, 'Role').style.width).toBe('140px');
+      expect(headerFor(container, 'Age').style.width).toBe('150px');
+      expect(container.querySelector('[data-slot="empty"]')).toHaveAttribute('colspan', '5');
+    });
+
+    it('widens the detail-panel colSpan in the fixed layout', async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <Table
+          data={users}
+          columns={resizeColumns}
+          getRowId={getRowId}
+          columnResizing={{ defaultValue: { name: 220 } }}
+          expansion={{ render: row => <span>Detail {row.name}</span> }}
+        />,
+      );
+
+      await user.click(within(container.querySelector('tbody') as HTMLElement).getAllByRole('button', { name: 'Expand row' })[0] as HTMLElement);
+      expect(screen.getByText('Detail Ada').closest('td')).toHaveAttribute('colspan', '5');
+    });
+
+    it('follows the pointer while controlled and keeps the parent value when it declines the change', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ value: { name: 200 }, onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 50, pointerId: 1 });
+      expect(headerFor(container, 'Name').style.width).toBe('250px');
+      fireEvent.pointerUp(handle, { clientX: 50, pointerId: 1 });
+
+      expect(onChange).toHaveBeenCalledWith({ name: 250, role: 140, age: 150 });
+      expect(headerFor(container, 'Name').style.width).toBe('200px');
+    });
+
+    it('applies a controlled value the parent commits', () => {
+      const Controlled = () => {
+        const [sizing, setSizing] = useState<Record<string, number>>({ name: 200 });
+        return <Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ value: sizing, onChange: setSizing }} />;
+      };
+      const { container } = render(<Controlled />);
+
+      drag(handleFor('Name'), 0, -40);
+      expect(headerFor(container, 'Name').style.width).toBe('160px');
+    });
+
+    it('moves later sticky offsets when a pinned column is resized', () => {
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', sticky: 'left', width: 120 },
+        { id: 'role', header: 'Role', accessor: 'role', sticky: 'left', width: 100 },
+        { id: 'city', header: 'City', accessor: 'profile.city' },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing />);
+
+      expect(headerFor(container, 'Role').style.left).toBe('120px');
+      drag(handleFor('Name'), 0, 60);
+      expect(headerFor(container, 'Role').style.left).toBe('180px');
+    });
+
+    it('routes tableRef sizing calls through onChange, and ignores them when resizing is off', () => {
+      const ref: { current: TanStackTable<User> | null } = { current: null };
+      const onChange = vi.fn();
+      const { rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} tableRef={ref} columnResizing={{ onChange }} />);
+
+      act(() => ref.current?.setColumnSizing({ name: 99 }));
+      expect(onChange).toHaveBeenCalledWith({ name: 99 });
+
+      const offRef: { current: TanStackTable<User> | null } = { current: null };
+      rerender(<Table data={users} columns={resizeColumns} getRowId={getRowId} tableRef={offRef} />);
+      const plain = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} tableRef={offRef} />);
+      act(() => offRef.current?.setColumnSizing({ name: 99 }));
+      expect(plain.container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+    });
+
+    it('composes slotProps.resizeHandle handlers and honours preventDefault and aria-label', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const onKeyDown = vi.fn((event: React.KeyboardEvent) => event.preventDefault());
+      const onDoubleClick = vi.fn((event: React.MouseEvent) => event.preventDefault());
+      const onPointerDown = vi.fn((event: React.PointerEvent) => event.preventDefault());
+      const onPointerMove = vi.fn();
+      const onPointerUp = vi.fn();
+      const onPointerCancel = vi.fn();
+      render(
+        <Table
+          data={users}
+          columns={[{ id: 'name', header: 'Name', accessor: 'name' }]}
+          getRowId={getRowId}
+          columnResizing={{ defaultValue: { name: 200 }, onChange }}
+          slotProps={{ resizeHandle: { 'aria-label': 'Drag to resize', onKeyDown, onDoubleClick, onPointerDown, onPointerMove, onPointerUp, onPointerCancel } }}
+        />,
+      );
+      const handle = screen.getByRole('separator', { name: 'Drag to resize' });
+
+      handle.focus();
+      await user.keyboard('{ArrowRight}');
+      await user.dblClick(handle);
+      drag(handle, 0, 40);
+      fireEvent.pointerCancel(handle, { pointerId: 1 });
+
+      expect(onKeyDown).toHaveBeenCalled();
+      expect(onDoubleClick).toHaveBeenCalled();
+      expect(onPointerDown).toHaveBeenCalled();
+      expect(onPointerMove).toHaveBeenCalled();
+      expect(onPointerUp).toHaveBeenCalled();
+      expect(onPointerCancel).toHaveBeenCalled();
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('has no axe violations with resize handles in the auto and fixed layouts', async () => {
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing sorting={{}} />);
+      expect(await axe(container)).toHaveNoViolations();
+
+      drag(handleFor('Name'), 0, 30);
+      expect(container.querySelector('[data-slot="root"]')).toHaveAttribute('data-fixed-layout', '');
+      expect(await axe(container)).toHaveNoViolations();
     });
   });
 

@@ -8,6 +8,7 @@ import {
   getSortedRowModel,
   useReactTable,
   type ColumnFiltersState,
+  type ColumnSizingState,
   type ExpandedState,
   type OnChangeFn,
   type PaginationState,
@@ -21,7 +22,7 @@ import { useComponentTheme } from '../../provider';
 import { Spinner } from '../spinner';
 
 import { TableBase } from './base';
-import { TableProvider, type SlotAttrs, type TableContextValue } from './context';
+import { TableProvider, type SlotAttrs, type TableColumnResizingContext, type TableContextValue, type TableResizeDraft } from './context';
 import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE } from './defaults';
 import { buildOrderedColumns, computeStickyLayout, toTanStackColumns } from './helpers';
 import { TableBody } from './TableBody';
@@ -35,6 +36,7 @@ const EMPTY_SORTING: SortingState = [];
 const EMPTY_FILTERS: ColumnFiltersState = [];
 const EMPTY_SELECTION: RowSelectionState = {};
 const EMPTY_EXPANDED: ExpandedState = {};
+const EMPTY_SIZING: ColumnSizingState = {};
 
 export const Table = <TData,>(props: TableProps<TData>) => {
   const theme = useComponentTheme('Table');
@@ -67,6 +69,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     filtering,
     expansion,
     pagination,
+    columnResizing,
     onDataRequest,
     emptyState,
     getSubRows,
@@ -93,12 +96,19 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const paginationEnabled = pagination === true || !!paginationConfig;
   const pageSizeOptions = paginationConfig?.pageSizeOptions ?? DEFAULT_PAGE_SIZE_OPTIONS;
   const [tableViewportScrolled, setTableViewportScrolled] = useState(false);
+  const resizingConfig = typeof columnResizing === 'object' ? columnResizing : undefined;
+  const resizingEnabled = columnResizing === true || !!resizingConfig;
 
   // ── Controlled/uncontrolled state slices ─────────────────────────────────
   const [sortingState, setSorting] = useControllableState<SortingState>(sortingConfig?.value, sortingConfig?.defaultValue ?? EMPTY_SORTING, sortingConfig?.onChange);
   const [filtersState, setFilters] = useControllableState<ColumnFiltersState>(filtering?.value, filtering?.defaultValue ?? EMPTY_FILTERS, filtering?.onChange);
   const [selectionState, setSelection] = useControllableState<RowSelectionState>(selection?.value, selection?.defaultValue ?? EMPTY_SELECTION, selection?.onChange);
   const [expandedState, setExpanded] = useControllableState<ExpandedState>(expansion?.value, expansion?.defaultValue ?? EMPTY_EXPANDED, expansion?.onChange);
+  const [sizingState, setSizing] = useControllableState<ColumnSizingState>(resizingConfig?.value, resizingConfig?.defaultValue ?? EMPTY_SIZING, resizingConfig?.onChange);
+  // A pointer drag renders its live width from this draft and commits once on
+  // release, so `onChange` fires per resize rather than per pointer move — and a
+  // controlled consumer still sees the column follow the pointer.
+  const [resizeDraft, setResizeDraft] = useState<TableResizeDraft | null>(null);
 
   // Read the `{ pageIndex, pageSize }` slice off the config with defaults. Same
   // shape for the initial (mount-snapshot) and controlled (per-render) values
@@ -124,6 +134,15 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const rowSelection = selectionState ?? EMPTY_SELECTION;
   const expanded = expandedState ?? EMPTY_EXPANDED;
   const paginationValue = paginationStateRaw ?? initialPagination;
+  const committedSizing = (resizingEnabled ? sizingState : undefined) ?? EMPTY_SIZING;
+  const columnSizing = useMemo<ColumnSizingState>(
+    () => (resizeDraft ? { ...resizeDraft.base, [resizeDraft.columnId]: resizeDraft.width } : committedSizing),
+    [resizeDraft, committedSizing],
+  );
+  // Until a user sizes a column the table keeps its natural auto layout; from
+  // the first resize on, widths are explicit and `table-layout: fixed` honors
+  // them (a column can shrink below its content and a filler takes the slack).
+  const fixedLayout = resizingEnabled && Object.keys(columnSizing).length > 0;
 
   // Narrowing a sort/filter can shrink the result below the current page. In
   // client mode TanStack's `autoResetPageIndex` snaps back to page 0 for us; in
@@ -145,6 +164,11 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const onRowSelectionChange: OnChangeFn<RowSelectionState> = updater => setSelection(functionalUpdate(updater, rowSelection));
   const onExpandedChange: OnChangeFn<ExpandedState> = updater => setExpanded(functionalUpdate(updater, expanded));
   const onPaginationChange: OnChangeFn<PaginationState> = updater => setPagination(functionalUpdate(updater, paginationValue));
+  // Only reached through the `tableRef` instance (`setColumnSizing` /
+  // `resetColumnSizing`); the built-in handles commit via `columnResizing` below.
+  const onColumnSizingChange: OnChangeFn<ColumnSizingState> = updater => {
+    if (resizingEnabled) setSizing(functionalUpdate(updater, committedSizing));
+  };
 
   const table = useReactTable({
     data,
@@ -156,12 +180,18 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       rowSelection,
       expanded,
       pagination: paginationValue,
+      columnSizing,
     },
     onSortingChange,
     onColumnFiltersChange,
     onRowSelectionChange,
     onExpandedChange,
     onPaginationChange,
+    onColumnSizingChange,
+    // The resize handles are v2-owned (pointer capture, keyboard, measured
+    // start widths), so TanStack's own `getResizeHandler` is never used — this
+    // flag only feeds `column.getCanResize()`.
+    enableColumnResizing: resizingEnabled,
     // Table-level sort switch. Per-column `sortable` is the real gate
     // (`column.getCanSort()` ANDs both), so a `sorting` config without any
     // `sortable` column makes no header interactive — keying off the columns
@@ -254,9 +284,53 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     [theme, slotProps, classNames],
   );
 
-  const stickyLayout = useMemo(() => computeStickyLayout(buildOrderedColumns(table, { hasSelection, hasExpansion })), [table, tanstackColumns, hasSelection, hasExpansion]);
+  // `table` keeps one identity for its lifetime, so the inputs that change a
+  // column's size (`columnSizing`) are listed explicitly.
+  const stickyLayout = useMemo(
+    () => computeStickyLayout(buildOrderedColumns(table, { hasSelection, hasExpansion })),
+    [table, tanstackColumns, hasSelection, hasExpansion, columnSizing],
+  );
 
-  const totalColumnCount = tanstackColumns.length + (hasSelection ? 1 : 0) + (hasExpansion ? 1 : 0);
+  const totalColumnCount = tanstackColumns.length + (hasSelection ? 1 : 0) + (hasExpansion ? 1 : 0) + (fixedLayout ? 1 : 0);
+
+  // Header `<th>`s by column id, so the first resize can read the auto layout.
+  const headerCellsRef = useRef(new Map<string, HTMLElement>());
+  const committedSizingRef = useRef(committedSizing);
+  committedSizingRef.current = committedSizing;
+  const fixedLayoutRef = useRef(fixedLayout);
+  fixedLayoutRef.current = fixedLayout;
+
+  const columnResizingContext = useMemo<TableColumnResizingContext | undefined>(() => {
+    if (!resizingEnabled) return undefined;
+    return {
+      getBaseSizing: () => {
+        const committed = committedSizingRef.current;
+        const base: ColumnSizingState = {};
+        for (const column of table.getVisibleLeafColumns()) {
+          const committedWidth = committed[column.id];
+          if (committedWidth != null) {
+            base[column.id] = committedWidth;
+            continue;
+          }
+          // Already fixed: an unsized column renders at its `getSize()`.
+          // Still auto: freeze it at the width the browser gave it.
+          const measured = fixedLayoutRef.current ? 0 : Math.round(headerCellsRef.current.get(column.id)?.getBoundingClientRect().width ?? 0);
+          base[column.id] = measured > 0 ? measured : column.getSize();
+        }
+        return base;
+      },
+      setDraft: setResizeDraft,
+      commit: sizing => setSizing(sizing),
+      reset: columnId => {
+        const { [columnId]: _dropped, ...rest } = committedSizingRef.current;
+        setSizing(rest);
+      },
+      registerHeaderCell: (columnId, element) => {
+        if (element) headerCellsRef.current.set(columnId, element);
+        else headerCellsRef.current.delete(columnId);
+      },
+    };
+  }, [resizingEnabled, table, setSizing]);
 
   const contextValue: TableContextValue = {
     table,
@@ -272,6 +346,8 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     expansionRender: expansion?.render,
     hasColumnFilters,
     stickyLayout,
+    fixedLayout,
+    columnResizing: columnResizingContext,
     totalColumnCount,
     emptyState,
     paginationEnabled,
@@ -288,7 +364,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
 
   return (
     <TableProvider value={contextValue}>
-      <div {...rootAttrs} ref={ref}>
+      <div {...rootAttrs} ref={ref} data-fixed-layout={fixedLayout ? '' : undefined}>
         <div {...tableViewportAttrs} data-scrolled={tableViewportScrolled ? '' : undefined} onScroll={handleTableViewportScroll}>
           <table {...slotAttrs('table')} aria-busy={loading || undefined}>
             <TableHeader />

@@ -649,6 +649,98 @@ function StickyDemo() {
 render(<StickyDemo />);
 ```
 
+## Column resizing
+
+Pass `columnResizing` to let users drag a column's header edge to resize it.
+`true` keeps the widths uncontrolled; an object takes the usual `value` /
+`defaultValue` / `onChange` triple, where the value is a `{ [columnId]: px }`
+map of the columns the user has sized. `onChange` fires once per resize (on
+release, per arrow-key step, or on a double-click reset), never on every pointer
+move, so it is safe to persist from directly — reload the page after resizing
+below to see the widths come back.
+
+Per column, `resizable: false` removes the handle and `minWidth` / `maxWidth`
+bound the drag (the default minimum is `50px`). A double-click on a handle
+returns that column to its declared `width`.
+
+The table keeps its natural auto layout until the first resize. From then on
+every column carries an explicit width under `table-layout: fixed`
+(`data-fixed-layout` on the root), so a column can shrink below its content and
+a trailing filler cell takes up the leftover space instead of stretching the
+other columns.
+
+```tsx
+function ResizeDemo() {
+  const STORAGE_KEY = 'docs-table-column-widths';
+  const [widths, setWidths] = React.useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    } catch {
+      return {};
+    }
+  });
+  const data = [
+    {
+      id: '1',
+      flight: 'TK1979',
+      route: 'IST → LHR',
+      gate: 'F4',
+      status: 'Boarding',
+    },
+    {
+      id: '2',
+      flight: 'TK0011',
+      route: 'IST → JFK',
+      gate: 'D12',
+      status: 'On time',
+    },
+    {
+      id: '3',
+      flight: 'TK2310',
+      route: 'IST → ESB',
+      gate: 'A2',
+      status: 'Delayed',
+    },
+  ];
+  const columns = [
+    {
+      id: 'flight',
+      header: 'Flight',
+      accessor: 'flight',
+      width: 120,
+      minWidth: 90,
+    },
+    { id: 'route', header: 'Route', accessor: 'route', maxWidth: 320 },
+    { id: 'gate', header: 'Gate', accessor: 'gate', resizable: false },
+    { id: 'status', header: 'Status', accessor: 'status' },
+  ];
+  const handleChange = next => {
+    setWidths(next);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  };
+  return (
+    <div>
+      <Button
+        size="small"
+        appearance="outlined"
+        style={{ marginBottom: 12 }}
+        onClick={() => handleChange({})}
+      >
+        Reset widths
+      </Button>
+      <Table
+        data={data}
+        columns={columns}
+        getRowId={r => r.id}
+        columnResizing={{ value: widths, onChange: handleChange }}
+      />
+    </div>
+  );
+}
+
+render(<ResizeDemo />);
+```
+
 ## Density
 
 `size` scales the cell padding — `'xsmall'`, `'small'`, or `'base'` (the
@@ -841,11 +933,16 @@ const rowsToExport = getExportRows(tableRef.current); // Array<Record<columnId, 
   `Select` with an accessible name, and the nav buttons carry `aria-label`s.
 - The loading overlay surfaces the Spar `Spinner` (`role="status"`) and the
   table is marked `aria-busy` while `loading`.
+- Column resize handles follow the window-splitter pattern: a focusable
+  `role="separator"` with `aria-orientation="vertical"`, a
+  `Resize <header> column` name, and `aria-valuenow` / `aria-valuemin` /
+  `aria-valuemax` in px.
 
-| Key           | Behavior                                        |
-| ------------- | ----------------------------------------------- |
-| Tab           | Move between interactive controls in the table. |
-| Enter / Space | Toggle sorting on a focused sortable header.    |
+| Key           | Behavior                                                                        |
+| ------------- | ------------------------------------------------------------------------------- |
+| Tab           | Move between interactive controls in the table.                                 |
+| Enter / Space | Toggle sorting on a focused sortable header.                                    |
+| ← / →         | Narrow / widen the column of a focused resize handle by 10px (50px with Shift). |
 
 ## API Reference
 
@@ -856,28 +953,29 @@ for primitive behavior.
 
 #### Props {#table-props}
 
-| Name         | Type                                                            | Default | Description                                                                                                                                                                                                                                                                                                                           |
-| ------------ | --------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| data         | `TData[]`                                                       | -       | Row data. In `manual` mode this is the current server page.                                                                                                                                                                                                                                                                           |
-| columns      | `TableColumnDef<TData>[]`                                       | -       | Column definitions. See `TableColumnDef`.                                                                                                                                                                                                                                                                                             |
-| getRowId     | `(row: TData, index: number) => string`                         | -       | Stable row identity (single source of truth).                                                                                                                                                                                                                                                                                         |
-| size         | `TableSize`                                                     | 'base'  | Density scale.                                                                                                                                                                                                                                                                                                                        |
-| striped      | `boolean`                                                       | false   | Zebra-stripe rows → `data-striped`.                                                                                                                                                                                                                                                                                                   |
-| bordered     | `boolean`                                                       | false   | Cell borders → `data-bordered`.                                                                                                                                                                                                                                                                                                       |
-| stickyHeader | `boolean`                                                       | false   | Pin the header row during vertical scroll → `data-sticky-header`.                                                                                                                                                                                                                                                                     |
-| manual       | `boolean`                                                       | false   | Server mode. When `true`, Table processes nothing in-memory — it maps to TanStack's `manualSorting`/`manualFiltering`/`manualPagination` and emits a single bundled `onDataRequest` (RFC §3.3).                                                                                                                                       |
-| selection    | `TableSelectionConfig`                                          | -       | Row selection (single/multiple + select-all). Composes Spar Checkbox/Radio.                                                                                                                                                                                                                                                           |
-| sorting      | `TableSortingConfig`                                            | -       | Sorting (multi-sort opt-in).                                                                                                                                                                                                                                                                                                          |
-| filtering    | `TableFilteringConfig`                                          | -       | Column filtering. Filter UIs render in a Spar `Popover`.                                                                                                                                                                                                                                                                              |
-| expansion    | `TableExpansionConfig<TData>`                                   | -       | Expandable rows with a render-prop body.                                                                                                                                                                                                                                                                                              |
-| pagination   | `boolean \| TablePaginationConfig`                              | -       | Pagination. `true` enables it with defaults; an object configures it.                                                                                                                                                                                                                                                                 |
-| loading      | `boolean`                                                       | false   | Loading state → `data-loading` + a loading overlay.                                                                                                                                                                                                                                                                                   |
-| emptyState   | `React.ReactNode`                                               | -       | Content rendered when there are no rows.                                                                                                                                                                                                                                                                                              |
-| getSubRows   | `(row: TData) => TData[]`                                       | -       | Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with `expansion` (sans `render`) so expanding a row reveals its flattened sub-rows. When `getSubRows` is omitted, expansion falls back to the detail-panel mode driven by `expansion.render`. Supplying both keeps tree mode and suppresses the detail panel. |
-| tableRef     | `Ref<TanStackTable<TData> \| null>`                             | -       | Escape hatch for the rare imperative need — receives the TanStack table instance (RFC §2.3: controlled props + an optional instance ref, never an imperative `@Method` surface). Also the access point for `getExportRows()`.                                                                                                         |
-| classNames   | `Partial<Record<TableSlot, string>>`                            | -       | Per-slot class name overrides.                                                                                                                                                                                                                                                                                                        |
-| slotProps    | `Partial<Record<TableSlot, React.HTMLAttributes<HTMLElement>>>` | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                                                                                    |
-| className    | `string`                                                        | -       | Appends custom classes to the root container.                                                                                                                                                                                                                                                                                         |
+| Name           | Type                                                            | Default | Description                                                                                                                                                                                                                                                                                                                                          |
+| -------------- | --------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| data           | `TData[]`                                                       | -       | Row data. In `manual` mode this is the current server page.                                                                                                                                                                                                                                                                                          |
+| columns        | `TableColumnDef<TData>[]`                                       | -       | Column definitions. See `TableColumnDef`.                                                                                                                                                                                                                                                                                                            |
+| getRowId       | `(row: TData, index: number) => string`                         | -       | Stable row identity (single source of truth).                                                                                                                                                                                                                                                                                                        |
+| size           | `TableSize`                                                     | 'base'  | Density scale.                                                                                                                                                                                                                                                                                                                                       |
+| striped        | `boolean`                                                       | false   | Zebra-stripe rows → `data-striped`.                                                                                                                                                                                                                                                                                                                  |
+| bordered       | `boolean`                                                       | false   | Cell borders → `data-bordered`.                                                                                                                                                                                                                                                                                                                      |
+| stickyHeader   | `boolean`                                                       | false   | Pin the header row during vertical scroll → `data-sticky-header`.                                                                                                                                                                                                                                                                                    |
+| manual         | `boolean`                                                       | false   | Server mode. When `true`, Table processes nothing in-memory — it maps to TanStack's `manualSorting`/`manualFiltering`/`manualPagination` and emits a single bundled `onDataRequest` (RFC §3.3).                                                                                                                                                      |
+| selection      | `TableSelectionConfig`                                          | -       | Row selection (single/multiple + select-all). Composes Spar Checkbox/Radio.                                                                                                                                                                                                                                                                          |
+| sorting        | `TableSortingConfig`                                            | -       | Sorting (multi-sort opt-in).                                                                                                                                                                                                                                                                                                                         |
+| filtering      | `TableFilteringConfig`                                          | -       | Column filtering. Filter UIs render in a Spar `Popover`.                                                                                                                                                                                                                                                                                             |
+| expansion      | `TableExpansionConfig<TData>`                                   | -       | Expandable rows with a render-prop body.                                                                                                                                                                                                                                                                                                             |
+| pagination     | `boolean \| TablePaginationConfig`                              | -       | Pagination. `true` enables it with defaults; an object configures it.                                                                                                                                                                                                                                                                                |
+| columnResizing | `boolean \| TableColumnResizingConfig`                          | -       | User-controlled column resizing. `true` enables it uncontrolled; an object adds the controlled/uncontrolled widths. Every column gets a resize handle on its header edge (pointer drag, touch, and Left/Right arrow keys); a column opts out with `resizable: false` and is bounded by its `minWidth` / `maxWidth`. See `TableColumnResizingConfig`. |
+| loading        | `boolean`                                                       | false   | Loading state → `data-loading` + a loading overlay.                                                                                                                                                                                                                                                                                                  |
+| emptyState     | `React.ReactNode`                                               | -       | Content rendered when there are no rows.                                                                                                                                                                                                                                                                                                             |
+| getSubRows     | `(row: TData) => TData[]`                                       | -       | Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with `expansion` (sans `render`) so expanding a row reveals its flattened sub-rows. When `getSubRows` is omitted, expansion falls back to the detail-panel mode driven by `expansion.render`. Supplying both keeps tree mode and suppresses the detail panel.                |
+| tableRef       | `Ref<TanStackTable<TData> \| null>`                             | -       | Escape hatch for the rare imperative need — receives the TanStack table instance (RFC §2.3: controlled props + an optional instance ref, never an imperative `@Method` surface). Also the access point for `getExportRows()`.                                                                                                                        |
+| classNames     | `Partial<Record<TableSlot, string>>`                            | -       | Per-slot class name overrides.                                                                                                                                                                                                                                                                                                                       |
+| slotProps      | `Partial<Record<TableSlot, React.HTMLAttributes<HTMLElement>>>` | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                                                                                                   |
+| className      | `string`                                                        | -       | Appends custom classes to the root container.                                                                                                                                                                                                                                                                                                        |
 
 #### Events {#table-events}
 
@@ -887,29 +985,32 @@ for primitive behavior.
 
 #### Data attributes {#table-data-attributes}
 
-| Attribute                  | Applied when                                                              | Purpose                                                                                                  |
-| -------------------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| data-slot="root"           | Always                                                                    | Stable selector for the root container.                                                                  |
-| data-slot="table-viewport" | Always                                                                    | The table-only horizontal/vertical scroll container; pagination remains outside it.                      |
-| data-size                  | Always                                                                    | Reflects the resolved `size` (density) so recipes can scope cell padding.                                |
-| data-striped               | When `striped` is true.                                                   | Enables zebra striping on body rows.                                                                     |
-| data-bordered              | When `bordered` is true.                                                  | Adds vertical separators between columns.                                                                |
-| data-sticky-header         | When `stickyHeader` is true.                                              | Pins the header row during vertical scroll.                                                              |
-| data-scrolled              | On the table viewport while `scrollTop > 0`.                              | Adds sticky-header elevation only after vertical scrolling begins.                                       |
-| data-loading               | When `loading` is true.                                                   | Shows the loading overlay; the table is also marked `aria-busy`.                                         |
-| data-align                 | On every header/body cell with an `align` (or column `meta.headerAlign`). | Drives cell `text-align` (`start` \| `center` \| `end`).                                                 |
-| data-sticky                | On cells of a column with `sticky: "left" \| "right"`.                    | Pins the column; per-edge offset + z-index are applied inline.                                           |
-| aria-sort                  | On sortable header cells.                                                 | A11y sort state (`ascending` \| `descending` \| `none`); the sort arrow mirrors it via `data-direction`. |
-| data-selected              | On a selected body row.                                                   | Theme hook for the selected-row background.                                                              |
+| Attribute                  | Applied when                                                              | Purpose                                                                                                      |
+| -------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| data-slot="root"           | Always                                                                    | Stable selector for the root container.                                                                      |
+| data-slot="table-viewport" | Always                                                                    | The table-only horizontal/vertical scroll container; pagination remains outside it.                          |
+| data-size                  | Always                                                                    | Reflects the resolved `size` (density) so recipes can scope cell padding.                                    |
+| data-striped               | When `striped` is true.                                                   | Enables zebra striping on body rows.                                                                         |
+| data-bordered              | When `bordered` is true.                                                  | Adds vertical separators between columns.                                                                    |
+| data-sticky-header         | When `stickyHeader` is true.                                              | Pins the header row during vertical scroll.                                                                  |
+| data-scrolled              | On the table viewport while `scrollTop > 0`.                              | Adds sticky-header elevation only after vertical scrolling begins.                                           |
+| data-loading               | When `loading` is true.                                                   | Shows the loading overlay; the table is also marked `aria-busy`.                                             |
+| data-align                 | On every header/body cell with an `align` (or column `meta.headerAlign`). | Drives cell `text-align` (`start` \| `center` \| `end`).                                                     |
+| data-sticky                | On cells of a column with `sticky: "left" \| "right"`.                    | Pins the column; per-edge offset + z-index are applied inline.                                               |
+| aria-sort                  | On sortable header cells.                                                 | A11y sort state (`ascending` \| `descending` \| `none`); the sort arrow mirrors it via `data-direction`.     |
+| data-fixed-layout          | With `columnResizing`, once any column has a user width.                  | Switches the table to `table-layout: fixed` and adds a trailing filler cell that absorbs the leftover width. |
+| data-resizing              | On the column resize handle while it is being dragged.                    | Highlights the active handle; the root keeps the `col-resize` cursor while any handle carries it.            |
+| data-selected              | On a selected body row.                                                   | Theme hook for the selected-row background.                                                                  |
 
 ### Type Definitions {#table-type-definitions}
 
-| Name                  | Definition                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| TableSize             | `'xsmall' \| 'small' \| 'base'`                                                                                                                                                                                                                                                                                                                                                                                                |
-| TableSelectionConfig  | `{ mode: 'single' \| 'multiple' }`                                                                                                                                                                                                                                                                                                                                                                                             |
-| TableSortingConfig    | `{ multi?: boolean }`                                                                                                                                                                                                                                                                                                                                                                                                          |
-| TableFilteringConfig  | `{ value?: T; defaultValue?: T; onChange?: (value: T) => void }`                                                                                                                                                                                                                                                                                                                                                               |
-| TablePaginationConfig | `{ pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) => void }`                                                                                                                                                                                                                                                                                   |
-| TableSlot             | `\| 'root' \| 'tableViewport' \| 'table' \| 'header' \| 'headerRow' \| 'headerCell' \| 'headerContent' \| 'sortTrigger' \| 'sortIcon' \| 'body' \| 'row' \| 'cell' \| 'selectionCell' \| 'expandCell' \| 'expandButton' \| 'expandedRow' \| 'filterButton' \| 'filterPanel' \| 'pagination' \| 'paginationInfo' \| 'paginationNav' \| 'paginationActions' \| 'paginationSize' \| 'paginationGoToPage' \| 'empty' \| 'loading'` |
-| TableDataRequest      | `{ pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState }`                                                                                                                                                                                                                                                                                                                                          |
+| Name                      | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TableSize                 | `'xsmall' \| 'small' \| 'base'`                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| TableSelectionConfig      | `{ mode: 'single' \| 'multiple' }`                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| TableSortingConfig        | `{ multi?: boolean }`                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| TableFilteringConfig      | `{ value?: T; defaultValue?: T; onChange?: (value: T) => void }`                                                                                                                                                                                                                                                                                                                                                                                                 |
+| TablePaginationConfig     | `{ pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) => void }`                                                                                                                                                                                                                                                                                                                     |
+| TableColumnResizingConfig | `{ value?: T; defaultValue?: T; onChange?: (value: T) => void }`                                                                                                                                                                                                                                                                                                                                                                                                 |
+| TableSlot                 | `\| 'root' \| 'tableViewport' \| 'table' \| 'header' \| 'headerRow' \| 'headerCell' \| 'headerContent' \| 'sortTrigger' \| 'sortIcon' \| 'resizeHandle' \| 'body' \| 'row' \| 'cell' \| 'selectionCell' \| 'expandCell' \| 'expandButton' \| 'expandedRow' \| 'fillerCell' \| 'filterButton' \| 'filterPanel' \| 'pagination' \| 'paginationInfo' \| 'paginationNav' \| 'paginationActions' \| 'paginationSize' \| 'paginationGoToPage' \| 'empty' \| 'loading'` |
+| TableDataRequest          | `{ pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState }`                                                                                                                                                                                                                                                                                                                                                                            |

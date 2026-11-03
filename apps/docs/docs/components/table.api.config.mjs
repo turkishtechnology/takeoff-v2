@@ -88,6 +88,16 @@ export default {
           purpose: 'A11y sort state (`ascending` | `descending` | `none`); the sort arrow mirrors it via `data-direction`.',
         },
         {
+          attribute: 'data-fixed-layout',
+          appliedWhen: 'With `columnResizing`, once any column has a user width.',
+          purpose: 'Switches the table to `table-layout: fixed` and adds a trailing filler cell that absorbs the leftover width.',
+        },
+        {
+          attribute: 'data-resizing',
+          appliedWhen: 'On the column resize handle while it is being dragged.',
+          purpose: 'Highlights the active handle; the root keeps the `col-resize` cursor while any handle carries it.',
+        },
+        {
           attribute: 'data-selected',
           appliedWhen: 'On a selected body row.',
           purpose: 'Theme hook for the selected-row background.',
