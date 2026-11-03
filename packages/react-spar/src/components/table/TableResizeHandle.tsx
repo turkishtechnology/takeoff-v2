@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type 
 import type { Column } from '@tanstack/react-table';
 
 import { useTableContext, type TableGrowPlan } from './context';
-import { RESIZE_KEYBOARD_STEP, RESIZE_KEYBOARD_STEP_LARGE } from './defaults';
+import { RESIZE_DRAG_THRESHOLD, RESIZE_KEYBOARD_STEP, RESIZE_KEYBOARD_STEP_LARGE } from './defaults';
 import { clampColumnWidth, getColumnResizeBounds, resolveGrowth, type ResolvedGrowth } from './helpers';
 import type { TableColumnSizing } from './types';
 
@@ -49,11 +49,19 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
   // screen — before the first resize `getSize()` is only the 150px default.
   const handleRef = useRef<HTMLDivElement>(null);
   const [renderedWidth, setRenderedWidth] = useState<number>();
+  // The table's width stands in for the upper bound of a column without a
+  // `maxWidth` (ARIA would otherwise assume 100).
+  const [tableWidth, setTableWidth] = useState<number>();
   useEffect(() => {
     const cell = handleRef.current?.parentElement;
     if (!cell || typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(() => setRenderedWidth(Math.ceil(cell.getBoundingClientRect().width)));
+    const tableElement = cell.closest('table');
+    const observer = new ResizeObserver(() => {
+      setRenderedWidth(Math.ceil(cell.getBoundingClientRect().width));
+      if (tableElement) setTableWidth(Math.floor(tableElement.getBoundingClientRect().width));
+    });
     observer.observe(cell);
+    if (tableElement) observer.observe(tableElement);
     return () => observer.disconnect();
   }, []);
 
@@ -88,6 +96,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
   // Clamped so it never sits outside the range announced next to it (the auto
   // layout ignores the bounds until the first resize).
   const now = Math.min(max, Math.max(min, renderedWidth || Math.round(column.getSize())));
+  const valueMax = Number.isFinite(max) ? max : tableWidth ? Math.max(now, tableWidth) : undefined;
 
   // A growing column takes its room from the absorber and then from the
   // columns after it, so the table never grows past its container.
@@ -124,6 +133,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
     attrs.onPointerMove?.(event);
     const session = sessionRef.current;
     if (!session || event.pointerId !== session.pointerId) return;
+    if (!session.moved && Math.abs(event.clientX - session.startX) < RESIZE_DRAG_THRESHOLD) return;
     session.moved = true;
     const resolved = widthAt(session, event.clientX);
     session.liveWidth = resolved.width;
@@ -191,7 +201,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
       aria-label={attrs['aria-label'] ?? label}
       aria-valuenow={now}
       aria-valuemin={min}
-      aria-valuemax={Number.isFinite(max) ? max : undefined}
+      aria-valuemax={valueMax}
       aria-valuetext={`${now} px`}
       tabIndex={0}
       data-resizing={dragging ? '' : undefined}

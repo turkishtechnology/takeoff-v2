@@ -1582,10 +1582,10 @@ describe('Table (props-first)', () => {
 
     // jsdom lays nothing out; give every header cell a measurable width so the
     // first resize has an auto layout to freeze.
-    // Measuring clones (`width: min-/max-content`) read 0 unless a test says otherwise.
+    // Measuring clones (`data-measure`) read 0 unless a test says otherwise.
     const mockHeaderWidth = (width: number, byHeader: Record<string, number> = {}) =>
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const isLiveHeader = this.tagName === 'TH' && !this.style.width.endsWith('-content');
+        const isLiveHeader = this.tagName === 'TH' && !this.hasAttribute('data-measure');
         const measured = isLiveHeader ? (byHeader[this.textContent ?? ''] ?? width) : 0;
         return { width: measured, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
@@ -1783,7 +1783,7 @@ describe('Table (props-first)', () => {
       const onChange = vi.fn();
       // The absorber (Age) renders 60px wide: 10px to give, then Role gives the rest.
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const width = this.tagName === 'TH' && !this.style.width.endsWith('-content') ? (this.textContent === 'Age' ? 60 : 120) : 0;
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'Age' ? 60 : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
@@ -1907,14 +1907,15 @@ describe('Table (props-first)', () => {
       const tableElement = container.querySelector('table') as HTMLElement;
 
       fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
-      // The first move renders the draft (here at the stored width)…
-      fireEvent.pointerMove(handle, { clientX: 0, pointerId: 1 });
-      expect(tableElement.style.minWidth).toBe('390px');
+      // The first move renders the draft…
+      fireEvent.pointerMove(handle, { clientX: 10, pointerId: 1 });
+      expect(bodyCell.style.width).toBe('210px');
+      expect(tableElement.style.minWidth).toBe('400px');
       // …later moves only touch the header cell and the min-width floor.
       fireEvent.pointerMove(handle, { clientX: 40, pointerId: 1 });
       expect(headerFor(container, 'Name').style.width).toBe('240px');
       expect(tableElement.style.minWidth).toBe('430px');
-      expect(bodyCell.style.width).toBe('200px');
+      expect(bodyCell.style.width).toBe('210px');
 
       fireEvent.pointerCancel(handle, { clientX: 40, pointerId: 1 });
       expect(headerFor(container, 'Name').style.width).toBe('200px');
@@ -2076,9 +2077,9 @@ describe('Table (props-first)', () => {
     it('fits an undeclared column to its content on double-click while others stay sized', async () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
-      // Clones measured at max-content: a header and a body cell, the body one wider.
+      // Measuring clones: a header and a body cell, the body one wider.
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const width = this.style.width === 'max-content' ? (this.tagName === 'TH' ? 90 : 233.4) : 0;
+        const width = this.hasAttribute('data-measure') ? (this.tagName === 'TH' ? 90 : 233.4) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       const { container } = render(
@@ -2103,7 +2104,7 @@ describe('Table (props-first)', () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const width = this.style.width === 'max-content' ? 180 : this.tagName === 'IFRAME' ? 64 : 0;
+        const width = this.hasAttribute('data-measure') ? 180 : this.tagName === 'IFRAME' ? 64 : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       const columns: TableColumnDef<User>[] = [
@@ -2142,6 +2143,100 @@ describe('Table (props-first)', () => {
       await user.dblClick(handleFor('Name'));
       expect(onChange).toHaveBeenLastCalledWith({ role: 300 });
       expect(headerFor(container, 'Name').style.width).toBe('150px');
+    });
+
+    it('gives the slack to the last column without a declared width, so a fixed trailing column keeps it', () => {
+      mockHeaderWidth(120);
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'city', header: 'City', accessor: 'profile.city' },
+        { id: 'actions', header: 'Actions', cell: () => null, width: 80, resizable: false },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+
+      // City takes the slack: no handle, no width. Actions stays at 80px.
+      expect(screen.queryByRole('separator', { name: 'Resize City column' })).not.toBeInTheDocument();
+      expect(headerFor(container, 'City').style.width).toBe('');
+      expect(headerFor(container, 'Actions').style.width).toBe('80px');
+    });
+
+    it('treats pointer jitter below the drag threshold as a click', () => {
+      mockHeaderWidth(120);
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 0, 2);
+      expect(onChange).not.toHaveBeenCalled();
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+    });
+
+    it('lets nothing grow past the start width once the absorber is at its floor, even after a shrink', () => {
+      // An overflowing table: the absorber (Age) already sits at its 50px min.
+      mockHeaderWidth(120, { Age: 50 });
+      const onChange = vi.fn();
+      render(<Table data={users} columns={[resizeColumns[0], resizeColumns[2]] as TableColumnDef<User>[]} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: -30, pointerId: 1 });
+      fireEvent.pointerMove(handle, { clientX: 100, pointerId: 1 });
+      fireEvent.pointerUp(handle, { clientX: 100, pointerId: 1 });
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('fits to content within the same room a drag may take', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      // Content wants 300px; the absorber (Age) is 100px wide, so 50px to spare.
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.hasAttribute('data-measure') ? 300 : this.tagName === 'TH' && this.textContent === 'Age' ? 100 : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 100, role: 140 }, onChange }} />);
+
+      await user.dblClick(handleFor('Name'));
+      // 50 from the absorber, then Role down to its 50px min.
+      expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 50 });
+    });
+
+    it('holds a column that stops being the absorber at the width it had', () => {
+      mockHeaderWidth(120, { Age: 333 });
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      expect(headerFor(container, 'Age').style.width).toBe('');
+
+      const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
+      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      expect(headerFor(container, 'Age').style.width).toBe('333px');
+      expect(headerFor(container, 'City').style.width).toBe('');
+    });
+
+    it('announces the table width as the upper bound of a column without maxWidth', () => {
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.tagName === 'TABLE' ? 640.6 : this.tagName === 'TH' ? 120 : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const observers: Array<() => void> = [];
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(private readonly callback: () => void) {}
+          observe() {
+            observers.push(this.callback);
+          }
+          disconnect() {}
+        },
+      );
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'role', header: 'Role', accessor: 'role', maxWidth: 300 },
+        { id: 'age', header: 'Age', accessor: 'age' },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing />);
+      expect(handleFor('Name')).not.toHaveAttribute('aria-valuemax');
+      act(() => observers.forEach(callback => callback()));
+
+      expect(handleFor('Name')).toHaveAttribute('aria-valuemax', '640');
+      expect(handleFor('Role')).toHaveAttribute('aria-valuemax', '300');
     });
 
     it('reports the rendered header width to assistive tech', () => {

@@ -245,11 +245,11 @@ not loading.
 
 ### Resizable columns
 
-`columnResizing` puts a drag handle on every header edge (pointer, touch, and
-Left/Right arrows; double-click resets to the declared `width`). `onChange`
-fires once per resize with `{ [columnId]: px }`, so persist it directly and pass
-it back to restore the layout. Opt a column out with `resizable: false` and
-bound it with `minWidth` (default `50`) / `maxWidth`.
+`columnResizing` puts a drag handle on each resizable header edge (pointer,
+touch, and Left/Right arrows; double-click resets to the declared `width`).
+`onChange` fires once per resize with `{ [columnId]: px }`, so persist it
+directly and pass it back to restore the layout. Opt a column out with
+`resizable: false` and bound it with `minWidth` (default `50`) / `maxWidth`.
 
 ```tsx
 const [widths, setWidths] = useState(() => loadWidths());
@@ -279,9 +279,10 @@ const [widths, setWidths] = useState(() => loadWidths());
 ```
 
 The table keeps its auto layout until the first resize, then switches to
-`table-layout: fixed` (`data-fixed-layout`). The last unpinned column has no
-handle and absorbs the leftover width, so the table's own width never jumps; the
-last column never gets a handle.
+`table-layout: fixed` (`data-fixed-layout`). The absorber (the last unpinned
+column without a declared `width`) has no handle and takes the leftover width,
+so the table's own width never jumps and a fixed-width actions column keeps its
+width; the last column never gets a handle.
 
 ### Server (manual) data + export
 

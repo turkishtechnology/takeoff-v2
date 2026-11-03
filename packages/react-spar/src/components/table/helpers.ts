@@ -145,7 +145,6 @@ export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): Colu
         align,
         sticky,
         width,
-        resizable,
         minWidth,
         maxWidth,
         className: meta?.className,
@@ -379,19 +378,18 @@ export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: Sti
 };
 
 /**
- * The column that absorbs the leftover width of a user-sized table: the last
- * visible column that is not pinned (pinned columns need their width for the
- * offset math). It is never user-resized, so the table's overall width never
- * changes when another column is — the absorber widens or narrows instead.
- * `undefined` when every column is pinned.
+ * The column that absorbs the leftover width of a user-sized table. Pinned
+ * columns are never picked (they need their width for the offset math). Among
+ * the rest, the last one without a declared `width` wins, so a fixed-width
+ * column such as a trailing actions column keeps its width; when every one
+ * declares a width, the last one takes the slack. It is never user-resized, so
+ * the table's overall width never changes when another column is: the absorber
+ * widens or narrows instead. `undefined` when every column is pinned.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getAbsorberColumnId = (columns: Column<any, unknown>[]): string | undefined => {
-  for (let index = columns.length - 1; index >= 0; index--) {
-    const column = columns[index];
-    if (column && column.columnDef.meta?.sticky == null) return column.id;
-  }
-  return undefined;
+  const unpinned = columns.filter(column => column.columnDef.meta?.sticky == null).reverse();
+  return (unpinned.find(column => column.columnDef.meta?.width == null) ?? unpinned[0])?.id;
 };
 
 /** The `[min, max]` px range a user resize of this column is clamped to. */
@@ -409,11 +407,17 @@ export const getColumnResizeBounds = (column: Column<any, unknown>): [number, nu
 /** Elements a measuring clone must not load; replaced by same-width stand-ins. */
 const PROBE_REPLACED = 'iframe, video, audio, object, embed';
 
+/** Inline sizing a measuring clone must drop (sticky offsets, resolved widths). */
+const PROBE_CLEARED_STYLES = ['width', 'min-width', 'max-width', 'position', 'left', 'right', 'inset-inline-start', 'inset-inline-end'];
+
 /**
- * The width a column's content wants on one line: the widest `max-content` of
- * its header cell and its rendered body cells, measured on hidden clones next
- * to the table so the size / density styles still apply. `0` when nothing can
- * be measured (no header cell, or a non-layout environment).
+ * The width a column's content wants on one line: the `max-content` width of
+ * its header cell and its rendered body cells. They are cloned into a hidden,
+ * auto-layout copy of the table (same element and classes, inside the same
+ * container), one cell per row, so the size / density / font rules that target
+ * the table still apply and the copy's only column is as wide as its widest
+ * cell. `0` when nothing can be measured (no header cell, or a non-layout
+ * environment).
  */
 export const measureColumnContentWidth = (headerCell: HTMLElement | undefined): number => {
   const headerRow = headerCell?.parentElement as HTMLTableRowElement | null | undefined;
@@ -421,37 +425,48 @@ export const measureColumnContentWidth = (headerCell: HTMLElement | undefined): 
   const host = tableElement?.parentElement;
   if (!headerCell || !headerRow || !tableElement || !host) return 0;
   const index = (headerCell as HTMLTableCellElement).cellIndex;
-  const cells: HTMLElement[] = [headerCell];
+  const bodyCells: HTMLElement[] = [];
   for (const body of Array.from(tableElement.tBodies)) {
     for (const row of Array.from(body.rows)) {
       // Skip rows that don't line up with the header (detail panels, empty / loading rows).
       const cell = row.cells.length === headerRow.cells.length ? row.cells[index] : undefined;
-      if (cell) cells.push(cell);
+      if (cell) bodyCells.push(cell);
     }
   }
-  const probe = document.createElement('div');
+  const probe = tableElement.cloneNode(false) as HTMLTableElement;
+  probe.removeAttribute('id');
   probe.setAttribute('aria-hidden', 'true');
-  probe.style.cssText = 'position:absolute;top:0;left:0;visibility:hidden;pointer-events:none;';
-  for (const cell of cells) {
-    const clone = cell.cloneNode(true) as HTMLElement;
-    clone.style.position = 'static';
-    clone.style.display = 'block';
-    clone.style.width = 'max-content';
-    // Connecting a copy must not touch the real content: a named radio would
-    // join (and uncheck) the live group, and embedded documents / media would
-    // load. Stand-ins of the same width keep the measurement.
-    for (const input of Array.from(clone.querySelectorAll('input, select, textarea'))) input.removeAttribute('name');
-    const originals = cell.querySelectorAll(PROBE_REPLACED);
-    clone.querySelectorAll(PROBE_REPLACED).forEach((element, index) => {
-      const standIn = document.createElement('span');
-      standIn.style.cssText = `display:inline-block;width:${originals[index]?.getBoundingClientRect().width ?? 0}px;`;
-      element.replaceWith(standIn);
-    });
-    probe.appendChild(clone);
-  }
+  probe.style.cssText = 'position:absolute;top:0;left:0;visibility:hidden;pointer-events:none;width:max-content;min-width:0;max-width:none;';
+  probe.style.setProperty('table-layout', 'auto', 'important');
+  const clones: HTMLElement[] = [];
+  const addSection = (tag: 'thead' | 'tbody', cells: HTMLElement[]) => {
+    const section = document.createElement(tag);
+    for (const cell of cells) {
+      const clone = cell.cloneNode(true) as HTMLElement;
+      clone.setAttribute('data-measure', '');
+      for (const property of PROBE_CLEARED_STYLES) clone.style.removeProperty(property);
+      // Connecting a copy must not touch the real content: a named radio would
+      // join (and uncheck) the live group, and embedded documents / media would
+      // load. Stand-ins of the same width keep the measurement.
+      for (const input of Array.from(clone.querySelectorAll('input, select, textarea'))) input.removeAttribute('name');
+      const originals = cell.querySelectorAll(PROBE_REPLACED);
+      clone.querySelectorAll(PROBE_REPLACED).forEach((element, position) => {
+        const standIn = document.createElement('span');
+        standIn.style.cssText = `display:inline-block;width:${originals[position]?.getBoundingClientRect().width ?? 0}px;`;
+        element.replaceWith(standIn);
+      });
+      const row = document.createElement('tr');
+      row.appendChild(clone);
+      section.appendChild(row);
+      clones.push(clone);
+    }
+    probe.appendChild(section);
+  };
+  addSection('thead', [headerCell]);
+  addSection('tbody', bodyCells);
   host.appendChild(probe);
   let width = 0;
-  for (const clone of Array.from(probe.children)) width = Math.max(width, clone.getBoundingClientRect().width);
+  for (const clone of clones) width = Math.max(width, clone.getBoundingClientRect().width);
   probe.remove();
   return Math.ceil(width);
 };

@@ -231,8 +231,8 @@ export interface TableColumnDef<TData> {
    */
   resizable?: boolean;
   /**
-   * Narrowest width (px) a user resize can reach.
-   * @defaultValue 50
+   * Narrowest width (px) a user resize can reach. Defaults to `50`, or to the
+   * declared `width` / `maxWidth` when either is narrower.
    */
   minWidth?: number;
   /** Widest width (px) a user resize can reach. Unbounded when omitted. */
@@ -374,10 +374,12 @@ export interface TableProps<TData = any> {
   pagination?: TablePaginationConfig | boolean;
   /**
    * User-controlled column resizing. `true` enables it uncontrolled; an object
-   * adds the controlled/uncontrolled widths. Every column gets a resize handle
-   * on its header edge (pointer drag, touch, and Left/Right arrow keys); a
-   * column opts out with `resizable: false` and is bounded by its
-   * `minWidth` / `maxWidth`. See {@link TableColumnResizingConfig}.
+   * adds the controlled/uncontrolled widths. Each resizable column gets a
+   * handle on its header edge (pointer drag, touch, and Left/Right arrow keys),
+   * bounded by its `minWidth` / `maxWidth`; a column opts out with
+   * `resizable: false`. The last column and the absorber column (the one that
+   * takes up the leftover width) have no handle. See
+   * {@link TableColumnResizingConfig}.
    */
   columnResizing?: TableColumnResizingConfig | boolean;
   /** Bundled server data-request callback (`manual` mode). See {@link TableDataRequest}. */
@@ -428,7 +430,6 @@ declare module '@tanstack/react-table' {
     align?: TableAlign;
     sticky?: TableStickySide;
     width?: number;
-    resizable?: boolean;
     minWidth?: number;
     maxWidth?: number;
     className?: string;
