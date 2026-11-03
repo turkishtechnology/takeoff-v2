@@ -1707,7 +1707,7 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 100 });
     });
 
-    it('grows a column from the absorber first, then from the columns after it, and stops there', () => {
+    it('grows a column from the absorber first, then from the columns between it and the absorber, and stops there', () => {
       const onChange = vi.fn();
       // The absorber (Age) renders 200px wide; every column may narrow to 50px.
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
