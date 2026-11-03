@@ -647,14 +647,17 @@ and the viewport to `280px` tall so both axes scroll.
 Pass `columnResizing` to let users drag a column's header edge to resize it.
 `true` keeps the widths uncontrolled; an object takes the usual `value` /
 `defaultValue` / `onChange` triple, where the value is a `{ [columnId]: px }`
-map of the columns the user has sized. `onChange` fires once per resize (on
+map. It is empty until the first resize, which freezes every visible column
+except the last unpinned one at its current width, so from then on it holds all
+of them, not just the one that was dragged. `onChange` fires once per resize (on
 release, per arrow-key step, or on a double-click reset), never on every pointer
 move, so it is safe to persist from directly — reload the page after resizing
 below to see the widths come back.
 
 Per column, `resizable: false` removes the handle and `minWidth` / `maxWidth`
-bound the drag (the default minimum is `50px`). A double-click on a handle
-returns that column to its declared `width`.
+bound the drag (the default minimum is `50px`, or the declared `width` when that
+is narrower). A double-click on a handle returns that column to its declared
+`width`, or to `150px` when it declares none.
 
 The table keeps its natural auto layout until the first resize. From then on
 every column carries an explicit width under `table-layout: fixed`

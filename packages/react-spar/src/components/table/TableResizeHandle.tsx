@@ -102,7 +102,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
     // not freeze the auto layout.
     if (!commit || !session.moved) return;
     const width = widthAt(session, event.clientX);
-    if (width !== session.startWidth || session.base[column.id] == null) columnResizing.commit({ ...session.base, [column.id]: width });
+    if (width !== session.startWidth) columnResizing.commit({ ...session.base, [column.id]: width });
   };
 
   const handlePointerUp = (event: PointerEvent<HTMLElement>) => {
@@ -131,7 +131,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
     const base = columnResizing.getBaseSizing();
     const current = base[column.id] ?? column.getSize();
     const width = clampColumnWidth(column, current + sign * step);
-    if (width !== current || base[column.id] == null) columnResizing.commit({ ...base, [column.id]: width });
+    if (width !== current) columnResizing.commit({ ...base, [column.id]: width });
   };
 
   const handleDoubleClick = (event: MouseEvent<HTMLElement>) => {

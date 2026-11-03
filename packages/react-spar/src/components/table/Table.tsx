@@ -335,6 +335,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       setDraft: setResizeDraft,
       commit: sizing => setSizing(sizing),
       reset: columnId => {
+        if (committedSizingRef.current[columnId] == null) return;
         const { [columnId]: _dropped, ...rest } = committedSizingRef.current;
         setSizing(rest);
       },

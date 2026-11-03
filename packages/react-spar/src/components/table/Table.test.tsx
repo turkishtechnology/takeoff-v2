@@ -1943,6 +1943,32 @@ describe('Table (props-first)', () => {
       expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
     });
 
+    it('does not fire onChange when a double-click has nothing to reset', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      await user.dblClick(handleFor('Name'));
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('never widens a column declared narrower than the default min when it is shrunk', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(
+        <Table data={users} columns={[{ id: 'name', header: 'Name', accessor: 'name', width: 40 }, ...resizeColumns.slice(1)]} getRowId={getRowId} columnResizing={{ onChange }} />,
+      );
+
+      expect(handleFor('Name')).toHaveAttribute('aria-valuemin', '40');
+      handleFor('Name').focus();
+      await user.keyboard('{ArrowLeft}');
+      expect(onChange).not.toHaveBeenCalled();
+      drag(handleFor('Name'), 0, -30);
+      expect(onChange).not.toHaveBeenCalled();
+      await user.keyboard('{ArrowRight}');
+      expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 140 });
+    });
+
     it('starts in the fixed layout from defaultValue with the utility columns in the min width', () => {
       const { container } = render(
         <Table data={[]} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 220 } }} selection={{ mode: 'multiple' }} />,

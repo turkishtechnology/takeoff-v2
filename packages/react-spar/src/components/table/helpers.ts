@@ -397,7 +397,9 @@ export const getAbsorberColumnId = (columns: Column<any, unknown>[]): string | u
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getColumnResizeBounds = (column: Column<any, unknown>): [number, number] => {
   const meta = column.columnDef.meta;
-  const min = meta?.minWidth ?? DEFAULT_MIN_COLUMN_WIDTH;
+  // Without an explicit `minWidth`, a column declared narrower than the default
+  // min keeps its own width as the floor, so shrinking it never widens it.
+  const min = meta?.minWidth ?? Math.min(DEFAULT_MIN_COLUMN_WIDTH, meta?.width ?? DEFAULT_MIN_COLUMN_WIDTH, meta?.maxWidth ?? DEFAULT_MIN_COLUMN_WIDTH);
   // A `maxWidth` below the effective min would invert the range; the min wins.
   const max = Math.max(min, meta?.maxWidth ?? Number.POSITIVE_INFINITY);
   return [min, max];

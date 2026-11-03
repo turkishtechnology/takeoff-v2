@@ -260,9 +260,11 @@ export interface TableSortingConfig extends ControlledState<SortingState> {
 export type TableFilteringConfig = ControlledState<ColumnFiltersState>;
 
 /**
- * User-sized column widths in px, keyed by column id (TanStack's
- * `ColumnSizingState`). Only the columns a user has sized appear; persist it and
- * pass it back as `defaultValue` (or `value`) to restore a layout.
+ * Column widths in px, keyed by column id (TanStack's `ColumnSizingState`).
+ * Empty until the first resize; that resize freezes every visible column except
+ * the last unpinned one (which takes up the leftover width) at its current
+ * width, so from then on the map holds all of them. Persist it and pass it back
+ * as `defaultValue` (or `value`) to restore a layout.
  */
 export type TableColumnSizing = ColumnSizingState;
 
