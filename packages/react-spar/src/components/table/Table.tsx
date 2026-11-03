@@ -360,6 +360,13 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   // that width (see `heldSizing`).
   const absorberWidthRef = useRef<{ id: string; width: number } | undefined>(undefined);
   useLayoutEffect(() => {
+    // Let go of held widths once they are stored (or nothing is stored any
+    // more), so a later stored sizing without them cannot bring them back.
+    const heldIds = Object.keys(heldSizing);
+    if (heldIds.length > 0 && heldIds.some(id => committedSizing[id] != null || Object.keys(committedSizing).length === 0)) {
+      setHeldSizing(heldWidths);
+      return;
+    }
     const previous = absorberWidthRef.current;
     const cell = fixedLayout && absorberColumnId ? headerCellsRef.current.get(absorberColumnId) : undefined;
     absorberWidthRef.current = cell && absorberColumnId ? { id: absorberColumnId, width: Math.ceil(cell.getBoundingClientRect().width) } : undefined;
@@ -400,8 +407,12 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       // Narrowest a column may get: its min width (its text then ends in an
       // ellipsis).
       const floorOf = (column: (typeof visible)[number]) => getColumnResizeBounds(column)[0];
+      // Only columns between this one and the absorber give way: those after
+      // the absorber have no handle to win their width back.
+      const index = visible.findIndex(candidate => candidate.id === columnId);
+      const absorberIndex = visible.indexOf(absorber);
       const donors = visible
-        .slice(visible.findIndex(candidate => candidate.id === columnId) + 1)
+        .slice(index + 1, Math.max(index + 1, absorberIndex))
         .filter(candidate => candidate.id !== absorber.id && candidate.getCanResize() && !stickyLayoutRef.current.has(candidate.id) && base[candidate.id] != null)
         .map(candidate => {
           const width = base[candidate.id] as number;

@@ -18,11 +18,12 @@ Table: user-controlled column resizing.
   shrink below its content. The last unpinned column without a declared `width`
   has no handle and absorbs the leftover width (a fixed-width trailing column
   keeps its width), so the table's own width never changes; a growing column
-  takes room from that column first, then from the columns after it, each down
-  to its min width (fit-to-content too); the last column never gets a handle,
-  and a press that moves less than 3px is a click. Once a table is resized (or
-  opens with stored widths), every body cell stays on one line: plain text ends
-  in an ellipsis, richer cell content is clipped.
+  takes room from that column first, then from the columns between it and that
+  column, each down to its min width (fit-to-content too); only columns before
+  that column get a handle (so the last column never does), and a press that
+  moves less than 3px is a click. Once a table is resized (or opens with stored
+  widths), every body cell stays on one line: plain text ends in an ellipsis,
+  richer cell content is clipped.
 - Header text is now wrapped in a new `headerLabel` slot
   (`.tk-table-header-label`) on every table, so a narrowed header of a resized
   table ends in an ellipsis.

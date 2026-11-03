@@ -2237,6 +2237,34 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({ age: 333 });
     });
 
+    it('never takes room from columns after the absorber', () => {
+      mockHeaderWidth(120, { Notes: 100 });
+      const onChange = vi.fn();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'notes', header: 'Notes', accessor: 'role' },
+        { id: 'status', header: 'Status', accessor: 'age', width: 100 },
+        { id: 'actions', header: 'Actions', cell: () => null, width: 80 },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // Notes has 50px to spare; Status and Actions give nothing.
+      drag(handleFor('Name'), 0, 200);
+      expect(onChange).toHaveBeenCalledWith({ name: 170, status: 120, actions: 120 });
+    });
+
+    it('lets a held width go once it is stored, so a later preset cannot bring it back', () => {
+      mockHeaderWidth(120, { Age: 333 });
+      const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ value: { name: 200 } }} />);
+      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200 } }} />);
+      expect(headerFor(container, 'Age').style.width).toBe('333px');
+
+      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200, age: 333 } }} />);
+      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 180 } }} />);
+      expect(headerFor(container, 'Age').style.width).toBe('150px');
+    });
+
     it('announces the table width as the upper bound of a column without maxWidth', () => {
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
         const width = this.tagName === 'TABLE' ? 640.6 : this.tagName === 'TH' ? 120 : 0;
