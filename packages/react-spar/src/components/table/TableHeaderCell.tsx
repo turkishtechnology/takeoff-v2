@@ -25,11 +25,15 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
   const canSort = column.getCanSort();
   const canFilter = column.getCanFilter() && !!meta?.filter;
   const sorted = column.getIsSorted();
-  // No handle on the absorber (it only takes up the slack) nor on the last
-  // column, whose inline-end edge is the table's own edge.
+  // Handles sit only before the absorber: it takes up the slack, and a column
+  // after it would grow at the absorber's expense on its *start* side, so its
+  // end edge (the handle) would not follow the pointer. That also covers the
+  // last column, whose inline-end edge is the table's own edge.
   const visibleColumns = table.getVisibleLeafColumns();
-  const isLastColumn = visibleColumns[visibleColumns.length - 1]?.id === column.id;
-  const canResize = !!columnResizing && column.getCanResize() && column.id !== absorberColumnId && !isLastColumn;
+  const index = visibleColumns.findIndex(candidate => candidate.id === column.id);
+  const absorberIndex = absorberColumnId == null ? -1 : visibleColumns.findIndex(candidate => candidate.id === absorberColumnId);
+  const isLastColumn = index === visibleColumns.length - 1;
+  const canResize = !!columnResizing && column.getCanResize() && !isLastColumn && (absorberIndex < 0 || index < absorberIndex);
 
   const sticky = resolveStickyCell(stickyLayout, column.id, { isHeader: true, stickyHeader });
   const attrs = slotAttrs('headerCell', { className: meta?.headerClassName });

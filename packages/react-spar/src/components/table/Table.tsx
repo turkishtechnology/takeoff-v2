@@ -121,9 +121,9 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   // Widths held for columns that stopped being the absorber (a column was
   // added after it, or shown again) without a stored width of their own: they
   // keep the width they had instead of jumping to their `getSize()` default.
-  // Tied to the stored sizing they were taken against, so the next commit
-  // (which carries them in its base) or a reset lets them go.
-  const [heldSizing, setHeldSizing] = useState<{ against: ColumnSizingState; widths: ColumnSizingState } | null>(null);
+  // Every commit carries them, so a held id lets go once it is stored; an
+  // empty stored sizing (back to the natural layout) lets them all go.
+  const [heldSizing, setHeldSizing] = useState<ColumnSizingState>(EMPTY_SIZING);
 
   // Read the `{ pageIndex, pageSize }` slice off the config with defaults. Same
   // shape for the initial (mount-snapshot) and controlled (per-render) values
@@ -150,7 +150,11 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const expanded = expandedState ?? EMPTY_EXPANDED;
   const paginationValue = paginationStateRaw ?? initialPagination;
   const committedSizing = (resizingEnabled ? sizingState : undefined) ?? EMPTY_SIZING;
-  const heldWidths = heldSizing?.against === committedSizing ? heldSizing.widths : EMPTY_SIZING;
+  const heldWidths = useMemo<ColumnSizingState>(() => {
+    const ids = Object.keys(heldSizing).filter(id => committedSizing[id] == null);
+    if (ids.length === 0 || Object.keys(committedSizing).length === 0) return EMPTY_SIZING;
+    return Object.fromEntries(ids.map(id => [id, heldSizing[id] as number]));
+  }, [heldSizing, committedSizing]);
   const columnSizing = useMemo<ColumnSizingState>(
     () =>
       resizeDraft
@@ -332,6 +336,8 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const headerCellsRef = useRef(new Map<string, HTMLElement>());
   const committedSizingRef = useRef(committedSizing);
   committedSizingRef.current = committedSizing;
+  const heldWidthsRef = useRef(heldWidths);
+  heldWidthsRef.current = heldWidths;
   const fixedLayoutRef = useRef(fixedLayout);
   fixedLayoutRef.current = fixedLayout;
   const stickyLayoutRef = useRef(stickyLayout);
@@ -360,7 +366,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     if (!fixedLayout || !previous || previous.id === absorberColumnId || previous.width <= 0) return;
     if (committedSizing[previous.id] != null || heldWidths[previous.id] != null) return;
     const column = table.getVisibleLeafColumns().find(candidate => candidate.id === previous.id);
-    if (column) setHeldSizing({ against: committedSizing, widths: { ...heldWidths, [previous.id]: clampColumnWidth(column, previous.width) } });
+    if (column) setHeldSizing({ ...heldWidths, [previous.id]: clampColumnWidth(column, previous.width) });
   });
 
   const columnResizingContext = useMemo<TableColumnResizingContext | undefined>(() => {
@@ -445,7 +451,8 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       commit: sizing => setSizing(sizing),
       reset: columnId => {
         const committed = committedSizingRef.current;
-        const { [columnId]: stored, ...rest } = committed;
+        // Held widths travel with the commit, like a drag's base carries them.
+        const { [columnId]: stored, ...rest } = { ...heldWidthsRef.current, ...committed };
         const column = table.getVisibleLeafColumns().find(candidate => candidate.id === columnId);
         // Dropping the width returns the column to its declared `width`, or —
         // when nothing else stays sized — the whole table to its natural auto

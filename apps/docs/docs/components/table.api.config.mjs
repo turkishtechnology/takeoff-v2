@@ -90,7 +90,7 @@ export default {
         {
           attribute: 'data-fixed-layout',
           appliedWhen: 'With `columnResizing`, once any column has a user width.',
-          purpose: 'Switches the table to `table-layout: fixed`; the last unpinned column absorbs the leftover width.',
+          purpose: 'Switches the table to `table-layout: fixed`; the absorber column (the last unpinned one without a declared `width`) takes the leftover width.',
         },
         {
           attribute: 'data-resizing',

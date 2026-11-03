@@ -680,9 +680,10 @@ fixed-width trailing column such as an actions column keeps its width. A growing
 column takes its room from the absorber first, then from the resizable, unpinned
 columns after it (nearest first), each down to its min width. So a resize never
 pushes the table past its container; a table that already overflows (e.g. widths
-stored on a wider screen) scrolls horizontally. The last column has no handle
-either, since its edge is the table's edge. Fitting a column to its content with
-a double-click takes its room the same way, and a press that moves less than 3px
+stored on a wider screen) scrolls horizontally. Only columns before the absorber
+get a handle, so a fixed-width column after it (and the last column, whose edge
+is the table's edge) keeps its width. Fitting a column to its content with a
+double-click takes its room the same way, and a press that moves less than 3px
 counts as a click, not a resize.
 
 ```tsx
