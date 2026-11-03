@@ -16,6 +16,10 @@ import { useCallback, useRef, type PointerEvent as ReactPointerEvent } from 'rea
  * every `pointerdown` that starts in one of its (portaled) descendants, and it
  * runs before Spar's bubble-phase `document` listener. We remember those
  * native events and veto the outside dismiss for exactly them.
+ *
+ * TODO(spar#196): turkishtechnology/spar#196 fixes this in Spar's
+ * `useInteractOutside` itself. Once a Spar release containing it is pinned,
+ * remove this hook and its use in `Dialog.Panel` / `Drawer.Panel`.
  */
 export const useNestedLayerDismissGuard = <E extends HTMLElement = HTMLElement>(onPointerDownCapture?: (event: ReactPointerEvent<E>) => void) => {
   const insideEvents = useRef<WeakSet<Event>>(new WeakSet());

@@ -933,6 +933,70 @@ describe('Dialog (compound)', () => {
       expect(onPointerDownCapture).toHaveBeenCalled();
     });
 
+    it('keeps a slotProps.root onPointerDownCapture working', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      const onPointerDownCapture = vi.fn();
+      render(
+        <Dialog defaultOpen onOpenChange={onOpenChange}>
+          <Dialog.Panel slotProps={{ root: { onPointerDownCapture } }}>
+            <Dialog.Title>{TITLE}</Dialog.Title>
+            <Select>
+              <Select.Trigger placeholder="Cabin" />
+              <Select.Content>
+                <Select.Item value="economy" label="Economy">
+                  Economy
+                </Select.Item>
+              </Select.Content>
+            </Select>
+          </Dialog.Panel>
+        </Dialog>,
+      );
+
+      await user.click(screen.getByRole('combobox'));
+      await user.click(screen.getByRole('option', { name: 'Economy' }));
+
+      expect(onPointerDownCapture).toHaveBeenCalled();
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(getPanel()).toHaveAttribute('data-state', 'open');
+    });
+
+    it('stays open with modal={false} when focus and pointer move into a nested Select', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      render(
+        <>
+          <button type="button">Elsewhere</button>
+          <Dialog defaultOpen modal={false} onOpenChange={onOpenChange}>
+            <Dialog.Panel>
+              <Dialog.Title>{TITLE}</Dialog.Title>
+              <Select>
+                <Select.Trigger placeholder="Cabin" />
+                <Select.Content>
+                  <Select.Item value="business" label="Business">
+                    Business
+                  </Select.Item>
+                </Select.Content>
+              </Select>
+            </Dialog.Panel>
+          </Dialog>
+        </>,
+      );
+
+      await user.click(screen.getByRole('combobox'));
+      const option = screen.getByRole('option', { name: 'Business' });
+      // Select.Content takes focus when it opens, outside the panel's DOM.
+      expect(getPanel().contains(document.activeElement)).toBe(false);
+      await user.click(option);
+
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(getPanel()).toHaveAttribute('data-state', 'open');
+      expect(screen.getByRole('combobox')).toHaveTextContent('Business');
+
+      await user.click(screen.getByRole('button', { name: 'Elsewhere' }));
+      expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
+    });
+
     it('still closes on a genuine outside press', async () => {
       const user = userEvent.setup();
       const onOpenChange = vi.fn();

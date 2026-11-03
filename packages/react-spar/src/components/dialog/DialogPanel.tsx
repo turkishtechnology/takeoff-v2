@@ -15,7 +15,11 @@ export const DialogPanel = <T extends ElementType = 'div'>(props: DialogPanelPro
   const { rootAttrs, rest } = composeRootAttrs<DialogPanelProps, DialogPanelSlot>(DialogPanelBase, props as DialogPanelProps<'div'>, theme);
   const { children, ref, ...sparProps } = rest;
 
-  const { onPointerDownCapture, guardOutside } = useNestedLayerDismissGuard(sparProps.onPointerDownCapture);
+  // `rootAttrs` (theme / `slotProps.root`) is spread after the instance props
+  // and wins for the same key, so the guard wraps whichever handler would
+  // otherwise have been applied.
+  const consumerPointerDownCapture = (rootAttrs.onPointerDownCapture ?? sparProps.onPointerDownCapture) as typeof sparProps.onPointerDownCapture;
+  const { onPointerDownCapture, guardOutside } = useNestedLayerDismissGuard(consumerPointerDownCapture);
 
   // Presses inside a portaled descendant (Select / Popover / Dropdown content)
   // are not outside presses; see `useNestedLayerDismissGuard`.

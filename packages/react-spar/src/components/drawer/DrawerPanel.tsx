@@ -20,7 +20,11 @@ export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelPro
 
   const { container, children, ref, ...panelProps } = rest;
 
-  const { onPointerDownCapture, guardOutside } = useNestedLayerDismissGuard(panelProps.onPointerDownCapture);
+  // `rootAttrs` (theme / `slotProps.root`) is spread after the instance props
+  // and wins for the same key, so the guard wraps whichever handler would
+  // otherwise have been applied.
+  const consumerPointerDownCapture = (rootAttrs.onPointerDownCapture ?? panelProps.onPointerDownCapture) as typeof panelProps.onPointerDownCapture;
+  const { onPointerDownCapture, guardOutside } = useNestedLayerDismissGuard(consumerPointerDownCapture);
 
   // Presses inside a portaled descendant (Select / Popover / Dropdown content)
   // are not outside presses; see `useNestedLayerDismissGuard`.
