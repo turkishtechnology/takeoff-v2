@@ -1,6 +1,7 @@
 import { useTableContext } from './context';
+import { getFillerIndex } from './helpers';
 import { TableHeaderCell } from './TableHeaderCell';
-import { ExpandHeaderCell, SelectionHeaderCell, TableFillerCell } from './TableUtilityCells';
+import { ExpandHeaderCell, SelectionHeaderCell, withFiller } from './TableUtilityCells';
 
 /**
  * `<thead>` + header rows. Leading utility cells (selection, then expand)
@@ -15,10 +16,10 @@ export const TableHeader = () => {
         <tr key={headerGroup.id} {...slotAttrs('headerRow')}>
           {hasSelection && <SelectionHeaderCell />}
           {hasExpansion && <ExpandHeaderCell />}
-          {headerGroup.headers.map(header => (
-            <TableHeaderCell key={header.id} header={header} />
-          ))}
-          {fixedLayout && <TableFillerCell />}
+          {withFiller(
+            headerGroup.headers.map(header => <TableHeaderCell key={header.id} header={header} />),
+            fixedLayout ? getFillerIndex(headerGroup.headers.map(header => header.column)) : -1,
+          )}
         </tr>
       ))}
     </thead>

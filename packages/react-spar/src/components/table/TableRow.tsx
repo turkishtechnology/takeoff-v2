@@ -3,7 +3,8 @@ import type { Row } from '@tanstack/react-table';
 
 import { useTableContext } from './context';
 import { TableCell } from './TableCell';
-import { ExpandBodyCell, SelectionBodyCell, TableFillerCell } from './TableUtilityCells';
+import { getFillerIndex } from './helpers';
+import { ExpandBodyCell, SelectionBodyCell, withFiller } from './TableUtilityCells';
 
 /**
  * One body `<tr>`. In detail-panel mode it also renders a disclosure `<tr>` when
@@ -16,6 +17,7 @@ import { ExpandBodyCell, SelectionBodyCell, TableFillerCell } from './TableUtili
 export const TableRow = ({ row }: { row: Row<any> }) => {
   const { slotAttrs, hasSelection, hasExpansion, treeMode, expansionRender, totalColumnCount, fixedLayout } = useTableContext('Table.Row');
   const selected = row.getIsSelected();
+  const cells = row.getVisibleCells();
 
   // Detail panel only outside tree mode — the two expansion shapes are
   // mutually exclusive (sub-rows win).
@@ -26,10 +28,10 @@ export const TableRow = ({ row }: { row: Row<any> }) => {
       <tr {...slotAttrs('row')} data-selected={selected ? '' : undefined}>
         {hasSelection && <SelectionBodyCell row={row} />}
         {hasExpansion && <ExpandBodyCell row={row} />}
-        {row.getVisibleCells().map(cell => (
-          <TableCell key={cell.id} cell={cell} />
-        ))}
-        {fixedLayout && <TableFillerCell />}
+        {withFiller(
+          cells.map(cell => <TableCell key={cell.id} cell={cell} />),
+          fixedLayout ? getFillerIndex(cells.map(cell => cell.column)) : -1,
+        )}
       </tr>
       {showDetailPanel && (
         <tr {...slotAttrs('expandedRow')}>

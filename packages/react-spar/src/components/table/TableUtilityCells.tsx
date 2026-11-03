@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import type { Row } from '@tanstack/react-table';
 import { ChevronBottomIconOutlinedRounded } from '@takeoff-icons/react/chevron-bottom';
 import { ChevronRightIconOutlinedRounded } from '@takeoff-icons/react/chevron-right';
@@ -139,7 +139,8 @@ ExpandBodyCell.displayName = 'Table.ExpandBodyCell';
 // ── Filler ──────────────────────────────────────────────────────────────────
 
 /**
- * Trailing cell of every header and body row once columns are user-sized. Under
+ * Filler cell of every header and body row once columns are user-sized — after
+ * the scrolling columns and before any right pins, so those stay flush right. Under
  * `table-layout: fixed` it is the only auto-width column, so it absorbs the
  * space the sized columns leave (shrinking a column never stretches its
  * neighbours) and collapses to zero once they overflow. Presentational only.
@@ -150,3 +151,7 @@ export const TableFillerCell = () => {
 };
 
 TableFillerCell.displayName = 'Table.FillerCell';
+
+/** Splice the filler cell into a row's data cells at `index` (see `getFillerIndex`); `-1` renders none. */
+export const withFiller = (cells: ReactNode[], index: number): ReactNode[] =>
+  index < 0 ? cells : [...cells.slice(0, index), <TableFillerCell key="__tk_filler__" />, ...cells.slice(index)];

@@ -1749,6 +1749,74 @@ describe('Table (props-first)', () => {
       expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
     });
 
+    it('drops the draft when the pointer capture is lost mid-drag', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 1 });
+      // Another pointer's capture loss is not ours.
+      fireEvent.lostPointerCapture(handle, { pointerId: 2 });
+      expect(headerFor(container, 'Name').style.width).toBe('190px');
+      fireEvent.lostPointerCapture(handle, { pointerId: 1 });
+
+      expect(handle).not.toHaveAttribute('data-resizing');
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      // The late pointerup of the abandoned drag commits nothing.
+      fireEvent.pointerUp(handle, { clientX: 40, pointerId: 1 });
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('drops the draft when the window loses focus mid-drag', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 1 });
+      fireEvent.blur(window);
+
+      expect(handle).not.toHaveAttribute('data-resizing');
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('drops the draft when the dragged handle unmounts mid-drag', () => {
+      const onChange = vi.fn();
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      fireEvent.pointerDown(handleFor('Name'), { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handleFor('Name'), { clientX: 40, pointerId: 1 });
+      expect(container.querySelector('[data-slot="root"]')).toHaveAttribute('data-fixed-layout', '');
+
+      rerender(
+        <Table
+          data={users}
+          columns={resizeColumns.map(column => (column.id === 'name' ? { ...column, resizable: false } : column))}
+          getRowId={getRowId}
+          columnResizing={{ onChange }}
+        />,
+      );
+
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      expect(headerFor(container, 'Name').style.width).toBe('');
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('keeps right-pinned columns flush right by placing the filler before them', () => {
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'role', header: 'Role', accessor: 'role' },
+        { id: 'age', header: 'Age', accessor: 'age', sticky: 'right', width: 80 },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 120 } }} />);
+
+      const order = (row: Element) => Array.from(row.children).map(cell => (cell.classList.contains('tk-table-filler-cell') ? 'filler' : cell.textContent));
+      expect(order(container.querySelector('thead tr') as Element)).toEqual(['Name', 'Role', 'filler', 'Age']);
+      expect(order(container.querySelector('tbody tr') as Element)).toEqual(['Ada', 'admin', 'filler', '42']);
+    });
+
     it('captures and releases the pointer when the platform supports it', () => {
       render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
       const handle = handleFor('Name');

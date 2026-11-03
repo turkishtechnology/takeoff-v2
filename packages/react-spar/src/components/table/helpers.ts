@@ -373,6 +373,18 @@ export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: Sti
   return hasWidth ? { width: column.getSize() } : undefined;
 };
 
+/**
+ * Where the fixed-layout filler cell goes in a row: right before the first
+ * right-pinned column, so the right pins stay flush with the table's right edge
+ * (the filler takes the slack between the scrolling columns and the pins), or at
+ * the end when nothing is pinned right.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getFillerIndex = (columns: Column<any, unknown>[]): number => {
+  const index = columns.findIndex(column => column.columnDef.meta?.sticky === 'right');
+  return index === -1 ? columns.length : index;
+};
+
 /** The `[min, max]` px range a user resize of this column is clamped to. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getColumnResizeBounds = (column: Column<any, unknown>): [number, number] => {

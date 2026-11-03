@@ -1,4 +1,4 @@
-import { useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react';
 import type { Column } from '@tanstack/react-table';
 
 import { useTableContext } from './context';
@@ -35,6 +35,30 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
   const { slotAttrs, columnResizing } = useTableContext('Table.ResizeHandle');
   const sessionRef = useRef<DragSession | null>(null);
   const [dragging, setDragging] = useState(false);
+  const setDraftRef = useRef(columnResizing?.setDraft);
+  setDraftRef.current = columnResizing?.setDraft;
+
+  // Abandon an in-flight drag without committing. The draft lives in Table
+  // state, so a drag that never sees its pointerup (window blur, capture taken
+  // away, the handle unmounting mid-drag) must clear it here or the column
+  // stays stuck at the draft width.
+  const abandon = () => {
+    if (!sessionRef.current) return;
+    sessionRef.current = null;
+    setDragging(false);
+    setDraftRef.current?.(null);
+  };
+  const abandonRef = useRef(abandon);
+  abandonRef.current = abandon;
+
+  useEffect(() => {
+    if (!dragging) return;
+    const onBlur = () => abandonRef.current();
+    window.addEventListener('blur', onBlur);
+    return () => window.removeEventListener('blur', onBlur);
+  }, [dragging]);
+
+  useEffect(() => () => abandonRef.current(), []);
 
   if (!columnResizing) return null;
 
@@ -91,6 +115,13 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
     endSession(event, false);
   };
 
+  // Fires after a normal pointerup too, but the session is already closed by
+  // then; reaching here with a live session means the capture was taken away.
+  const handleLostPointerCapture = (event: PointerEvent<HTMLElement>) => {
+    attrs.onLostPointerCapture?.(event);
+    if (sessionRef.current?.pointerId === event.pointerId) abandon();
+  };
+
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     attrs.onKeyDown?.(event);
     if (event.defaultPrevented || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) return;
@@ -124,6 +155,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerCancel}
+      onLostPointerCapture={handleLostPointerCapture}
       onKeyDown={handleKeyDown}
       onDoubleClick={handleDoubleClick}
     />
