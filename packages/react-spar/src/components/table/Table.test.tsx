@@ -1711,7 +1711,7 @@ describe('Table (props-first)', () => {
       const onChange = vi.fn();
       // The absorber (Age) renders 200px wide; every column may narrow to 50px.
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const width = this.style.width === 'min-content' ? (this.tagName === 'TH' ? 40 : 80) : this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
+        const width = this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
@@ -1745,7 +1745,7 @@ describe('Table (props-first)', () => {
       // 70px wider once Name is drawn 70px narrower; its floor is 50px.
       let nameWidth = 120;
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const width = this.style.width === 'min-content' ? 80 : this.tagName === 'TH' ? (this.textContent === 'Age' ? 320 - nameWidth : 120) : 0;
+        const width = this.tagName === 'TH' ? (this.textContent === 'Age' ? 320 - nameWidth : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       render(<Table data={users} columns={[...resizeColumns.slice(0, 1), ...resizeColumns.slice(2)]} getRowId={getRowId} columnResizing={{ onChange }} />);
@@ -1762,7 +1762,7 @@ describe('Table (props-first)', () => {
     it('never takes room from a pinned or non-resizable column', () => {
       const onChange = vi.fn();
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const width = this.style.width === 'min-content' ? 60 : this.tagName === 'TH' ? (this.textContent === 'City' ? 100 : 120) : 0;
+        const width = this.tagName === 'TH' ? (this.textContent === 'City' ? 100 : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       const columns: TableColumnDef<User>[] = [

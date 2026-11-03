@@ -665,8 +665,10 @@ Per column, `resizable: false` removes the handle and `minWidth` / `maxWidth`
 bound the drag (the default minimum is `50px`, or the declared `width` when that
 is narrower). A double-click on a handle returns that column to its declared
 `width`; a column without one is fitted to its content instead (or, when no
-other column stays sized, the whole table returns to its natural layout). Text
-in a narrowed column ends in an ellipsis.
+other column stays sized, the whole table returns to its natural layout). Once a
+table is resized (or opens with stored widths), every body cell stays on one
+line: plain text that does not fit ends in an ellipsis, and richer cell content
+(badges, flex wrappers) is clipped at the cell edge.
 
 The table keeps its natural auto layout until the first resize. From then on
 every column carries an explicit width under `table-layout: fixed`
