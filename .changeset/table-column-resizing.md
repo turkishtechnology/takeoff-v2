@@ -18,8 +18,9 @@ Table: user-controlled column resizing.
   shrink below its content. The last unpinned column has no handle and absorbs
   the leftover width, so the table's own width never changes; the last column
   never gets a handle.
-- Header text is wrapped in a new `headerLabel` slot (`.tk-table-header-label`)
-  so a narrowed header ends in an ellipsis.
+- Header text is now wrapped in a new `headerLabel` slot
+  (`.tk-table-header-label`) on every table, so a narrowed header of a resized
+  table ends in an ellipsis.
 - New `resizeHandle` slot, `TableColumnSizing` and `TableColumnResizingConfig`
   types, and the matching `.tk-table-resize-handle` recipe styles in
   `@takeoff-design/tokens`.

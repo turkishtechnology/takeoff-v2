@@ -30,6 +30,7 @@ afterAll(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 interface User {
@@ -2008,6 +2009,41 @@ describe('Table (props-first)', () => {
       expect(container.querySelector('[aria-hidden="true"][style*="visibility"]')).toBeNull();
     });
 
+    it('fits an unsized column too, and leaves the live content of the cells alone', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.style.width === 'max-content' ? 180 : this.tagName === 'IFRAME' ? 64 : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        {
+          id: 'pick',
+          header: 'Pick',
+          cell: ({ row }) => (
+            <span>
+              <input type="radio" name="pick" aria-label={`Pick ${row.original.name}`} defaultChecked={row.index === 0} />
+              <iframe title="preview" />
+            </span>
+          ),
+        },
+        { id: 'age', header: 'Age', accessor: 'age' },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 }, onChange }} />);
+
+      // `pick` has no stored width (it renders at the 150px default) yet still fits.
+      await user.dblClick(screen.getByRole('separator', { name: 'Resize Pick column' }));
+      expect(onChange).toHaveBeenLastCalledWith({ name: 200, pick: 180 });
+      expect(screen.getByRole('radio', { name: 'Pick Ada' })).toBeChecked();
+      expect(container.querySelectorAll('iframe')).toHaveLength(users.length);
+
+      // Fitting again to the same width commits nothing.
+      onChange.mockClear();
+      await user.dblClick(screen.getByRole('separator', { name: 'Resize Pick column' }));
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
     it('drops the width instead when the content cannot be measured', async () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
@@ -2036,7 +2072,25 @@ describe('Table (props-first)', () => {
 
       expect(handleFor('Name')).toHaveAttribute('aria-valuenow', '120');
       expect(handleFor('Name')).toHaveAttribute('aria-valuetext', '120 px');
-      vi.unstubAllGlobals();
+    });
+
+    it('keeps the reported width inside the announced range, as the auto layout can undercut the min', () => {
+      mockHeaderWidth(30);
+      const observers: Array<() => void> = [];
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(private readonly callback: () => void) {}
+          observe() {
+            observers.push(this.callback);
+          }
+          disconnect() {}
+        },
+      );
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      act(() => observers.forEach(callback => callback()));
+
+      expect(handleFor('Name')).toHaveAttribute('aria-valuenow', '50');
     });
 
     it('wraps the header text so a narrow column can end it in an ellipsis', () => {

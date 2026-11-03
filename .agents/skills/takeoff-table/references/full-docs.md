@@ -718,7 +718,7 @@ function ResizeDemo() {
       minWidth: 90,
     },
     { id: 'route', header: 'Route', accessor: 'route', maxWidth: 320 },
-    { id: 'gate', header: 'Gate', accessor: 'gate', resizable: false },
+    { id: 'gate', header: 'Gate', accessor: 'gate' },
     { id: 'status', header: 'Status', accessor: 'status' },
   ];
   const handleChange = next => {

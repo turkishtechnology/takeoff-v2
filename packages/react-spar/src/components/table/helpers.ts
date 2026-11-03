@@ -405,6 +405,9 @@ export const getColumnResizeBounds = (column: Column<any, unknown>): [number, nu
   return [min, max];
 };
 
+/** Elements a measuring clone must not load; replaced by same-width stand-ins. */
+const PROBE_REPLACED = 'iframe, video, audio, object, embed';
+
 /**
  * The width a column's content wants on one line: the widest `max-content` of
  * its header cell and its rendered body cells, measured on hidden clones next
@@ -433,6 +436,16 @@ export const measureColumnContentWidth = (headerCell: HTMLElement | undefined): 
     clone.style.position = 'static';
     clone.style.display = 'block';
     clone.style.width = 'max-content';
+    // Connecting a copy must not touch the real content: a named radio would
+    // join (and uncheck) the live group, and embedded documents / media would
+    // load. Stand-ins of the same width keep the measurement.
+    for (const input of Array.from(clone.querySelectorAll('input, select, textarea'))) input.removeAttribute('name');
+    const originals = cell.querySelectorAll(PROBE_REPLACED);
+    clone.querySelectorAll(PROBE_REPLACED).forEach((element, index) => {
+      const standIn = document.createElement('span');
+      standIn.style.cssText = `display:inline-block;width:${originals[index]?.getBoundingClientRect().width ?? 0}px;`;
+      element.replaceWith(standIn);
+    });
     probe.appendChild(clone);
   }
   host.appendChild(probe);

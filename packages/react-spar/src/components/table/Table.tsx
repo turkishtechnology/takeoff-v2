@@ -366,16 +366,20 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       commit: sizing => setSizing(sizing),
       reset: columnId => {
         const committed = committedSizingRef.current;
-        if (committed[columnId] == null) return;
-        const { [columnId]: _dropped, ...rest } = committed;
+        const { [columnId]: stored, ...rest } = committed;
         const column = table.getVisibleLeafColumns().find(candidate => candidate.id === columnId);
         // Dropping the width returns the column to its declared `width`, or —
         // when nothing else stays sized — the whole table to its natural auto
-        // layout. Otherwise an undeclared column would fall to the 150px
-        // default, so fit it to its content instead.
+        // layout. Otherwise an undeclared column would sit at the 150px
+        // default (stored or not), so fit it to its content instead.
         const staysFixed = table.getVisibleLeafColumns().some(candidate => candidate.id !== absorberColumnIdRef.current && rest[candidate.id] != null);
         const fitted = column && staysFixed && column.columnDef.meta?.width == null ? measureColumnContentWidth(headerCellsRef.current.get(columnId)) : 0;
-        setSizing(column && fitted > 0 ? { ...rest, [columnId]: clampColumnWidth(column, fitted) } : rest);
+        if (column && fitted > 0) {
+          const width = clampColumnWidth(column, fitted);
+          if (width !== stored) setSizing({ ...rest, [columnId]: width });
+          return;
+        }
+        if (stored != null) setSizing(rest);
       },
       registerHeaderCell: (columnId, element) => {
         if (element) headerCellsRef.current.set(columnId, element);

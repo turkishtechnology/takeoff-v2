@@ -265,7 +265,7 @@ const [widths, setWidths] = useState(() => loadWidths());
       minWidth: 90,
     },
     { id: 'route', header: 'Route', accessor: 'route', maxWidth: 320 },
-    { id: 'gate', header: 'Gate', accessor: 'gate', resizable: false },
+    { id: 'gate', header: 'Gate', accessor: 'gate' },
   ]}
   getRowId={row => row.id}
   columnResizing={{

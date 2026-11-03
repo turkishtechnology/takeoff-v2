@@ -45,7 +45,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
   useEffect(() => {
     const cell = handleRef.current?.parentElement;
     if (!cell || typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(() => setRenderedWidth(Math.round(cell.getBoundingClientRect().width)));
+    const observer = new ResizeObserver(() => setRenderedWidth(Math.ceil(cell.getBoundingClientRect().width)));
     observer.observe(cell);
     return () => observer.disconnect();
   }, []);
@@ -78,7 +78,9 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
   const header = column.columnDef.header;
   const label = typeof header === 'string' ? `Resize ${header} column` : 'Resize column';
   const attrs = slotAttrs('resizeHandle');
-  const now = renderedWidth || Math.round(column.getSize());
+  // Clamped so it never sits outside the range announced next to it (the auto
+  // layout ignores the bounds until the first resize).
+  const now = Math.min(max, Math.max(min, renderedWidth || Math.round(column.getSize())));
 
   const widthAt = (session: DragSession, clientX: number) => clampColumnWidth(column, session.startWidth + (clientX - session.startX) * session.direction);
 

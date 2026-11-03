@@ -287,11 +287,16 @@
 }
 
 // Header text. A flex item with `min-width: 0` so it can shrink below its
-// content and end in an ellipsis when its column is sized narrower.
+// content; once columns are user-sized it ends in an ellipsis. The clipping is
+// scoped to that layout so a focusable header render-prop keeps its focus ring
+// on tables that never resize.
 @mixin table-header-label {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+  .tk-table[data-fixed-layout] & {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 // Sort affordance — a real button so Enter/Space toggle sorting.
