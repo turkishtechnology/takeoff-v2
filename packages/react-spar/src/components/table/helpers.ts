@@ -363,26 +363,32 @@ export const resolveStickyCell = (layout: StickyLayout, key: string, options: { 
  * Resolve a cell's explicit width style. A column gets a fixed `width` only when
  * it declares one (`meta.width`), is sticky (pinned columns must be measured
  * for the offset math), or the table is in its user-sized `fixedLayout` (every
- * column then carries its width so `table-layout: fixed` honors it). Shared by
- * the body and header cell renderers so the two stay in lockstep. Returns
- * `undefined` when the column is auto-width.
+ * column then carries its width so `table-layout: fixed` honors it — except the
+ * `absorberColumnId` column, which stays auto and takes up the leftover space).
+ * Shared by the body and header cell renderers so the two stay in lockstep.
+ * Returns `undefined` when the column is auto-width.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: StickyLayout, fixedLayout = false): CSSProperties | undefined => {
+export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: StickyLayout, fixedLayout = false, absorberColumnId?: string): CSSProperties | undefined => {
+  if (fixedLayout && column.id === absorberColumnId) return undefined;
   const hasWidth = fixedLayout || column.columnDef.meta?.width != null || stickyLayout.has(column.id);
   return hasWidth ? { width: column.getSize() } : undefined;
 };
 
 /**
- * Where the fixed-layout filler cell goes in a row: right before the first
- * right-pinned column, so the right pins stay flush with the table's right edge
- * (the filler takes the slack between the scrolling columns and the pins), or at
- * the end when nothing is pinned right.
+ * The column that absorbs the leftover width of a user-sized table: the last
+ * visible column that is not pinned (pinned columns need their width for the
+ * offset math). It is never user-resized, so the table's overall width never
+ * changes when another column is — the absorber widens or narrows instead.
+ * `undefined` when every column is pinned.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getFillerIndex = (columns: Column<any, unknown>[]): number => {
-  const index = columns.findIndex(column => column.columnDef.meta?.sticky === 'right');
-  return index === -1 ? columns.length : index;
+export const getAbsorberColumnId = (columns: Column<any, unknown>[]): string | undefined => {
+  for (let index = columns.length - 1; index >= 0; index--) {
+    const column = columns[index];
+    if (column && column.columnDef.meta?.sticky == null) return column.id;
+  }
+  return undefined;
 };
 
 /** The `[min, max]` px range a user resize of this column is clamped to. */

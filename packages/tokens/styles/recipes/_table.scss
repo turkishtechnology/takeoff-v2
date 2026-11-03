@@ -151,7 +151,7 @@
   // User-sized columns (`columnResizing`). Once a column has been resized every
   // column carries an explicit width, so the table switches to the fixed
   // algorithm: widths are honored even below the content's min width, and the
-  // trailing filler cell is the one auto column that takes up the slack.
+  // last unpinned column is the one auto column that takes up the slack.
   &[data-fixed-layout] {
     .tk-table-table {
       table-layout: fixed;
@@ -165,18 +165,6 @@
     .tk-table-cell {
       overflow: hidden;
       overflow-wrap: anywhere;
-    }
-
-    // The filler continues the header band under a sticky header too.
-    .tk-table-header-row > .tk-table-filler-cell {
-      border-bottom: 1px solid var(--border-light);
-      background-color: var(--background-lightest);
-    }
-
-    &[data-sticky-header] .tk-table-header-row > .tk-table-filler-cell {
-      position: sticky;
-      top: 0;
-      z-index: 2;
     }
   }
 
@@ -368,16 +356,6 @@
   &:focus-visible {
     outline: 2px solid transparent;
   }
-}
-
-// Trailing filler cell of a user-sized table: no padding so it can collapse
-// to zero, and it inherits the row's background/borders like any cell.
-@mixin table-filler-cell {
-  box-sizing: border-box;
-  padding: 0;
-  border: 0;
-  border-bottom: 1px solid var(--border-light);
-  background-color: inherit;
 }
 
 // ---------------------------------------------------------------------------

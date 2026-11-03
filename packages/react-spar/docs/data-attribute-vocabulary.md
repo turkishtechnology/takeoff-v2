@@ -421,9 +421,8 @@ follow the standard conventions (presence = `''`, finite = string).
   column.
 - **`data-fixed-layout` (State, presence) on the root.** Emitted once
   `columnResizing` is on and any column has a user width. The recipe switches
-  `.tk-table-table` to `table-layout: fixed` and styles the trailing
-  `.tk-table-filler-cell`; it sits on the root so the cell rules cascade like
-  the other root variants.
+  `.tk-table-table` to `table-layout: fixed` and clips the cells; it sits on the
+  root so the cell rules cascade like the other root variants.
 - **`data-resizing` (State, presence) on the dragged resize handle.** Node-local
   so the recipe can keep the active handle's line drawn while the pointer has
   left it; the root reads it through `:has()` for the `col-resize` cursor rather

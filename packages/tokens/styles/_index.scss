@@ -606,10 +606,6 @@
   @include table.table-expanded-row;
 }
 
-.tk-table-filler-cell {
-  @include table.table-filler-cell;
-}
-
 .tk-table-filter-button {
   @include table.table-filter-button;
 }

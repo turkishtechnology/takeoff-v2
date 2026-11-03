@@ -65,13 +65,19 @@ export interface TableContextValue {
   hasColumnFilters: boolean;
   stickyLayout: StickyLayout;
   /**
-   * Columns are user-sized → `table-layout: fixed`, every column carries an
-   * explicit width, and a trailing filler cell absorbs the leftover space.
+   * Columns are user-sized → `table-layout: fixed`, and every column but the
+   * absorber carries an explicit width.
    */
   fixedLayout: boolean;
+  /**
+   * With `columnResizing`, the column that takes up the leftover width (see
+   * `getAbsorberColumnId`): it renders no resize handle and, once the layout is
+   * fixed, no explicit width.
+   */
+  absorberColumnId?: string;
   /** Resize plumbing; `undefined` when `columnResizing` is off. */
   columnResizing?: TableColumnResizingContext;
-  /** Visible column count incl. utility + filler cells — for `colSpan` (empty/expanded rows). */
+  /** Visible column count incl. utility cells — for `colSpan` (empty/expanded rows). */
   totalColumnCount: number;
   emptyState?: ReactNode;
   paginationEnabled: boolean;

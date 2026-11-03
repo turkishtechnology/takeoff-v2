@@ -18,14 +18,18 @@ type AnyHeader = Header<any, unknown>;
  * `<button>` so Enter/Space toggle sorting natively (RFC §3.5).
  */
 export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
-  const { slotAttrs, stickyLayout, stickyHeader, fixedLayout, columnResizing } = useTableContext('Table.HeaderCell');
+  const { table, slotAttrs, stickyLayout, stickyHeader, fixedLayout, absorberColumnId, columnResizing } = useTableContext('Table.HeaderCell');
   const column = header.column;
   const meta = column.columnDef.meta;
   const align = meta?.headerAlign ?? meta?.align;
   const canSort = column.getCanSort();
   const canFilter = column.getCanFilter() && !!meta?.filter;
   const sorted = column.getIsSorted();
-  const canResize = !!columnResizing && column.getCanResize();
+  // No handle on the absorber (it only takes up the slack) nor on the last
+  // column, whose inline-end edge is the table's own edge.
+  const visibleColumns = table.getVisibleLeafColumns();
+  const isLastColumn = visibleColumns[visibleColumns.length - 1]?.id === column.id;
+  const canResize = !!columnResizing && column.getCanResize() && column.id !== absorberColumnId && !isLastColumn;
 
   const sticky = resolveStickyCell(stickyLayout, column.id, { isHeader: true, stickyHeader });
   const attrs = slotAttrs('headerCell', { className: meta?.headerClassName });
@@ -43,7 +47,7 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
       data-align={align}
       data-sticky={sticky.dataSticky}
       data-sortable={canSort ? '' : undefined}
-      style={{ ...attrs.style, ...sticky.style, ...resolveCellWidth(column, stickyLayout, fixedLayout) }}
+      style={{ ...attrs.style, ...sticky.style, ...resolveCellWidth(column, stickyLayout, fixedLayout, absorberColumnId) }}
     >
       <div {...slotAttrs('headerContent')}>
         {canSort ? (

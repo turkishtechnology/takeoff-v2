@@ -279,7 +279,9 @@ const [widths, setWidths] = useState(() => loadWidths());
 ```
 
 The table keeps its auto layout until the first resize, then switches to
-`table-layout: fixed` (`data-fixed-layout`) with a trailing filler cell.
+`table-layout: fixed` (`data-fixed-layout`). The last unpinned column has no
+handle and absorbs the leftover width, so the table's own width never jumps; the
+last column never gets a handle.
 
 ### Server (manual) data + export
 

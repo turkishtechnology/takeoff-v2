@@ -13,8 +13,10 @@ Table: user-controlled column resizing.
 - New column options: `resizable` (default `true`), `minWidth` (default `50`)
   and `maxWidth`.
 - The table keeps its auto layout until the first resize, then switches to
-  `table-layout: fixed` (`data-fixed-layout` on the root) with a trailing filler
-  cell, so a column can shrink below its content without stretching the others.
-- New `resizeHandle` and `fillerCell` slots, `TableColumnSizing` and
-  `TableColumnResizingConfig` types, and the matching `.tk-table-resize-handle`
-  / `.tk-table-filler-cell` recipe styles in `@takeoff-design/tokens`.
+  `table-layout: fixed` (`data-fixed-layout` on the root), so a column can
+  shrink below its content. The last unpinned column has no handle and absorbs
+  the leftover width, so the table's own width never changes; the last column
+  never gets a handle.
+- New `resizeHandle` slot, `TableColumnSizing` and `TableColumnResizingConfig`
+  types, and the matching `.tk-table-resize-handle` recipe styles in
+  `@takeoff-design/tokens`.

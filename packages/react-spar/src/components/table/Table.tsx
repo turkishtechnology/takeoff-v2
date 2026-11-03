@@ -23,8 +23,8 @@ import { Spinner } from '../spinner';
 
 import { TableBase } from './base';
 import { TableProvider, type SlotAttrs, type TableColumnResizingContext, type TableContextValue, type TableResizeDraft } from './context';
-import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE } from './defaults';
-import { buildOrderedColumns, computeStickyLayout, toTanStackColumns } from './helpers';
+import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE, UTILITY_COLUMN_WIDTH } from './defaults';
+import { buildOrderedColumns, computeStickyLayout, getAbsorberColumnId, getColumnResizeBounds, toTanStackColumns } from './helpers';
 import { TableBody } from './TableBody';
 import { TableHeader } from './TableHeader';
 import { TablePagination } from './TablePagination';
@@ -141,7 +141,8 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   );
   // Until a user sizes a column the table keeps its natural auto layout; from
   // the first resize on, widths are explicit and `table-layout: fixed` honors
-  // them (a column can shrink below its content and a filler takes the slack).
+  // them (a column can shrink below its content and the absorber column takes
+  // the slack).
   const fixedLayout = resizingEnabled && Object.keys(columnSizing).length > 0;
 
   // Narrowing a sort/filter can shrink the result below the current page. In
@@ -291,7 +292,19 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     [table, tanstackColumns, hasSelection, hasExpansion, columnSizing],
   );
 
-  const totalColumnCount = tanstackColumns.length + (hasSelection ? 1 : 0) + (hasExpansion ? 1 : 0) + (fixedLayout ? 1 : 0);
+  const totalColumnCount = tanstackColumns.length + (hasSelection ? 1 : 0) + (hasExpansion ? 1 : 0);
+
+  const visibleColumns = table.getVisibleLeafColumns();
+  const absorberColumnId = resizingEnabled ? getAbsorberColumnId(visibleColumns) : undefined;
+  const absorberColumnIdRef = useRef(absorberColumnId);
+  absorberColumnIdRef.current = absorberColumnId;
+  // Under `table-layout: fixed` the table fills its container and the absorber
+  // gets whatever the sized columns leave. Once they need more than that, this
+  // floor keeps the absorber at its min width and the viewport scrolls instead.
+  const tableMinWidth = fixedLayout
+    ? visibleColumns.reduce((sum, column) => sum + (column.id === absorberColumnId ? getColumnResizeBounds(column)[0] : column.getSize()), 0) +
+      ((hasSelection ? 1 : 0) + (hasExpansion ? 1 : 0)) * UTILITY_COLUMN_WIDTH
+    : undefined;
 
   // Header `<th>`s by column id, so the first resize can read the auto layout.
   const headerCellsRef = useRef(new Map<string, HTMLElement>());
@@ -307,6 +320,8 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         const committed = committedSizingRef.current;
         const base: ColumnSizingState = {};
         for (const column of table.getVisibleLeafColumns()) {
+          // The absorber is never sized: it keeps taking up the slack.
+          if (column.id === absorberColumnIdRef.current) continue;
           const committedWidth = committed[column.id];
           if (committedWidth != null) {
             base[column.id] = committedWidth;
@@ -314,7 +329,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
           }
           // Already fixed: an unsized column renders at its `getSize()`.
           // Still auto: freeze it at the width the browser gave it.
-          const measured = fixedLayoutRef.current ? 0 : Math.round(headerCellsRef.current.get(column.id)?.getBoundingClientRect().width ?? 0);
+          const measured = fixedLayoutRef.current ? 0 : Math.ceil(headerCellsRef.current.get(column.id)?.getBoundingClientRect().width ?? 0);
           base[column.id] = measured > 0 ? measured : column.getSize();
         }
         return base;
@@ -347,6 +362,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     hasColumnFilters,
     stickyLayout,
     fixedLayout,
+    absorberColumnId,
     columnResizing: columnResizingContext,
     totalColumnCount,
     emptyState,
@@ -362,11 +378,13 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     setTableViewportScrolled(current => (current === nextScrolled ? current : nextScrolled));
   };
 
+  const tableAttrs = slotAttrs('table');
+
   return (
     <TableProvider value={contextValue}>
       <div {...rootAttrs} ref={ref} data-fixed-layout={fixedLayout ? '' : undefined}>
         <div {...tableViewportAttrs} data-scrolled={tableViewportScrolled ? '' : undefined} onScroll={handleTableViewportScroll}>
-          <table {...slotAttrs('table')} aria-busy={loading || undefined}>
+          <table {...tableAttrs} style={tableMinWidth != null ? { ...tableAttrs.style, minWidth: tableMinWidth } : tableAttrs.style} aria-busy={loading || undefined}>
             <TableHeader />
             <TableBody />
           </table>

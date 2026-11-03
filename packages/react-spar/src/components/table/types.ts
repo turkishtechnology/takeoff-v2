@@ -56,7 +56,6 @@ export type TableSlot =
   | 'expandCell'
   | 'expandButton'
   | 'expandedRow'
-  | 'fillerCell'
   | 'filterButton'
   | 'filterPanel'
   | 'pagination'

@@ -1603,13 +1603,24 @@ describe('Table (props-first)', () => {
 
       expect(screen.queryByRole('separator')).not.toBeInTheDocument();
       expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
-      expect(container.querySelector('.tk-table-filler-cell')).not.toBeInTheDocument();
     });
 
-    it('puts a labelled separator on every resizable header and skips resizable: false', () => {
+    it('puts a labelled separator on every resizable header and skips resizable: false and the last column', () => {
       const header = () => <span>Custom</span>;
+      const [name, role, age] = resizeColumns as [TableColumnDef<User>, TableColumnDef<User>, TableColumnDef<User>];
       const { container } = render(
-        <Table data={users} columns={[...resizeColumns, { id: 'city', header, accessor: 'profile.city', minWidth: 80, maxWidth: 300 }]} getRowId={getRowId} columnResizing />,
+        <Table
+          data={users}
+          columns={[
+            name,
+            { ...role, resizable: false },
+            { id: 'city', header, accessor: 'profile.city', minWidth: 80, maxWidth: 300 },
+            { ...age, resizable: true },
+            { id: 'key', header: 'Key', accessor: 'id' },
+          ]}
+          getRowId={getRowId}
+          columnResizing
+        />,
       );
 
       const separators = screen.getAllByRole('separator');
@@ -1618,12 +1629,14 @@ describe('Table (props-first)', () => {
       expect(handleFor('Name')).toHaveAttribute('tabindex', '0');
       expect(handleFor('Name')).toHaveAttribute('aria-valuemin', '50');
       expect(handleFor('Name')).not.toHaveAttribute('aria-valuemax');
-      expect(handleFor('Role')).toHaveAttribute('aria-valuenow', '140');
+      expect(handleFor('Age')).toHaveAttribute('aria-valuenow', '150');
       // A non-string header falls back to a generic name.
       const custom = screen.getByRole('separator', { name: 'Resize column' });
       expect(custom).toHaveAttribute('aria-valuemin', '80');
       expect(custom).toHaveAttribute('aria-valuemax', '300');
-      expect(headerFor(container, 'Age').querySelector('.tk-table-resize-handle')).toBeNull();
+      expect(headerFor(container, 'Role').querySelector('.tk-table-resize-handle')).toBeNull();
+      // The last column absorbs the slack and its edge is the table's own edge.
+      expect(headerFor(container, 'Key').querySelector('.tk-table-resize-handle')).toBeNull();
       expect(handleFor('Name')).toHaveClass('tk-table-resize-handle');
       expect(handleFor('Name')).toHaveAttribute('data-slot', 'resize-handle');
     });
@@ -1644,16 +1657,16 @@ describe('Table (props-first)', () => {
       expect(onChange).not.toHaveBeenCalled();
       expect(headerFor(container, 'Name').style.width).toBe('180px');
       expect(root).toHaveAttribute('data-fixed-layout', '');
-      // Every other column is frozen at its measured width.
+      // Every other column is frozen at its measured width; the last one stays
+      // auto and absorbs the slack, floored at its min width.
       expect(headerFor(container, 'Role').style.width).toBe('120px');
-      expect(headerFor(container, 'Age').style.width).toBe('120px');
-      expect(container.querySelectorAll('.tk-table-filler-cell')).toHaveLength(4);
-      expect(container.querySelector('.tk-table-filler-cell')).toHaveAttribute('aria-hidden', 'true');
+      expect(headerFor(container, 'Age').style.width).toBe('');
+      expect(container.querySelector('table')).toHaveStyle({ minWidth: '350px' });
 
       fireEvent.pointerUp(handle, { clientX: 160, pointerId: 1 });
       expect(handle).not.toHaveAttribute('data-resizing');
       expect(onChange).toHaveBeenCalledTimes(1);
-      expect(onChange).toHaveBeenCalledWith({ name: 180, role: 120, age: 120 });
+      expect(onChange).toHaveBeenCalledWith({ name: 180, role: 120 });
       expect(headerFor(container, 'Name').style.width).toBe('180px');
       expect(
         within(container.querySelector('tbody') as HTMLElement)
@@ -1668,7 +1681,7 @@ describe('Table (props-first)', () => {
 
       drag(handleFor('Role'), 0, 10);
       // jsdom measures 0 → declared width (140) / TanStack's default size (150).
-      expect(onChange).toHaveBeenCalledWith({ name: 150, role: 150, age: 150 });
+      expect(onChange).toHaveBeenCalledWith({ name: 150, role: 150 });
     });
 
     it('clamps a drag to the default min width and to minWidth / maxWidth', () => {
@@ -1677,6 +1690,7 @@ describe('Table (props-first)', () => {
       const columns: TableColumnDef<User>[] = [
         { id: 'name', header: 'Name', accessor: 'name' },
         { id: 'role', header: 'Role', accessor: 'role', minWidth: 100, maxWidth: 200 },
+        { id: 'age', header: 'Age', accessor: 'age' },
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
 
@@ -1693,7 +1707,10 @@ describe('Table (props-first)', () => {
       render(
         <Table
           data={users}
-          columns={[{ id: 'name', header: 'Name', accessor: 'name', width: 90, minWidth: 80, maxWidth: 60 }]}
+          columns={[
+            { id: 'name', header: 'Name', accessor: 'name', width: 90, minWidth: 80, maxWidth: 60 },
+            { id: 'role', header: 'Role', accessor: 'role' },
+          ]}
           getRowId={getRowId}
           columnResizing={{ onChange }}
         />,
@@ -1804,17 +1821,21 @@ describe('Table (props-first)', () => {
       expect(onChange).not.toHaveBeenCalled();
     });
 
-    it('keeps right-pinned columns flush right by placing the filler before them', () => {
+    it('lets the last unpinned column absorb the slack so right pins stay flush right', () => {
       const columns: TableColumnDef<User>[] = [
         { id: 'name', header: 'Name', accessor: 'name' },
         { id: 'role', header: 'Role', accessor: 'role' },
         { id: 'age', header: 'Age', accessor: 'age', sticky: 'right', width: 80 },
       ];
-      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 120 } }} />);
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 120, role: 300 } }} />);
 
-      const order = (row: Element) => Array.from(row.children).map(cell => (cell.classList.contains('tk-table-filler-cell') ? 'filler' : cell.textContent));
-      expect(order(container.querySelector('thead tr') as Element)).toEqual(['Name', 'Role', 'filler', 'Age']);
-      expect(order(container.querySelector('tbody tr') as Element)).toEqual(['Ada', 'admin', 'filler', '42']);
+      expect(Array.from((container.querySelector('thead tr') as Element).children).map(cell => cell.textContent)).toEqual(['Name', 'Role', 'Age']);
+      // The absorber ignores a stored width and renders no handle; the pinned
+      // last column keeps its width but has no handle on the table's edge.
+      expect(headerFor(container, 'Role').style.width).toBe('');
+      expect(headerFor(container, 'Age').style.width).toBe('80px');
+      expect(screen.getAllByRole('separator')).toEqual([handleFor('Name')]);
+      expect(container.querySelector('table')).toHaveStyle({ minWidth: '250px' });
     });
 
     it('captures and releases the pointer when the platform supports it', () => {
@@ -1839,9 +1860,9 @@ describe('Table (props-first)', () => {
       await user.click(document.body);
       handleFor('Name').focus();
       await user.keyboard('{ArrowRight}');
-      expect(onChange).toHaveBeenLastCalledWith({ name: 210, role: 140, age: 150 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 210, role: 140 });
       await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
-      expect(onChange).toHaveBeenLastCalledWith({ name: 160, role: 140, age: 150 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 160, role: 140 });
       await user.keyboard('{ArrowUp}');
       expect(onChange).toHaveBeenCalledTimes(2);
     });
@@ -1849,7 +1870,17 @@ describe('Table (props-first)', () => {
     it('does not commit a keyboard step that the bounds swallow', async () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
-      render(<Table data={users} columns={[{ id: 'name', header: 'Name', accessor: 'name' }]} getRowId={getRowId} columnResizing={{ defaultValue: { name: 50 }, onChange }} />);
+      render(
+        <Table
+          data={users}
+          columns={[
+            { id: 'name', header: 'Name', accessor: 'name' },
+            { id: 'role', header: 'Role', accessor: 'role' },
+          ]}
+          getRowId={getRowId}
+          columnResizing={{ defaultValue: { name: 50 }, onChange }}
+        />,
+      );
 
       handleFor('Name').focus();
       await user.keyboard('{ArrowLeft}');
@@ -1868,11 +1899,11 @@ describe('Table (props-first)', () => {
       render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 }, onChange }} />);
 
       drag(handleFor('Name'), 100, 70);
-      expect(onChange).toHaveBeenLastCalledWith({ name: 230, role: 140, age: 150 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 230, role: 140 });
       handleFor('Name').focus();
       // ArrowLeft points at the inline end in RTL, so it widens.
       await user.keyboard('{ArrowLeft}');
-      expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 140, age: 150 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 140 });
     });
 
     it('double-click returns a column to its declared width', async () => {
@@ -1890,7 +1921,7 @@ describe('Table (props-first)', () => {
       expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
     });
 
-    it('starts in the fixed layout from defaultValue and widens colSpans for the filler', () => {
+    it('starts in the fixed layout from defaultValue with the utility columns in the min width', () => {
       const { container } = render(
         <Table data={[]} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 220 } }} selection={{ mode: 'multiple' }} />,
       );
@@ -1899,11 +1930,12 @@ describe('Table (props-first)', () => {
       expect(headerFor(container, 'Name').style.width).toBe('220px');
       // Unsized columns render at their declared / default size.
       expect(headerFor(container, 'Role').style.width).toBe('140px');
-      expect(headerFor(container, 'Age').style.width).toBe('150px');
-      expect(container.querySelector('[data-slot="empty"]')).toHaveAttribute('colspan', '5');
+      expect(headerFor(container, 'Age').style.width).toBe('');
+      expect(container.querySelector('table')).toHaveStyle({ minWidth: '458px' });
+      expect(container.querySelector('[data-slot="empty"]')).toHaveAttribute('colspan', '4');
     });
 
-    it('widens the detail-panel colSpan in the fixed layout', async () => {
+    it('keeps the detail-panel colSpan in the fixed layout', async () => {
       const user = userEvent.setup();
       const { container } = render(
         <Table
@@ -1916,7 +1948,7 @@ describe('Table (props-first)', () => {
       );
 
       await user.click(within(container.querySelector('tbody') as HTMLElement).getAllByRole('button', { name: 'Expand row' })[0] as HTMLElement);
-      expect(screen.getByText('Detail Ada').closest('td')).toHaveAttribute('colspan', '5');
+      expect(screen.getByText('Detail Ada').closest('td')).toHaveAttribute('colspan', '4');
     });
 
     it('follows the pointer while controlled and keeps the parent value when it declines the change', () => {
@@ -1929,7 +1961,7 @@ describe('Table (props-first)', () => {
       expect(headerFor(container, 'Name').style.width).toBe('250px');
       fireEvent.pointerUp(handle, { clientX: 50, pointerId: 1 });
 
-      expect(onChange).toHaveBeenCalledWith({ name: 250, role: 140, age: 150 });
+      expect(onChange).toHaveBeenCalledWith({ name: 250, role: 140 });
       expect(headerFor(container, 'Name').style.width).toBe('200px');
     });
 
@@ -1984,7 +2016,10 @@ describe('Table (props-first)', () => {
       render(
         <Table
           data={users}
-          columns={[{ id: 'name', header: 'Name', accessor: 'name' }]}
+          columns={[
+            { id: 'name', header: 'Name', accessor: 'name' },
+            { id: 'role', header: 'Role', accessor: 'role' },
+          ]}
           getRowId={getRowId}
           columnResizing={{ defaultValue: { name: 200 }, onChange }}
           slotProps={{ resizeHandle: { 'aria-label': 'Drag to resize', onKeyDown, onDoubleClick, onPointerDown, onPointerMove, onPointerUp, onPointerCancel } }}
