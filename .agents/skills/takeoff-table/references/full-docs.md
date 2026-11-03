@@ -665,8 +665,8 @@ Per column, `resizable: false` removes the handle and `minWidth` / `maxWidth`
 bound the drag (the default minimum is `50px`, or the declared `width` when that
 is narrower). A double-click on a handle returns that column to its declared
 `width`; a column without one is fitted to its content instead (or, when no
-other column stays sized, the whole table returns to its natural layout). Body
-text in a narrowed column wraps; header text ends in an ellipsis.
+other column stays sized, the whole table returns to its natural layout). Text
+in a narrowed column ends in an ellipsis.
 
 The table keeps its natural auto layout until the first resize. From then on
 every column carries an explicit width under `table-layout: fixed`
@@ -674,11 +674,10 @@ every column carries an explicit width under `table-layout: fixed`
 table itself never changes width: the last unpinned column has no handle and
 takes up whatever the others leave. A growing column takes its room from that
 last column first, then from the resizable, unpinned columns after it (nearest
-first), each down to its min width or the narrowest its content fits without
-breaking a word. So a resize never pushes the table past its container; a table
-that already overflows (e.g. widths stored on a wider screen) scrolls
-horizontally. The last column has no handle either, since its edge is the
-table's edge.
+first), each down to its min width. So a resize never pushes the table past its
+container; a table that already overflows (e.g. widths stored on a wider screen)
+scrolls horizontally. The last column has no handle either, since its edge is
+the table's edge.
 
 ```tsx
 function ResizeDemo() {
@@ -721,7 +720,7 @@ function ResizeDemo() {
       width: 120,
       minWidth: 90,
     },
-    { id: 'route', header: 'Route', accessor: 'route', maxWidth: 320 },
+    { id: 'route', header: 'Route', accessor: 'route' },
     { id: 'gate', header: 'Gate', accessor: 'gate' },
     { id: 'status', header: 'Status', accessor: 'status' },
   ];

@@ -167,8 +167,11 @@
       overflow-clip-margin: 4px;
     }
 
+    // A narrowed column keeps its rows one line high: text ends in an ellipsis
+    // instead of breaking letter by letter.
     .tk-table-cell {
-      overflow-wrap: anywhere;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 

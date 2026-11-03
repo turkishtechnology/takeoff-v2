@@ -18,8 +18,8 @@ Table: user-controlled column resizing.
   shrink below its content. The last unpinned column has no handle and absorbs
   the leftover width, so the table's own width never changes; a growing column
   takes room from that column first, then from the columns after it, each down
-  to its min width or its content's narrowest width; the last column never gets
-  a handle.
+  to its min width (cell text then ends in an ellipsis); the last column never
+  gets a handle.
 - Header text is now wrapped in a new `headerLabel` slot
   (`.tk-table-header-label`) on every table, so a narrowed header of a resized
   table ends in an ellipsis.

@@ -1709,7 +1709,7 @@ describe('Table (props-first)', () => {
 
     it('grows a column from the absorber first, then from the columns after it, and stops there', () => {
       const onChange = vi.fn();
-      // The absorber (Age) renders 200px wide; every column's content needs 80px.
+      // The absorber (Age) renders 200px wide; every column may narrow to 50px.
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
         const width = this.style.width === 'min-content' ? (this.tagName === 'TH' ? 40 : 80) : this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
@@ -1721,28 +1721,28 @@ describe('Table (props-first)', () => {
       fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
       fireEvent.pointerMove(handle, { clientX: 100, pointerId: 1 });
       expect(headerFor(container, 'Role').style.width).toBe('120px');
-      // …past it Role gives up room (live, without a re-render) down to its 80px…
-      fireEvent.pointerMove(handle, { clientX: 140, pointerId: 1 });
-      expect(headerFor(container, 'Name').style.width).toBe('260px');
+      // …past its 150px spare Role gives up room (live, without a re-render)…
+      fireEvent.pointerMove(handle, { clientX: 170, pointerId: 1 });
+      expect(headerFor(container, 'Name').style.width).toBe('290px');
       expect(headerFor(container, 'Role').style.width).toBe('100px');
-      // …and then the drag stops: 120 + 120 + 40.
-      fireEvent.pointerMove(handle, { clientX: 300, pointerId: 1 });
-      expect(headerFor(container, 'Role').style.width).toBe('80px');
+      // …down to its 50px min, and then the drag stops: 120 + 150 + 70.
+      fireEvent.pointerMove(handle, { clientX: 400, pointerId: 1 });
+      expect(headerFor(container, 'Role').style.width).toBe('50px');
       // Back below the absorber's share, Role gets its width back.
       fireEvent.pointerMove(handle, { clientX: 50, pointerId: 1 });
       expect(headerFor(container, 'Role').style.width).toBe('120px');
-      fireEvent.pointerUp(handle, { clientX: 300, pointerId: 1 });
-      expect(onChange).toHaveBeenLastCalledWith({ name: 280, role: 80 });
+      fireEvent.pointerUp(handle, { clientX: 400, pointerId: 1 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 340, role: 50 });
 
       // Shrinking is never limited.
       drag(handleFor('Name'), 0, -100);
-      expect(onChange).toHaveBeenLastCalledWith({ name: 180, role: 80 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 50 });
     });
 
     it('does not count room freed by an earlier shrink in the same drag as spare', () => {
       const onChange = vi.fn();
       // The absorber (Age) reads 200px while Name is at its start width and
-      // 70px wider once Name is drawn 70px narrower; its floor is 80px.
+      // 70px wider once Name is drawn 70px narrower; its floor is 50px.
       let nameWidth = 120;
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
         const width = this.style.width === 'min-content' ? 80 : this.tagName === 'TH' ? (this.textContent === 'Age' ? 320 - nameWidth : 120) : 0;
@@ -1754,9 +1754,9 @@ describe('Table (props-first)', () => {
       fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
       fireEvent.pointerMove(handle, { clientX: -70, pointerId: 1 });
       nameWidth = 50;
-      // Released far past the start in one event: 120px of real spare, not 190.
+      // Released far past the start in one event: 150px of real spare, not 220.
       fireEvent.pointerUp(handle, { clientX: 400, pointerId: 1 });
-      expect(onChange).toHaveBeenLastCalledWith({ name: 240 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 270 });
     });
 
     it('never takes room from a pinned or non-resizable column', () => {
@@ -1773,24 +1773,24 @@ describe('Table (props-first)', () => {
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
 
-      // Only the absorber (City) gives: 100 - 60 = 40px.
+      // Only the absorber (City) gives: 100 - 50 = 50px.
       drag(handleFor('Name'), 0, 300);
-      expect(onChange).toHaveBeenLastCalledWith({ name: 160, role: 120, age: 120 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 170, role: 120, age: 120 });
     });
 
-    it('applies the same limit to a keyboard step', async () => {
+    it('applies the same plan to a keyboard step', async () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
-      // The absorber renders 200px wide and its longest word needs 180px.
+      // The absorber (Age) renders 60px wide: 10px to give, then Role gives the rest.
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const width = this.style.width === 'min-content' ? 180 : this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
+        const width = this.tagName === 'TH' && !this.style.width.endsWith('-content') ? (this.textContent === 'Age' ? 60 : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
 
       handleFor('Name').focus();
       await user.keyboard('{Shift>}{ArrowRight}{/Shift}');
-      expect(onChange).toHaveBeenLastCalledWith({ name: 140, role: 120 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 170, role: 80 });
     });
 
     it('lets the min win over an inverted maxWidth', () => {

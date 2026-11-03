@@ -264,7 +264,7 @@ const [widths, setWidths] = useState(() => loadWidths());
       width: 120,
       minWidth: 90,
     },
-    { id: 'route', header: 'Route', accessor: 'route', maxWidth: 320 },
+    { id: 'route', header: 'Route', accessor: 'route' },
     { id: 'gate', header: 'Gate', accessor: 'gate' },
   ]}
   getRowId={row => row.id}

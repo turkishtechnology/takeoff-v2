@@ -55,7 +55,7 @@ export interface TableColumnResizingContext {
    * Where a column can take room from when it grows, so a resize never pushes
    * the table past its container: first the absorber, then the resizable,
    * unpinned columns after it (nearest first), each down to its min width
-   * or its content's min-content, whichever is wider. `shrunkBy` is how far
+   * (where its text ends in an ellipsis). `shrunkBy` is how far
    * the column is currently drawn below the width the resize started from:
    * the absorber is that much wider on screen than its share at the start.
    */

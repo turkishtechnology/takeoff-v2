@@ -347,10 +347,9 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         const absorberCell = absorber ? headerCellsRef.current.get(absorber.id) : undefined;
         const available = (absorberCell?.getBoundingClientRect().width ?? 0) - Math.max(0, shrunkBy);
         if (!absorber || !absorberCell || absorber.id === columnId || available <= 0) return { absorberSpare: Number.POSITIVE_INFINITY, donors: [] };
-        // Narrowest a column may get: its min width, or what its content needs
-        // without breaking inside a word.
-        const floorOf = (column: (typeof visible)[number]) =>
-          Math.max(getColumnResizeBounds(column)[0], measureColumnContentWidth(headerCellsRef.current.get(column.id), 'min-content'));
+        // Narrowest a column may get: its min width (its text then ends in an
+        // ellipsis).
+        const floorOf = (column: (typeof visible)[number]) => getColumnResizeBounds(column)[0];
         const donors = visible
           .slice(visible.findIndex(candidate => candidate.id === columnId) + 1)
           .filter(candidate => candidate.id !== absorber.id && candidate.getCanResize() && !stickyLayoutRef.current.has(candidate.id) && base[candidate.id] != null)
