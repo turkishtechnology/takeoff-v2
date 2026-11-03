@@ -14,7 +14,7 @@ export interface TableResizeDraft {
   base: ColumnSizingState;
   columnId: string;
   width: number;
-  /** Narrowed widths of the columns to its right that gave up room for it. */
+  /** Narrowed widths of the columns after it that gave up room for it. */
   donors?: ColumnSizingState;
 }
 
@@ -22,7 +22,7 @@ export interface TableResizeDraft {
 export interface TableGrowPlan {
   /** What the absorber can give up; `Infinity` when there is none or nothing can be measured. */
   absorberSpare: number;
-  /** Then the sized columns to its right, nearest first: their width and what each can give up. */
+  /** Then the sized columns after it (toward the inline end), nearest first: their width and what each can give up. */
   donors: Array<{ id: string; width: number; spare: number }>;
 }
 
@@ -54,10 +54,12 @@ export interface TableColumnResizingContext {
   /**
    * Where a column can take room from when it grows, so a resize never pushes
    * the table past its container: first the absorber, then the resizable,
-   * unpinned columns to its right (nearest first), each down to its min width
-   * or its content's min-content, whichever is wider.
+   * unpinned columns after it (nearest first), each down to its min width
+   * or its content's min-content, whichever is wider. `shrunkBy` is how far
+   * the column is currently drawn below the width the resize started from:
+   * the absorber is that much wider on screen than its share at the start.
    */
-  getGrowPlan: (columnId: string, base: ColumnSizingState) => TableGrowPlan;
+  getGrowPlan: (columnId: string, base: ColumnSizingState, shrunkBy?: number) => TableGrowPlan;
   /** Header cells register their `<th>` so a first resize can measure the auto layout. */
   registerHeaderCell: (columnId: string, element: HTMLElement | null) => void;
 }

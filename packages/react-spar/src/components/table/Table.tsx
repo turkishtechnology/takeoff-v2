@@ -340,12 +340,12 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         }
         return base;
       },
-      getGrowPlan: (columnId, base) => {
+      getGrowPlan: (columnId, base, shrunkBy = 0) => {
         const visible = table.getVisibleLeafColumns();
         const absorberId = absorberColumnIdRef.current;
         const absorber = visible.find(candidate => candidate.id === absorberId);
         const absorberCell = absorber ? headerCellsRef.current.get(absorber.id) : undefined;
-        const available = absorberCell?.getBoundingClientRect().width ?? 0;
+        const available = (absorberCell?.getBoundingClientRect().width ?? 0) - Math.max(0, shrunkBy);
         if (!absorber || !absorberCell || absorber.id === columnId || available <= 0) return { absorberSpare: Number.POSITIVE_INFINITY, donors: [] };
         // Narrowest a column may get: its min width, or what its content needs
         // without breaking inside a word.

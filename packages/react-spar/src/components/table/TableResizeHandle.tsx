@@ -18,6 +18,8 @@ interface DragSession {
    * column, so a click or a shrinking drag never measures.
    */
   plan?: TableGrowPlan;
+  /** The width last drawn for the column during this drag. */
+  liveWidth: number;
   base: TableColumnSizing;
   /** `-1` in RTL, where dragging toward the inline end means moving left. */
   direction: 1 | -1;
@@ -88,11 +90,11 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
   const now = Math.min(max, Math.max(min, renderedWidth || Math.round(column.getSize())));
 
   // A growing column takes its room from the absorber and then from the
-  // columns to its right, so the table never grows past its container.
+  // columns after it, so the table never grows past its container.
   const widthAt = (session: DragSession, clientX: number): ResolvedGrowth => {
     const desired = clampColumnWidth(column, session.startWidth + (clientX - session.startX) * session.direction);
     if (desired <= session.startWidth) return { width: desired };
-    session.plan ??= columnResizing.getGrowPlan(column.id, session.base);
+    session.plan ??= columnResizing.getGrowPlan(column.id, session.base, session.startWidth - session.liveWidth);
     return resolveGrowth(session.startWidth, desired, session.plan);
   };
 
@@ -105,7 +107,15 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
 
     const base = columnResizing.getBaseSizing();
     const startWidth = base[column.id] ?? column.getSize();
-    sessionRef.current = { pointerId: event.pointerId, startX: event.clientX, startWidth, base, direction: readDirection(event.currentTarget), moved: false };
+    sessionRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startWidth,
+      liveWidth: startWidth,
+      base,
+      direction: readDirection(event.currentTarget),
+      moved: false,
+    };
     event.currentTarget.setPointerCapture?.(event.pointerId);
     setDragging(true);
   };
@@ -115,21 +125,25 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
     const session = sessionRef.current;
     if (!session || event.pointerId !== session.pointerId) return;
     session.moved = true;
-    columnResizing.setDraft({ base: session.base, columnId: column.id, ...widthAt(session, event.clientX) });
+    const resolved = widthAt(session, event.clientX);
+    session.liveWidth = resolved.width;
+    columnResizing.setDraft({ base: session.base, columnId: column.id, ...resolved });
   };
 
   const endSession = (event: PointerEvent<HTMLElement>, commit: boolean) => {
     const session = sessionRef.current;
     if (!session || event.pointerId !== session.pointerId) return;
     sessionRef.current = null;
+    // Resolve while the last drawn draft is still on screen (the plan, if not
+    // measured yet, reads the absorber's rendered width).
+    const resolved = commit && session.moved ? widthAt(session, event.clientX) : undefined;
     setDragging(false);
     columnResizing.setDraft(null);
     if (event.currentTarget.hasPointerCapture?.(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
     // A press without movement is a click (or half of a double-click): it must
     // not freeze the auto layout.
-    if (!commit || !session.moved) return;
-    const { width, donors } = widthAt(session, event.clientX);
-    if (width !== session.startWidth) columnResizing.commit({ ...session.base, ...donors, [column.id]: width });
+    if (!resolved) return;
+    if (resolved.width !== session.startWidth) columnResizing.commit({ ...session.base, ...resolved.donors, [column.id]: resolved.width });
   };
 
   const handlePointerUp = (event: PointerEvent<HTMLElement>) => {

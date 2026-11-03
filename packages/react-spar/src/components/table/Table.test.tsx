@@ -1707,7 +1707,7 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 100 });
     });
 
-    it('grows a column from the absorber first, then from the columns to its right, and stops there', () => {
+    it('grows a column from the absorber first, then from the columns after it, and stops there', () => {
       const onChange = vi.fn();
       // The absorber (Age) renders 200px wide; every column's content needs 80px.
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
@@ -1737,6 +1737,26 @@ describe('Table (props-first)', () => {
       // Shrinking is never limited.
       drag(handleFor('Name'), 0, -100);
       expect(onChange).toHaveBeenLastCalledWith({ name: 180, role: 80 });
+    });
+
+    it('does not count room freed by an earlier shrink in the same drag as spare', () => {
+      const onChange = vi.fn();
+      // The absorber (Age) reads 200px while Name is at its start width and
+      // 70px wider once Name is drawn 70px narrower; its floor is 80px.
+      let nameWidth = 120;
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.style.width === 'min-content' ? 80 : this.tagName === 'TH' ? (this.textContent === 'Age' ? 320 - nameWidth : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      render(<Table data={users} columns={[...resizeColumns.slice(0, 1), ...resizeColumns.slice(2)]} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: -70, pointerId: 1 });
+      nameWidth = 50;
+      // Released far past the start in one event: 120px of real spare, not 190.
+      fireEvent.pointerUp(handle, { clientX: 400, pointerId: 1 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 240 });
     });
 
     it('never takes room from a pinned or non-resizable column', () => {
