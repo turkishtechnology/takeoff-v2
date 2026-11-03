@@ -1,7 +1,7 @@
 import type { ElementType } from 'react';
 import { DialogContent as SparDialogContent } from '@turkish-technology/spar';
 
-import { blockDismiss, composeRootAttrs } from '../../core';
+import { blockDismiss, composeRootAttrs, useNestedLayerDismissGuard } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { DrawerPanelBase } from './base';
@@ -20,13 +20,19 @@ export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelPro
 
   const { container, children, ref, ...panelProps } = rest;
 
-  const dismissHandlers = !dismissible && {
-    onEscapeKeyDown: blockDismiss(panelProps.onEscapeKeyDown),
-    onPointerDownOutside: blockDismiss(panelProps.onPointerDownOutside),
-    onInteractOutside: blockDismiss(panelProps.onInteractOutside),
+  const { onPointerDownCapture, guardOutside } = useNestedLayerDismissGuard(panelProps.onPointerDownCapture);
+
+  // Presses inside a portaled descendant (Select / Popover / Dropdown content)
+  // are not outside presses; see `useNestedLayerDismissGuard`.
+  // When not dismissible, `blockDismiss` still vetoes genuine outside presses.
+  const outside = <E extends Event>(handler?: (event: E) => void) => guardOutside(dismissible ? handler : blockDismiss(handler));
+  const dismissHandlers = {
+    ...(!dismissible && { onEscapeKeyDown: blockDismiss(panelProps.onEscapeKeyDown) }),
+    onPointerDownOutside: outside(panelProps.onPointerDownOutside),
+    onInteractOutside: outside(panelProps.onInteractOutside),
   };
   return (
-    <SparDialogContent {...panelProps} container={container} ref={ref} {...rootAttrs} {...dismissHandlers}>
+    <SparDialogContent {...panelProps} container={container} ref={ref} {...rootAttrs} {...dismissHandlers} onPointerDownCapture={onPointerDownCapture}>
       {children}
     </SparDialogContent>
   );

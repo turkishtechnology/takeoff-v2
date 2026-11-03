@@ -7,6 +7,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi, t
 import type { ClassNamesMap, ComponentsThemeMap, ComponentThemeConfig, SlotPropsMap } from '../../core';
 import { TakeoffSparProvider } from '../../provider';
 import { render, screen, within } from '../../test-utils';
+import { Select } from '../select';
 
 import { Drawer } from './index';
 import type {
@@ -704,6 +705,65 @@ describe('Drawer (compound)', () => {
         expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
         expect(getPanel()).toHaveAttribute('data-state', 'closed');
       });
+    });
+  });
+
+  describe('nested floating layers', () => {
+    // jsdom ships no ResizeObserver; Select.Content and Floating UI need one.
+    const OriginalResizeObserver = globalThis.ResizeObserver;
+    beforeAll(() => {
+      globalThis.ResizeObserver = class {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      } as unknown as typeof ResizeObserver;
+    });
+    afterAll(() => {
+      globalThis.ResizeObserver = OriginalResizeObserver;
+    });
+
+    const renderNested = (onOpenChange: DrawerProps['onOpenChange']) =>
+      render(
+        <Drawer defaultOpen onOpenChange={onOpenChange}>
+          <Drawer.Overlay />
+          <Drawer.Panel>
+            <Drawer.Title>Filters</Drawer.Title>
+            <Select>
+              <Select.Trigger placeholder="Cabin" />
+              <Select.Content>
+                <Select.Item value="economy" label="Economy">
+                  Economy
+                </Select.Item>
+                <Select.Item value="business" label="Business">
+                  Business
+                </Select.Item>
+              </Select.Content>
+            </Select>
+          </Drawer.Panel>
+        </Drawer>,
+      );
+
+    it('stays open when an option of a nested (portaled) Select is picked', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      renderNested(onOpenChange);
+
+      await user.click(screen.getByRole('combobox'));
+      await user.click(screen.getByRole('option', { name: 'Business' }));
+
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(getPanel()).toHaveAttribute('data-state', 'open');
+      expect(screen.getByRole('combobox')).toHaveTextContent('Business');
+    });
+
+    it('still closes on a genuine outside press', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      renderNested(onOpenChange);
+
+      await user.click(getPart('tk-drawer-overlay'));
+
+      expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
     });
   });
 
