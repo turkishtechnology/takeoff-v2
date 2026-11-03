@@ -1704,7 +1704,7 @@ describe('Table (props-first)', () => {
 
     it('lets the min win over an inverted maxWidth', () => {
       const onChange = vi.fn();
-      render(
+      const { container } = render(
         <Table
           data={users}
           columns={[
@@ -1717,8 +1717,30 @@ describe('Table (props-first)', () => {
       );
 
       expect(handleFor('Name')).toHaveAttribute('aria-valuemax', '80');
+      // It renders at the min too, so the width on screen and the handle agree
+      // and a drag that cannot move it commits nothing.
+      expect(headerFor(container, 'Name').style.width).toBe('80px');
       drag(handleFor('Name'), 0, 100);
-      expect(onChange).toHaveBeenCalledWith({ name: 80 });
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('keeps stored widths it is not using when another column is resized', () => {
+      const onChange = vi.fn();
+      const ref: { current: TanStackTable<User> | null } = { current: null };
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} tableRef={ref} columnResizing={{ defaultValue: { name: 200, role: 140, age: 300 }, onChange }} />);
+
+      act(() => ref.current?.getColumn('role')?.toggleVisibility(false));
+      drag(handleFor('Name'), 0, 20);
+      // The absorber's (age) and the hidden column's (role) widths survive.
+      expect(onChange).toHaveBeenCalledWith({ name: 220, role: 140, age: 300 });
+    });
+
+    it('stays in the natural layout when only the absorber has a stored width', () => {
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { age: 300 } }} />);
+
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      expect(headerFor(container, 'Name').style.width).toBe('');
+      expect(headerFor(container, 'Age').style.width).toBe('');
     });
 
     it('treats a press without movement as a click and leaves the layout alone', () => {

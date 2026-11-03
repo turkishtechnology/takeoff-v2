@@ -139,11 +139,6 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     () => (resizeDraft ? { ...resizeDraft.base, [resizeDraft.columnId]: resizeDraft.width } : committedSizing),
     [resizeDraft, committedSizing],
   );
-  // Until a user sizes a column the table keeps its natural auto layout; from
-  // the first resize on, widths are explicit and `table-layout: fixed` honors
-  // them (a column can shrink below its content and the absorber column takes
-  // the slack).
-  const fixedLayout = resizingEnabled && Object.keys(columnSizing).length > 0;
 
   // Narrowing a sort/filter can shrink the result below the current page. In
   // client mode TanStack's `autoResetPageIndex` snaps back to page 0 for us; in
@@ -296,6 +291,12 @@ export const Table = <TData,>(props: TableProps<TData>) => {
 
   const visibleColumns = table.getVisibleLeafColumns();
   const absorberColumnId = resizingEnabled ? getAbsorberColumnId(visibleColumns) : undefined;
+  // Until a user sizes a column the table keeps its natural auto layout; from
+  // the first resize on, widths are explicit and `table-layout: fixed` honors
+  // them (a column can shrink below its content and the absorber column takes
+  // the slack). Only a width that takes effect counts: one stored for the
+  // absorber or for a hidden column leaves the natural layout alone.
+  const fixedLayout = resizingEnabled && visibleColumns.some(column => column.id !== absorberColumnId && columnSizing[column.id] != null);
   const absorberColumnIdRef = useRef(absorberColumnId);
   absorberColumnIdRef.current = absorberColumnId;
   // Under `table-layout: fixed` the table fills its container and the absorber
@@ -318,15 +319,12 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     return {
       getBaseSizing: () => {
         const committed = committedSizingRef.current;
-        const base: ColumnSizingState = {};
+        // Start from every stored width so a resize never drops one the table
+        // is not using right now (a hidden column, or the absorber's).
+        const base: ColumnSizingState = { ...committed };
         for (const column of table.getVisibleLeafColumns()) {
           // The absorber is never sized: it keeps taking up the slack.
-          if (column.id === absorberColumnIdRef.current) continue;
-          const committedWidth = committed[column.id];
-          if (committedWidth != null) {
-            base[column.id] = committedWidth;
-            continue;
-          }
+          if (column.id === absorberColumnIdRef.current || committed[column.id] != null) continue;
           // Already fixed: an unsized column renders at its `getSize()`.
           // Still auto: freeze it at the width the browser gave it.
           const measured = fixedLayoutRef.current ? 0 : Math.ceil(headerCellsRef.current.get(column.id)?.getBoundingClientRect().width ?? 0);

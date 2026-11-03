@@ -163,7 +163,9 @@ export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): Colu
     // defaulting `minSize` here would widen a narrow declared `width` on tables
     // that never resize.
     if (minWidth != null) def.minSize = minWidth;
-    if (maxWidth != null) def.maxSize = maxWidth;
+    // TanStack applies `maxSize` last; keep it from undercutting `minWidth` so
+    // the rendered width matches the min-wins range a resize is clamped to.
+    if (maxWidth != null) def.maxSize = minWidth != null ? Math.max(minWidth, maxWidth) : maxWidth;
 
     if (typeof accessor === 'function') {
       def.accessorFn = accessor;
