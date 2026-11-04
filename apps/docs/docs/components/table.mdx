@@ -519,6 +519,14 @@ with `type` (+ `options` for the choice controls):
   scope={tableScope}
 />
 
+While a filter is active its panel shows a **Clear** button. Localize it per
+column with `clearLabel`; it applies to presets and custom `render` panels
+alike.
+
+```tsx
+{ id: 'name', header: 'Ad', accessor: 'name', filter: { type: 'text', placeholder: 'Ara', clearLabel: 'Temizle' } }
+```
+
 ### Custom filters (escape hatch)
 
 When no preset fits — a number range, a date range, a combobox, async-loaded

@@ -144,6 +144,13 @@ export interface TableColumnFilter<TData = unknown> {
   /** Placeholder for the `text` preset's input / `select` triggers. */
   placeholder?: string;
   /**
+   * Text of the button that clears this column's filter, shown in the panel
+   * while the filter is active. Localize it here, e.g. `'Temizle'`; applies to
+   * presets and custom `render` panels alike.
+   * @defaultValue 'Clear'
+   */
+  clearLabel?: string;
+  /**
    * Escape hatch: render the filter control yourself. Receives the column's
    * value + setter (see {@link TableColumnFilterContext}). When present, the
    * preset fields above are ignored.

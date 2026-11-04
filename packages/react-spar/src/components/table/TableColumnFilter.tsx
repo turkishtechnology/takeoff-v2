@@ -71,7 +71,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
         </div>
         {active && (
           <Button size="small" appearance="text" onClick={ctx.clear}>
-            Clear
+            {filter.clearLabel ?? 'Clear'}
           </Button>
         )}
       </Popover.Content>

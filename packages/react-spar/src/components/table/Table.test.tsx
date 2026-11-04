@@ -715,6 +715,33 @@ describe('Table (props-first)', () => {
       expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
     });
 
+    it('renders a localized Clear label from `clearLabel`', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        {
+          id: 'role',
+          header: 'Role',
+          accessor: 'role',
+          filter: {
+            type: 'radio',
+            clearLabel: 'Temizle',
+            options: [
+              { label: 'Admin', value: 'admin' },
+              { label: 'User', value: 'user' },
+            ],
+          },
+        },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(await screen.findByRole('radio', { name: 'User' }));
+      expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: 'Temizle' }));
+      expect(bodyRowTexts(container)).toEqual(['admin', 'user', 'admin']);
+    });
+
     it('removes the checkbox filter once the last option is unchecked', async () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
