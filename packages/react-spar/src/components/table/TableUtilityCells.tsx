@@ -121,9 +121,9 @@ export const ExpandBodyCell = ({ row }: { row: Row<any> }) => {
     <td {...attrs} data-sticky={sticky.dataSticky} style={mergeStyle(attrs.style, sticky.style, { width: UTILITY_COLUMN_WIDTH })}>
       {row.getCanExpand() && (
         <button
+          aria-label={expanded ? labels.collapseRow : labels.expandRow}
           {...slotAttrs('expandButton')}
           type="button"
-          aria-label={expanded ? labels.collapseRow : labels.expandRow}
           aria-expanded={expanded}
           onClick={row.getToggleExpandedHandler()}
         >

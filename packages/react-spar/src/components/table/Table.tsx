@@ -104,7 +104,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const paginationConfig = typeof pagination === 'object' ? pagination : undefined;
   const paginationEnabled = pagination === true || !!paginationConfig;
   const pageSizeOptions = paginationConfig?.pageSizeOptions ?? DEFAULT_PAGE_SIZE_OPTIONS;
-  const labels = useMemo(() => resolveLabels(labelsProp), [labelsProp]);
+  const labels = resolveLabels(labelsProp);
   const [tableViewportScrolled, setTableViewportScrolled] = useState(false);
 
   // ── Controlled/uncontrolled state slices ─────────────────────────────────

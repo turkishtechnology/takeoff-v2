@@ -473,6 +473,16 @@ For naming, slot vocabulary, callback conventions, and the `composeRootAttrs` /
 `buildSlotAttrs` API, see
 [Coding Standards](../packages/react-spar/docs/coding-standards.md).
 
+## User-facing strings
+
+Every visible string and accessible name a wrapper renders is localizable and
+its English default lives in the component's `defaults.ts`. A component with a
+few strings takes flat `*Label` props (Upload, Stepper, Toast). A component with
+many takes one `labels?: Partial<…Labels>` object instead (Table), so a whole
+translation fits one JSON entry and one provider `defaultProps` key. Dynamic
+strings are `{placeholder}` templates, never functions, and an empty string
+falls back to the default so no control loses its name.
+
 ## Review checklist
 
 A component is not ready to merge unless:

@@ -417,7 +417,8 @@ export interface TableProps<TData = any> {
    * it app-wide through `TakeoffSparProvider`
    * `components.Table.defaultProps.labels` (an instance `labels` replaces that
    * object, it does not merge with it). `emptyState` still wins over
-   * `labels.noData`, and `slotProps` `aria-label`s win over the matching keys.
+   * `labels.noData`, and an `aria-label` in `slotProps.filterButton` /
+   * `pagination` / `expandButton` wins over the matching key.
    * See {@link TableLabels}.
    */
   labels?: Partial<TableLabels>;

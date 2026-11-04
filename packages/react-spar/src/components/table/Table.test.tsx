@@ -11,7 +11,7 @@ import { render as renderPlain, renderWithProvider as render, screen, within } f
 
 import { Table } from './Table';
 import { TableBody } from './TableBody';
-import { getExportRows } from './helpers';
+import { formatLabel, getExportRows } from './helpers';
 import type { TableColumnDef, TableSlot } from './types';
 
 // Spar Select/Popover content observe their anchor; jsdom lacks ResizeObserver.
@@ -777,6 +777,35 @@ describe('Table (props-first)', () => {
       expect(screen.getByRole('button', { name: 'Rolü temizle' })).toBeInTheDocument();
     });
 
+    it('takes the select placeholder from `labels.filterSelectPlaceholder`', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', options: [{ label: 'Admin', value: 'admin' }] } }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterSelectPlaceholder: 'Seçiniz' }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Seçiniz');
+    });
+
+    it('lets a slotProps aria-label win over the matching `labels` key', () => {
+      render(
+        <Table
+          data={manyUsers}
+          columns={baseColumns}
+          getRowId={getRowId}
+          pagination
+          expansion={{ render: () => 'detail' }}
+          labels={{ pagination: 'Sayfalama', expandRow: 'Satırı aç' }}
+          slotProps={{ pagination: { 'aria-label': 'Sonuçlar' }, expandButton: { 'aria-label': 'Detay' } }}
+        />,
+      );
+      expect(screen.getByRole('navigation', { name: 'Sonuçlar' })).toBeInTheDocument();
+      expect(screen.getAllByRole('button', { name: 'Detay' }).length).toBeGreaterThan(0);
+    });
+
+    it('leaves unknown and inherited template keys literal', () => {
+      expect(formatLabel('{page} {constructor} {nope}', { page: 2 })).toBe('2 {constructor} {nope}');
+    });
+
     it('falls back to the default select placeholder when given an empty string', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [
@@ -829,7 +858,7 @@ describe('Table (props-first)', () => {
         expect(screen.getByRole('button', { name })).toBeInTheDocument();
       }
       expect(screen.getByRole('combobox', { name: 'Sayfa başına satır' })).toBeInTheDocument();
-      expect(screen.getAllByLabelText('Sayfaya git').length).toBeGreaterThan(0);
+      expect(screen.getAllByLabelText('Sayfaya git')).toHaveLength(2);
       expect(screen.getByRole('checkbox', { name: 'Tüm satırları seç' })).toBeInTheDocument();
       expect(screen.getAllByRole('checkbox', { name: 'Satırı seç' }).length).toBe(10);
       expect(screen.getByText('Satır detayı')).toBeInTheDocument();
@@ -837,8 +866,12 @@ describe('Table (props-first)', () => {
       await user.click(firstExpand);
       expect(screen.getByRole('button', { name: 'Satırı kapat' })).toBeInTheDocument();
 
-      rerender(<Table data={[]} columns={baseColumns} getRowId={getRowId} labels={labels} />);
+      rerender(<Table data={[]} columns={baseColumns} getRowId={getRowId} labels={{ ...labels, noItems: 'Kayıt yok', pageStatusUnknown: 'Sayfa {page}' }} pagination />);
       expect(screen.getByText('Veri yok')).toBeInTheDocument();
+      expect(screen.getByText('Kayıt yok')).toBeInTheDocument();
+      expect(screen.getByText('Sayfa 1')).toBeInTheDocument();
+      rerender(<Table data={users} columns={baseColumns} getRowId={getRowId} labels={{ rowSelection: 'Satır seçimi' }} selection={{ mode: 'single' }} />);
+      expect(screen.getByText('Satır seçimi')).toBeInTheDocument();
       rerender(<Table data={users} columns={baseColumns} getRowId={getRowId} labels={labels} loading />);
       expect(screen.getByRole('status', { name: 'Yükleniyor' })).toBeInTheDocument();
     });

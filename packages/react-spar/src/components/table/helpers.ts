@@ -363,4 +363,4 @@ export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: Sti
 
 /** Fill a `labels` template: every `{key}` is replaced by its value. */
 export const formatLabel = (template: string, values: Record<string, number | string>): string =>
-  template.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? String(values[key]) : match));
+  template.replace(/\{(\w+)\}/g, (match, key: string) => (Object.prototype.hasOwnProperty.call(values, key) ? String(values[key]) : match));
