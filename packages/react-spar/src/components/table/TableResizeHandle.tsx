@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react';
+import { useEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react';
 import type { Column } from '@tanstack/react-table';
 
 import { useTableContext, type TableGrowPlan } from './context';
@@ -44,6 +44,7 @@ const growthSign = (element: HTMLElement, edge: 'start' | 'end'): 1 | -1 => (rea
 export const TableResizeHandle = ({ column, edge = 'end' }: { column: AnyColumn; edge?: 'start' | 'end' }) => {
   const { slotAttrs, columnResizing } = useTableContext('Table.ResizeHandle');
   const sessionRef = useRef<DragSession | null>(null);
+  const keyContentWidthsRef = useRef<Map<string, number> | undefined>(undefined);
   const [dragging, setDragging] = useState(false);
   const setDraftRef = useRef(columnResizing?.setDraft);
   setDraftRef.current = columnResizing?.setDraft;
@@ -189,8 +190,17 @@ export const TableResizeHandle = ({ column, edge = 'end' }: { column: AnyColumn;
     const base = columnResizing.getBaseSizing();
     const current = base[column.id] ?? column.getSize();
     const stepped = clampColumnWidth(column, current + sign * step, current);
-    const { width, donors } = stepped > current ? resolveGrowth(current, stepped, columnResizing.getGrowPlan(column.id, base)) : { width: stepped, donors: undefined };
+    keyContentWidthsRef.current ??= new Map();
+    const { width, donors } =
+      stepped > current ? resolveGrowth(current, stepped, columnResizing.getGrowPlan(column.id, base, 0, keyContentWidthsRef.current)) : { width: stepped, donors: undefined };
     if (width !== current) columnResizing.commit({ ...base, ...donors, [column.id]: width });
+  };
+
+  // Content widths stay cached while the handle keeps focus, so holding an
+  // arrow key measures the columns that give way once, not on every repeat.
+  const handleBlur = (event: FocusEvent<HTMLElement>) => {
+    attrs.onBlur?.(event);
+    keyContentWidthsRef.current = undefined;
   };
 
   const handleDoubleClick = (event: MouseEvent<HTMLElement>) => {
@@ -219,6 +229,7 @@ export const TableResizeHandle = ({ column, edge = 'end' }: { column: AnyColumn;
       onPointerCancel={handlePointerCancel}
       onLostPointerCapture={handleLostPointerCapture}
       onKeyDown={handleKeyDown}
+      onBlur={handleBlur}
       onDoubleClick={handleDoubleClick}
     />
   );

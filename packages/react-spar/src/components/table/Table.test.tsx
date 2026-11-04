@@ -1763,6 +1763,28 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({ name: 160, role: 100 });
     });
 
+    it('measures content once per run of key presses, again after the handle loses focus', () => {
+      let probes = 0;
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        if (this.tagName === 'TH' && this.hasAttribute('data-measure')) probes += 1;
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'Age' ? 300 : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      const handle = handleFor('Name');
+
+      fireEvent.keyDown(handle, { key: 'ArrowRight' });
+      const once = probes;
+      expect(once).toBeGreaterThan(0);
+      fireEvent.keyDown(handle, { key: 'ArrowRight' });
+      fireEvent.keyDown(handle, { key: 'ArrowRight' });
+      expect(probes).toBe(once);
+
+      fireEvent.blur(handle);
+      fireEvent.keyDown(handle, { key: 'ArrowRight' });
+      expect(probes).toBe(once * 2);
+    });
+
     it('does not count room freed by an earlier shrink in the same drag as spare', () => {
       const onChange = vi.fn();
       // The absorber (Age) takes whatever Name's drawn width leaves of 320px:

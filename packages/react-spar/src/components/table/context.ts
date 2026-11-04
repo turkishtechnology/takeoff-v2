@@ -67,11 +67,13 @@ export interface TableColumnResizingContext {
    * Where a column can take room from when it grows, so a resize never pushes
    * the table past its container: first the absorber, then the resizable,
    * unpinned columns between them (nearest first), each down to the width its
-   * content needs (never below its min width), so its text stays whole. `shrunkBy` is how far
-   * the column is currently drawn below the width the resize started from:
-   * the absorber is that much wider on screen than its share at the start.
+   * content needs (never below its min width), so its text stays whole.
+   * `shrunkBy` is how far the column is currently drawn below the width the
+   * resize started from: the absorber is that much wider on screen than its
+   * share at the start. `contentWidths` caches the measured content widths
+   * across calls (a run of key presses), since measuring clones the column.
    */
-  getGrowPlan: (columnId: string, base: ColumnSizingState, shrunkBy?: number) => TableGrowPlan;
+  getGrowPlan: (columnId: string, base: ColumnSizingState, shrunkBy?: number, contentWidths?: Map<string, number>) => TableGrowPlan;
   /** Header cells register their `<th>` so a first resize can measure the auto layout. */
   registerHeaderCell: (columnId: string, element: HTMLElement | null) => void;
 }

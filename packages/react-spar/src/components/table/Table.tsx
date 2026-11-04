@@ -511,7 +511,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       }
       return base;
     };
-    const getGrowPlan: TableColumnResizingContext['getGrowPlan'] = (columnId, base, shrunkBy = 0) => {
+    const getGrowPlan: TableColumnResizingContext['getGrowPlan'] = (columnId, base, shrunkBy = 0, contentWidths = new Map()) => {
       const visible = table.getVisibleLeafColumns();
       const absorberId = absorberColumnIdRef.current;
       const absorber = visible.find(candidate => candidate.id === absorberId);
@@ -527,8 +527,16 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       // Narrowest a column gives way to: the width its content needs (its
       // header and rendered cells at `max-content`, so its text stays whole),
       // and never below its min width. Measured only for the columns that may
-      // give way, once per drag.
-      const floorOf = (column: (typeof visible)[number]) => Math.max(getColumnResizeBounds(column)[0], measureColumnContentWidth(headerCellsRef.current.get(column.id)));
+      // give way: once per drag (the plan is kept for the drag), and once per
+      // run of key presses (the handle passes the same cache).
+      const contentWidthOf = (columnId: string) => {
+        const cached = contentWidths.get(columnId);
+        if (cached != null) return cached;
+        const measured = measureColumnContentWidth(headerCellsRef.current.get(columnId));
+        contentWidths.set(columnId, measured);
+        return measured;
+      };
+      const floorOf = (column: (typeof visible)[number]) => Math.max(getColumnResizeBounds(column)[0], contentWidthOf(column.id));
       // Only columns between this one and the absorber give way, nearest
       // first: each of them has a handle on that same side to win its width
       // back, and a column beyond the absorber is never touched.
