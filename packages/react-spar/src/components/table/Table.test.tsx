@@ -1913,34 +1913,6 @@ describe('Table (props-first)', () => {
       expect(trigger).not.toHaveAttribute('data-active');
     });
 
-    it('routes classNames.filterClear and slotProps.filterClear onto the filter Clear button', async () => {
-      const user = userEvent.setup();
-      const onClearClick = vi.fn();
-      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
-      const { container } = render(
-        <Table
-          data={users}
-          columns={columns}
-          getRowId={getRowId}
-          labels={{ filterClear: 'Temizle' }}
-          classNames={{ filterClear: 'instance-filter-clear' }}
-          slotProps={{ filterClear: { title: 'Filtreyi temizle', onClick: onClearClick } }}
-        />,
-      );
-
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
-      await user.type(await screen.findByRole('searchbox'), 'ada');
-      const clear = screen.getByRole('button', { name: 'Temizle' });
-      expect(clear).toHaveClass('tk-table-filter-clear', 'instance-filter-clear');
-      expect(clear).toHaveAttribute('title', 'Filtreyi temizle');
-      expect(clear).not.toHaveAttribute('data-slot', 'filter-clear');
-
-      // The slot layers never displace Table's own clear handler.
-      await user.click(clear);
-      expect(onClearClick).toHaveBeenCalledTimes(1);
-      expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus', 'Grace']);
-    });
-
     it('composes slotProps.tableViewport (style + onScroll) with the built-in data-scrolled hook', () => {
       const onScroll = vi.fn();
       const { container } = render(<Table data={users} columns={baseColumns} getRowId={getRowId} slotProps={{ tableViewport: { style: { maxHeight: 280 }, onScroll } }} />);

@@ -59,8 +59,6 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   // `slotProps.filterButton` layers still go through `slotAttrs`, like every
   // other slot. The panel wrapper IS a Table-owned slot node.
   const { 'data-slot': _filterButtonSlot, ...filterButtonAttrs } = slotAttrs('filterButton');
-  // The Clear button is a Spar `Button` (owner node) too: same treatment.
-  const { 'data-slot': _filterClearSlot, ...filterClearAttrs } = slotAttrs('filterClear');
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -72,16 +70,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
           {filter.render ? filter.render(ctx) : <PresetFilterControl filter={filter} ctx={ctx} container={panel} />}
         </div>
         {active && (
-          <Button
-            size="small"
-            appearance="text"
-            {...filterClearAttrs}
-            onClick={event => {
-              // Chain a consumer `slotProps.filterClear.onClick` (e.g. analytics) before clearing.
-              filterClearAttrs.onClick?.(event);
-              ctx.clear();
-            }}
-          >
+          <Button size="small" appearance="text" onClick={ctx.clear}>
             {labels.filterClear}
           </Button>
         )}

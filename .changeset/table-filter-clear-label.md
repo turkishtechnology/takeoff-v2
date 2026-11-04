@@ -10,6 +10,3 @@ expansion controls. Pass only the keys you need (e.g.
 the rest keep their English defaults. Dynamic entries are `{placeholder}`
 templates. Set it app-wide through `TakeoffSparProvider`
 `components.Table.defaultProps.labels`.
-
-The filter panel's Clear button is also a new `filterClear` slot for
-`classNames` / `slotProps`.
