@@ -592,3 +592,12 @@ export const createWidthObserver = () => {
 };
 
 export type TableWidthObserver = ReturnType<typeof createWidthObserver>;
+
+/**
+ * The room the data columns share: the table viewport's inner width less the
+ * utility (selection / expand) columns. `0` when it cannot be measured.
+ */
+export const getColumnRoom = (headerCell: HTMLElement | undefined, utilityColumns: number): number => {
+  const containerWidth = headerCell?.closest('table')?.parentElement?.clientWidth ?? 0;
+  return containerWidth > 0 ? containerWidth - utilityColumns * UTILITY_COLUMN_WIDTH : 0;
+};

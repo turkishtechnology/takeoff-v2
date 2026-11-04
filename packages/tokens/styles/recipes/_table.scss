@@ -154,7 +154,8 @@
   // `fit` mode) the absorber is the one auto column that takes up the slack.
   // `expand` mode: the table carries its columns' sum as its width, so the
   // bordered viewport hugs it (and scrolls once it outgrows the container)
-  // instead of leaving empty bordered room at the inline end.
+  // instead of leaving empty bordered room at the inline end. Pagination and
+  // the loading overlay stay on the root, so they keep the container's width.
   &[data-fixed-layout][data-resize-mode='expand'] .tk-table-viewport {
     width: fit-content;
     max-width: 100%;

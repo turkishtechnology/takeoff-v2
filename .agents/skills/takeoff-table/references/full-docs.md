@@ -678,17 +678,17 @@ whatever the others leave. The absorber is the last unpinned column without a
 declared `width` (or the last unpinned one when every column declares one), so a
 fixed-width trailing column such as an actions column keeps its width. A growing
 column takes its room from the absorber first, then from the resizable, unpinned
-columns between it and the absorber (nearest first), each down to its min width.
-So a resize never pushes the table past its container; a table that already
-overflows (e.g. widths stored on a wider screen) scrolls horizontally. Each
-handle sits on the edge that faces the absorber: the end edge for a column
-before it, the start edge for a column after it (a right-pinned column, say), so
-the edge under the pointer is always the one that moves. A column after the
-absorber takes its room from the absorber and the columns between them. Give a
-column that should keep its width, such as the Actions column below,
-`resizable: false`. Fitting a column to its content with a double-click takes
-its room the same way, and a press that moves less than 3px counts as a click,
-not a resize.
+columns between it and the absorber (nearest first), each down to the width its
+content needs (never below its min width), so their text stays readable. So a
+resize never pushes the table past its container; a table that already overflows
+(e.g. widths stored on a wider screen) scrolls horizontally. Each handle sits on
+the edge that faces the absorber: the end edge for a column before it, the start
+edge for a column after it (a right-pinned column, say), so the edge under the
+pointer is always the one that moves. A column after the absorber takes its room
+from the absorber and the columns between them. Give a column that should keep
+its width, such as the Actions column below, `resizable: false`. Fitting a
+column to its content with a double-click takes its room the same way, and a
+press that moves less than 3px counts as a click, not a resize.
 
 A few edge cases: only widths of visible columns count, so hiding every sized
 column returns the table to its natural layout (the widths stay stored for when

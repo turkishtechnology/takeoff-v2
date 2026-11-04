@@ -33,6 +33,7 @@ import {
   createWidthObserver,
   getAbsorberColumnId,
   getColumnResizeBounds,
+  getColumnRoom,
   getDraftWidth,
   measureColumnContentWidth,
   resolveGrowth,
@@ -434,12 +435,14 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     if (!fixedLayout || !previous || previous.absorberId === absorberColumnId) return;
     if (committedSizing[previous.absorberId] != null || heldWidths[previous.absorberId] != null) return;
     const column = visible.find(candidate => candidate.id === previous.absorberId);
-    const containerWidth = column ? (headerCellsRef.current.get(column.id)?.closest('table')?.parentElement?.clientWidth ?? 0) : 0;
-    if (!column || containerWidth <= 0) return;
+    const room = column ? getColumnRoom(headerCellsRef.current.get(column.id), (hasSelection ? 1 : 0) + (hasExpansion ? 1 : 0)) : 0;
+    if (!column || room <= 0) return;
     // The old absorber had what the other columns left of the container (the
-    // fixed layout fills it exactly, or the absorber sat at its floor).
-    const utilityWidth = ((hasSelection ? 1 : 0) + (hasExpansion ? 1 : 0)) * UTILITY_COLUMN_WIDTH;
-    let previousWidth = containerWidth - utilityWidth;
+    // fixed layout fills it exactly, or the absorber sat at its floor). The
+    // container is read now, in the commit that changed the absorber: should
+    // it change width in that same commit (a parent resize, a vertical
+    // scrollbar appearing), the held width is off by that difference.
+    let previousWidth = room;
     for (const [id, size] of previous.sizes) if (id !== previous.absorberId) previousWidth -= size;
     // Columns added (or shown) since: hand each its own size out of the old
     // absorber's slack instead of squeezing the new absorber to its min, as far
@@ -462,10 +465,9 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       if (fixedLayoutRef.current) return undefined;
       const visible = table.getVisibleLeafColumns();
       const absorber = visible.find(column => column.id === absorberColumnIdRef.current);
-      const containerWidth = absorber ? (headerCellsRef.current.get(absorber.id)?.closest('table')?.parentElement?.clientWidth ?? 0) : 0;
-      if (!absorber || containerWidth <= 0) return undefined;
-      const utilityWidth = ((hasSelectionRef.current ? 1 : 0) + (hasExpansionRef.current ? 1 : 0)) * UTILITY_COLUMN_WIDTH;
-      return containerWidth - utilityWidth - visible.reduce((sum, column) => sum + (column.id === absorber.id ? 0 : widthOf(column)), 0);
+      const room = absorber ? getColumnRoom(headerCellsRef.current.get(absorber.id), (hasSelectionRef.current ? 1 : 0) + (hasExpansionRef.current ? 1 : 0)) : 0;
+      if (!absorber || room <= 0) return undefined;
+      return room - visible.reduce((sum, column) => sum + (column.id === absorber.id ? 0 : widthOf(column)), 0);
     };
     const getBaseSizing = (): ColumnSizingState => {
       const committed = committedSizingRef.current;
@@ -522,9 +524,11 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       // May go below the floor (an earlier shrink in this drag already freed
       // more than the absorber has): then the absorber has nothing to spare.
       const available = absorberWidth - Math.max(0, shrunkBy);
-      // Narrowest a column may get: its min width (its text then ends in an
-      // ellipsis).
-      const floorOf = (column: (typeof visible)[number]) => getColumnResizeBounds(column)[0];
+      // Narrowest a column gives way to: the width its content needs (its
+      // header and rendered cells at `max-content`, so its text stays whole),
+      // and never below its min width. Measured only for the columns that may
+      // give way, once per drag.
+      const floorOf = (column: (typeof visible)[number]) => Math.max(getColumnResizeBounds(column)[0], measureColumnContentWidth(headerCellsRef.current.get(column.id)));
       // Only columns between this one and the absorber give way, nearest
       // first: each of them has a handle on that same side to win its width
       // back, and a column beyond the absorber is never touched.

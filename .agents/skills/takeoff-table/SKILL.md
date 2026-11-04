@@ -284,11 +284,11 @@ column without a declared `width`) has no handle and takes the leftover width,
 so the table's own width never jumps and a fixed-width actions column keeps its
 width. Each handle sits on the edge facing the absorber (the end edge before it,
 the start edge after it), and a growing column takes room only from the absorber
-and the columns between it and the absorber, each down to its min width. Give a
-column that must keep its width `resizable: false`. Pass
-`columnResizing={{ mode: 'expand' }}` instead when the table should grow past
-its container and scroll (no absorber; every column keeps its width, the last
-column gets a handle).
+and the columns between it and the absorber, each down to the width its content
+needs (never below its min width). Give a column that must keep its width
+`resizable: false`. Pass `columnResizing={{ mode: 'expand' }}` instead when the
+table should grow past its container and scroll (no absorber; every column keeps
+its width, the last column gets a handle).
 
 ### Server (manual) data + export
 

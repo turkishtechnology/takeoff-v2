@@ -1719,7 +1719,7 @@ describe('Table (props-first)', () => {
       const onChange = vi.fn();
       // The absorber (Age) renders 200px wide; every column may narrow to 50px.
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const width = this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'Age' ? 200 : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
@@ -1747,6 +1747,22 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 50 });
     });
 
+    it('keeps the columns that give way at least as wide as their content', () => {
+      const onChange = vi.fn();
+      // Role's content needs 100px and Age's 180px, both above the 50px min.
+      const content: Record<string, number> = { Role: 100, Age: 180 };
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const probedColumn = this.closest('table')?.querySelector('thead')?.textContent ?? '';
+        const width = this.hasAttribute('data-measure') ? (content[probedColumn] ?? 0) : this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // 20px from Age (200 → 180), then 20px from Role (120 → 100), no further.
+      drag(handleFor('Name'), 0, 500);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 160, role: 100 });
+    });
+
     it('does not count room freed by an earlier shrink in the same drag as spare', () => {
       const onChange = vi.fn();
       // The absorber (Age) takes whatever Name's drawn width leaves of 320px:
@@ -1755,7 +1771,7 @@ describe('Table (props-first)', () => {
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
         const nameCell = this.parentElement?.querySelector('th') as HTMLElement | null;
         const nameWidth = parseFloat(nameCell?.style.width ?? '') || 120;
-        const width = this.tagName === 'TH' ? (this.textContent === 'Age' ? 320 - nameWidth : 120) : 0;
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'Age' ? 320 - nameWidth : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       render(<Table data={users} columns={[...resizeColumns.slice(0, 1), ...resizeColumns.slice(2)]} getRowId={getRowId} columnResizing={{ onChange }} />);
@@ -1773,7 +1789,7 @@ describe('Table (props-first)', () => {
     it('never takes room from a pinned or non-resizable column', () => {
       const onChange = vi.fn();
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const width = this.tagName === 'TH' ? (this.textContent === 'City' ? 100 : 120) : 0;
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'City' ? 100 : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       const columns: TableColumnDef<User>[] = [
@@ -1909,7 +1925,7 @@ describe('Table (props-first)', () => {
       expect(onChange).not.toHaveBeenCalled();
     });
 
-    it('moves an unpinned column without re-rendering the body, and hands the styles back on cancel', () => {
+    it('moves an unpinned column without re-rendering the body, and drops the live draft on cancel', () => {
       const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200, role: 140 } }} />);
       const handle = handleFor('Name');
       const bodyCell = within(container.querySelector('tbody') as HTMLElement)
@@ -2202,7 +2218,8 @@ describe('Table (props-first)', () => {
       const onChange = vi.fn();
       // Content wants 300px; the absorber (Age) is 100px wide, so 50px to spare.
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const width = this.hasAttribute('data-measure') ? 300 : this.tagName === 'TH' && this.textContent === 'Age' ? 100 : 0;
+        const probedColumn = this.closest('table')?.querySelector('thead')?.textContent;
+        const width = this.hasAttribute('data-measure') ? (probedColumn === 'Name' ? 300 : 0) : this.tagName === 'TH' && this.textContent === 'Age' ? 100 : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 100, role: 140 }, onChange }} />);
@@ -2451,7 +2468,7 @@ describe('Table (props-first)', () => {
     it('reads the grow plan again on each new drag', () => {
       let absorberWidth = 100;
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-        const width = this.tagName === 'TH' ? (this.textContent === 'Age' ? absorberWidth : 120) : 0;
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'Age' ? absorberWidth : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
       const onChange = vi.fn();

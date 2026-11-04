@@ -282,7 +282,8 @@ export interface TableColumnResizingConfig extends ControlledState<TableColumnSi
    *   absorber: the last unpinned column without a declared `width`, or the
    *   last unpinned one when every column declares one) takes up the
    *   slack, and a growing column takes room from it and then from the
-   *   columns between them, each down to its min width.
+   *   columns between them, each down to the width its content needs (never
+   *   below its min width).
    * - `expand`: every column keeps its own width. A growing column widens the
    *   table past its container, which then scrolls horizontally; a shrinking
    *   one narrows the table, and its border narrows with it. The last
