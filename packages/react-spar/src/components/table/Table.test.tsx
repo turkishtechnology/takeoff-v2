@@ -786,6 +786,21 @@ describe('Table (props-first)', () => {
       expect(screen.getByRole('button', { name: 'Sütunu filtrele' })).toBeInTheDocument();
     });
 
+    it("keeps Spinner's provider aria-label unless `labels.loading` is set", () => {
+      const { rerender } = renderPlain(
+        <TakeoffSparProvider components={{ Spinner: { defaultProps: { 'aria-label': 'Yükleniyor' } } }}>
+          <Table data={users} columns={baseColumns} getRowId={getRowId} loading />
+        </TakeoffSparProvider>,
+      );
+      expect(screen.getByRole('status', { name: 'Yükleniyor' })).toBeInTheDocument();
+      rerender(
+        <TakeoffSparProvider components={{ Spinner: { defaultProps: { 'aria-label': 'Yükleniyor' } } }}>
+          <Table data={users} columns={baseColumns} getRowId={getRowId} loading labels={{ loading: 'Tablo yükleniyor' }} />
+        </TakeoffSparProvider>,
+      );
+      expect(screen.getByRole('status', { name: 'Tablo yükleniyor' })).toBeInTheDocument();
+    });
+
     it('ignores non-string label values instead of crashing', () => {
       const loose = JSON.parse('{"pageStatus": 1, "noData": null}') as Partial<TableLabels>;
       render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination labels={loose} />);

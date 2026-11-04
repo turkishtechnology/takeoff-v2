@@ -292,7 +292,7 @@ export interface TableDataRequest {
 export interface TableLabels {
   /** Empty-table text when `emptyState` is not given. @defaultValue 'No data' */
   noData: string;
-  /** Accessible name of the loading spinner. @defaultValue 'Loading' */
+  /** Accessible name of the loading spinner; when unset, Spinner's own (provider) default applies. @defaultValue 'Loading' */
   loading: string;
   /** Accessible name of each column's filter trigger. @defaultValue 'Filter column' */
   filterButton: string;

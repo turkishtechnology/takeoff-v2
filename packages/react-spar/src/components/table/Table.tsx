@@ -46,7 +46,7 @@ const resolveLabels = (...layers: (Partial<TableLabels> | undefined)[]): TableLa
     if (!layer) continue;
     for (const key of Object.keys(layer) as (keyof TableLabels)[]) {
       const value: unknown = layer[key];
-      if (typeof value === 'string' && value !== '' && key in DEFAULT_LABELS) resolved[key] = value;
+      if (typeof value === 'string' && value !== '' && Object.prototype.hasOwnProperty.call(DEFAULT_LABELS, key)) resolved[key] = value;
     }
   }
   return resolved;
@@ -111,6 +111,9 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   // `labels` is merged per key rather than taken from the shallow props merge,
   // so read both layers off the originals.
   const labels = resolveLabels(theme?.defaultProps?.labels, props.labels);
+  // Only name the spinner when `labels.loading` was actually set, so an
+  // app-wide `components.Spinner.defaultProps['aria-label']` keeps applying.
+  const loadingLabelSet = [theme?.defaultProps?.labels?.loading, props.labels?.loading].some(value => typeof value === 'string' && value !== '');
   const [tableViewportScrolled, setTableViewportScrolled] = useState(false);
 
   // ── Controlled/uncontrolled state slices ─────────────────────────────────
@@ -318,10 +321,10 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         {paginationEnabled && <TablePagination />}
         {loading && (
           // No `aria-hidden`: the Spar Spinner ships `role="status"`, named by
-          // `labels.loading`, so the overlay politely announces the loading
-          // transition (the table also carries `aria-busy`).
+          // `labels.loading` (or Spinner's own default), so the overlay politely
+          // announces the loading transition (the table also carries `aria-busy`).
           <div {...slotAttrs('loading')}>
-            <Spinner aria-label={labels.loading} />
+            <Spinner aria-label={loadingLabelSet ? labels.loading : undefined} />
           </div>
         )}
       </div>
