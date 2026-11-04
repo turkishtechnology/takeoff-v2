@@ -308,7 +308,7 @@ export interface TableLabels {
   pageStatusUnknown: string;
   /** Visible item range (1-based). @defaultValue 'Items {start}-{end} of {total}' */
   itemsRange: string;
-  /** Item range text when there are no rows. @defaultValue '0 items' */
+  /** Item range text when there are no rows (`{total}` is 0). @defaultValue '0 items' */
   noItems: string;
   /** @defaultValue 'First page' */
   firstPage: string;

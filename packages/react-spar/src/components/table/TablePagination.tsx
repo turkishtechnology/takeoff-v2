@@ -34,7 +34,7 @@ export const TablePagination = () => {
   const totalRows = table.getRowCount();
   const startItem = pageIndex * pageSize + 1;
   const endItem = Math.min((pageIndex + 1) * pageSize, totalRows);
-  const itemsLabel = totalRows === 0 ? labels.noItems : formatLabel(labels.itemsRange, { start: startItem, end: endItem, total: totalRows });
+  const itemsLabel = totalRows === 0 ? formatLabel(labels.noItems, { total: 0 }) : formatLabel(labels.itemsRange, { start: startItem, end: endItem, total: totalRows });
 
   // The active `pageSize` can come from a `pagination.pageSize` prop that isn't
   // one of `pageSizeOptions`. Fold it in (sorted) so the Select always has a
