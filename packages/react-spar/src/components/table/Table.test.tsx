@@ -777,6 +777,17 @@ describe('Table (props-first)', () => {
       expect(screen.getByRole('button', { name: 'Rolü temizle' })).toBeInTheDocument();
     });
 
+    it('falls back to the default select placeholder when given an empty string', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', placeholder: '', options: [{ label: 'Admin', value: 'admin' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Select');
+    });
+
     it('takes the filter labels app-wide from provider defaultProps', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
