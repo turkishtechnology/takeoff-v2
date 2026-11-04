@@ -27,10 +27,12 @@ export interface TableLiveDraft {
 
 /** Where a growing column takes its room from (see `getGrowPlan`). */
 export interface TableGrowPlan {
-  /** What the absorber can give up; `Infinity` when there is none or nothing can be measured. */
+  /** What the absorber can give up before its content is cut; `Infinity` when there is none or nothing can be measured. */
   absorberSpare: number;
+  /** What it can give up beyond that, down to its min width (taken only once every `spare` is used). */
+  absorberExtra?: number;
   /** Then the sized columns between the growing column and the absorber, nearest first: their width and what each can give up. */
-  donors: Array<{ id: string; width: number; spare: number }>;
+  donors: Array<{ id: string; width: number; spare: number; extra?: number }>;
 }
 
 /**
@@ -67,7 +69,7 @@ export interface TableColumnResizingContext {
    * Where a column can take room from when it grows, so a resize never pushes
    * the table past its container: first the absorber, then the resizable,
    * unpinned columns between them (nearest first), each down to the width its
-   * content needs (never below its min width), so its text stays whole.
+   * content needs, then (in a second pass, same order) down to its min width.
    * `shrunkBy` is how far the column is currently drawn below the width the
    * resize started from: the absorber is that much wider on screen than its
    * share at the start. `contentWidths` caches the measured content widths

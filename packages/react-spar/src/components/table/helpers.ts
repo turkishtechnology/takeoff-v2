@@ -494,16 +494,30 @@ export interface ResolvedGrowth {
  */
 export const resolveGrowth = (startWidth: number, desired: number, plan: TableGrowPlan): ResolvedGrowth => {
   if (desired <= startWidth) return { width: desired };
-  const budget = plan.donors.reduce((sum, donor) => sum + donor.spare, plan.absorberSpare);
+  const absorberExtra = plan.absorberExtra ?? 0;
+  const budget = plan.donors.reduce((sum, donor) => sum + donor.spare + (donor.extra ?? 0), plan.absorberSpare + absorberExtra);
   const width = Math.min(desired, startWidth + budget);
-  let remaining = width - startWidth - plan.absorberSpare;
-  if (remaining <= 0) return { width };
+  let remaining = width - startWidth;
+  const take = (amount: number) => {
+    const taken = Math.min(amount, remaining);
+    remaining -= taken;
+    return taken;
+  };
+  // Two passes in the same order: first down to each column's content width,
+  // then (only if that is not enough) on down to its min width.
+  const taken = new Map<string, number>();
+  for (const pass of ['spare', 'extra'] as const) {
+    take(pass === 'spare' ? plan.absorberSpare : absorberExtra);
+    for (const donor of plan.donors) {
+      const amount = take(donor[pass] ?? 0);
+      if (amount > 0) taken.set(donor.id, (taken.get(donor.id) ?? 0) + amount);
+    }
+  }
+  if (taken.size === 0) return { width };
   const donors: ColumnSizingState = {};
   for (const donor of plan.donors) {
-    const take = Math.min(donor.spare, remaining);
-    donors[donor.id] = donor.width - take;
-    remaining -= take;
-    if (remaining <= 0) break;
+    const amount = taken.get(donor.id);
+    if (amount != null) donors[donor.id] = donor.width - amount;
   }
   return { width, donors };
 };

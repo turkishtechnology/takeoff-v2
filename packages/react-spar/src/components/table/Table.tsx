@@ -524,11 +524,10 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       // May go below the floor (an earlier shrink in this drag already freed
       // more than the absorber has): then the absorber has nothing to spare.
       const available = absorberWidth - Math.max(0, shrunkBy);
-      // Narrowest a column gives way to: the width its content needs (its
-      // header and rendered cells at `max-content`, so its text stays whole),
-      // and never below its min width. Measured only for the columns that may
-      // give way: once per drag (the plan is kept for the drag), and once per
-      // run of key presses (the handle passes the same cache).
+      // The width a column's content needs (its header and rendered cells at
+      // `max-content`, so its text stays whole). Measured only for the columns
+      // that may give way: once per drag (the plan is kept for the drag), and
+      // once per run of key presses (the handle passes the same cache).
       const contentWidthOf = (columnId: string) => {
         const cached = contentWidths.get(columnId);
         if (cached != null) return cached;
@@ -536,7 +535,14 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         contentWidths.set(columnId, measured);
         return measured;
       };
-      const floorOf = (column: (typeof visible)[number]) => Math.max(getColumnResizeBounds(column)[0], contentWidthOf(column.id));
+      // What a column of this width gives up: `spare` down to its content
+      // width, then `extra` on down to its min width, so the first pass keeps
+      // text whole and the second keeps the handle moving once none is left.
+      const giveOf = (column: (typeof visible)[number], width: number) => {
+        const min = getColumnResizeBounds(column)[0];
+        const spare = Math.max(0, Math.floor(width - Math.max(min, contentWidthOf(column.id))));
+        return { spare, extra: Math.max(0, Math.floor(width - min)) - spare };
+      };
       // Only columns between this one and the absorber give way, nearest
       // first: each of them has a handle on that same side to win its width
       // back, and a column beyond the absorber is never touched.
@@ -547,10 +553,11 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         .filter(candidate => candidate.id !== absorber.id && candidate.getCanResize() && !stickyLayoutRef.current.has(candidate.id) && base[candidate.id] != null)
         .map(candidate => {
           const width = base[candidate.id] as number;
-          return { id: candidate.id, width, spare: Math.max(0, Math.floor(width - floorOf(candidate))) };
+          return { id: candidate.id, width, ...giveOf(candidate, width) };
         })
-        .filter(donor => donor.spare > 0);
-      return { absorberSpare: Math.max(0, Math.floor(available - floorOf(absorber))), donors };
+        .filter(donor => donor.spare + donor.extra > 0);
+      const { spare: absorberSpare, extra: absorberExtra } = giveOf(absorber, available);
+      return { absorberSpare, absorberExtra, donors };
     };
     return {
       getBaseSizing,

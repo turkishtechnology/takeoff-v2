@@ -1747,7 +1747,7 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 50 });
     });
 
-    it('keeps the columns that give way at least as wide as their content', () => {
+    it('lets the columns that give way keep their content first, then their min width', () => {
       const onChange = vi.fn();
       // Role's content needs 100px and Age's 180px, both above the 50px min.
       const content: Record<string, number> = { Role: 100, Age: 180 };
@@ -1756,11 +1756,34 @@ describe('Table (props-first)', () => {
         const width = this.hasAttribute('data-measure') ? (content[probedColumn] ?? 0) : this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
+      const first = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // 20px from Age (200 → 180), then 20px from Role (120 → 100): both still read whole.
+      drag(handleFor('Name'), 0, 40);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 160, role: 100 });
+      first.unmount();
+
+      // Asked for more, they give way on down to their 50px min, in the same order.
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      drag(handleFor('Name'), 0, 500);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 340, role: 50 });
+    });
+
+    it('still grows when the absorber is already cut short', () => {
+      const onChange = vi.fn();
+      // Age's content needs 400px but is drawn 200px wide: it has nothing to
+      // give before its content is cut, only down to its min after that.
+      const content: Record<string, number> = { Role: 100, Age: 400 };
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const probedColumn = this.closest('table')?.querySelector('thead')?.textContent ?? '';
+        const width = this.hasAttribute('data-measure') ? (content[probedColumn] ?? 0) : this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
       render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
 
-      // 20px from Age (200 → 180), then 20px from Role (120 → 100), no further.
-      drag(handleFor('Name'), 0, 500);
-      expect(onChange).toHaveBeenLastCalledWith({ name: 160, role: 100 });
+      // 20px from Role down to its content, then 40px out of Age.
+      drag(handleFor('Name'), 0, 60);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 180, role: 100 });
     });
 
     it('measures content once per run of key presses, again after the handle loses focus', () => {

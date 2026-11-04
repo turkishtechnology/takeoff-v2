@@ -679,10 +679,11 @@ declared `width` (or the last unpinned one when every column declares one), so a
 fixed-width trailing column such as an actions column keeps its width. A growing
 column takes its room from the absorber first, then from the resizable, unpinned
 columns between it and the absorber (nearest first), each down to the width its
-content needs (never below its min width), so their text stays readable. So a
-resize never pushes the table past its container; a table that already overflows
-(e.g. widths stored on a wider screen) scrolls horizontally. Each handle sits on
-the edge that faces the absorber: the end edge for a column before it, the start
+content needs, so their text stays readable; only when that is not enough do
+they give way further, in the same order, down to their min width. So a resize
+never pushes the table past its container; a table that already overflows (e.g.
+widths stored on a wider screen) scrolls horizontally. Each handle sits on the
+edge that faces the absorber: the end edge for a column before it, the start
 edge for a column after it (a right-pinned column, say), so the edge under the
 pointer is always the one that moves. A column after the absorber takes its room
 from the absorber and the columns between them. Give a column that should keep
