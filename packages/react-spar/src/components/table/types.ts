@@ -400,7 +400,10 @@ export interface TableProps<TData = any> {
    * @defaultValue false
    */
   loading?: boolean;
-  /** Content rendered when there are no rows. */
+  /**
+   * Content rendered when there are no rows. Defaults to `labels.noData`; pass
+   * `null` (or `false`) to leave the empty cell blank.
+   */
   emptyState?: ReactNode;
   /**
    * Every user-facing string Table renders — visible text and accessible

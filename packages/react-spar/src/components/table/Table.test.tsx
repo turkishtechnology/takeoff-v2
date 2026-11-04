@@ -804,6 +804,12 @@ describe('Table (props-first)', () => {
       expect(screen.getByRole('status', { name: 'Tablo yükleniyor' })).toBeInTheDocument();
     });
 
+    it('leaves the empty cell blank when emptyState is null', () => {
+      const { container } = render(<Table data={[]} columns={baseColumns} getRowId={getRowId} emptyState={null} />);
+      expect(screen.queryByText('No data')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-slot="empty"]')).toBeEmptyDOMElement();
+    });
+
     it('ignores non-string label values instead of crashing', () => {
       const loose = JSON.parse('{"pageStatus": 1, "noData": null}') as Partial<TableLabels>;
       render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination labels={loose} />);

@@ -13,7 +13,7 @@ export const TableBody = () => {
           <td {...slotAttrs('empty')} colSpan={totalColumnCount}>
             {/* While loading, the overlay communicates state; suppress the
                 empty copy so it does not flash "no data" mid-fetch. */}
-            {loading ? null : (emptyState ?? labels.noData)}
+            {loading ? null : emptyState === undefined ? labels.noData : emptyState}
           </td>
         </tr>
       ) : (

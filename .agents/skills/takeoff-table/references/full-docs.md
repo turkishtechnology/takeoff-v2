@@ -703,8 +703,9 @@ render(<DensityDemo />);
 ## Empty state
 
 When `data` is empty, Table renders a single full-width cell. The default copy
-is `No data`; pass `emptyState` to supply your own node. While `loading` is true
-the empty copy is suppressed so it does not flash mid-fetch.
+is `No data` (`labels.noData`); pass `emptyState` to supply your own node, or
+`emptyState={null}` to leave the cell blank. While `loading` is true the empty
+copy is suppressed so it does not flash mid-fetch.
 
 ```tsx
 function EmptyDemo() {
