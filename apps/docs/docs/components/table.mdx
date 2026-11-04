@@ -696,7 +696,10 @@ the columns come back). A partial `value` / `defaultValue` (say
 `{ route: 240 }`) opens the table straight in the fixed layout: the listed
 columns take their stored width, the others their declared `width` or 150px,
 rather than their natural width. With every column pinned there is no absorber,
-so a growing column widens the table and the table scrolls horizontally.
+so a growing column widens the table and the table scrolls horizontally. A
+resize reports widths only for columns in `columns`, so hide a column (column
+visibility) rather than dropping its definition if its stored width should
+survive.
 
 <LiveCode
   code={resizeDemo}

@@ -393,7 +393,9 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       const base: ColumnSizingState = Object.fromEntries(Object.entries(committed).filter(([id]) => known.has(id)));
       // Still auto: freeze each unsized column at the width the browser gave
       // it, rounded up so its text does not get an ellipsis on the first touch,
-      // unless the rounding would take more than the absorber can give.
+      // unless the rounding would take more than the absorber can give. (Only
+      // the rounding is weighed; a column the browser drew outside its own
+      // min/max bounds, which is rare, still shifts the absorber by the clamp.)
       const frozen = fixedLayoutRef.current
         ? []
         : table
@@ -498,8 +500,8 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         const fitted = column && staysFixed && column.columnDef.meta?.width == null ? measureColumnContentWidth(headerCellsRef.current.get(columnId)) : 0;
         if (column && fitted > 0) {
           // Growing to fit takes room like a drag does (absorber first, then
-          // the columns after it), so it never pushes the table past its
-          // container; the content is cut short instead.
+          // the columns between this one and the absorber), so it never pushes
+          // the table past its container; the content is cut short instead.
           const current = Math.round(column.getSize());
           const desired = clampColumnWidth(column, fitted);
           const { width, donors } = desired > current ? resolveGrowth(current, desired, getGrowPlan(columnId, getBaseSizing())) : { width: desired, donors: undefined };

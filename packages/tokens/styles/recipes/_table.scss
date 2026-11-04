@@ -355,8 +355,10 @@
   }
 }
 
-// Column resize handle — a focusable `role="separator"` straddling the header
-// cell's inline-end edge. The hit area is wider than the line it draws, and
+// Column resize handle — a focusable `role="separator"` inside the header cell,
+// along the edge that faces the absorber column: the inline end by default,
+// the inline start with `data-edge="start"`. The hit area is wider than the
+// line it draws, and
 // `touch-action: none` lets a touch drag resize instead of scrolling.
 @mixin table-resize-handle {
   position: absolute;
