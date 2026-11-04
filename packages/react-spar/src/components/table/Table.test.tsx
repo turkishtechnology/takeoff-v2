@@ -1741,10 +1741,12 @@ describe('Table (props-first)', () => {
 
     it('does not count room freed by an earlier shrink in the same drag as spare', () => {
       const onChange = vi.fn();
-      // The absorber (Age) reads 200px while Name is at its start width and
-      // 70px wider once Name is drawn 70px narrower; its floor is 50px.
-      let nameWidth = 120;
+      // The absorber (Age) takes whatever Name's drawn width leaves of 320px:
+      // 200px at Name's start width, 270px once the draft draws Name at 50px.
+      // Its floor is 50px. Name reads 120px until a draft draws it.
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const nameCell = this.parentElement?.querySelector('th') as HTMLElement | null;
+        const nameWidth = parseFloat(nameCell?.style.width ?? '') || 120;
         const width = this.tagName === 'TH' ? (this.textContent === 'Age' ? 320 - nameWidth : 120) : 0;
         return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
@@ -1753,8 +1755,9 @@ describe('Table (props-first)', () => {
 
       fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
       fireEvent.pointerMove(handle, { clientX: -70, pointerId: 1 });
-      nameWidth = 50;
-      // Released far past the start in one event: 150px of real spare, not 220.
+      expect(headerFor(document.body, 'Name').style.width).toBe('50px');
+      // Released far past the start in one event, while the 50px draft is still
+      // drawn (so Age reads 270): 150px of real spare, not 220.
       fireEvent.pointerUp(handle, { clientX: 400, pointerId: 1 });
       expect(onChange).toHaveBeenLastCalledWith({ name: 270 });
     });
@@ -1984,10 +1987,12 @@ describe('Table (props-first)', () => {
 
       expect(Array.from((container.querySelector('thead tr') as Element).children).map(cell => cell.textContent)).toEqual(['Name', 'Role', 'Age']);
       // The absorber ignores a stored width and renders no handle; the pinned
-      // last column keeps its width but has no handle on the table's edge.
+      // last column keeps its width and gets its handle on the edge facing it.
       expect(headerFor(container, 'Role').style.width).toBe('');
       expect(headerFor(container, 'Age').style.width).toBe('80px');
-      expect(screen.getAllByRole('separator')).toEqual([handleFor('Name')]);
+      expect(screen.getAllByRole('separator')).toEqual([handleFor('Name'), handleFor('Age')]);
+      expect(handleFor('Name')).toHaveAttribute('data-edge', 'end');
+      expect(handleFor('Age')).toHaveAttribute('data-edge', 'start');
       expect(container.querySelector('table')).toHaveStyle({ minWidth: '250px' });
     });
 
@@ -2210,7 +2215,7 @@ describe('Table (props-first)', () => {
       expect(headerFor(container, 'City').style.width).toBe('');
     });
 
-    it('puts handles only before the absorber, so fixed-width columns after it keep their width', () => {
+    it('puts each handle on the edge that faces the absorber', () => {
       const columns: TableColumnDef<User>[] = [
         { id: 'name', header: 'Name', accessor: 'name' },
         { id: 'notes', header: 'Notes', accessor: 'role' },
@@ -2219,7 +2224,98 @@ describe('Table (props-first)', () => {
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing />);
 
-      expect(screen.getAllByRole('separator').map(handle => handle.getAttribute('aria-label'))).toEqual(['Resize Name column']);
+      expect(screen.getAllByRole('separator').map(handle => `${handle.getAttribute('aria-label')} ${handle.getAttribute('data-edge')}`)).toEqual([
+        'Resize Name column end',
+        'Resize Status column start',
+        'Resize Actions column start',
+      ]);
+    });
+
+    it('grows a column after the absorber toward the inline start, from the absorber then the columns between', () => {
+      mockHeaderWidth(120, { Notes: 100 });
+      const onChange = vi.fn();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'notes', header: 'Notes', accessor: 'role' },
+        { id: 'status', header: 'Status', accessor: 'age', width: 100 },
+        { id: 'actions', header: 'Actions', cell: () => null, width: 80 },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // Moving left widens Actions: 50 from Notes, then Status down to its 50px min.
+      drag(handleFor('Actions'), 0, -500);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 120, status: 50, actions: 240 });
+      // The arrows move the edge too: Right narrows it.
+      fireEvent.keyDown(handleFor('Actions'), { key: 'ArrowRight' });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 120, status: 50, actions: 230 });
+    });
+
+    it('leaves Alt, Ctrl and Meta arrows to the browser', () => {
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      for (const modifier of ['altKey', 'ctrlKey', 'metaKey']) {
+        expect(fireEvent.keyDown(handleFor('Name'), { key: 'ArrowLeft', [modifier]: true })).toBe(true);
+      }
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('freezes measured widths inside the bounds the column renders with, and drops widths of removed columns', () => {
+      mockHeaderWidth(120, { Role: 260 });
+      const onChange = vi.fn();
+      const columns = resizeColumns.map(column => (column.id === 'role' ? { ...column, maxWidth: 200 } : column));
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ defaultValue: { gone: 99 }, onChange }} />);
+
+      drag(handleFor('Name'), 0, -20);
+      expect(onChange).toHaveBeenCalledWith({ name: 100, role: 200 });
+    });
+
+    it('rounds frozen widths down when rounding up would take more than the absorber can give', () => {
+      const widths: Record<string, number> = { Name: 120.6, Role: 140.6, Age: 50.5 };
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.tagName === 'TH' ? (widths[this.textContent ?? ''] ?? 0) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const onChange = vi.fn();
+      const { unmount } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      drag(handleFor('Role'), 0, -10);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 120, role: 130 });
+      unmount();
+
+      // With room to spare it rounds up, so no text gets an ellipsis on the first touch.
+      widths.Age = 300;
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      drag(handleFor('Role'), 0, -10);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 121, role: 131 });
+    });
+
+    it('lets a column grow the table when every column is pinned (no absorber)', () => {
+      mockHeaderWidth(120);
+      const onChange = vi.fn();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', sticky: 'left', width: 120 },
+        { id: 'role', header: 'Role', accessor: 'role', sticky: 'left', width: 120 },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 0, 400);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 520, role: 120 });
+    });
+
+    it('reads the grow plan again on each new drag', () => {
+      let absorberWidth = 100;
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.tagName === 'TH' ? (this.textContent === 'Age' ? absorberWidth : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const onChange = vi.fn();
+      render(<Table data={users} columns={[resizeColumns[0], resizeColumns[2]] as TableColumnDef<User>[]} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 0, 300);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 170 });
+      absorberWidth = 250;
+      drag(handleFor('Name'), 0, 300);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 370 });
     });
 
     it('keeps held widths through a double-click reset and a controlled value passed as a new object', async () => {
@@ -2437,16 +2533,17 @@ describe('Table (props-first)', () => {
     it('routes tableRef sizing calls through onChange, and ignores them when resizing is off', () => {
       const ref: { current: TanStackTable<User> | null } = { current: null };
       const onChange = vi.fn();
-      const { rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} tableRef={ref} columnResizing={{ onChange }} />);
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} tableRef={ref} columnResizing={{ onChange }} />);
 
       act(() => ref.current?.setColumnSizing({ name: 99 }));
       expect(onChange).toHaveBeenCalledWith({ name: 99 });
 
       const offRef: { current: TanStackTable<User> | null } = { current: null };
+      onChange.mockClear();
       rerender(<Table data={users} columns={resizeColumns} getRowId={getRowId} tableRef={offRef} />);
-      const plain = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} tableRef={offRef} />);
       act(() => offRef.current?.setColumnSizing({ name: 99 }));
-      expect(plain.container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      expect(onChange).not.toHaveBeenCalled();
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
     });
 
     it('composes slotProps.resizeHandle handlers and honours preventDefault and aria-label', async () => {

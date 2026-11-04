@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { flexRender, type Header } from '@tanstack/react-table';
 import { ArrowBottomIconOutlinedRounded } from '@takeoff-icons/react/arrow-bottom';
 import { ArrowTopIconOutlinedRounded } from '@takeoff-icons/react/arrow-top';
@@ -25,15 +26,19 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
   const canSort = column.getCanSort();
   const canFilter = column.getCanFilter() && !!meta?.filter;
   const sorted = column.getIsSorted();
-  // Handles sit only before the absorber: it takes up the slack, and a column
-  // after it would grow at the absorber's expense on its *start* side, so its
-  // end edge (the handle) would not follow the pointer. That also covers the
-  // last column, whose inline-end edge is the table's own edge.
+  // The handle sits on the edge that faces the absorber, the column that
+  // takes up the slack: a column before it grows toward the inline end (handle
+  // on its end edge), one after it toward the inline start (handle on its
+  // start edge), so the edge under the pointer is always the one that moves.
+  // The absorber itself has none, and without an absorber (every column
+  // pinned) the last column has none either: its end edge is the table's.
   const visibleColumns = table.getVisibleLeafColumns();
   const index = visibleColumns.findIndex(candidate => candidate.id === column.id);
   const absorberIndex = absorberColumnId == null ? -1 : visibleColumns.findIndex(candidate => candidate.id === absorberColumnId);
-  const isLastColumn = index === visibleColumns.length - 1;
-  const canResize = !!columnResizing && column.getCanResize() && !isLastColumn && (absorberIndex < 0 || index < absorberIndex);
+  const edge = absorberIndex >= 0 && index > absorberIndex ? 'start' : 'end';
+  const canResize = !!columnResizing && column.getCanResize() && index !== absorberIndex && (edge === 'start' || index !== visibleColumns.length - 1);
+  const registerHeaderCell = columnResizing?.registerHeaderCell;
+  const headerCellRef = useCallback((element: HTMLTableCellElement | null) => registerHeaderCell?.(column.id, element), [registerHeaderCell, column.id]);
 
   const sticky = resolveStickyCell(stickyLayout, column.id, { isHeader: true, stickyHeader });
   const attrs = slotAttrs('headerCell', { className: meta?.headerClassName });
@@ -46,7 +51,7 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
   return (
     <th
       {...attrs}
-      ref={columnResizing ? element => columnResizing.registerHeaderCell(column.id, element) : undefined}
+      ref={registerHeaderCell ? headerCellRef : undefined}
       scope="col"
       colSpan={header.colSpan}
       aria-sort={ariaSort}
@@ -68,7 +73,7 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
         )}
         {canFilter && <TableColumnFilter header={header} />}
       </div>
-      {canResize && <TableResizeHandle column={column} />}
+      {canResize && <TableResizeHandle column={column} edge={edge} />}
     </th>
   );
 };

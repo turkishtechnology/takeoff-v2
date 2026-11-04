@@ -27,9 +27,12 @@ interface DragSession {
 }
 
 const readDirection = (element: HTMLElement): 1 | -1 => (getComputedStyle(element).direction === 'rtl' ? -1 : 1);
+/** `1` when moving the pointer toward the inline end widens the column. */
+const growthSign = (element: HTMLElement, edge: 'start' | 'end'): 1 | -1 => (readDirection(element) * (edge === 'start' ? -1 : 1)) as 1 | -1;
 
 /**
- * The drag/keyboard affordance on a header cell's inline-end edge. A focusable
+ * The drag/keyboard affordance on the header cell edge that faces the absorber
+ * (the inline end before it, the inline start after it). A focusable
  * `role="separator"` (the WAI-ARIA window-splitter pattern): pointer drag —
  * mouse, pen, and touch through pointer capture — or Left/Right arrows resize
  * the column, Shift takes a larger step, and a double-click returns the column
@@ -38,7 +41,7 @@ const readDirection = (element: HTMLElement): 1 | -1 => (getComputedStyle(elemen
  * The handle never commits mid-drag: it renders a draft through context and
  * commits once on release, so `columnResizing.onChange` fires per resize.
  */
-export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
+export const TableResizeHandle = ({ column, edge = 'end' }: { column: AnyColumn; edge?: 'start' | 'end' }) => {
   const { slotAttrs, columnResizing } = useTableContext('Table.ResizeHandle');
   const sessionRef = useRef<DragSession | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -122,7 +125,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
       startWidth,
       liveWidth: startWidth,
       base,
-      direction: readDirection(event.currentTarget),
+      direction: growthSign(event.currentTarget, edge),
       moved: false,
     };
     event.currentTarget.setPointerCapture?.(event.pointerId);
@@ -175,10 +178,12 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
 
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     attrs.onKeyDown?.(event);
-    if (event.defaultPrevented || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) return;
+    // Alt/Ctrl/Meta + arrow belong to the browser and assistive tech (Alt+Left is "back").
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) return;
     event.preventDefault();
     const step = event.shiftKey ? RESIZE_KEYBOARD_STEP_LARGE : RESIZE_KEYBOARD_STEP;
-    const sign = (event.key === 'ArrowRight' ? 1 : -1) * readDirection(event.currentTarget);
+    // The arrows move the edge under the handle, like a drag does.
+    const sign = (event.key === 'ArrowRight' ? 1 : -1) * growthSign(event.currentTarget, edge);
     const base = columnResizing.getBaseSizing();
     const current = base[column.id] ?? column.getSize();
     const stepped = clampColumnWidth(column, current + sign * step);
@@ -205,6 +210,7 @@ export const TableResizeHandle = ({ column }: { column: AnyColumn }) => {
       aria-valuetext={`${now} px`}
       tabIndex={0}
       data-resizing={dragging ? '' : undefined}
+      data-edge={edge}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}

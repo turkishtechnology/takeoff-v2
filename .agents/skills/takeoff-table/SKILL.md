@@ -282,9 +282,10 @@ The table keeps its auto layout until the first resize, then switches to
 `table-layout: fixed` (`data-fixed-layout`). The absorber (the last unpinned
 column without a declared `width`) has no handle and takes the leftover width,
 so the table's own width never jumps and a fixed-width actions column keeps its
-width. Only columns before the absorber get a handle (so the last column never
-does), and a growing column takes room only from the absorber and the columns
-between it and the absorber, each down to its min width.
+width. Each handle sits on the edge facing the absorber (the end edge before it,
+the start edge after it), and a growing column takes room only from the absorber
+and the columns between it and the absorber, each down to its min width. Give a
+column that must keep its width `resizable: false`.
 
 ### Server (manual) data + export
 

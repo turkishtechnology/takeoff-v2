@@ -323,7 +323,6 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   // absorber or for a hidden column leaves the natural layout alone.
   const fixedLayout = resizingEnabled && visibleColumns.some(column => column.id !== absorberColumnId && columnSizing[column.id] != null);
   const absorberColumnIdRef = useRef(absorberColumnId);
-  absorberColumnIdRef.current = absorberColumnId;
   // Under `table-layout: fixed` the table fills its container and the absorber
   // gets whatever the sized columns leave. Once they need more than that, this
   // floor keeps the absorber at its min width and the viewport scrolls instead.
@@ -335,15 +334,20 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   // Header `<th>`s by column id, so the first resize can read the auto layout.
   const headerCellsRef = useRef(new Map<string, HTMLElement>());
   const committedSizingRef = useRef(committedSizing);
-  committedSizingRef.current = committedSizing;
   const heldWidthsRef = useRef(heldWidths);
-  heldWidthsRef.current = heldWidths;
   const fixedLayoutRef = useRef(fixedLayout);
-  fixedLayoutRef.current = fixedLayout;
   const stickyLayoutRef = useRef(stickyLayout);
-  stickyLayoutRef.current = stickyLayout;
   const tableMinWidthRef = useRef(tableMinWidth);
-  tableMinWidthRef.current = tableMinWidth;
+  // The resize context reads the layout React last committed (from pointer and
+  // key events), so these follow each commit rather than each render.
+  useLayoutEffect(() => {
+    absorberColumnIdRef.current = absorberColumnId;
+    committedSizingRef.current = committedSizing;
+    heldWidthsRef.current = heldWidths;
+    fixedLayoutRef.current = fixedLayout;
+    stickyLayoutRef.current = stickyLayout;
+    tableMinWidthRef.current = tableMinWidth;
+  });
   // The draft React last rendered, and the newer one written straight to the
   // DOM on top of it (see `setDraft`).
   const renderedDraftRef = useRef<TableResizeDraft | null>(null);
@@ -378,18 +382,39 @@ export const Table = <TData,>(props: TableProps<TData>) => {
 
   const columnResizingContext = useMemo<TableColumnResizingContext | undefined>(() => {
     if (!resizingEnabled) return undefined;
+    // A header cell's laid-out width; 0 when it is not mounted or not laid out.
+    const measureHeader = (columnId: string | undefined) => (columnId == null ? undefined : headerCellsRef.current.get(columnId))?.getBoundingClientRect().width ?? 0;
     const getBaseSizing = (): ColumnSizingState => {
       const committed = committedSizingRef.current;
       // Start from every stored width so a resize never drops one the table
-      // is not using right now (a hidden column, or the absorber's).
-      const base: ColumnSizingState = { ...committed };
+      // is not using right now (a hidden column, or the absorber's), but not
+      // one for a column the table no longer has.
+      const known = new Set(table.getAllLeafColumns().map(column => column.id));
+      const base: ColumnSizingState = Object.fromEntries(Object.entries(committed).filter(([id]) => known.has(id)));
+      // Still auto: freeze each unsized column at the width the browser gave
+      // it, rounded up so its text does not get an ellipsis on the first touch,
+      // unless the rounding would take more than the absorber can give.
+      const frozen = fixedLayoutRef.current
+        ? []
+        : table
+            .getVisibleLeafColumns()
+            .filter(column => column.id !== absorberColumnIdRef.current && committed[column.id] == null)
+            .map(column => ({ column, width: measureHeader(column.id) }));
+      const roundingUp = frozen.reduce((sum, { width }) => sum + (Math.ceil(width) - width), 0);
+      const absorber = table.getVisibleLeafColumns().find(column => column.id === absorberColumnIdRef.current);
+      const absorberWidth = measureHeader(absorber?.id);
+      const round = !absorber || absorberWidth - roundingUp >= getColumnResizeBounds(absorber)[0] ? Math.ceil : Math.floor;
+      // Within the bounds `getSize()` applies, so a frozen column never jumps
+      // (and no out-of-range width is stored), without the resize floor that
+      // would widen a column the browser drew narrower than it.
+      for (const { column, width } of frozen) {
+        if (width <= 0) continue;
+        const { minSize = 0, maxSize = Number.POSITIVE_INFINITY } = column.columnDef;
+        base[column.id] = Math.min(maxSize, Math.max(minSize, round(width)));
+      }
+      // Already fixed: an unsized column renders at its `getSize()`.
       for (const column of table.getVisibleLeafColumns()) {
-        // The absorber is never sized: it keeps taking up the slack.
-        if (column.id === absorberColumnIdRef.current || committed[column.id] != null) continue;
-        // Already fixed: an unsized column renders at its `getSize()`.
-        // Still auto: freeze it at the width the browser gave it.
-        const measured = fixedLayoutRef.current ? 0 : Math.ceil(headerCellsRef.current.get(column.id)?.getBoundingClientRect().width ?? 0);
-        base[column.id] = measured > 0 ? measured : column.getSize();
+        if (column.id !== absorberColumnIdRef.current && base[column.id] == null) base[column.id] = column.getSize();
       }
       return base;
     };
@@ -397,8 +422,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       const visible = table.getVisibleLeafColumns();
       const absorberId = absorberColumnIdRef.current;
       const absorber = visible.find(candidate => candidate.id === absorberId);
-      const absorberCell = absorber ? headerCellsRef.current.get(absorber.id) : undefined;
-      const absorberWidth = absorberCell?.getBoundingClientRect().width ?? 0;
+      const absorberWidth = measureHeader(absorber?.id);
       // Nothing laid out to measure: leave growing unbounded.
       if (!absorber || absorberWidth <= 0 || absorber.id === columnId) return { absorberSpare: Number.POSITIVE_INFINITY, donors: [] };
       // May go below the floor (an earlier shrink in this drag already freed
@@ -407,12 +431,13 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       // Narrowest a column may get: its min width (its text then ends in an
       // ellipsis).
       const floorOf = (column: (typeof visible)[number]) => getColumnResizeBounds(column)[0];
-      // Only columns between this one and the absorber give way: those after
-      // the absorber have no handle to win their width back.
+      // Only columns between this one and the absorber give way, nearest
+      // first: each of them has a handle on that same side to win its width
+      // back, and a column beyond the absorber is never touched.
       const index = visible.findIndex(candidate => candidate.id === columnId);
       const absorberIndex = visible.indexOf(absorber);
-      const donors = visible
-        .slice(index + 1, Math.max(index + 1, absorberIndex))
+      const between = index < absorberIndex ? visible.slice(index + 1, absorberIndex) : visible.slice(absorberIndex + 1, index).reverse();
+      const donors = between
         .filter(candidate => candidate.id !== absorber.id && candidate.getCanResize() && !stickyLayoutRef.current.has(candidate.id) && base[candidate.id] != null)
         .map(candidate => {
           const width = base[candidate.id] as number;

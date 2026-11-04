@@ -377,8 +377,9 @@ export interface TableProps<TData = any> {
    * adds the controlled/uncontrolled widths. Each resizable column gets a
    * handle on its header edge (pointer drag, touch, and Left/Right arrow keys),
    * bounded by its `minWidth` / `maxWidth`; a column opts out with
-   * `resizable: false`. Only columns before the absorber column (the one that
-   * takes up the leftover width) get a handle, so the last column never does. See
+   * `resizable: false`. The handle sits on the edge facing the absorber column
+   * (the one that takes up the leftover width): the end edge before it, the
+   * start edge after it; the absorber itself has none. See
    * {@link TableColumnResizingConfig}.
    */
   columnResizing?: TableColumnResizingConfig | boolean;

@@ -387,6 +387,18 @@
   &:focus-visible {
     outline: 2px solid transparent;
   }
+
+  // A column after the absorber grows toward the inline start, so its handle
+  // sits on that edge.
+  &[data-edge='start'] {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+
+    &::after {
+      inset-inline-start: 0;
+      inset-inline-end: auto;
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
