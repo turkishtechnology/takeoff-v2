@@ -13,6 +13,7 @@ export const DEFAULT_LABELS: TableLabels = {
   // default names the overlay, which is also 'Loading' out of the box.
   loading: 'Loading',
   filterButton: 'Filter column',
+  filterValue: 'Filter value',
   filterClear: 'Clear',
   filterSelectPlaceholder: 'Select',
   pagination: 'Pagination',
@@ -28,6 +29,7 @@ export const DEFAULT_LABELS: TableLabels = {
   currentPage: 'Page {page}, current page',
   rowsPerPage: 'Rows per page',
   goToPage: 'Go to page',
+  goToPageSubmit: 'Go to page',
   selectAllRows: 'Select all rows',
   selectRow: 'Select row',
   rowSelection: 'Row selection',

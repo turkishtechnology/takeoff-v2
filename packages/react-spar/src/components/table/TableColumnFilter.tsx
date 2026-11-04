@@ -10,7 +10,7 @@ import { Radio } from '../radio';
 import { Select } from '../select';
 
 import { useTableContext } from './context';
-import { isEmptyFilterValue } from './helpers';
+import { formatLabel, isEmptyFilterValue } from './helpers';
 import type { TableColumnFilter as TableColumnFilterConfig, TableColumnFilterContext, TableColumnFilterOption } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,6 +42,9 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   const filter = column.columnDef.meta?.filter as TableColumnFilterConfig | undefined;
   if (!filter) return null;
 
+  // `{column}` in the filter labels: the header text, or the id when the
+  // header is a node or render function.
+  const columnName = typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id;
   const value = column.getFilterValue();
   const active = (filter.isActive ?? defaultIsActive)(value);
 
@@ -62,12 +65,22 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <Popover.Trigger aria-label={labels.filterButton} {...filterButtonAttrs} data-active={active ? '' : undefined}>
+      <Popover.Trigger aria-label={formatLabel(labels.filterButton, { column: columnName })} {...filterButtonAttrs} data-active={active ? '' : undefined}>
         <SearchIconOutlinedRounded aria-hidden="true" />
       </Popover.Trigger>
       <Popover.Content className="tk-table-filter-panel">
         <div {...slotAttrs('filterPanel')} ref={setPanel}>
-          {filter.render ? filter.render(ctx) : <PresetFilterControl filter={filter} ctx={ctx} container={panel} />}
+          {filter.render ? (
+            filter.render(ctx)
+          ) : (
+            <PresetFilterControl
+              filter={filter}
+              ctx={ctx}
+              container={panel}
+              fieldLabel={formatLabel(labels.filterValue, { column: columnName })}
+              selectPlaceholder={labels.filterSelectPlaceholder}
+            />
+          )}
         </div>
         {active && (
           <Button size="small" appearance="text" onClick={ctx.clear}>
@@ -88,7 +101,19 @@ TableColumnFilter.displayName = 'Table.ColumnFilter';
  * `radio` / `checkbox`). The matching predicate is wired upstream in
  * `helpers.ts`; this only renders the v2 control and reads/writes the value.
  */
-const PresetFilterControl = ({ filter, ctx, container }: { filter: TableColumnFilterConfig; ctx: TableColumnFilterContext; container: HTMLElement | null }) => {
+const PresetFilterControl = ({
+  filter,
+  ctx,
+  container,
+  fieldLabel,
+  selectPlaceholder,
+}: {
+  filter: TableColumnFilterConfig;
+  ctx: TableColumnFilterContext;
+  container: HTMLElement | null;
+  fieldLabel: string;
+  selectPlaceholder: string;
+}) => {
   const { type, options = [], placeholder } = filter;
   const { value, setValue } = ctx;
 
@@ -97,6 +122,7 @@ const PresetFilterControl = ({ filter, ctx, container }: { filter: TableColumnFi
       <Input>
         <Input.Field
           type="search"
+          aria-label={fieldLabel}
           placeholder={placeholder}
           value={typeof value === 'string' ? value : ''}
           onChange={(event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value || undefined)}
@@ -109,7 +135,8 @@ const PresetFilterControl = ({ filter, ctx, container }: { filter: TableColumnFi
     return (
       <SelectFilter
         options={options}
-        placeholder={placeholder}
+        label={fieldLabel}
+        placeholder={placeholder || selectPlaceholder}
         value={typeof value === 'string' ? value : ''}
         onChange={next => setValue(next || undefined)}
         container={container}
@@ -142,18 +169,19 @@ PresetFilterControl.displayName = 'Table.PresetFilterControl';
 
 const SelectFilter = ({
   options,
+  label,
   placeholder,
   value,
   onChange,
   container,
 }: {
   options: TableColumnFilterOption[];
-  placeholder?: string;
+  label: string;
+  placeholder: string;
   value: string;
   onChange: (value: string) => void;
   container: HTMLElement | null;
 }) => {
-  const { labels } = useTableContext('Table.ColumnFilter');
   const selected = options.find(option => option.value === value);
   // The listbox is portalled INTO the filter panel rather than `document.body`.
   // Spar's Popover treats any pointer-down or focus outside its content node as
@@ -163,7 +191,7 @@ const SelectFilter = ({
   // an "inside" interaction with no wrapper-side dismiss logic.
   return (
     <Select value={value} onChange={onChange}>
-      <Select.Trigger>{selected ? selected.label : placeholder || labels.filterSelectPlaceholder}</Select.Trigger>
+      <Select.Trigger aria-label={label}>{selected ? selected.label : placeholder}</Select.Trigger>
       <Select.Content container={container}>
         {options.map(option => (
           <Select.Item key={option.value} value={option.value}>

@@ -313,9 +313,10 @@ All strings come from `labels` (partial; missing or empty keys keep the English
 default). Templates use `{placeholders}`: `pageStatus` (`{page}`,
 `{pageCount}`), `pageStatusUnknown` (`{page}`), `itemsRange` (`{start}`,
 `{end}`, `{total}`), `noItems` (`{total}`, always `0`), `goToPageNumber` /
-`currentPage` (`{page}`). Other keys: `noData`, `loading`, `filterButton`,
-`filterClear`, `filterSelectPlaceholder`, `pagination`, `firstPage`,
-`previousPage`, `nextPage`, `lastPage`, `rowsPerPage`, `goToPage`,
+`currentPage` (`{page}`), `filterButton` / `filterValue` (`{column}`: header
+text, or id). Other keys: `noData`, `loading`, `filterClear`,
+`filterSelectPlaceholder`, `pagination`, `firstPage`, `previousPage`,
+`nextPage`, `lastPage`, `rowsPerPage`, `goToPage`, `goToPageSubmit`,
 `selectAllRows`, `selectRow`, `rowSelection`, `expandRow`, `collapseRow`,
 `rowDetails`. App-wide: `TakeoffSparProvider`
 `components.Table.defaultProps.labels` (an instance `labels` merges over it per

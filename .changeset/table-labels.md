@@ -10,7 +10,9 @@ selection and expansion controls. Pass only the keys you need (e.g.
 the rest keep their English defaults. Dynamic entries are `{placeholder}`
 templates. Set it app-wide through `TakeoffSparProvider`
 `components.Table.defaultProps.labels`; an instance `labels` is merged over it
-key by key.
+key by key. `filterButton` and the new `filterValue` (the text filter input and
+`select` filter trigger, which had no accessible name) take a `{column}`
+placeholder, and the page-jump submit has its own `goToPageSubmit` key.
 
 An empty `filter.placeholder` on a `select` filter now falls back to the default
 text (`labels.filterSelectPlaceholder`) instead of rendering an empty trigger.

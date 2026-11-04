@@ -872,14 +872,16 @@ override one string and keep the rest.
 The pagination and expand-button names come only from `labels`; an `aria-label`
 in `slotProps.pagination` / `slotProps.expandButton` is ignored.
 `slotProps.filterButton['aria-label']` still wins over `labels.filterButton`.
-Template numbers are inserted as-is (`1234`, not `1.234`), and templates have no
-plural rules.
+`{column}` in `filterButton` / `filterValue` is the column's header text, or its
+`id` when `header` is a node or function. Template numbers are inserted as-is
+(`1234`, not `1.234`), and templates have no plural rules.
 
 | Key                                                    | Default                              | Used for                                            |
 | ------------------------------------------------------ | ------------------------------------ | --------------------------------------------------- |
 | `noData`                                               | `'No data'`                          | Empty table (`emptyState` wins)                     |
 | `loading`                                              | `'Loading'`                          | Loading spinner's accessible name                   |
-| `filterButton`                                         | `'Filter column'`                    | Filter trigger's accessible name                    |
+| `filterButton`                                         | `'Filter column'`                    | Filter trigger's name (`{column}`)                  |
+| `filterValue`                                          | `'Filter value'`                     | Text filter input / select trigger (`{column}`)     |
 | `filterClear`                                          | `'Clear'`                            | Filter panel Clear button                           |
 | `filterSelectPlaceholder`                              | `'Select'`                           | `select` filter trigger (`filter.placeholder` wins) |
 | `pagination`                                           | `'Pagination'`                       | Pagination region's accessible name                 |
@@ -891,7 +893,8 @@ plural rules.
 | `goToPageNumber`                                       | `'Go to page {page}'`                | Page-number buttons                                 |
 | `currentPage`                                          | `'Page {page}, current page'`        | Current page's button                               |
 | `rowsPerPage`                                          | `'Rows per page'`                    | Page-size select                                    |
-| `goToPage`                                             | `'Go to page'`                       | Page-jump input and submit                          |
+| `goToPage`                                             | `'Go to page'`                       | Page-jump input                                     |
+| `goToPageSubmit`                                       | `'Go to page'`                       | Page-jump submit button                             |
 | `selectAllRows` / `selectRow`                          | `'Select all rows'` / `'Select row'` | Selection controls                                  |
 | `rowSelection`                                         | `'Row selection'`                    | Hidden header of the single-selection column        |
 | `expandRow` / `collapseRow`                            | `'Expand row'` / `'Collapse row'`    | Expand button                                       |

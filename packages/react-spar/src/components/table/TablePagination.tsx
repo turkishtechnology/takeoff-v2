@@ -157,7 +157,7 @@ export const TablePagination = () => {
               appearance="text"
               rounded
               size="small"
-              aria-label={labels.goToPage}
+              aria-label={labels.goToPageSubmit}
               disabled={pageCount <= 0}
               onClick={goToPage}
               startContent={<ChevronRightIconOutlinedRounded />}

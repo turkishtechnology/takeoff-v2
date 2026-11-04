@@ -847,6 +847,23 @@ describe('Table (props-first)', () => {
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Select');
     });
 
+    it('names each filter trigger and filter field after its column through `{column}`', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+        { id: 'role', header: () => 'Role', accessor: 'role', filter: { type: 'select', options: [{ label: 'Admin', value: 'admin' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterButton: '{column} filtrele', filterValue: '{column} değeri' }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Name filtrele' }));
+      expect(await screen.findByRole('searchbox', { name: 'Name değeri' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      // A non-string header falls back to the column id.
+      await user.click(screen.getByRole('button', { name: 'role filtrele' }));
+      expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox', { name: 'role değeri' })).toBeInTheDocument();
+    });
+
     it('localizes pagination, selection, expansion, empty and loading strings through `labels`', async () => {
       const user = userEvent.setup();
       const labels = {
@@ -863,6 +880,7 @@ describe('Table (props-first)', () => {
         currentPage: '{page}. sayfa, geçerli sayfa',
         rowsPerPage: 'Sayfa başına satır',
         goToPage: 'Sayfaya git',
+        goToPageSubmit: 'Git',
         selectAllRows: 'Tüm satırları seç',
         selectRow: 'Satırı seç',
         expandRow: 'Satırı aç',
@@ -888,7 +906,8 @@ describe('Table (props-first)', () => {
         expect(screen.getByRole('button', { name })).toBeInTheDocument();
       }
       expect(screen.getByRole('combobox', { name: 'Sayfa başına satır' })).toBeInTheDocument();
-      expect(screen.getAllByLabelText('Sayfaya git')).toHaveLength(2);
+      expect(screen.getByRole('spinbutton', { name: 'Sayfaya git' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Git' })).toBeInTheDocument();
       expect(screen.getByRole('checkbox', { name: 'Tüm satırları seç' })).toBeInTheDocument();
       expect(screen.getAllByRole('checkbox', { name: 'Satırı seç' }).length).toBe(10);
       expect(screen.getByText('Satır detayı')).toBeInTheDocument();

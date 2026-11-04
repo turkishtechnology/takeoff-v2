@@ -294,8 +294,10 @@ export interface TableLabels {
   noData: string;
   /** Accessible name of the loading spinner; when unset, Spinner's own (provider) default applies. @defaultValue 'Loading' */
   loading: string;
-  /** Accessible name of each column's filter trigger. @defaultValue 'Filter column' */
+  /** Accessible name of each column's filter trigger; `{column}` is the column's header text (or id). @defaultValue 'Filter column' */
   filterButton: string;
+  /** Accessible name of the `text` filter input and the `select` filter trigger; `{column}` as in `filterButton`. @defaultValue 'Filter value' */
+  filterValue: string;
   /** Clear button in the filter panel (presets and custom `render` panels). @defaultValue 'Clear' */
   filterClear: string;
   /** `select` filter trigger text when nothing is picked; `filter.placeholder` overrides it. @defaultValue 'Select' */
@@ -324,8 +326,10 @@ export interface TableLabels {
   currentPage: string;
   /** Accessible name of the page-size select. @defaultValue 'Rows per page' */
   rowsPerPage: string;
-  /** Accessible name of the page-jump input and its submit. @defaultValue 'Go to page' */
+  /** Accessible name of the page-jump input. @defaultValue 'Go to page' */
   goToPage: string;
+  /** Accessible name of the page-jump submit button. @defaultValue 'Go to page' */
+  goToPageSubmit: string;
   /** @defaultValue 'Select all rows' */
   selectAllRows: string;
   /** @defaultValue 'Select row' */
@@ -413,7 +417,9 @@ export interface TableProps<TData = any> {
    * `components.Table.defaultProps.labels`; an instance `labels` is merged
    * over it key by key. `emptyState` still wins over
    * `labels.noData`, and an `aria-label` in `slotProps.filterButton` still wins
-   * over `labels.filterButton` (as before).
+   * over `labels.filterButton` (as before), while an `aria-label` in
+   * `slotProps.pagination` / `slotProps.expandButton` is ignored in favour of
+   * `labels`.
    * See {@link TableLabels}.
    */
   labels?: Partial<TableLabels>;
