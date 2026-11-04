@@ -810,6 +810,17 @@ describe('Table (props-first)', () => {
       expect(container.querySelector('[data-slot="empty"]')).toBeEmptyDOMElement();
     });
 
+    it('leaves the empty cell blank when emptyState is false', () => {
+      const { container } = render(<Table data={[]} columns={baseColumns} getRowId={getRowId} emptyState={false} />);
+      expect(screen.queryByText('No data')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-slot="empty"]')).toBeEmptyDOMElement();
+    });
+
+    it('fills {total} in the noItems label', () => {
+      render(<Table data={[]} columns={baseColumns} getRowId={getRowId} labels={{ noItems: '{total} kayıt' }} pagination />);
+      expect(screen.getByText('0 kayıt')).toBeInTheDocument();
+    });
+
     it('ignores non-string label values instead of crashing', () => {
       const loose = JSON.parse('{"pageStatus": 1, "noData": null}') as Partial<TableLabels>;
       render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination labels={loose} />);

@@ -14,6 +14,3 @@ key by key.
 
 An empty `filter.placeholder` on a `select` filter now falls back to the default
 text (`labels.filterSelectPlaceholder`) instead of rendering an empty trigger.
-
-`emptyState={null}` (or `false`) now leaves the empty-table cell blank instead
-of showing the default "No data" text.

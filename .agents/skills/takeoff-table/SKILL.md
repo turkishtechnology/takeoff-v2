@@ -298,7 +298,7 @@ const rowsToExport = getExportRows(tableRef.current);
 | `getSubRows`               | `(row) => TData[]`                                                        | —         | Children reader for tree data.                                                                     |
 | `manual`                   | `boolean`                                                                 | `false`   | Server mode; pairs with `onDataRequest`.                                                           |
 | `loading`                  | `boolean`                                                                 | `false`   | Spinner overlay + `aria-busy`.                                                                     |
-| `emptyState`               | `ReactNode`                                                               | `No data` | Shown when `data` is empty (suppressed while loading).                                             |
+| `emptyState`               | `ReactNode`                                                               | `No data` | Shown when `data` is empty (suppressed while loading); `null`/`false` leaves the cell blank.       |
 | `labels`                   | `Partial<TableLabels>`                                                    | English   | Every user-facing string, to translate or reword (see Labels).                                     |
 | `tableRef`                 | `Ref<TanStackTable>`                                                      | —         | Imperative instance; access point for `getExportRows()`.                                           |
 | `onDataRequest`            | `(req: TableDataRequest) => void`                                         | —         | Bundled server request (manual mode).                                                              |
@@ -312,11 +312,12 @@ Full props, events, data attributes & type definitions: see
 All strings come from `labels` (partial; missing or empty keys keep the English
 default). Templates use `{placeholders}`: `pageStatus` (`{page}`,
 `{pageCount}`), `pageStatusUnknown` (`{page}`), `itemsRange` (`{start}`,
-`{end}`, `{total}`), `goToPageNumber` / `currentPage` (`{page}`). Other keys:
-`noData`, `loading`, `filterButton`, `filterClear`, `filterSelectPlaceholder`,
-`pagination`, `noItems`, `firstPage`, `previousPage`, `nextPage`, `lastPage`,
-`rowsPerPage`, `goToPage`, `selectAllRows`, `selectRow`, `rowSelection`,
-`expandRow`, `collapseRow`, `rowDetails`. App-wide: `TakeoffSparProvider`
+`{end}`, `{total}`), `noItems` (`{total}`, always `0`), `goToPageNumber` /
+`currentPage` (`{page}`). Other keys: `noData`, `loading`, `filterButton`,
+`filterClear`, `filterSelectPlaceholder`, `pagination`, `firstPage`,
+`previousPage`, `nextPage`, `lastPage`, `rowsPerPage`, `goToPage`,
+`selectAllRows`, `selectRow`, `rowSelection`, `expandRow`, `collapseRow`,
+`rowDetails`. App-wide: `TakeoffSparProvider`
 `components.Table.defaultProps.labels` (an instance `labels` merges over it per
 key).
 
