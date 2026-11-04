@@ -167,6 +167,15 @@
       overflow-clip-margin: 4px;
     }
 
+    // The last column's inline-end edge is the table's own. Chrome still
+    // counts text clipped by `overflow: clip` (plus its margin) as scrollable
+    // overflow, so a narrow last column would grow a few-pixel horizontal
+    // scrollbar under the table; `hidden` keeps it inside.
+    .tk-table-header-cell:last-child,
+    .tk-table-cell:last-child {
+      overflow: hidden;
+    }
+
     // A narrowed column keeps its rows one line high: text ends in an ellipsis
     // instead of breaking letter by letter.
     .tk-table-cell {
