@@ -2396,8 +2396,9 @@ describe('Table (props-first)', () => {
     });
 
     it('rounds the first frozen widths against the container budget', () => {
-      // Rounding 120.5 up twice would leave Age 28px of the 270px container,
-      // below its 50px min, although its auto width (100px) could take it.
+      // The 270px container cannot fit Age's 50px min either way (28px rounded
+      // up, 30px down), so round down to overflow as little as possible, even
+      // though Age's auto width (100px) alone would allow rounding up.
       mockHeaderWidth(120.5, { Age: 100 });
       vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
         return this.getAttribute('data-slot') === 'table-viewport' ? 270 : 0;
