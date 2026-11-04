@@ -64,8 +64,7 @@ const manyUsers: User[] = Array.from({ length: 12 }, (_, index) => ({
 }));
 const nameColumns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name' }];
 const bodyRowTexts = (container: HTMLElement) => Array.from(container.querySelectorAll('tbody tr')).map(row => row.querySelector('td')?.textContent);
-const goToPageButton = (container: HTMLElement) =>
-  within(container.querySelector('[data-slot="pagination-go-to-page"]') as HTMLElement).getByRole('button', { name: 'Go to page' });
+const goToPageButton = (container: HTMLElement) => within(container.querySelector('[data-slot="pagination-go-to-page"]') as HTMLElement).getByRole('button', { name: 'Go' });
 
 describe('Table (props-first)', () => {
   describe('rendering', () => {
@@ -758,7 +757,7 @@ describe('Table (props-first)', () => {
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Seçiniz');
     });
 
-    it('takes pagination and expand names from `labels`, while slotProps.filterButton still wins', async () => {
+    it('takes filter-trigger, pagination and expand names from `labels`, ignoring slotProps aria-labels', async () => {
       const user = userEvent.setup();
       render(
         <Table
@@ -771,7 +770,8 @@ describe('Table (props-first)', () => {
           slotProps={{ pagination: { 'aria-label': 'Sonuçlar' }, expandButton: { 'aria-label': 'Detay' }, filterButton: { 'aria-label': 'Ada göre filtrele' } }}
         />,
       );
-      expect(screen.getByRole('button', { name: 'Ada göre filtrele' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Sütunu filtrele' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Ada göre filtrele' })).not.toBeInTheDocument();
       expect(screen.getByRole('navigation', { name: 'Sayfalama' })).toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Detay' })).not.toBeInTheDocument();
       const [first] = screen.getAllByRole('button', { name: 'Satırı aç' });
@@ -1978,8 +1978,8 @@ describe('Table (props-first)', () => {
         </TakeoffSparProvider>,
       );
 
-      // The instance `aria-label` replaces the built-in "Filter column" label.
-      const trigger = screen.getByRole('button', { name: 'Filter names' });
+      // The name comes only from `labels`: a slotProps `aria-label` is ignored.
+      const trigger = screen.getByRole('button', { name: 'Filter column' });
       expect(trigger).toHaveClass('tk-table-filter-button', 'theme-filter-button', 'instance-filter-button');
       expect(trigger).toHaveAttribute('title', 'Instance title');
       expect(trigger).toHaveAttribute('lang', 'en');
@@ -2122,7 +2122,7 @@ describe('Table (props-first)', () => {
     it('exposes the go-to-page submit button by name and passes axe on a paginated table', async () => {
       const { container } = render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination={{ pageSize: 5 }} />);
 
-      expect(screen.getByRole('button', { name: 'Go to page' })).not.toHaveAttribute('aria-hidden');
+      expect(screen.getByRole('button', { name: 'Go' })).not.toHaveAttribute('aria-hidden');
       expect(await axe(container)).toHaveNoViolations();
     });
   });

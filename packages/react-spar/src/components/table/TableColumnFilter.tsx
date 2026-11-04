@@ -60,12 +60,13 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   // `data-slot="root"`), so the Table `data-slot` is dropped from the trigger
   // attrs — but the class and the theme/instance `classNames.filterButton` /
   // `slotProps.filterButton` layers still go through `slotAttrs`, like every
-  // other slot. The panel wrapper IS a Table-owned slot node.
+  // other slot. The name comes only from `labels`, so it is set after the
+  // spread. The panel wrapper IS a Table-owned slot node.
   const { 'data-slot': _filterButtonSlot, ...filterButtonAttrs } = slotAttrs('filterButton');
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <Popover.Trigger aria-label={formatLabel(labels.filterButton, { column: columnName })} {...filterButtonAttrs} data-active={active ? '' : undefined}>
+      <Popover.Trigger {...filterButtonAttrs} aria-label={formatLabel(labels.filterButton, { column: columnName })} data-active={active ? '' : undefined}>
         <SearchIconOutlinedRounded aria-hidden="true" />
       </Popover.Trigger>
       <Popover.Content className="tk-table-filter-panel">

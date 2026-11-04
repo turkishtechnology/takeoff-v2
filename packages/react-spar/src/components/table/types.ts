@@ -328,7 +328,7 @@ export interface TableLabels {
   rowsPerPage: string;
   /** Accessible name of the page-jump input. @defaultValue 'Go to page' */
   goToPage: string;
-  /** Accessible name of the page-jump submit button. @defaultValue 'Go to page' */
+  /** Accessible name of the page-jump submit button. @defaultValue 'Go' */
   goToPageSubmit: string;
   /** @defaultValue 'Select all rows' */
   selectAllRows: string;
@@ -415,11 +415,9 @@ export interface TableProps<TData = any> {
    * English defaults, and an empty string also falls back to the default. Set
    * it app-wide through `TakeoffSparProvider`
    * `components.Table.defaultProps.labels`; an instance `labels` is merged
-   * over it key by key. `emptyState` still wins over
-   * `labels.noData`, and an `aria-label` in `slotProps.filterButton` still wins
-   * over `labels.filterButton` (as before), while an `aria-label` in
-   * `slotProps.pagination` / `slotProps.expandButton` is ignored in favour of
-   * `labels`.
+   * over it key by key. `emptyState` still wins over `labels.noData`, while an
+   * `aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
+   * `slotProps.expandButton` is ignored in favour of `labels`.
    * See {@link TableLabels}.
    */
   labels?: Partial<TableLabels>;

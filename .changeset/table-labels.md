@@ -12,7 +12,12 @@ templates. Set it app-wide through `TakeoffSparProvider`
 `components.Table.defaultProps.labels`; an instance `labels` is merged over it
 key by key. `filterButton` and the new `filterValue` (the text filter input and
 `select` filter trigger, which had no accessible name) take a `{column}`
-placeholder, and the page-jump submit has its own `goToPageSubmit` key.
+placeholder, and the page-jump submit has its own `goToPageSubmit` key (default
+`'Go'`, so it no longer shares the input's name).
+
+The filter trigger, pagination region and expand button now take their
+accessible names only from `labels`: an `aria-label` passed through
+`slotProps.filterButton` / `pagination` / `expandButton` is ignored.
 
 An empty `filter.placeholder` on a `select` filter now falls back to the default
 text (`labels.filterSelectPlaceholder`) instead of rendering an empty trigger.
