@@ -287,25 +287,27 @@ const rowsToExport = getExportRows(tableRef.current);
 
 ## Key props
 
-| Prop                       | Type                                                                      | Default   | Notes                                                                                              |
-| -------------------------- | ------------------------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------- |
-| `data`                     | `TData[]`                                                                 | —         | Row data (the current server page in `manual` mode).                                               |
-| `columns`                  | `TableColumnDef<TData>[]`                                                 | —         | Column defs: `id`, `header`, `accessor`, `cell`, `filter`, `align`, `sortable`, `sticky`, `width`. |
-| `getRowId`                 | `(row, index) => string`                                                  | —         | **Required.** Stable row identity.                                                                 |
-| `size`                     | `'xsmall' \| 'small' \| 'base'`                                           | `'base'`  | Density (cell padding).                                                                            |
-| `striped` / `bordered`     | `boolean`                                                                 | `false`   | Zebra rows / column separators.                                                                    |
-| `selection`                | `{ mode: 'single' \| 'multiple' }`                                        | —         | Row selection (Checkbox/Radio; select-all is multiple-only).                                       |
-| `sorting`                  | `{ multi?: boolean }` or controlled `{ value, onChange }`                 | —         | Multi-sort opt-in.                                                                                 |
-| `filtering`                | `{ value?, defaultValue?, onChange? }`                                    | —         | Controlled column-filter state.                                                                    |
-| `pagination`               | `boolean \| { pageSize, pageIndex, pageSizeOptions, rowCount, onChange }` | —         | `true` enables defaults; `rowCount` required in `manual` mode.                                     |
-| `expansion`                | `{ render?, defaultValue?, ... }`                                         | —         | Detail panel (`render`) or tree toggle (with `getSubRows`).                                        |
-| `getSubRows`               | `(row) => TData[]`                                                        | —         | Children reader for tree data.                                                                     |
-| `manual`                   | `boolean`                                                                 | `false`   | Server mode; pairs with `onDataRequest`.                                                           |
-| `loading`                  | `boolean`                                                                 | `false`   | Spinner overlay + `aria-busy`.                                                                     |
-| `emptyState`               | `ReactNode`                                                               | `No data` | Shown when `data` is empty (suppressed while loading).                                             |
-| `tableRef`                 | `Ref<TanStackTable>`                                                      | —         | Imperative instance; access point for `getExportRows()`.                                           |
-| `onDataRequest`            | `(req: TableDataRequest) => void`                                         | —         | Bundled server request (manual mode).                                                              |
-| `classNames` / `slotProps` | per-slot overrides                                                        | —         | Keyed by `TableSlot` (e.g. `tableViewport`).                                                       |
+| Prop                       | Type                                                                      | Default           | Notes                                                                                              |
+| -------------------------- | ------------------------------------------------------------------------- | ----------------- | -------------------------------------------------------------------------------------------------- |
+| `data`                     | `TData[]`                                                                 | —                 | Row data (the current server page in `manual` mode).                                               |
+| `columns`                  | `TableColumnDef<TData>[]`                                                 | —                 | Column defs: `id`, `header`, `accessor`, `cell`, `filter`, `align`, `sortable`, `sticky`, `width`. |
+| `getRowId`                 | `(row, index) => string`                                                  | —                 | **Required.** Stable row identity.                                                                 |
+| `size`                     | `'xsmall' \| 'small' \| 'base'`                                           | `'base'`          | Density (cell padding).                                                                            |
+| `striped` / `bordered`     | `boolean`                                                                 | `false`           | Zebra rows / column separators.                                                                    |
+| `selection`                | `{ mode: 'single' \| 'multiple' }`                                        | —                 | Row selection (Checkbox/Radio; select-all is multiple-only).                                       |
+| `sorting`                  | `{ multi?: boolean }` or controlled `{ value, onChange }`                 | —                 | Multi-sort opt-in.                                                                                 |
+| `filtering`                | `{ value?, defaultValue?, onChange? }`                                    | —                 | Controlled column-filter state.                                                                    |
+| `pagination`               | `boolean \| { pageSize, pageIndex, pageSizeOptions, rowCount, onChange }` | —                 | `true` enables defaults; `rowCount` required in `manual` mode.                                     |
+| `expansion`                | `{ render?, defaultValue?, ... }`                                         | —                 | Detail panel (`render`) or tree toggle (with `getSubRows`).                                        |
+| `getSubRows`               | `(row) => TData[]`                                                        | —                 | Children reader for tree data.                                                                     |
+| `manual`                   | `boolean`                                                                 | `false`           | Server mode; pairs with `onDataRequest`.                                                           |
+| `loading`                  | `boolean`                                                                 | `false`           | Spinner overlay + `aria-busy`.                                                                     |
+| `emptyState`               | `ReactNode`                                                               | `No data`         | Shown when `data` is empty (suppressed while loading).                                             |
+| `filterClearLabel`         | `string`                                                                  | `'Clear'`         | Clear button text in every column filter panel; `filter.clearLabel` overrides per column.          |
+| `filterButtonLabel`        | `string`                                                                  | `'Filter column'` | Accessible name of every column's filter trigger.                                                  |
+| `tableRef`                 | `Ref<TanStackTable>`                                                      | —                 | Imperative instance; access point for `getExportRows()`.                                           |
+| `onDataRequest`            | `(req: TableDataRequest) => void`                                         | —                 | Bundled server request (manual mode).                                                              |
+| `classNames` / `slotProps` | per-slot overrides                                                        | —                 | Keyed by `TableSlot` (e.g. `tableViewport`).                                                       |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
