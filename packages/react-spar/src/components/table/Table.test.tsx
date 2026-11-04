@@ -800,6 +800,7 @@ describe('Table (props-first)', () => {
       );
       expect(screen.getByRole('navigation', { name: 'Sonuçlar' })).toBeInTheDocument();
       expect(screen.getAllByRole('button', { name: 'Detay' }).length).toBeGreaterThan(0);
+      expect(screen.queryByRole('button', { name: 'Satırı aç' })).not.toBeInTheDocument();
     });
 
     it('leaves unknown and inherited template keys literal', () => {
