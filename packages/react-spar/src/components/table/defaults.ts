@@ -6,8 +6,7 @@ export const DEFAULT_PAGE_SIZE_OPTIONS: number[] = [10, 25, 50, 100];
 
 // Every user-facing string Table renders, visible or for assistive technology.
 // Localizable per table through the root's `labels` prop (or app-wide through
-// provider `defaultProps`); a column's `filter.clearLabel` overrides
-// `filterClear` for that column.
+// provider `defaultProps`).
 export const DEFAULT_LABELS: TableLabels = {
   noData: 'No data',
   loading: 'Loading',

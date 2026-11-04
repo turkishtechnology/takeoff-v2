@@ -138,9 +138,8 @@ const columns = [
 ];
 ```
 
-Clear button text: `labels.filterClear` on the root (see Localization below);
-`filter.clearLabel` overrides per column. The Clear button's slot is
-`filterClear`.
+Clear button text: `labels.filterClear` on the root (see Localization below).
+The Clear button's slot is `filterClear`.
 
 Preset `type` values: `text` (Input/substring), `select` and `radio` (equality),
 `checkbox` and `multi-select` (membership). For anything else (number/date

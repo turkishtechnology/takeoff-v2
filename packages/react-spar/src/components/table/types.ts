@@ -145,13 +145,6 @@ export interface TableColumnFilter<TData = unknown> {
   /** Placeholder for the `text` preset's input / `select` triggers. */
   placeholder?: string;
   /**
-   * Text of the button that clears this column's filter, shown in the panel
-   * while the filter is active. Overrides the Table's `labels.filterClear` for
-   * this column; applies to presets and custom `render` panels alike. An empty
-   * string falls back to the Table-level label.
-   */
-  clearLabel?: string;
-  /**
    * Escape hatch: render the filter control yourself. Receives the column's
    * value + setter (see {@link TableColumnFilterContext}). When present, the
    * preset fields above are ignored.
@@ -304,7 +297,7 @@ export interface TableLabels {
   loading: string;
   /** Accessible name of each column's filter trigger. @defaultValue 'Filter column' */
   filterButton: string;
-  /** Clear button in the filter panel; `filter.clearLabel` overrides it per column. @defaultValue 'Clear' */
+  /** Clear button in the filter panel (presets and custom `render` panels). @defaultValue 'Clear' */
   filterClear: string;
   /** `select` filter trigger text when nothing is picked; `filter.placeholder` overrides it. @defaultValue 'Select' */
   filterSelectPlaceholder: string;

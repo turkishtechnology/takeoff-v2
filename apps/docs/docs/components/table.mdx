@@ -520,8 +520,7 @@ with `type` (+ `options` for the choice controls):
 />
 
 While a filter is active its panel shows a **Clear** button. Its text comes from
-`labels.filterClear` (see [Localization](#localization)); a column's
-`filter.clearLabel` overrides it for that column, for presets and custom
+`labels.filterClear` (see [Localization](#localization)), for presets and custom
 `render` panels alike. The button is also a slot (`filterClear`) for
 `classNames` / `slotProps` styling and attributes.
 
@@ -732,27 +731,27 @@ An instance `labels` replaces that object rather than merging with it.
 </TakeoffSparProvider>
 ```
 
-| Key                                                    | Default                              | Used for                                             |
-| ------------------------------------------------------ | ------------------------------------ | ---------------------------------------------------- |
-| `noData`                                               | `'No data'`                          | Empty table (`emptyState` wins)                      |
-| `loading`                                              | `'Loading'`                          | Loading spinner's accessible name                    |
-| `filterButton`                                         | `'Filter column'`                    | Filter trigger's accessible name                     |
-| `filterClear`                                          | `'Clear'`                            | Filter panel Clear button (`filter.clearLabel` wins) |
-| `filterSelectPlaceholder`                              | `'Select'`                           | `select` filter trigger (`filter.placeholder` wins)  |
-| `pagination`                                           | `'Pagination'`                       | Pagination region's accessible name                  |
-| `pageStatus`                                           | `'Page {page} of {pageCount}'`       | Page indicator                                       |
-| `pageStatusUnknown`                                    | `'Page {page}'`                      | Page indicator while the page count is 0             |
-| `itemsRange`                                           | `'Items {start}-{end} of {total}'`   | Item range                                           |
-| `noItems`                                              | `'0 items'`                          | Item range with no rows                              |
-| `firstPage` / `previousPage` / `nextPage` / `lastPage` | `'First page'` …                     | Pagination buttons                                   |
-| `goToPageNumber`                                       | `'Go to page {page}'`                | Page-number buttons                                  |
-| `currentPage`                                          | `'Page {page}, current page'`        | Current page's button                                |
-| `rowsPerPage`                                          | `'Rows per page'`                    | Page-size select                                     |
-| `goToPage`                                             | `'Go to page'`                       | Page-jump input and submit                           |
-| `selectAllRows` / `selectRow`                          | `'Select all rows'` / `'Select row'` | Selection controls                                   |
-| `rowSelection`                                         | `'Row selection'`                    | Hidden header of the single-selection column         |
-| `expandRow` / `collapseRow`                            | `'Expand row'` / `'Collapse row'`    | Expand button                                        |
-| `rowDetails`                                           | `'Row details'`                      | Hidden header of the expansion column                |
+| Key                                                    | Default                              | Used for                                            |
+| ------------------------------------------------------ | ------------------------------------ | --------------------------------------------------- |
+| `noData`                                               | `'No data'`                          | Empty table (`emptyState` wins)                     |
+| `loading`                                              | `'Loading'`                          | Loading spinner's accessible name                   |
+| `filterButton`                                         | `'Filter column'`                    | Filter trigger's accessible name                    |
+| `filterClear`                                          | `'Clear'`                            | Filter panel Clear button                           |
+| `filterSelectPlaceholder`                              | `'Select'`                           | `select` filter trigger (`filter.placeholder` wins) |
+| `pagination`                                           | `'Pagination'`                       | Pagination region's accessible name                 |
+| `pageStatus`                                           | `'Page {page} of {pageCount}'`       | Page indicator                                      |
+| `pageStatusUnknown`                                    | `'Page {page}'`                      | Page indicator while the page count is 0            |
+| `itemsRange`                                           | `'Items {start}-{end} of {total}'`   | Item range                                          |
+| `noItems`                                              | `'0 items'`                          | Item range with no rows                             |
+| `firstPage` / `previousPage` / `nextPage` / `lastPage` | `'First page'` …                     | Pagination buttons                                  |
+| `goToPageNumber`                                       | `'Go to page {page}'`                | Page-number buttons                                 |
+| `currentPage`                                          | `'Page {page}, current page'`        | Current page's button                               |
+| `rowsPerPage`                                          | `'Rows per page'`                    | Page-size select                                    |
+| `goToPage`                                             | `'Go to page'`                       | Page-jump input and submit                          |
+| `selectAllRows` / `selectRow`                          | `'Select all rows'` / `'Select row'` | Selection controls                                  |
+| `rowSelection`                                         | `'Row selection'`                    | Hidden header of the single-selection column        |
+| `expandRow` / `collapseRow`                            | `'Expand row'` / `'Collapse row'`    | Expand button                                       |
+| `rowDetails`                                           | `'Row details'`                      | Hidden header of the expansion column               |
 
 ## Accessibility
 

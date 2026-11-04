@@ -11,5 +11,5 @@ the rest keep their English defaults. Dynamic entries are `{placeholder}`
 templates. Set it app-wide through `TakeoffSparProvider`
 `components.Table.defaultProps.labels`.
 
-A column's `filter.clearLabel` overrides the Clear text for that column, and the
-Clear button is a new `filterClear` slot for `classNames` / `slotProps`.
+The filter panel's Clear button is also a new `filterClear` slot for
+`classNames` / `slotProps`.

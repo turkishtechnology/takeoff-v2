@@ -715,34 +715,7 @@ describe('Table (props-first)', () => {
       expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
     });
 
-    it('renders a localized Clear label from `clearLabel`', async () => {
-      const user = userEvent.setup();
-      const columns: TableColumnDef<User>[] = [
-        {
-          id: 'role',
-          header: 'Role',
-          accessor: 'role',
-          filter: {
-            type: 'radio',
-            clearLabel: 'Temizle',
-            options: [
-              { label: 'Admin', value: 'admin' },
-              { label: 'User', value: 'user' },
-            ],
-          },
-        },
-      ];
-      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
-
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
-      await user.click(await screen.findByRole('radio', { name: 'User' }));
-      expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
-
-      await user.click(screen.getByRole('button', { name: 'Temizle' }));
-      expect(bodyRowTexts(container)).toEqual(['admin', 'user', 'admin']);
-    });
-
-    it('localizes the filter trigger and Clear once on the root, with per-column overrides', async () => {
+    it('localizes the filter trigger and Clear once on the root, for presets and render panels', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [
         { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
@@ -751,7 +724,6 @@ describe('Table (props-first)', () => {
           header: 'Role',
           accessor: 'role',
           filter: {
-            clearLabel: 'Rolü temizle',
             isActive: v => v != null,
             render: ({ setValue }) => (
               <button type="button" onClick={() => setValue('user')}>
@@ -771,10 +743,10 @@ describe('Table (props-first)', () => {
       expect(screen.getByRole('button', { name: 'Temizle' })).toBeInTheDocument();
       await user.keyboard('{Escape}');
 
-      // A custom `render` panel gets the same button; the column label wins.
+      // A custom `render` panel gets the same localized button.
       await user.click(roleTrigger);
       await user.click(await screen.findByRole('button', { name: 'Only users' }));
-      expect(screen.getByRole('button', { name: 'Rolü temizle' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Temizle' })).toBeInTheDocument();
     });
 
     it('takes the select placeholder from `labels.filterSelectPlaceholder`', async () => {
@@ -893,7 +865,7 @@ describe('Table (props-first)', () => {
 
     it('falls back to the default labels when given empty strings', async () => {
       const user = userEvent.setup();
-      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: { type: 'text', clearLabel: '' } }];
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterClear: '', filterButton: '' }} />);
 
       await user.click(screen.getByRole('button', { name: 'Filter column' }));

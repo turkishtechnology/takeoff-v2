@@ -82,7 +82,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
               ctx.clear();
             }}
           >
-            {filter.clearLabel || labels.filterClear}
+            {labels.filterClear}
           </Button>
         )}
       </Popover.Content>
