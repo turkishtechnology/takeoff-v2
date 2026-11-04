@@ -40,13 +40,15 @@ const EMPTY_EXPANDED: ExpandedState = {};
 // per-table override keeps the app-wide strings for every other key. Missing,
 // empty and non-string values (e.g. from a loose JSON file) fall back, so no
 // control is ever left without a name and templates never throw.
+const isUsableLabel = (value: unknown): value is string => typeof value === 'string' && value !== '';
+
 const resolveLabels = (...layers: (Partial<TableLabels> | undefined)[]): TableLabels => {
   const resolved = { ...DEFAULT_LABELS };
   for (const layer of layers) {
     if (!layer) continue;
     for (const key of Object.keys(layer) as (keyof TableLabels)[]) {
       const value: unknown = layer[key];
-      if (typeof value === 'string' && value !== '' && Object.prototype.hasOwnProperty.call(DEFAULT_LABELS, key)) resolved[key] = value;
+      if (isUsableLabel(value) && Object.prototype.hasOwnProperty.call(DEFAULT_LABELS, key)) resolved[key] = value;
     }
   }
   return resolved;
@@ -113,7 +115,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const labels = resolveLabels(theme?.defaultProps?.labels, props.labels);
   // Only name the spinner when `labels.loading` was actually set, so an
   // app-wide `components.Spinner.defaultProps['aria-label']` keeps applying.
-  const loadingLabelSet = [theme?.defaultProps?.labels?.loading, props.labels?.loading].some(value => typeof value === 'string' && value !== '');
+  const loadingLabelSet = [theme?.defaultProps?.labels?.loading, props.labels?.loading].some(isUsableLabel);
   const [tableViewportScrolled, setTableViewportScrolled] = useState(false);
 
   // ── Controlled/uncontrolled state slices ─────────────────────────────────

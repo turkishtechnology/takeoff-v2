@@ -868,6 +868,12 @@ override one string and keep the rest.
 </TakeoffSparProvider>
 ```
 
+The pagination and expand-button names come only from `labels`; an `aria-label`
+in `slotProps.pagination` / `slotProps.expandButton` is ignored.
+`slotProps.filterButton['aria-label']` still wins over `labels.filterButton`.
+Template numbers are inserted as-is (`1234`, not `1.234`), and templates have no
+plural rules.
+
 | Key                                                    | Default                              | Used for                                            |
 | ------------------------------------------------------ | ------------------------------------ | --------------------------------------------------- |
 | `noData`                                               | `'No data'`                          | Empty table (`emptyState` wins)                     |

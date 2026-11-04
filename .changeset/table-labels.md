@@ -11,3 +11,6 @@ the rest keep their English defaults. Dynamic entries are `{placeholder}`
 templates. Set it app-wide through `TakeoffSparProvider`
 `components.Table.defaultProps.labels`; an instance `labels` is merged over it
 key by key.
+
+An empty `filter.placeholder` on a `select` filter now falls back to the default
+text (`labels.filterSelectPlaceholder`) instead of rendering an empty trigger.
