@@ -489,8 +489,10 @@ export interface ResolvedGrowth {
 }
 
 /**
- * Grow `startWidth` toward `desired` within `plan`: the absorber's spare width
- * goes first, then each donor's, nearest first. Shrinking is never limited.
+ * Grow `startWidth` toward `desired` within `plan`, in two passes over the
+ * same order (the absorber, then each donor, nearest first): first down to
+ * each column's content width (`spare`), then down to its min width
+ * (`extra`). Shrinking is never limited.
  */
 export const resolveGrowth = (startWidth: number, desired: number, plan: TableGrowPlan): ResolvedGrowth => {
   if (desired <= startWidth) return { width: desired };
