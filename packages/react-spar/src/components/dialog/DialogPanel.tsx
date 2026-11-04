@@ -1,7 +1,8 @@
 import type { ElementType } from 'react';
 import { DialogContent as SparDialogContent } from '@turkish-technology/spar';
 
-import { composeRootAttrs, useNestedLayerDismissHandlers } from '../../core';
+import { composeRootAttrs } from '../../core';
+import { useNestedLayerDismissHandlers } from '../../hooks';
 import { useComponentTheme } from '../../provider';
 
 import { DialogPanelBase } from './base';

@@ -1,6 +1,6 @@
 import { useCallback, useRef, type PointerEvent as ReactPointerEvent } from 'react';
 
-import { blockDismiss } from './blockDismiss';
+import { blockDismiss } from '../core';
 
 /**
  * Keeps a dismissable layer (Dialog / Drawer panel) open when the user
