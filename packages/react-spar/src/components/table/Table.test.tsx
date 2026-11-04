@@ -775,6 +775,11 @@ describe('Table (props-first)', () => {
       expect(screen.queryByRole('button', { name: 'Satırı aç' })).not.toBeInTheDocument();
     });
 
+    it('keeps the pagination role fixed even when slotProps set one', () => {
+      render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination slotProps={{ pagination: { role: 'region' } }} />);
+      expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
+    });
+
     it('leaves unknown and inherited template keys literal', () => {
       expect(formatLabel('{page} {constructor} {nope}', { page: 2 })).toBe('2 {constructor} {nope}');
     });
