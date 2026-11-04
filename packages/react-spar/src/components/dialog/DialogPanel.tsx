@@ -17,7 +17,7 @@ export const DialogPanel = <T extends ElementType = 'div'>(props: DialogPanelPro
   const { children, ref, ...sparProps } = rest;
 
   // Presses inside a portaled descendant (Select / Popover / Dropdown content)
-  // are not outside presses; see `useNestedLayerDismissGuard`.
+  // are not outside presses; see `useNestedLayerDismissHandlers`.
   const dismissHandlers = useNestedLayerDismissHandlers({ dismissible, instanceProps: sparProps, rootAttrs });
 
   return (

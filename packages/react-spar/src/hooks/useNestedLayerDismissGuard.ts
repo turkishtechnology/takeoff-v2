@@ -1,4 +1,5 @@
 import { useCallback, useRef, type PointerEvent as ReactPointerEvent } from 'react';
+import type { DialogContentProps as SparDialogContentProps } from '@turkish-technology/spar';
 
 import { blockDismiss } from '../core';
 
@@ -61,10 +62,9 @@ export interface NestedLayerDismissOptions {
   /** `false` blocks every dismiss (Escape and genuine outside presses). */
   dismissible: boolean;
   /** The panel's instance props as forwarded to Spar's `DialogContent`. */
-  instanceProps: {
-    onEscapeKeyDown?: Handler<KeyboardEvent>;
-    onPointerDownOutside?: Handler<PointerEvent>;
-    onInteractOutside?: Handler<PointerEvent>;
+  // Handler types come from Spar so they cannot drift from what
+  // `DialogContent` actually passes.
+  instanceProps: Pick<SparDialogContentProps, 'onEscapeKeyDown' | 'onPointerDownOutside' | 'onInteractOutside'> & {
     onPointerDownCapture?: Handler<ReactPointerEvent<HTMLDivElement>>;
   };
   /** The theme / `slotProps.root` attrs, spread after the instance props. */

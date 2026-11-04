@@ -22,7 +22,7 @@ export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelPro
   const { container, children, ref, ...panelProps } = rest;
 
   // Presses inside a portaled descendant (Select / Popover / Dropdown content)
-  // are not outside presses; see `useNestedLayerDismissGuard`.
+  // are not outside presses; see `useNestedLayerDismissHandlers`.
   const dismissHandlers = useNestedLayerDismissHandlers({ dismissible, instanceProps: panelProps, rootAttrs });
 
   return (
