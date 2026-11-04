@@ -36,13 +36,18 @@ const EMPTY_FILTERS: ColumnFiltersState = [];
 const EMPTY_SELECTION: RowSelectionState = {};
 const EMPTY_EXPANDED: ExpandedState = {};
 
-// Empty strings (and missing keys) fall back to the English default, so no
-// control is ever left without a name.
-const resolveLabels = (labels: Partial<TableLabels> | undefined): TableLabels => {
-  if (!labels) return DEFAULT_LABELS;
+// Layers defaults <- provider `defaultProps.labels` <- instance `labels`, so a
+// per-table override keeps the app-wide strings for every other key. Missing,
+// empty and non-string values (e.g. from a loose JSON file) fall back, so no
+// control is ever left without a name and templates never throw.
+const resolveLabels = (...layers: (Partial<TableLabels> | undefined)[]): TableLabels => {
   const resolved = { ...DEFAULT_LABELS };
-  for (const key of Object.keys(labels) as (keyof TableLabels)[]) {
-    if (labels[key]) resolved[key] = labels[key];
+  for (const layer of layers) {
+    if (!layer) continue;
+    for (const key of Object.keys(layer) as (keyof TableLabels)[]) {
+      const value: unknown = layer[key];
+      if (typeof value === 'string' && value !== '' && key in DEFAULT_LABELS) resolved[key] = value;
+    }
   }
   return resolved;
 };
@@ -80,7 +85,6 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     pagination,
     onDataRequest,
     emptyState,
-    labels: labelsProp,
     getSubRows,
     tableRef,
     ref,
@@ -104,7 +108,9 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const paginationConfig = typeof pagination === 'object' ? pagination : undefined;
   const paginationEnabled = pagination === true || !!paginationConfig;
   const pageSizeOptions = paginationConfig?.pageSizeOptions ?? DEFAULT_PAGE_SIZE_OPTIONS;
-  const labels = resolveLabels(labelsProp);
+  // `labels` is merged per key rather than taken from the shallow props merge,
+  // so read both layers off the originals.
+  const labels = resolveLabels(theme?.defaultProps?.labels, props.labels);
   const [tableViewportScrolled, setTableViewportScrolled] = useState(false);
 
   // ── Controlled/uncontrolled state slices ─────────────────────────────────
@@ -311,9 +317,9 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         </div>
         {paginationEnabled && <TablePagination />}
         {loading && (
-          // No `aria-hidden`: the Spar Spinner ships `role="status"` +
-          // `aria-label="Loading"`, so the overlay politely announces the
-          // loading transition (the table also carries `aria-busy`).
+          // No `aria-hidden`: the Spar Spinner ships `role="status"`, named by
+          // `labels.loading`, so the overlay politely announces the loading
+          // transition (the table also carries `aria-busy`).
           <div {...slotAttrs('loading')}>
             <Spinner aria-label={labels.loading} />
           </div>

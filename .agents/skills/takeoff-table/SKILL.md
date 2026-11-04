@@ -138,7 +138,7 @@ const columns = [
 ];
 ```
 
-Clear button text: `labels.filterClear` on the root (see Localization below).
+Clear button text: `labels.filterClear` on the root (see Labels below).
 
 Preset `type` values: `text` (Input/substring), `select` and `radio` (equality),
 `checkbox` and `multi-select` (membership). For anything else (number/date
@@ -299,7 +299,7 @@ const rowsToExport = getExportRows(tableRef.current);
 | `manual`                   | `boolean`                                                                 | `false`   | Server mode; pairs with `onDataRequest`.                                                           |
 | `loading`                  | `boolean`                                                                 | `false`   | Spinner overlay + `aria-busy`.                                                                     |
 | `emptyState`               | `ReactNode`                                                               | `No data` | Shown when `data` is empty (suppressed while loading).                                             |
-| `labels`                   | `Partial<TableLabels>`                                                    | English   | Every user-facing string, for localization (see Localization).                                     |
+| `labels`                   | `Partial<TableLabels>`                                                    | English   | Every user-facing string, to translate or reword (see Labels).                                     |
 | `tableRef`                 | `Ref<TanStackTable>`                                                      | —         | Imperative instance; access point for `getExportRows()`.                                           |
 | `onDataRequest`            | `(req: TableDataRequest) => void`                                         | —         | Bundled server request (manual mode).                                                              |
 | `classNames` / `slotProps` | per-slot overrides                                                        | —         | Keyed by `TableSlot` (e.g. `tableViewport`).                                                       |
@@ -307,7 +307,7 @@ const rowsToExport = getExportRows(tableRef.current);
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
 
-## Localization
+## Labels
 
 All strings come from `labels` (partial; missing or empty keys keep the English
 default). Templates use `{placeholders}`: `pageStatus` (`{page}`,
@@ -317,7 +317,8 @@ default). Templates use `{placeholders}`: `pageStatus` (`{page}`,
 `pagination`, `noItems`, `firstPage`, `previousPage`, `nextPage`, `lastPage`,
 `rowsPerPage`, `goToPage`, `selectAllRows`, `selectRow`, `rowSelection`,
 `expandRow`, `collapseRow`, `rowDetails`. App-wide: `TakeoffSparProvider`
-`components.Table.defaultProps.labels` (an instance `labels` replaces it).
+`components.Table.defaultProps.labels` (an instance `labels` merges over it per
+key).
 
 ```tsx
 <Table

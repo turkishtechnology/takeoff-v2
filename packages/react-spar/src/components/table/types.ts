@@ -404,11 +404,11 @@ export interface TableProps<TData = any> {
   emptyState?: ReactNode;
   /**
    * Every user-facing string Table renders — visible text and accessible
-   * names — for localization. Pass only the keys you need; the rest keep their
+   * names — to translate or reword. Pass only the keys you need; the rest keep their
    * English defaults, and an empty string also falls back to the default. Set
    * it app-wide through `TakeoffSparProvider`
-   * `components.Table.defaultProps.labels` (an instance `labels` replaces that
-   * object, it does not merge with it). `emptyState` still wins over
+   * `components.Table.defaultProps.labels`; an instance `labels` is merged
+   * over it key by key. `emptyState` still wins over
    * `labels.noData`, and an `aria-label` in `slotProps.filterButton` /
    * `pagination` / `expandButton` (instance or provider-level) wins over the
    * matching key.

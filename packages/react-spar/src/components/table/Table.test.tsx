@@ -12,7 +12,7 @@ import { render as renderPlain, renderWithProvider as render, screen, within } f
 import { Table } from './Table';
 import { TableBody } from './TableBody';
 import { formatLabel, getExportRows } from './helpers';
-import type { TableColumnDef, TableSlot } from './types';
+import type { TableColumnDef, TableLabels, TableSlot } from './types';
 
 // Spar Select/Popover content observe their anchor; jsdom lacks ResizeObserver.
 const originalResizeObserver = globalThis.ResizeObserver;
@@ -762,17 +762,34 @@ describe('Table (props-first)', () => {
       render(
         <Table
           data={manyUsers}
-          columns={baseColumns}
           getRowId={getRowId}
           pagination
           expansion={{ render: () => 'detail' }}
-          labels={{ pagination: 'Sayfalama', expandRow: 'Satırı aç' }}
-          slotProps={{ pagination: { 'aria-label': 'Sonuçlar' }, expandButton: { 'aria-label': 'Detay' } }}
+          columns={[{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }]}
+          labels={{ pagination: 'Sayfalama', expandRow: 'Satırı aç', filterButton: 'Sütunu filtrele' }}
+          slotProps={{ pagination: { 'aria-label': 'Sonuçlar' }, expandButton: { 'aria-label': 'Detay' }, filterButton: { 'aria-label': 'Ada göre filtrele' } }}
         />,
       );
+      expect(screen.getByRole('button', { name: 'Ada göre filtrele' })).toBeInTheDocument();
       expect(screen.getByRole('navigation', { name: 'Sonuçlar' })).toBeInTheDocument();
       expect(screen.getAllByRole('button', { name: 'Detay' }).length).toBeGreaterThan(0);
       expect(screen.queryByRole('button', { name: 'Satırı aç' })).not.toBeInTheDocument();
+    });
+
+    it('merges instance `labels` over provider defaultProps labels key by key', () => {
+      renderPlain(
+        <TakeoffSparProvider components={{ Table: { defaultProps: { labels: { noData: 'Veri yok', filterButton: 'Sütunu filtrele' } } } }}>
+          <Table data={[]} columns={[{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }]} getRowId={getRowId} labels={{ noData: 'Kayıt bulunamadı' }} />
+        </TakeoffSparProvider>,
+      );
+      expect(screen.getByText('Kayıt bulunamadı')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Sütunu filtrele' })).toBeInTheDocument();
+    });
+
+    it('ignores non-string label values instead of crashing', () => {
+      const loose = JSON.parse('{"pageStatus": 1, "noData": null}') as Partial<TableLabels>;
+      render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination labels={loose} />);
+      expect(screen.getByText(/^Page 1 of \d+$/)).toBeInTheDocument();
     });
 
     it('keeps the pagination role fixed even when slotProps set one', () => {

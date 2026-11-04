@@ -214,8 +214,8 @@ render(<FilterPresetDemo />);
 ```
 
 While a filter is active its panel shows a **Clear** button. Its text comes from
-`labels.filterClear` (see [Localization](#localization)), for presets and custom
-`render` panels alike.
+`labels.filterClear` (see [Labels](#labels)), for presets and custom `render`
+panels alike.
 
 ### Custom filters (escape hatch)
 
@@ -832,13 +832,14 @@ const tableRef = useRef(null);
 const rowsToExport = getExportRows(tableRef.current); // Array<Record<columnId, value>>
 ```
 
-## Localization
+## Labels
 
 Every string Table renders — visible text and accessible names — comes from the
-`labels` prop. Pass only the keys you need; the rest keep their English
-defaults, and an empty string also falls back to the default. Dynamic entries
-are templates whose `{placeholders}` Table fills in, so word order stays with
-the translation and the object can live in a JSON translation file.
+`labels` prop, whether you are translating it or just rewording it. Pass only
+the keys you need; the rest keep their English defaults, and an empty string
+also falls back to the default. Dynamic entries are templates whose
+`{placeholders}` Table fills in, so word order stays with the translation and
+the object can live in a JSON translation file.
 
 ```tsx
 <Table
@@ -856,7 +857,8 @@ the translation and the object can live in a JSON translation file.
 ```
 
 To localize every Table in the app at once, set it as provider `defaultProps`.
-An instance `labels` replaces that object rather than merging with it.
+An instance `labels` is merged over it key by key, so a single table can
+override one string and keep the rest.
 
 ```tsx
 <TakeoffSparProvider
@@ -933,7 +935,7 @@ for primitive behavior.
 | pagination   | `boolean \| TablePaginationConfig`                              | -       | Pagination. `true` enables it with defaults; an object configures it.                                                                                                                                                                                                                                                                 |
 | loading      | `boolean`                                                       | false   | Loading state → `data-loading` + a loading overlay.                                                                                                                                                                                                                                                                                   |
 | emptyState   | `React.ReactNode`                                               | -       | Content rendered when there are no rows.                                                                                                                                                                                                                                                                                              |
-| labels       | `Partial<TableLabels>`                                          | -       | Every user-facing string (visible text and accessible names) for localization. See Localization.                                                                                                                                                                                                                                      |
+| labels       | `Partial<TableLabels>`                                          | -       | Every user-facing string (visible text and accessible names) to translate or reword. See Labels.                                                                                                                                                                                                                                      |
 | getSubRows   | `(row: TData) => TData[]`                                       | -       | Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with `expansion` (sans `render`) so expanding a row reveals its flattened sub-rows. When `getSubRows` is omitted, expansion falls back to the detail-panel mode driven by `expansion.render`. Supplying both keeps tree mode and suppresses the detail panel. |
 | tableRef     | `Ref<TanStackTable<TData> \| null>`                             | -       | Escape hatch for the rare imperative need — receives the TanStack table instance (RFC §2.3: controlled props + an optional instance ref, never an imperative `@Method` surface). Also the access point for `getExportRows()`.                                                                                                         |
 | classNames   | `Partial<Record<TableSlot, string>>`                            | -       | Per-slot class name overrides.                                                                                                                                                                                                                                                                                                        |

@@ -475,13 +475,14 @@ For naming, slot vocabulary, callback conventions, and the `composeRootAttrs` /
 
 ## User-facing strings
 
-Every visible string and accessible name a wrapper renders is localizable and
-its English default lives in the component's `defaults.ts`. A component with a
-few strings takes flat `*Label` props (Upload, Stepper, Toast). A component with
-many takes one `labels?: Partial<…Labels>` object instead (Table), so a whole
-translation fits one JSON entry and one provider `defaultProps` key. Dynamic
+New components make every visible string and accessible name customizable, with
+the English default in the component's `defaults.ts`. A component with a few
+strings takes flat `*Label` props (as Upload does). A component with many takes
+one `labels?: Partial<…Labels>` object instead (Table), merged per key over
+provider `defaultProps`, so a whole translation fits one JSON entry. Dynamic
 strings are `{placeholder}` templates, never functions, and an empty string
-falls back to the default so no control loses its name.
+falls back to the default so no control loses its name. Older components
+(Stepper, Toast, Input sub-buttons) predate this and do not all follow it yet.
 
 ## Review checklist
 
