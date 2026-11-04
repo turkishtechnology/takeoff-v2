@@ -146,7 +146,7 @@ export interface TableColumnFilter<TData = unknown> {
   placeholder?: string;
   /**
    * Text of the button that clears this column's filter, shown in the panel
-   * while the filter is active. Overrides the Table's `filterClearLabel` for
+   * while the filter is active. Overrides the Table's `labels.filterClear` for
    * this column; applies to presets and custom `render` panels alike. An empty
    * string falls back to the Table-level label.
    */
@@ -292,6 +292,63 @@ export interface TableDataRequest {
 }
 
 /**
+ * User-facing strings of a Table. Dynamic entries are templates whose
+ * `{placeholders}` Table fills in (like Upload's `{name}` labels), so word
+ * order stays with the translation and the whole object can live in a JSON
+ * translation file.
+ */
+export interface TableLabels {
+  /** Empty-table text when `emptyState` is not given. @defaultValue 'No data' */
+  noData: string;
+  /** Accessible name of the loading spinner. @defaultValue 'Loading' */
+  loading: string;
+  /** Accessible name of each column's filter trigger. @defaultValue 'Filter column' */
+  filterButton: string;
+  /** Clear button in the filter panel; `filter.clearLabel` overrides it per column. @defaultValue 'Clear' */
+  filterClear: string;
+  /** `select` filter trigger text when nothing is picked; `filter.placeholder` overrides it. @defaultValue 'Select' */
+  filterSelectPlaceholder: string;
+  /** Accessible name of the pagination region. @defaultValue 'Pagination' */
+  pagination: string;
+  /** Page indicator. @defaultValue 'Page {page} of {pageCount}' */
+  pageStatus: string;
+  /** Page indicator while the page count is unknown (0). @defaultValue 'Page {page}' */
+  pageStatusUnknown: string;
+  /** Visible item range (1-based). @defaultValue 'Items {start}-{end} of {total}' */
+  itemsRange: string;
+  /** Item range text when there are no rows. @defaultValue '0 items' */
+  noItems: string;
+  /** @defaultValue 'First page' */
+  firstPage: string;
+  /** @defaultValue 'Previous page' */
+  previousPage: string;
+  /** @defaultValue 'Next page' */
+  nextPage: string;
+  /** @defaultValue 'Last page' */
+  lastPage: string;
+  /** Accessible name of a page-number button. @defaultValue 'Go to page {page}' */
+  goToPageNumber: string;
+  /** Accessible name of the current page's button. @defaultValue 'Page {page}, current page' */
+  currentPage: string;
+  /** Accessible name of the page-size select. @defaultValue 'Rows per page' */
+  rowsPerPage: string;
+  /** Accessible name of the page-jump input and its submit. @defaultValue 'Go to page' */
+  goToPage: string;
+  /** @defaultValue 'Select all rows' */
+  selectAllRows: string;
+  /** @defaultValue 'Select row' */
+  selectRow: string;
+  /** Hidden header of the single-selection column. @defaultValue 'Row selection' */
+  rowSelection: string;
+  /** @defaultValue 'Expand row' */
+  expandRow: string;
+  /** @defaultValue 'Collapse row' */
+  collapseRow: string;
+  /** Hidden header of the expansion column. @defaultValue 'Row details' */
+  rowDetails: string;
+}
+
+/**
  * Public props for `Table`. Props-first (RFC §3.1, Tier 1): a common table is
  * a single `<Table data columns getRowId />` call. `getRowId` is **mandatory**
  * — the single identity source TanStack's `RowSelectionState` keys on (RFC §2.3).
@@ -354,19 +411,16 @@ export interface TableProps<TData = any> {
   /** Content rendered when there are no rows. */
   emptyState?: ReactNode;
   /**
-   * Text of the Clear button in every column filter panel (e.g. `'Temizle'`).
-   * A column's `filter.clearLabel` overrides it. An empty string falls back to
-   * the default, since the button needs a visible name.
-   * @defaultValue 'Clear'
+   * Every user-facing string Table renders — visible text and accessible
+   * names — for localization. Pass only the keys you need; the rest keep their
+   * English defaults, and an empty string also falls back to the default. Set
+   * it app-wide through `TakeoffSparProvider`
+   * `components.Table.defaultProps.labels` (an instance `labels` replaces that
+   * object, it does not merge with it). `emptyState` still wins over
+   * `labels.noData`, and `slotProps` `aria-label`s win over the matching keys.
+   * See {@link TableLabels}.
    */
-  filterClearLabel?: string;
-  /**
-   * Accessible name of every column's filter trigger (e.g. `'Sütunu filtrele'`).
-   * An empty string falls back to the default. An `aria-label` passed through
-   * `slotProps.filterButton` still wins over it.
-   * @defaultValue 'Filter column'
-   */
-  filterButtonLabel?: string;
+  labels?: Partial<TableLabels>;
   /**
    * Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with
    * `expansion` (sans `render`) so expanding a row reveals its flattened

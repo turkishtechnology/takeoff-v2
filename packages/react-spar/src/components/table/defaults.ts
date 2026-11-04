@@ -1,16 +1,39 @@
-import type { TableSize } from './types';
+import type { TableLabels, TableSize } from './types';
 
 export const DEFAULT_SIZE: TableSize = 'base';
 export const DEFAULT_PAGE_SIZE = 10;
 export const DEFAULT_PAGE_SIZE_OPTIONS: number[] = [10, 25, 50, 100];
 
-// Column-filter popover strings. Localizable per table through the root's
-// `filterClearLabel` / `filterButtonLabel` props, and per column through
-// `filter.clearLabel`.
-export const DEFAULT_FILTER_CLEAR_LABEL = 'Clear';
-export const DEFAULT_FILTER_BUTTON_LABEL = 'Filter column';
-/** `select` preset trigger text when nothing is picked; per column via `filter.placeholder`. */
-export const DEFAULT_FILTER_SELECT_PLACEHOLDER = 'Select';
+// Every user-facing string Table renders, visible or for assistive technology.
+// Localizable per table through the root's `labels` prop (or app-wide through
+// provider `defaultProps`); a column's `filter.clearLabel` overrides
+// `filterClear` for that column.
+export const DEFAULT_LABELS: TableLabels = {
+  noData: 'No data',
+  loading: 'Loading',
+  filterButton: 'Filter column',
+  filterClear: 'Clear',
+  filterSelectPlaceholder: 'Select',
+  pagination: 'Pagination',
+  pageStatus: 'Page {page} of {pageCount}',
+  pageStatusUnknown: 'Page {page}',
+  itemsRange: 'Items {start}-{end} of {total}',
+  noItems: '0 items',
+  firstPage: 'First page',
+  previousPage: 'Previous page',
+  nextPage: 'Next page',
+  lastPage: 'Last page',
+  goToPageNumber: 'Go to page {page}',
+  currentPage: 'Page {page}, current page',
+  rowsPerPage: 'Rows per page',
+  goToPage: 'Go to page',
+  selectAllRows: 'Select all rows',
+  selectRow: 'Select row',
+  rowSelection: 'Row selection',
+  expandRow: 'Expand row',
+  collapseRow: 'Collapse row',
+  rowDetails: 'Row details',
+};
 
 /** Fallback px width used for sticky-offset math when a column omits `width`. */
 export const DEFAULT_COLUMN_WIDTH = 150;

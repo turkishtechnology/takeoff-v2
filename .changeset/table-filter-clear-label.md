@@ -2,12 +2,14 @@
 '@takeoff-ui/react-spar': minor
 ---
 
-`Table` column filters can now be localized. Set `filterClearLabel` on the Table
-(e.g. `"Temizle"`) to change the filter panel's Clear button for every column,
-and `filterButtonLabel` to change the filter trigger's accessible name (default
-"Filter column"). A column's `filter.clearLabel` overrides the table-level text.
-Empty strings fall back to the defaults.
+`Table` can now be fully localized through a new `labels` prop. It covers every
+string Table renders: the empty state, the loading spinner, the column filter
+trigger and Clear button, pagination text and buttons, and the selection and
+expansion controls. Pass only the keys you need (e.g.
+`labels={{ filterClear: 'Temizle', pageStatus: 'Sayfa {page} / {pageCount}' }}`);
+the rest keep their English defaults. Dynamic entries are `{placeholder}`
+templates. Set it app-wide through `TakeoffSparProvider`
+`components.Table.defaultProps.labels`.
 
-Set them app-wide through `TakeoffSparProvider` `components.Table.defaultProps`.
-The Clear button is also a new `filterClear` slot, so `classNames.filterClear` /
-`slotProps.filterClear` can style it or add attributes.
+A column's `filter.clearLabel` overrides the Clear text for that column, and the
+Clear button is a new `filterClear` slot for `classNames` / `slotProps`.

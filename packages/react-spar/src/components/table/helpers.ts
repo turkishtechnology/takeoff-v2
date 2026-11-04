@@ -360,3 +360,7 @@ export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: Sti
   const hasWidth = column.columnDef.meta?.width != null || stickyLayout.has(column.id);
   return hasWidth ? { width: column.getSize() } : undefined;
 };
+
+/** Fill a `labels` template: every `{key}` is replaced by its value. */
+export const formatLabel = (template: string, values: Record<string, number | string>): string =>
+  template.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? String(values[key]) : match));

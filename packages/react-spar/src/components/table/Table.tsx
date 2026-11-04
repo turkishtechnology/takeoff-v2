@@ -22,12 +22,12 @@ import { Spinner } from '../spinner';
 
 import { TableBase } from './base';
 import { TableProvider, type SlotAttrs, type TableContextValue } from './context';
-import { DEFAULT_FILTER_BUTTON_LABEL, DEFAULT_FILTER_CLEAR_LABEL, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE } from './defaults';
+import { DEFAULT_LABELS, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE } from './defaults';
 import { buildOrderedColumns, computeStickyLayout, toTanStackColumns } from './helpers';
 import { TableBody } from './TableBody';
 import { TableHeader } from './TableHeader';
 import { TablePagination } from './TablePagination';
-import type { TableProps } from './types';
+import type { TableLabels, TableProps } from './types';
 
 // Stable empty defaults so uncontrolled state values keep a constant identity
 // across renders (the `onDataRequest` effect keys on reference equality).
@@ -35,6 +35,17 @@ const EMPTY_SORTING: SortingState = [];
 const EMPTY_FILTERS: ColumnFiltersState = [];
 const EMPTY_SELECTION: RowSelectionState = {};
 const EMPTY_EXPANDED: ExpandedState = {};
+
+// Empty strings (and missing keys) fall back to the English default, so no
+// control is ever left without a name.
+const resolveLabels = (labels: Partial<TableLabels> | undefined): TableLabels => {
+  if (!labels) return DEFAULT_LABELS;
+  const resolved = { ...DEFAULT_LABELS };
+  for (const key of Object.keys(labels) as (keyof TableLabels)[]) {
+    if (labels[key]) resolved[key] = labels[key];
+  }
+  return resolved;
+};
 
 export const Table = <TData,>(props: TableProps<TData>) => {
   const theme = useComponentTheme('Table');
@@ -69,8 +80,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     pagination,
     onDataRequest,
     emptyState,
-    filterClearLabel,
-    filterButtonLabel,
+    labels: labelsProp,
     getSubRows,
     tableRef,
     ref,
@@ -94,6 +104,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const paginationConfig = typeof pagination === 'object' ? pagination : undefined;
   const paginationEnabled = pagination === true || !!paginationConfig;
   const pageSizeOptions = paginationConfig?.pageSizeOptions ?? DEFAULT_PAGE_SIZE_OPTIONS;
+  const labels = useMemo(() => resolveLabels(labelsProp), [labelsProp]);
   const [tableViewportScrolled, setTableViewportScrolled] = useState(false);
 
   // ── Controlled/uncontrolled state slices ─────────────────────────────────
@@ -278,8 +289,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     emptyState,
     paginationEnabled,
     pageSizeOptions,
-    filterClearLabel: filterClearLabel || DEFAULT_FILTER_CLEAR_LABEL,
-    filterButtonLabel: filterButtonLabel || DEFAULT_FILTER_BUTTON_LABEL,
+    labels,
     slotAttrs,
   };
 
@@ -305,7 +315,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
           // `aria-label="Loading"`, so the overlay politely announces the
           // loading transition (the table also carries `aria-busy`).
           <div {...slotAttrs('loading')}>
-            <Spinner />
+            <Spinner aria-label={labels.loading} />
           </div>
         )}
       </div>

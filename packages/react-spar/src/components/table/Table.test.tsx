@@ -761,7 +761,7 @@ describe('Table (props-first)', () => {
           },
         },
       ];
-      render(<Table data={users} columns={columns} getRowId={getRowId} filterClearLabel="Temizle" filterButtonLabel="Sütunu filtrele" />);
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterClear: 'Temizle', filterButton: 'Sütunu filtrele' }} />);
 
       const [nameTrigger, roleTrigger] = screen.getAllByRole('button', { name: 'Sütunu filtrele' });
       expect(screen.queryByRole('button', { name: 'Filter column' })).not.toBeInTheDocument();
@@ -788,11 +788,66 @@ describe('Table (props-first)', () => {
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Select');
     });
 
+    it('localizes pagination, selection, expansion, empty and loading strings through `labels`', async () => {
+      const user = userEvent.setup();
+      const labels = {
+        noData: 'Veri yok',
+        loading: 'Yükleniyor',
+        pagination: 'Sayfalama',
+        pageStatus: 'Sayfa {page} / {pageCount}',
+        itemsRange: '{total} kayıttan {start}-{end}',
+        firstPage: 'İlk sayfa',
+        previousPage: 'Önceki sayfa',
+        nextPage: 'Sonraki sayfa',
+        lastPage: 'Son sayfa',
+        goToPageNumber: '{page}. sayfaya git',
+        currentPage: '{page}. sayfa, geçerli sayfa',
+        rowsPerPage: 'Sayfa başına satır',
+        goToPage: 'Sayfaya git',
+        selectAllRows: 'Tüm satırları seç',
+        selectRow: 'Satırı seç',
+        expandRow: 'Satırı aç',
+        collapseRow: 'Satırı kapat',
+        rowDetails: 'Satır detayı',
+      };
+      const { rerender } = render(
+        <Table
+          data={manyUsers}
+          columns={baseColumns}
+          getRowId={getRowId}
+          labels={labels}
+          pagination={{ pageSize: 10 }}
+          selection={{ mode: 'multiple' }}
+          expansion={{ render: () => 'detail' }}
+        />,
+      );
+
+      expect(screen.getByRole('navigation', { name: 'Sayfalama' })).toBeInTheDocument();
+      expect(screen.getByText(/^Sayfa 1 \/ \d+$/)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(`^${manyUsers.length} kayıttan 1-10$`))).toBeInTheDocument();
+      for (const name of ['İlk sayfa', 'Önceki sayfa', 'Sonraki sayfa', 'Son sayfa', '1. sayfa, geçerli sayfa', '2. sayfaya git']) {
+        expect(screen.getByRole('button', { name })).toBeInTheDocument();
+      }
+      expect(screen.getByRole('combobox', { name: 'Sayfa başına satır' })).toBeInTheDocument();
+      expect(screen.getAllByLabelText('Sayfaya git').length).toBeGreaterThan(0);
+      expect(screen.getByRole('checkbox', { name: 'Tüm satırları seç' })).toBeInTheDocument();
+      expect(screen.getAllByRole('checkbox', { name: 'Satırı seç' }).length).toBe(10);
+      expect(screen.getByText('Satır detayı')).toBeInTheDocument();
+      const [firstExpand] = screen.getAllByRole('button', { name: 'Satırı aç' });
+      await user.click(firstExpand);
+      expect(screen.getByRole('button', { name: 'Satırı kapat' })).toBeInTheDocument();
+
+      rerender(<Table data={[]} columns={baseColumns} getRowId={getRowId} labels={labels} />);
+      expect(screen.getByText('Veri yok')).toBeInTheDocument();
+      rerender(<Table data={users} columns={baseColumns} getRowId={getRowId} labels={labels} loading />);
+      expect(screen.getByRole('status', { name: 'Yükleniyor' })).toBeInTheDocument();
+    });
+
     it('takes the filter labels app-wide from provider defaultProps', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       renderPlain(
-        <TakeoffSparProvider components={{ Table: { defaultProps: { filterClearLabel: 'Temizle', filterButtonLabel: 'Sütunu filtrele' } } }}>
+        <TakeoffSparProvider components={{ Table: { defaultProps: { labels: { filterClear: 'Temizle', filterButton: 'Sütunu filtrele' } } } }}>
           <Table data={users} columns={columns} getRowId={getRowId} />
         </TakeoffSparProvider>,
       );
@@ -805,7 +860,7 @@ describe('Table (props-first)', () => {
     it('falls back to the default labels when given empty strings', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: { type: 'text', clearLabel: '' } }];
-      render(<Table data={users} columns={columns} getRowId={getRowId} filterClearLabel="" filterButtonLabel="" />);
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterClear: '', filterButton: '' }} />);
 
       await user.click(screen.getByRole('button', { name: 'Filter column' }));
       await user.type(await screen.findByRole('searchbox'), 'a');
@@ -1861,7 +1916,7 @@ describe('Table (props-first)', () => {
           data={users}
           columns={columns}
           getRowId={getRowId}
-          filterClearLabel="Temizle"
+          labels={{ filterClear: 'Temizle' }}
           classNames={{ filterClear: 'instance-filter-clear' }}
           slotProps={{ filterClear: { title: 'Filtreyi temizle', onClick: onClearClick } }}
         />,

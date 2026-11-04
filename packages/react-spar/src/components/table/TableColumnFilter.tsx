@@ -10,7 +10,6 @@ import { Radio } from '../radio';
 import { Select } from '../select';
 
 import { useTableContext } from './context';
-import { DEFAULT_FILTER_SELECT_PLACEHOLDER } from './defaults';
 import { isEmptyFilterValue } from './helpers';
 import type { TableColumnFilter as TableColumnFilterConfig, TableColumnFilterContext, TableColumnFilterOption } from './types';
 
@@ -32,7 +31,7 @@ const defaultIsActive = (value: unknown): boolean => !isEmptyFilterValue(value);
  * a real React portal, the correct fix for the legacy sticky-cell z-index bug.
  */
 export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
-  const { slotAttrs, filterClearLabel, filterButtonLabel } = useTableContext('Table.ColumnFilter');
+  const { slotAttrs, labels } = useTableContext('Table.ColumnFilter');
   const [open, setOpen] = useState(false);
   // The panel node is held in state (not a ref) because it is the portal
   // `container` for the `select` preset's listbox, and that prop is read during
@@ -65,7 +64,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <Popover.Trigger aria-label={filterButtonLabel} {...filterButtonAttrs} data-active={active ? '' : undefined}>
+      <Popover.Trigger aria-label={labels.filterButton} {...filterButtonAttrs} data-active={active ? '' : undefined}>
         <SearchIconOutlinedRounded aria-hidden="true" />
       </Popover.Trigger>
       <Popover.Content className="tk-table-filter-panel">
@@ -83,7 +82,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
               ctx.clear();
             }}
           >
-            {filter.clearLabel || filterClearLabel}
+            {filter.clearLabel || labels.filterClear}
           </Button>
         )}
       </Popover.Content>
@@ -165,6 +164,7 @@ const SelectFilter = ({
   onChange: (value: string) => void;
   container: HTMLElement | null;
 }) => {
+  const { labels } = useTableContext('Table.ColumnFilter');
   const selected = options.find(option => option.value === value);
   // The listbox is portalled INTO the filter panel rather than `document.body`.
   // Spar's Popover treats any pointer-down or focus outside its content node as
@@ -174,7 +174,7 @@ const SelectFilter = ({
   // an "inside" interaction with no wrapper-side dismiss logic.
   return (
     <Select value={value} onChange={onChange}>
-      <Select.Trigger>{selected ? selected.label : placeholder || DEFAULT_FILTER_SELECT_PLACEHOLDER}</Select.Trigger>
+      <Select.Trigger>{selected ? selected.label : placeholder || labels.filterSelectPlaceholder}</Select.Trigger>
       <Select.Content container={container}>
         {options.map(option => (
           <Select.Item key={option.value} value={option.value}>

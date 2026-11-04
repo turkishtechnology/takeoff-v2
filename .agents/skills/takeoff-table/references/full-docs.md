@@ -213,21 +213,11 @@ function FilterPresetDemo() {
 render(<FilterPresetDemo />);
 ```
 
-While a filter is active its panel shows a **Clear** button. Localize it once
-for the whole table with `filterClearLabel`, and the filter trigger's accessible
-name with `filterButtonLabel`. A column's `filter.clearLabel` overrides the
-table-level text. Both apply to presets and custom `render` panels alike. Set
-them app-wide as `TakeoffSparProvider` `components.Table.defaultProps`; the
-Clear button's slot is `filterClear`.
-
-```tsx
-<Table
-  data={rows}
-  columns={columns}
-  filterClearLabel="Temizle"
-  filterButtonLabel="Sütunu filtrele"
-/>
-```
+While a filter is active its panel shows a **Clear** button. Its text comes from
+`labels.filterClear` (see [Localization](#localization)); a column's
+`filter.clearLabel` overrides it for that column, for presets and custom
+`render` panels alike. The button is also a slot (`filterClear`) for
+`classNames` / `slotProps` styling and attributes.
 
 ### Custom filters (escape hatch)
 
@@ -844,6 +834,62 @@ const tableRef = useRef(null);
 const rowsToExport = getExportRows(tableRef.current); // Array<Record<columnId, value>>
 ```
 
+## Localization
+
+Every string Table renders — visible text and accessible names — comes from the
+`labels` prop. Pass only the keys you need; the rest keep their English
+defaults, and an empty string also falls back to the default. Dynamic entries
+are templates whose `{placeholders}` Table fills in, so word order stays with
+the translation and the object can live in a JSON translation file.
+
+```tsx
+<Table
+  data={rows}
+  columns={columns}
+  labels={{
+    noData: 'Veri yok',
+    filterClear: 'Temizle',
+    filterButton: 'Sütunu filtrele',
+    pageStatus: 'Sayfa {page} / {pageCount}',
+    itemsRange: '{total} kayıttan {start}-{end}',
+    goToPageNumber: '{page}. sayfaya git',
+  }}
+/>
+```
+
+To localize every Table in the app at once, set it as provider `defaultProps`.
+An instance `labels` replaces that object rather than merging with it.
+
+```tsx
+<TakeoffSparProvider
+  components={{ Table: { defaultProps: { labels: trTableLabels } } }}
+>
+  <App />
+</TakeoffSparProvider>
+```
+
+| Key                                                    | Default                              | Used for                                             |
+| ------------------------------------------------------ | ------------------------------------ | ---------------------------------------------------- |
+| `noData`                                               | `'No data'`                          | Empty table (`emptyState` wins)                      |
+| `loading`                                              | `'Loading'`                          | Loading spinner's accessible name                    |
+| `filterButton`                                         | `'Filter column'`                    | Filter trigger's accessible name                     |
+| `filterClear`                                          | `'Clear'`                            | Filter panel Clear button (`filter.clearLabel` wins) |
+| `filterSelectPlaceholder`                              | `'Select'`                           | `select` filter trigger (`filter.placeholder` wins)  |
+| `pagination`                                           | `'Pagination'`                       | Pagination region's accessible name                  |
+| `pageStatus`                                           | `'Page {page} of {pageCount}'`       | Page indicator                                       |
+| `pageStatusUnknown`                                    | `'Page {page}'`                      | Page indicator while the page count is 0             |
+| `itemsRange`                                           | `'Items {start}-{end} of {total}'`   | Item range                                           |
+| `noItems`                                              | `'0 items'`                          | Item range with no rows                              |
+| `firstPage` / `previousPage` / `nextPage` / `lastPage` | `'First page'` …                     | Pagination buttons                                   |
+| `goToPageNumber`                                       | `'Go to page {page}'`                | Page-number buttons                                  |
+| `currentPage`                                          | `'Page {page}, current page'`        | Current page's button                                |
+| `rowsPerPage`                                          | `'Rows per page'`                    | Page-size select                                     |
+| `goToPage`                                             | `'Go to page'`                       | Page-jump input and submit                           |
+| `selectAllRows` / `selectRow`                          | `'Select all rows'` / `'Select row'` | Selection controls                                   |
+| `rowSelection`                                         | `'Row selection'`                    | Hidden header of the single-selection column         |
+| `expandRow` / `collapseRow`                            | `'Expand row'` / `'Collapse row'`    | Expand button                                        |
+| `rowDetails`                                           | `'Row details'`                      | Hidden header of the expansion column                |
+
 ## Accessibility
 
 - Renders a native `<table>` / `<thead>` / `<tbody>` / `<th scope="col">` /
@@ -872,30 +918,29 @@ for primitive behavior.
 
 #### Props {#table-props}
 
-| Name              | Type                                                            | Default         | Description                                                                                                                                                                                                                                                                                                                           |
-| ----------------- | --------------------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| data              | `TData[]`                                                       | -               | Row data. In `manual` mode this is the current server page.                                                                                                                                                                                                                                                                           |
-| columns           | `TableColumnDef<TData>[]`                                       | -               | Column definitions. See `TableColumnDef`.                                                                                                                                                                                                                                                                                             |
-| getRowId          | `(row: TData, index: number) => string`                         | -               | Stable row identity (single source of truth).                                                                                                                                                                                                                                                                                         |
-| size              | `TableSize`                                                     | 'base'          | Density scale.                                                                                                                                                                                                                                                                                                                        |
-| striped           | `boolean`                                                       | false           | Zebra-stripe rows → `data-striped`.                                                                                                                                                                                                                                                                                                   |
-| bordered          | `boolean`                                                       | false           | Cell borders → `data-bordered`.                                                                                                                                                                                                                                                                                                       |
-| stickyHeader      | `boolean`                                                       | false           | Pin the header row during vertical scroll → `data-sticky-header`.                                                                                                                                                                                                                                                                     |
-| manual            | `boolean`                                                       | false           | Server mode. When `true`, Table processes nothing in-memory — it maps to TanStack's `manualSorting`/`manualFiltering`/`manualPagination` and emits a single bundled `onDataRequest` (RFC §3.3).                                                                                                                                       |
-| selection         | `TableSelectionConfig`                                          | -               | Row selection (single/multiple + select-all). Composes Spar Checkbox/Radio.                                                                                                                                                                                                                                                           |
-| sorting           | `TableSortingConfig`                                            | -               | Sorting (multi-sort opt-in).                                                                                                                                                                                                                                                                                                          |
-| filtering         | `TableFilteringConfig`                                          | -               | Column filtering. Filter UIs render in a Spar `Popover`.                                                                                                                                                                                                                                                                              |
-| expansion         | `TableExpansionConfig<TData>`                                   | -               | Expandable rows with a render-prop body.                                                                                                                                                                                                                                                                                              |
-| pagination        | `boolean \| TablePaginationConfig`                              | -               | Pagination. `true` enables it with defaults; an object configures it.                                                                                                                                                                                                                                                                 |
-| loading           | `boolean`                                                       | false           | Loading state → `data-loading` + a loading overlay.                                                                                                                                                                                                                                                                                   |
-| emptyState        | `React.ReactNode`                                               | -               | Content rendered when there are no rows.                                                                                                                                                                                                                                                                                              |
-| filterClearLabel  | `string`                                                        | 'Clear'         | Text of the Clear button in every column filter panel. A column's `filter.clearLabel` overrides it; an empty string falls back to the default.                                                                                                                                                                                        |
-| filterButtonLabel | `string`                                                        | 'Filter column' | Accessible name of every column's filter trigger. An empty string falls back to the default; `slotProps.filterButton['aria-label']` still wins.                                                                                                                                                                                       |
-| getSubRows        | `(row: TData) => TData[]`                                       | -               | Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with `expansion` (sans `render`) so expanding a row reveals its flattened sub-rows. When `getSubRows` is omitted, expansion falls back to the detail-panel mode driven by `expansion.render`. Supplying both keeps tree mode and suppresses the detail panel. |
-| tableRef          | `Ref<TanStackTable<TData> \| null>`                             | -               | Escape hatch for the rare imperative need — receives the TanStack table instance (RFC §2.3: controlled props + an optional instance ref, never an imperative `@Method` surface). Also the access point for `getExportRows()`.                                                                                                         |
-| classNames        | `Partial<Record<TableSlot, string>>`                            | -               | Per-slot class name overrides.                                                                                                                                                                                                                                                                                                        |
-| slotProps         | `Partial<Record<TableSlot, React.HTMLAttributes<HTMLElement>>>` | -               | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                                                                                    |
-| className         | `string`                                                        | -               | Appends custom classes to the root container.                                                                                                                                                                                                                                                                                         |
+| Name         | Type                                                            | Default | Description                                                                                                                                                                                                                                                                                                                           |
+| ------------ | --------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| data         | `TData[]`                                                       | -       | Row data. In `manual` mode this is the current server page.                                                                                                                                                                                                                                                                           |
+| columns      | `TableColumnDef<TData>[]`                                       | -       | Column definitions. See `TableColumnDef`.                                                                                                                                                                                                                                                                                             |
+| getRowId     | `(row: TData, index: number) => string`                         | -       | Stable row identity (single source of truth).                                                                                                                                                                                                                                                                                         |
+| size         | `TableSize`                                                     | 'base'  | Density scale.                                                                                                                                                                                                                                                                                                                        |
+| striped      | `boolean`                                                       | false   | Zebra-stripe rows → `data-striped`.                                                                                                                                                                                                                                                                                                   |
+| bordered     | `boolean`                                                       | false   | Cell borders → `data-bordered`.                                                                                                                                                                                                                                                                                                       |
+| stickyHeader | `boolean`                                                       | false   | Pin the header row during vertical scroll → `data-sticky-header`.                                                                                                                                                                                                                                                                     |
+| manual       | `boolean`                                                       | false   | Server mode. When `true`, Table processes nothing in-memory — it maps to TanStack's `manualSorting`/`manualFiltering`/`manualPagination` and emits a single bundled `onDataRequest` (RFC §3.3).                                                                                                                                       |
+| selection    | `TableSelectionConfig`                                          | -       | Row selection (single/multiple + select-all). Composes Spar Checkbox/Radio.                                                                                                                                                                                                                                                           |
+| sorting      | `TableSortingConfig`                                            | -       | Sorting (multi-sort opt-in).                                                                                                                                                                                                                                                                                                          |
+| filtering    | `TableFilteringConfig`                                          | -       | Column filtering. Filter UIs render in a Spar `Popover`.                                                                                                                                                                                                                                                                              |
+| expansion    | `TableExpansionConfig<TData>`                                   | -       | Expandable rows with a render-prop body.                                                                                                                                                                                                                                                                                              |
+| pagination   | `boolean \| TablePaginationConfig`                              | -       | Pagination. `true` enables it with defaults; an object configures it.                                                                                                                                                                                                                                                                 |
+| loading      | `boolean`                                                       | false   | Loading state → `data-loading` + a loading overlay.                                                                                                                                                                                                                                                                                   |
+| emptyState   | `React.ReactNode`                                               | -       | Content rendered when there are no rows.                                                                                                                                                                                                                                                                                              |
+| labels       | `Partial<TableLabels>`                                          | -       | Every user-facing string (visible text and accessible names) for localization. See Localization.                                                                                                                                                                                                                                      |
+| getSubRows   | `(row: TData) => TData[]`                                       | -       | Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with `expansion` (sans `render`) so expanding a row reveals its flattened sub-rows. When `getSubRows` is omitted, expansion falls back to the detail-panel mode driven by `expansion.render`. Supplying both keeps tree mode and suppresses the detail panel. |
+| tableRef     | `Ref<TanStackTable<TData> \| null>`                             | -       | Escape hatch for the rare imperative need — receives the TanStack table instance (RFC §2.3: controlled props + an optional instance ref, never an imperative `@Method` surface). Also the access point for `getExportRows()`.                                                                                                         |
+| classNames   | `Partial<Record<TableSlot, string>>`                            | -       | Per-slot class name overrides.                                                                                                                                                                                                                                                                                                        |
+| slotProps    | `Partial<Record<TableSlot, React.HTMLAttributes<HTMLElement>>>` | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                                                                                    |
+| className    | `string`                                                        | -       | Appends custom classes to the root container.                                                                                                                                                                                                                                                                                         |
 
 #### Events {#table-events}
 

@@ -4,7 +4,7 @@ import type { Table as TanStackTable } from '@tanstack/react-table';
 import { createSafeContext } from '../../hooks';
 
 import type { StickyLayout } from './helpers';
-import type { TableSize, TableSlot } from './types';
+import type { TableLabels, TableSize, TableSlot } from './types';
 
 /** Attrs returned by {@link TableContextValue.slotAttrs} — spreadable onto any rendered slot node. */
 export type SlotAttrs = HTMLAttributes<HTMLElement> & Record<`data-${string}`, string | undefined>;
@@ -41,9 +41,8 @@ export interface TableContextValue {
   emptyState?: ReactNode;
   paginationEnabled: boolean;
   pageSizeOptions: number[];
-  /** Resolved Table-level filter strings (root props or defaults). */
-  filterClearLabel: string;
-  filterButtonLabel: string;
+  /** Resolved user-facing strings (`labels` prop over defaults). */
+  labels: TableLabels;
   /**
    * Compose the canonical attrs for a slot (theme + instance `classNames` /
    * `slotProps` layered under the canonical `tk-*` class + `data-slot`).
