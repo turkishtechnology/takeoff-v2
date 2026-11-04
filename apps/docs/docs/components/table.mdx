@@ -713,7 +713,9 @@ the object can live in a JSON translation file.
   labels={{
     noData: 'Veri yok',
     filterClear: 'Temizle',
-    filterButton: 'Sütunu filtrele',
+    filterButton: '{column} sütununu filtrele',
+    filterValue: '{column} filtre değeri',
+    filterSelectPlaceholder: 'Seçiniz',
     pageStatus: 'Sayfa {page} / {pageCount}',
     itemsRange: '{total} kayıttan {start}-{end}',
     goToPageNumber: '{page}. sayfaya git',
@@ -736,11 +738,11 @@ override one string and keep the rest.
 The filter-trigger, pagination and expand-button names come only from `labels`;
 an `aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
 `slotProps.expandButton` is ignored. `filterValue` names the text filter input
-(a `filter.placeholder` names it instead), the radio and checkbox groups, and
-the select trigger together with its visible value. `{column}` in `filterButton`
-/ `filterValue` is the column's header text, or its `id` when `header` is a node
-or function. Template numbers are inserted as-is (`1234`, not `1.234`), and
-templates have no plural rules.
+(a `filter.placeholder` stays a visible hint), the radio and checkbox groups,
+and the select trigger together with its visible value. `{column}` in
+`filterButton` / `filterValue` is the column's header text, or its `id` when
+`header` is a node or function. Template numbers are inserted as-is (`1234`, not
+`1.234`), and templates have no plural rules.
 
 | Key                                                    | Default                              | Used for                                            |
 | ------------------------------------------------------ | ------------------------------------ | --------------------------------------------------- |
@@ -760,7 +762,7 @@ templates have no plural rules.
 | `currentPage`                                          | `'Page {page}, current page'`        | Current page's button                               |
 | `rowsPerPage`                                          | `'Rows per page'`                    | Page-size select                                    |
 | `goToPage`                                             | `'Go to page'`                       | Page-jump input                                     |
-| `goToPageSubmit`                                       | `'Go'`                               | Page-jump submit button                             |
+| `goToPageSubmit`                                       | `'Go'`                               | Page-jump submit (translate with `goToPage`)        |
 | `selectAllRows` / `selectRow`                          | `'Select all rows'` / `'Select row'` | Selection controls                                  |
 | `rowSelection`                                         | `'Row selection'`                    | Hidden header of the single-selection column        |
 | `expandRow` / `collapseRow`                            | `'Expand row'` / `'Collapse row'`    | Expand button                                       |
@@ -817,7 +819,7 @@ for primitive behavior.
 | <ApiBadge label="getSubRows" />   | <code>(row: TData) =&gt; TData[]</code>                                                                                        | -       | Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with `expansion` (sans `render`) so expanding a row reveals its flattened sub-rows. When `getSubRows` is omitted, expansion falls back to the detail-panel mode driven by `expansion.render`. Supplying both keeps tree mode and suppresses the detail panel.                                                                                                                                                                                                                                         |
 | <ApiBadge label="tableRef" />     | <code>Ref&lt;TanStackTable&lt;TData&gt; &#124; null&gt;</code>                                                                 | -       | Escape hatch for the rare imperative need — receives the TanStack table instance (RFC §2.3: controlled props + an optional instance ref, never an imperative `@Method` surface). Also the access point for `getExportRows()`.                                                                                                                                                                                                                                                                                                                                                 |
 | <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#table-td-tableslot">TableSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#table-td-tableslot">TableSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#table-td-tableslot">TableSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides. An `aria-label` here is ignored for `filterButton`, `pagination` and `expandButton`, whose names come from `labels`.                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | <ApiBadge label="className" />    | <code>string</code>                                                                                                            | -       | Appends custom classes to the root container.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 #### Events {#table-events}

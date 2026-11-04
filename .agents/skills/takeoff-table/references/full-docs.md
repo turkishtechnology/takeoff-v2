@@ -849,7 +849,9 @@ the object can live in a JSON translation file.
   labels={{
     noData: 'Veri yok',
     filterClear: 'Temizle',
-    filterButton: 'Sütunu filtrele',
+    filterButton: '{column} sütununu filtrele',
+    filterValue: '{column} filtre değeri',
+    filterSelectPlaceholder: 'Seçiniz',
     pageStatus: 'Sayfa {page} / {pageCount}',
     itemsRange: '{total} kayıttan {start}-{end}',
     goToPageNumber: '{page}. sayfaya git',
@@ -872,11 +874,11 @@ override one string and keep the rest.
 The filter-trigger, pagination and expand-button names come only from `labels`;
 an `aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
 `slotProps.expandButton` is ignored. `filterValue` names the text filter input
-(a `filter.placeholder` names it instead), the radio and checkbox groups, and
-the select trigger together with its visible value. `{column}` in `filterButton`
-/ `filterValue` is the column's header text, or its `id` when `header` is a node
-or function. Template numbers are inserted as-is (`1234`, not `1.234`), and
-templates have no plural rules.
+(a `filter.placeholder` stays a visible hint), the radio and checkbox groups,
+and the select trigger together with its visible value. `{column}` in
+`filterButton` / `filterValue` is the column's header text, or its `id` when
+`header` is a node or function. Template numbers are inserted as-is (`1234`, not
+`1.234`), and templates have no plural rules.
 
 | Key                                                    | Default                              | Used for                                            |
 | ------------------------------------------------------ | ------------------------------------ | --------------------------------------------------- |
@@ -896,7 +898,7 @@ templates have no plural rules.
 | `currentPage`                                          | `'Page {page}, current page'`        | Current page's button                               |
 | `rowsPerPage`                                          | `'Rows per page'`                    | Page-size select                                    |
 | `goToPage`                                             | `'Go to page'`                       | Page-jump input                                     |
-| `goToPageSubmit`                                       | `'Go'`                               | Page-jump submit button                             |
+| `goToPageSubmit`                                       | `'Go'`                               | Page-jump submit (translate with `goToPage`)        |
 | `selectAllRows` / `selectRow`                          | `'Select all rows'` / `'Select row'` | Selection controls                                  |
 | `rowSelection`                                         | `'Row selection'`                    | Hidden header of the single-selection column        |
 | `expandRow` / `collapseRow`                            | `'Expand row'` / `'Collapse row'`    | Expand button                                       |

@@ -329,6 +329,9 @@ key).
   labels={{
     noData: 'Veri yok',
     filterClear: 'Temizle',
+    filterButton: '{column} sütununu filtrele',
+    filterValue: '{column} filtre değeri',
+    filterSelectPlaceholder: 'Seçiniz',
     pageStatus: 'Sayfa {page} / {pageCount}',
   }}
 />

@@ -297,8 +297,8 @@ export interface TableLabels {
   /** Accessible name of each column's filter trigger; `{column}` is the column's header text (or id). @defaultValue 'Filter {column}' */
   filterButton: string;
   /**
-   * Accessible name of a preset filter's field: the `text` input (unless `filter.placeholder` names it), the
-   * `radio` / `checkbox` group, and the `select` trigger, which also announces its visible value.
+   * Accessible name of a preset filter's field: the `text` input (a `filter.placeholder` stays a visible hint),
+   * the `radio` / `checkbox` group, and the `select` trigger, which also announces its visible value.
    * `{column}` as in `filterButton`. @defaultValue 'Filter {column} value'
    */
   filterValue: string;
@@ -443,7 +443,10 @@ export interface TableProps<TData = any> {
   className?: string;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<TableSlot>;
-  /** Per-slot HTML attribute overrides. */
+  /**
+   * Per-slot HTML attribute overrides. An `aria-label` here is ignored for
+   * `filterButton`, `pagination` and `expandButton`, whose names come from `labels`.
+   */
   slotProps?: SlotPropsMap<TableSlot>;
   /** Ref to the root scroll container. */
   ref?: Ref<HTMLDivElement>;

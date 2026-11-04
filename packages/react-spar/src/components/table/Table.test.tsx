@@ -847,6 +847,12 @@ describe('Table (props-first)', () => {
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Select');
     });
 
+    it('keeps the page-jump submit named `Go` when only `goToPage` is translated', () => {
+      render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination={{ pageSize: 10 }} labels={{ goToPage: 'Sayfaya git' }} />);
+      expect(screen.getByRole('spinbutton', { name: 'Sayfaya git' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Go' })).toBeInTheDocument();
+    });
+
     it('names filter triggers and fields after their column by default', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
@@ -856,20 +862,26 @@ describe('Table (props-first)', () => {
       expect(await screen.findByRole('searchbox', { name: 'Filter Name value' })).toBeInTheDocument();
     });
 
-    it('lets a text filter placeholder name the field, and falls back to `filterValue` without one', async () => {
+    it('names the text filter after its column even when a placeholder is set', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [
-        { id: 'name', header: 'Name', accessor: 'name', filter: { type: 'text', placeholder: 'Search by name' } },
-        { id: 'role', header: 'Role', accessor: 'role', filter: 'text' },
+        { id: 'name', header: 'Name', accessor: 'name', filter: { type: 'text', placeholder: 'Search…' } },
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'text', placeholder: 'Search…' } },
+        { id: 'city', header: '  ', accessor: 'profile.city', filter: 'text' },
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
       await user.click(screen.getByRole('button', { name: 'Filter Name' }));
-      expect(await screen.findByRole('searchbox', { name: 'Search by name' })).toHaveAttribute('placeholder', 'Search by name');
+      expect(await screen.findByRole('searchbox', { name: 'Filter Name value' })).toHaveAttribute('placeholder', 'Search…');
       await user.keyboard('{Escape}');
 
       await user.click(screen.getByRole('button', { name: 'Filter Role' }));
-      expect(await screen.findByRole('searchbox', { name: 'Filter Role value' })).toBeInTheDocument();
+      expect(await screen.findByRole('searchbox', { name: 'Filter Role value' })).toHaveAttribute('placeholder', 'Search…');
+      await user.keyboard('{Escape}');
+
+      // A blank header falls back to the column id.
+      await user.click(screen.getByRole('button', { name: 'Filter city' }));
+      expect(await screen.findByRole('searchbox', { name: 'Filter city value' })).toBeInTheDocument();
     });
 
     it('names the select filter trigger with the column label plus its visible value', async () => {
@@ -880,6 +892,9 @@ describe('Table (props-first)', () => {
       await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
       const trigger = within(panel).getByRole('combobox', { name: 'Filter Role value Select' });
+      // Spar's trigger keeps the consumer `aria-labelledby` (two ids: label, value).
+      expect(trigger.getAttribute('aria-labelledby')?.split(' ')).toHaveLength(2);
+      expect(trigger).not.toHaveAttribute('aria-label');
       await user.click(trigger);
       await user.click(await screen.findByRole('option', { name: 'Admin' }));
       expect(within(panel).getByRole('combobox', { name: 'Filter Role value Admin' })).toHaveTextContent('Admin');

@@ -43,8 +43,9 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   if (!filter) return null;
 
   // `{column}` in the filter labels: the header text, or the id when the
-  // header is a node or render function.
-  const columnName = typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id;
+  // header is empty, a node or a render function.
+  const headerText = typeof column.columnDef.header === 'string' ? column.columnDef.header.trim() : '';
+  const columnName = headerText || column.id;
   const value = column.getFilterValue();
   const active = (filter.isActive ?? defaultIsActive)(value);
 
@@ -123,10 +124,9 @@ const PresetFilterControl = ({
       <Input>
         <Input.Field
           type="search"
-          // A consumer placeholder is the field's name (set explicitly, since
-          // placeholder-only naming is unreliable); `filterValue` fills in when
-          // there is none.
-          aria-label={placeholder || fieldLabel}
+          // Always the per-column `filterValue`, so names stay unique when
+          // placeholders repeat; the placeholder remains a visible hint.
+          aria-label={fieldLabel}
           placeholder={placeholder}
           value={typeof value === 'string' ? value : ''}
           onChange={(event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value || undefined)}
@@ -203,6 +203,8 @@ const SelectFilter = ({
       <span id={labelId} style={visuallyHidden}>
         {label}
       </span>
+      {/* Spar's trigger forwards a consumer `aria-labelledby` as-is (covered
+          by the Table filter tests), so the hidden label and value span name it. */}
       <Select.Trigger aria-labelledby={`${labelId} ${valueId}`}>
         <span id={valueId}>{selected ? selected.label : placeholder}</span>
       </Select.Trigger>
