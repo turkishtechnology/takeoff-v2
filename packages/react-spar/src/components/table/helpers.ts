@@ -3,7 +3,7 @@ import type { CellContext, Column, ColumnDef, ColumnSizingState, FilterFn, Table
 
 import { isDevelopment } from '../../utils';
 
-import type { TableGrowPlan } from './context';
+import type { TableGrowPlan, TableResizeDraft } from './context';
 import { DEFAULT_COLUMN_WIDTH, DEFAULT_MIN_COLUMN_WIDTH, UTILITY_COLUMN_WIDTH } from './defaults';
 import type { TableColumnDef, TableColumnFilter, TableColumnFilterType, TableStickySide } from './types';
 
@@ -507,3 +507,88 @@ export const resolveGrowth = (startWidth: number, desired: number, plan: TableGr
   }
   return { width, donors };
 };
+
+/** A column's width in a resize draft: the dragged one, a donor, or its base (`undefined` for the absorber). */
+export const getDraftWidth = (draft: TableResizeDraft, columnId: string): number | undefined =>
+  columnId === draft.columnId ? draft.width : (draft.donors?.[columnId] ?? draft.base[columnId]);
+
+/** A minimal external store for `useSyncExternalStore`. */
+export interface TableStore<S> {
+  get: () => S;
+  set: (next: S) => void;
+  subscribe: (listener: () => void) => () => void;
+}
+
+export const createTableStore = <S>(initial: S): TableStore<S> => {
+  let state = initial;
+  const listeners = new Set<() => void>();
+  return {
+    get: () => state,
+    set: next => {
+      if (Object.is(next, state)) return;
+      state = next;
+      listeners.forEach(listener => listener());
+    },
+    subscribe: listener => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+  };
+};
+
+/**
+ * One `ResizeObserver` shared by every resize handle of a table: each handle
+ * listens to its own header cell and to the table, so a table resize is one
+ * callback rather than one per handle.
+ */
+export const createWidthObserver = () => {
+  const listeners = new Map<Element, Set<() => void>>();
+  let observer: ResizeObserver | undefined;
+  const notify = (entries?: ResizeObserverEntry[]) => {
+    const called = new Set<() => void>();
+    const targets = entries?.length ? entries.map(entry => listeners.get(entry.target)) : [...listeners.values()];
+    for (const set of targets) {
+      set?.forEach(listener => {
+        if (called.has(listener)) return;
+        called.add(listener);
+        listener();
+      });
+    }
+  };
+  return {
+    /** Call `listener` whenever `cell` or its table changes size; returns the unsubscribe. */
+    observe: (cell: HTMLElement, listener: () => void): (() => void) => {
+      if (typeof ResizeObserver === 'undefined') return () => {};
+      const resizeObserver = (observer ??= new ResizeObserver(notify));
+      const elements = [cell, cell.closest('table')].filter((element): element is HTMLElement => element != null);
+      for (const element of elements) {
+        let set = listeners.get(element);
+        if (!set) {
+          set = new Set();
+          listeners.set(element, set);
+          resizeObserver.observe(element);
+        }
+        set.add(listener);
+      }
+      return () => {
+        for (const element of elements) {
+          const set = listeners.get(element);
+          set?.delete(listener);
+          if (set?.size === 0) {
+            listeners.delete(element);
+            observer?.unobserve(element);
+          }
+        }
+      };
+    },
+    disconnect: () => {
+      observer?.disconnect();
+      observer = undefined;
+      listeners.clear();
+    },
+  };
+};
+
+export type TableWidthObserver = ReturnType<typeof createWidthObserver>;

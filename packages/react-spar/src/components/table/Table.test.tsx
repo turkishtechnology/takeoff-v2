@@ -1590,6 +1590,12 @@ describe('Table (props-first)', () => {
         return { width: measured, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
       });
 
+    // The fixed layout fills the viewport: Name 200 + Role 140 + Age (the absorber).
+    const mockViewportWidth = (width: number) =>
+      vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+        return this.getAttribute('data-slot') === 'table-viewport' ? width : 0;
+      });
+
     const handleFor = (name: string) => screen.getByRole('separator', { name: `Resize ${name} column` });
     const headerFor = (container: HTMLElement, name: string) =>
       within(container.querySelector('thead') as HTMLElement)
@@ -2208,6 +2214,7 @@ describe('Table (props-first)', () => {
 
     it('holds a column that stops being the absorber, handing the new one its size out of its slack', () => {
       mockHeaderWidth(120, { Age: 333 });
+      mockViewportWidth(673);
       const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
       expect(headerFor(container, 'Age').style.width).toBe('');
 
@@ -2219,6 +2226,7 @@ describe('Table (props-first)', () => {
 
     it('hands every column added at once its size out of the old absorber', () => {
       mockHeaderWidth(120, { Age: 500 });
+      mockViewportWidth(840);
       const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
 
       const withTwo = [
@@ -2230,6 +2238,32 @@ describe('Table (props-first)', () => {
       expect(headerFor(container, 'Age').style.width).toBe('200px');
       expect(headerFor(container, 'City').style.width).toBe('150px');
       expect(headerFor(container, 'Country').style.width).toBe('');
+    });
+
+    it("counts the utility columns when working out the old absorber's width", () => {
+      mockHeaderWidth(120);
+      // 673px of columns plus the 48px selection and expand columns.
+      mockViewportWidth(769);
+      const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
+      const props = { data: users, getRowId, selection: { mode: 'multiple' as const }, expansion: { render: () => null }, columnResizing: { defaultValue: { name: 200 } } };
+      const { container, rerender } = render(<Table {...props} columns={resizeColumns} />);
+
+      rerender(<Table {...props} columns={withCity} />);
+      expect(headerFor(container, 'Age').style.width).toBe('183px');
+    });
+
+    it('holds nothing when the old absorber has a stored width or is gone', () => {
+      mockHeaderWidth(120);
+      mockViewportWidth(673);
+      const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
+      const stored = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200, age: 300 } }} />);
+      stored.rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200, age: 300 } }} />);
+      expect(headerFor(stored.container, 'Age').style.width).toBe('300px');
+      stored.unmount();
+
+      const replaced = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      replaced.rerender(<Table data={users} columns={[resizeColumns[0], resizeColumns[1], withCity[3]]} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      expect(headerFor(replaced.container, 'City').style.width).toBe('');
     });
 
     it('puts each handle on the edge that faces the absorber', () => {
@@ -2433,6 +2467,7 @@ describe('Table (props-first)', () => {
     it('keeps held widths through a double-click reset and a controlled value passed as a new object', async () => {
       const user = userEvent.setup();
       mockHeaderWidth(120, { Age: 333 });
+      mockViewportWidth(673);
       const onChange = vi.fn();
       const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
       const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ value: { name: 200 }, onChange }} />);
@@ -2463,6 +2498,7 @@ describe('Table (props-first)', () => {
 
     it('lets a held width go once it is stored, so a later preset cannot bring it back', () => {
       mockHeaderWidth(120, { Age: 333 });
+      mockViewportWidth(673);
       const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
       const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ value: { name: 200 } }} />);
       rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200 } }} />);
@@ -2500,6 +2536,71 @@ describe('Table (props-first)', () => {
 
       expect(handleFor('Name')).toHaveAttribute('aria-valuemax', '640');
       expect(handleFor('Role')).toHaveAttribute('aria-valuemax', '300');
+    });
+
+    it('shares one ResizeObserver between the handles and keeps it through an inline onChange', () => {
+      const observers: Array<{ observed: Element[] }> = [];
+      let unobserved = 0;
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          observed: Element[] = [];
+          constructor() {
+            observers.push(this);
+          }
+          observe(element: Element) {
+            this.observed.push(element);
+          }
+          unobserve() {
+            unobserved += 1;
+          }
+          disconnect() {}
+        },
+      );
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange: () => {} }} />);
+
+      // Name's and Role's header cells, and the table once.
+      expect(observers).toHaveLength(1);
+      expect(observers[0].observed).toEqual([headerFor(container, 'Name'), container.querySelector('table'), headerFor(container, 'Role')]);
+      rerender(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange: () => {} }} />);
+      expect(observers[0].observed).toHaveLength(3);
+
+      rerender(<Table data={users} columns={resizeColumns} getRowId={getRowId} />);
+      expect(unobserved).toBe(3);
+    });
+
+    it('does not measure the layout on a plain re-render', () => {
+      const measure = mockHeaderWidth(120);
+      const { rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      measure.mockClear();
+
+      rerender(<Table data={[...users]} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      expect(measure).not.toHaveBeenCalled();
+    });
+
+    it('re-reads only the handles whose cell changed size, and does without a ResizeObserver', () => {
+      mockHeaderWidth(120, { Role: 140 });
+      let notify: (entries: Array<{ target: Element }>) => void = () => {};
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(callback: typeof notify) {
+            notify = callback;
+          }
+          observe() {}
+          unobserve() {}
+          disconnect() {}
+        },
+      );
+      const { container, unmount } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      act(() => notify([{ target: headerFor(container, 'Role') }]));
+      expect(handleFor('Role')).toHaveAttribute('aria-valuenow', '140');
+      expect(handleFor('Name')).toHaveAttribute('aria-valuenow', '150');
+      unmount();
+
+      vi.stubGlobal('ResizeObserver', undefined);
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      expect(handleFor('Name')).toHaveAttribute('aria-valuenow', '150');
     });
 
     it('reports the rendered header width to assistive tech', () => {

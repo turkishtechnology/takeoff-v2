@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type UIEventHandler } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode, type UIEventHandler } from 'react';
 import {
   functionalUpdate,
   getCoreRowModel,
@@ -23,22 +23,59 @@ import { useComponentTheme } from '../../provider';
 import { Spinner } from '../spinner';
 
 import { TableBase } from './base';
-import { TableProvider, type SlotAttrs, type TableColumnResizingContext, type TableContextValue, type TableResizeDraft } from './context';
+import { TableProvider, type SlotAttrs, type TableColumnResizingContext, type TableContextValue, type TableLiveDraft, type TableResizeDraft } from './context';
 import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE, UTILITY_COLUMN_WIDTH } from './defaults';
 import {
   buildOrderedColumns,
   clampColumnWidth,
   computeStickyLayout,
+  createTableStore,
+  createWidthObserver,
   getAbsorberColumnId,
   getColumnResizeBounds,
+  getDraftWidth,
   measureColumnContentWidth,
   resolveGrowth,
   toTanStackColumns,
+  type TableStore,
 } from './helpers';
 import { TableBody } from './TableBody';
 import { TableHeader } from './TableHeader';
 import { TablePagination } from './TablePagination';
 import type { TableProps } from './types';
+
+const subscribeNothing = () => () => {};
+
+/**
+ * The `<table>` element. Its min-width (and width in `expand` mode) follows
+ * the live draft of a drag, so a pointer move re-renders this element and the
+ * affected header cells only: `children` keeps its identity, so React skips
+ * the header and body.
+ */
+const TableGrid = ({
+  attrs,
+  minWidth,
+  expandMode,
+  liveDraft,
+  busy,
+  children,
+}: {
+  attrs: SlotAttrs;
+  minWidth: number | undefined;
+  expandMode: boolean;
+  liveDraft: TableStore<TableLiveDraft | null> | undefined;
+  busy: boolean;
+  children: ReactNode;
+}) => {
+  const liveMinWidth = useSyncExternalStore(liveDraft?.subscribe ?? subscribeNothing, () => liveDraft?.get()?.minWidth);
+  const width = liveMinWidth ?? minWidth;
+  const style: CSSProperties | undefined = width != null ? { ...attrs.style, minWidth: width, ...(expandMode ? { width } : undefined) } : attrs.style;
+  return (
+    <table {...attrs} style={style} aria-busy={busy || undefined}>
+      {children}
+    </table>
+  );
+};
 
 // Stable empty defaults so uncontrolled state values keep a constant identity
 // across renders (the `onDataRequest` effect keys on reference equality).
@@ -343,9 +380,11 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const fixedLayoutRef = useRef(fixedLayout);
   const stickyLayoutRef = useRef(stickyLayout);
   const tableMinWidthRef = useRef(tableMinWidth);
-  const expandModeRef = useRef(expandMode);
   const hasSelectionRef = useRef(hasSelection);
   const hasExpansionRef = useRef(hasExpansion);
+  // Its identity follows an inline `onChange`; read through a ref so the resize
+  // context (and every header cell's ref callback) keeps one identity.
+  const setSizingRef = useRef(setSizing);
   // The resize context reads the layout React last committed (from pointer and
   // key events), so these follow each commit rather than each render.
   useLayoutEffect(() => {
@@ -355,25 +394,31 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     fixedLayoutRef.current = fixedLayout;
     stickyLayoutRef.current = stickyLayout;
     tableMinWidthRef.current = tableMinWidth;
-    expandModeRef.current = expandMode;
     hasSelectionRef.current = hasSelection;
     hasExpansionRef.current = hasExpansion;
+    setSizingRef.current = setSizing;
   });
-  // The draft React last rendered, and the newer one written straight to the
-  // DOM on top of it (see `setDraft`).
+  // The draft React last rendered, and the newer one drawn on top of it
+  // through the live-draft store (see `setDraft`).
   const renderedDraftRef = useRef<TableResizeDraft | null>(null);
-  const liveDraftRef = useRef<TableResizeDraft | null>(null);
+  const liveDraft = useMemo(() => createTableStore<TableLiveDraft | null>(null), []);
+  // One `ResizeObserver` for every handle of this table.
+  const widthObserver = useMemo(() => createWidthObserver(), []);
+  useEffect(() => () => widthObserver.disconnect(), [widthObserver]);
   // Set once React has committed the draft: until then the header cells still
-  // show the previous one, and a move written straight to the DOM would be
-  // overwritten by that pending render.
+  // show the previous one, so a live draft only builds on a rendered one. The
+  // live draft it replaces is dropped here, before paint.
   useLayoutEffect(() => {
     renderedDraftRef.current = resizeDraft;
-  }, [resizeDraft]);
+    liveDraft.set(null);
+  }, [resizeDraft, liveDraft]);
 
-  // The absorber's width as last laid out. When another column becomes the
-  // absorber and the old one stays visible without a stored width, hold it at
-  // that width (see `heldSizing`).
-  const absorberWidthRef = useRef<{ id: string; width: number; visibleIds: Set<string> } | undefined>(undefined);
+  // The fixed layout as last committed: the absorber and every other visible
+  // column's size. When another column becomes the absorber and the old one
+  // stays visible without a stored width, hold it at the width it had (see
+  // `heldSizing`), worked out from the container rather than measured on
+  // every render.
+  const previousLayoutRef = useRef<{ absorberId: string; sizes: Map<string, number> } | undefined>(undefined);
   useLayoutEffect(() => {
     // Let go of held widths once they are stored (or nothing is stored any
     // more), so a later stored sizing without them cannot bring them back.
@@ -382,22 +427,27 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       setHeldSizing(heldWidths);
       return;
     }
-    const previous = absorberWidthRef.current;
+    const previous = previousLayoutRef.current;
     const visible = table.getVisibleLeafColumns();
-    const cell = fixedLayout && absorberColumnId ? headerCellsRef.current.get(absorberColumnId) : undefined;
-    absorberWidthRef.current =
-      cell && absorberColumnId ? { id: absorberColumnId, width: Math.ceil(cell.getBoundingClientRect().width), visibleIds: new Set(visible.map(column => column.id)) } : undefined;
-    if (!fixedLayout || !previous || previous.id === absorberColumnId || previous.width <= 0) return;
-    if (committedSizing[previous.id] != null || heldWidths[previous.id] != null) return;
-    const column = visible.find(candidate => candidate.id === previous.id);
-    if (!column) return;
+    previousLayoutRef.current =
+      fixedLayout && absorberColumnId ? { absorberId: absorberColumnId, sizes: new Map(visible.map(column => [column.id, column.getSize()])) } : undefined;
+    if (!fixedLayout || !previous || previous.absorberId === absorberColumnId) return;
+    if (committedSizing[previous.absorberId] != null || heldWidths[previous.absorberId] != null) return;
+    const column = visible.find(candidate => candidate.id === previous.absorberId);
+    const containerWidth = column ? (headerCellsRef.current.get(column.id)?.closest('table')?.parentElement?.clientWidth ?? 0) : 0;
+    if (!column || containerWidth <= 0) return;
+    // The old absorber had what the other columns left of the container (the
+    // fixed layout fills it exactly, or the absorber sat at its floor).
+    const utilityWidth = ((hasSelection ? 1 : 0) + (hasExpansion ? 1 : 0)) * UTILITY_COLUMN_WIDTH;
+    let previousWidth = containerWidth - utilityWidth;
+    for (const [id, size] of previous.sizes) if (id !== previous.absorberId) previousWidth -= size;
     // Columns added (or shown) since: hand each its own size out of the old
     // absorber's slack instead of squeezing the new absorber to its min, as far
     // as the old absorber's own floor allows.
-    const handOver = visible.reduce((sum, candidate) => sum + (previous.visibleIds.has(candidate.id) ? 0 : candidate.getSize()), 0);
-    const width = Math.max(getColumnResizeBounds(column)[0], previous.width - handOver);
-    setHeldSizing({ ...heldWidths, [previous.id]: clampColumnWidth(column, width) });
-  });
+    const handOver = visible.reduce((sum, candidate) => sum + (previous.sizes.has(candidate.id) ? 0 : candidate.getSize()), 0);
+    const width = Math.max(getColumnResizeBounds(column)[0], Math.round(previousWidth) - handOver);
+    setHeldSizing({ ...heldWidths, [previous.absorberId]: clampColumnWidth(column, width) });
+  }, [table, fixedLayout, absorberColumnId, visibleColumns, columnSizing, committedSizing, heldSizing, heldWidths, hasSelection, hasExpansion]);
 
   const columnResizingContext = useMemo<TableColumnResizingContext | undefined>(() => {
     if (!resizingEnabled) return undefined;
@@ -495,42 +545,23 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       getGrowPlan,
       setDraft: draft => {
         const rendered = renderedDraftRef.current;
-        const cell = rendered ? headerCellsRef.current.get(rendered.columnId) : undefined;
-        const tableElement = cell?.closest('table');
-        // Width of a column in a draft: the dragged one, a donor, or its base.
-        const widthIn = (source: TableResizeDraft, id: string) => (id === source.columnId ? source.width : (source.donors?.[id] ?? source.base[id] ?? 0));
-        const live = liveDraftRef.current;
-        const touched = (source: TableResizeDraft | null) => (source ? [source.columnId, ...Object.keys(source.donors ?? {})] : []);
         // Fast path: a later move of the same drag. Only the affected header
         // cells (`table-layout: fixed` sizes columns from the first row) and the
-        // min-width floor change; unpinned columns move no sticky offset.
-        if (draft && rendered && cell && tableElement && draft.base === rendered.base && draft.columnId === rendered.columnId && !stickyLayoutRef.current.has(draft.columnId)) {
-          const ids = new Set([...touched(rendered), ...touched(live), ...touched(draft)]);
+        // table's min-width change; unpinned columns move no sticky offset.
+        if (draft && rendered && draft.base === rendered.base && draft.columnId === rendered.columnId && !stickyLayoutRef.current.has(draft.columnId)) {
+          const ids = new Set([rendered.columnId, ...Object.keys(rendered.donors ?? {}), ...Object.keys(draft.donors ?? {})]);
           let delta = 0;
-          for (const id of ids) {
-            const target = headerCellsRef.current.get(id);
-            if (target) target.style.width = `${widthIn(draft, id)}px`;
-            delta += widthIn(draft, id) - widthIn(rendered, id);
-          }
-          tableElement.style.minWidth = `${(tableMinWidthRef.current ?? 0) + delta}px`;
-          if (expandModeRef.current) tableElement.style.width = tableElement.style.minWidth;
-          liveDraftRef.current = draft;
+          for (const id of ids) delta += (getDraftWidth(draft, id) ?? 0) - (getDraftWidth(rendered, id) ?? 0);
+          liveDraft.set({ draft, minWidth: (tableMinWidthRef.current ?? 0) + delta });
           return;
         }
-        // Hand the styles back to React as it last rendered them, so its next
-        // render (which may not touch them) starts from what it believes is there.
-        if (live && rendered && tableElement) {
-          for (const id of new Set([...touched(rendered), ...touched(live)])) {
-            const target = headerCellsRef.current.get(id);
-            if (target) target.style.width = `${widthIn(rendered, id)}px`;
-          }
-          tableElement.style.minWidth = `${tableMinWidthRef.current ?? 0}px`;
-          if (expandModeRef.current) tableElement.style.width = tableElement.style.minWidth;
-        }
-        liveDraftRef.current = null;
-        setResizeDraft(draft);
+        // Rendered in full; the live draft goes once React commits it.
+        if (draft === rendered) liveDraft.set(null);
+        else setResizeDraft(draft);
       },
-      commit: sizing => setSizing(sizing),
+      liveDraft,
+      observeWidth: widthObserver.observe,
+      commit: sizing => setSizingRef.current(sizing),
       reset: columnId => {
         const committed = committedSizingRef.current;
         // Held widths travel with the commit, like a drag's base carries them.
@@ -549,17 +580,39 @@ export const Table = <TData,>(props: TableProps<TData>) => {
           const current = Math.round(column.getSize());
           const desired = clampColumnWidth(column, fitted);
           const { width, donors } = desired > current ? resolveGrowth(current, desired, getGrowPlan(columnId, getBaseSizing())) : { width: desired, donors: undefined };
-          if (width !== stored || donors) setSizing({ ...rest, ...donors, [columnId]: width });
+          if (width !== stored || donors) setSizingRef.current({ ...rest, ...donors, [columnId]: width });
           return;
         }
-        if (stored != null) setSizing(rest);
+        if (stored != null) setSizingRef.current(rest);
       },
       registerHeaderCell: (columnId, element) => {
         if (element) headerCellsRef.current.set(columnId, element);
         else headerCellsRef.current.delete(columnId);
       },
     };
-  }, [resizingEnabled, table, setSizing]);
+  }, [resizingEnabled, table, liveDraft, widthObserver]);
+
+  // Each resizable column's handle edge, worked out once per layout rather
+  // than by every header cell scanning the visible columns. The handle sits on
+  // the edge that faces the absorber, the column that takes up the slack: a
+  // column before it grows toward the inline end (handle on its end edge), one
+  // after it toward the inline start (handle on its start edge), so the edge
+  // under the pointer is always the one that moves. The absorber itself has
+  // none. Without an absorber the last column has none either in `fit` mode
+  // (every column pinned: its end edge is the table's), but does in `expand`
+  // mode, where dragging it widens the table.
+  const resizeEdges = useMemo(() => {
+    if (!resizingEnabled) return undefined;
+    const edges = new Map<string, 'start' | 'end'>();
+    const absorberIndex = absorberColumnId == null ? -1 : visibleColumns.findIndex(column => column.id === absorberColumnId);
+    visibleColumns.forEach((column, index) => {
+      if (!column.getCanResize() || index === absorberIndex) return;
+      const edge = absorberIndex >= 0 && index > absorberIndex ? 'start' : 'end';
+      if (edge === 'end' && !expandMode && index === visibleColumns.length - 1) return;
+      edges.set(column.id, edge);
+    });
+    return edges;
+  }, [resizingEnabled, visibleColumns, absorberColumnId, expandMode]);
 
   const contextValue: TableContextValue = {
     table,
@@ -578,6 +631,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     fixedLayout,
     absorberColumnId,
     resizeMode,
+    resizeEdges,
     columnResizing: columnResizingContext,
     totalColumnCount,
     emptyState,
@@ -594,19 +648,22 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   };
 
   const tableAttrs = slotAttrs('table');
+  // One element identity per render of Table, so a live-draft render of the
+  // grid alone leaves the header and body untouched.
+  const tableChildren = (
+    <>
+      <TableHeader />
+      <TableBody />
+    </>
+  );
 
   return (
     <TableProvider value={contextValue}>
       <div {...rootAttrs} ref={ref} data-fixed-layout={fixedLayout ? '' : undefined} data-resize-mode={resizingEnabled ? resizeMode : undefined}>
         <div {...tableViewportAttrs} data-scrolled={tableViewportScrolled ? '' : undefined} onScroll={handleTableViewportScroll}>
-          <table
-            {...tableAttrs}
-            style={tableMinWidth != null ? { ...tableAttrs.style, minWidth: tableMinWidth, ...(expandMode ? { width: tableMinWidth } : undefined) } : tableAttrs.style}
-            aria-busy={loading || undefined}
-          >
-            <TableHeader />
-            <TableBody />
-          </table>
+          <TableGrid attrs={tableAttrs} minWidth={tableMinWidth} expandMode={expandMode} liveDraft={columnResizingContext?.liveDraft} busy={!!loading}>
+            {tableChildren}
+          </TableGrid>
         </div>
         {paginationEnabled && <TablePagination />}
         {loading && (

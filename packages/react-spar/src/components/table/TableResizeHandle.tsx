@@ -55,18 +55,17 @@ export const TableResizeHandle = ({ column, edge = 'end' }: { column: AnyColumn;
   // The table's width stands in for the upper bound of a column without a
   // `maxWidth` (ARIA would otherwise assume 100).
   const [tableWidth, setTableWidth] = useState<number>();
+  // Through the table's one shared observer, not one per handle.
+  const observeWidth = columnResizing?.observeWidth;
   useEffect(() => {
     const cell = handleRef.current?.parentElement;
-    if (!cell || typeof ResizeObserver === 'undefined') return;
+    if (!cell || !observeWidth) return;
     const tableElement = cell.closest('table');
-    const observer = new ResizeObserver(() => {
+    return observeWidth(cell, () => {
       setRenderedWidth(Math.ceil(cell.getBoundingClientRect().width));
       if (tableElement) setTableWidth(Math.floor(tableElement.getBoundingClientRect().width));
     });
-    observer.observe(cell);
-    if (tableElement) observer.observe(tableElement);
-    return () => observer.disconnect();
-  }, []);
+  }, [observeWidth]);
 
   // Abandon an in-flight drag without committing. The draft lives in Table
   // state, so a drag that never sees its pointerup (window blur, capture taken

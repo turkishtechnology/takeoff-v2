@@ -3,7 +3,7 @@ import type { ColumnSizingState, Table as TanStackTable } from '@tanstack/react-
 
 import { createSafeContext } from '../../hooks';
 
-import type { StickyLayout } from './helpers';
+import type { StickyLayout, TableStore } from './helpers';
 import type { TableSize, TableSlot } from './types';
 
 /** Attrs returned by {@link TableContextValue.slotAttrs} — spreadable onto any rendered slot node. */
@@ -16,6 +16,13 @@ export interface TableResizeDraft {
   width: number;
   /** Narrowed widths of the columns after it that gave up room for it. */
   donors?: ColumnSizingState;
+}
+
+/** A later move of a drag, drawn through the live-draft store (see `setDraft`). */
+export interface TableLiveDraft {
+  draft: TableResizeDraft;
+  /** The table's min-width under this draft (also its width in `expand` mode). */
+  minWidth: number;
 }
 
 /** Where a growing column takes its room from (see `getGrowPlan`). */
@@ -39,11 +46,16 @@ export interface TableColumnResizingContext {
   getBaseSizing: () => ColumnSizingState;
   /**
    * Show (or clear, with `null`) a live drag width without committing it. The
-   * first draft of a drag renders (it freezes the layout); later drafts of the
-   * same drag on an unpinned column are written straight to the header cell and
-   * the table's min-width, so a large body is not re-rendered per pointer move.
+   * first draft of a drag renders the table (it freezes the layout); later
+   * drafts of the same drag on an unpinned column go through `liveDraft`, so
+   * only the affected header cells and the `<table>` re-render per pointer
+   * move, not the body.
    */
   setDraft: (draft: TableResizeDraft | null) => void;
+  /** The newest draft of a drag on top of the rendered one, and the table's min-width under it. */
+  liveDraft: TableStore<TableLiveDraft | null>;
+  /** Watch a header cell's and its table's rendered width through the table's one shared `ResizeObserver`. */
+  observeWidth: (cell: HTMLElement, listener: () => void) => () => void;
   /** Commit a new layout → `columnResizing.onChange`. */
   commit: (sizing: ColumnSizingState) => void;
   /**
@@ -104,6 +116,11 @@ export interface TableContextValue {
   absorberColumnId?: string;
   /** `columnResizing.mode`: `expand` has no absorber, and the last column gets a handle. */
   resizeMode: 'fit' | 'expand';
+  /**
+   * With `columnResizing`, the edge each resizable column's handle sits on
+   * (`start` after the absorber); a column without an entry has no handle.
+   */
+  resizeEdges?: ReadonlyMap<string, 'start' | 'end'>;
   /** Resize plumbing; `undefined` when `columnResizing` is off. */
   columnResizing?: TableColumnResizingContext;
   /** Visible column count incl. utility cells — for `colSpan` (empty/expanded rows). */
