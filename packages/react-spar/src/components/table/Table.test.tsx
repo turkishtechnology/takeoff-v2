@@ -742,6 +742,51 @@ describe('Table (props-first)', () => {
       expect(bodyRowTexts(container)).toEqual(['admin', 'user', 'admin']);
     });
 
+    it('localizes the filter trigger and Clear once on the root, with per-column overrides', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+        {
+          id: 'role',
+          header: 'Role',
+          accessor: 'role',
+          filter: {
+            clearLabel: 'Rolü temizle',
+            isActive: v => v != null,
+            render: ({ setValue }) => (
+              <button type="button" onClick={() => setValue('user')}>
+                Only users
+              </button>
+            ),
+          },
+        },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} filterClearLabel="Temizle" filterButtonLabel="Sütunu filtrele" />);
+
+      const [nameTrigger, roleTrigger] = screen.getAllByRole('button', { name: 'Sütunu filtrele' });
+      expect(screen.queryByRole('button', { name: 'Filter column' })).not.toBeInTheDocument();
+
+      await user.click(nameTrigger);
+      await user.type(await screen.findByRole('searchbox'), 'a');
+      expect(screen.getByRole('button', { name: 'Temizle' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      // A custom `render` panel gets the same button; the column label wins.
+      await user.click(roleTrigger);
+      await user.click(await screen.findByRole('button', { name: 'Only users' }));
+      expect(screen.getByRole('button', { name: 'Rolü temizle' })).toBeInTheDocument();
+    });
+
+    it('falls back to the default labels when given empty strings', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: { type: 'text', clearLabel: '' } }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} filterClearLabel="" filterButtonLabel="" />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.type(await screen.findByRole('searchbox'), 'a');
+      expect(screen.getByRole('button', { name: 'Clear' })).toBeInTheDocument();
+    });
+
     it('removes the checkbox filter once the last option is unchecked', async () => {
       const user = userEvent.setup();
       const onChange = vi.fn();

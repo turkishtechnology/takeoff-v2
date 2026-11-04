@@ -1,7 +1,9 @@
 ---
-'@takeoff-ui/react-spar': patch
+'@takeoff-ui/react-spar': minor
 ---
 
-`Table` column filters take a `clearLabel` so the filter panel's Clear button
-can be localized (e.g. `clearLabel: 'Temizle'`). It defaults to "Clear" and
-applies to presets and custom `render` panels alike.
+`Table` column filters can now be localized. Set `filterClearLabel` on the Table
+(e.g. `"Temizle"`) to change the filter panel's Clear button for every column,
+and `filterButtonLabel` to change the filter trigger's accessible name (default
+"Filter column"). A column's `filter.clearLabel` overrides the table-level text.
+Empty strings fall back to the defaults.

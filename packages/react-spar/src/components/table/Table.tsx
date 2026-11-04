@@ -22,7 +22,7 @@ import { Spinner } from '../spinner';
 
 import { TableBase } from './base';
 import { TableProvider, type SlotAttrs, type TableContextValue } from './context';
-import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE } from './defaults';
+import { DEFAULT_FILTER_BUTTON_LABEL, DEFAULT_FILTER_CLEAR_LABEL, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE } from './defaults';
 import { buildOrderedColumns, computeStickyLayout, toTanStackColumns } from './helpers';
 import { TableBody } from './TableBody';
 import { TableHeader } from './TableHeader';
@@ -69,6 +69,8 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     pagination,
     onDataRequest,
     emptyState,
+    filterClearLabel,
+    filterButtonLabel,
     getSubRows,
     tableRef,
     ref,
@@ -276,6 +278,8 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     emptyState,
     paginationEnabled,
     pageSizeOptions,
+    filterClearLabel: filterClearLabel || DEFAULT_FILTER_CLEAR_LABEL,
+    filterButtonLabel: filterButtonLabel || DEFAULT_FILTER_BUTTON_LABEL,
     slotAttrs,
   };
 

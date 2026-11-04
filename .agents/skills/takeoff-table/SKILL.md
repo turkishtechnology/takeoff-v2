@@ -138,6 +138,10 @@ const columns = [
 ];
 ```
 
+Localize the filter popover once on the root: `filterClearLabel="Temizle"`
+(Clear button) and `filterButtonLabel` (trigger's accessible name);
+`filter.clearLabel` overrides per column.
+
 Preset `type` values: `text` (Input/substring), `select` and `radio` (equality),
 `checkbox` and `multi-select` (membership). For anything else (number/date
 range, combobox, async), pass a `filter.render` receiving

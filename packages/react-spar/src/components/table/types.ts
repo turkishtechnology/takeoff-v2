@@ -145,9 +145,9 @@ export interface TableColumnFilter<TData = unknown> {
   placeholder?: string;
   /**
    * Text of the button that clears this column's filter, shown in the panel
-   * while the filter is active. Localize it here, e.g. `'Temizle'`; applies to
-   * presets and custom `render` panels alike.
-   * @defaultValue 'Clear'
+   * while the filter is active. Overrides the Table's `filterClearLabel` for
+   * this column; applies to presets and custom `render` panels alike. An empty
+   * string falls back to the Table-level label.
    */
   clearLabel?: string;
   /**
@@ -352,6 +352,19 @@ export interface TableProps<TData = any> {
   loading?: boolean;
   /** Content rendered when there are no rows. */
   emptyState?: ReactNode;
+  /**
+   * Text of the Clear button in every column filter panel (e.g. `'Temizle'`).
+   * A column's `filter.clearLabel` overrides it. An empty string falls back to
+   * the default, since the button needs a visible name.
+   * @defaultValue 'Clear'
+   */
+  filterClearLabel?: string;
+  /**
+   * Accessible name of every column's filter trigger (e.g. `'Sütunu filtrele'`).
+   * An empty string falls back to the default.
+   * @defaultValue 'Filter column'
+   */
+  filterButtonLabel?: string;
   /**
    * Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with
    * `expansion` (sans `render`) so expanding a row reveals its flattened

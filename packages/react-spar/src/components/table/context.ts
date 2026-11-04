@@ -41,6 +41,9 @@ export interface TableContextValue {
   emptyState?: ReactNode;
   paginationEnabled: boolean;
   pageSizeOptions: number[];
+  /** Resolved Table-level filter strings (root props or defaults). */
+  filterClearLabel: string;
+  filterButtonLabel: string;
   /**
    * Compose the canonical attrs for a slot (theme + instance `classNames` /
    * `slotProps` layered under the canonical `tk-*` class + `data-slot`).

@@ -31,7 +31,7 @@ const defaultIsActive = (value: unknown): boolean => !isEmptyFilterValue(value);
  * a real React portal, the correct fix for the legacy sticky-cell z-index bug.
  */
 export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
-  const { slotAttrs } = useTableContext('Table.ColumnFilter');
+  const { slotAttrs, filterClearLabel, filterButtonLabel } = useTableContext('Table.ColumnFilter');
   const [open, setOpen] = useState(false);
   // The panel node is held in state (not a ref) because it is the portal
   // `container` for the `select` preset's listbox, and that prop is read during
@@ -62,7 +62,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <Popover.Trigger aria-label="Filter column" {...filterButtonAttrs} data-active={active ? '' : undefined}>
+      <Popover.Trigger aria-label={filterButtonLabel} {...filterButtonAttrs} data-active={active ? '' : undefined}>
         <SearchIconOutlinedRounded aria-hidden="true" />
       </Popover.Trigger>
       <Popover.Content className="tk-table-filter-panel">
@@ -71,7 +71,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
         </div>
         {active && (
           <Button size="small" appearance="text" onClick={ctx.clear}>
-            {filter.clearLabel ?? 'Clear'}
+            {filter.clearLabel || filterClearLabel}
           </Button>
         )}
       </Popover.Content>
