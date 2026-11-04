@@ -719,12 +719,12 @@ behaviour above: the table stays as wide as its container and the absorber gives
 way. With `mode: 'expand'` there is no absorber: every column keeps its own
 width (the last column gets a handle too), a growing column widens the table
 past its container, which then scrolls horizontally, and a shrinking one narrows
-the table and leaves room at the inline end. Pick it per table, for example
-`fit` for a dashboard card and `expand` for a wide data grid. Widths stored in
-`fit` mode have no entry for the absorber, so under `expand` it would fall back
-to its declared or default width: when you switch `mode` at runtime, reset the
-stored widths too (a fresh `value`, or a new `key` for `defaultValue`). Switch
-the demo's mode below to compare; it resets them the same way.
+the table, its border along with it. Pick it per table, for example `fit` for a
+dashboard card and `expand` for a wide data grid. Widths stored in `fit` mode
+have no entry for the absorber, so under `expand` it would fall back to its
+declared or default width: when you switch `mode` at runtime, reset the stored
+widths too (a fresh `value`, or a new `key` for `defaultValue`). Switch the
+demo's mode below to compare; it resets them the same way.
 
 <LiveCode
   code={resizeDemo}
@@ -908,6 +908,7 @@ for primitive behavior.
 | <ApiBadge label="data-sticky" />                          | On cells of a column with `sticky: "left" \| "right"`.                    | Pins the column; per-edge offset + z-index are applied inline.                                                                                |
 | <ApiBadge label="aria-sort" />                            | On sortable header cells.                                                 | A11y sort state (`ascending` \| `descending` \| `none`); the sort arrow mirrors it via `data-direction`.                                      |
 | <ApiBadge label="data-fixed-layout" />                    | With `columnResizing`, once any column has a user width.                  | Switches the table to `table-layout: fixed`; the absorber column (the last unpinned one without a declared `width`) takes the leftover width. |
+| <ApiBadge label="data-resize-mode" />                     | With `columnResizing`: `fit` (default) or `expand`.                       | In `expand` mode with a fixed layout, the bordered viewport hugs the table, so its border narrows when the table does.                        |
 | <ApiBadge label="data-resizing" />                        | On the column resize handle while it is being dragged.                    | Highlights the active handle; the root keeps the `col-resize` cursor while any handle carries it.                                             |
 | <ApiBadge label="data-selected" />                        | On a selected body row.                                                   | Theme hook for the selected-row background.                                                                                                   |
 

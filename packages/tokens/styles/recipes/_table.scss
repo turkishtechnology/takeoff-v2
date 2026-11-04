@@ -152,6 +152,14 @@
   // column carries an explicit width, so the table switches to the fixed
   // algorithm: widths are honored even below the content's min width, and (in
   // `fit` mode) the absorber is the one auto column that takes up the slack.
+  // `expand` mode: the table carries its columns' sum as its width, so the
+  // bordered viewport hugs it (and scrolls once it outgrows the container)
+  // instead of leaving empty bordered room at the inline end.
+  &[data-fixed-layout][data-resize-mode='expand'] .tk-table-viewport {
+    width: fit-content;
+    max-width: 100%;
+  }
+
   &[data-fixed-layout] {
     .tk-table-table {
       table-layout: fixed;

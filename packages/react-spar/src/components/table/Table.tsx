@@ -597,7 +597,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
 
   return (
     <TableProvider value={contextValue}>
-      <div {...rootAttrs} ref={ref} data-fixed-layout={fixedLayout ? '' : undefined}>
+      <div {...rootAttrs} ref={ref} data-fixed-layout={fixedLayout ? '' : undefined} data-resize-mode={resizingEnabled ? resizeMode : undefined}>
         <div {...tableViewportAttrs} data-scrolled={tableViewportScrolled ? '' : undefined} onScroll={handleTableViewportScroll}>
           <table
             {...tableAttrs}

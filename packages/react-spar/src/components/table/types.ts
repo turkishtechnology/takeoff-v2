@@ -285,7 +285,7 @@ export interface TableColumnResizingConfig extends ControlledState<TableColumnSi
    *   columns between them, each down to its min width.
    * - `expand`: every column keeps its own width. A growing column widens the
    *   table past its container, which then scrolls horizontally; a shrinking
-   *   one narrows the table and leaves room at the inline end. The last
+   *   one narrows the table, and its border narrows with it. The last
    *   column gets a handle too.
    *
    * Widths stored in `fit` mode have no entry for the absorber, so when

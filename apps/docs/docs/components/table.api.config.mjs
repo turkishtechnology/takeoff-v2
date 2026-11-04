@@ -93,6 +93,11 @@ export default {
           purpose: 'Switches the table to `table-layout: fixed`; the absorber column (the last unpinned one without a declared `width`) takes the leftover width.',
         },
         {
+          attribute: 'data-resize-mode',
+          appliedWhen: 'With `columnResizing`: `fit` (default) or `expand`.',
+          purpose: 'In `expand` mode with a fixed layout, the bordered viewport hugs the table, so its border narrows when the table does.',
+        },
+        {
           attribute: 'data-resizing',
           appliedWhen: 'On the column resize handle while it is being dragged.',
           purpose: 'Highlights the active handle; the root keeps the `col-resize` cursor while any handle carries it.',

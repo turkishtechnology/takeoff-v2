@@ -423,6 +423,10 @@ follow the standard conventions (presence = `''`, finite = string).
   `columnResizing` is on and any column has a user width. The recipe switches
   `.tk-table-table` to `table-layout: fixed` and clips the cells; it sits on the
   root so the cell rules cascade like the other root variants.
+- **`data-resize-mode` (Variant) on the root.** `fit` | `expand`, emitted while
+  `columnResizing` is on. With `expand` and `data-fixed-layout`, the recipe
+  sizes the bordered viewport to the table (`width: fit-content`, capped at
+  `100%`), so a narrowed table's border narrows with it.
 - **`data-resizing` (State, presence) on the dragged resize handle.** Node-local
   so the recipe can keep the active handle's line drawn while the pointer has
   left it; the root reads it through `:has()` for the `col-resize` cursor rather

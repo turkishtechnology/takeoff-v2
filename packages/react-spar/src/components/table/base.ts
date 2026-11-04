@@ -17,7 +17,8 @@ import type { TableProps, TableSlot } from './types';
  * own hooks; recorded under "Component-specific decisions → Table"):
  *   Root:        data-size, data-striped, data-bordered, data-sticky-header,
  *                data-loading, data-fixed-layout (presence once columns are
- *                user-sized)
+ *                user-sized), data-resize-mode (fit|expand with
+ *                columnResizing)
  *   Viewport:    data-scrolled (presence while scrollTop > 0)
  *   Header/cell: data-align (start|center|end), data-sticky (left|right),
  *                data-sortable (presence) + aria-sort (a11y source of truth)

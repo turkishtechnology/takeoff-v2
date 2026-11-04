@@ -1607,6 +1607,7 @@ describe('Table (props-first)', () => {
 
       expect(screen.queryByRole('separator')).not.toBeInTheDocument();
       expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-resize-mode');
     });
 
     it('puts a labelled separator on every resizable header and skips resizable: false and the last column', () => {
@@ -1661,6 +1662,7 @@ describe('Table (props-first)', () => {
       expect(onChange).not.toHaveBeenCalled();
       expect(headerFor(container, 'Name').style.width).toBe('180px');
       expect(root).toHaveAttribute('data-fixed-layout', '');
+      expect(root).toHaveAttribute('data-resize-mode', 'fit');
       // Every other column is frozen at its measured width; the last one stays
       // auto and absorbs the slack, floored at its min width.
       expect(headerFor(container, 'Role').style.width).toBe('120px');
@@ -2327,6 +2329,8 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ mode: 'expand', onChange }} />);
       const tableElement = container.querySelector('table') as HTMLElement;
+      // The recipe hugs the bordered viewport to the table in this mode.
+      expect(container.querySelector('[data-slot="root"]')).toHaveAttribute('data-resize-mode', 'expand');
 
       // The last column gets a handle too: its edge moves the table's.
       expect(screen.getAllByRole('separator').map(handle => handle.getAttribute('aria-label'))).toEqual(['Resize Name column', 'Resize Role column', 'Resize City column']);

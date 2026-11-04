@@ -706,12 +706,12 @@ behaviour above: the table stays as wide as its container and the absorber gives
 way. With `mode: 'expand'` there is no absorber: every column keeps its own
 width (the last column gets a handle too), a growing column widens the table
 past its container, which then scrolls horizontally, and a shrinking one narrows
-the table and leaves room at the inline end. Pick it per table, for example
-`fit` for a dashboard card and `expand` for a wide data grid. Widths stored in
-`fit` mode have no entry for the absorber, so under `expand` it would fall back
-to its declared or default width: when you switch `mode` at runtime, reset the
-stored widths too (a fresh `value`, or a new `key` for `defaultValue`). Switch
-the demo's mode below to compare; it resets them the same way.
+the table, its border along with it. Pick it per table, for example `fit` for a
+dashboard card and `expand` for a wide data grid. Widths stored in `fit` mode
+have no entry for the absorber, so under `expand` it would fall back to its
+declared or default width: when you switch `mode` at runtime, reset the stored
+widths too (a fresh `value`, or a new `key` for `defaultValue`). Switch the
+demo's mode below to compare; it resets them the same way.
 
 ```tsx
 function ResizeDemo() {
