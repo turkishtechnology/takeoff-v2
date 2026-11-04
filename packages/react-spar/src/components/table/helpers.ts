@@ -471,11 +471,16 @@ export const measureColumnContentWidth = (headerCell: HTMLElement | undefined): 
   return Math.ceil(width);
 };
 
-/** Clamp a resized width into the column's bounds and round it to whole px. */
+/**
+ * Clamp a resized width into the column's bounds and round it to whole px.
+ * `from` is the width the resize starts at: a column already narrower than its
+ * min (the browser drew it so before the first resize) may stay that narrow,
+ * so shrinking it never widens it.
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const clampColumnWidth = (column: Column<any, unknown>, width: number): number => {
+export const clampColumnWidth = (column: Column<any, unknown>, width: number, from = Number.POSITIVE_INFINITY): number => {
   const [min, max] = getColumnResizeBounds(column);
-  return Math.round(Math.min(max, Math.max(min, width)));
+  return Math.round(Math.min(max, Math.max(Math.min(min, from), width)));
 };
 
 export interface ResolvedGrowth {

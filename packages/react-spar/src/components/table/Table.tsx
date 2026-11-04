@@ -343,6 +343,8 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const stickyLayoutRef = useRef(stickyLayout);
   const tableMinWidthRef = useRef(tableMinWidth);
   const expandModeRef = useRef(expandMode);
+  const hasSelectionRef = useRef(hasSelection);
+  const hasExpansionRef = useRef(hasExpansion);
   // The resize context reads the layout React last committed (from pointer and
   // key events), so these follow each commit rather than each render.
   useLayoutEffect(() => {
@@ -353,6 +355,8 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     stickyLayoutRef.current = stickyLayout;
     tableMinWidthRef.current = tableMinWidth;
     expandModeRef.current = expandMode;
+    hasSelectionRef.current = hasSelection;
+    hasExpansionRef.current = hasExpansion;
   });
   // The draft React last rendered, and the newer one written straight to the
   // DOM on top of it (see `setDraft`).
@@ -382,8 +386,16 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     absorberWidthRef.current = cell && absorberColumnId ? { id: absorberColumnId, width: Math.ceil(cell.getBoundingClientRect().width) } : undefined;
     if (!fixedLayout || !previous || previous.id === absorberColumnId || previous.width <= 0) return;
     if (committedSizing[previous.id] != null || heldWidths[previous.id] != null) return;
-    const column = table.getVisibleLeafColumns().find(candidate => candidate.id === previous.id);
-    if (column) setHeldSizing({ ...heldWidths, [previous.id]: clampColumnWidth(column, previous.width) });
+    const visible = table.getVisibleLeafColumns();
+    const column = visible.find(candidate => candidate.id === previous.id);
+    if (!column) return;
+    // A column added (or shown) after the old absorber is the new one: hand it
+    // its own size out of the old absorber's slack instead of squeezing it to
+    // its min, as far as the old absorber's own floor allows.
+    const absorber = visible.find(candidate => candidate.id === absorberColumnId);
+    const handOver = absorber && visible.indexOf(absorber) > visible.indexOf(column) ? absorber.getSize() : 0;
+    const width = Math.max(getColumnResizeBounds(column)[0], previous.width - handOver);
+    setHeldSizing({ ...heldWidths, [previous.id]: clampColumnWidth(column, width) });
   });
 
   const columnResizingContext = useMemo<TableColumnResizingContext | undefined>(() => {
@@ -430,7 +442,19 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       const visible = table.getVisibleLeafColumns();
       const absorberId = absorberColumnIdRef.current;
       const absorber = visible.find(candidate => candidate.id === absorberId);
-      const absorberWidth = measureHeader(absorber?.id);
+      // Still in the auto layout (the first resize), the absorber's width
+      // there says nothing about the fixed layout about to replace it, where
+      // it gets what the frozen columns leave of the container; read that
+      // instead when the container can be measured.
+      const containerWidth = fixedLayoutRef.current || !absorber ? 0 : (headerCellsRef.current.get(absorber.id)?.closest('table')?.parentElement?.clientWidth ?? 0);
+      const utilityWidth = ((hasSelectionRef.current ? 1 : 0) + (hasExpansionRef.current ? 1 : 0)) * UTILITY_COLUMN_WIDTH;
+      const absorberWidth =
+        containerWidth > 0
+          ? Math.max(
+              0,
+              containerWidth - utilityWidth - visible.reduce((sum, candidate) => sum + (candidate.id === absorber?.id ? 0 : (base[candidate.id] ?? candidate.getSize())), 0),
+            )
+          : measureHeader(absorber?.id);
       // Nothing laid out to measure: leave growing unbounded.
       if (!absorber || absorberWidth <= 0 || absorber.id === columnId) return { absorberSpare: Number.POSITIVE_INFINITY, donors: [] };
       // May go below the floor (an earlier shrink in this drag already freed

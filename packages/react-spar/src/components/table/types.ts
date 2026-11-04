@@ -279,7 +279,8 @@ export interface TableColumnResizingConfig extends ControlledState<TableColumnSi
    * Where a growing column finds its room.
    *
    * - `fit`: the table stays as wide as its container. One unsized column (the
-   *   absorber, the last unpinned one without a declared `width`) takes up the
+   *   absorber: the last unpinned column without a declared `width`, or the
+   *   last unpinned one when every column declares one) takes up the
    *   slack, and a growing column takes room from it and then from the
    *   columns between them, each down to its min width.
    * - `expand`: every column keeps its own width. A growing column widens the

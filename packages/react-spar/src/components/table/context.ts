@@ -22,7 +22,7 @@ export interface TableResizeDraft {
 export interface TableGrowPlan {
   /** What the absorber can give up; `Infinity` when there is none or nothing can be measured. */
   absorberSpare: number;
-  /** Then the sized columns after it (toward the inline end), nearest first: their width and what each can give up. */
+  /** Then the sized columns between the growing column and the absorber, nearest first: their width and what each can give up. */
   donors: Array<{ id: string; width: number; spare: number }>;
 }
 

@@ -1634,8 +1634,8 @@ describe('Table (props-first)', () => {
       expect(handleFor('Name')).toHaveAttribute('aria-valuemin', '50');
       expect(handleFor('Name')).not.toHaveAttribute('aria-valuemax');
       expect(handleFor('Age')).toHaveAttribute('aria-valuenow', '150');
-      // A non-string header falls back to a generic name.
-      const custom = screen.getByRole('separator', { name: 'Resize column' });
+      // A rendered header falls back to its column id, so the handles stay apart.
+      const custom = screen.getByRole('separator', { name: 'Resize city column' });
       expect(custom).toHaveAttribute('aria-valuemin', '80');
       expect(custom).toHaveAttribute('aria-valuemax', '300');
       expect(headerFor(container, 'Role').querySelector('.tk-table-resize-handle')).toBeNull();
@@ -2204,14 +2204,14 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 50 });
     });
 
-    it('holds a column that stops being the absorber at the width it had', () => {
+    it('holds a column that stops being the absorber, handing the new one its size out of its slack', () => {
       mockHeaderWidth(120, { Age: 333 });
       const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
       expect(headerFor(container, 'Age').style.width).toBe('');
 
       const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
       rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
-      expect(headerFor(container, 'Age').style.width).toBe('333px');
+      expect(headerFor(container, 'Age').style.width).toBe('183px');
       expect(headerFor(container, 'City').style.width).toBe('');
     });
 
@@ -2337,6 +2337,36 @@ describe('Table (props-first)', () => {
       expect(tableElement.style.width).toBe('640px');
     });
 
+    it('never widens a column the auto layout drew below its min when it is shrunk', () => {
+      mockHeaderWidth(120, { Role: 34 });
+      const onChange = vi.fn();
+      const columns = resizeColumns.map(column => (column.id === 'role' ? { ...column, width: undefined } : column));
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // Already at or below its min: shrinking leaves it where it is.
+      fireEvent.keyDown(handleFor('Role'), { key: 'ArrowLeft' });
+      drag(handleFor('Role'), 0, -20);
+      expect(onChange).not.toHaveBeenCalled();
+      // Growing goes up by the step, not straight to the 50px min.
+      fireEvent.keyDown(handleFor('Role'), { key: 'ArrowRight' });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 120, role: 44 });
+    });
+
+    it("sizes the first resize of an auto table against its container, not the absorber's auto width", () => {
+      // The auto layout overflows: Age is drawn 600px wide, but once frozen it
+      // only gets what Name and Role leave of the 400px container.
+      mockHeaderWidth(120, { Age: 600 });
+      vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+        return this.getAttribute('data-slot') === 'table-viewport' ? 400 : 0;
+      });
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // 400 - 120 - 120 = 160 for Age, 110 above its floor; then Role down to 50.
+      drag(handleFor('Name'), 0, 500);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 300, role: 50 });
+    });
+
     it('reads the grow plan again on each new drag', () => {
       let absorberWidth = 100;
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
@@ -2361,11 +2391,11 @@ describe('Table (props-first)', () => {
       const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ value: { name: 200 }, onChange }} />);
       rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200 }, onChange }} />);
       rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200 }, onChange }} />);
-      expect(headerFor(container, 'Age').style.width).toBe('333px');
+      expect(headerFor(container, 'Age').style.width).toBe('183px');
 
       // Name's width is dropped (nothing to fit in jsdom); Age's held width goes along.
       await user.dblClick(handleFor('Name'));
-      expect(onChange).toHaveBeenLastCalledWith({ age: 333 });
+      expect(onChange).toHaveBeenLastCalledWith({ age: 183 });
     });
 
     it('never takes room from columns after the absorber', () => {
@@ -2389,9 +2419,9 @@ describe('Table (props-first)', () => {
       const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
       const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ value: { name: 200 } }} />);
       rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200 } }} />);
-      expect(headerFor(container, 'Age').style.width).toBe('333px');
+      expect(headerFor(container, 'Age').style.width).toBe('183px');
 
-      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200, age: 333 } }} />);
+      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200, age: 183 } }} />);
       rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 180 } }} />);
       expect(headerFor(container, 'Age').style.width).toBe('150px');
     });

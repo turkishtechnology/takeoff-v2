@@ -94,7 +94,10 @@ export const TableResizeHandle = ({ column, edge = 'end' }: { column: AnyColumn;
 
   const [min, max] = getColumnResizeBounds(column);
   const header = column.columnDef.header;
-  const label = typeof header === 'string' ? `Resize ${header} column` : 'Resize column';
+  // A rendered header has no text to read here; the column id still tells the
+  // handles apart for assistive tech (`slotProps.resizeHandle['aria-label']`
+  // overrides it).
+  const label = `Resize ${typeof header === 'string' ? header : column.id} column`;
   const attrs = slotAttrs('resizeHandle');
   // Clamped so it never sits outside the range announced next to it (the auto
   // layout ignores the bounds until the first resize).
@@ -104,7 +107,7 @@ export const TableResizeHandle = ({ column, edge = 'end' }: { column: AnyColumn;
   // A growing column takes its room from the absorber and then from the
   // columns after it, so the table never grows past its container.
   const widthAt = (session: DragSession, clientX: number): ResolvedGrowth => {
-    const desired = clampColumnWidth(column, session.startWidth + (clientX - session.startX) * session.direction);
+    const desired = clampColumnWidth(column, session.startWidth + (clientX - session.startX) * session.direction, session.startWidth);
     if (desired <= session.startWidth) return { width: desired };
     session.plan ??= columnResizing.getGrowPlan(column.id, session.base, session.startWidth - session.liveWidth);
     return resolveGrowth(session.startWidth, desired, session.plan);
@@ -186,7 +189,7 @@ export const TableResizeHandle = ({ column, edge = 'end' }: { column: AnyColumn;
     const sign = (event.key === 'ArrowRight' ? 1 : -1) * growthSign(event.currentTarget, edge);
     const base = columnResizing.getBaseSizing();
     const current = base[column.id] ?? column.getSize();
-    const stepped = clampColumnWidth(column, current + sign * step);
+    const stepped = clampColumnWidth(column, current + sign * step, current);
     const { width, donors } = stepped > current ? resolveGrowth(current, stepped, columnResizing.getGrowPlan(column.id, base)) : { width: stepped, donors: undefined };
     if (width !== current) columnResizing.commit({ ...base, ...donors, [column.id]: width });
   };
