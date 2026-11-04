@@ -167,10 +167,12 @@
       overflow-clip-margin: 4px;
     }
 
-    // The last column's inline-end edge is the table's own. Chrome still
-    // counts text clipped by `overflow: clip` (plus its margin) as scrollable
-    // overflow, so a narrow last column would grow a few-pixel horizontal
-    // scrollbar under the table; `hidden` keeps it inside.
+    // The exception: the last column's inline-end edge is the table's own.
+    // Chrome counts text clipped by `overflow: clip` there as scrollable
+    // overflow (even with `overflow-clip-margin: 0`), so a narrow last column
+    // would grow a few-pixel horizontal scrollbar under the table. `hidden`
+    // keeps it inside, at the cost of the clip margin: a focus ring flush with
+    // that edge is cut, and the cell is a scroll container.
     .tk-table-header-cell:last-child,
     .tk-table-cell:last-child {
       overflow: hidden;
