@@ -758,7 +758,8 @@ describe('Table (props-first)', () => {
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Seçiniz');
     });
 
-    it('lets a slotProps aria-label win over the matching `labels` key', () => {
+    it('takes pagination and expand names from `labels`, while slotProps.filterButton still wins', async () => {
+      const user = userEvent.setup();
       render(
         <Table
           data={manyUsers}
@@ -766,14 +767,16 @@ describe('Table (props-first)', () => {
           pagination
           expansion={{ render: () => 'detail' }}
           columns={[{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }]}
-          labels={{ pagination: 'Sayfalama', expandRow: 'Satırı aç', filterButton: 'Sütunu filtrele' }}
+          labels={{ pagination: 'Sayfalama', expandRow: 'Satırı aç', collapseRow: 'Satırı kapat', filterButton: 'Sütunu filtrele' }}
           slotProps={{ pagination: { 'aria-label': 'Sonuçlar' }, expandButton: { 'aria-label': 'Detay' }, filterButton: { 'aria-label': 'Ada göre filtrele' } }}
         />,
       );
       expect(screen.getByRole('button', { name: 'Ada göre filtrele' })).toBeInTheDocument();
-      expect(screen.getByRole('navigation', { name: 'Sonuçlar' })).toBeInTheDocument();
-      expect(screen.getAllByRole('button', { name: 'Detay' }).length).toBeGreaterThan(0);
-      expect(screen.queryByRole('button', { name: 'Satırı aç' })).not.toBeInTheDocument();
+      expect(screen.getByRole('navigation', { name: 'Sayfalama' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Detay' })).not.toBeInTheDocument();
+      const [first] = screen.getAllByRole('button', { name: 'Satırı aç' });
+      await user.click(first);
+      expect(screen.getByRole('button', { name: 'Satırı kapat' })).toBeInTheDocument();
     });
 
     it('merges instance `labels` over provider defaultProps labels key by key', () => {

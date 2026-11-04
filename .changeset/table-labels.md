@@ -11,7 +11,3 @@ the rest keep their English defaults. Dynamic entries are `{placeholder}`
 templates. Set it app-wide through `TakeoffSparProvider`
 `components.Table.defaultProps.labels`; an instance `labels` is merged over it
 key by key.
-
-An `aria-label` passed through `slotProps.pagination` or
-`slotProps.expandButton` now wins over Table's built-in name, as
-`slotProps.filterButton` already did (previously it was ignored).

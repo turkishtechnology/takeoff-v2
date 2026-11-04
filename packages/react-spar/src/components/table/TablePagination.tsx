@@ -51,7 +51,7 @@ export const TablePagination = () => {
   };
 
   return (
-    <div aria-label={labels.pagination} {...slotAttrs('pagination')} role="navigation">
+    <div {...slotAttrs('pagination')} role="navigation" aria-label={labels.pagination}>
       <div {...slotAttrs('paginationInfo')}>
         <span aria-live="polite">{formatLabel(pageCount > 0 ? labels.pageStatus : labels.pageStatusUnknown, { page: pageIndex + 1, pageCount })}</span>
         <span aria-live="polite">{itemsLabel}</span>
