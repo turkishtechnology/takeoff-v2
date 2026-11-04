@@ -198,6 +198,8 @@ export const TableResizeHandle = ({ column, edge = 'end' }: { column: AnyColumn;
 
   // Content widths stay cached while the handle keeps focus, so holding an
   // arrow key measures the columns that give way once, not on every repeat.
+  // Rows that change meanwhile only shift where the first pass (keep the text
+  // whole) ends; the min-width bounds stay exact.
   const handleBlur = (event: FocusEvent<HTMLElement>) => {
     attrs.onBlur?.(event);
     keyContentWidthsRef.current = undefined;

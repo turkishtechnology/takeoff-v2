@@ -30,9 +30,9 @@ export interface TableGrowPlan {
   /** What the absorber can give up before its content is cut; `Infinity` when there is none or nothing can be measured. */
   absorberSpare: number;
   /** What it can give up beyond that, down to its min width (taken only once every `spare` is used). */
-  absorberExtra?: number;
+  absorberExtra: number;
   /** Then the sized columns between the growing column and the absorber, nearest first: their width and what each can give up. */
-  donors: Array<{ id: string; width: number; spare: number; extra?: number }>;
+  donors: Array<{ id: string; width: number; spare: number; extra: number }>;
 }
 
 /**

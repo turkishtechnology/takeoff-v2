@@ -520,7 +520,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       const budget = getContainerBudget(candidate => base[candidate.id] ?? candidate.getSize());
       const absorberWidth = budget ?? measureHeader(absorber?.id);
       // Nothing laid out to measure: leave growing unbounded.
-      if (!absorber || (budget == null && absorberWidth <= 0) || absorber.id === columnId) return { absorberSpare: Number.POSITIVE_INFINITY, donors: [] };
+      if (!absorber || (budget == null && absorberWidth <= 0) || absorber.id === columnId) return { absorberSpare: Number.POSITIVE_INFINITY, absorberExtra: 0, donors: [] };
       // May go below the floor (an earlier shrink in this drag already freed
       // more than the absorber has): then the absorber has nothing to spare.
       const available = absorberWidth - Math.max(0, shrunkBy);

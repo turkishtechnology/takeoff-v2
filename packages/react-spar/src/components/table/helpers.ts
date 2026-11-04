@@ -494,8 +494,7 @@ export interface ResolvedGrowth {
  */
 export const resolveGrowth = (startWidth: number, desired: number, plan: TableGrowPlan): ResolvedGrowth => {
   if (desired <= startWidth) return { width: desired };
-  const absorberExtra = plan.absorberExtra ?? 0;
-  const budget = plan.donors.reduce((sum, donor) => sum + donor.spare + (donor.extra ?? 0), plan.absorberSpare + absorberExtra);
+  const budget = plan.donors.reduce((sum, donor) => sum + donor.spare + donor.extra, plan.absorberSpare + plan.absorberExtra);
   const width = Math.min(desired, startWidth + budget);
   let remaining = width - startWidth;
   const take = (amount: number) => {
@@ -507,9 +506,9 @@ export const resolveGrowth = (startWidth: number, desired: number, plan: TableGr
   // then (only if that is not enough) on down to its min width.
   const taken = new Map<string, number>();
   for (const pass of ['spare', 'extra'] as const) {
-    take(pass === 'spare' ? plan.absorberSpare : absorberExtra);
+    take(pass === 'spare' ? plan.absorberSpare : plan.absorberExtra);
     for (const donor of plan.donors) {
-      const amount = take(donor[pass] ?? 0);
+      const amount = take(donor[pass]);
       if (amount > 0) taken.set(donor.id, (taken.get(donor.id) ?? 0) + amount);
     }
   }
