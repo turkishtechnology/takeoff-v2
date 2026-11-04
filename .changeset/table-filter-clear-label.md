@@ -7,3 +7,7 @@
 and `filterButtonLabel` to change the filter trigger's accessible name (default
 "Filter column"). A column's `filter.clearLabel` overrides the table-level text.
 Empty strings fall back to the defaults.
+
+Set them app-wide through `TakeoffSparProvider` `components.Table.defaultProps`.
+The Clear button is also a new `filterClear` slot, so `classNames.filterClear` /
+`slotProps.filterClear` can style it or add attributes.

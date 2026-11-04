@@ -56,6 +56,7 @@ export type TableSlot =
   | 'expandedRow'
   | 'filterButton'
   | 'filterPanel'
+  | 'filterClear'
   | 'pagination'
   | 'paginationInfo'
   | 'paginationNav'
@@ -361,7 +362,8 @@ export interface TableProps<TData = any> {
   filterClearLabel?: string;
   /**
    * Accessible name of every column's filter trigger (e.g. `'Sütunu filtrele'`).
-   * An empty string falls back to the default.
+   * An empty string falls back to the default. An `aria-label` passed through
+   * `slotProps.filterButton` still wins over it.
    * @defaultValue 'Filter column'
    */
   filterButtonLabel?: string;

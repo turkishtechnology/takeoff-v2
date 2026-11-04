@@ -777,6 +777,20 @@ describe('Table (props-first)', () => {
       expect(screen.getByRole('button', { name: 'Rolü temizle' })).toBeInTheDocument();
     });
 
+    it('takes the filter labels app-wide from provider defaultProps', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
+      renderPlain(
+        <TakeoffSparProvider components={{ Table: { defaultProps: { filterClearLabel: 'Temizle', filterButtonLabel: 'Sütunu filtrele' } } }}>
+          <Table data={users} columns={columns} getRowId={getRowId} />
+        </TakeoffSparProvider>,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Sütunu filtrele' }));
+      await user.type(await screen.findByRole('searchbox'), 'a');
+      expect(screen.getByRole('button', { name: 'Temizle' })).toBeInTheDocument();
+    });
+
     it('falls back to the default labels when given empty strings', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: { type: 'text', clearLabel: '' } }];
@@ -1825,6 +1839,32 @@ describe('Table (props-first)', () => {
       // slot name does not ride along, and the Table state hook still lands.
       expect(trigger).toHaveAttribute('data-slot', 'root');
       expect(trigger).not.toHaveAttribute('data-active');
+    });
+
+    it('routes classNames.filterClear and slotProps.filterClear onto the filter Clear button', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
+      const { container } = render(
+        <Table
+          data={users}
+          columns={columns}
+          getRowId={getRowId}
+          filterClearLabel="Temizle"
+          classNames={{ filterClear: 'instance-filter-clear' }}
+          slotProps={{ filterClear: { title: 'Filtreyi temizle' } }}
+        />,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.type(await screen.findByRole('searchbox'), 'ada');
+      const clear = screen.getByRole('button', { name: 'Temizle' });
+      expect(clear).toHaveClass('tk-table-filter-clear', 'instance-filter-clear');
+      expect(clear).toHaveAttribute('title', 'Filtreyi temizle');
+      expect(clear).not.toHaveAttribute('data-slot', 'filter-clear');
+
+      // The slot layers never displace Table's own clear handler.
+      await user.click(clear);
+      expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus', 'Grace']);
     });
 
     it('composes slotProps.tableViewport (style + onScroll) with the built-in data-scrolled hook', () => {

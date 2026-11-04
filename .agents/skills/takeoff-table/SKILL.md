@@ -140,7 +140,9 @@ const columns = [
 
 Localize the filter popover once on the root: `filterClearLabel="Temizle"`
 (Clear button) and `filterButtonLabel` (trigger's accessible name);
-`filter.clearLabel` overrides per column.
+`filter.clearLabel` overrides per column. For the whole app, set them as
+`TakeoffSparProvider` `components.Table.defaultProps`. The Clear button's slot
+is `filterClear`.
 
 Preset `type` values: `text` (Input/substring), `select` and `radio` (equality),
 `checkbox` and `multi-select` (membership). For anything else (number/date

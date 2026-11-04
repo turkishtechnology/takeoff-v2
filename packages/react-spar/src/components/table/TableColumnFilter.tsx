@@ -10,6 +10,7 @@ import { Radio } from '../radio';
 import { Select } from '../select';
 
 import { useTableContext } from './context';
+import { DEFAULT_FILTER_SELECT_PLACEHOLDER } from './defaults';
 import { isEmptyFilterValue } from './helpers';
 import type { TableColumnFilter as TableColumnFilterConfig, TableColumnFilterContext, TableColumnFilterOption } from './types';
 
@@ -59,6 +60,8 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   // `slotProps.filterButton` layers still go through `slotAttrs`, like every
   // other slot. The panel wrapper IS a Table-owned slot node.
   const { 'data-slot': _filterButtonSlot, ...filterButtonAttrs } = slotAttrs('filterButton');
+  // The Clear button is a Spar `Button` (owner node) too: same treatment.
+  const { 'data-slot': _filterClearSlot, ...filterClearAttrs } = slotAttrs('filterClear');
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -70,7 +73,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
           {filter.render ? filter.render(ctx) : <PresetFilterControl filter={filter} ctx={ctx} container={panel} />}
         </div>
         {active && (
-          <Button size="small" appearance="text" onClick={ctx.clear}>
+          <Button size="small" appearance="text" {...filterClearAttrs} onClick={ctx.clear}>
             {filter.clearLabel || filterClearLabel}
           </Button>
         )}
@@ -162,7 +165,7 @@ const SelectFilter = ({
   // an "inside" interaction with no wrapper-side dismiss logic.
   return (
     <Select value={value} onChange={onChange}>
-      <Select.Trigger>{selected ? selected.label : (placeholder ?? 'Select')}</Select.Trigger>
+      <Select.Trigger>{selected ? selected.label : (placeholder ?? DEFAULT_FILTER_SELECT_PLACEHOLDER)}</Select.Trigger>
       <Select.Content container={container}>
         {options.map(option => (
           <Select.Item key={option.value} value={option.value}>
