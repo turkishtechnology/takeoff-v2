@@ -2215,6 +2215,21 @@ describe('Table (props-first)', () => {
       expect(headerFor(container, 'City').style.width).toBe('');
     });
 
+    it('hands every column added at once its size out of the old absorber', () => {
+      mockHeaderWidth(120, { Age: 500 });
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+
+      const withTwo = [
+        ...resizeColumns,
+        { id: 'city', header: 'City', accessor: 'profile.city' },
+        { id: 'country', header: 'Country', accessor: 'profile.city' },
+      ] as TableColumnDef<User>[];
+      rerender(<Table data={users} columns={withTwo} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      expect(headerFor(container, 'Age').style.width).toBe('200px');
+      expect(headerFor(container, 'City').style.width).toBe('150px');
+      expect(headerFor(container, 'Country').style.width).toBe('');
+    });
+
     it('puts each handle on the edge that faces the absorber', () => {
       const columns: TableColumnDef<User>[] = [
         { id: 'name', header: 'Name', accessor: 'name' },
@@ -2365,6 +2380,33 @@ describe('Table (props-first)', () => {
       // 400 - 120 - 120 = 160 for Age, 110 above its floor; then Role down to 50.
       drag(handleFor('Name'), 0, 500);
       expect(onChange).toHaveBeenLastCalledWith({ name: 300, role: 50 });
+    });
+
+    it('takes the room from the columns between when the auto layout already overflows its container', () => {
+      // Name and Role alone take more than the 200px container: Age has nothing to give.
+      mockHeaderWidth(120, { Age: 600 });
+      vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+        return this.getAttribute('data-slot') === 'table-viewport' ? 200 : 0;
+      });
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 0, 500);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 190, role: 50 });
+    });
+
+    it('rounds the first frozen widths against the container budget', () => {
+      // Rounding 120.5 up twice would leave Age 28px of the 270px container,
+      // below its 50px min, although its auto width (100px) could take it.
+      mockHeaderWidth(120.5, { Age: 100 });
+      vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+        return this.getAttribute('data-slot') === 'table-viewport' ? 270 : 0;
+      });
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 0, 10);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 130, role: 110 });
     });
 
     it('reads the grow plan again on each new drag', () => {

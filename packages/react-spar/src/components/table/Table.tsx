@@ -7,6 +7,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type Column,
   type ColumnFiltersState,
   type ColumnSizingState,
   type ExpandedState,
@@ -372,7 +373,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   // The absorber's width as last laid out. When another column becomes the
   // absorber and the old one stays visible without a stored width, hold it at
   // that width (see `heldSizing`).
-  const absorberWidthRef = useRef<{ id: string; width: number } | undefined>(undefined);
+  const absorberWidthRef = useRef<{ id: string; width: number; visibleIds: Set<string> } | undefined>(undefined);
   useLayoutEffect(() => {
     // Let go of held widths once they are stored (or nothing is stored any
     // more), so a later stored sizing without them cannot bring them back.
@@ -382,18 +383,18 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       return;
     }
     const previous = absorberWidthRef.current;
+    const visible = table.getVisibleLeafColumns();
     const cell = fixedLayout && absorberColumnId ? headerCellsRef.current.get(absorberColumnId) : undefined;
-    absorberWidthRef.current = cell && absorberColumnId ? { id: absorberColumnId, width: Math.ceil(cell.getBoundingClientRect().width) } : undefined;
+    absorberWidthRef.current =
+      cell && absorberColumnId ? { id: absorberColumnId, width: Math.ceil(cell.getBoundingClientRect().width), visibleIds: new Set(visible.map(column => column.id)) } : undefined;
     if (!fixedLayout || !previous || previous.id === absorberColumnId || previous.width <= 0) return;
     if (committedSizing[previous.id] != null || heldWidths[previous.id] != null) return;
-    const visible = table.getVisibleLeafColumns();
     const column = visible.find(candidate => candidate.id === previous.id);
     if (!column) return;
-    // A column added (or shown) after the old absorber is the new one: hand it
-    // its own size out of the old absorber's slack instead of squeezing it to
-    // its min, as far as the old absorber's own floor allows.
-    const absorber = visible.find(candidate => candidate.id === absorberColumnId);
-    const handOver = absorber && visible.indexOf(absorber) > visible.indexOf(column) ? absorber.getSize() : 0;
+    // Columns added (or shown) since: hand each its own size out of the old
+    // absorber's slack instead of squeezing the new absorber to its min, as far
+    // as the old absorber's own floor allows.
+    const handOver = visible.reduce((sum, candidate) => sum + (previous.visibleIds.has(candidate.id) ? 0 : candidate.getSize()), 0);
     const width = Math.max(getColumnResizeBounds(column)[0], previous.width - handOver);
     setHeldSizing({ ...heldWidths, [previous.id]: clampColumnWidth(column, width) });
   });
@@ -402,6 +403,20 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     if (!resizingEnabled) return undefined;
     // A header cell's laid-out width; 0 when it is not mounted or not laid out.
     const measureHeader = (columnId: string | undefined) => (columnId == null ? undefined : headerCellsRef.current.get(columnId))?.getBoundingClientRect().width ?? 0;
+    // Still in the auto layout (the first resize), the absorber's width there
+    // says nothing about the fixed layout about to replace it, where it gets
+    // what the other columns leave of the container. That budget (negative
+    // when they overflow it), or undefined once fixed or when the container
+    // cannot be measured.
+    const getContainerBudget = (widthOf: (column: Column<TData, unknown>) => number): number | undefined => {
+      if (fixedLayoutRef.current) return undefined;
+      const visible = table.getVisibleLeafColumns();
+      const absorber = visible.find(column => column.id === absorberColumnIdRef.current);
+      const containerWidth = absorber ? (headerCellsRef.current.get(absorber.id)?.closest('table')?.parentElement?.clientWidth ?? 0) : 0;
+      if (!absorber || containerWidth <= 0) return undefined;
+      const utilityWidth = ((hasSelectionRef.current ? 1 : 0) + (hasExpansionRef.current ? 1 : 0)) * UTILITY_COLUMN_WIDTH;
+      return containerWidth - utilityWidth - visible.reduce((sum, column) => sum + (column.id === absorber.id ? 0 : widthOf(column)), 0);
+    };
     const getBaseSizing = (): ColumnSizingState => {
       const committed = committedSizingRef.current;
       // Start from every stored width so a resize never drops one the table
@@ -420,17 +435,23 @@ export const Table = <TData,>(props: TableProps<TData>) => {
             .getVisibleLeafColumns()
             .filter(column => column.id !== absorberColumnIdRef.current && committed[column.id] == null)
             .map(column => ({ column, width: measureHeader(column.id) }));
-      const roundingUp = frozen.reduce((sum, { width }) => sum + (Math.ceil(width) - width), 0);
-      const absorber = table.getVisibleLeafColumns().find(column => column.id === absorberColumnIdRef.current);
-      const absorberWidth = measureHeader(absorber?.id);
-      const round = !absorber || absorberWidth - roundingUp >= getColumnResizeBounds(absorber)[0] ? Math.ceil : Math.floor;
       // Within the bounds `getSize()` applies, so a frozen column never jumps
       // (and no out-of-range width is stored), without the resize floor that
       // would widen a column the browser drew narrower than it.
-      for (const { column, width } of frozen) {
-        if (width <= 0) continue;
+      const freeze = (column: Column<TData, unknown>, width: number) => {
         const { minSize = 0, maxSize = Number.POSITIVE_INFINITY } = column.columnDef;
-        base[column.id] = Math.min(maxSize, Math.max(minSize, round(width)));
+        return Math.min(maxSize, Math.max(minSize, width));
+      };
+      const absorber = table.getVisibleLeafColumns().find(column => column.id === absorberColumnIdRef.current);
+      // Weighed against the same budget the grow plan uses: the container's
+      // leftover when it can be measured, else the absorber's auto width.
+      const ceiled = new Map(frozen.filter(({ width }) => width > 0).map(({ column, width }) => [column.id, freeze(column, Math.ceil(width))]));
+      const budget = getContainerBudget(column => committed[column.id] ?? ceiled.get(column.id) ?? column.getSize());
+      const roundingUp = frozen.reduce((sum, { width }) => sum + (Math.ceil(width) - width), 0);
+      const absorberRoom = budget ?? measureHeader(absorber?.id) - roundingUp;
+      const round = !absorber || absorberRoom >= getColumnResizeBounds(absorber)[0] ? Math.ceil : Math.floor;
+      for (const { column, width } of frozen) {
+        if (width > 0) base[column.id] = freeze(column, round(width));
       }
       // Already fixed: an unsized column renders at its `getSize()`.
       for (const column of table.getVisibleLeafColumns()) {
@@ -442,21 +463,12 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       const visible = table.getVisibleLeafColumns();
       const absorberId = absorberColumnIdRef.current;
       const absorber = visible.find(candidate => candidate.id === absorberId);
-      // Still in the auto layout (the first resize), the absorber's width
-      // there says nothing about the fixed layout about to replace it, where
-      // it gets what the frozen columns leave of the container; read that
-      // instead when the container can be measured.
-      const containerWidth = fixedLayoutRef.current || !absorber ? 0 : (headerCellsRef.current.get(absorber.id)?.closest('table')?.parentElement?.clientWidth ?? 0);
-      const utilityWidth = ((hasSelectionRef.current ? 1 : 0) + (hasExpansionRef.current ? 1 : 0)) * UTILITY_COLUMN_WIDTH;
-      const absorberWidth =
-        containerWidth > 0
-          ? Math.max(
-              0,
-              containerWidth - utilityWidth - visible.reduce((sum, candidate) => sum + (candidate.id === absorber?.id ? 0 : (base[candidate.id] ?? candidate.getSize())), 0),
-            )
-          : measureHeader(absorber?.id);
+      // On the first resize, what the frozen columns leave of the container
+      // (nothing when they already overflow it, so only the donors give way).
+      const budget = getContainerBudget(candidate => base[candidate.id] ?? candidate.getSize());
+      const absorberWidth = budget ?? measureHeader(absorber?.id);
       // Nothing laid out to measure: leave growing unbounded.
-      if (!absorber || absorberWidth <= 0 || absorber.id === columnId) return { absorberSpare: Number.POSITIVE_INFINITY, donors: [] };
+      if (!absorber || (budget == null && absorberWidth <= 0) || absorber.id === columnId) return { absorberSpare: Number.POSITIVE_INFINITY, donors: [] };
       // May go below the floor (an earlier shrink in this drag already freed
       // more than the absorber has): then the absorber has nothing to spare.
       const available = absorberWidth - Math.max(0, shrunkBy);

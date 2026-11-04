@@ -150,8 +150,8 @@
 
   // User-sized columns (`columnResizing`). Once a column has been resized every
   // column carries an explicit width, so the table switches to the fixed
-  // algorithm: widths are honored even below the content's min width, and the
-  // last unpinned column is the one auto column that takes up the slack.
+  // algorithm: widths are honored even below the content's min width, and (in
+  // `fit` mode) the absorber is the one auto column that takes up the slack.
   &[data-fixed-layout] {
     .tk-table-table {
       table-layout: fixed;

@@ -287,6 +287,10 @@ export interface TableColumnResizingConfig extends ControlledState<TableColumnSi
    *   table past its container, which then scrolls horizontally; a shrinking
    *   one narrows the table and leaves room at the inline end. The last
    *   column gets a handle too.
+   *
+   * Widths stored in `fit` mode have no entry for the absorber, so when
+   * switching `mode` at runtime, reset the stored widths too (a fresh `value`,
+   * or a new `key` for `defaultValue`).
    * @defaultValue 'fit'
    */
   mode?: TableColumnResizingMode;
