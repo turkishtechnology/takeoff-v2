@@ -294,9 +294,9 @@ export interface TableLabels {
   noData: string;
   /** Accessible name of the loading spinner; when unset, Spinner's own (provider) default applies. @defaultValue 'Loading' */
   loading: string;
-  /** Accessible name of each column's filter trigger; `{column}` is the column's header text (or id). @defaultValue 'Filter column' */
+  /** Accessible name of each column's filter trigger; `{column}` is the column's header text (or id). @defaultValue 'Filter {column}' */
   filterButton: string;
-  /** Accessible name of the `text` filter input and the `select` filter trigger; `{column}` as in `filterButton`. @defaultValue 'Filter value' */
+  /** Accessible name of the `text` filter input and the `select` filter trigger; `{column}` as in `filterButton`. @defaultValue 'Filter {column} value' */
   filterValue: string;
   /** Clear button in the filter panel (presets and custom `render` panels). @defaultValue 'Clear' */
   filterClear: string;

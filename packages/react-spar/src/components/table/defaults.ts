@@ -12,8 +12,8 @@ export const DEFAULT_LABELS: TableLabels = {
   // Only used when `labels.loading` is set; otherwise Spinner's own (provider)
   // default names the overlay, which is also 'Loading' out of the box.
   loading: 'Loading',
-  filterButton: 'Filter column',
-  filterValue: 'Filter value',
+  filterButton: 'Filter {column}',
+  filterValue: 'Filter {column} value',
   filterClear: 'Clear',
   filterSelectPlaceholder: 'Select',
   pagination: 'Pagination',

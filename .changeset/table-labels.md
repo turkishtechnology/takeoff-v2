@@ -12,12 +12,18 @@ templates. Set it app-wide through `TakeoffSparProvider`
 `components.Table.defaultProps.labels`; an instance `labels` is merged over it
 key by key. `filterButton` and the new `filterValue` (the text filter input and
 `select` filter trigger, which had no accessible name) take a `{column}`
-placeholder, and the page-jump submit has its own `goToPageSubmit` key (default
-`'Go'`, so it no longer shares the input's name).
+placeholder, and the page-jump submit has its own `goToPageSubmit` key.
 
-The filter trigger, pagination region and expand button now take their
-accessible names only from `labels`: an `aria-label` passed through
-`slotProps.filterButton` / `pagination` / `expandButton` is ignored.
+**Behaviour changes** (accessible names and fallbacks; review any tests or
+overrides that match on them):
 
-An empty `filter.placeholder` on a `select` filter now falls back to the default
-text (`labels.filterSelectPlaceholder`) instead of rendering an empty trigger.
+- Filter triggers are named per column: `'Filter column'` → `'Filter {column}'`
+  (e.g. `'Filter Name'`), and the new filter-field name defaults to
+  `'Filter {column} value'`.
+- The page-jump submit button is named `'Go'` instead of `'Go to page'`, so it
+  no longer shares the input's name.
+- The filter trigger, pagination region and expand button take their accessible
+  names only from `labels`: an `aria-label` passed through
+  `slotProps.filterButton` / `pagination` / `expandButton` is now ignored.
+- An empty `filter.placeholder` on a `select` filter falls back to the default
+  text (`labels.filterSelectPlaceholder`) instead of rendering an empty trigger.

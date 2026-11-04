@@ -257,7 +257,7 @@ describe('Table (props-first)', () => {
         expect(node.style.position).toBe('');
       }
       expect(container.querySelectorAll('tbody tr[data-selected]')).toHaveLength(0);
-      expect(screen.getByRole('button', { name: 'Filter column' })).not.toHaveAttribute('data-active');
+      expect(screen.getByRole('button', { name: 'Filter Name' })).not.toHaveAttribute('data-active');
     });
   });
 
@@ -561,10 +561,10 @@ describe('Table (props-first)', () => {
         { id: 'name', header: 'Name', accessor: 'name' },
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
-      expect(screen.getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Filter Role' })).toBeInTheDocument();
       // Only the filterable column gets a trigger, and the panel is not mounted until opened.
-      expect(screen.getAllByRole('button', { name: 'Filter column' })).toHaveLength(1);
-      expect(within(screen.getByRole('columnheader', { name: /Role/ })).getByRole('button', { name: 'Filter column' })).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getAllByRole('button', { name: 'Filter Role' })).toHaveLength(1);
+      expect(within(screen.getByRole('columnheader', { name: /Role/ })).getByRole('button', { name: 'Filter Role' })).toHaveAttribute('aria-expanded', 'false');
       expect(within(screen.getByRole('columnheader', { name: 'Name' })).queryByRole('button')).toBeNull();
       expect(document.querySelector('[data-slot="filter-panel"]')).toBeNull();
     });
@@ -575,7 +575,7 @@ describe('Table (props-first)', () => {
       const headerContent = container.querySelector('[data-slot="header-content"]') as HTMLElement;
 
       expect(within(headerContent).getByRole('button', { name: 'Name' })).toBeInTheDocument();
-      expect(within(headerContent).getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
+      expect(within(headerContent).getByRole('button', { name: 'Filter Name' })).toBeInTheDocument();
     });
 
     it('narrows rows through the `text` preset (string shorthand)', async () => {
@@ -583,7 +583,7 @@ describe('Table (props-first)', () => {
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       await user.type(await screen.findByRole('searchbox'), 'Ada');
       expect(bodyRowTexts(container)).toEqual(['Ada']);
     });
@@ -606,7 +606,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       await user.click(await screen.findByRole('radio', { name: 'User' }));
       expect(bodyRowTexts(container)).toEqual(['user']);
 
@@ -632,7 +632,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       await user.click(await screen.findByRole('checkbox', { name: 'Admin' }));
       expect(bodyRowTexts(container)).toEqual(['admin', 'admin']);
     });
@@ -653,7 +653,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       await user.type(await screen.findByLabelText('custom filter'), 'Grace');
       expect(bodyRowTexts(container)).toEqual(['Grace']);
     });
@@ -673,7 +673,7 @@ describe('Table (props-first)', () => {
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
       expect(trigger).not.toHaveAttribute('data-active');
 
       await user.click(trigger);
@@ -692,7 +692,7 @@ describe('Table (props-first)', () => {
 
       // Case-insensitive substring: "a" matches Ada + Grace, not Linus.
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Grace']);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
       expect(trigger).toHaveClass('tk-table-filter-button');
       expect(trigger).toHaveAttribute('data-active', '');
 
@@ -735,7 +735,7 @@ describe('Table (props-first)', () => {
       render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterClear: 'Temizle', filterButton: 'Sütunu filtrele' }} />);
 
       const [nameTrigger, roleTrigger] = screen.getAllByRole('button', { name: 'Sütunu filtrele' });
-      expect(screen.queryByRole('button', { name: 'Filter column' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Filter Name' })).not.toBeInTheDocument();
 
       await user.click(nameTrigger);
       await user.type(await screen.findByRole('searchbox'), 'a');
@@ -753,7 +753,7 @@ describe('Table (props-first)', () => {
       const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', options: [{ label: 'Admin', value: 'admin' }] } }];
       render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterSelectPlaceholder: 'Seçiniz' }} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Seçiniz');
     });
 
@@ -843,8 +843,17 @@ describe('Table (props-first)', () => {
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Select');
+    });
+
+    it('names filter triggers and fields after their column by default', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
+      expect(await screen.findByRole('searchbox', { name: 'Filter Name value' })).toBeInTheDocument();
     });
 
     it('names each filter trigger and filter field after its column through `{column}`', async () => {
@@ -944,7 +953,7 @@ describe('Table (props-first)', () => {
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterClear: '', filterButton: '' }} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       await user.type(await screen.findByRole('searchbox'), 'a');
       expect(screen.getByRole('button', { name: 'Clear' })).toBeInTheDocument();
     });
@@ -968,7 +977,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} filtering={{ onChange }} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       await user.click(await screen.findByRole('checkbox', { name: 'Admin' }));
       await user.click(screen.getByRole('checkbox', { name: 'User' }));
       expect(onChange).toHaveBeenLastCalledWith([{ id: 'role', value: ['admin', 'user'] }]);
@@ -981,7 +990,7 @@ describe('Table (props-first)', () => {
       await user.click(screen.getByRole('checkbox', { name: 'User' }));
       expect(onChange).toHaveBeenLastCalledWith([]);
       expect(bodyRowTexts(container)).toEqual(['admin', 'user', 'admin']);
-      expect(screen.getByRole('button', { name: 'Filter column' })).not.toHaveAttribute('data-active');
+      expect(screen.getByRole('button', { name: 'Filter Role' })).not.toHaveAttribute('data-active');
     });
 
     it('renders the `multi-select` preset as a checkbox list with membership matching', async () => {
@@ -1003,7 +1012,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       expect(await screen.findAllByRole('checkbox')).toHaveLength(3);
       await user.click(screen.getByRole('checkbox', { name: 'Linus' }));
       await user.click(screen.getByRole('checkbox', { name: 'Ada' }));
@@ -1028,7 +1037,7 @@ describe('Table (props-first)', () => {
 
       rerender(ui('admin'));
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Grace']);
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
       expect(within(panel).getByRole('combobox')).toHaveTextContent('Admin');
     });
@@ -1039,13 +1048,13 @@ describe('Table (props-first)', () => {
       const withPlaceholder: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', placeholder: 'Pick a role', options } }];
       const { unmount } = render(<Table data={users} columns={withPlaceholder} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Pick a role');
       unmount();
 
       const withoutPlaceholder: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', options } }];
       render(<Table data={users} columns={withoutPlaceholder} getRowId={getRowId} />);
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Select');
     });
 
@@ -1066,7 +1075,7 @@ describe('Table (props-first)', () => {
         },
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
 
       await user.click(trigger);
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
@@ -1093,7 +1102,7 @@ describe('Table (props-first)', () => {
         },
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} filtering={{ onChange }} />);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Role' });
 
       await user.click(trigger);
       const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
@@ -1168,8 +1177,8 @@ describe('Table (props-first)', () => {
       );
 
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus', 'Grace']);
-      const triggers = screen.getAllByRole('button', { name: 'Filter column' });
-      expect(triggers).toHaveLength(4);
+      // Each trigger is named after its column through the default `Filter {column}`.
+      const triggers = ['Name', 'Role', 'City', 'Age'].map(column => screen.getByRole('button', { name: `Filter ${column}` }));
       for (const trigger of triggers) expect(trigger).not.toHaveAttribute('data-active');
     });
 
@@ -1177,7 +1186,7 @@ describe('Table (props-first)', () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
 
       trigger.focus();
       await user.keyboard('{Enter}');
@@ -1631,7 +1640,7 @@ describe('Table (props-first)', () => {
 
       expect(onDataRequest).toHaveBeenLastCalledWith({ pagination: { pageIndex: 0, pageSize: 10 }, sorting: [], filters: [{ id: 'role', value: 'admin' }] });
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus', 'Grace']);
-      expect(screen.getByRole('button', { name: 'Filter column' })).toHaveAttribute('data-active', '');
+      expect(screen.getByRole('button', { name: 'Filter Role' })).toHaveAttribute('data-active', '');
 
       await user.click(screen.getByRole('button', { name: 'Name' }));
       expect(screen.getByRole('columnheader', { name: /Name/ })).toHaveAttribute('aria-sort', 'ascending');
@@ -1660,7 +1669,7 @@ describe('Table (props-first)', () => {
         />,
       );
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       await user.type(await screen.findByRole('searchbox'), 'A');
 
       expect(onPaginationChange).toHaveBeenCalledTimes(1);
@@ -1979,7 +1988,7 @@ describe('Table (props-first)', () => {
       );
 
       // The name comes only from `labels`: a slotProps `aria-label` is ignored.
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
       expect(trigger).toHaveClass('tk-table-filter-button', 'theme-filter-button', 'instance-filter-button');
       expect(trigger).toHaveAttribute('title', 'Instance title');
       expect(trigger).toHaveAttribute('lang', 'en');
@@ -2068,7 +2077,7 @@ describe('Table (props-first)', () => {
           loading
         />,
       );
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       expect(await screen.findByRole('searchbox')).toBeInTheDocument();
       for (const entry of slots.filter(([slot]) => slot !== 'empty')) expectSlotLayers(entry);
       await user.keyboard('{Escape}');
@@ -2102,7 +2111,7 @@ describe('Table (props-first)', () => {
       const { container } = render(<Table data={manyUsers} columns={columns} getRowId={getRowId} pagination={{ pageSize: 5 }} loading />);
 
       expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Filter Name' })).toBeInTheDocument();
       expect(await axe(container)).toHaveNoViolations();
     });
 
