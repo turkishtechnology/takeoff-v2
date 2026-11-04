@@ -8,7 +8,7 @@ import { DEFAULT_DISCLOSURE_COLLAPSE_ICON, DEFAULT_DISCLOSURE_EXPAND_ICON, resol
 import * as core from './index';
 import { isRenderableNode } from './isRenderableNode';
 import { renderPointerArrow } from './pointerArrow';
-import { useNestedLayerDismissGuard } from './useNestedLayerDismissGuard';
+import { useNestedLayerDismissGuard, useNestedLayerDismissHandlers } from './useNestedLayerDismissGuard';
 
 describe('core public entry', () => {
   it('re-exports every shared wrapper helper from its source module', () => {
@@ -19,6 +19,7 @@ describe('core public entry', () => {
     expect(core.isRenderableNode).toBe(isRenderableNode);
     expect(core.renderPointerArrow).toBe(renderPointerArrow);
     expect(core.useNestedLayerDismissGuard).toBe(useNestedLayerDismissGuard);
+    expect(core.useNestedLayerDismissHandlers).toBe(useNestedLayerDismissHandlers);
     expect(core.resolveDisclosureIndicator).toBe(resolveDisclosureIndicator);
     expect(core.DEFAULT_DISCLOSURE_EXPAND_ICON).toBe(DEFAULT_DISCLOSURE_EXPAND_ICON);
     expect(core.DEFAULT_DISCLOSURE_COLLAPSE_ICON).toBe(DEFAULT_DISCLOSURE_COLLAPSE_ICON);

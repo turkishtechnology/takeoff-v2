@@ -1,7 +1,7 @@
 import type { ElementType } from 'react';
 import { DialogContent as SparDialogContent } from '@turkish-technology/spar';
 
-import { blockDismiss, composeRootAttrs, useNestedLayerDismissGuard } from '../../core';
+import { composeRootAttrs, useNestedLayerDismissHandlers } from '../../core';
 import { useComponentTheme } from '../../provider';
 
 import { DrawerPanelBase } from './base';
@@ -20,23 +20,12 @@ export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelPro
 
   const { container, children, ref, ...panelProps } = rest;
 
-  // `rootAttrs` (theme / `slotProps.root`) is spread after the instance props
-  // and wins for the same key, so the guard wraps whichever handler would
-  // otherwise have been applied.
-  const consumerPointerDownCapture = (rootAttrs.onPointerDownCapture ?? panelProps.onPointerDownCapture) as typeof panelProps.onPointerDownCapture;
-  const { onPointerDownCapture, guardOutside } = useNestedLayerDismissGuard(consumerPointerDownCapture);
-
   // Presses inside a portaled descendant (Select / Popover / Dropdown content)
   // are not outside presses; see `useNestedLayerDismissGuard`.
-  // When not dismissible, `blockDismiss` still vetoes genuine outside presses.
-  const outside = <E extends Event>(handler?: (event: E) => void) => guardOutside(dismissible ? handler : blockDismiss(handler));
-  const dismissHandlers = {
-    ...(!dismissible && { onEscapeKeyDown: blockDismiss(panelProps.onEscapeKeyDown) }),
-    onPointerDownOutside: outside(panelProps.onPointerDownOutside),
-    onInteractOutside: outside(panelProps.onInteractOutside),
-  };
+  const dismissHandlers = useNestedLayerDismissHandlers({ dismissible, instanceProps: panelProps, rootAttrs });
+
   return (
-    <SparDialogContent {...panelProps} container={container} ref={ref} {...rootAttrs} {...dismissHandlers} onPointerDownCapture={onPointerDownCapture}>
+    <SparDialogContent {...panelProps} container={container} ref={ref} {...rootAttrs} {...dismissHandlers}>
       {children}
     </SparDialogContent>
   );

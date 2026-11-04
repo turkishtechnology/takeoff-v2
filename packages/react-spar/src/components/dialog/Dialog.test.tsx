@@ -961,14 +961,17 @@ describe('Dialog (compound)', () => {
       expect(getPanel()).toHaveAttribute('data-state', 'open');
     });
 
-    it('stays open with modal={false} when focus and pointer move into a nested Select', async () => {
+    it.each([
+      { name: 'focus trapped', trapFocus: undefined },
+      { name: 'trapFocus={false}', trapFocus: false },
+    ])('stays open with modal={false} ($name) when focus and pointer move into a nested Select', async ({ trapFocus }) => {
       const user = userEvent.setup();
       const onOpenChange = vi.fn();
       render(
         <>
           <button type="button">Elsewhere</button>
           <Dialog defaultOpen modal={false} onOpenChange={onOpenChange}>
-            <Dialog.Panel>
+            <Dialog.Panel trapFocus={trapFocus}>
               <Dialog.Title>{TITLE}</Dialog.Title>
               <Select>
                 <Select.Trigger placeholder="Cabin" />
@@ -986,6 +989,7 @@ describe('Dialog (compound)', () => {
       await user.click(screen.getByRole('combobox'));
       const option = screen.getByRole('option', { name: 'Business' });
       // Select.Content takes focus when it opens, outside the panel's DOM.
+      expect(screen.getByRole('listbox').contains(document.activeElement)).toBe(true);
       expect(getPanel().contains(document.activeElement)).toBe(false);
       await user.click(option);
 

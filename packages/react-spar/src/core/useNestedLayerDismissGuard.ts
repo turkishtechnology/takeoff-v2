@@ -1,5 +1,7 @@
 import { useCallback, useRef, type PointerEvent as ReactPointerEvent } from 'react';
 
+import { blockDismiss } from './blockDismiss';
+
 /**
  * Keeps a dismissable layer (Dialog / Drawer panel) open when the user
  * interacts with a floating layer that is rendered *inside* it in the React
@@ -22,11 +24,12 @@ import { useCallback, useRef, type PointerEvent as ReactPointerEvent } from 'rea
  * remove this hook and its use in `Dialog.Panel` / `Drawer.Panel`.
  */
 export const useNestedLayerDismissGuard = <E extends HTMLElement = HTMLElement>(onPointerDownCapture?: (event: ReactPointerEvent<E>) => void) => {
-  const insideEvents = useRef<WeakSet<Event>>(new WeakSet());
+  const insideEvents = useRef<WeakSet<Event> | null>(null);
+  const getInsideEvents = () => (insideEvents.current ??= new WeakSet());
 
   const handlePointerDownCapture = useCallback(
     (event: ReactPointerEvent<E>) => {
-      insideEvents.current.add(event.nativeEvent);
+      getInsideEvents().add(event.nativeEvent);
       onPointerDownCapture?.(event);
     },
     [onPointerDownCapture],
@@ -40,7 +43,7 @@ export const useNestedLayerDismissGuard = <E extends HTMLElement = HTMLElement>(
   const guardOutside = useCallback(
     <T extends Event>(handler?: (event: T) => void) =>
       (event: T) => {
-        if (insideEvents.current.has(event)) {
+        if (getInsideEvents().has(event)) {
           event.preventDefault();
           return;
         }
@@ -50,4 +53,43 @@ export const useNestedLayerDismissGuard = <E extends HTMLElement = HTMLElement>(
   );
 
   return { onPointerDownCapture: handlePointerDownCapture, guardOutside };
+};
+
+type Handler<E> = ((event: E) => void) | undefined;
+
+export interface NestedLayerDismissOptions {
+  /** `false` blocks every dismiss (Escape and genuine outside presses). */
+  dismissible: boolean;
+  /** The panel's instance props as forwarded to Spar's `DialogContent`. */
+  instanceProps: {
+    onEscapeKeyDown?: Handler<KeyboardEvent>;
+    onPointerDownOutside?: Handler<PointerEvent>;
+    onInteractOutside?: Handler<PointerEvent>;
+    onPointerDownCapture?: Handler<ReactPointerEvent<HTMLDivElement>>;
+  };
+  /** The theme / `slotProps.root` attrs, spread after the instance props. */
+  rootAttrs: Record<string, unknown>;
+}
+
+/**
+ * The full set of dismiss-related props for `Dialog.Panel` / `Drawer.Panel`,
+ * so both panels stay in sync: the nested-layer guard, `blockDismiss` when
+ * not dismissible, and the consumer's `onPointerDownCapture` (taken from
+ * `rootAttrs` first, since that is spread last and wins for the same key).
+ * Spread the result after the instance props and `rootAttrs`.
+ *
+ * TODO(spar#196): remove together with `useNestedLayerDismissGuard`.
+ */
+export const useNestedLayerDismissHandlers = ({ dismissible, instanceProps, rootAttrs }: NestedLayerDismissOptions) => {
+  const consumerPointerDownCapture = (rootAttrs.onPointerDownCapture ?? instanceProps.onPointerDownCapture) as Handler<ReactPointerEvent<HTMLDivElement>>;
+  const { onPointerDownCapture, guardOutside } = useNestedLayerDismissGuard(consumerPointerDownCapture);
+
+  const outside = <E extends Event>(handler: Handler<E>) => guardOutside(dismissible ? handler : blockDismiss(handler));
+
+  return {
+    ...(!dismissible && { onEscapeKeyDown: blockDismiss(instanceProps.onEscapeKeyDown) }),
+    onPointerDownOutside: outside(instanceProps.onPointerDownOutside),
+    onInteractOutside: outside(instanceProps.onInteractOutside),
+    onPointerDownCapture,
+  };
 };
