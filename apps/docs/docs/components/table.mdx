@@ -735,8 +735,10 @@ override one string and keep the rest.
 
 The filter-trigger, pagination and expand-button names come only from `labels`;
 an `aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
-`slotProps.expandButton` is ignored. `{column}` in `filterButton` /
-`filterValue` is the column's header text, or its `id` when `header` is a node
+`slotProps.expandButton` is ignored. `filterValue` names the text filter input
+(a `filter.placeholder` names it instead), the radio and checkbox groups, and
+the select trigger together with its visible value. `{column}` in `filterButton`
+/ `filterValue` is the column's header text, or its `id` when `header` is a node
 or function. Template numbers are inserted as-is (`1234`, not `1.234`), and
 templates have no plural rules.
 
@@ -745,7 +747,7 @@ templates have no plural rules.
 | `noData`                                               | `'No data'`                          | Empty table (`emptyState` wins)                     |
 | `loading`                                              | `'Loading'`                          | Loading spinner's accessible name                   |
 | `filterButton`                                         | `'Filter {column}'`                  | Filter trigger's name (`{column}`)                  |
-| `filterValue`                                          | `'Filter {column} value'`            | Text filter input / select trigger (`{column}`)     |
+| `filterValue`                                          | `'Filter {column} value'`            | Filter field / group name (`{column}`)              |
 | `filterClear`                                          | `'Clear'`                            | Filter panel Clear button                           |
 | `filterSelectPlaceholder`                              | `'Select'`                           | `select` filter trigger (`filter.placeholder` wins) |
 | `pagination`                                           | `'Pagination'`                       | Pagination region's accessible name                 |

@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from 'react';
+import { useId, useState, type ChangeEvent } from 'react';
 import type { Header } from '@tanstack/react-table';
 import { SearchIconOutlinedRounded } from '@takeoff-icons/react/search';
 
@@ -10,7 +10,7 @@ import { Radio } from '../radio';
 import { Select } from '../select';
 
 import { useTableContext } from './context';
-import { formatLabel, isEmptyFilterValue } from './helpers';
+import { formatLabel, isEmptyFilterValue, visuallyHidden } from './helpers';
 import type { TableColumnFilter as TableColumnFilterConfig, TableColumnFilterContext, TableColumnFilterOption } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -123,7 +123,10 @@ const PresetFilterControl = ({
       <Input>
         <Input.Field
           type="search"
-          aria-label={fieldLabel}
+          // A consumer placeholder is the field's name (set explicitly, since
+          // placeholder-only naming is unreliable); `filterValue` fills in when
+          // there is none.
+          aria-label={placeholder || fieldLabel}
           placeholder={placeholder}
           value={typeof value === 'string' ? value : ''}
           onChange={(event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value || undefined)}
@@ -147,7 +150,7 @@ const PresetFilterControl = ({
 
   if (type === 'radio') {
     return (
-      <Radio value={typeof value === 'string' ? value : ''} onChange={next => setValue(next || undefined)}>
+      <Radio aria-label={fieldLabel} value={typeof value === 'string' ? value : ''} onChange={next => setValue(next || undefined)}>
         {options.map(option => (
           <Radio.Item key={option.value} value={option.value}>
             <Radio.Label>{option.label}</Radio.Label>
@@ -160,7 +163,7 @@ const PresetFilterControl = ({
   // `checkbox` and `multi-select` are both multi-choice. Spar's Select has no
   // multi mode, so both render as a checkbox list (the value is a `string[]`).
   if (type === 'checkbox' || type === 'multi-select') {
-    return <CheckboxListFilter options={options} value={Array.isArray(value) ? (value as string[]) : []} onChange={setValue} />;
+    return <CheckboxListFilter label={fieldLabel} options={options} value={Array.isArray(value) ? (value as string[]) : []} onChange={setValue} />;
   }
 
   return null;
@@ -184,15 +187,25 @@ const SelectFilter = ({
   container: HTMLElement | null;
 }) => {
   const selected = options.find(option => option.value === value);
+  const labelId = useId();
+  const valueId = useId();
   // The listbox is portalled INTO the filter panel rather than `document.body`.
   // Spar's Popover treats any pointer-down or focus outside its content node as
   // a dismiss, and the focus path cannot be vetoed (`focusin` is not
   // cancelable), so a body-portalled listbox closed the popover the moment the
   // Select opened and focused it. Keeping the listbox inside the panel makes it
   // an "inside" interaction with no wrapper-side dismiss logic.
+  //
+  // The trigger is named by the hidden column label plus its own visible text,
+  // so the name always contains what is shown (WCAG 2.5.3, label in name).
   return (
     <Select value={value} onChange={onChange}>
-      <Select.Trigger aria-label={label}>{selected ? selected.label : placeholder}</Select.Trigger>
+      <span id={labelId} style={visuallyHidden}>
+        {label}
+      </span>
+      <Select.Trigger aria-labelledby={`${labelId} ${valueId}`}>
+        <span id={valueId}>{selected ? selected.label : placeholder}</span>
+      </Select.Trigger>
       <Select.Content container={container}>
         {options.map(option => (
           <Select.Item key={option.value} value={option.value}>
@@ -204,8 +217,19 @@ const SelectFilter = ({
   );
 };
 
-const CheckboxListFilter = ({ options, value, onChange }: { options: TableColumnFilterOption[]; value: string[]; onChange: (value: string[] | undefined) => void }) => (
-  <>
+const CheckboxListFilter = ({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: TableColumnFilterOption[];
+  value: string[];
+  onChange: (value: string[] | undefined) => void;
+}) => (
+  // A named group, laid out like the panel body it replaces as the flex parent.
+  <div role="group" aria-label={label} style={{ display: 'flex', flexDirection: 'column', gap: 'inherit' }}>
     {options.map(option => {
       const checked = value.includes(option.value);
       return (
@@ -222,5 +246,5 @@ const CheckboxListFilter = ({ options, value, onChange }: { options: TableColumn
         </Checkbox>
       );
     })}
-  </>
+  </div>
 );

@@ -296,7 +296,11 @@ export interface TableLabels {
   loading: string;
   /** Accessible name of each column's filter trigger; `{column}` is the column's header text (or id). @defaultValue 'Filter {column}' */
   filterButton: string;
-  /** Accessible name of the `text` filter input and the `select` filter trigger; `{column}` as in `filterButton`. @defaultValue 'Filter {column} value' */
+  /**
+   * Accessible name of a preset filter's field: the `text` input (unless `filter.placeholder` names it), the
+   * `radio` / `checkbox` group, and the `select` trigger, which also announces its visible value.
+   * `{column}` as in `filterButton`. @defaultValue 'Filter {column} value'
+   */
   filterValue: string;
   /** Clear button in the filter panel (presets and custom `render` panels). @defaultValue 'Clear' */
   filterClear: string;

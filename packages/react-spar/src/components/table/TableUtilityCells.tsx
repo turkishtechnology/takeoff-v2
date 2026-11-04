@@ -8,24 +8,9 @@ import { Radio } from '../radio';
 
 import { useTableContext } from './context';
 import { UTILITY_COLUMN_WIDTH } from './defaults';
-import { EXPAND_COLUMN_KEY, resolveStickyCell, SELECTION_COLUMN_KEY } from './helpers';
+import { EXPAND_COLUMN_KEY, resolveStickyCell, SELECTION_COLUMN_KEY, visuallyHidden } from './helpers';
 
 const mergeStyle = (...styles: (CSSProperties | undefined)[]): CSSProperties => Object.assign({}, ...styles);
-
-// The design system ships no sr-only utility and the recipe must stay a purely
-// visual dependency, so header text meant only for assistive technology hides
-// itself inline.
-const visuallyHidden: CSSProperties = {
-  position: 'absolute',
-  width: 1,
-  height: 1,
-  margin: -1,
-  padding: 0,
-  overflow: 'hidden',
-  clip: 'rect(0 0 0 0)',
-  whiteSpace: 'nowrap',
-  border: 0,
-};
 
 // ── Selection ───────────────────────────────────────────────────────────────
 

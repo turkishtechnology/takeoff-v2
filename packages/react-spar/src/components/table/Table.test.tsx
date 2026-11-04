@@ -856,6 +856,52 @@ describe('Table (props-first)', () => {
       expect(await screen.findByRole('searchbox', { name: 'Filter Name value' })).toBeInTheDocument();
     });
 
+    it('lets a text filter placeholder name the field, and falls back to `filterValue` without one', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', filter: { type: 'text', placeholder: 'Search by name' } },
+        { id: 'role', header: 'Role', accessor: 'role', filter: 'text' },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
+      expect(await screen.findByRole('searchbox', { name: 'Search by name' })).toHaveAttribute('placeholder', 'Search by name');
+      await user.keyboard('{Escape}');
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      expect(await screen.findByRole('searchbox', { name: 'Filter Role value' })).toBeInTheDocument();
+    });
+
+    it('names the select filter trigger with the column label plus its visible value', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', options: [{ label: 'Admin', value: 'admin' }] } }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
+      const trigger = within(panel).getByRole('combobox', { name: 'Filter Role value Select' });
+      await user.click(trigger);
+      await user.click(await screen.findByRole('option', { name: 'Admin' }));
+      expect(within(panel).getByRole('combobox', { name: 'Filter Role value Admin' })).toHaveTextContent('Admin');
+    });
+
+    it('names the radio and checkbox filter groups after their column', async () => {
+      const user = userEvent.setup();
+      const options = [{ label: 'Admin', value: 'admin' }];
+      const columns: TableColumnDef<User>[] = [
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'radio', options } },
+        { id: 'city', header: 'City', accessor: 'profile.city', filter: { type: 'checkbox', options: [{ label: 'Istanbul', value: 'Istanbul' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      expect(await screen.findByRole('radiogroup', { name: 'Filter Role value' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      await user.click(screen.getByRole('button', { name: 'Filter City' }));
+      expect(await screen.findByRole('group', { name: 'Filter City value' })).toContainElement(screen.getByRole('checkbox', { name: 'Istanbul' }));
+    });
+
     it('names each filter trigger and filter field after its column through `{column}`', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [
@@ -870,7 +916,7 @@ describe('Table (props-first)', () => {
 
       // A non-string header falls back to the column id.
       await user.click(screen.getByRole('button', { name: 'role filtrele' }));
-      expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox', { name: 'role değeri' })).toBeInTheDocument();
+      expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox', { name: 'role değeri Select' })).toBeInTheDocument();
     });
 
     it('localizes pagination, selection, expansion, empty and loading strings through `labels`', async () => {
@@ -2113,6 +2159,22 @@ describe('Table (props-first)', () => {
       expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Filter Name' })).toBeInTheDocument();
       expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it.each([
+      ['text', { type: 'text' as const }],
+      ['select', { type: 'select' as const, options: [{ label: 'Admin', value: 'admin' }] }],
+      ['radio', { type: 'radio' as const, options: [{ label: 'Admin', value: 'admin' }] }],
+      ['checkbox', { type: 'checkbox' as const, options: [{ label: 'Admin', value: 'admin' }] }],
+    ])('has no axe violations in an open %s filter panel', async (_type, filter) => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
+      expect(panel).toBeInTheDocument();
+      expect(await axe(panel)).toHaveNoViolations();
     });
 
     it('names every single-selection radio and passes axe', async () => {
