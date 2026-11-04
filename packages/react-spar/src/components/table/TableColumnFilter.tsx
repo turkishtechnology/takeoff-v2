@@ -73,7 +73,16 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
           {filter.render ? filter.render(ctx) : <PresetFilterControl filter={filter} ctx={ctx} container={panel} />}
         </div>
         {active && (
-          <Button size="small" appearance="text" {...filterClearAttrs} onClick={ctx.clear}>
+          <Button
+            size="small"
+            appearance="text"
+            {...filterClearAttrs}
+            onClick={event => {
+              // Chain a consumer `slotProps.filterClear.onClick` (e.g. analytics) before clearing.
+              filterClearAttrs.onClick?.(event);
+              ctx.clear();
+            }}
+          >
             {filter.clearLabel || filterClearLabel}
           </Button>
         )}
@@ -165,7 +174,7 @@ const SelectFilter = ({
   // an "inside" interaction with no wrapper-side dismiss logic.
   return (
     <Select value={value} onChange={onChange}>
-      <Select.Trigger>{selected ? selected.label : (placeholder ?? DEFAULT_FILTER_SELECT_PLACEHOLDER)}</Select.Trigger>
+      <Select.Trigger>{selected ? selected.label : placeholder || DEFAULT_FILTER_SELECT_PLACEHOLDER}</Select.Trigger>
       <Select.Content container={container}>
         {options.map(option => (
           <Select.Item key={option.value} value={option.value}>

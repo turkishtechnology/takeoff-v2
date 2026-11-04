@@ -1843,6 +1843,7 @@ describe('Table (props-first)', () => {
 
     it('routes classNames.filterClear and slotProps.filterClear onto the filter Clear button', async () => {
       const user = userEvent.setup();
+      const onClearClick = vi.fn();
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       const { container } = render(
         <Table
@@ -1851,7 +1852,7 @@ describe('Table (props-first)', () => {
           getRowId={getRowId}
           filterClearLabel="Temizle"
           classNames={{ filterClear: 'instance-filter-clear' }}
-          slotProps={{ filterClear: { title: 'Filtreyi temizle' } }}
+          slotProps={{ filterClear: { title: 'Filtreyi temizle', onClick: onClearClick } }}
         />,
       );
 
@@ -1864,6 +1865,7 @@ describe('Table (props-first)', () => {
 
       // The slot layers never displace Table's own clear handler.
       await user.click(clear);
+      expect(onClearClick).toHaveBeenCalledTimes(1);
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus', 'Grace']);
     });
 
