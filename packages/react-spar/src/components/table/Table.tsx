@@ -107,6 +107,10 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const [tableViewportScrolled, setTableViewportScrolled] = useState(false);
   const resizingConfig = typeof columnResizing === 'object' ? columnResizing : undefined;
   const resizingEnabled = columnResizing === true || !!resizingConfig;
+  const resizeMode = resizingConfig?.mode ?? 'fit';
+  // `expand`: no column takes up the slack; the table is as wide as its
+  // columns and its container scrolls once they need more.
+  const expandMode = resizeMode === 'expand';
 
   // ── Controlled/uncontrolled state slices ─────────────────────────────────
   const [sortingState, setSorting] = useControllableState<SortingState>(sortingConfig?.value, sortingConfig?.defaultValue ?? EMPTY_SORTING, sortingConfig?.onChange);
@@ -315,7 +319,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const totalColumnCount = tanstackColumns.length + (hasSelection ? 1 : 0) + (hasExpansion ? 1 : 0);
 
   const visibleColumns = table.getVisibleLeafColumns();
-  const absorberColumnId = resizingEnabled ? getAbsorberColumnId(visibleColumns) : undefined;
+  const absorberColumnId = resizingEnabled && !expandMode ? getAbsorberColumnId(visibleColumns) : undefined;
   // Until a user sizes a column the table keeps its natural auto layout; from
   // the first resize on, widths are explicit and `table-layout: fixed` honors
   // them (a column can shrink below its content and the absorber column takes
@@ -338,6 +342,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const fixedLayoutRef = useRef(fixedLayout);
   const stickyLayoutRef = useRef(stickyLayout);
   const tableMinWidthRef = useRef(tableMinWidth);
+  const expandModeRef = useRef(expandMode);
   // The resize context reads the layout React last committed (from pointer and
   // key events), so these follow each commit rather than each render.
   useLayoutEffect(() => {
@@ -347,6 +352,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     fixedLayoutRef.current = fixedLayout;
     stickyLayoutRef.current = stickyLayout;
     tableMinWidthRef.current = tableMinWidth;
+    expandModeRef.current = expandMode;
   });
   // The draft React last rendered, and the newer one written straight to the
   // DOM on top of it (see `setDraft`).
@@ -471,6 +477,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
             delta += widthIn(draft, id) - widthIn(rendered, id);
           }
           tableElement.style.minWidth = `${(tableMinWidthRef.current ?? 0) + delta}px`;
+          if (expandModeRef.current) tableElement.style.width = tableElement.style.minWidth;
           liveDraftRef.current = draft;
           return;
         }
@@ -482,6 +489,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
             if (target) target.style.width = `${widthIn(rendered, id)}px`;
           }
           tableElement.style.minWidth = `${tableMinWidthRef.current ?? 0}px`;
+          if (expandModeRef.current) tableElement.style.width = tableElement.style.minWidth;
         }
         liveDraftRef.current = null;
         setResizeDraft(draft);
@@ -533,6 +541,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     stickyLayout,
     fixedLayout,
     absorberColumnId,
+    resizeMode,
     columnResizing: columnResizingContext,
     totalColumnCount,
     emptyState,
@@ -554,7 +563,11 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     <TableProvider value={contextValue}>
       <div {...rootAttrs} ref={ref} data-fixed-layout={fixedLayout ? '' : undefined}>
         <div {...tableViewportAttrs} data-scrolled={tableViewportScrolled ? '' : undefined} onScroll={handleTableViewportScroll}>
-          <table {...tableAttrs} style={tableMinWidth != null ? { ...tableAttrs.style, minWidth: tableMinWidth } : tableAttrs.style} aria-busy={loading || undefined}>
+          <table
+            {...tableAttrs}
+            style={tableMinWidth != null ? { ...tableAttrs.style, minWidth: tableMinWidth, ...(expandMode ? { width: tableMinWidth } : undefined) } : tableAttrs.style}
+            aria-busy={loading || undefined}
+          >
             <TableHeader />
             <TableBody />
           </table>

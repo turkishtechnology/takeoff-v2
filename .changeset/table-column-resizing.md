@@ -11,6 +11,10 @@ Table: user-controlled column resizing.
   double-click returns the column to its declared `width`, or fits it to its
   content when it declares none. `onChange` fires once per resize, not on every
   pointer move, so it can be persisted directly.
+- `columnResizing.mode`: `'fit'` (default) keeps the table at its container's
+  width as described below; `'expand'` keeps every column's width, so a growing
+  column widens the table and its container scrolls (new
+  `TableColumnResizingMode` type).
 - New column options: `resizable` (default `true`), `minWidth` (default `50`)
   and `maxWidth`.
 - The table keeps its auto layout until the first resize, then switches to

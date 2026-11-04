@@ -392,6 +392,7 @@ render(<LoadingDemo />);
 export const resizeDemo = String.raw`
 function ResizeDemo() {
   const STORAGE_KEY = 'docs-table-column-widths';
+  const [mode, setMode] = React.useState('fit');
   const [widths, setWidths] = React.useState(() => {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -423,14 +424,26 @@ function ResizeDemo() {
   };
   return (
     <div style={{ width: '100%' }}>
-      <Button size="small" appearance="outlined" style={{ marginBottom: 12 }} onClick={() => handleChange({})}>
-        Reset widths
-      </Button>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <Button size="small" appearance="outlined" onClick={() => handleChange({})}>
+          Reset widths
+        </Button>
+        <Button
+          size="small"
+          appearance="outlined"
+          onClick={() => {
+            setMode(mode === 'fit' ? 'expand' : 'fit');
+            handleChange({});
+          }}
+        >
+          Mode: {mode}
+        </Button>
+      </div>
       <Table
         data={data}
         columns={columns}
         getRowId={(r) => r.id}
-        columnResizing={{ value: widths, onChange: handleChange }}
+        columnResizing={{ mode, value: widths, onChange: handleChange }}
       />
     </div>
   );
@@ -701,6 +714,15 @@ resize reports widths only for columns in `columns`, so hide a column (column
 visibility) rather than dropping its definition if its stored width should
 survive.
 
+`mode` picks where a growing column finds its room. The default, `'fit'`, is the
+behaviour above: the table stays as wide as its container and the absorber gives
+way. With `mode: 'expand'` there is no absorber: every column keeps its own
+width (the last column gets a handle too), a growing column widens the table
+past its container, which then scrolls horizontally, and a shrinking one narrows
+the table and leaves room at the inline end. Pick it per table, for example
+`fit` for a dashboard card and `expand` for a wide data grid. Switch the demo's
+mode below to compare; switching also resets the stored widths.
+
 <LiveCode
   code={resizeDemo}
   noInline
@@ -895,7 +917,7 @@ for primitive behavior.
 | <span id="table-td-tablesortingconfig"><ApiBadge label="TableSortingConfig" /></span>               | <code>&#123; multi?: boolean &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | <span id="table-td-tablefilteringconfig"><ApiBadge label="TableFilteringConfig" /></span>           | <code>&#123; value?: T; defaultValue?: T; onChange?: (value: T) =&gt; void &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | <span id="table-td-tablepaginationconfig"><ApiBadge label="TablePaginationConfig" /></span>         | <code>&#123; pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) =&gt; void &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| <span id="table-td-tablecolumnresizingconfig"><ApiBadge label="TableColumnResizingConfig" /></span> | <code>&#123; value?: T; defaultValue?: T; onChange?: (value: T) =&gt; void &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| <span id="table-td-tablecolumnresizingconfig"><ApiBadge label="TableColumnResizingConfig" /></span> | <code>&#123; mode?: TableColumnResizingMode &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | <span id="table-td-tableslot"><ApiBadge label="TableSlot" /></span>                                 | <code>&#124; 'root' &#124; 'tableViewport' &#124; 'table' &#124; 'header' &#124; 'headerRow' &#124; 'headerCell' &#124; 'headerContent' &#124; 'headerLabel' &#124; 'sortTrigger' &#124; 'sortIcon' &#124; 'resizeHandle' &#124; 'body' &#124; 'row' &#124; 'cell' &#124; 'selectionCell' &#124; 'expandCell' &#124; 'expandButton' &#124; 'expandedRow' &#124; 'filterButton' &#124; 'filterPanel' &#124; 'pagination' &#124; 'paginationInfo' &#124; 'paginationNav' &#124; 'paginationActions' &#124; 'paginationSize' &#124; 'paginationGoToPage' &#124; 'empty' &#124; 'loading'</code> |
 | <span id="table-td-tabledatarequest"><ApiBadge label="TableDataRequest" /></span>                   | <code>&#123; pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 

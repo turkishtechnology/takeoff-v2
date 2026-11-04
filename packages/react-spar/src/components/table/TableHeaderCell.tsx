@@ -19,7 +19,7 @@ type AnyHeader = Header<any, unknown>;
  * `<button>` so Enter/Space toggle sorting natively (RFC §3.5).
  */
 export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
-  const { table, slotAttrs, stickyLayout, stickyHeader, fixedLayout, absorberColumnId, columnResizing } = useTableContext('Table.HeaderCell');
+  const { table, slotAttrs, stickyLayout, stickyHeader, fixedLayout, absorberColumnId, resizeMode, columnResizing } = useTableContext('Table.HeaderCell');
   const column = header.column;
   const meta = column.columnDef.meta;
   const align = meta?.headerAlign ?? meta?.align;
@@ -30,13 +30,14 @@ export const TableHeaderCell = ({ header }: { header: AnyHeader }) => {
   // takes up the slack: a column before it grows toward the inline end (handle
   // on its end edge), one after it toward the inline start (handle on its
   // start edge), so the edge under the pointer is always the one that moves.
-  // The absorber itself has none, and without an absorber (every column
-  // pinned) the last column has none either: its end edge is the table's.
+  // The absorber itself has none. Without an absorber the last column has
+  // none either in `fit` mode (every column pinned: its end edge is the
+  // table's), but does in `expand` mode, where dragging it widens the table.
   const visibleColumns = table.getVisibleLeafColumns();
   const index = visibleColumns.findIndex(candidate => candidate.id === column.id);
   const absorberIndex = absorberColumnId == null ? -1 : visibleColumns.findIndex(candidate => candidate.id === absorberColumnId);
   const edge = absorberIndex >= 0 && index > absorberIndex ? 'start' : 'end';
-  const canResize = !!columnResizing && column.getCanResize() && index !== absorberIndex && (edge === 'start' || index !== visibleColumns.length - 1);
+  const canResize = !!columnResizing && column.getCanResize() && index !== absorberIndex && (edge === 'start' || resizeMode === 'expand' || index !== visibleColumns.length - 1);
   const registerHeaderCell = columnResizing?.registerHeaderCell;
   const headerCellRef = useCallback((element: HTMLTableCellElement | null) => registerHeaderCell?.(column.id, element), [registerHeaderCell, column.id]);
 

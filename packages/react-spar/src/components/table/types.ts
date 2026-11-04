@@ -262,9 +262,9 @@ export type TableFilteringConfig = ControlledState<ColumnFiltersState>;
 
 /**
  * Column widths in px, keyed by column id (TanStack's `ColumnSizingState`).
- * Empty until the first resize; that resize freezes every visible column except
- * the last unpinned one (which takes up the leftover width) at its current
- * width, so from then on the map holds all of them. Persist it and pass it back
+ * Empty until the first resize; that resize freezes every visible column (in
+ * `fit` mode, all but the absorber, which takes up the leftover width) at its
+ * current width, so from then on the map holds all of them. Persist it and pass it back
  * as `defaultValue` (or `value`) to restore a layout.
  */
 export type TableColumnSizing = ColumnSizingState;
@@ -274,7 +274,25 @@ export type TableColumnSizing = ColumnSizingState;
  * release, on each arrow-key step, and on a double-click reset — never on every
  * pointer move while dragging, so it is safe to persist from directly.
  */
-export type TableColumnResizingConfig = ControlledState<TableColumnSizing>;
+export interface TableColumnResizingConfig extends ControlledState<TableColumnSizing> {
+  /**
+   * Where a growing column finds its room.
+   *
+   * - `fit`: the table stays as wide as its container. One unsized column (the
+   *   absorber, the last unpinned one without a declared `width`) takes up the
+   *   slack, and a growing column takes room from it and then from the
+   *   columns between them, each down to its min width.
+   * - `expand`: every column keeps its own width. A growing column widens the
+   *   table past its container, which then scrolls horizontally; a shrinking
+   *   one narrows the table and leaves room at the inline end. The last
+   *   column gets a handle too.
+   * @defaultValue 'fit'
+   */
+  mode?: TableColumnResizingMode;
+}
+
+/** See {@link TableColumnResizingConfig.mode}. */
+export type TableColumnResizingMode = 'fit' | 'expand';
 
 export interface TableSelectionConfig extends ControlledState<RowSelectionState> {
   /** `single` renders radios + caps selection at one row; `multiple` renders checkboxes + a select-all header. */

@@ -102,6 +102,8 @@ export interface TableContextValue {
    * fixed, no explicit width.
    */
   absorberColumnId?: string;
+  /** `columnResizing.mode`: `expand` has no absorber, and the last column gets a handle. */
+  resizeMode: 'fit' | 'expand';
   /** Resize plumbing; `undefined` when `columnResizing` is off. */
   columnResizing?: TableColumnResizingContext;
   /** Visible column count incl. utility cells — for `colSpan` (empty/expanded rows). */

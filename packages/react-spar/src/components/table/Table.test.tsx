@@ -2302,6 +2302,41 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({ name: 520, role: 120 });
     });
 
+    it('expand mode: every column keeps its width and a growing one widens the table', () => {
+      mockHeaderWidth(120, { City: 100 });
+      const onChange = vi.fn();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'role', header: 'Role', accessor: 'role' },
+        { id: 'city', header: 'City', accessor: 'profile.city' },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ mode: 'expand', onChange }} />);
+      const tableElement = container.querySelector('table') as HTMLElement;
+
+      // The last column gets a handle too: its edge moves the table's.
+      expect(screen.getAllByRole('separator').map(handle => handle.getAttribute('aria-label'))).toEqual(['Resize Name column', 'Resize Role column', 'Resize City column']);
+
+      const handle = handleFor('Name');
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 100, pointerId: 1 });
+      expect(tableElement.style.width).toBe('440px');
+      // Later moves go straight to the DOM, the table's width with them.
+      fireEvent.pointerMove(handle, { clientX: 300, pointerId: 1 });
+      expect(tableElement.style.width).toBe('640px');
+      expect(tableElement.style.minWidth).toBe('640px');
+      fireEvent.pointerUp(handle, { clientX: 300, pointerId: 1 });
+      // Nothing gave way: every column is stored, the absorber included.
+      expect(onChange).toHaveBeenLastCalledWith({ name: 420, role: 120, city: 100 });
+      expect(headerFor(container, 'City').style.width).toBe('100px');
+
+      // Shrinking narrows the table and leaves room at the inline end.
+      fireEvent.pointerDown(handleFor('City'), { clientX: 0, pointerId: 2, button: 0 });
+      fireEvent.pointerMove(handleFor('City'), { clientX: -40, pointerId: 2 });
+      expect(tableElement.style.width).toBe('600px');
+      fireEvent.pointerCancel(handleFor('City'), { clientX: -40, pointerId: 2 });
+      expect(tableElement.style.width).toBe('640px');
+    });
+
     it('reads the grow plan again on each new drag', () => {
       let absorberWidth = 100;
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {

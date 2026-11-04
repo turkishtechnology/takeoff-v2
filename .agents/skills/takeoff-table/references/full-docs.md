@@ -701,9 +701,19 @@ resize reports widths only for columns in `columns`, so hide a column (column
 visibility) rather than dropping its definition if its stored width should
 survive.
 
+`mode` picks where a growing column finds its room. The default, `'fit'`, is the
+behaviour above: the table stays as wide as its container and the absorber gives
+way. With `mode: 'expand'` there is no absorber: every column keeps its own
+width (the last column gets a handle too), a growing column widens the table
+past its container, which then scrolls horizontally, and a shrinking one narrows
+the table and leaves room at the inline end. Pick it per table, for example
+`fit` for a dashboard card and `expand` for a wide data grid. Switch the demo's
+mode below to compare; switching also resets the stored widths.
+
 ```tsx
 function ResizeDemo() {
   const STORAGE_KEY = 'docs-table-column-widths';
+  const [mode, setMode] = React.useState('fit');
   const [widths, setWidths] = React.useState(() => {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -763,19 +773,30 @@ function ResizeDemo() {
   };
   return (
     <div>
-      <Button
-        size="small"
-        appearance="outlined"
-        style={{ marginBottom: 12 }}
-        onClick={() => handleChange({})}
-      >
-        Reset widths
-      </Button>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <Button
+          size="small"
+          appearance="outlined"
+          onClick={() => handleChange({})}
+        >
+          Reset widths
+        </Button>
+        <Button
+          size="small"
+          appearance="outlined"
+          onClick={() => {
+            setMode(mode === 'fit' ? 'expand' : 'fit');
+            handleChange({});
+          }}
+        >
+          Mode: {mode}
+        </Button>
+      </div>
       <Table
         data={data}
         columns={columns}
         getRowId={r => r.id}
-        columnResizing={{ value: widths, onChange: handleChange }}
+        columnResizing={{ mode, value: widths, onChange: handleChange }}
       />
     </div>
   );
@@ -1054,6 +1075,6 @@ for primitive behavior.
 | TableSortingConfig        | `{ multi?: boolean }`                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | TableFilteringConfig      | `{ value?: T; defaultValue?: T; onChange?: (value: T) => void }`                                                                                                                                                                                                                                                                                                                                                                                                  |
 | TablePaginationConfig     | `{ pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) => void }`                                                                                                                                                                                                                                                                                                                      |
-| TableColumnResizingConfig | `{ value?: T; defaultValue?: T; onChange?: (value: T) => void }`                                                                                                                                                                                                                                                                                                                                                                                                  |
+| TableColumnResizingConfig | `{ mode?: TableColumnResizingMode }`                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | TableSlot                 | `\| 'root' \| 'tableViewport' \| 'table' \| 'header' \| 'headerRow' \| 'headerCell' \| 'headerContent' \| 'headerLabel' \| 'sortTrigger' \| 'sortIcon' \| 'resizeHandle' \| 'body' \| 'row' \| 'cell' \| 'selectionCell' \| 'expandCell' \| 'expandButton' \| 'expandedRow' \| 'filterButton' \| 'filterPanel' \| 'pagination' \| 'paginationInfo' \| 'paginationNav' \| 'paginationActions' \| 'paginationSize' \| 'paginationGoToPage' \| 'empty' \| 'loading'` |
 | TableDataRequest          | `{ pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState }`                                                                                                                                                                                                                                                                                                                                                                             |
