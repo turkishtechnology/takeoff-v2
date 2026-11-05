@@ -64,7 +64,15 @@ function Starters({ onPick }: { onPick: (text: string) => void }) {
       <p className="text-sm text-text-base">Ask anything about your flight, or start with one of these:</p>
       <div className="flex flex-wrap justify-center gap-2">
         {starters.map(text => (
-          <Chip key={text} clickable onClick={() => onPick(text)}>
+          <Chip
+            key={text}
+            clickable
+            onClick={event => {
+              // The starters unmount once a message exists; move focus to the composer first.
+              event.currentTarget.closest('section')?.querySelector('textarea')?.focus();
+              onPick(text);
+            }}
+          >
             {text}
           </Chip>
         ))}

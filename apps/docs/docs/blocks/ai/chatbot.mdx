@@ -78,15 +78,18 @@ The block keeps only the draft text. Your code owns the conversation:
 - `onSubmit(text)` fires with the trimmed text when the user sends. Append the
   user message, set `typing` while you wait, then append the answer.
 - To stream a reply, append an empty assistant message and update its `content`
-  as chunks arrive.
+  as chunks arrive. The log announces added messages, not text that changes
+  inside one, so screen readers do not hear streamed text. If that matters for
+  your product, append the finished reply as its own message, or announce it in
+  a visually hidden `role="status"` element when the stream ends.
 
 `content` is a `ReactNode`, so you can render markdown or rich cards with the
 renderer your app already uses.
 
 ## Accessibility
 
-- The conversation is a `role="log"` region with `aria-live="polite"`, so screen
-  readers announce new messages without moving focus.
+- The conversation is a `role="log"` region, so screen readers announce new
+  messages without moving focus. Sending keeps focus in the composer.
 - New messages scroll into view only while the reader is at the bottom;
   scrolling up to re-read is never interrupted.
 - Enter sends and Shift+Enter adds a line. Enter does not send, and Escape does

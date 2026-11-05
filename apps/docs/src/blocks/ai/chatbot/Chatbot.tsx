@@ -187,7 +187,7 @@ function Message({ message, type }: { message: ChatbotMessage; type: ChatbotType
       <div className={`flex max-w-[75%] flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
         {/* Keep typed line breaks for plain text only: rendered markdown emits
             newline text nodes between blocks that pre-wrap would show. */}
-        <div className={`rounded-lg text-sm leading-5 ${typeof message.content === 'string' ? 'whitespace-pre-wrap' : ''} ${isUser ? s.userBubble : s.bubble}`}>
+        <div className={`rounded-lg text-sm leading-5 break-words ${typeof message.content === 'string' ? 'whitespace-pre-wrap' : ''} ${isUser ? s.userBubble : s.bubble}`}>
           {message.content}
         </div>
         {(message.time || message.status) && (
@@ -221,6 +221,8 @@ export function Chatbot({
   const titleId = useId();
   const [draft, setDraft] = useState('');
   const logRef = useRef<HTMLDivElement>(null);
+  // Input.Field types its ref for both the input and textarea forms.
+  const fieldRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
   const stickToBottom = useRef(true);
 
   // Follow new messages only while the reader is already at the bottom, so
@@ -245,6 +247,8 @@ export function Chatbot({
     stickToBottom.current = true;
     onSubmit(text);
     setDraft('');
+    // Sending disables the Send button; keep keyboard focus in the composer.
+    fieldRef.current?.focus();
   };
 
   const handleSubmit = (event: FormEvent) => {
@@ -262,7 +266,7 @@ export function Chatbot({
   };
 
   return (
-    <Card as="section" aria-labelledby={titleId} className={`flex h-[560px] w-full max-w-[400px] flex-col overflow-hidden ${className}`}>
+    <Card as="section" aria-labelledby={titleId} className={`flex h-[560px] max-h-full w-full max-w-[400px] flex-col overflow-hidden ${className}`}>
       <Card.Header headerType={type} className="!flex-row items-center justify-between gap-3 !px-3 !py-3">
         <div className="flex min-w-0 items-center gap-1.5">
           <ChatbotIcon className={`size-10 shrink-0 ${s.avatar}`} />
@@ -290,7 +294,6 @@ export function Chatbot({
       <div
         ref={logRef}
         role="log"
-        aria-live="polite"
         aria-relevant="additions"
         aria-label={`Conversation with ${title}`}
         tabIndex={0}
@@ -312,6 +315,7 @@ export function Chatbot({
             </>
           )}
           <Input.Field
+            ref={fieldRef}
             as="textarea"
             rows={1}
             value={draft}
@@ -366,17 +370,17 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
 
   return (
     <div className={`z-50 flex flex-col items-end gap-3 ${positionClassName}`} onKeyDown={event => event.key === 'Escape' && !isComposing(event) && open && close()}>
-      {open && (
-        <div id={panelId} ref={panelRef} className="w-[min(400px,calc(100vw-2rem))]">
-          <Chatbot {...chatbotProps} onClose={close} />
-        </div>
-      )}
+      {/* Hidden rather than unmounted, so the draft and scroll position
+          survive closing; capped so the header stays on short screens. */}
+      <div id={panelId} ref={panelRef} hidden={!open} className="h-[min(560px,calc(100dvh-7rem))] w-[min(400px,calc(100vw-2rem))]">
+        <Chatbot {...chatbotProps} onClose={close} className="!h-full" />
+      </div>
       <button
         ref={triggerRef}
         type="button"
         aria-label={open ? 'Hide chat' : `Chat with ${chatbotProps.title ?? 'Takeoff bot'}`}
         aria-expanded={open}
-        aria-controls={open ? panelId : undefined}
+        aria-controls={panelId}
         onClick={() => (open ? close() : openPanel())}
         className="flex size-12 items-center justify-center rounded-full bg-static-white text-primary-base shadow-lg transition-colors hover:text-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base"
       >
