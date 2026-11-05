@@ -82,11 +82,13 @@ the indicator on its own.
 
 ## Attachments and rich messages
 
-The plus button opens a file picker. Picked files appear above the composer,
-where each one can be removed, and are passed to `onSubmit(text, files)`. A
-message can carry `attachments`, which render as thumbnails for images and as
-file links otherwise. Limit the picker with `accept`, or hide the button with
-`allowAttachments={false}`.
+The plus button opens a menu where the user picks what to attach: a photo or
+video, a document, or any file. The choice sets what the file picker accepts.
+Picked files appear above the composer, where each one can be removed, and are
+passed to `onSubmit(text, files)`. A message can carry `attachments`, which
+render as thumbnails for images and as file links otherwise. Change the choices
+with `attachmentOptions` (a single option skips the menu), or hide the button
+with `allowAttachments={false}`.
 
 Anything in a message's `extra` renders under its bubble. This example uses it
 for suggestion chips, a flight card with an image, and Yes / No buttons, as in

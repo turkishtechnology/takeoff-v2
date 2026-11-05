@@ -18,6 +18,6 @@ app automatically. Compare against the page when you want to pick up a change.
 
 ## AI
 
-| Block                              | Use it for                                                                |
-| ---------------------------------- | ------------------------------------------------------------------------- |
-| [Chatbot](/docs/blocks/ai/chatbot) | A chat assistant panel, floating behind a launcher or embedded in a page. |
+| Block                       | Use it for                                                                |
+| --------------------------- | ------------------------------------------------------------------------- |
+| [Chatbot](./ai/chatbot.mdx) | A chat assistant panel, floating behind a launcher or embedded in a page. |

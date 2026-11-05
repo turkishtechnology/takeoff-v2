@@ -8,14 +8,17 @@
  *
  * Design: Figma → Takeoff - Blocks → Chatbot.
  */
-import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactNode, type SVGProps, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { Badge, Button, Card, Input } from '@takeoff-ui/react-spar';
+import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactNode, type SVGProps, useEffect, useId, useRef, useState } from 'react';
+import { Badge, Button, Card, Dropdown, Input } from '@takeoff-ui/react-spar';
 import { AddCircleIconFilledTk } from '@takeoff-icons/react/add-circle';
+import { AttachIconOutlinedRounded } from '@takeoff-icons/react/attach';
+import { CameraIconOutlinedRounded } from '@takeoff-icons/react/camera';
 import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
 import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
 import { DoneAllIconOutlinedRounded } from '@takeoff-icons/react/done-all';
 import { FileIconOutlinedRounded } from '@takeoff-icons/react/file';
 import { FlashIconFilledRounded } from '@takeoff-icons/react/flash';
+import { PdfIconOutlinedRounded } from '@takeoff-icons/react/pdf';
 import { PersonIconFilledRounded } from '@takeoff-icons/react/person';
 import { SendIconFilledRounded } from '@takeoff-icons/react/send';
 
@@ -31,6 +34,20 @@ export interface ChatbotAttachment {
   /** Where the file can be shown or downloaded from, e.g. an object URL. */
   url: string;
 }
+
+/** A choice in the attach menu: what the file picker offers. */
+export interface ChatbotAttachmentOption {
+  label: string;
+  icon?: ReactNode;
+  /** `accept` of the file picker for this choice, e.g. `image/*`. Leave out for any file. */
+  accept?: string;
+}
+
+export const defaultAttachmentOptions: ChatbotAttachmentOption[] = [
+  { label: 'Photo or video', icon: <CameraIconOutlinedRounded />, accept: 'image/*,video/*' },
+  { label: 'Document', icon: <PdfIconOutlinedRounded />, accept: '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt' },
+  { label: 'Any file', icon: <AttachIconOutlinedRounded /> },
+];
 
 export interface ChatbotMessage {
   id: string;
@@ -66,8 +83,11 @@ export interface ChatbotProps {
   userAvatar?: string | ReactNode;
   /** Shows the attach button. Set to `false` to hide it. */
   allowAttachments?: boolean;
-  /** `accept` of the file picker, e.g. `image/*,.pdf`. */
-  accept?: string;
+  /**
+   * Choices of the attach menu that the plus button opens. With a single
+   * option, the plus button opens the file picker directly.
+   */
+  attachmentOptions?: ChatbotAttachmentOption[];
   /** Renders the more button and calls this when it is pressed. */
   onMenu?: () => void;
   /** Renders the close button and calls this when it is pressed. */
@@ -150,7 +170,13 @@ const footerStyles: Record<ChatbotType, { footer: string; composer: string; fiel
   },
 };
 
-/** The Takeoff scrollbar (tokens `takeoff-scrollbar` mixin) for a scroll container. */
+/**
+ * Takeoff scrollbar colours (tokens `takeoff-scrollbar` mixin) for a scroll
+ * container. Chromium 121+ and Firefox use the standard `scrollbar-*`
+ * properties, so they get the colours on a thin native scrollbar; Safari
+ * uses the `::-webkit-scrollbar` rules, which also carry the 4px size and
+ * the rounded thumb.
+ */
 const scrollbar =
   '[scrollbar-color:var(--secondary-sub-base)_var(--background-lightest)] [scrollbar-width:thin] [&::-webkit-scrollbar]:size-1 [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-secondary-sub-base [&::-webkit-scrollbar-thumb:hover]:bg-secondary-dark [&::-webkit-scrollbar-track]:rounded-sm [&::-webkit-scrollbar-track]:bg-background-lightest';
 
@@ -344,8 +370,14 @@ function Message({ message, bubble, userAvatar }: { message: ChatbotMessage; bub
 /** Files picked in the composer, with a preview URL for each image. */
 function usePickedFiles() {
   const [files, setFiles] = useState<File[]>([]);
-  const previews = useMemo(() => files.map(file => (file.type.startsWith('image/') ? URL.createObjectURL(file) : null)), [files]);
-  useEffect(() => () => previews.forEach(url => url && URL.revokeObjectURL(url)), [previews]);
+  const [previews, setPreviews] = useState<(string | null)[]>([]);
+  // Create and revoke the object URLs in one effect, so each URL is revoked
+  // exactly once, also under StrictMode's double effects.
+  useEffect(() => {
+    const urls = files.map(file => (file.type.startsWith('image/') ? URL.createObjectURL(file) : null));
+    setPreviews(urls);
+    return () => urls.forEach(url => url && URL.revokeObjectURL(url));
+  }, [files]);
   return { files, previews, setFiles };
 }
 
@@ -362,7 +394,7 @@ export function Chatbot({
   placeholder = 'Type your message here',
   userAvatar,
   allowAttachments = true,
-  accept,
+  attachmentOptions = defaultAttachmentOptions,
   onMenu,
   onClose,
   emptyState,
@@ -373,6 +405,7 @@ export function Chatbot({
   const [draft, setDraft] = useState('');
   const { files, previews, setFiles } = usePickedFiles();
   const logRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   // Input.Field types its ref for both the input and textarea forms.
   const fieldRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
@@ -388,18 +421,20 @@ export function Chatbot({
     }
   }, [messages, typing]);
 
-  // The log also changes size without new messages: when a hidden launcher
-  // panel is shown, and when the composer grows or shrinks. Stay pinned to
-  // the bottom through those too.
+  // Sizes also change without new messages: the log when a hidden launcher
+  // panel is shown or the composer grows, and the content when an image
+  // loads or a message renders late. Stay pinned to the bottom through those.
   useEffect(() => {
     const log = logRef.current;
-    if (!log || typeof ResizeObserver === 'undefined') return;
+    const content = contentRef.current;
+    if (!log || !content || typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(() => {
       if (stickToBottom.current) {
         log.scrollTop = log.scrollHeight;
       }
     });
     observer.observe(log);
+    observer.observe(content);
     return () => observer.disconnect();
   }, []);
 
@@ -432,6 +467,13 @@ export function Chatbot({
       event.preventDefault();
       send();
     }
+  };
+
+  const pickFiles = (option: ChatbotAttachmentOption) => {
+    const input = fileRef.current;
+    if (!input) return;
+    input.accept = option.accept ?? '';
+    input.click();
   };
 
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
@@ -472,14 +514,17 @@ export function Chatbot({
         aria-label={`Conversation with ${title}`}
         tabIndex={0}
         onScroll={handleScroll}
-        className={`flex flex-1 flex-col gap-6 overflow-y-auto bg-frames-lightest px-3 py-6 [&>:first-child]:mt-auto focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary-base ${scrollbar}`}
+        className={`flex-1 overflow-y-auto bg-frames-lightest focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary-base ${scrollbar}`}
       >
-        {messages.length === 0 && !typing
-          ? emptyState
-          : messages.map(message => (
-              <Message key={message.id} message={message} bubble={bubbleStyles[message.role === 'user' ? userBubble : assistantBubble][message.role]} userAvatar={userAvatar} />
-            ))}
-        {typing && <TypingIndicator label={`${title} is typing`} surface={bubbleStyles[assistantBubble].assistant} />}
+        {/* Messages stack from the bottom, as in a chat app. */}
+        <div ref={contentRef} className="flex min-h-full flex-col justify-end gap-6 px-3 py-6">
+          {messages.length === 0 && !typing
+            ? emptyState
+            : messages.map(message => (
+                <Message key={message.id} message={message} bubble={bubbleStyles[message.role === 'user' ? userBubble : assistantBubble][message.role]} userAvatar={userAvatar} />
+              ))}
+          {typing && <TypingIndicator label={`${title} is typing`} surface={bubbleStyles[assistantBubble].assistant} />}
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className={`p-3 ${f.footer}`}>
@@ -510,16 +555,42 @@ export function Chatbot({
         <Input className={`!items-end !gap-2 !p-1 ${f.composer}`}>
           {allowAttachments && (
             <>
-              <input ref={fileRef} type="file" multiple accept={accept} onChange={handleFiles} className="hidden" tabIndex={-1} aria-hidden="true" />
-              <Button
-                variant="neutral"
-                appearance="text"
-                size="small"
-                aria-label="Attach files"
-                startContent={<AddCircleIconFilledTk />}
-                onClick={() => fileRef.current?.click()}
-                classNames={{ content: f.attach }}
-              />
+              <input ref={fileRef} type="file" multiple onChange={handleFiles} className="hidden" tabIndex={-1} aria-hidden="true" />
+              {attachmentOptions.length === 1 ? (
+                <Button
+                  variant="neutral"
+                  appearance="text"
+                  size="small"
+                  aria-label="Attach files"
+                  startContent={<AddCircleIconFilledTk className={f.attach} />}
+                  onClick={() => pickFiles(attachmentOptions[0])}
+                />
+              ) : (
+                <Dropdown size="small">
+                  <Dropdown.Trigger
+                    as={Button}
+                    variant="neutral"
+                    appearance="text"
+                    size="small"
+                    aria-label="Attach files"
+                    startContent={<AddCircleIconFilledTk className={f.attach} />}
+                  />
+                  <Dropdown.Content side="top" align="start">
+                    {attachmentOptions.map(option => (
+                      <Dropdown.Item key={option.label} textValue={option.label} onSelect={() => pickFiles(option)}>
+                        <span className="flex items-center gap-2">
+                          {option.icon && (
+                            <span className="flex size-5 shrink-0 text-text-base [&_svg]:size-5" aria-hidden="true">
+                              {option.icon}
+                            </span>
+                          )}
+                          {option.label}
+                        </span>
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Content>
+                </Dropdown>
+              )}
               <span className={`h-6 w-px shrink-0 self-center ${f.divider}`} aria-hidden="true" />
             </>
           )}
@@ -585,8 +656,19 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
     triggerRef.current?.focus();
   };
 
+  const rootRef = useRef<HTMLDivElement>(null);
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    // React bubbles events from portals, so an Escape that closes a menu or
+    // popover inside the panel (its content is portaled out of this DOM)
+    // reaches this handler too. Close only for Escapes from the launcher's
+    // own DOM that nothing else has handled.
+    if (event.key !== 'Escape' || !open || event.defaultPrevented || isComposing(event)) return;
+    if (!rootRef.current?.contains(event.target as Node)) return;
+    close();
+  };
+
   return (
-    <div className={`z-50 flex flex-col items-end gap-3 ${positionClassName}`} onKeyDown={event => event.key === 'Escape' && !isComposing(event) && open && close()}>
+    <div ref={rootRef} className={`z-50 flex flex-col items-end gap-3 ${positionClassName}`} onKeyDown={handleKeyDown}>
       {/* Kept mounted so the draft survives closing. Closing scales and fades
           the panel into the launcher, then makes it invisible and inert.
           Capped so the header stays on short screens. */}
