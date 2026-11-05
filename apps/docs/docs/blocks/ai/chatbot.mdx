@@ -12,7 +12,6 @@ import CodeBlock from '@theme/CodeBlock';
 import BlockPreview from '@site/src/components/BlockPreview';
 import FloatingExample from '@site/src/blocks/ai/chatbot/examples/FloatingExample';
 import EmbeddedExample from '@site/src/blocks/ai/chatbot/examples/EmbeddedExample';
-import TypingExample from '@site/src/blocks/ai/chatbot/examples/TypingExample';
 import RichMessageExample from '@site/src/blocks/ai/chatbot/examples/RichMessageExample';
 import TypesExample from '@site/src/blocks/ai/chatbot/examples/TypesExample';
 import IconExample from '@site/src/blocks/ai/chatbot/examples/IconExample';
@@ -26,7 +25,6 @@ import NotificationExample from '@site/src/blocks/ai/chatbot/examples/Notificati
 import MobileExample from '@site/src/blocks/ai/chatbot/examples/MobileExample';
 import floatingSource from '@site/src/blocks/ai/chatbot/examples/FloatingExample.tsx?raw';
 import embeddedSource from '@site/src/blocks/ai/chatbot/examples/EmbeddedExample.tsx?raw';
-import typingSource from '@site/src/blocks/ai/chatbot/examples/TypingExample.tsx?raw';
 import richSource from '@site/src/blocks/ai/chatbot/examples/RichMessageExample.tsx?raw';
 import typesSource from '@site/src/blocks/ai/chatbot/examples/TypesExample.tsx?raw';
 import iconSource from '@site/src/blocks/ai/chatbot/examples/IconExample.tsx?raw';
@@ -81,17 +79,28 @@ export function SupportChat() {
   const [typing, setTyping] = useState(false);
 
   const send = async (text: string) => {
+    const id = crypto.randomUUID();
     setMessages(current => [
       ...current,
-      { id: crypto.randomUUID(), role: 'user', content: text, status: 'sent' },
+      { id, role: 'user', content: text, status: 'sent' },
     ]);
     setTyping(true);
-    const answer = await askMyAssistant(text); // your API or AI SDK
-    setTyping(false);
-    setMessages(current => [
-      ...current,
-      { id: crypto.randomUUID(), role: 'assistant', content: answer },
-    ]);
+    try {
+      const answer = await askMyAssistant(text); // your API or AI SDK
+      setMessages(current => [
+        ...current,
+        { id: crypto.randomUUID(), role: 'assistant', content: answer },
+      ]);
+    } catch {
+      // Mark the message as not sent; pass onRetry to offer Retry.
+      setMessages(current =>
+        current.map(message =>
+          message.id === id ? { ...message, status: 'failed' } : message,
+        ),
+      );
+    } finally {
+      setTyping(false);
+    }
   };
 
   return (
@@ -153,17 +162,6 @@ Render `Chatbot` directly to place it in a page or a side panel. Pass
 
 <BlockPreview minHeight={600} code={embeddedSource} title="EmbeddedExample.tsx">
   <EmbeddedExample />
-</BlockPreview>
-
-## Typing and streaming
-
-While `typing` is true, the log shows the typing indicator and the header badge
-reads "Typing…". This example also streams each reply word by word: it adds an
-empty assistant message and grows its `content`. Use **Show typing** to look at
-the indicator on its own.
-
-<BlockPreview minHeight={560} code={typingSource} title="TypingExample.tsx">
-  <TypingExample />
 </BlockPreview>
 
 ## Message status and undo

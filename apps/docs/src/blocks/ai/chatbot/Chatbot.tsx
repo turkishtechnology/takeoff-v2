@@ -412,7 +412,8 @@ export function ChatbotHeader({
                 rounded
                 startContent={<FlashIconFilledRounded />}
                 // Figma draws the bolt at 14px; the small Badge recipe sizes icons at 10px.
-                className="shrink-0 [&_.tk-badge-icon]:!size-3.5"
+                className="shrink-0"
+                classNames={{ icon: '!size-3.5' }}
               >
                 {typing ? 'Typing…' : 'Online'}
               </Badge>
@@ -618,7 +619,7 @@ function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo,
     : failed && !isUser
       ? 'border border-states-danger-light bg-states-danger-lightest p-3 text-states-danger-darkest'
       : failed
-        ? `${bubble} !border !border-solid !border-states-danger-light`
+        ? `${bubble} px-3 py-2 !border !border-solid !border-states-danger-light`
         : bubble;
 
   return (
@@ -681,7 +682,7 @@ function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo,
             )}
             {canRetry && (
               <>
-                <span aria-hidden="true">·</span>
+                {(message.time || (isUser && !retracted && message.status)) && <span aria-hidden="true">·</span>}
                 <MetaButton onClick={() => onRetry?.(message)} className="text-states-danger-base">
                   <RefreshRightIconOutlinedRounded width={14} height={14} aria-hidden="true" />
                   Retry
