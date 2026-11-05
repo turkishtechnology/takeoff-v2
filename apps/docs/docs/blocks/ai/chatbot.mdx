@@ -469,8 +469,9 @@ app already uses.
 - Delivery states have a visually hidden label, the unread count is part of the
   launcher's label, the thumbs are toggle buttons (`aria-pressed`), and copying
   is announced.
-- While offline or disabled, the message field is described by the notice, and
-  near `maxLength` by the character count.
+- While offline or disabled, the message field is read-only and `aria-disabled`,
+  so it keeps focus, and it is described by the notice, and near `maxLength` by
+  the character count.
 - Suggestions are a labelled group of buttons. Pressing one keeps focus in the
   composer, and accepting consent moves focus there.
 - The jump button and the dividers are visible cues only: the log already
@@ -480,6 +481,8 @@ app already uses.
   `ChatbotRating` are labelled toggle buttons in a labelled group, and the
   thanks is announced.
 - While loading, the log is `aria-busy` and the skeleton has a status label.
+  Loaded history, the first page and older pages, is added while the log is
+  muted for a moment, so screen readers do not read it out as new messages.
 - The composer grows with its content through `field-sizing: content`; browsers
   without it (Firefox, older Safari) keep a single row that scrolls.
 

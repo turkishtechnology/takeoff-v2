@@ -59,21 +59,25 @@ export function useDemoConversation(initial: ChatbotMessage[], { stream = false,
     setPending(count => count - 1);
     if (questionId && retracted.current.has(questionId)) return;
 
-    const custom = !again && answerWith ? answerWith(prompt, files) : undefined;
-    const { content, ...fields } = typeof custom === 'string' ? { content: custom } : (custom ?? {});
-    const text = typeof content === 'string' ? content : reply(prompt, files, again);
+    const custom = answerWith?.(prompt, files);
+    const { content: customContent, ...fields } = typeof custom === 'string' ? { content: custom } : (custom ?? {});
+    // A regenerated answer gets a new text but keeps fields such as sources.
+    const content = again || customContent === undefined ? reply(prompt, files, again) : customContent;
     const id = newId();
     const markRead = (current: ChatbotMessage[]) =>
       current.map(message => (message.role === 'user' && message.status === 'sent' ? { ...message, status: 'read' as const, undoable: false } : message));
 
     if (!stream) {
-      setMessages(current => [...markRead(current), { id, role: 'assistant', content: text, time: now(), author, ...fields }]);
+      setMessages(current => [...markRead(current), { id, role: 'assistant', content, time: now(), author, ...fields }]);
       return;
     }
+    const text = typeof content === 'string' ? content : '';
 
     // Streaming: add an empty message, then grow its content chunk by chunk.
     setMessages(current => [...markRead(current), { id, role: 'assistant', content: '', time: now(), author, streaming: true }]);
-    const words = text.split(' ');
+    // Only text streams; other content arrives at once.
+    const words = text ? text.split(' ') : [];
+    if (!text) update(id, { content });
     for (let i = 1; i <= words.length; i++) {
       await wait(60);
       if (!mounted.current) return;

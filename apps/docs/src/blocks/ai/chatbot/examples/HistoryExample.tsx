@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@takeoff-ui/react-spar';
 import { Chatbot, type ChatbotMessage } from '../Chatbot';
 import { useDemoConversation } from '../useDemoConversation';
@@ -27,11 +27,16 @@ export default function HistoryExample() {
   const [loading, setLoading] = useState(true);
   const [loaded, setLoaded] = useState(0);
   const [loadingOlder, setLoadingOlder] = useState(false);
+  // Bumped on reload, so a page that arrives after it is dropped.
+  const request = useRef(0);
 
   const loadFirstPage = async () => {
+    const id = ++request.current;
     setLoading(true);
+    setLoadingOlder(false);
     setMessages([]);
     await wait(1500);
+    if (id !== request.current) return;
     setMessages(pages[0]);
     setLoaded(1);
     setLoading(false);
@@ -44,8 +49,10 @@ export default function HistoryExample() {
 
   const loadOlder = async () => {
     if (loadingOlder || loaded >= pages.length) return;
+    const id = request.current;
     setLoadingOlder(true);
     await wait(1000);
+    if (id !== request.current) return;
     setMessages(current => [...pages[loaded], ...current]);
     setLoaded(loaded + 1);
     setLoadingOlder(false);

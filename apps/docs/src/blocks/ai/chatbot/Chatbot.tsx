@@ -707,7 +707,7 @@ function Sources({ items, label }: { items: ChatbotSource[]; label: string }) {
       <span className="text-[11px] leading-4 font-medium opacity-80">{label}</span>
       <ul className="!m-0 flex list-none flex-wrap gap-1.5 !p-0">
         {items.map((item, index) => (
-          <li key={item.url} className="!m-0 min-w-0">
+          <li key={`${index}-${item.url}`} className="!m-0 min-w-0">
             <a
               href={item.url}
               target="_blank"
@@ -1111,7 +1111,18 @@ export function Chatbot({
 
   // What the log looked like at the last render, to tell appended messages
   // from prepended (older) ones.
-  const last = useRef({ firstId: messages[0]?.id, lastId: messages[messages.length - 1]?.id, height: 0 });
+  const last = useRef({ firstId: messages[0]?.id, lastId: messages[messages.length - 1]?.id, height: 0, loading });
+
+  // The log announces what is added to it. Loaded history is not new, so mute
+  // the log for a moment while it is inserted. Set before the browser paints,
+  // so screen readers see the change as made in a muted region.
+  const muteTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(muteTimer.current), []);
+  const muteLog = (log: HTMLElement) => {
+    log.setAttribute('aria-live', 'off');
+    clearTimeout(muteTimer.current);
+    muteTimer.current = setTimeout(() => log.removeAttribute('aria-live'), 1000);
+  };
 
   // Follow new messages only while the reader is already at the bottom, so
   // scrolling up to re-read an earlier answer is never interrupted. A layout
@@ -1122,10 +1133,12 @@ export function Chatbot({
     const previous = last.current;
     const firstId = messages[0]?.id;
     const lastId = messages[messages.length - 1]?.id;
+    const prepended = firstId !== previous.firstId && lastId === previous.lastId;
+    if (prepended || (previous.loading && !loading)) muteLog(log);
 
     if (stickToBottom.current) {
       log.scrollTop = log.scrollHeight;
-    } else if (firstId !== previous.firstId && lastId === previous.lastId) {
+    } else if (prepended) {
       // Older messages were added above: keep the reader on the same message.
       log.scrollTop += log.scrollHeight - previous.height;
     } else if (lastId !== previous.lastId) {
@@ -1138,7 +1151,7 @@ export function Chatbot({
         setJumpShown(true);
       }
     }
-    last.current = { firstId, lastId, height: log.scrollHeight };
+    last.current = { firstId, lastId, height: log.scrollHeight, loading };
     // Only messages, typing and loading change the log; `jumpShown` is read, not followed.
   }, [messages, typing, loading]);
 
@@ -1316,9 +1329,9 @@ export function Chatbot({
             {suggestions.length > 0 && (
               // Lined up with the bubbles, past the 32px avatar and its 8px gap.
               <div role="group" aria-label={l.suggestions} className={`-mt-3 flex flex-wrap gap-2 pl-10 ${enter}`}>
-                {suggestions.map(text => (
+                {suggestions.map((text, index) => (
                   <Chip
-                    key={text}
+                    key={`${index}-${text}`}
                     variant="primary"
                     appearance="outlined"
                     clickable
@@ -1457,7 +1470,10 @@ export function Chatbot({
                   onChange={event => setDraft(event.currentTarget.value)}
                   onKeyDown={handleKeyDown}
                   placeholder={listening ? l.listening : (placeholder ?? l.placeholder)}
-                  disabled={blocked}
+                  // Read-only rather than disabled, so a field that turns off
+                  // while focused (e.g. after a rate limit) keeps keyboard focus.
+                  readOnly={blocked}
+                  aria-disabled={blocked || undefined}
                   aria-describedby={describedBy}
                   aria-invalid={overLimit || undefined}
                   aria-label={l.message}
@@ -1507,7 +1523,7 @@ export function Chatbot({
   );
 }
 
-export interface ChatbotLauncherProps extends Omit<ChatbotProps, 'onClose'> {
+export interface ChatbotLauncherProps extends Omit<ChatbotProps, 'onClose' | 'expanded' | 'onExpandedChange'> {
   /** Start open. */
   defaultOpen?: boolean;
   /** Positioning of the launcher. Defaults to the bottom-right of the viewport. */
