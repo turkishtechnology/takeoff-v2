@@ -153,6 +153,13 @@ export interface TableColumnFilter<TData = unknown> {
   /** Placeholder for the `text` preset's input / `select` triggers. */
   placeholder?: string;
   /**
+   * Plain-text column name for the `{column}` placeholder in
+   * `labels.filterButton` / `labels.filterValue`. Wins over a string `header`;
+   * set it when `header` is a node or function, which otherwise falls back to
+   * the column `id`.
+   */
+  label?: string;
+  /**
    * Escape hatch: render the filter control yourself. Receives the column's
    * value + setter (see {@link TableColumnFilterContext}). When present, the
    * preset fields above are ignored.
@@ -303,7 +310,7 @@ export interface TableLabels {
   noData: string;
   /** Accessible name of the loading spinner; when unset, Spinner's own (provider) default applies. @defaultValue 'Loading' */
   loading: string;
-  /** Accessible name of each column's filter trigger; `{column}` is the column's header text (or id). @defaultValue 'Filter {column}' */
+  /** Accessible name of each column's filter trigger; `{column}` is `filter.label`, else the header text, else the id. @defaultValue 'Filter {column}' */
   filterButton: string;
   /**
    * Accessible name of a preset filter's field: the `text` input (a `filter.placeholder` stays a visible hint),

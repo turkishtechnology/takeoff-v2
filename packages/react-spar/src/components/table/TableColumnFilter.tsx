@@ -59,10 +59,10 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   const filter = column.columnDef.meta?.filter as TableColumnFilterConfig | undefined;
   if (!filter) return null;
 
-  // `{column}` in the filter labels: the header text, or the id when the
-  // header is empty, a node or a render function.
+  // `{column}` in the filter labels: `filter.label`, else the header text, else
+  // the id (an empty, node or render-function header has no text to use).
   const headerText = typeof column.columnDef.header === 'string' ? column.columnDef.header.trim() : '';
-  const columnName = headerText || column.id;
+  const columnName = filter.label?.trim() || headerText || column.id;
   const value = column.getFilterValue();
   const active = (filter.isActive ?? defaultIsActive)(value);
   const fieldLabel = formatLabel(labels.filterValue, { column: columnName });

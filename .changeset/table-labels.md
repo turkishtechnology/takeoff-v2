@@ -33,10 +33,12 @@ overrides that match on them):
 - An empty `filter.placeholder` on a `select` filter falls back to the default
   text (`labels.filterSelectPlaceholder`) instead of rendering an empty trigger.
 
-Custom `filter.render` controls receive `fieldLabel` (the formatted
-`labels.filterValue`) to use as their accessible name. Table always provides it;
-it is optional on `TableColumnFilterContext` only so a context built by hand
-(e.g. in a unit test) still type-checks.
+A column's new `filter.label` sets the plain-text name used for `{column}`
+(needed when `header` is a node or function, which otherwise falls back to the
+column `id`). Custom `filter.render` controls receive `fieldLabel` (the
+formatted `labels.filterValue`) to use as their accessible name. Table always
+provides it; it is optional on `TableColumnFilterContext` only so a context
+built by hand (e.g. in a unit test) still type-checks.
 
 The checkbox and multi-select filter options now sit in a named group, the new
 `filterOptions` slot (`tk-table-filter-options`), styled by the matching

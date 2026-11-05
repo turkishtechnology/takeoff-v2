@@ -958,6 +958,24 @@ describe('Table (props-first)', () => {
       expect(await screen.findByRole('textbox', { name: 'Age filtre değeri' })).toBeInTheDocument();
     });
 
+    it('takes `{column}` from `filter.label` over the header and id', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'createdAt', header: () => <span>Oluşturma</span>, accessor: 'name', filter: { type: 'text', label: 'Oluşturma' } },
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'text', label: '  ' } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterButton: '{column} sütununu filtrele', filterValue: '{column} filtre değeri' }} />);
+
+      // A node header uses `filter.label` instead of the id.
+      expect(screen.queryByRole('button', { name: 'createdAt sütununu filtrele' })).not.toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Oluşturma sütununu filtrele' }));
+      expect(await screen.findByRole('searchbox', { name: 'Oluşturma filtre değeri' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      // A blank `filter.label` falls back to the header text.
+      expect(screen.getByRole('button', { name: 'Role sütununu filtrele' })).toBeInTheDocument();
+    });
+
     it('names each filter trigger and filter field after its column through `{column}`', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [
