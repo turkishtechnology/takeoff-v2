@@ -34,6 +34,7 @@ import { CopyIconOutlinedRounded } from '@takeoff-icons/react/copy';
 import { DoneAllIconOutlinedRounded } from '@takeoff-icons/react/done-all';
 import { FileIconOutlinedRounded } from '@takeoff-icons/react/file';
 import { FlashIconFilledRounded } from '@takeoff-icons/react/flash';
+import { HistoryIconOutlinedRounded } from '@takeoff-icons/react/history';
 import { MaximizeIconOutlinedRounded } from '@takeoff-icons/react/maximize';
 import { MicIconFilledRounded, MicIconOutlinedRounded } from '@takeoff-icons/react/mic';
 import { MinimizeIconOutlinedRounded } from '@takeoff-icons/react/minimize';
@@ -304,6 +305,12 @@ export interface ChatbotProps {
   /** Shows a full screen button in the header. The launcher sets these when `expandable` is on. */
   expanded?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
+  /**
+   * Draws the card's rounded corners, border and shadow. Turn it off when
+   * the chatbot fills a frame of its own, e.g. a drawer or a full screen
+   * panel. `'desktop'` turns it off on screens narrower than 640px only.
+   */
+  framed?: boolean | 'desktop';
   /** Rendered at the end of the log, after the messages, e.g. a `ChatbotRating` when the chat ends. */
   endContent?: ReactNode;
   /** Image URL or element for the user's avatar. Defaults to a person icon. */
@@ -1038,6 +1045,17 @@ function usePickedFiles() {
   return { files, previews, setFiles };
 }
 
+/**
+ * The card's frame. Each state sets every property, so a frameless chatbot
+ * never depends on two competing `!important` classes. The `max-sm:` ones
+ * come later in the stylesheet than the plain ones, so they win below 640px.
+ */
+const frameStyles = {
+  on: { card: '!rounded-xl !shadow-1-default-base', header: '' },
+  off: { card: '!rounded-none !border-0 !shadow-none', header: '!rounded-none' },
+  desktop: { card: '!rounded-xl !shadow-1-default-base max-sm:!rounded-none max-sm:!border-0 max-sm:!shadow-none', header: 'max-sm:!rounded-none' },
+};
+
 export function Chatbot({
   messages,
   onSubmit,
@@ -1068,6 +1086,7 @@ export function Chatbot({
   expanded,
   onExpandedChange,
   endContent,
+  framed = true,
   userAvatar,
   allowAttachments = true,
   attachmentOptions = defaultAttachmentOptions,
@@ -1083,6 +1102,7 @@ export function Chatbot({
 }: ChatbotProps) {
   const l = { ...defaultLabels, ...labels };
   const f = footerStyles[type];
+  const frame = frameStyles[framed === 'desktop' ? 'desktop' : framed ? 'on' : 'off'];
   const titleId = useId();
   const noticeId = useId();
   const counterId = useId();
@@ -1257,11 +1277,7 @@ export function Chatbot({
   const describedBy = [composerNotice ? noticeId : '', showCounter ? counterId : ''].filter(Boolean).join(' ') || undefined;
 
   return (
-    <Card
-      as="section"
-      aria-labelledby={titleId}
-      className={`flex h-[560px] max-h-full w-full max-w-[400px] flex-col overflow-hidden !rounded-xl !shadow-1-default-base ${className}`}
-    >
+    <Card as="section" aria-labelledby={titleId} className={`flex h-[560px] max-h-full w-full max-w-[400px] flex-col overflow-hidden ${frame.card} ${className}`}>
       <ChatbotHeader
         type={type}
         title={agent?.name ?? title}
@@ -1275,7 +1291,7 @@ export function Chatbot({
         onExpandedChange={onExpandedChange}
         onClose={onClose}
         labels={l}
-        className="relative z-10 !shadow-2-default-lg"
+        className={`relative z-10 !shadow-2-default-lg ${frame.header}`}
       />
 
       <div className="relative flex min-h-0 flex-1 flex-col">
@@ -1296,7 +1312,8 @@ export function Chatbot({
                 {loadingOlder ? (
                   <Skeleton width={160} height={20} className="!rounded-full" aria-label={l.loading} />
                 ) : (
-                  <Button variant="neutral" appearance="text" size="small" onClick={onLoadOlder}>
+                  // A pill, the shape of the skeleton that replaces it while loading.
+                  <Button variant="neutral" appearance="outlined" size="small" rounded startContent={<HistoryIconOutlinedRounded />} onClick={onLoadOlder}>
                     {l.loadOlder}
                   </Button>
                 )}
@@ -1426,7 +1443,7 @@ export function Chatbot({
                         appearance="text"
                         size="small"
                         aria-label={l.attachFiles}
-                        className="!size-8"
+                        className="!size-8 shrink-0"
                         disabled={blocked}
                         startContent={<AddCircleIconFilledTk className={f.attach} />}
                         onClick={() => pickFiles(attachmentOptions[0])}
@@ -1439,7 +1456,7 @@ export function Chatbot({
                           appearance="text"
                           size="small"
                           aria-label={l.attachFiles}
-                          className="!size-8"
+                          className="!size-8 shrink-0"
                           disabled={blocked}
                           startContent={<AddCircleIconFilledTk className={f.attach} />}
                         />
@@ -1459,7 +1476,8 @@ export function Chatbot({
                         </Dropdown.Content>
                       </Dropdown>
                     )}
-                    <span className={`h-6 w-px shrink-0 self-center ${f.divider}`} aria-hidden="true" />
+                    {/* Centred on the buttons, which stay at the bottom as the field grows. */}
+                    <span className={`mb-1 h-6 w-px shrink-0 self-end ${f.divider}`} aria-hidden="true" />
                   </>
                 )}
                 <Input.Field
@@ -1477,7 +1495,7 @@ export function Chatbot({
                   aria-describedby={describedBy}
                   aria-invalid={overLimit || undefined}
                   aria-label={l.message}
-                  className={`max-h-32 !resize-none self-center !py-1.5 [field-sizing:content] ${scrollbar} ${f.field}`}
+                  className={`max-h-32 min-w-0 flex-1 !resize-none self-center !py-1.5 [field-sizing:content] ${scrollbar} ${f.field}`}
                 />
                 {onVoiceInput && (
                   <Button
@@ -1490,7 +1508,7 @@ export function Chatbot({
                     startContent={listening ? <MicIconFilledRounded /> : <MicIconOutlinedRounded />}
                     onClick={onVoiceInput}
                     // While recording, a red mic with a pulsing ring.
-                    className={`!size-8 ${listening ? '!rounded-full bg-states-danger-lightest motion-safe:animate-pulse' : ''}`}
+                    className={`!size-8 shrink-0 ${listening ? '!rounded-full bg-states-danger-lightest motion-safe:animate-pulse' : ''}`}
                     classNames={{ content: listening ? '!text-states-danger-base' : f.attach }}
                   />
                 )}
@@ -1502,7 +1520,7 @@ export function Chatbot({
                   aria-label={l.send}
                   startContent={<SendIconFilledRounded />}
                   disabled={!canSend}
-                  className="!size-8 disabled:opacity-40"
+                  className="!size-8 shrink-0 disabled:opacity-40"
                   classNames={{ content: f.send }}
                 />
               </Input>
@@ -1543,16 +1561,14 @@ export interface ChatbotLauncherProps extends Omit<ChatbotProps, 'onClose' | 'ex
   onOpenChange?: (open: boolean) => void;
 }
 
+// The panel covers its containing block: the viewport, or the nearest
+// ancestor with a transform, as in the docs preview frame. Full screen, the
+// card drops its frame, which would only draw a border along the edges.
 const fullScreenStyles = {
-  // The panel covers its containing block: the viewport, or the nearest
-  // ancestor with a transform, as in the docs preview frame.
-  always: { panel: 'fixed inset-0 z-10 !h-full !w-full', card: '!max-w-full !rounded-none' },
-  mobile: {
-    panel: 'max-sm:fixed max-sm:inset-0 max-sm:z-10 max-sm:!h-full max-sm:!w-full',
-    card: 'max-sm:!max-w-full max-sm:!rounded-none',
-  },
-  never: { panel: '', card: '' },
-};
+  always: { panel: 'fixed inset-0 z-10 !h-full !w-full', card: '!max-w-full', framed: false },
+  mobile: { panel: 'max-sm:fixed max-sm:inset-0 max-sm:z-10 max-sm:!h-full max-sm:!w-full', card: 'max-sm:!max-w-full', framed: 'desktop' },
+  never: { panel: '', card: '', framed: true },
+} as const;
 
 /** A floating action button (Figma `chatbot-fab`) that opens the chatbot in a panel above it. */
 export function ChatbotLauncher({
@@ -1631,6 +1647,7 @@ export function ChatbotLauncher({
           onClose={close}
           expanded={expandable ? expanded : undefined}
           onExpandedChange={expandable ? setExpanded : undefined}
+          framed={chatbotProps.framed ?? full.framed}
           className={`!h-full ${full.card} ${chatbotProps.className ?? ''}`}
         />
       </div>
