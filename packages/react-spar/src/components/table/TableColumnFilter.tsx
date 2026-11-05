@@ -26,6 +26,12 @@ const defaultIsActive = (value: unknown): boolean => !isEmptyFilterValue(value);
 // `slotProps.filterButton['aria-label']` renamed the trigger before `labels`
 // existed; it is ignored now, so tell developers once where the name moved.
 let warnedFilterButtonAriaLabel = false;
+
+// Test-only: the flag is module-level, so a test that expects the warning would
+// depend on test order without a reset. Not re-exported from the barrel.
+export const resetTableDevWarnings = (): void => {
+  warnedFilterButtonAriaLabel = false;
+};
 const warnIgnoredFilterButtonAriaLabel = (ariaLabel: unknown) => {
   if (warnedFilterButtonAriaLabel || ariaLabel === undefined || !isDevelopment()) return;
   warnedFilterButtonAriaLabel = true;

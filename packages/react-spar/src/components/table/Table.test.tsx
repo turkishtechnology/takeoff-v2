@@ -11,6 +11,7 @@ import { render as renderPlain, renderWithProvider as render, screen, within } f
 
 import { Table } from './Table';
 import { TableBody } from './TableBody';
+import { resetTableDevWarnings } from './TableColumnFilter';
 import { formatLabel, getExportRows } from './helpers';
 import type { TableColumnDef, TableLabels, TableSlot } from './types';
 
@@ -759,6 +760,7 @@ describe('Table (props-first)', () => {
 
     it('takes filter-trigger, pagination and expand names from `labels`, ignoring slotProps aria-labels', async () => {
       const user = userEvent.setup();
+      resetTableDevWarnings();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       render(
         <Table
@@ -928,11 +930,15 @@ describe('Table (props-first)', () => {
       const columns: TableColumnDef<User>[] = [
         { id: 'city', header: 'City', accessor: 'profile.city', filter: { type: 'checkbox', options: [{ label: 'Istanbul', value: 'Istanbul' }] } },
       ];
-      render(<Table data={users} columns={columns} getRowId={getRowId} classNames={{ filterOptions: 'my-options' }} slotProps={{ filterOptions: { 'aria-label': 'ignored' } }} />);
+      renderPlain(
+        <TakeoffSparProvider components={{ Table: { classNames: { filterOptions: 'theme-options' } } }}>
+          <Table data={users} columns={columns} getRowId={getRowId} classNames={{ filterOptions: 'my-options' }} slotProps={{ filterOptions: { 'aria-label': 'ignored' } }} />
+        </TakeoffSparProvider>,
+      );
 
       await user.click(screen.getByRole('button', { name: 'Filter City' }));
       const group = await screen.findByRole('group', { name: 'Filter City value' });
-      expect(group).toHaveClass('tk-table-filter-options', 'my-options');
+      expect(group).toHaveClass('tk-table-filter-options', 'theme-options', 'my-options');
       expect(group).toHaveAttribute('data-slot', 'filter-options');
     });
 
