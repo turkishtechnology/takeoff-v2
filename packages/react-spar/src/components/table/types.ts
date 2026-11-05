@@ -156,7 +156,7 @@ export interface TableColumnFilter<TData = unknown> {
    * Plain-text column name for the `{column}` placeholder in
    * `labels.filterButton` / `labels.filterValue`. Wins over a string `header`;
    * set it when `header` is a node or function, which otherwise falls back to
-   * the column `id`.
+   * the column `id`. Used only for accessible names; it is never rendered.
    */
   label?: string;
   /**

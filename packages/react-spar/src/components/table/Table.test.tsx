@@ -2088,6 +2088,8 @@ describe('Table (props-first)', () => {
     });
 
     it('routes classNames.filterButton and slotProps.filterButton (theme + instance) onto the filter trigger', () => {
+      // The ignored aria-label triggers the once-only dev warning; keep it out of the output.
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       renderPlain(
         <TakeoffSparProvider
