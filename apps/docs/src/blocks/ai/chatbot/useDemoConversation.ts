@@ -31,9 +31,11 @@ export interface DemoConversationOptions {
   undoWindow?: number;
   /** Who answers, when it is not the bot, e.g. a human agent after a handoff. */
   author?: ChatbotAuthor;
+  /** The answer to a question: its text, or message fields such as `sources` and `suggestions`. */
+  answerWith?: (text: string, files: File[]) => string | Partial<ChatbotMessage>;
 }
 
-export function useDemoConversation(initial: ChatbotMessage[], { stream = false, delay = 1200, undoWindow = 0, author }: DemoConversationOptions = {}) {
+export function useDemoConversation(initial: ChatbotMessage[], { stream = false, delay = 1200, undoWindow = 0, author, answerWith }: DemoConversationOptions = {}) {
   const [messages, setMessages] = useState(initial);
   // Count pending replies so overlapping sends keep the indicator on.
   const [pending, setPending] = useState(0);
@@ -57,13 +59,15 @@ export function useDemoConversation(initial: ChatbotMessage[], { stream = false,
     setPending(count => count - 1);
     if (questionId && retracted.current.has(questionId)) return;
 
-    const text = reply(prompt, files, again);
+    const custom = !again && answerWith ? answerWith(prompt, files) : undefined;
+    const { content, ...fields } = typeof custom === 'string' ? { content: custom } : (custom ?? {});
+    const text = typeof content === 'string' ? content : reply(prompt, files, again);
     const id = newId();
     const markRead = (current: ChatbotMessage[]) =>
       current.map(message => (message.role === 'user' && message.status === 'sent' ? { ...message, status: 'read' as const, undoable: false } : message));
 
     if (!stream) {
-      setMessages(current => [...markRead(current), { id, role: 'assistant', content: text, time: now(), author }]);
+      setMessages(current => [...markRead(current), { id, role: 'assistant', content: text, time: now(), author, ...fields }]);
       return;
     }
 
@@ -75,7 +79,7 @@ export function useDemoConversation(initial: ChatbotMessage[], { stream = false,
       if (!mounted.current) return;
       update(id, { content: words.slice(0, i).join(' ') });
     }
-    update(id, { streaming: false });
+    update(id, { streaming: false, ...fields });
   };
 
   /** Delivers a user message (sending, then sent) and asks for the answer. */

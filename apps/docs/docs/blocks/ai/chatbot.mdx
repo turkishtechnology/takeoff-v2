@@ -36,6 +36,32 @@ import handoffSource from '@site/src/blocks/ai/chatbot/examples/HandoffExample.t
 import offlineSource from '@site/src/blocks/ai/chatbot/examples/OfflineExample.tsx?raw';
 import notificationSource from '@site/src/blocks/ai/chatbot/examples/NotificationExample.tsx?raw';
 import mobileSource from '@site/src/blocks/ai/chatbot/examples/MobileExample.tsx?raw';
+import TurkishExample from '@site/src/blocks/ai/chatbot/examples/TurkishExample';
+import SuggestionsExample from '@site/src/blocks/ai/chatbot/examples/SuggestionsExample';
+import SourcesExample from '@site/src/blocks/ai/chatbot/examples/SourcesExample';
+import DisclaimerExample from '@site/src/blocks/ai/chatbot/examples/DisclaimerExample';
+import ExpandExample from '@site/src/blocks/ai/chatbot/examples/ExpandExample';
+import DatesExample from '@site/src/blocks/ai/chatbot/examples/DatesExample';
+import NewMessagesExample from '@site/src/blocks/ai/chatbot/examples/NewMessagesExample';
+import RatingExample from '@site/src/blocks/ai/chatbot/examples/RatingExample';
+import VoiceExample from '@site/src/blocks/ai/chatbot/examples/VoiceExample';
+import LimitsExample from '@site/src/blocks/ai/chatbot/examples/LimitsExample';
+import DrawerExample from '@site/src/blocks/ai/chatbot/examples/DrawerExample';
+import HistoryExample from '@site/src/blocks/ai/chatbot/examples/HistoryExample';
+import ConsentExample from '@site/src/blocks/ai/chatbot/examples/ConsentExample';
+import turkishSource from '@site/src/blocks/ai/chatbot/examples/TurkishExample.tsx?raw';
+import suggestionsSource from '@site/src/blocks/ai/chatbot/examples/SuggestionsExample.tsx?raw';
+import sourcesSource from '@site/src/blocks/ai/chatbot/examples/SourcesExample.tsx?raw';
+import disclaimerSource from '@site/src/blocks/ai/chatbot/examples/DisclaimerExample.tsx?raw';
+import expandSource from '@site/src/blocks/ai/chatbot/examples/ExpandExample.tsx?raw';
+import datesSource from '@site/src/blocks/ai/chatbot/examples/DatesExample.tsx?raw';
+import newMessagesSource from '@site/src/blocks/ai/chatbot/examples/NewMessagesExample.tsx?raw';
+import ratingSource from '@site/src/blocks/ai/chatbot/examples/RatingExample.tsx?raw';
+import voiceSource from '@site/src/blocks/ai/chatbot/examples/VoiceExample.tsx?raw';
+import limitsSource from '@site/src/blocks/ai/chatbot/examples/LimitsExample.tsx?raw';
+import drawerSource from '@site/src/blocks/ai/chatbot/examples/DrawerExample.tsx?raw';
+import historySource from '@site/src/blocks/ai/chatbot/examples/HistoryExample.tsx?raw';
+import consentSource from '@site/src/blocks/ai/chatbot/examples/ConsentExample.tsx?raw';
 import chatbotSource from '@site/src/blocks/ai/chatbot/Chatbot.tsx?raw';
 import conversationSource from '@site/src/blocks/ai/chatbot/useDemoConversation.ts?raw';
 
@@ -46,9 +72,9 @@ composer. It is a **block**: there is no `Chatbot` export in
 `@takeoff-ui/react-spar`. Copy [`Chatbot.tsx`](#source) into your app and
 connect it to your own backend or AI SDK.
 
-The block is built from `Card`, `Badge`, `Button` and `Input`, and imports its
-icons from `@takeoff-icons/react`. Add that package to your app if it is not
-already a direct dependency:
+The block is built from `Card`, `Badge`, `Button`, `Chip`, `Dropdown`, `Input`
+and `Skeleton`, and imports its icons from `@takeoff-icons/react`. Add that
+package to your app if it is not already a direct dependency:
 
 ```bash
 pnpm add @takeoff-icons/react
@@ -243,6 +269,147 @@ and `offlineNotice` explains why.
   <OfflineExample />
 </BlockPreview>
 
+## Full screen
+
+`expandable` adds a full screen button to the launcher's header. On phones the
+panel already opens full screen (`fullScreen="mobile"`), so the button matters
+on larger screens. Closing the panel leaves full screen.
+
+<BlockPreview minHeight={720} code={expandSource} title="ExpandExample.tsx">
+  <ExpandExample />
+</BlockPreview>
+
+## Side panel
+
+To keep the chat next to the page at full height, put the `Chatbot` in a
+`Drawer.Panel`. The chatbot brings its own header, so pass `onClose` to close
+the drawer from it, and give the panel an `aria-label`.
+
+<BlockPreview minHeight={200} code={drawerSource} title="DrawerExample.tsx">
+  <DrawerExample />
+</BlockPreview>
+
+## Follow-up suggestions
+
+Give an answer `suggestions` to show them as chips under it while it is the last
+message. Pressing one sends it as the user's message, through `onSubmit`.
+
+<BlockPreview
+  minHeight={600}
+  code={suggestionsSource}
+  title="SuggestionsExample.tsx"
+>
+  <SuggestionsExample />
+</BlockPreview>
+
+## Sources
+
+Give an answer `sources` (`title` and `url`) to list the pages it is based on
+under the text. They open in a new tab.
+
+<BlockPreview minHeight={520} code={sourcesSource} title="SourcesExample.tsx">
+  <SourcesExample />
+</BlockPreview>
+
+## AI disclaimer
+
+`disclaimer` shows a short note under the composer, e.g. that answers are
+written by AI. It can hold links.
+
+<BlockPreview
+  minHeight={460}
+  code={disclaimerSource}
+  title="DisclaimerExample.tsx"
+>
+  <DisclaimerExample />
+</BlockPreview>
+
+## Day dividers
+
+Give each message the label of its `day`, e.g. "Today" or "3 November". A
+divider with the label is shown above the first message of each day.
+
+<BlockPreview minHeight={600} code={datesSource} title="DatesExample.tsx">
+  <DatesExample />
+</BlockPreview>
+
+## New messages
+
+When a message arrives while the reader is scrolled up, the log does not jump. A
+"New messages" divider marks where they start and a button counts them; pressing
+it, or scrolling to the bottom, clears both. Scroll up and select **Receive a
+message** to try it.
+
+<BlockPreview
+  minHeight={560}
+  code={newMessagesSource}
+  title="NewMessagesExample.tsx"
+>
+  <NewMessagesExample />
+</BlockPreview>
+
+## Loading history
+
+`loading` shows skeleton messages while the conversation loads. With `hasOlder`,
+a Load older messages button sits at the top of the log; it and scrolling to the
+top call `onLoadOlder`. Prepend the older messages to `messages` and the reader
+stays on the message they were reading. Set `loadingOlder` while they load.
+
+<BlockPreview minHeight={520} code={historySource} title="HistoryExample.tsx">
+  <HistoryExample />
+</BlockPreview>
+
+## Consent
+
+`consent` replaces the composer with a notice and a Start chat button until the
+reader agrees, e.g. for a privacy notice. `onAcceptConsent` fires when they do;
+clear `consent` then and the composer takes its place.
+
+<BlockPreview minHeight={480} code={consentSource} title="ConsentExample.tsx">
+  <ConsentExample />
+</BlockPreview>
+
+## Length and rate limits
+
+`maxLength` shows a counter near the limit and turns Send off over it.
+`disabled` with a `notice` turns the composer off while the online badge stays,
+e.g. after your service answers 429 Too Many Requests. Send three messages to
+see it.
+
+<BlockPreview minHeight={600} code={limitsSource} title="LimitsExample.tsx">
+  <LimitsExample />
+</BlockPreview>
+
+## Voice input
+
+`onVoiceInput` adds a microphone button to the composer, and `listening` shows
+it recording. The block only shows the state: record with the Web Speech API or
+`MediaRecorder` and send the transcript through your own `onSubmit`.
+
+<BlockPreview minHeight={480} code={voiceSource} title="VoiceExample.tsx">
+  <VoiceExample />
+</BlockPreview>
+
+## Rating
+
+`ChatbotRating` asks for a 1 to 5 star rating. Put it in `endContent`, which is
+shown after the last message, when the chat ends.
+
+<BlockPreview minHeight={600} code={ratingSource} title="RatingExample.tsx">
+  <RatingExample />
+</BlockPreview>
+
+## Language
+
+Every text the block shows or announces comes from `labels`, including the
+screen reader labels. Pass a `ChatbotLabels` object, or only the texts you
+change; the rest stays in English. Translate `attachmentOptions` and your
+`menuItems` too.
+
+<BlockPreview minHeight={600} code={turkishSource} title="TurkishExample.tsx">
+  <TurkishExample />
+</BlockPreview>
+
 ## Types
 
 `type` follows the Figma variants and styles the header, the bubbles and the
@@ -270,8 +437,8 @@ conversation:
 
 - Pass the conversation as `messages`. Each message has an `id`, a `role`
   (`assistant`, `user` or `system`), `content`, and optionally `attachments`,
-  `extra`, `time`, `status`, `retracted`, `undoable`, `feedback`, `author` and
-  `streaming`.
+  `extra`, `time`, `day`, `status`, `retracted`, `undoable`, `feedback`,
+  `author`, `streaming`, `sources` and `suggestions`.
 - `onSubmit(text, files)` fires when the user sends. Upload the files, append
   the user message, set `typing` while you wait, then append the answer.
 - To stream a reply, append an empty assistant message with `streaming: true`
@@ -302,7 +469,17 @@ app already uses.
 - Delivery states have a visually hidden label, the unread count is part of the
   launcher's label, the thumbs are toggle buttons (`aria-pressed`), and copying
   is announced.
-- While offline, the disabled message field is described by the notice.
+- While offline or disabled, the message field is described by the notice, and
+  near `maxLength` by the character count.
+- Suggestions are a labelled group of buttons. Pressing one keeps focus in the
+  composer, and accepting consent moves focus there.
+- The jump button and the dividers are visible cues only: the log already
+  announces new messages. Day and new-message dividers are `role="separator"`
+  with a label.
+- The microphone is a toggle button (`aria-pressed`), the stars of
+  `ChatbotRating` are labelled toggle buttons in a labelled group, and the
+  thanks is announced.
+- While loading, the log is `aria-busy` and the skeleton has a status label.
 - The composer grows with its content through `field-sizing: content`; browsers
   without it (Firefox, older Safari) keep a single row that scrolls.
 

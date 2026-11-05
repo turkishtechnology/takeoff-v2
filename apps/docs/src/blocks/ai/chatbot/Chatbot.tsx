@@ -8,9 +8,23 @@
  *
  * Design: Figma → Takeoff - Blocks → Chatbot.
  */
-import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactNode, type RefObject, type SVGProps, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import { Badge, Button, Card, Dropdown, Input } from '@takeoff-ui/react-spar';
+import {
+  type ChangeEvent,
+  type FormEvent,
+  Fragment,
+  type KeyboardEvent,
+  type ReactNode,
+  type RefObject,
+  type SVGProps,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
+import { Badge, Button, Card, Chip, Dropdown, Input, Skeleton } from '@takeoff-ui/react-spar';
 import { AddCircleIconFilledTk } from '@takeoff-icons/react/add-circle';
+import { ArrowBottomIconOutlinedRounded } from '@takeoff-icons/react/arrow-bottom';
 import { AttachIconOutlinedRounded } from '@takeoff-icons/react/attach';
 import { CameraIconOutlinedRounded } from '@takeoff-icons/react/camera';
 import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
@@ -20,15 +34,126 @@ import { CopyIconOutlinedRounded } from '@takeoff-icons/react/copy';
 import { DoneAllIconOutlinedRounded } from '@takeoff-icons/react/done-all';
 import { FileIconOutlinedRounded } from '@takeoff-icons/react/file';
 import { FlashIconFilledRounded } from '@takeoff-icons/react/flash';
+import { MaximizeIconOutlinedRounded } from '@takeoff-icons/react/maximize';
+import { MicIconFilledRounded, MicIconOutlinedRounded } from '@takeoff-icons/react/mic';
+import { MinimizeIconOutlinedRounded } from '@takeoff-icons/react/minimize';
+import { OpenIconOutlinedRounded } from '@takeoff-icons/react/open';
 import { PdfIconOutlinedRounded } from '@takeoff-icons/react/pdf';
 import { PersonIconFilledRounded } from '@takeoff-icons/react/person';
 import { RefreshRightIconOutlinedRounded } from '@takeoff-icons/react/refresh-right';
 import { SendIconFilledRounded } from '@takeoff-icons/react/send';
+import { StarIconFilledRounded, StarIconOutlinedRounded } from '@takeoff-icons/react/star';
 import { ThumbDownIconFilledRounded, ThumbDownIconOutlinedRounded } from '@takeoff-icons/react/thumb-down';
 import { ThumbUpIconFilledRounded, ThumbUpIconOutlinedRounded } from '@takeoff-icons/react/thumb-up';
 import { WarningCircleIconFilledRounded } from '@takeoff-icons/react/warning-circle';
 
 const DEFAULT_TITLE = 'Takeoff bot';
+
+/**
+ * Every text the block shows or announces. Pass a partial object as `labels`
+ * to translate it; anything left out stays in English.
+ */
+export interface ChatbotLabels {
+  subtitle: string;
+  online: string;
+  offline: string;
+  typing: string;
+  moreOptions: string;
+  closeChat: string;
+  expand: string;
+  collapse: string;
+  conversation: (title: string) => string;
+  isTyping: (name: string) => string;
+  offlineNotice: string;
+  placeholder: string;
+  listening: string;
+  message: string;
+  send: string;
+  attachFiles: string;
+  attachments: string;
+  removeFile: (name: string) => string;
+  voiceInput: string;
+  stopVoiceInput: string;
+  characters: (count: number, max: number) => string;
+  sending: string;
+  sent: string;
+  read: string;
+  notDelivered: string;
+  notSent: string;
+  retry: string;
+  undo: string;
+  retracted: string;
+  somethingWentWrong: string;
+  copy: string;
+  copied: string;
+  copiedToClipboard: string;
+  goodResponse: string;
+  badResponse: string;
+  regenerate: string;
+  suggestions: string;
+  sources: string;
+  newMessages: (count: number) => string;
+  newMessagesDivider: string;
+  loadOlder: string;
+  loading: string;
+  startChat: string;
+  openChat: (title: string, unread: number) => string;
+  hideChat: string;
+  dismissGreeting: string;
+  rating: (value: number, max: number) => string;
+  ratingThanks: string;
+}
+
+export const defaultLabels: ChatbotLabels = {
+  subtitle: 'Chat with',
+  online: 'Online',
+  offline: 'Offline',
+  typing: 'Typing…',
+  moreOptions: 'More options',
+  closeChat: 'Close chat',
+  expand: 'Full screen',
+  collapse: 'Exit full screen',
+  conversation: title => `Conversation with ${title}`,
+  isTyping: name => `${name} is typing`,
+  offlineNotice: 'We are offline right now. Please come back later.',
+  placeholder: 'Type your message here',
+  listening: 'Listening…',
+  message: 'Message',
+  send: 'Send message',
+  attachFiles: 'Attach files',
+  attachments: 'Attachments',
+  removeFile: name => `Remove ${name}`,
+  voiceInput: 'Voice input',
+  stopVoiceInput: 'Stop voice input',
+  characters: (count, max) => `${count} of ${max} characters`,
+  sending: 'Sending',
+  sent: 'Sent',
+  read: 'Read',
+  notDelivered: 'Not delivered',
+  notSent: 'Not sent',
+  retry: 'Retry',
+  undo: 'Undo',
+  retracted: 'You retracted this message',
+  somethingWentWrong: 'Something went wrong',
+  copy: 'Copy',
+  copied: 'Copied',
+  copiedToClipboard: 'Copied to clipboard',
+  goodResponse: 'Good response',
+  badResponse: 'Bad response',
+  regenerate: 'Regenerate response',
+  suggestions: 'Suggested questions',
+  sources: 'Sources',
+  newMessages: count => (count === 1 ? '1 new message' : `${count} new messages`),
+  newMessagesDivider: 'New messages',
+  loadOlder: 'Load older messages',
+  loading: 'Loading messages',
+  startChat: 'Start chat',
+  openChat: (title, unread) => (unread > 0 ? `Chat with ${title}, ${unread} unread ${unread === 1 ? 'message' : 'messages'}` : `Chat with ${title}`),
+  hideChat: 'Hide chat',
+  dismissGreeting: 'Dismiss message',
+  rating: (value, max) => `${value} of ${max} stars`,
+  ratingThanks: 'Thanks for your feedback!',
+};
 
 export type ChatbotType = 'basic' | 'divided' | 'light' | 'dark' | 'primary';
 
@@ -74,8 +199,16 @@ export interface ChatbotAuthor {
   avatar: string | ReactNode;
 }
 
+/** A page an answer is based on, shown as a link under the answer. */
+export interface ChatbotSource {
+  title: string;
+  url: string;
+}
+
 export interface ChatbotMessage {
   id: string;
+  /** Day label, e.g. "Today". A divider with it is shown above the first message of each day. */
+  day?: string;
   /** `system` renders a centred note in the log, e.g. "Ayşe joined the chat". */
   role: 'assistant' | 'user' | 'system';
   content: ReactNode;
@@ -101,6 +234,10 @@ export interface ChatbotMessage {
   author?: ChatbotAuthor;
   /** Set while a reply is still streaming in; hides the answer actions until it is complete. */
   streaming?: boolean;
+  /** Pages the answer is based on, shown as links under the answer. */
+  sources?: ChatbotSource[];
+  /** Follow-up questions shown as chips under the answer while it is the last message. Pressing one sends it. */
+  suggestions?: string[];
 }
 
 /** An item of the more (⋮) menu in the header. */
@@ -125,14 +262,50 @@ export interface ChatbotProps {
   /** Bubble style of user messages. Defaults to `type`. */
   userBubble?: ChatbotType;
   title?: string;
+  /** Defaults to `labels.subtitle`. */
   subtitle?: string;
+  /** Texts of the block, e.g. a translation. Anything left out stays in English. */
+  labels?: Partial<ChatbotLabels>;
   /** A human agent who took over the chat: the header shows their name and avatar. */
   agent?: ChatbotAuthor;
   /** `false` shows an "Offline" badge, disables the composer and shows `offlineNotice`. */
   online?: boolean;
-  /** Shown above the disabled composer while offline. */
+  /** Shown above the disabled composer while offline. Defaults to `labels.offlineNotice`. */
   offlineNotice?: ReactNode;
+  /** Disables the composer while online, e.g. after a rate limit. Say why with `notice`. */
+  disabled?: boolean;
+  /** Shown above the composer, e.g. why it is disabled. */
+  notice?: ReactNode;
+  /** Shown under the composer, e.g. that answers are written by AI. */
+  disclaimer?: ReactNode;
+  /** Defaults to `labels.placeholder`. */
   placeholder?: string;
+  /** Longest message the user can send. A counter shows near the limit and Send turns off over it. */
+  maxLength?: number;
+  /**
+   * Asks for consent before the chat starts, e.g. a privacy notice. While
+   * set, it replaces the composer with this content and a Start chat button
+   * that calls `onAcceptConsent`; clear it once accepted.
+   */
+  consent?: ReactNode;
+  onAcceptConsent?: () => void;
+  /** Shows skeleton messages in place of the log, e.g. while the history loads. */
+  loading?: boolean;
+  /** Shows a Load older messages button at the top of the log, which calls `onLoadOlder`. Scrolling to the top calls it too. */
+  hasOlder?: boolean;
+  /** Shows a placeholder in place of the Load older messages button while they load. */
+  loadingOlder?: boolean;
+  /** Prepend older messages to `messages`; the reader's place in the log is kept. */
+  onLoadOlder?: () => void;
+  /** Shows a microphone button in the composer that calls this. */
+  onVoiceInput?: () => void;
+  /** Shows the microphone button as recording. */
+  listening?: boolean;
+  /** Shows a full screen button in the header. The launcher sets these when `expandable` is on. */
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
+  /** Rendered at the end of the log, after the messages, e.g. a `ChatbotRating` when the chat ends. */
+  endContent?: ReactNode;
   /** Image URL or element for the user's avatar. Defaults to a person icon. */
   userAvatar?: string | ReactNode;
   /** Shows the attach button. Set to `false` to hide it. */
@@ -375,7 +548,11 @@ export interface ChatbotHeaderProps {
   /** Id for the title, so a region can be labelled by it. */
   titleId?: string;
   menuItems?: ChatbotMenuItem[];
+  /** With `onExpandedChange`, shows a full screen button that toggles this. */
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
   onClose?: () => void;
+  labels?: Partial<ChatbotLabels>;
   className?: string;
 }
 
@@ -383,23 +560,27 @@ export interface ChatbotHeaderProps {
 export function ChatbotHeader({
   type = 'basic',
   title = DEFAULT_TITLE,
-  subtitle = 'Chat with',
+  subtitle,
   avatar,
   online = true,
   typing = false,
   titleId,
   menuItems = [],
+  expanded = false,
+  onExpandedChange,
   onClose,
+  labels,
   className = '',
 }: ChatbotHeaderProps) {
   const s = headerStyles[type];
+  const l = { ...defaultLabels, ...labels };
 
   return (
     <Card.Header headerType={type} className={`!flex-row items-center justify-between gap-3 !p-3 ${className}`}>
       <div className="flex min-w-0 items-center gap-1.5">
         {avatar ? <Avatar avatar={avatar} cover className="size-10" /> : <ChatbotIcon face={s.face} className={`size-10 shrink-0 ${s.avatar}`} />}
         <div className="min-w-0">
-          <div className={`text-[11px] leading-4 uppercase ${s.subtitle}`}>{subtitle}</div>
+          <div className={`text-[11px] leading-4 uppercase ${s.subtitle}`}>{subtitle ?? l.subtitle}</div>
           <div className="flex items-center gap-1">
             <Card.Title id={titleId} level={2} className="truncate !text-xl !leading-[30px]">
               {title}
@@ -415,11 +596,11 @@ export function ChatbotHeader({
                 className="shrink-0"
                 classNames={{ icon: '!size-3.5' }}
               >
-                {typing ? 'Typing…' : 'Online'}
+                {typing ? l.typing : l.online}
               </Badge>
             ) : (
               <Badge variant="neutral" appearance="filledLight" size="small" rounded className="shrink-0">
-                Offline
+                {l.offline}
               </Badge>
             )}
           </div>
@@ -429,7 +610,7 @@ export function ChatbotHeader({
         {menuItems.length > 0 && (
           <Dropdown size="small">
             {/* Dropdown.Trigger only styles its root, so the icon carries the colour. */}
-            <Dropdown.Trigger as={Button} variant="neutral" appearance="text" aria-label="More options" startContent={<MoreIcon className={s.button} />} />
+            <Dropdown.Trigger as={Button} variant="neutral" appearance="text" aria-label={l.moreOptions} startContent={<MoreIcon className={s.button} />} />
             <Dropdown.Content align="end">
               {menuItems.map(item => (
                 <Dropdown.Item key={item.label} textValue={item.label} onSelect={item.onSelect}>
@@ -446,8 +627,18 @@ export function ChatbotHeader({
             </Dropdown.Content>
           </Dropdown>
         )}
+        {onExpandedChange && (
+          <Button
+            variant="neutral"
+            appearance="text"
+            aria-label={expanded ? l.collapse : l.expand}
+            startContent={expanded ? <MinimizeIconOutlinedRounded /> : <MaximizeIconOutlinedRounded />}
+            onClick={() => onExpandedChange(!expanded)}
+            classNames={{ content: s.button }}
+          />
+        )}
         {onClose && (
-          <Button variant="neutral" appearance="text" aria-label="Close chat" startContent={<CloseIconOutlinedRounded />} onClick={onClose} classNames={{ content: s.button }} />
+          <Button variant="neutral" appearance="text" aria-label={l.closeChat} startContent={<CloseIconOutlinedRounded />} onClick={onClose} classNames={{ content: s.button }} />
         )}
       </div>
     </Card.Header>
@@ -477,7 +668,7 @@ function Attachments({ items }: { items: ChatbotAttachment[] }) {
     <div className="flex flex-wrap gap-2">
       {items.map(item =>
         item.type.startsWith('image/') ? (
-          <a key={item.id} href={item.url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-lg !no-underline">
+          <a key={item.id} href={item.url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-lg !border-0 !no-underline">
             <img src={item.url} alt={item.name} className="max-h-40 max-w-full object-cover" />
           </a>
         ) : (
@@ -485,7 +676,7 @@ function Attachments({ items }: { items: ChatbotAttachment[] }) {
             key={item.id}
             href={item.url}
             download={item.name}
-            className="flex max-w-full items-center gap-1.5 rounded-lg bg-background-light px-2 py-1.5 text-text-darkest !no-underline"
+            className="flex max-w-full items-center gap-1.5 rounded-lg !border-0 bg-background-light px-2 py-1.5 text-text-darkest !no-underline"
           >
             <FileIconOutlinedRounded width={20} height={20} className="shrink-0" />
             <span className="truncate">{item.name}</span>
@@ -495,8 +686,6 @@ function Attachments({ items }: { items: ChatbotAttachment[] }) {
     </div>
   );
 }
-
-const statusLabels = { sending: 'Sending', sent: 'Sent', read: 'Read', failed: 'Not delivered' } as const;
 
 /** A small text button for the row under a bubble: Retry, Undo. */
 function MetaButton({ children, onClick, className = '' }: { children: ReactNode; onClick: () => void; className?: string }) {
@@ -511,6 +700,111 @@ function MetaButton({ children, onClick, className = '' }: { children: ReactNode
   );
 }
 
+/** Links to the pages an answer is based on, at the bottom of its bubble. */
+function Sources({ items, label }: { items: ChatbotSource[]; label: string }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[11px] leading-4 font-medium opacity-80">{label}</span>
+      <ul className="!m-0 flex list-none flex-wrap gap-1.5 !p-0">
+        {items.map((item, index) => (
+          <li key={item.url} className="!m-0 min-w-0">
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noreferrer"
+              className="flex max-w-56 items-center gap-1 rounded-full !border !border-solid !border-current/25 px-2 py-0.5 text-xs leading-4 !text-current !no-underline hover:bg-current/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-base"
+            >
+              <span className="font-semibold">{index + 1}</span>
+              <span className="truncate">{item.title}</span>
+              <OpenIconOutlinedRounded width={12} height={12} className="shrink-0" aria-hidden="true" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** A line across the log with a label: the day, or where new messages start. */
+function LogDivider({ children, className = 'text-text-base' }: { children: ReactNode; className?: string }) {
+  return (
+    <div role="separator" aria-label={typeof children === 'string' ? children : undefined} className={`flex items-center gap-3 text-[11px] leading-4 font-medium ${className}`}>
+      <span className="h-px flex-1 bg-current opacity-25" />
+      <span aria-hidden="true">{children}</span>
+      <span className="h-px flex-1 bg-current opacity-25" />
+    </div>
+  );
+}
+
+/** Placeholder bubbles while the history loads. */
+function MessagesSkeleton({ label }: { label: string }) {
+  const rows = [
+    { user: false, width: 220, height: 64 },
+    { user: true, width: 150, height: 36 },
+    { user: false, width: 260, height: 44 },
+  ];
+  return (
+    <div role="status" aria-label={label} className="flex flex-col gap-6">
+      {rows.map((row, index) => (
+        <div key={index} className={`flex items-end gap-2 ${row.user ? 'flex-row-reverse' : ''}`}>
+          <Skeleton shape="circle" height={32} />
+          <Skeleton width={row.width} height={row.height} className="max-w-[70%] !rounded-lg" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export interface ChatbotRatingProps {
+  question: ReactNode;
+  /** The chosen rating, from 1 to `max`. */
+  value?: number;
+  onChange: (value: number) => void;
+  max?: number;
+  labels?: Partial<ChatbotLabels>;
+  className?: string;
+}
+
+/** A star rating card for the end of a chat, e.g. in `endContent`. */
+export function ChatbotRating({ question, value = 0, onChange, max = 5, labels, className = '' }: ChatbotRatingProps) {
+  const l = { ...defaultLabels, ...labels };
+  const questionId = useId();
+  const [hovered, setHovered] = useState(0);
+  const shown = hovered || value;
+
+  return (
+    <div
+      role="group"
+      aria-labelledby={questionId}
+      className={`mx-auto flex w-full max-w-72 flex-col items-center gap-2 rounded-lg border border-solid border-border-light bg-frames-lightest p-4 text-center ${enter} ${className}`}
+    >
+      <p id={questionId} className="!m-0 text-sm leading-5 font-semibold text-text-darkest">
+        {question}
+      </p>
+      <div className="flex" onMouseLeave={() => setHovered(0)}>
+        {Array.from({ length: max }, (_, index) => index + 1).map(star => (
+          <button
+            key={star}
+            type="button"
+            aria-label={l.rating(star, max)}
+            aria-pressed={value === star}
+            onClick={() => onChange(star)}
+            onMouseEnter={() => setHovered(star)}
+            className={`flex size-9 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 transition-transform duration-150 hover:scale-110 focus-visible:outline-2 focus-visible:outline-primary-base motion-reduce:transition-none ${
+              star <= shown ? 'text-states-warning-base' : 'text-neutral-300 in-data-[theme=dark]:text-neutral-600'
+            }`}
+          >
+            {star <= shown ? <StarIconFilledRounded width={28} height={28} aria-hidden="true" /> : <StarIconOutlinedRounded width={28} height={28} aria-hidden="true" />}
+          </button>
+        ))}
+      </div>
+      <p role="status" className="!m-0 min-h-4 text-xs leading-4 text-text-base">
+        {value > 0 ? l.ratingThanks : ''}
+      </p>
+    </div>
+  );
+}
+
 /** Copy, thumbs up and down and regenerate under an assistant message. */
 function MessageActions({
   message,
@@ -518,10 +812,12 @@ function MessageActions({
   copyable,
   onFeedback,
   onRegenerate,
+  l,
 }: {
   message: ChatbotMessage;
   bubbleRef: RefObject<HTMLDivElement | null>;
   copyable: boolean;
+  l: ChatbotLabels;
   onFeedback?: ChatbotProps['onFeedback'];
   onRegenerate?: ChatbotProps['onRegenerate'];
 }) {
@@ -558,27 +854,27 @@ function MessageActions({
 
   return (
     <div className="-ml-1.5 flex items-center">
-      {copyable && action(copied ? 'Copied' : 'Copy', copied ? <CheckIconOutlinedRounded /> : <CopyIconOutlinedRounded />, copy)}
+      {copyable && action(copied ? l.copied : l.copy, copied ? <CheckIconOutlinedRounded /> : <CopyIconOutlinedRounded />, copy)}
       {onFeedback && (
         <>
           {action(
-            'Good response',
+            l.goodResponse,
             message.feedback === 'up' ? <ThumbUpIconFilledRounded /> : <ThumbUpIconOutlinedRounded />,
             () => onFeedback(message, message.feedback === 'up' ? undefined : 'up'),
             message.feedback === 'up',
           )}
           {action(
-            'Bad response',
+            l.badResponse,
             message.feedback === 'down' ? <ThumbDownIconFilledRounded /> : <ThumbDownIconOutlinedRounded />,
             () => onFeedback(message, message.feedback === 'down' ? undefined : 'down'),
             message.feedback === 'down',
           )}
         </>
       )}
-      {onRegenerate && action('Regenerate response', <RefreshRightIconOutlinedRounded />, () => onRegenerate(message))}
+      {onRegenerate && action(l.regenerate, <RefreshRightIconOutlinedRounded />, () => onRegenerate(message))}
       {/* Announce the copy, which has no other visible effect for screen readers. */}
       <span className="sr-only" role="status">
-        {copied ? 'Copied to clipboard' : ''}
+        {copied ? l.copiedToClipboard : ''}
       </span>
     </div>
   );
@@ -590,9 +886,10 @@ interface MessageProps extends Pick<ChatbotProps, 'onRetry' | 'onUndo' | 'onFeed
   icon: ChatbotIconType;
   userAvatar?: string | ReactNode;
   copyable: boolean;
+  l: ChatbotLabels;
 }
 
-function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo, onFeedback, onRegenerate }: MessageProps) {
+function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo, onFeedback, onRegenerate, l }: MessageProps) {
   const bubbleRef = useRef<HTMLDivElement>(null);
 
   if (message.role === 'system') {
@@ -641,20 +938,21 @@ function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo,
         {hasBody && (
           <div ref={bubbleRef} className={`flex flex-col gap-3 rounded-lg text-sm leading-5 break-words ${bubbleClass}`}>
             {retracted ? (
-              'You retracted this message'
+              l.retracted
             ) : (
               <>
                 {message.attachments?.length ? <Attachments items={message.attachments} /> : null}
                 {failed && !isUser && (
                   <span className="flex items-center gap-1.5 font-semibold">
                     <WarningCircleIconFilledRounded width={16} height={16} className="shrink-0" aria-hidden="true" />
-                    Something went wrong
+                    {l.somethingWentWrong}
                   </span>
                 )}
                 {/* Keep typed line breaks for plain text only: rendered markdown
                     emits newline text nodes between blocks that pre-wrap would show. */}
                 {hasContent && <div className={typeof message.content === 'string' ? 'whitespace-pre-wrap' : ''}>{message.content}</div>}
                 {message.extra}
+                {message.sources?.length ? <Sources items={message.sources} label={l.sources} /> : null}
               </>
             )}
           </div>
@@ -669,15 +967,15 @@ function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo,
                 {message.status === 'read' && <DoneAllIconOutlinedRounded width={16} height={16} className="text-primary-sub-base" aria-hidden="true" />}
                 {failed ? (
                   // The bubble's red border marks the failure; the row only names it.
-                  <span className="text-states-danger-base">Not sent</span>
+                  <span className="text-states-danger-base">{l.notSent}</span>
                 ) : (
-                  <span className="sr-only">{statusLabels[message.status]}</span>
+                  <span className="sr-only">{{ sending: l.sending, sent: l.sent, read: l.read, failed: l.notDelivered }[message.status]}</span>
                 )}
               </>
             )}
             {canUndo && (
               <MetaButton onClick={() => onUndo?.(message)} className="ml-1 text-primary-base">
-                Undo
+                {l.undo}
               </MetaButton>
             )}
             {canRetry && (
@@ -685,13 +983,13 @@ function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo,
                 {(message.time || (isUser && !retracted && message.status)) && <span aria-hidden="true">·</span>}
                 <MetaButton onClick={() => onRetry?.(message)} className="text-states-danger-base">
                   <RefreshRightIconOutlinedRounded width={14} height={14} aria-hidden="true" />
-                  Retry
+                  {l.retry}
                 </MetaButton>
               </>
             )}
           </div>
         )}
-        {hasActions && <MessageActions message={message} bubbleRef={bubbleRef} copyable={copyable} onFeedback={onFeedback} onRegenerate={onRegenerate} />}
+        {hasActions && <MessageActions message={message} bubbleRef={bubbleRef} copyable={copyable} onFeedback={onFeedback} onRegenerate={onRegenerate} l={l} />}
       </div>
     </div>
   );
@@ -749,11 +1047,27 @@ export function Chatbot({
   userBubble = type,
   iconType = 'primary',
   title = DEFAULT_TITLE,
-  subtitle = 'Chat with',
+  subtitle,
+  labels,
   agent,
   online = true,
-  offlineNotice = 'We are offline right now. Please come back later.',
-  placeholder = 'Type your message here',
+  offlineNotice,
+  disabled = false,
+  notice,
+  disclaimer,
+  placeholder,
+  maxLength,
+  consent,
+  onAcceptConsent,
+  loading = false,
+  hasOlder = false,
+  loadingOlder = false,
+  onLoadOlder,
+  onVoiceInput,
+  listening = false,
+  expanded,
+  onExpandedChange,
+  endContent,
   userAvatar,
   allowAttachments = true,
   attachmentOptions = defaultAttachmentOptions,
@@ -767,9 +1081,11 @@ export function Chatbot({
   emptyState,
   className = '',
 }: ChatbotProps) {
+  const l = { ...defaultLabels, ...labels };
   const f = footerStyles[type];
   const titleId = useId();
   const noticeId = useId();
+  const counterId = useId();
   const [draft, setDraft] = useState('');
   const { files, previews, setFiles } = usePickedFiles();
   const logRef = useRef<HTMLDivElement>(null);
@@ -779,16 +1095,52 @@ export function Chatbot({
   const fieldRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
   const stickToBottom = useRef(true);
   const offline = !online;
-  const canSend = !offline && (draft.trim() !== '' || files.length > 0);
+  const blocked = offline || disabled || Boolean(consent);
+  const overLimit = maxLength !== undefined && draft.length > maxLength;
+  const canSend = !blocked && !overLimit && (draft.trim() !== '' || files.length > 0);
+  const composerNotice = offline ? (offlineNotice ?? l.offlineNotice) : notice;
+  const showCounter = maxLength !== undefined && draft.length >= maxLength * 0.8;
+
+  // The first message that arrived while the reader was scrolled up. It gets
+  // a "New messages" divider, which stays until the reader sends, and the
+  // jump button counts from it until the reader reaches the bottom.
+  const [unseenId, setUnseenId] = useState<string | null>(null);
+  const [jumpShown, setJumpShown] = useState(false);
+  const unseenIndex = unseenId ? messages.findIndex(message => message.id === unseenId) : -1;
+  const unseenCount = !jumpShown || unseenIndex < 0 ? 0 : messages.slice(unseenIndex).filter(message => message.role !== 'user').length;
+
+  // What the log looked like at the last render, to tell appended messages
+  // from prepended (older) ones.
+  const last = useRef({ firstId: messages[0]?.id, lastId: messages[messages.length - 1]?.id, height: 0 });
 
   // Follow new messages only while the reader is already at the bottom, so
-  // scrolling up to re-read an earlier answer is never interrupted.
-  useEffect(() => {
+  // scrolling up to re-read an earlier answer is never interrupted. A layout
+  // effect, so the log never paints at the old position first.
+  useLayoutEffect(() => {
     const log = logRef.current;
-    if (log && stickToBottom.current) {
+    if (!log) return;
+    const previous = last.current;
+    const firstId = messages[0]?.id;
+    const lastId = messages[messages.length - 1]?.id;
+
+    if (stickToBottom.current) {
       log.scrollTop = log.scrollHeight;
+    } else if (firstId !== previous.firstId && lastId === previous.lastId) {
+      // Older messages were added above: keep the reader on the same message.
+      log.scrollTop += log.scrollHeight - previous.height;
+    } else if (lastId !== previous.lastId) {
+      const from = messages.findIndex(message => message.id === previous.lastId) + 1;
+      const added = from > 0 ? messages.slice(from) : [];
+      const firstUnseen = added.find(message => message.role !== 'user');
+      if (firstUnseen) {
+        // A new batch after the reader caught up starts a new divider.
+        if (!jumpShown) setUnseenId(firstUnseen.id);
+        setJumpShown(true);
+      }
     }
-  }, [messages, typing]);
+    last.current = { firstId, lastId, height: log.scrollHeight };
+    // Only messages, typing and loading change the log; `jumpShown` is read, not followed.
+  }, [messages, typing, loading]);
 
   // Sizes also change without new messages: the log when a hidden launcher
   // panel is shown or the composer grows, and the content when an image
@@ -801,23 +1153,50 @@ export function Chatbot({
       if (stickToBottom.current) {
         log.scrollTop = log.scrollHeight;
       }
+      last.current.height = log.scrollHeight;
     });
     observer.observe(log);
     observer.observe(content);
     return () => observer.disconnect();
   }, []);
 
+  // Once consent is given, the composer replaces the Start chat button; move focus there.
+  const hadConsent = useRef(Boolean(consent));
+  useEffect(() => {
+    if (hadConsent.current && !consent) fieldRef.current?.focus();
+    hadConsent.current = Boolean(consent);
+  }, [consent]);
+
+  const previousScrollTop = useRef(0);
   const handleScroll = () => {
     const log = logRef.current;
-    if (log) {
-      stickToBottom.current = log.scrollHeight - log.scrollTop - log.clientHeight < 24;
-    }
+    if (!log) return;
+    const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 24;
+    stickToBottom.current = atBottom;
+    if (atBottom && jumpShown) setJumpShown(false);
+    // Reaching the top loads older messages, once per arrival there.
+    if (hasOlder && !loadingOlder && log.scrollTop < 40 && previousScrollTop.current >= 40) onLoadOlder?.();
+    previousScrollTop.current = log.scrollTop;
+  };
+
+  const jumpToLatest = () => {
+    const log = logRef.current;
+    if (!log) return;
+    stickToBottom.current = true;
+    setJumpShown(false);
+    log.scrollTo({ top: log.scrollHeight, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  };
+
+  const sendText = (text: string, picked: File[]) => {
+    stickToBottom.current = true;
+    setUnseenId(null);
+    setJumpShown(false);
+    onSubmit(text, picked);
   };
 
   const send = () => {
     if (!canSend) return;
-    stickToBottom.current = true;
-    onSubmit(draft.trim(), files);
+    sendText(draft.trim(), files);
     setDraft('');
     setFiles([]);
     // Sending disables the Send button; keep keyboard focus in the composer.
@@ -858,6 +1237,12 @@ export function Chatbot({
     fieldRef.current?.focus();
   };
 
+  // Follow-up chips belong to the latest answer only, once it is complete.
+  const lastMessage = messages[messages.length - 1];
+  const suggestions = !typing && !blocked && lastMessage?.role === 'assistant' && !lastMessage.streaming && lastMessage.status !== 'failed' ? (lastMessage.suggestions ?? []) : [];
+
+  const describedBy = [composerNotice ? noticeId : '', showCounter ? counterId : ''].filter(Boolean).join(' ') || undefined;
+
   return (
     <Card
       as="section"
@@ -873,152 +1258,250 @@ export function Chatbot({
         typing={typing}
         titleId={titleId}
         menuItems={menuItems}
+        expanded={expanded}
+        onExpandedChange={onExpandedChange}
         onClose={onClose}
+        labels={l}
         className="relative z-10 !shadow-2-default-lg"
       />
 
-      <div
-        ref={logRef}
-        role="log"
-        aria-relevant="additions"
-        aria-label={`Conversation with ${title}`}
-        tabIndex={0}
-        onScroll={handleScroll}
-        className={`flex-1 overflow-y-auto bg-frames-lightest focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary-base ${scrollbar}`}
-      >
-        {/* Messages stack from the bottom, as in a chat app. */}
-        <div ref={contentRef} className="flex min-h-full flex-col justify-end gap-6 px-3 py-6">
-          {messages.length === 0 && !typing
-            ? emptyState
-            : messages.map(message => (
-                <Message
-                  key={message.id}
-                  message={message}
-                  bubble={bubbleStyles[message.role === 'user' ? userBubble : assistantBubble][message.role === 'user' ? 'user' : 'assistant']}
-                  icon={iconType}
-                  userAvatar={userAvatar}
-                  copyable={copyable}
-                  onRetry={onRetry}
-                  onUndo={onUndo}
-                  onFeedback={onFeedback}
-                  onRegenerate={onRegenerate}
-                />
-              ))}
-          {typing && <TypingIndicator label={`${agent?.name ?? title} is typing`} surface={bubbleStyles[assistantBubble].assistant} icon={iconType} />}
+      <div className="relative flex min-h-0 flex-1 flex-col">
+        <div
+          ref={logRef}
+          role="log"
+          aria-relevant="additions"
+          aria-label={l.conversation(title)}
+          aria-busy={loading || loadingOlder}
+          tabIndex={0}
+          onScroll={handleScroll}
+          className={`flex-1 overflow-y-auto bg-frames-lightest focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary-base ${scrollbar}`}
+        >
+          {/* Messages stack from the bottom, as in a chat app. */}
+          <div ref={contentRef} className="flex min-h-full flex-col justify-end gap-6 px-3 py-6">
+            {hasOlder && !loading && (
+              <div className="flex justify-center">
+                {loadingOlder ? (
+                  <Skeleton width={160} height={20} className="!rounded-full" aria-label={l.loading} />
+                ) : (
+                  <Button variant="neutral" appearance="text" size="small" onClick={onLoadOlder}>
+                    {l.loadOlder}
+                  </Button>
+                )}
+              </div>
+            )}
+            {loading ? (
+              <MessagesSkeleton label={l.loading} />
+            ) : messages.length === 0 && !typing ? (
+              emptyState
+            ) : (
+              messages.map((message, index) => (
+                <Fragment key={message.id}>
+                  {message.day && message.day !== messages[index - 1]?.day && <LogDivider>{message.day}</LogDivider>}
+                  {message.id === unseenId && <LogDivider className="text-primary-base">{l.newMessagesDivider}</LogDivider>}
+                  <Message
+                    message={message}
+                    bubble={bubbleStyles[message.role === 'user' ? userBubble : assistantBubble][message.role === 'user' ? 'user' : 'assistant']}
+                    icon={iconType}
+                    userAvatar={userAvatar}
+                    copyable={copyable}
+                    onRetry={onRetry}
+                    onUndo={onUndo}
+                    onFeedback={onFeedback}
+                    onRegenerate={onRegenerate}
+                    l={l}
+                  />
+                </Fragment>
+              ))
+            )}
+            {suggestions.length > 0 && (
+              // Lined up with the bubbles, past the 32px avatar and its 8px gap.
+              <div role="group" aria-label={l.suggestions} className={`-mt-3 flex flex-wrap gap-2 pl-10 ${enter}`}>
+                {suggestions.map(text => (
+                  <Chip
+                    key={text}
+                    variant="primary"
+                    appearance="outlined"
+                    clickable
+                    onClick={() => {
+                      // The chips unmount once the question is sent; keep focus in the composer.
+                      fieldRef.current?.focus();
+                      sendText(text, []);
+                    }}
+                    className="!bg-frames-lightest"
+                  >
+                    {text}
+                  </Chip>
+                ))}
+              </div>
+            )}
+            {typing && <TypingIndicator label={l.isTyping(agent?.name ?? title)} surface={bubbleStyles[assistantBubble].assistant} icon={iconType} />}
+            {endContent}
+          </div>
         </div>
+        {unseenCount > 0 && (
+          // Centred over the bottom of the log; the wrapper lets clicks through beside the button.
+          <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center">
+            <Button
+              variant="primary"
+              size="small"
+              onClick={jumpToLatest}
+              endContent={<ArrowBottomIconOutlinedRounded />}
+              className={`pointer-events-auto !rounded-full !shadow-1-default-base ${enter}`}
+            >
+              {l.newMessages(unseenCount)}
+            </Button>
+          </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className={`flex flex-col gap-2 p-3 ${f.footer}`}>
-        {offline && offlineNotice && (
-          <p id={noticeId} className={`!m-0 text-center text-xs leading-4 ${f.notice}`}>
-            {offlineNotice}
-          </p>
-        )}
-        {/* One composer box: picked files sit in their own tray above the
-            text field, split off by a divider, so they never read as part
-            of the conversation. */}
-        <div className={`overflow-hidden rounded-lg border transition-colors ${f.box} ${offline ? 'opacity-50' : ''}`}>
-          {files.length > 0 && (
-            <ul aria-label="Attachments" className={`!m-0 flex list-none gap-2 overflow-x-auto border-b !p-2 !pt-3 ${f.boxDivider} ${scrollbar}`}>
-              {files.map((file, index) => (
-                <li key={`${file.name}-${index}`} className="relative !m-0 shrink-0">
-                  {previews.get(file) ? (
-                    <img src={previews.get(file)} alt={file.name} className="block size-14 rounded-md object-cover" />
-                  ) : (
-                    <span className="flex h-14 w-44 items-center gap-2 rounded-md bg-background-light px-2 text-text-darkest">
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary-base text-static-white">
-                        <FileIconOutlinedRounded width={20} height={20} />
-                      </span>
-                      <span className="flex min-w-0 flex-col text-xs leading-4">
-                        <span className="truncate font-medium">{file.name}</span>
-                        <span className="text-text-base">{formatSize(file.size)}</span>
-                      </span>
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    aria-label={`Remove ${file.name}`}
-                    onClick={() => removeFile(index)}
-                    className="absolute -top-1.5 -right-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full border-2 border-solid border-frames-lightest bg-neutral-900 p-0 text-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-base"
-                  >
-                    <CloseIconOutlinedRounded width={12} height={12} />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          <Input className="!items-end !gap-2 !rounded-none !border-0 !bg-transparent !p-1 !shadow-none !outline-none">
-            {allowAttachments && (
-              <>
-                <input ref={fileRef} type="file" multiple onChange={handleFiles} className="hidden" tabIndex={-1} aria-hidden="true" />
-                {attachmentOptions.length === 1 ? (
+        {consent ? (
+          // Until the reader agrees, the notice and a start button take the composer's place.
+          <>
+            <div className={`text-xs leading-4 ${f.notice}`}>{consent}</div>
+            <Button type="button" variant="primary" onClick={onAcceptConsent} className="!w-full">
+              {l.startChat}
+            </Button>
+          </>
+        ) : (
+          <>
+            {composerNotice && (
+              <p id={noticeId} className={`!m-0 text-center text-xs leading-4 ${f.notice}`}>
+                {composerNotice}
+              </p>
+            )}
+            {/* One composer box: picked files sit in their own tray above the
+                text field, split off by a divider, so they never read as part
+                of the conversation. */}
+            <div className={`overflow-hidden rounded-lg border transition-colors ${f.box} ${blocked ? 'opacity-50' : ''} ${overLimit ? '!border-states-danger-base' : ''}`}>
+              {files.length > 0 && (
+                <ul aria-label={l.attachments} className={`!m-0 flex list-none gap-2 overflow-x-auto border-b !p-2 !pt-3 ${f.boxDivider} ${scrollbar}`}>
+                  {files.map((file, index) => (
+                    <li key={`${file.name}-${index}`} className="relative !m-0 shrink-0">
+                      {previews.get(file) ? (
+                        <img src={previews.get(file)} alt={file.name} className="block size-14 rounded-md object-cover" />
+                      ) : (
+                        <span className="flex h-14 w-44 items-center gap-2 rounded-md bg-background-light px-2 text-text-darkest">
+                          <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary-base text-static-white">
+                            <FileIconOutlinedRounded width={20} height={20} />
+                          </span>
+                          <span className="flex min-w-0 flex-col text-xs leading-4">
+                            <span className="truncate font-medium">{file.name}</span>
+                            <span className="text-text-base">{formatSize(file.size)}</span>
+                          </span>
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        aria-label={l.removeFile(file.name)}
+                        onClick={() => removeFile(index)}
+                        className="absolute -top-1.5 -right-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full border-2 border-solid border-frames-lightest bg-neutral-900 p-0 text-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-base"
+                      >
+                        <CloseIconOutlinedRounded width={12} height={12} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <Input className="!items-end !gap-2 !rounded-none !border-0 !bg-transparent !p-1 !shadow-none !outline-none">
+                {allowAttachments && (
+                  <>
+                    <input ref={fileRef} type="file" multiple onChange={handleFiles} className="hidden" tabIndex={-1} aria-hidden="true" />
+                    {attachmentOptions.length === 1 ? (
+                      <Button
+                        variant="neutral"
+                        appearance="text"
+                        size="small"
+                        aria-label={l.attachFiles}
+                        className="!size-8"
+                        disabled={blocked}
+                        startContent={<AddCircleIconFilledTk className={f.attach} />}
+                        onClick={() => pickFiles(attachmentOptions[0])}
+                      />
+                    ) : (
+                      <Dropdown size="small">
+                        <Dropdown.Trigger
+                          as={Button}
+                          variant="neutral"
+                          appearance="text"
+                          size="small"
+                          aria-label={l.attachFiles}
+                          className="!size-8"
+                          disabled={blocked}
+                          startContent={<AddCircleIconFilledTk className={f.attach} />}
+                        />
+                        <Dropdown.Content side="top" align="start">
+                          {attachmentOptions.map(option => (
+                            <Dropdown.Item key={option.label} textValue={option.label} onSelect={() => pickFiles(option)}>
+                              <span className="flex items-center gap-2">
+                                {option.icon && (
+                                  <span className="flex size-5 shrink-0 text-text-base [&_svg]:size-5" aria-hidden="true">
+                                    {option.icon}
+                                  </span>
+                                )}
+                                {option.label}
+                              </span>
+                            </Dropdown.Item>
+                          ))}
+                        </Dropdown.Content>
+                      </Dropdown>
+                    )}
+                    <span className={`h-6 w-px shrink-0 self-center ${f.divider}`} aria-hidden="true" />
+                  </>
+                )}
+                <Input.Field
+                  ref={fieldRef}
+                  as="textarea"
+                  rows={1}
+                  value={draft}
+                  onChange={event => setDraft(event.currentTarget.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={listening ? l.listening : (placeholder ?? l.placeholder)}
+                  disabled={blocked}
+                  aria-describedby={describedBy}
+                  aria-invalid={overLimit || undefined}
+                  aria-label={l.message}
+                  className={`max-h-32 !resize-none self-center !py-1.5 [field-sizing:content] ${scrollbar} ${f.field}`}
+                />
+                {onVoiceInput && (
                   <Button
                     variant="neutral"
                     appearance="text"
                     size="small"
-                    aria-label="Attach files"
-                    className="!size-8"
-                    disabled={offline}
-                    startContent={<AddCircleIconFilledTk className={f.attach} />}
-                    onClick={() => pickFiles(attachmentOptions[0])}
+                    aria-label={listening ? l.stopVoiceInput : l.voiceInput}
+                    aria-pressed={listening}
+                    disabled={blocked}
+                    startContent={listening ? <MicIconFilledRounded /> : <MicIconOutlinedRounded />}
+                    onClick={onVoiceInput}
+                    // While recording, a red mic with a pulsing ring.
+                    className={`!size-8 ${listening ? '!rounded-full bg-states-danger-lightest motion-safe:animate-pulse' : ''}`}
+                    classNames={{ content: listening ? '!text-states-danger-base' : f.attach }}
                   />
-                ) : (
-                  <Dropdown size="small">
-                    <Dropdown.Trigger
-                      as={Button}
-                      variant="neutral"
-                      appearance="text"
-                      size="small"
-                      aria-label="Attach files"
-                      className="!size-8"
-                      disabled={offline}
-                      startContent={<AddCircleIconFilledTk className={f.attach} />}
-                    />
-                    <Dropdown.Content side="top" align="start">
-                      {attachmentOptions.map(option => (
-                        <Dropdown.Item key={option.label} textValue={option.label} onSelect={() => pickFiles(option)}>
-                          <span className="flex items-center gap-2">
-                            {option.icon && (
-                              <span className="flex size-5 shrink-0 text-text-base [&_svg]:size-5" aria-hidden="true">
-                                {option.icon}
-                              </span>
-                            )}
-                            {option.label}
-                          </span>
-                        </Dropdown.Item>
-                      ))}
-                    </Dropdown.Content>
-                  </Dropdown>
                 )}
-                <span className={`h-6 w-px shrink-0 self-center ${f.divider}`} aria-hidden="true" />
-              </>
+                <Button
+                  type="submit"
+                  variant="neutral"
+                  appearance="text"
+                  size="small"
+                  aria-label={l.send}
+                  startContent={<SendIconFilledRounded />}
+                  disabled={!canSend}
+                  className="!size-8 disabled:opacity-40"
+                  classNames={{ content: f.send }}
+                />
+              </Input>
+            </div>
+            {showCounter && (
+              <p id={counterId} className={`!m-0 -mt-1 text-right text-[11px] leading-4 ${overLimit ? 'font-medium text-states-danger-base' : f.notice}`}>
+                <span aria-hidden="true">
+                  {draft.length}/{maxLength}
+                </span>
+                <span className="sr-only">{l.characters(draft.length, maxLength)}</span>
+              </p>
             )}
-            <Input.Field
-              ref={fieldRef}
-              as="textarea"
-              rows={1}
-              value={draft}
-              onChange={event => setDraft(event.currentTarget.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              disabled={offline}
-              aria-describedby={offline && offlineNotice ? noticeId : undefined}
-              aria-label="Message"
-              className={`max-h-32 !resize-none self-center !py-1.5 [field-sizing:content] ${scrollbar} ${f.field}`}
-            />
-            <Button
-              type="submit"
-              variant="neutral"
-              appearance="text"
-              size="small"
-              aria-label="Send message"
-              startContent={<SendIconFilledRounded />}
-              disabled={!canSend}
-              className="!size-8 disabled:opacity-40"
-              classNames={{ content: f.send }}
-            />
-          </Input>
-        </div>
+          </>
+        )}
+        {disclaimer && <p className={`!m-0 text-center text-[11px] leading-4 ${f.notice}`}>{disclaimer}</p>}
       </form>
     </Card>
   );
@@ -1038,6 +1521,8 @@ export interface ChatbotLauncherProps extends Omit<ChatbotProps, 'onClose'> {
    * screens narrower than 640px, `false` never.
    */
   fullScreen?: boolean | 'mobile';
+  /** Shows a header button that opens the panel full screen on larger screens too. */
+  expandable?: boolean;
   /** Called when the panel opens or closes, e.g. to clear `unread`. */
   onOpenChange?: (open: boolean) => void;
 }
@@ -1060,15 +1545,18 @@ export function ChatbotLauncher({
   unread = 0,
   greeting,
   fullScreen = 'mobile',
+  expandable = false,
   onOpenChange,
   ...chatbotProps
 }: ChatbotLauncherProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const [expanded, setExpanded] = useState(false);
+  const l = { ...defaultLabels, ...chatbotProps.labels };
   const [greetingDismissed, setGreetingDismissed] = useState(false);
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const full = fullScreenStyles[fullScreen === true ? 'always' : fullScreen === 'mobile' ? 'mobile' : 'never'];
+  const full = fullScreenStyles[fullScreen === true || expanded ? 'always' : fullScreen === 'mobile' ? 'mobile' : 'never'];
   const title = chatbotProps.agent?.name ?? chatbotProps.title ?? DEFAULT_TITLE;
 
   // Move focus into the composer only when the user opens the panel, never on
@@ -1091,6 +1579,7 @@ export function ChatbotLauncher({
 
   const close = () => {
     setOpen(false);
+    setExpanded(false);
     onOpenChange?.(false);
     triggerRef.current?.focus();
   };
@@ -1107,7 +1596,6 @@ export function ChatbotLauncher({
   };
 
   const showGreeting = Boolean(greeting) && !open && !greetingDismissed;
-  const unreadLabel = unread > 0 ? `, ${unread} unread ${unread === 1 ? 'message' : 'messages'}` : '';
 
   return (
     <div ref={rootRef} className={`z-50 flex flex-col items-end gap-3 ${positionClassName}`} onKeyDown={handleKeyDown}>
@@ -1122,7 +1610,13 @@ export function ChatbotLauncher({
           open ? 'visible translate-y-0 scale-100 opacity-100' : 'invisible translate-y-2 scale-95 opacity-0'
         }`}
       >
-        <Chatbot {...chatbotProps} onClose={close} className={`!h-full ${full.card} ${chatbotProps.className ?? ''}`} />
+        <Chatbot
+          {...chatbotProps}
+          onClose={close}
+          expanded={expandable ? expanded : undefined}
+          onExpandedChange={expandable ? setExpanded : undefined}
+          className={`!h-full ${full.card} ${chatbotProps.className ?? ''}`}
+        />
       </div>
       {showGreeting && (
         <div className={`relative flex max-w-64 items-start gap-1 rounded-xl rounded-br-sm bg-frames-lightest py-2 pr-1 pl-3 shadow-1-default-base ${enter}`}>
@@ -1138,7 +1632,7 @@ export function ChatbotLauncher({
             variant="neutral"
             appearance="text"
             size="small"
-            aria-label="Dismiss message"
+            aria-label={l.dismissGreeting}
             startContent={<CloseIconOutlinedRounded />}
             onClick={() => setGreetingDismissed(true)}
             classNames={{ content: '!text-text-base' }}
@@ -1148,7 +1642,7 @@ export function ChatbotLauncher({
       <button
         ref={triggerRef}
         type="button"
-        aria-label={open ? 'Hide chat' : `Chat with ${title}${unreadLabel}`}
+        aria-label={open ? l.hideChat : l.openChat(title, unread)}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => (open ? close() : openPanel())}
