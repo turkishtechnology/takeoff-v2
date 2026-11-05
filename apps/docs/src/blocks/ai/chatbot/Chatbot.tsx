@@ -26,6 +26,17 @@ const DEFAULT_TITLE = 'Takeoff bot';
 
 export type ChatbotType = 'basic' | 'divided' | 'light' | 'dark' | 'primary';
 
+/** Figma `chatbot-icon` types. `white` is for dark or coloured surfaces. */
+export type ChatbotIconType = 'primary' | 'dark' | 'light' | 'white';
+
+/** Mark colour and face fill of each icon type. */
+export const chatbotIconStyles: Record<ChatbotIconType, { mark: string; face?: string }> = {
+  primary: { mark: 'text-primary-base', face: 'fill-static-white' },
+  dark: { mark: 'text-neutral-900', face: 'fill-static-white' },
+  light: { mark: 'text-neutral-200', face: 'fill-static-white' },
+  white: { mark: 'text-static-white' },
+};
+
 export interface ChatbotAttachment {
   id: string;
   name: string;
@@ -73,6 +84,8 @@ export interface ChatbotProps {
   type?: ChatbotType;
   /** Bubble style of assistant messages. Defaults to `type`. */
   assistantBubble?: ChatbotType;
+  /** Icon type of the bot avatar next to messages. */
+  iconType?: ChatbotIconType;
   /** Bubble style of user messages. Defaults to `type`. */
   userBubble?: ChatbotType;
   title?: string;
@@ -293,10 +306,10 @@ export function ChatbotHeader({
   );
 }
 
-function TypingIndicator({ label, surface }: { label: string; surface: string }) {
+function TypingIndicator({ label, surface, icon }: { label: string; surface: string; icon: ChatbotIconType }) {
   return (
     <div className={`flex items-end gap-2 ${enter}`}>
-      <ChatbotIcon face="fill-static-white" className="size-8 shrink-0 text-primary-base" />
+      <ChatbotIcon face={chatbotIconStyles[icon].face} className={`size-8 shrink-0 ${chatbotIconStyles[icon].mark}`} />
       <div className={`flex h-10 items-center gap-1 rounded-lg !px-4 !py-0 ${surface}`}>
         <span className="sr-only">{label}</span>
         {[0, 160, 320].map(delay => (
@@ -335,7 +348,7 @@ function Attachments({ items }: { items: ChatbotAttachment[] }) {
   );
 }
 
-function Message({ message, bubble, userAvatar }: { message: ChatbotMessage; bubble: string; userAvatar?: string | ReactNode }) {
+function Message({ message, bubble, icon, userAvatar }: { message: ChatbotMessage; bubble: string; icon: ChatbotIconType; userAvatar?: string | ReactNode }) {
   const isUser = message.role === 'user';
   const hasContent = message.content !== '' && message.content != null;
   const hasMeta = Boolean(message.time || message.status);
@@ -348,7 +361,7 @@ function Message({ message, bubble, userAvatar }: { message: ChatbotMessage; bub
           <UserAvatar avatar={userAvatar} />
         </span>
       ) : (
-        <ChatbotIcon face="fill-static-white" className={`size-8 shrink-0 text-primary-base ${hasMeta ? 'mb-5' : ''}`} />
+        <ChatbotIcon face={chatbotIconStyles[icon].face} className={`size-8 shrink-0 ${chatbotIconStyles[icon].mark} ${hasMeta ? 'mb-5' : ''}`} />
       )}
       <div className={`flex max-w-[80%] min-w-0 flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
         {(hasContent || Boolean(message.attachments?.length) || Boolean(message.extra)) && (
@@ -400,6 +413,7 @@ export function Chatbot({
   type = 'basic',
   assistantBubble = type,
   userBubble = type,
+  iconType = 'primary',
   title = DEFAULT_TITLE,
   subtitle = 'Chat with',
   online = true,
@@ -533,9 +547,15 @@ export function Chatbot({
           {messages.length === 0 && !typing
             ? emptyState
             : messages.map(message => (
-                <Message key={message.id} message={message} bubble={bubbleStyles[message.role === 'user' ? userBubble : assistantBubble][message.role]} userAvatar={userAvatar} />
+                <Message
+                  key={message.id}
+                  message={message}
+                  bubble={bubbleStyles[message.role === 'user' ? userBubble : assistantBubble][message.role]}
+                  icon={iconType}
+                  userAvatar={userAvatar}
+                />
               ))}
-          {typing && <TypingIndicator label={`${title} is typing`} surface={bubbleStyles[assistantBubble].assistant} />}
+          {typing && <TypingIndicator label={`${title} is typing`} surface={bubbleStyles[assistantBubble].assistant} icon={iconType} />}
         </div>
       </div>
 
