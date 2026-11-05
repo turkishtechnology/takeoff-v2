@@ -9,7 +9,9 @@ const RAW_QUERY = /^\?raw$/;
  *
  * The existing rules (babel for .tsx, css, …) are told to skip `?raw`
  * requests; otherwise they would transpile the file before it is read as text.
- * Only rules already registered when this plugin runs are patched.
+ * Only rules already registered when this plugin runs are patched: if a
+ * later plugin adds a JS/TS loader, `?raw` imports of those files come back
+ * transpiled instead of as source. Keep this plugin last.
  */
 export default function rawSourcePlugin(): Plugin {
   return {

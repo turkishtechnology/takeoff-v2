@@ -17,6 +17,8 @@ import { DoneAllIconOutlinedRounded } from '@takeoff-icons/react/done-all';
 import { FlashIconFilledRounded } from '@takeoff-icons/react/flash';
 import { SendIconFilledRounded } from '@takeoff-icons/react/send';
 
+const DEFAULT_TITLE = 'Takeoff bot';
+
 export type ChatbotType = 'basic' | 'divided' | 'light' | 'dark' | 'primary';
 
 export interface ChatbotMessage {
@@ -208,7 +210,7 @@ export function Chatbot({
   onSubmit,
   typing = false,
   type = 'basic',
-  title = 'Takeoff bot',
+  title = DEFAULT_TITLE,
   subtitle = 'Chat with',
   online = true,
   placeholder = 'Type your message here',
@@ -233,6 +235,21 @@ export function Chatbot({
       log.scrollTop = log.scrollHeight;
     }
   }, [messages, typing]);
+
+  // The log also changes size without new messages: when a hidden launcher
+  // panel is shown, and when the composer grows or shrinks. Stay pinned to
+  // the bottom through those too.
+  useEffect(() => {
+    const log = logRef.current;
+    if (!log || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => {
+      if (stickToBottom.current) {
+        log.scrollTop = log.scrollHeight;
+      }
+    });
+    observer.observe(log);
+    return () => observer.disconnect();
+  }, []);
 
   const handleScroll = () => {
     const log = logRef.current;
@@ -370,15 +387,14 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
 
   return (
     <div className={`z-50 flex flex-col items-end gap-3 ${positionClassName}`} onKeyDown={event => event.key === 'Escape' && !isComposing(event) && open && close()}>
-      {/* Hidden rather than unmounted, so the draft and scroll position
-          survive closing; capped so the header stays on short screens. */}
+      {/* Hidden rather than unmounted, so the draft survives closing; capped so the header stays on short screens. */}
       <div id={panelId} ref={panelRef} hidden={!open} className="h-[min(560px,calc(100dvh-7rem))] w-[min(400px,calc(100vw-2rem))]">
-        <Chatbot {...chatbotProps} onClose={close} className="!h-full" />
+        <Chatbot {...chatbotProps} onClose={close} className={`!h-full ${chatbotProps.className ?? ''}`} />
       </div>
       <button
         ref={triggerRef}
         type="button"
-        aria-label={open ? 'Hide chat' : `Chat with ${chatbotProps.title ?? 'Takeoff bot'}`}
+        aria-label={open ? 'Hide chat' : `Chat with ${chatbotProps.title ?? DEFAULT_TITLE}`}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => (open ? close() : openPanel())}

@@ -199,7 +199,11 @@ function mdxToMarkdown(rawBody) {
     }
   }
   body = body.replace(/<CodeBlock\b([^>]*)>\s*\{(\w+)\}\s*<\/CodeBlock>/gu, (_, attrs, name) => {
-    if (!rawImports.has(name)) return '> _Source — see the online docs._';
+    if (!rawImports.has(name)) {
+      // Only `import x from '@site/…?raw';` (single quotes, semicolon) is read.
+      console.warn(`gen:llms — <CodeBlock>{${name}}</CodeBlock> has no readable '@site/…?raw' import; its source is left out of the mirror`);
+      return '> _Source — see the online docs._';
+    }
     const language = attrs.match(/\blanguage=(["'])(\w+)\1/u)?.[2] ?? '';
     const title = attrs.match(/\btitle=(["'])([^"']+)\1/u)?.[2];
     const fence = protect('```' + language + '\n' + normalizeDemo(rawImports.get(name)) + '\n```');
