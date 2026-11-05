@@ -55,7 +55,7 @@ export interface ChatbotMessage {
   content: ReactNode;
   /** Files sent with the message. */
   attachments?: ChatbotAttachment[];
-  /** Rendered under the bubble: suggestion chips, buttons, a card. */
+  /** Rendered in the bubble under the content: suggestion chips, buttons, a card. */
   extra?: ReactNode;
   /** Shown under the bubble, e.g. `20:13`. */
   time?: string;
@@ -351,15 +351,15 @@ function Message({ message, bubble, userAvatar }: { message: ChatbotMessage; bub
         <ChatbotIcon face="fill-static-white" className={`size-8 shrink-0 text-primary-base ${hasMeta ? 'mb-5' : ''}`} />
       )}
       <div className={`flex max-w-[80%] min-w-0 flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
-        {(hasContent || Boolean(message.attachments?.length)) && (
-          // Keep typed line breaks for plain text only: rendered markdown emits
-          // newline text nodes between blocks that pre-wrap would show.
-          <div className={`flex flex-col gap-2 rounded-lg text-sm leading-5 break-words ${typeof message.content === 'string' ? 'whitespace-pre-wrap' : ''} ${bubble}`}>
+        {(hasContent || Boolean(message.attachments?.length) || Boolean(message.extra)) && (
+          <div className={`flex flex-col gap-3 rounded-lg text-sm leading-5 break-words ${bubble}`}>
             {message.attachments?.length ? <Attachments items={message.attachments} /> : null}
-            {hasContent && <div>{message.content}</div>}
+            {/* Keep typed line breaks for plain text only: rendered markdown
+                emits newline text nodes between blocks that pre-wrap would show. */}
+            {hasContent && <div className={typeof message.content === 'string' ? 'whitespace-pre-wrap' : ''}>{message.content}</div>}
+            {message.extra}
           </div>
         )}
-        {message.extra}
         {hasMeta && (
           <div className="flex h-4 items-center gap-1 text-[11px] leading-4 text-text-base">
             {message.time && <span>{message.time}</span>}
