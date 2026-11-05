@@ -24,9 +24,12 @@ overrides that match on them):
   `'Filter {column} value'`.
 - The page-jump submit button is named `'Go'` instead of `'Go to page'`, so it
   no longer shares the input's name.
-- The filter trigger, pagination region and expand button take their accessible
-  names only from `labels`: an `aria-label` passed through
-  `slotProps.filterButton` / `pagination` / `expandButton` is now ignored.
+- The filter trigger takes its accessible name only from `labels`: an
+  `aria-label` passed through `slotProps.filterButton` (theme or instance) is
+  now ignored, and a development warning points to `labels.filterButton`. Move
+  that text to `labels.filterButton` (e.g. `'{column} sütununu filtrele'`).
+- `@takeoff-design/tokens` peer range is now `>=0.5.2`, the release that ships
+  the `tk-table-filter-options` class used by the checkbox filter.
 - An empty `filter.placeholder` on a `select` filter falls back to the default
   text (`labels.filterSelectPlaceholder`) instead of rendering an empty trigger.
 
@@ -35,7 +38,6 @@ Custom `filter.render` controls receive `fieldLabel` (the formatted
 it is optional on `TableColumnFilterContext` only so a context built by hand
 (e.g. in a unit test) still type-checks.
 
-The checkbox and multi-select filter options now sit in a named group styled by
-the new `tk-table-filter-options` class, so update `@takeoff-design/tokens`
-together with this release; with an older tokens version the options lay out in
-a row instead of a column.
+The checkbox and multi-select filter options now sit in a named group, the new
+`filterOptions` slot (`tk-table-filter-options`), styled by the matching
+`@takeoff-design/tokens` release.

@@ -512,3 +512,6 @@ A component is not ready to merge unless:
 - [ ] Tests cover callback payload shape
 - [ ] Tests cover documented styling hooks (`data-*`, `tk-*`)
 - [ ] Tests cover the accessibility happy path (`axe`)
+- [ ] Visible strings and accessible names are customizable, with English
+      defaults in `defaults.ts` (see
+      [User-facing strings](#user-facing-strings))

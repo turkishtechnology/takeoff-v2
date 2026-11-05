@@ -181,7 +181,9 @@ with `type` (+ `options` for the choice controls):
   ¹ Spar's `Select` has no multi mode yet, so `multi-select` currently renders
   the same `Checkbox` list as `checkbox`. The `checkbox` and `multi-select`
   options sit in a named group with the `tk-table-filter-options` class (from
-  `@takeoff-design/tokens`), which themes can target to restyle the list.
+  `@takeoff-design/tokens`), exposed as the `filterOptions` slot, so
+  `classNames.filterOptions` / `slotProps.filterOptions` or a theme can restyle
+  the list.
 </small>
 
 ```tsx
@@ -885,7 +887,7 @@ and the select trigger together with its visible value. `{column}` in
 
 | Key                                                    | Default                              | Used for                                            |
 | ------------------------------------------------------ | ------------------------------------ | --------------------------------------------------- |
-| `noData`                                               | `'No data'`                          | Empty table (`emptyState` wins)                     |
+| `noData`                                               | `'No data'`                          | Empty table (any `emptyState` wins, provider too)   |
 | `loading`                                              | `'Loading'`                          | Loading spinner's accessible name                   |
 | `filterButton`                                         | `'Filter {column}'`                  | Filter trigger's name (`{column}`)                  |
 | `filterValue`                                          | `'Filter {column} value'`            | Filter field / group name (`{column}`)              |

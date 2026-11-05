@@ -8,6 +8,7 @@ import { Input } from '../input';
 import { Popover } from '../popover';
 import { Radio } from '../radio';
 import { Select } from '../select';
+import { isDevelopment } from '../../utils';
 
 import { useTableContext } from './context';
 import { formatLabel, isEmptyFilterValue, visuallyHidden } from './helpers';
@@ -21,6 +22,16 @@ type AnyHeader = Header<any, unknown>;
 // is not the "clears the filter" empty value — the inverse of the matching
 // predicates' `autoRemove`.
 const defaultIsActive = (value: unknown): boolean => !isEmptyFilterValue(value);
+
+// `slotProps.filterButton['aria-label']` renamed the trigger before `labels`
+// existed; it is ignored now, so tell developers once where the name moved.
+let warnedFilterButtonAriaLabel = false;
+const warnIgnoredFilterButtonAriaLabel = (ariaLabel: unknown) => {
+  if (warnedFilterButtonAriaLabel || ariaLabel === undefined || !isDevelopment()) return;
+  warnedFilterButtonAriaLabel = true;
+  // eslint-disable-next-line no-console
+  console.warn("[Table] slotProps.filterButton['aria-label'] is ignored; use labels.filterButton (it accepts a {column} placeholder).");
+};
 
 /**
  * Header filter control rendered inside a Spar `Popover`. **Two tiers**: a
@@ -66,6 +77,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   // other slot. The name comes only from `labels`, so it is set after the
   // spread. The panel wrapper IS a Table-owned slot node.
   const { 'data-slot': _filterButtonSlot, ...filterButtonAttrs } = slotAttrs('filterButton');
+  warnIgnoredFilterButtonAriaLabel((filterButtonAttrs as { 'aria-label'?: unknown })['aria-label']);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -225,24 +237,28 @@ const CheckboxListFilter = ({
   options: TableColumnFilterOption[];
   value: string[];
   onChange: (value: string[] | undefined) => void;
-}) => (
-  // A named group; `tk-table-filter-options` stacks the options like the panel body.
-  <div role="group" aria-label={label} className="tk-table-filter-options">
-    {options.map(option => {
-      const checked = value.includes(option.value);
-      return (
-        <Checkbox
-          key={option.value}
-          checked={checked}
-          onChange={next => {
-            const updated = next ? [...value, option.value] : value.filter(item => item !== option.value);
-            onChange(updated.length ? updated : undefined);
-          }}
-        >
-          <Checkbox.Indicator />
-          {option.label}
-        </Checkbox>
-      );
-    })}
-  </div>
-);
+}) => {
+  const { slotAttrs } = useTableContext('Table.ColumnFilter');
+  return (
+    // A named group (`filterOptions` slot) that stacks the options like the panel
+    // body. Its name comes from `labels`, so it is set after the slot spread.
+    <div {...slotAttrs('filterOptions')} role="group" aria-label={label}>
+      {options.map(option => {
+        const checked = value.includes(option.value);
+        return (
+          <Checkbox
+            key={option.value}
+            checked={checked}
+            onChange={next => {
+              const updated = next ? [...value, option.value] : value.filter(item => item !== option.value);
+              onChange(updated.length ? updated : undefined);
+            }}
+          >
+            <Checkbox.Indicator />
+            {option.label}
+          </Checkbox>
+        );
+      })}
+    </div>
+  );
+};

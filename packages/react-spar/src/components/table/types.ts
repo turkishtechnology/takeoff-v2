@@ -56,6 +56,7 @@ export type TableSlot =
   | 'expandedRow'
   | 'filterButton'
   | 'filterPanel'
+  | 'filterOptions'
   | 'pagination'
   | 'paginationInfo'
   | 'paginationNav'
@@ -427,7 +428,8 @@ export interface TableProps<TData = any> {
    * English defaults, and an empty string also falls back to the default. Set
    * it app-wide through `TakeoffSparProvider`
    * `components.Table.defaultProps.labels`; an instance `labels` is merged
-   * over it key by key. `emptyState` still wins over `labels.noData`, while an
+   * over it key by key. `emptyState` still wins over `labels.noData`, even when
+   * it comes from the provider's `defaultProps`, while an
    * `aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
    * `slotProps.expandButton` is ignored in favour of `labels`.
    * See {@link TableLabels}.

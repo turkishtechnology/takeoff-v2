@@ -113,10 +113,10 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   // `labels` is merged per key rather than taken from the shallow props merge,
   // so read both layers off the originals.
   const themeLabels = theme?.defaultProps?.labels;
-  const labels = useMemo(() => resolveLabels(themeLabels, props.labels), [themeLabels, props.labels]);
+  const labels = resolveLabels(themeLabels, props.labels);
   // Only name the spinner when `labels.loading` was actually set, so an
   // app-wide `components.Spinner.defaultProps['aria-label']` keeps applying.
-  const loadingLabelSet = [theme?.defaultProps?.labels?.loading, props.labels?.loading].some(isUsableLabel);
+  const loadingLabelSet = [themeLabels?.loading, props.labels?.loading].some(isUsableLabel);
   const [tableViewportScrolled, setTableViewportScrolled] = useState(false);
 
   // ── Controlled/uncontrolled state slices ─────────────────────────────────

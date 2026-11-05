@@ -759,6 +759,7 @@ describe('Table (props-first)', () => {
 
     it('takes filter-trigger, pagination and expand names from `labels`, ignoring slotProps aria-labels', async () => {
       const user = userEvent.setup();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       render(
         <Table
           data={manyUsers}
@@ -772,6 +773,10 @@ describe('Table (props-first)', () => {
       );
       expect(screen.getByRole('button', { name: 'Sütunu filtrele' })).toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Ada göre filtrele' })).not.toBeInTheDocument();
+      // The dropped filter-trigger aria-label is flagged once, in development only.
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('labels.filterButton');
+      warn.mockRestore();
       expect(screen.getByRole('navigation', { name: 'Sayfalama' })).toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Detay' })).not.toBeInTheDocument();
       const [first] = screen.getAllByRole('button', { name: 'Satırı aç' });
@@ -916,6 +921,19 @@ describe('Table (props-first)', () => {
       await user.click(screen.getByRole('button', { name: 'Filter City' }));
       expect(await screen.findByRole('group', { name: 'Filter City value' })).toContainElement(screen.getByRole('checkbox', { name: 'Istanbul' }));
       expect(screen.getByRole('group', { name: 'Filter City value' })).toHaveClass('tk-table-filter-options');
+    });
+
+    it('exposes the checkbox options group as the filterOptions slot', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'city', header: 'City', accessor: 'profile.city', filter: { type: 'checkbox', options: [{ label: 'Istanbul', value: 'Istanbul' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} classNames={{ filterOptions: 'my-options' }} slotProps={{ filterOptions: { 'aria-label': 'ignored' } }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter City' }));
+      const group = await screen.findByRole('group', { name: 'Filter City value' });
+      expect(group).toHaveClass('tk-table-filter-options', 'my-options');
+      expect(group).toHaveAttribute('data-slot', 'filter-options');
     });
 
     it('passes the formatted field label to a custom filter.render', async () => {
