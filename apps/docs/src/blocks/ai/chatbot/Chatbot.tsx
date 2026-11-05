@@ -8,7 +8,7 @@
  *
  * Design: Figma → Takeoff - Blocks → Chatbot.
  */
-import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactNode, type RefObject, type SVGProps, useEffect, useId, useRef, useState } from 'react';
+import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactNode, type RefObject, type SVGProps, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { Badge, Button, Card, Dropdown, Input } from '@takeoff-ui/react-spar';
 import { AddCircleIconFilledTk } from '@takeoff-icons/react/add-circle';
 import { AttachIconOutlinedRounded } from '@takeoff-icons/react/attach';
@@ -688,7 +688,9 @@ function usePickedFiles() {
   const urls = useRef(new Map<File, string>());
   const [previews, setPreviews] = useState<ReadonlyMap<File, string>>(new Map());
 
-  useEffect(() => {
+  // A layout effect, so a new image shows its thumbnail on the first paint
+  // instead of flashing the file tile for a frame.
+  useLayoutEffect(() => {
     const map = urls.current;
     for (const [file, url] of map) {
       if (!files.includes(file)) {

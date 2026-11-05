@@ -56,9 +56,54 @@ already a direct dependency:
 pnpm add @takeoff-icons/react
 ```
 
-Each example below shows its own code. The examples keep the conversation in
-state with [`useDemoConversation`](#source), a small hook that answers with a
-canned reply; replace it with your own data.
+## Quick start
+
+1. Copy [`Chatbot.tsx`](#source) into your app, for example to
+   `src/components/Chatbot.tsx`. It is the only file you need; the file is yours
+   to change.
+2. Render `ChatbotLauncher` for the floating button, or `Chatbot` to place the
+   panel in a page.
+3. Keep the conversation in your own state and answer from your backend or AI
+   SDK in `onSubmit`:
+
+```tsx
+import { useState } from 'react';
+import { ChatbotLauncher, type ChatbotMessage } from './components/Chatbot';
+
+export function SupportChat() {
+  const [messages, setMessages] = useState<ChatbotMessage[]>([
+    {
+      id: 'welcome',
+      role: 'assistant',
+      content: 'Hi, how can I help with your trip?',
+    },
+  ]);
+  const [typing, setTyping] = useState(false);
+
+  const send = async (text: string) => {
+    setMessages(current => [
+      ...current,
+      { id: crypto.randomUUID(), role: 'user', content: text, status: 'sent' },
+    ]);
+    setTyping(true);
+    const answer = await askMyAssistant(text); // your API or AI SDK
+    setTyping(false);
+    setMessages(current => [
+      ...current,
+      { id: crypto.randomUUID(), role: 'assistant', content: answer },
+    ]);
+  };
+
+  return (
+    <ChatbotLauncher messages={messages} typing={typing} onSubmit={send} />
+  );
+}
+```
+
+Everything else is opt-in through props, and each example below shows one of
+them with its code. The examples share [`useDemoConversation`](#source), a
+demo-only hook that answers with a canned reply in place of a backend. Do not
+copy it; use your own state and service as above.
 
 ## Floating
 
@@ -227,14 +272,17 @@ conversation:
 
 - Pass the conversation as `messages`. Each message has an `id`, a `role`
   (`assistant`, `user` or `system`), `content`, and optionally `attachments`,
-  `extra`, `time`, `status`, `retracted`, `undoable`, `feedback` and `author`.
+  `extra`, `time`, `status`, `retracted`, `undoable`, `feedback`, `author` and
+  `streaming`.
 - `onSubmit(text, files)` fires when the user sends. Upload the files, append
   the user message, set `typing` while you wait, then append the answer.
-- To stream a reply, append an empty assistant message and update its `content`
-  as chunks arrive. The log announces added messages, not text that changes
-  inside one, so screen readers do not hear streamed text. If that matters for
-  your product, append the finished reply as its own message, or announce it in
-  a visually hidden `role="status"` element when the stream ends.
+- To stream a reply, append an empty assistant message with `streaming: true`
+  and update its `content` as chunks arrive. Set `streaming` back to `false`
+  when the stream ends or fails; until then the answer actions stay hidden. The
+  log announces added messages, not text that changes inside one, so screen
+  readers do not hear streamed text. If that matters for your product, append
+  the finished reply as its own message, or announce it in a visually hidden
+  `role="status"` element when the stream ends.
 
 `content` is a `ReactNode`, so you can render markdown with the renderer your
 app already uses.
@@ -262,8 +310,8 @@ app already uses.
 
 ## Source
 
-Copy `Chatbot.tsx` into your app. `useDemoConversation.ts` is the demo state the
-examples use.
+Copy `Chatbot.tsx` into your app. `useDemoConversation.ts` is only the demo
+state the examples use; you do not need it.
 
 <CodeBlock language="tsx" title="Chatbot.tsx" showLineNumbers>
   {chatbotSource}
