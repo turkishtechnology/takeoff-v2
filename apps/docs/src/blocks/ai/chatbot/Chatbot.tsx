@@ -405,7 +405,15 @@ export function ChatbotHeader({
               {title}
             </Card.Title>
             {online ? (
-              <Badge variant="success" appearance="filledLight" size="small" rounded startContent={<FlashIconFilledRounded />} className="shrink-0">
+              <Badge
+                variant="success"
+                appearance="filledLight"
+                size="small"
+                rounded
+                startContent={<FlashIconFilledRounded />}
+                // Figma draws the bolt at 14px; the small Badge recipe sizes icons at 10px.
+                className="shrink-0 [&_.tk-badge-icon]:!size-3.5"
+              >
                 {typing ? 'Typing…' : 'Online'}
               </Badge>
             ) : (
@@ -944,6 +952,7 @@ export function Chatbot({
                     appearance="text"
                     size="small"
                     aria-label="Attach files"
+                    className="!size-8"
                     disabled={offline}
                     startContent={<AddCircleIconFilledTk className={f.attach} />}
                     onClick={() => pickFiles(attachmentOptions[0])}
@@ -956,6 +965,7 @@ export function Chatbot({
                       appearance="text"
                       size="small"
                       aria-label="Attach files"
+                      className="!size-8"
                       disabled={offline}
                       startContent={<AddCircleIconFilledTk className={f.attach} />}
                     />
@@ -999,7 +1009,7 @@ export function Chatbot({
               aria-label="Send message"
               startContent={<SendIconFilledRounded />}
               disabled={!canSend}
-              className="disabled:opacity-40"
+              className="!size-8 disabled:opacity-40"
               classNames={{ content: f.send }}
             />
           </Input>
