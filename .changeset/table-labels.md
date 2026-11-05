@@ -31,7 +31,9 @@ overrides that match on them):
   text (`labels.filterSelectPlaceholder`) instead of rendering an empty trigger.
 
 Custom `filter.render` controls receive `fieldLabel` (the formatted
-`labels.filterValue`) to use as their accessible name.
+`labels.filterValue`) to use as their accessible name. Table always provides it;
+it is optional on `TableColumnFilterContext` only so a context built by hand
+(e.g. in a unit test) still type-checks.
 
 The checkbox and multi-select filter options now sit in a named group styled by
 the new `tk-table-filter-options` class, so update `@takeoff-design/tokens`
