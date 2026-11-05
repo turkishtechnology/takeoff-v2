@@ -700,7 +700,7 @@ function MetaButton({ children, onClick, className = '' }: { children: ReactNode
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex cursor-pointer items-center gap-0.5 rounded border-0 bg-transparent p-0 font-[inherit] text-[11px] leading-4 font-medium underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base ${className}`}
+      className={`inline-flex cursor-pointer items-center gap-0.5 rounded border-0 bg-transparent p-0 font-[inherit] text-[11px] leading-4 font-medium underline decoration-transparent underline-offset-2 transition-[text-decoration-color] duration-200 ease-out hover:decoration-current motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base ${className}`}
     >
       {children}
     </button>
@@ -719,7 +719,7 @@ function Sources({ items, label }: { items: ChatbotSource[]; label: string }) {
               href={item.url}
               target="_blank"
               rel="noreferrer"
-              className="flex max-w-56 items-center gap-1 rounded-full !border !border-solid !border-current/25 px-2 py-0.5 text-xs leading-4 !text-current !no-underline hover:bg-current/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-base"
+              className="flex max-w-56 items-center gap-1 rounded-full !border !border-solid !border-current/25 px-2 py-0.5 text-xs leading-4 !text-current !no-underline transition-colors duration-200 ease-out motion-reduce:transition-none hover:bg-current/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-base"
             >
               <span className="font-semibold">{index + 1}</span>
               <span className="truncate">{item.title}</span>
@@ -1325,7 +1325,7 @@ export function Chatbot({
                   type="button"
                   onClick={loadingOlder ? undefined : onLoadOlder}
                   aria-disabled={loadingOlder || undefined}
-                  className="flex cursor-pointer items-center gap-1 rounded border-0 bg-transparent px-1 py-0.5 font-[inherit] text-[11px] leading-4 font-medium text-text-base hover:text-text-darkest focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base aria-disabled:cursor-default aria-disabled:hover:text-text-base"
+                  className="flex cursor-pointer items-center gap-1 rounded border-0 bg-transparent px-1 py-0.5 font-[inherit] text-[11px] leading-4 font-medium text-text-base transition-colors duration-200 ease-out motion-reduce:transition-none hover:text-text-darkest focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base aria-disabled:cursor-default aria-disabled:hover:text-text-base"
                 >
                   {loadingOlder ? (
                     <>
@@ -1706,7 +1706,7 @@ export function ChatbotLauncher({
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => (open ? close() : openPanel())}
-        className="group relative flex size-12 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-primary-base transition-[color,box-shadow,scale] duration-150 hover:text-primary-dark hover:shadow-1-hover-base focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base active:scale-95 active:text-primary-base aria-expanded:hover:text-primary-dark motion-reduce:transition-none"
+        className="group relative flex size-12 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-primary-base transition-[color,box-shadow,scale,translate] duration-200 ease-out hover:-translate-y-0.5 hover:text-primary-dark hover:shadow-1-hover-base focus-visible:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base active:translate-y-0 active:scale-95 active:text-primary-base aria-expanded:hover:text-primary-dark motion-reduce:transition-none"
       >
         <FabIcon />
         {unread > 0 && !open && (
