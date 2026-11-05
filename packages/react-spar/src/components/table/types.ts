@@ -99,9 +99,11 @@ export interface TableColumnFilterContext<TData = unknown> {
   /**
    * Accessible name for the filter field: `labels.filterValue` with `{column}`
    * filled in (e.g. `'Filter Name value'`). Put it on your control's
-   * `aria-label` so custom filters are named like the presets.
+   * `aria-label` so custom filters are named like the presets. Table always
+   * sets it; it is optional only so a hand-built context (e.g. in a unit test
+   * of your `render`) still type-checks.
    */
-  fieldLabel: string;
+  fieldLabel?: string;
 }
 
 /**
