@@ -8,23 +8,38 @@
  *
  * Design: Figma → Takeoff - Blocks → Chatbot.
  */
-import { type FormEvent, type KeyboardEvent, type ReactNode, type SVGProps, useEffect, useId, useRef, useState } from 'react';
+import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactNode, type SVGProps, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Badge, Button, Card, Input } from '@takeoff-ui/react-spar';
-import { AddCircleIconOutlinedRounded } from '@takeoff-icons/react/add-circle';
+import { AddCircleIconFilledTk } from '@takeoff-icons/react/add-circle';
 import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
 import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
 import { DoneAllIconOutlinedRounded } from '@takeoff-icons/react/done-all';
+import { FileIconOutlinedRounded } from '@takeoff-icons/react/file';
 import { FlashIconFilledRounded } from '@takeoff-icons/react/flash';
+import { PersonIconFilledRounded } from '@takeoff-icons/react/person';
 import { SendIconFilledRounded } from '@takeoff-icons/react/send';
 
 const DEFAULT_TITLE = 'Takeoff bot';
 
 export type ChatbotType = 'basic' | 'divided' | 'light' | 'dark' | 'primary';
 
+export interface ChatbotAttachment {
+  id: string;
+  name: string;
+  /** MIME type. `image/*` attachments render as a thumbnail. */
+  type: string;
+  /** Where the file can be shown or downloaded from, e.g. an object URL. */
+  url: string;
+}
+
 export interface ChatbotMessage {
   id: string;
   role: 'assistant' | 'user';
   content: ReactNode;
+  /** Files sent with the message. */
+  attachments?: ChatbotAttachment[];
+  /** Rendered under the bubble: suggestion chips, buttons, a card. */
+  extra?: ReactNode;
   /** Shown under the bubble, e.g. `20:13`. */
   time?: string;
   /** Delivery state of a user message. `read` shows the double tick. */
@@ -33,18 +48,28 @@ export interface ChatbotMessage {
 
 export interface ChatbotProps {
   messages: ChatbotMessage[];
-  /** Called with the trimmed text when the user sends a message. */
-  onSubmit: (text: string) => void;
+  /** Called when the user sends. `text` is trimmed; `files` are the attached files. */
+  onSubmit: (text: string, files: File[]) => void;
   /** Shows the typing indicator below the last message. */
   typing?: boolean;
-  /** Visual style; matches the Figma `type` variants of header, bubble and footer. */
+  /** Style of the header and the composer; also the bubbles unless set below. Matches the Figma `type` variants. */
   type?: ChatbotType;
+  /** Bubble style of assistant messages. Defaults to `type`. */
+  assistantBubble?: ChatbotType;
+  /** Bubble style of user messages. Defaults to `type`. */
+  userBubble?: ChatbotType;
   title?: string;
   subtitle?: string;
   online?: boolean;
   placeholder?: string;
-  /** Renders the attach button and calls this when it is pressed. */
-  onAttach?: () => void;
+  /** Image URL or element for the user's avatar. Defaults to a person icon. */
+  userAvatar?: string | ReactNode;
+  /** Shows the attach button. Set to `false` to hide it. */
+  allowAttachments?: boolean;
+  /** `accept` of the file picker, e.g. `image/*,.pdf`. */
+  accept?: string;
+  /** Renders the more button and calls this when it is pressed. */
+  onMenu?: () => void;
   /** Renders the close button and calls this when it is pressed. */
   onClose?: () => void;
   /** Content shown when there are no messages, e.g. prompt starters. */
@@ -52,88 +77,85 @@ export interface ChatbotProps {
   className?: string;
 }
 
-const styles: Record<
-  ChatbotType,
-  {
-    subtitle: string;
-    avatar: string;
-    headerButton: 'neutral' | 'white';
-    bubble: string;
-    userBubble: string;
-    footer: string;
-    composer: string;
-    field: string;
-    divider: string;
-    attach: string;
-    send: string;
-  }
-> = {
+// Dark and primary headers stay dark and red in both colour modes, so their
+// icons use static white rather than the `white` button variant, which flips.
+const headerStyles: Record<ChatbotType, { subtitle: string; avatar: string; face?: string; button: string }> = {
+  basic: { subtitle: 'text-text-base', avatar: 'text-primary-base', face: 'fill-static-white', button: '' },
+  divided: { subtitle: 'text-text-base', avatar: 'text-primary-base', face: 'fill-static-white', button: '' },
+  light: { subtitle: 'text-text-base', avatar: 'text-primary-base', face: 'fill-static-white', button: '' },
+  dark: { subtitle: 'text-neutral-400', avatar: 'text-neutral-200', button: '!text-static-white' },
+  primary: { subtitle: 'text-static-white', avatar: 'text-static-white', button: '!text-static-white' },
+};
+
+const bubbleStyles: Record<ChatbotType, { assistant: string; user: string }> = {
+  basic: { assistant: 'text-text-darkest', user: 'text-text-darkest' },
+  divided: {
+    assistant: 'border border-border-light bg-frames-lightest p-3 text-text-darkest',
+    user: 'border border-border-light bg-frames-lightest px-3 py-2 text-text-darkest',
+  },
+  light: {
+    assistant: 'border border-border-light bg-background-lightest p-3 text-text-darkest',
+    user: 'border border-border-light bg-background-lightest px-3 py-2 text-text-darkest',
+  },
+  dark: {
+    assistant: 'border border-border-light bg-neutral-900 p-3 text-neutral-50',
+    user: 'border border-border-light bg-neutral-900 px-3 py-2 text-neutral-50',
+  },
+  primary: {
+    assistant: 'bg-primary-lightest p-3 text-primary-darkest',
+    user: 'bg-primary-lightest px-3 py-2 text-primary-darkest',
+  },
+};
+
+const footerStyles: Record<ChatbotType, { footer: string; composer: string; field: string; divider: string; attach: string; send: string }> = {
   basic: {
-    subtitle: 'text-text-base',
-    avatar: 'text-primary-base',
-    headerButton: 'neutral',
-    bubble: 'text-text-darkest',
-    userBubble: 'text-text-darkest',
     footer: 'bg-frames-lightest',
     composer: '',
     field: '',
-    divider: 'bg-border-light',
+    divider: 'bg-background-light',
     attach: '!text-neutral-600',
     send: '!text-primary-base',
   },
   divided: {
-    subtitle: 'text-text-base',
-    avatar: 'text-primary-base',
-    headerButton: 'neutral',
-    bubble: 'border border-border-light bg-frames-lightest p-3 text-text-darkest',
-    userBubble: 'border border-border-light bg-frames-lightest px-3 py-2 text-text-darkest',
     footer: 'border-t border-border-light bg-frames-lightest',
     composer: '',
     field: '',
-    divider: 'bg-border-light',
+    divider: 'bg-background-light',
     attach: '!text-neutral-600',
     send: '!text-primary-base',
   },
   light: {
-    subtitle: 'text-text-base',
-    avatar: 'text-primary-base',
-    headerButton: 'neutral',
-    bubble: 'border border-border-light bg-background-lightest p-3 text-text-darkest',
-    userBubble: 'border border-border-light bg-background-lightest px-3 py-2 text-text-darkest',
     footer: 'border-t border-border-light bg-background-lightest',
     composer: '',
     field: '',
-    divider: 'bg-border-light',
+    divider: 'bg-background-light',
     attach: '!text-neutral-600',
     send: '!text-primary-base',
   },
   dark: {
-    subtitle: 'text-neutral-400',
-    avatar: 'text-neutral-200',
-    headerButton: 'white',
-    bubble: 'border border-border-light bg-neutral-900 p-3 text-neutral-50',
-    userBubble: 'border border-border-light bg-neutral-900 px-3 py-2 text-neutral-50',
     footer: 'bg-neutral-800',
     composer: '!border-neutral-600 !bg-transparent',
-    field: '!text-neutral-50 placeholder:!text-neutral-600',
+    field: '!text-neutral-50 placeholder:!text-neutral-500',
     divider: 'bg-neutral-600',
     attach: '!text-neutral-200',
     send: '!text-neutral-50',
   },
   primary: {
-    subtitle: 'text-static-white',
-    avatar: 'text-static-white',
-    headerButton: 'white',
-    bubble: 'bg-primary-lightest p-3 text-primary-darkest',
-    userBubble: 'bg-primary-lightest px-3 py-2 text-primary-darkest',
     footer: 'bg-primary-base',
     composer: '!border-primary-sub-base !bg-transparent',
-    field: '!text-static-white placeholder:!text-primary-light',
+    field: '!text-static-white placeholder:!text-static-white/70',
     divider: 'bg-primary-sub-base',
     attach: '!text-static-white',
     send: '!text-static-white',
   },
 };
+
+/** The Takeoff scrollbar (tokens `takeoff-scrollbar` mixin) for a scroll container. */
+const scrollbar =
+  '[scrollbar-color:var(--secondary-sub-base)_var(--background-lightest)] [scrollbar-width:thin] [&::-webkit-scrollbar]:size-1 [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-secondary-sub-base [&::-webkit-scrollbar-thumb:hover]:bg-secondary-dark [&::-webkit-scrollbar-track]:rounded-sm [&::-webkit-scrollbar-track]:bg-background-lightest';
+
+/** Messages and the typing indicator fade in when they are added. */
+const enter = 'motion-safe:transition-[opacity,translate] motion-safe:duration-300 motion-safe:starting:translate-y-2 motion-safe:starting:opacity-0';
 
 /**
  * True while an IME composition is open. Safari reports the keydown that
@@ -144,10 +166,18 @@ function isComposing(event: { nativeEvent: globalThis.KeyboardEvent; keyCode: nu
   return event.nativeEvent.isComposing || event.keyCode === 229;
 }
 
-/** The Takeoff bot mark. Colour follows `currentColor`. */
-export function ChatbotIcon(props: SVGProps<SVGSVGElement>) {
+/**
+ * The Takeoff bot mark (Figma `chatbot-icon`). Colour follows `currentColor`:
+ * `text-primary-base`, `text-neutral-900`, `text-neutral-200` or
+ * `text-static-white` give the primary, dark, light and white types. The face
+ * is cut out, so it shows the surface behind the mark; pass a fill class as
+ * `face` (e.g. `fill-static-white`) to fill it instead. Size it with `size-8`
+ * (small), `size-10` (base) or `size-12` (large).
+ */
+export function ChatbotIcon({ face, ...props }: SVGProps<SVGSVGElement> & { face?: string }) {
   return (
     <svg viewBox="0 0 40 40" fill="currentColor" aria-hidden="true" {...props}>
+      {face && <circle cx="20" cy="20" r="13.5" className={face} />}
       <path d="M36.67 0H20C14.48 0 9.48 2.24 5.86 5.86A19.94 19.94 0 0 0 0 20c0 11.05 8.95 20 20 20s20-8.95 20-20V3.33C40 1.5 38.5 0 36.67 0Zm-7.24 29.43A13.29 13.29 0 0 1 20 33.33c-7.37 0-13.33-5.96-13.33-13.33 0-3.68 1.49-7.01 3.9-9.43A13.29 13.29 0 0 1 20 6.67c3.68 0 7.02 1.49 9.43 3.9a13.3 13.3 0 0 1 3.9 9.43c0 3.68-1.49 7.02-3.9 9.43Z" />
       <path d="M15.37 19.37c-.38.64-.87.5-1.61.3a6.81 6.81 0 0 0-1.85-.3c-.75 0-1.35.17-1.84.3-.75.2-1.23.34-1.61-.3-.62-1.02 1.08-3.54 3.45-3.54 2.38 0 4.07 2.52 3.46 3.54Z" />
       <path d="M29.93 19.67c.74.2 1.23.34 1.61-.3.61-1.02-1.08-3.54-3.45-3.54-2.38 0-4.07 2.52-3.46 3.54.38.64.87.5 1.61.3.49-.13 1.09-.3 1.84-.3.76 0 1.36.17 1.85.3Z" />
@@ -156,44 +186,150 @@ export function ChatbotIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** Vertical three-dot icon for the more button. */
+function MoreIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+      <circle cx="12" cy="5" r="2" />
+      <circle cx="12" cy="12" r="2" />
+      <circle cx="12" cy="19" r="2" />
+    </svg>
+  );
+}
+
+function UserAvatar({ avatar }: { avatar?: string | ReactNode }) {
+  return (
+    <span className="flex size-8 shrink-0 items-end justify-center overflow-hidden rounded-full border border-static-white bg-background-light text-text-base" aria-hidden="true">
+      {typeof avatar === 'string' ? <img src={avatar} alt="" className="h-7 w-auto" /> : (avatar ?? <PersonIconFilledRounded width={20} height={20} className="mb-1" />)}
+    </span>
+  );
+}
+
+export interface ChatbotHeaderProps {
+  type?: ChatbotType;
+  title?: string;
+  subtitle?: string;
+  online?: boolean;
+  /** Shows "Typing…" in place of "Online". */
+  typing?: boolean;
+  /** Id for the title, so a region can be labelled by it. */
+  titleId?: string;
+  onMenu?: () => void;
+  onClose?: () => void;
+  className?: string;
+}
+
+/** The chatbot header (Figma `Chatbot header`). Render it inside a `Card`. */
+export function ChatbotHeader({
+  type = 'basic',
+  title = DEFAULT_TITLE,
+  subtitle = 'Chat with',
+  online = true,
+  typing = false,
+  titleId,
+  onMenu,
+  onClose,
+  className = '',
+}: ChatbotHeaderProps) {
+  const s = headerStyles[type];
+
+  return (
+    <Card.Header headerType={type} className={`!flex-row items-center justify-between gap-3 !p-3 ${className}`}>
+      <div className="flex min-w-0 items-center gap-1.5">
+        <ChatbotIcon face={s.face} className={`size-10 shrink-0 ${s.avatar}`} />
+        <div className="min-w-0">
+          <div className={`text-[11px] leading-4 uppercase ${s.subtitle}`}>{subtitle}</div>
+          <div className="flex items-center gap-1">
+            <Card.Title id={titleId} level={2} className="truncate !text-xl !leading-[30px]">
+              {title}
+            </Card.Title>
+            {online && (
+              <Badge variant="success" appearance="filledLight" size="small" rounded startContent={<FlashIconFilledRounded />} className="shrink-0">
+                {typing ? 'Typing…' : 'Online'}
+              </Badge>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="flex shrink-0 items-center gap-1">
+        {onMenu && <Button variant="neutral" appearance="text" aria-label="More options" startContent={<MoreIcon />} onClick={onMenu} classNames={{ content: s.button }} />}
+        {onClose && (
+          <Button variant="neutral" appearance="text" aria-label="Close chat" startContent={<CloseIconOutlinedRounded />} onClick={onClose} classNames={{ content: s.button }} />
+        )}
+      </div>
+    </Card.Header>
+  );
+}
+
 function TypingIndicator({ label, surface }: { label: string; surface: string }) {
   return (
-    <div className="flex items-end gap-2">
-      <ChatbotIcon className="size-8 shrink-0 text-primary-base" />
-      <div className={`flex h-9 items-center gap-1 rounded-lg !px-3 !py-0 ${surface}`}>
+    <div className={`flex items-end gap-2 ${enter}`}>
+      <ChatbotIcon face="fill-static-white" className="size-8 shrink-0 text-primary-base" />
+      <div className={`flex h-10 items-center gap-1 rounded-lg !px-4 !py-0 ${surface}`}>
         <span className="sr-only">{label}</span>
-        {[0, 150, 300].map(delay => (
-          <span key={delay} className="size-1.5 animate-bounce rounded-full bg-current opacity-60 motion-reduce:animate-none" style={{ animationDelay: `${delay}ms` }} />
+        {[0, 160, 320].map(delay => (
+          <span
+            key={delay}
+            className="size-2 animate-bounce rounded-full bg-current opacity-50 motion-reduce:animate-none"
+            style={{ animationDelay: `${delay}ms`, animationDuration: '1s' }}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function Message({ message, type }: { message: ChatbotMessage; type: ChatbotType }) {
+function Attachments({ items }: { items: ChatbotAttachment[] }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {items.map(item =>
+        item.type.startsWith('image/') ? (
+          <a key={item.id} href={item.url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-lg !no-underline">
+            <img src={item.url} alt={item.name} className="max-h-40 max-w-full object-cover" />
+          </a>
+        ) : (
+          <a
+            key={item.id}
+            href={item.url}
+            download={item.name}
+            className="flex max-w-full items-center gap-1.5 rounded-lg bg-background-light px-2 py-1.5 text-text-darkest !no-underline"
+          >
+            <FileIconOutlinedRounded width={20} height={20} className="shrink-0" />
+            <span className="truncate">{item.name}</span>
+          </a>
+        ),
+      )}
+    </div>
+  );
+}
+
+function Message({ message, bubble, userAvatar }: { message: ChatbotMessage; bubble: string; userAvatar?: string | ReactNode }) {
   const isUser = message.role === 'user';
-  const s = styles[type];
+  const hasContent = message.content !== '' && message.content != null;
+  const hasMeta = Boolean(message.time || message.status);
 
   return (
-    <div className={`flex items-end gap-2 ${isUser ? 'flex-row-reverse' : ''}`}>
+    <div className={`flex items-end gap-2 ${isUser ? 'flex-row-reverse' : ''} ${enter}`}>
+      {/* The avatar lines up with the bubble, not with the time below it. */}
       {isUser ? (
-        <span
-          className="flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-frames-lightest bg-background-light text-xs text-text-dark"
-          aria-hidden="true"
-        >
-          You
+        <span className={hasMeta ? 'mb-5' : ''}>
+          <UserAvatar avatar={userAvatar} />
         </span>
       ) : (
-        <ChatbotIcon className="size-8 shrink-0 text-primary-base" />
+        <ChatbotIcon face="fill-static-white" className={`size-8 shrink-0 text-primary-base ${hasMeta ? 'mb-5' : ''}`} />
       )}
-      <div className={`flex max-w-[75%] flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
-        {/* Keep typed line breaks for plain text only: rendered markdown emits
-            newline text nodes between blocks that pre-wrap would show. */}
-        <div className={`rounded-lg text-sm leading-5 break-words ${typeof message.content === 'string' ? 'whitespace-pre-wrap' : ''} ${isUser ? s.userBubble : s.bubble}`}>
-          {message.content}
-        </div>
-        {(message.time || message.status) && (
-          <div className="flex items-center gap-1 text-[11px] leading-4 text-text-base">
+      <div className={`flex max-w-[80%] min-w-0 flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
+        {(hasContent || Boolean(message.attachments?.length)) && (
+          // Keep typed line breaks for plain text only: rendered markdown emits
+          // newline text nodes between blocks that pre-wrap would show.
+          <div className={`flex flex-col gap-2 rounded-lg text-sm leading-5 break-words ${typeof message.content === 'string' ? 'whitespace-pre-wrap' : ''} ${bubble}`}>
+            {message.attachments?.length ? <Attachments items={message.attachments} /> : null}
+            {hasContent && <div>{message.content}</div>}
+          </div>
+        )}
+        {message.extra}
+        {hasMeta && (
+          <div className="flex h-4 items-center gap-1 text-[11px] leading-4 text-text-base">
             {message.time && <span>{message.time}</span>}
             {message.status === 'read' && <DoneAllIconOutlinedRounded width={16} height={16} className="text-primary-sub-base" />}
             {message.status === 'sent' && <CheckIconOutlinedRounded width={16} height={16} className="text-text-base" />}
@@ -205,27 +341,43 @@ function Message({ message, type }: { message: ChatbotMessage; type: ChatbotType
   );
 }
 
+/** Files picked in the composer, with a preview URL for each image. */
+function usePickedFiles() {
+  const [files, setFiles] = useState<File[]>([]);
+  const previews = useMemo(() => files.map(file => (file.type.startsWith('image/') ? URL.createObjectURL(file) : null)), [files]);
+  useEffect(() => () => previews.forEach(url => url && URL.revokeObjectURL(url)), [previews]);
+  return { files, previews, setFiles };
+}
+
 export function Chatbot({
   messages,
   onSubmit,
   typing = false,
   type = 'basic',
+  assistantBubble = type,
+  userBubble = type,
   title = DEFAULT_TITLE,
   subtitle = 'Chat with',
   online = true,
   placeholder = 'Type your message here',
-  onAttach,
+  userAvatar,
+  allowAttachments = true,
+  accept,
+  onMenu,
   onClose,
   emptyState,
   className = '',
 }: ChatbotProps) {
-  const s = styles[type];
+  const f = footerStyles[type];
   const titleId = useId();
   const [draft, setDraft] = useState('');
+  const { files, previews, setFiles } = usePickedFiles();
   const logRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   // Input.Field types its ref for both the input and textarea forms.
   const fieldRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
   const stickToBottom = useRef(true);
+  const canSend = draft.trim() !== '' || files.length > 0;
 
   // Follow new messages only while the reader is already at the bottom, so
   // scrolling up to re-read an earlier answer is never interrupted.
@@ -259,11 +411,11 @@ export function Chatbot({
   };
 
   const send = () => {
-    const text = draft.trim();
-    if (!text) return;
+    if (!canSend) return;
     stickToBottom.current = true;
-    onSubmit(text);
+    onSubmit(draft.trim(), files);
     setDraft('');
+    setFiles([]);
     // Sending disables the Send button; keep keyboard focus in the composer.
     fieldRef.current?.focus();
   };
@@ -282,31 +434,36 @@ export function Chatbot({
     }
   };
 
+  const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
+    const picked = Array.from(event.currentTarget.files ?? []);
+    setFiles(current => [...current, ...picked]);
+    // Clear the input so picking the same file again still fires `change`.
+    event.currentTarget.value = '';
+    fieldRef.current?.focus();
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(current => current.filter((_, i) => i !== index));
+    fieldRef.current?.focus();
+  };
+
   return (
-    <Card as="section" aria-labelledby={titleId} className={`flex h-[560px] max-h-full w-full max-w-[400px] flex-col overflow-hidden ${className}`}>
-      <Card.Header headerType={type} className="!flex-row items-center justify-between gap-3 !px-3 !py-3">
-        <div className="flex min-w-0 items-center gap-1.5">
-          <ChatbotIcon className={`size-10 shrink-0 ${s.avatar}`} />
-          <div className="min-w-0">
-            <div className={`text-[11px] leading-4 ${s.subtitle}`}>{subtitle}</div>
-            <div className="flex items-center gap-1">
-              <Card.Title id={titleId} level={2} className="truncate !text-xl !leading-[30px]">
-                {title}
-              </Card.Title>
-              {online && (
-                <Badge variant="success" appearance="filledLight" size="small" rounded startContent={<FlashIconFilledRounded />}>
-                  Online
-                </Badge>
-              )}
-            </div>
-          </div>
-        </div>
-        {onClose && (
-          <Button variant={s.headerButton} appearance="text" size="small" aria-label="Close chat" onClick={onClose}>
-            <CloseIconOutlinedRounded width={20} height={20} />
-          </Button>
-        )}
-      </Card.Header>
+    <Card
+      as="section"
+      aria-labelledby={titleId}
+      className={`flex h-[560px] max-h-full w-full max-w-[400px] flex-col overflow-hidden !rounded-xl !shadow-1-default-base ${className}`}
+    >
+      <ChatbotHeader
+        type={type}
+        title={title}
+        subtitle={subtitle}
+        online={online}
+        typing={typing}
+        titleId={titleId}
+        onMenu={onMenu}
+        onClose={onClose}
+        className="relative z-10 !shadow-2-default-lg"
+      />
 
       <div
         ref={logRef}
@@ -315,20 +472,55 @@ export function Chatbot({
         aria-label={`Conversation with ${title}`}
         tabIndex={0}
         onScroll={handleScroll}
-        className="flex flex-1 flex-col gap-4 overflow-y-auto bg-frames-lightest p-4 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary-base"
+        className={`flex flex-1 flex-col gap-6 overflow-y-auto bg-frames-lightest px-3 py-6 [&>:first-child]:mt-auto focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary-base ${scrollbar}`}
       >
-        {messages.length === 0 && !typing ? emptyState : messages.map(message => <Message key={message.id} message={message} type={type} />)}
-        {typing && <TypingIndicator label={`${title} is typing`} surface={s.bubble} />}
+        {messages.length === 0 && !typing
+          ? emptyState
+          : messages.map(message => (
+              <Message key={message.id} message={message} bubble={bubbleStyles[message.role === 'user' ? userBubble : assistantBubble][message.role]} userAvatar={userAvatar} />
+            ))}
+        {typing && <TypingIndicator label={`${title} is typing`} surface={bubbleStyles[assistantBubble].assistant} />}
       </div>
 
-      <form onSubmit={handleSubmit} className={`p-3 ${s.footer}`}>
-        <Input className={`!items-end !gap-2 !p-1 ${s.composer}`}>
-          {onAttach && (
+      <form onSubmit={handleSubmit} className={`p-3 ${f.footer}`}>
+        {files.length > 0 && (
+          <ul aria-label="Attachments" className={`!m-0 !mb-2 flex list-none gap-2 overflow-x-auto !p-0 !pt-1.5 !pr-1.5 ${scrollbar}`}>
+            {files.map((file, index) => (
+              <li key={`${file.name}-${index}`} className="relative !m-0 shrink-0">
+                {previews[index] ? (
+                  <img src={previews[index]} alt={file.name} className="size-14 rounded-lg border border-border-light object-cover" />
+                ) : (
+                  <span className="flex h-14 max-w-40 items-center gap-1.5 rounded-lg border border-border-light bg-background-lightest px-2 text-xs text-text-darkest">
+                    <FileIconOutlinedRounded width={20} height={20} className="shrink-0" />
+                    <span className="truncate">{file.name}</span>
+                  </span>
+                )}
+                <button
+                  type="button"
+                  aria-label={`Remove ${file.name}`}
+                  onClick={() => removeFile(index)}
+                  className="absolute -top-1.5 -right-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full border-0 bg-neutral-900 p-0 text-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-base"
+                >
+                  <CloseIconOutlinedRounded width={14} height={14} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <Input className={`!items-end !gap-2 !p-1 ${f.composer}`}>
+          {allowAttachments && (
             <>
-              <Button variant="neutral" appearance="text" size="small" aria-label="Attach a file" onClick={onAttach} className={s.attach}>
-                <AddCircleIconOutlinedRounded width={20} height={20} />
-              </Button>
-              <span className={`h-8 w-px shrink-0 ${s.divider}`} aria-hidden="true" />
+              <input ref={fileRef} type="file" multiple accept={accept} onChange={handleFiles} className="hidden" tabIndex={-1} aria-hidden="true" />
+              <Button
+                variant="neutral"
+                appearance="text"
+                size="small"
+                aria-label="Attach files"
+                startContent={<AddCircleIconFilledTk />}
+                onClick={() => fileRef.current?.click()}
+                classNames={{ content: f.attach }}
+              />
+              <span className={`h-6 w-px shrink-0 self-center ${f.divider}`} aria-hidden="true" />
             </>
           )}
           <Input.Field
@@ -340,11 +532,19 @@ export function Chatbot({
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             aria-label="Message"
-            className={`max-h-32 !resize-none self-center !py-1.5 [field-sizing:content] ${s.field}`}
+            className={`max-h-32 !resize-none self-center !py-1.5 [field-sizing:content] ${scrollbar} ${f.field}`}
           />
-          <Button type="submit" variant="neutral" appearance="text" size="small" aria-label="Send message" disabled={!draft.trim()} className={`disabled:opacity-40 ${s.send}`}>
-            <SendIconFilledRounded width={20} height={20} />
-          </Button>
+          <Button
+            type="submit"
+            variant="neutral"
+            appearance="text"
+            size="small"
+            aria-label="Send message"
+            startContent={<SendIconFilledRounded />}
+            disabled={!canSend}
+            className="disabled:opacity-40"
+            classNames={{ content: f.send }}
+          />
         </Input>
       </form>
     </Card>
@@ -358,7 +558,7 @@ export interface ChatbotLauncherProps extends Omit<ChatbotProps, 'onClose'> {
   positionClassName?: string;
 }
 
-/** A floating action button that opens the chatbot in a panel above it. */
+/** A floating action button (Figma `chatbot-fab`) that opens the chatbot in a panel above it. */
 export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixed bottom-6 right-6', ...chatbotProps }: ChatbotLauncherProps) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = useId();
@@ -387,8 +587,17 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
 
   return (
     <div className={`z-50 flex flex-col items-end gap-3 ${positionClassName}`} onKeyDown={event => event.key === 'Escape' && !isComposing(event) && open && close()}>
-      {/* Hidden rather than unmounted, so the draft survives closing; capped so the header stays on short screens. */}
-      <div id={panelId} ref={panelRef} hidden={!open} className="h-[min(560px,calc(100dvh-7rem))] w-[min(400px,calc(100vw-2rem))]">
+      {/* Kept mounted so the draft survives closing. Closing scales and fades
+          the panel into the launcher, then makes it invisible and inert.
+          Capped so the header stays on short screens. */}
+      <div
+        id={panelId}
+        ref={panelRef}
+        inert={!open}
+        className={`h-[min(560px,calc(100dvh-7rem))] w-[min(400px,calc(100vw-2rem))] origin-bottom-right transition-[opacity,scale,translate,visibility] duration-200 ease-out motion-reduce:transition-none ${
+          open ? 'visible translate-y-0 scale-100 opacity-100' : 'invisible translate-y-2 scale-95 opacity-0'
+        }`}
+      >
         <Chatbot {...chatbotProps} onClose={close} className={`!h-full ${chatbotProps.className ?? ''}`} />
       </div>
       <button
@@ -398,9 +607,9 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => (open ? close() : openPanel())}
-        className="flex size-12 items-center justify-center rounded-full bg-static-white text-primary-base shadow-lg transition-colors hover:text-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base"
+        className="flex size-12 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-primary-base transition-[color,box-shadow,scale] duration-150 hover:text-primary-dark hover:shadow-1-hover-base focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base active:scale-95 active:text-primary-base motion-reduce:transition-none"
       >
-        <ChatbotIcon className="size-12" />
+        <ChatbotIcon face="fill-static-white" className="size-12" />
       </button>
     </div>
   );

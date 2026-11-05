@@ -2,27 +2,37 @@
 title: Chatbot
 description:
   A copy-paste chatbot block composed from Card, Badge, Button and Input — a
-  floating launcher or an embedded panel, in the five Figma styles.
+  floating launcher or an embedded panel, in the five Figma styles, with
+  attachments, typing and rich messages.
 sidebar_label: Chatbot
 slug: /blocks/ai/chatbot
 ---
 
 import CodeBlock from '@theme/CodeBlock';
 import BlockPreview from '@site/src/components/BlockPreview';
-import {
-  ChatbotEmbeddedDemo,
-  ChatbotFloatingDemo,
-  ChatbotTypeDemo,
-} from '@site/src/blocks/ai/chatbot/ChatbotDemo';
+import FloatingExample from '@site/src/blocks/ai/chatbot/examples/FloatingExample';
+import EmbeddedExample from '@site/src/blocks/ai/chatbot/examples/EmbeddedExample';
+import TypingExample from '@site/src/blocks/ai/chatbot/examples/TypingExample';
+import RichMessageExample from '@site/src/blocks/ai/chatbot/examples/RichMessageExample';
+import TypesExample from '@site/src/blocks/ai/chatbot/examples/TypesExample';
+import HeaderExample from '@site/src/blocks/ai/chatbot/examples/HeaderExample';
+import IconExample from '@site/src/blocks/ai/chatbot/examples/IconExample';
+import floatingSource from '@site/src/blocks/ai/chatbot/examples/FloatingExample.tsx?raw';
+import embeddedSource from '@site/src/blocks/ai/chatbot/examples/EmbeddedExample.tsx?raw';
+import typingSource from '@site/src/blocks/ai/chatbot/examples/TypingExample.tsx?raw';
+import richSource from '@site/src/blocks/ai/chatbot/examples/RichMessageExample.tsx?raw';
+import typesSource from '@site/src/blocks/ai/chatbot/examples/TypesExample.tsx?raw';
+import headerSource from '@site/src/blocks/ai/chatbot/examples/HeaderExample.tsx?raw';
+import iconSource from '@site/src/blocks/ai/chatbot/examples/IconExample.tsx?raw';
 import chatbotSource from '@site/src/blocks/ai/chatbot/Chatbot.tsx?raw';
-import demoSource from '@site/src/blocks/ai/chatbot/ChatbotDemo.tsx?raw';
+import conversationSource from '@site/src/blocks/ai/chatbot/useDemoConversation.ts?raw';
 
 # Chatbot
 
 A chat assistant panel with a header, a scrolling conversation and a message
 composer. It is a **block**: there is no `Chatbot` export in
-`@takeoff-ui/react-spar`. Copy [the source](#source) into your app and connect
-it to your own backend or AI SDK.
+`@takeoff-ui/react-spar`. Copy [`Chatbot.tsx`](#source) into your app and
+connect it to your own backend or AI SDK.
 
 The block is built from `Card`, `Badge`, `Button` and `Input`, and imports its
 icons from `@takeoff-icons/react`. Add that package to your app if it is not
@@ -32,17 +42,22 @@ already a direct dependency:
 pnpm add @takeoff-icons/react
 ```
 
-The prompt starters in the embedded demo use `Chip`. The composer grows with its
-content through `field-sizing: content`; browsers without it (Firefox, older
-Safari) keep a single row that scrolls.
+Each example below shows its own code. The examples keep the conversation in
+state with [`useDemoConversation`](#source), a small hook that answers with a
+canned reply; replace it with your own data.
 
 ## Floating
 
-`ChatbotLauncher` renders a floating button that opens the panel above it.
-Escape or the close button returns focus to the launcher.
+`ChatbotLauncher` renders the floating button (Figma `chatbot-fab`) that opens
+the panel above it with a short scale-and-fade animation. The button darkens and
+lifts on hover and presses in when clicked. Escape or the close button closes
+the panel and returns focus to the launcher; the draft is kept.
 
-<BlockPreview minHeight={720}>
-  <ChatbotFloatingDemo />
+Use `assistantBubble` and `userBubble` to style the two sides separately, as in
+the Figma widget, and `userAvatar` for the user's picture.
+
+<BlockPreview minHeight={720} code={floatingSource} title="FloatingExample.tsx">
+  <FloatingExample />
 </BlockPreview>
 
 ## Embedded
@@ -50,8 +65,35 @@ Escape or the close button returns focus to the launcher.
 Render `Chatbot` directly to place it in a page or a side panel. Pass
 `emptyState` to show prompt starters before the first message.
 
-<BlockPreview minHeight={600}>
-  <ChatbotEmbeddedDemo />
+<BlockPreview minHeight={600} code={embeddedSource} title="EmbeddedExample.tsx">
+  <EmbeddedExample />
+</BlockPreview>
+
+## Typing and streaming
+
+While `typing` is true, the log shows the typing indicator and the header badge
+reads "Typing…". This example also streams each reply word by word: it adds an
+empty assistant message and grows its `content`. Use **Show typing** to look at
+the indicator on its own.
+
+<BlockPreview minHeight={560} code={typingSource} title="TypingExample.tsx">
+  <TypingExample />
+</BlockPreview>
+
+## Attachments and rich messages
+
+The plus button opens a file picker. Picked files appear above the composer,
+where each one can be removed, and are passed to `onSubmit(text, files)`. A
+message can carry `attachments`, which render as thumbnails for images and as
+file links otherwise. Limit the picker with `accept`, or hide the button with
+`allowAttachments={false}`.
+
+Anything in a message's `extra` renders under its bubble. This example uses it
+for suggestion chips, a flight card with an image, and Yes / No buttons, as in
+the Figma structured response.
+
+<BlockPreview minHeight={700} code={richSource} title="RichMessageExample.tsx">
+  <RichMessageExample />
 </BlockPreview>
 
 ## Types
@@ -59,32 +101,47 @@ Render `Chatbot` directly to place it in a page or a side panel. Pass
 `type` follows the Figma variants and styles the header, the bubbles and the
 composer together.
 
-<BlockPreview minHeight={540}>
-  <div className="grid gap-6 lg:grid-cols-2">
-    <ChatbotTypeDemo type="basic" />
-    <ChatbotTypeDemo type="divided" />
-    <ChatbotTypeDemo type="light" />
-    <ChatbotTypeDemo type="dark" />
-    <ChatbotTypeDemo type="primary" />
-  </div>
+<BlockPreview minHeight={540} code={typesSource} title="TypesExample.tsx">
+  <TypesExample />
+</BlockPreview>
+
+## Header
+
+`ChatbotHeader` is exported on its own, for example for a chat that lives in a
+`Drawer`. It shows the more button when you pass `onMenu`, and the close button
+when you pass `onClose`.
+
+<BlockPreview code={headerSource} title="HeaderExample.tsx">
+  <HeaderExample />
+</BlockPreview>
+
+## Icon
+
+`ChatbotIcon` is the bot mark. Its colour follows `currentColor`, and its face
+is cut out, so the surface behind it shows through.
+
+<BlockPreview code={iconSource} title="IconExample.tsx">
+  <IconExample />
 </BlockPreview>
 
 ## Connecting your data
 
-The block keeps only the draft text. Your code owns the conversation:
+The block keeps only the draft text and the picked files. Your code owns the
+conversation:
 
 - Pass the conversation as `messages`. Each message has an `id`, a `role`
-  (`assistant` or `user`), `content`, and optionally `time` and `status`.
-- `onSubmit(text)` fires with the trimmed text when the user sends. Append the
-  user message, set `typing` while you wait, then append the answer.
+  (`assistant` or `user`), `content`, and optionally `attachments`, `extra`,
+  `time` and `status`.
+- `onSubmit(text, files)` fires when the user sends. Upload the files, append
+  the user message, set `typing` while you wait, then append the answer.
 - To stream a reply, append an empty assistant message and update its `content`
   as chunks arrive. The log announces added messages, not text that changes
   inside one, so screen readers do not hear streamed text. If that matters for
   your product, append the finished reply as its own message, or announce it in
   a visually hidden `role="status"` element when the stream ends.
 
-`content` is a `ReactNode`, so you can render markdown or rich cards with the
-renderer your app already uses.
+`content` is a `ReactNode`, so you can render markdown with the renderer your
+app already uses.
 
 ## Accessibility
 
@@ -95,19 +152,23 @@ renderer your app already uses.
 - Enter sends and Shift+Enter adds a line. Enter does not send, and Escape does
   not close, while an IME composition is open.
 - The typing indicator is added to the log with a text label, so it is announced
-  once, and its animation stops under `prefers-reduced-motion`.
-- Icon-only buttons carry an `aria-label`, and the launcher exposes
-  `aria-expanded`.
+  once. Its animation, the message fade-in and the panel animation stop under
+  `prefers-reduced-motion`.
+- Icon-only buttons carry an `aria-label`, each picked file has a labelled
+  remove button, and the launcher exposes `aria-expanded`. The closed panel is
+  `inert`.
+- The composer grows with its content through `field-sizing: content`; browsers
+  without it (Firefox, older Safari) keep a single row that scrolls.
 
 ## Source
 
-Copy `Chatbot.tsx` into your app. `ChatbotDemo.tsx` shows how the previews on
-this page keep the conversation in state.
+Copy `Chatbot.tsx` into your app. `useDemoConversation.ts` is the demo state the
+examples use.
 
 <CodeBlock language="tsx" title="Chatbot.tsx" showLineNumbers>
   {chatbotSource}
 </CodeBlock>
 
-<CodeBlock language="tsx" title="ChatbotDemo.tsx">
-  {demoSource}
+<CodeBlock language="tsx" title="useDemoConversation.ts">
+  {conversationSource}
 </CodeBlock>

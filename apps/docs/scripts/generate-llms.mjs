@@ -209,8 +209,20 @@ function mdxToMarkdown(rawBody) {
     const fence = protect('```' + language + '\n' + normalizeDemo(rawImports.get(name)) + '\n```');
     return title ? `**${title}**\n\n${fence}` : fence;
   });
-  // Live block previews have no Markdown form.
-  body = body.replace(/<BlockPreview\b[^>]*>[\s\S]*?<\/BlockPreview>/gu, '> _Interactive demo — see the online docs._');
+  // Live block previews have no Markdown form; keep the example's source
+  // when the preview carries it as `code={x}`.
+  body = body.replace(/<BlockPreview\b([^>]*)>[\s\S]*?<\/BlockPreview>/gu, (_, attrs) => {
+    const note = '> _Interactive demo — see the online docs._';
+    const name = attrs.match(/\bcode=\{(\w+)\}/u)?.[1];
+    if (!name) return note;
+    if (!rawImports.has(name)) {
+      console.warn(`gen:llms — <BlockPreview code={${name}}> has no readable '@site/…?raw' import; its source is left out of the mirror`);
+      return note;
+    }
+    const title = attrs.match(/\btitle=(["'])([^"']+)\1/u)?.[2];
+    const fence = protect('```tsx\n' + normalizeDemo(rawImports.get(name)) + '\n```');
+    return `${note}\n\n${title ? `**${title}**\n\n` : ''}${fence}`;
+  });
 
   // 2. Drop JSX comments ({/* ... */}), including the api-tables + prettier
   //    markers.
