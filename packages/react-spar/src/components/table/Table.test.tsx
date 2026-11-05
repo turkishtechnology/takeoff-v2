@@ -915,6 +915,7 @@ describe('Table (props-first)', () => {
 
       await user.click(screen.getByRole('button', { name: 'Filter City' }));
       expect(await screen.findByRole('group', { name: 'Filter City value' })).toContainElement(screen.getByRole('checkbox', { name: 'Istanbul' }));
+      expect(screen.getByRole('group', { name: 'Filter City value' })).toHaveClass('tk-table-filter-options');
     });
 
     it('names each filter trigger and filter field after its column through `{column}`', async () => {

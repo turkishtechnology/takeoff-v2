@@ -230,8 +230,8 @@ const CheckboxListFilter = ({
   value: string[];
   onChange: (value: string[] | undefined) => void;
 }) => (
-  // A named group, laid out like the panel body it replaces as the flex parent.
-  <div role="group" aria-label={label} style={{ display: 'flex', flexDirection: 'column', gap: 'inherit' }}>
+  // A named group; `tk-table-filter-options` stacks the options like the panel body.
+  <div role="group" aria-label={label} className="tk-table-filter-options">
     {options.map(option => {
       const checked = value.includes(option.value);
       return (
