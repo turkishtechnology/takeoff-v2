@@ -68,13 +68,14 @@ export function useDemoConversation(initial: ChatbotMessage[], { stream = false,
     }
 
     // Streaming: add an empty message, then grow its content chunk by chunk.
-    setMessages(current => [...markRead(current), { id, role: 'assistant', content: '', time: now(), author }]);
+    setMessages(current => [...markRead(current), { id, role: 'assistant', content: '', time: now(), author, streaming: true }]);
     const words = text.split(' ');
     for (let i = 1; i <= words.length; i++) {
       await wait(60);
       if (!mounted.current) return;
       update(id, { content: words.slice(0, i).join(' ') });
     }
+    update(id, { streaming: false });
   };
 
   /** Delivers a user message (sending, then sent) and asks for the answer. */

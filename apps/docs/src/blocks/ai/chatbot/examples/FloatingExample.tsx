@@ -27,7 +27,8 @@ function download(messages: ChatbotMessage[]) {
   link.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
   link.download = 'chat.txt';
   link.click();
-  URL.revokeObjectURL(link.href);
+  // Give the browser time to start the download before the URL goes away.
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }
 
 export default function FloatingExample() {

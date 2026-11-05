@@ -9,7 +9,7 @@ const conversation: ChatbotMessage[] = [
 ];
 
 export default function StatusExample() {
-  // Each sent message can be undone for 5 seconds.
+  // A sent message can be undone for up to 5 seconds, until the bot reads it.
   const { messages, typing, submit, undo } = useDemoConversation(conversation, { undoWindow: 5000, delay: 2500 });
 
   return (

@@ -126,8 +126,8 @@ the indicator on its own.
 A user message shows a clock while `status` is `sending`, one tick when `sent`
 and a double tick when `read`. While a message is `undoable` and `onUndo` is
 set, Undo appears under it; your code clears `undoable` when the undo window
-ends. A message with `retracted` is replaced by a note. This example keeps Undo
-for 5 seconds; send a message to try it.
+ends. A message with `retracted` is replaced by a note. This example offers Undo
+for up to 5 seconds, until the bot reads the message; send a message to try it.
 
 <BlockPreview minHeight={600} code={statusSource} title="StatusExample.tsx">
   <StatusExample />

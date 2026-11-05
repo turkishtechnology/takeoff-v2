@@ -15,7 +15,6 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export default function HandoffExample() {
   const [connected, setConnected] = useState(false);
-  const [connecting, setConnecting] = useState(false);
   // After the handoff, replies come from the agent.
   const { messages, setMessages, typing, submit } = useDemoConversation(
     [
@@ -37,9 +36,7 @@ export default function HandoffExample() {
       { id: newId(), role: 'user', content: 'Talk to an agent', time: now(), status: 'read' },
       { id: newId(), role: 'system', content: 'Connecting you to an agent…' },
     ]);
-    setConnecting(true);
     await wait(2000);
-    setConnecting(false);
     setConnected(true);
     setMessages(current => [
       ...current,
@@ -55,7 +52,7 @@ export default function HandoffExample() {
         subtitle={connected ? 'Live agent' : 'Chat with'}
         agent={connected ? agent : undefined}
         messages={messages}
-        typing={typing || connecting}
+        typing={typing}
         onSubmit={submit}
         userAvatar="/img/blocks/chatbot/user-avatar.svg"
       />

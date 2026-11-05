@@ -99,6 +99,8 @@ export interface ChatbotMessage {
   feedback?: 'up' | 'down';
   /** Shows this author's avatar instead of the bot icon. */
   author?: ChatbotAuthor;
+  /** Set while a reply is still streaming in; hides the answer actions until it is complete. */
+  streaming?: boolean;
 }
 
 /** An item of the more (⋮) menu in the header. */
@@ -590,7 +592,7 @@ function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo,
   const canRetry = failed && Boolean(onRetry);
   const canUndo = isUser && !retracted && message.undoable && Boolean(onUndo);
   // No actions on a message that is still empty (a stream that has not started) or failed.
-  const hasActions = !isUser && hasContent && !failed && (copyable || Boolean(onFeedback) || Boolean(onRegenerate));
+  const hasActions = !isUser && hasContent && !failed && !message.streaming && (copyable || Boolean(onFeedback) || Boolean(onRegenerate));
   const hasMeta = Boolean(message.time || (isUser && message.status && !retracted) || canRetry || canUndo);
 
   const bubbleClass = retracted
@@ -602,6 +604,8 @@ function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo,
   return (
     <div className={`flex items-end gap-2 ${isUser ? 'flex-row-reverse' : ''} ${enter}`}>
       {/* The avatar lines up with the bubble, not with the rows below it. */}
+      {/* Offsets: the meta row is 16px plus a 4px gap, the actions row a
+          32px small Button plus a 4px gap. Update them if those sizes change. */}
       <span className="shrink-0" style={{ marginBottom: (hasMeta ? 20 : 0) + (hasActions ? 36 : 0) }}>
         {isUser ? (
           <Avatar avatar={userAvatar} />
@@ -679,14 +683,35 @@ function formatSize(bytes: number) {
 /** Files picked in the composer, with a preview URL for each image. */
 function usePickedFiles() {
   const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<(string | null)[]>([]);
-  // Create and revoke the object URLs in one effect, so each URL is revoked
-  // exactly once, also under StrictMode's double effects.
+  // One URL per image file, kept while the file stays picked, so a preview
+  // always belongs to its own file and the others do not reload.
+  const urls = useRef(new Map<File, string>());
+  const [previews, setPreviews] = useState<ReadonlyMap<File, string>>(new Map());
+
   useEffect(() => {
-    const urls = files.map(file => (file.type.startsWith('image/') ? URL.createObjectURL(file) : null));
-    setPreviews(urls);
-    return () => urls.forEach(url => url && URL.revokeObjectURL(url));
+    const map = urls.current;
+    for (const [file, url] of map) {
+      if (!files.includes(file)) {
+        URL.revokeObjectURL(url);
+        map.delete(file);
+      }
+    }
+    for (const file of files) {
+      if (file.type.startsWith('image/') && !map.has(file)) map.set(file, URL.createObjectURL(file));
+    }
+    setPreviews(new Map(map));
   }, [files]);
+
+  // Revoke what is left on unmount. Under StrictMode the effect above runs
+  // again afterwards and creates fresh URLs.
+  useEffect(() => {
+    const map = urls.current;
+    return () => {
+      map.forEach(url => URL.revokeObjectURL(url));
+      map.clear();
+    };
+  }, []);
+
   return { files, previews, setFiles };
 }
 
@@ -872,8 +897,8 @@ export function Chatbot({
             <ul aria-label="Attachments" className={`!m-0 flex list-none gap-2 overflow-x-auto border-b !p-2 !pt-3 ${f.boxDivider} ${scrollbar}`}>
               {files.map((file, index) => (
                 <li key={`${file.name}-${index}`} className="relative !m-0 shrink-0">
-                  {previews[index] ? (
-                    <img src={previews[index]} alt={file.name} className="block size-14 rounded-md object-cover" />
+                  {previews.get(file) ? (
+                    <img src={previews.get(file)} alt={file.name} className="block size-14 rounded-md object-cover" />
                   ) : (
                     <span className="flex h-14 w-44 items-center gap-2 rounded-md bg-background-light px-2 text-text-darkest">
                       <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary-base text-static-white">
