@@ -360,18 +360,3 @@ export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: Sti
   const hasWidth = column.columnDef.meta?.width != null || stickyLayout.has(column.id);
   return hasWidth ? { width: column.getSize() } : undefined;
 };
-
-// The design system ships no sr-only utility and the recipe must stay a purely
-// visual dependency, so header text meant only for assistive technology hides
-// itself inline.
-export const visuallyHidden: CSSProperties = {
-  position: 'absolute',
-  width: 1,
-  height: 1,
-  margin: -1,
-  padding: 0,
-  overflow: 'hidden',
-  clip: 'rect(0 0 0 0)',
-  whiteSpace: 'nowrap',
-  border: 0,
-};

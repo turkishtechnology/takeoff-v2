@@ -1,4 +1,4 @@
-import { useId, useState, type ChangeEvent } from 'react';
+import { useEffect, useId, useState, type ChangeEvent } from 'react';
 import type { Header } from '@tanstack/react-table';
 import { SearchIconOutlinedRounded } from '@takeoff-icons/react/search';
 
@@ -8,10 +8,11 @@ import { Input } from '../input';
 import { Popover } from '../popover';
 import { Radio } from '../radio';
 import { Select } from '../select';
-import { formatLabel, isDevelopment } from '../../utils';
+import { formatLabel, visuallyHidden } from '../../utils';
 
-import { useTableContext } from './context';
-import { isEmptyFilterValue, visuallyHidden } from './helpers';
+import { useTableContext, type SlotAttrs } from './context';
+import { warnIgnoredFilterButtonName } from './devWarnings';
+import { isEmptyFilterValue } from './helpers';
 import type { TableColumnFilter as TableColumnFilterConfig, TableColumnFilterContext, TableColumnFilterOption } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,22 +23,6 @@ type AnyHeader = Header<any, unknown>;
 // is not the "clears the filter" empty value — the inverse of the matching
 // predicates' `autoRemove`.
 const defaultIsActive = (value: unknown): boolean => !isEmptyFilterValue(value);
-
-// `slotProps.filterButton['aria-label']` renamed the trigger before `labels`
-// existed; it is ignored now, so tell developers once where the name moved.
-let warnedFilterButtonAriaLabel = false;
-
-// Test-only: the flag is module-level, so a test that expects the warning would
-// depend on test order without a reset. Not re-exported from the barrel.
-export const resetTableDevWarnings = (): void => {
-  warnedFilterButtonAriaLabel = false;
-};
-const warnIgnoredFilterButtonAriaLabel = (ariaLabel: unknown) => {
-  if (warnedFilterButtonAriaLabel || ariaLabel === undefined || !isDevelopment()) return;
-  warnedFilterButtonAriaLabel = true;
-  // eslint-disable-next-line no-console
-  console.warn("[Table] slotProps.filterButton['aria-label'] is ignored; use labels.filterButton (it accepts a {column} placeholder).");
-};
 
 /**
  * Header filter control rendered inside a Spar `Popover`. **Two tiers**: a
@@ -57,6 +42,23 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   const column = header.column;
   // `meta.filter` is normalized to an object upstream (string presets too).
   const filter = column.columnDef.meta?.filter as TableColumnFilterConfig | undefined;
+
+  // `Popover.Trigger` / `Popover.Content` are owner nodes (each emits its own
+  // `data-slot="root"`), so the Table `data-slot` is dropped from the trigger
+  // attrs — but the class and the theme/instance `classNames.filterButton` /
+  // `slotProps.filterButton` layers still go through `slotAttrs`, like every
+  // other slot. The name comes only from `labels`: a slotProps `aria-label` or
+  // `aria-labelledby` (which would outrank it) is dropped from the spread and
+  // reported once in development. Read before the early return so the effect
+  // runs unconditionally. The panel wrapper IS a Table-owned slot node.
+  const {
+    'data-slot': _filterButtonSlot,
+    'aria-label': ignoredAriaLabel,
+    'aria-labelledby': ignoredAriaLabelledBy,
+    ...filterButtonAttrs
+  } = slotAttrs('filterButton') as ReturnType<typeof slotAttrs> & { 'aria-label'?: string; 'aria-labelledby'?: string };
+  useEffect(() => warnIgnoredFilterButtonName(ignoredAriaLabel, ignoredAriaLabelledBy), [ignoredAriaLabel, ignoredAriaLabelledBy]);
+
   if (!filter) return null;
 
   // `{column}` in the filter labels: `filter.label`, else the header text, else
@@ -76,15 +78,6 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
     fieldLabel,
   };
 
-  // `Popover.Trigger` / `Popover.Content` are owner nodes (each emits its own
-  // `data-slot="root"`), so the Table `data-slot` is dropped from the trigger
-  // attrs — but the class and the theme/instance `classNames.filterButton` /
-  // `slotProps.filterButton` layers still go through `slotAttrs`, like every
-  // other slot. The name comes only from `labels`, so it is set after the
-  // spread. The panel wrapper IS a Table-owned slot node.
-  const { 'data-slot': _filterButtonSlot, ...filterButtonAttrs } = slotAttrs('filterButton');
-  warnIgnoredFilterButtonAriaLabel((filterButtonAttrs as { 'aria-label'?: unknown })['aria-label']);
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <Popover.Trigger {...filterButtonAttrs} aria-label={formatLabel(labels.filterButton, { column: columnName })} data-active={active ? '' : undefined}>
@@ -95,7 +88,14 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
           {filter.render ? (
             filter.render(ctx)
           ) : (
-            <PresetFilterControl filter={filter} ctx={ctx} container={panel} fieldLabel={fieldLabel} selectPlaceholder={labels.filterSelectPlaceholder} />
+            <PresetFilterControl
+              filter={filter}
+              ctx={ctx}
+              container={panel}
+              fieldLabel={fieldLabel}
+              selectPlaceholder={labels.filterSelectPlaceholder}
+              optionsAttrs={slotAttrs('filterOptions')}
+            />
           )}
         </div>
         {active && (
@@ -123,12 +123,14 @@ const PresetFilterControl = ({
   container,
   fieldLabel,
   selectPlaceholder,
+  optionsAttrs,
 }: {
   filter: TableColumnFilterConfig;
   ctx: TableColumnFilterContext;
   container: HTMLElement | null;
   fieldLabel: string;
   selectPlaceholder: string;
+  optionsAttrs: SlotAttrs;
 }) => {
   const { type, options = [], placeholder } = filter;
   const { value, setValue } = ctx;
@@ -177,7 +179,7 @@ const PresetFilterControl = ({
   // `checkbox` and `multi-select` are both multi-choice. Spar's Select has no
   // multi mode, so both render as a checkbox list (the value is a `string[]`).
   if (type === 'checkbox' || type === 'multi-select') {
-    return <CheckboxListFilter label={fieldLabel} options={options} value={Array.isArray(value) ? (value as string[]) : []} onChange={setValue} />;
+    return <CheckboxListFilter attrs={optionsAttrs} label={fieldLabel} options={options} value={Array.isArray(value) ? (value as string[]) : []} onChange={setValue} />;
   }
 
   return null;
@@ -201,8 +203,8 @@ const SelectFilter = ({
   container: HTMLElement | null;
 }) => {
   const selected = options.find(option => option.value === value);
+  const nameId = useId();
   const labelId = useId();
-  const valueId = useId();
   // The listbox is portalled INTO the filter panel rather than `document.body`.
   // Spar's Popover treats any pointer-down or focus outside its content node as
   // a dismiss, and the focus path cannot be vetoed (`focusin` is not
@@ -210,19 +212,23 @@ const SelectFilter = ({
   // Select opened and focused it. Keeping the listbox inside the panel makes it
   // an "inside" interaction with no wrapper-side dismiss logic.
   //
-  // The trigger is named by the hidden column label plus its own visible text,
-  // so the name always contains what is shown (WCAG 2.5.3, label in name).
+  // The column label sits visually hidden INSIDE the trigger, so its text reads
+  // "<label> <value>". A combobox does not take its name from content, so the
+  // trigger points `aria-labelledby` at that span (keeping what is shown in the
+  // name, WCAG 2.5.3). Spar labels the listbox by the trigger, which a name
+  // computation reads as the chosen option only, so the listbox is pointed at
+  // the column label directly (a consumer `aria-labelledby` wins in Spar).
   return (
     <Select value={value} onChange={onChange}>
-      <span id={labelId} style={visuallyHidden}>
-        {label}
-      </span>
-      {/* Spar's trigger forwards a consumer `aria-labelledby` as-is (pinned in
-          Select.test.tsx), so the hidden label and value span name it. */}
-      <Select.Trigger aria-labelledby={`${labelId} ${valueId}`}>
-        <span id={valueId}>{selected ? selected.label : placeholder}</span>
+      <Select.Trigger aria-labelledby={nameId}>
+        <span id={nameId}>
+          <span id={labelId} style={visuallyHidden}>
+            {label}
+          </span>{' '}
+          {selected ? selected.label : placeholder}
+        </span>
       </Select.Trigger>
-      <Select.Content container={container}>
+      <Select.Content container={container} aria-labelledby={labelId}>
         {options.map(option => (
           <Select.Item key={option.value} value={option.value}>
             {option.label}
@@ -234,21 +240,22 @@ const SelectFilter = ({
 };
 
 const CheckboxListFilter = ({
+  attrs,
   label,
   options,
   value,
   onChange,
 }: {
+  attrs: SlotAttrs;
   label: string;
   options: TableColumnFilterOption[];
   value: string[];
   onChange: (value: string[] | undefined) => void;
 }) => {
-  const { slotAttrs } = useTableContext('Table.ColumnFilter');
   return (
     // A named group (`filterOptions` slot) that stacks the options like the panel
     // body. Its name comes from `labels`, so it is set after the slot spread.
-    <div {...slotAttrs('filterOptions')} role="group" aria-label={label}>
+    <div {...attrs} role="group" aria-label={label}>
       {options.map(option => {
         const checked = value.includes(option.value);
         return (

@@ -5,10 +5,11 @@ import { ChevronRightIconOutlinedRounded } from '@takeoff-icons/react/chevron-ri
 
 import { Checkbox } from '../checkbox';
 import { Radio } from '../radio';
+import { visuallyHidden } from '../../utils';
 
 import { useTableContext } from './context';
 import { UTILITY_COLUMN_WIDTH } from './defaults';
-import { EXPAND_COLUMN_KEY, resolveStickyCell, SELECTION_COLUMN_KEY, visuallyHidden } from './helpers';
+import { EXPAND_COLUMN_KEY, resolveStickyCell, SELECTION_COLUMN_KEY } from './helpers';
 
 const mergeStyle = (...styles: (CSSProperties | undefined)[]): CSSProperties => Object.assign({}, ...styles);
 

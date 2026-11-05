@@ -11,7 +11,7 @@ import { render as renderPlain, renderWithProvider as render, screen, within } f
 
 import { Table } from './Table';
 import { TableBody } from './TableBody';
-import { resetTableDevWarnings } from './TableColumnFilter';
+import { resetTableDevWarnings } from './devWarnings';
 import { getExportRows } from './helpers';
 import { formatLabel } from '../../utils';
 import type { TableColumnDef, TableLabels, TableSlot } from './types';
@@ -787,6 +787,27 @@ describe('Table (props-first)', () => {
       expect(screen.getByRole('button', { name: 'Satırı kapat' })).toBeInTheDocument();
     });
 
+    it('drops a slotProps `aria-labelledby` on the filter trigger too, and warns once', () => {
+      resetTableDevWarnings();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      render(
+        <>
+          <span id="outside-name">Outside name</span>
+          <Table
+            data={users}
+            getRowId={getRowId}
+            columns={[{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }]}
+            slotProps={{ filterButton: { 'aria-labelledby': 'outside-name' } }}
+          />
+        </>,
+      );
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
+      expect(trigger).not.toHaveAttribute('aria-labelledby');
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain("['aria-labelledby']");
+      warn.mockRestore();
+    });
+
     it('merges instance `labels` over provider defaultProps labels key by key', () => {
       renderPlain(
         <TakeoffSparProvider components={{ Table: { defaultProps: { labels: { noData: 'Veri yok', filterButton: 'Sütunu filtrele' } } } }}>
@@ -900,10 +921,11 @@ describe('Table (props-first)', () => {
       await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
       const trigger = within(panel).getByRole('combobox', { name: 'Filter Role value Select' });
-      // Spar's trigger keeps the consumer `aria-labelledby` (two ids: label, value).
-      expect(trigger.getAttribute('aria-labelledby')?.split(' ')).toHaveLength(2);
       expect(trigger).not.toHaveAttribute('aria-label');
       await user.click(trigger);
+      // The listbox is named by the column label itself, not by the trigger
+      // (which a name computation would reduce to the chosen option).
+      expect(await screen.findByRole('listbox')).toHaveAccessibleName('Filter Role value');
       await user.click(await screen.findByRole('option', { name: 'Admin' }));
       expect(within(panel).getByRole('combobox', { name: 'Filter Role value Admin' })).toHaveTextContent('Admin');
     });
@@ -1069,10 +1091,10 @@ describe('Table (props-first)', () => {
       expect(screen.getByRole('button', { name: 'Temizle' })).toBeInTheDocument();
     });
 
-    it('falls back to the default labels when given empty strings', async () => {
+    it('falls back to the default labels when given empty or whitespace-only strings', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
-      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterClear: '', filterButton: '' }} />);
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterClear: '   ', filterButton: '' }} />);
 
       await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       await user.type(await screen.findByRole('searchbox'), 'a');

@@ -842,10 +842,10 @@ const rowsToExport = getExportRows(tableRef.current); // Array<Record<columnId, 
 
 Every string Table renders — visible text and accessible names — comes from the
 `labels` prop, whether you are translating it or just rewording it. Pass only
-the keys you need; the rest keep their English defaults, and an empty string
-also falls back to the default. Dynamic entries are templates whose
-`{placeholders}` Table fills in, so word order stays with the translation and
-the object can live in a JSON translation file.
+the keys you need; the rest keep their English defaults, and an empty or
+whitespace-only string also falls back to the default. Dynamic entries are
+templates whose `{placeholders}` Table fills in, so word order stays with the
+translation and the object can live in a JSON translation file.
 
 ```tsx
 <Table
@@ -878,13 +878,14 @@ override one string and keep the rest.
 
 The filter-trigger, pagination and expand-button names come only from `labels`;
 an `aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
-`slotProps.expandButton` is ignored. `filterValue` names the text filter input
-(a `filter.placeholder` stays a visible hint), the radio and checkbox groups,
-and the select trigger together with its visible value. `{column}` in
-`filterButton` / `filterValue` is the column's `filter.label`, else its header
-text, else its `id` (for an empty, node or function `header`, so set
-`filter.label` there). Template numbers are inserted as-is (`1234`, not
-`1.234`), and templates have no plural rules.
+`slotProps.expandButton` is ignored, as is an `aria-labelledby` on
+`slotProps.filterButton`. `filterValue` names the text filter input (a
+`filter.placeholder` stays a visible hint), the radio and checkbox groups, and
+the select trigger together with its visible value. `{column}` in `filterButton`
+/ `filterValue` is the column's `filter.label`, else its header text, else its
+`id` (for an empty, node or function `header`, so set `filter.label` there).
+Template numbers are inserted as-is (`1234`, not `1.234`), and templates have no
+plural rules.
 
 | Key                                                    | Default                              | Used for                                            |
 | ------------------------------------------------------ | ------------------------------------ | --------------------------------------------------- |

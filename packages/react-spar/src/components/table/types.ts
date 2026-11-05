@@ -432,13 +432,14 @@ export interface TableProps<TData = any> {
   /**
    * Every user-facing string Table renders — visible text and accessible
    * names — to translate or reword. Pass only the keys you need; the rest keep their
-   * English defaults, and an empty string also falls back to the default. Set
+   * English defaults, and an empty or whitespace-only string also falls back to the default. Set
    * it app-wide through `TakeoffSparProvider`
    * `components.Table.defaultProps.labels`; an instance `labels` is merged
    * over it key by key. `emptyState` still wins over `labels.noData`, even when
    * it comes from the provider's `defaultProps`, while an
    * `aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
-   * `slotProps.expandButton` is ignored in favour of `labels`.
+   * `slotProps.expandButton` (and an `aria-labelledby` on `filterButton`) is
+   * ignored in favour of `labels`.
    * See {@link TableLabels}.
    */
   labels?: Partial<TableLabels>;
@@ -462,7 +463,8 @@ export interface TableProps<TData = any> {
   classNames?: ClassNamesMap<TableSlot>;
   /**
    * Per-slot HTML attribute overrides. An `aria-label` here is ignored for
-   * `filterButton`, `pagination` and `expandButton`, whose names come from `labels`.
+   * `filterButton`, `pagination` and `expandButton`, whose names come from `labels`;
+   * so is an `aria-labelledby` on `filterButton`.
    */
   slotProps?: SlotPropsMap<TableSlot>;
   /** Ref to the root scroll container. */

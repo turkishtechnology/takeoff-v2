@@ -25,9 +25,12 @@ overrides that match on them):
 - The page-jump submit button is named `'Go'` instead of `'Go to page'`, so it
   no longer shares the input's name.
 - The filter trigger takes its accessible name only from `labels`: an
-  `aria-label` passed through `slotProps.filterButton` (theme or instance) is
-  now ignored, and a development warning points to `labels.filterButton`. Move
-  that text to `labels.filterButton` (e.g. `'{column} sütununu filtrele'`).
+  `aria-label` or `aria-labelledby` passed through `slotProps.filterButton`
+  (theme or instance) is now ignored, and a development warning points to
+  `labels.filterButton`. Move that text to `labels.filterButton` (e.g.
+  `'{column} sütununu filtrele'`).
+- A whitespace-only `labels` value falls back to the default, like an empty
+  string.
 - `@takeoff-design/tokens` peer range is now `>=0.5.2`, the release that ships
   the `tk-table-filter-options` class used by the checkbox filter.
 - An empty `filter.placeholder` on a `select` filter falls back to the default
