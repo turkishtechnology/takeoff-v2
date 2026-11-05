@@ -463,9 +463,7 @@
 // options the same way the panel body does, so the extra group element doesn't
 // change the layout.
 @mixin table-filter-options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--popconfirm-base-gap);
+  @include table-filter-panel-body;
 }
 
 // ---------------------------------------------------------------------------

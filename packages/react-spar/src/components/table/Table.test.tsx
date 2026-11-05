@@ -918,6 +918,22 @@ describe('Table (props-first)', () => {
       expect(screen.getByRole('group', { name: 'Filter City value' })).toHaveClass('tk-table-filter-options');
     });
 
+    it('passes the formatted field label to a custom filter.render', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        {
+          id: 'age',
+          header: 'Age',
+          accessor: 'age',
+          filter: { render: ({ fieldLabel }) => <input aria-label={fieldLabel} /> },
+        },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterValue: '{column} filtre değeri' }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Age' }));
+      expect(await screen.findByRole('textbox', { name: 'Age filtre değeri' })).toBeInTheDocument();
+    });
+
     it('names each filter trigger and filter field after its column through `{column}`', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [

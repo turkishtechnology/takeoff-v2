@@ -221,10 +221,10 @@ panels alike.
 
 When no preset fits — a number range, a date range, a combobox, async-loaded
 options — pass `render` instead. It receives
-`{ value, setValue, clear, column, close }` and returns any control; Table still
-owns the surrounding popover. `value` is whatever shape your control writes, so
-pair it with a `filterFn` (client mode) and, if the default non-empty heuristic
-is wrong, an `isActive` predicate for the active dot.
+`{ value, setValue, clear, column, close, fieldLabel }` and returns any control;
+Table still owns the surrounding popover. `value` is whatever shape your control
+writes, so pair it with a `filterFn` (client mode) and, if the default non-empty
+heuristic is wrong, an `isActive` predicate for the active dot.
 
 <Alert variant="info" appearance="outlined" className="my-8 w-full">
   <Alert.Content>
@@ -263,9 +263,10 @@ function FilterCustomDemo() {
           value == null || value === ''
             ? true
             : row.getValue(columnId) >= Number(value),
-        render: ({ value, setValue }) => (
+        render: ({ value, setValue, fieldLabel }) => (
           <Input>
             <Input.Field
+              aria-label={fieldLabel}
               type="number"
               placeholder="Min score"
               value={value ?? ''}

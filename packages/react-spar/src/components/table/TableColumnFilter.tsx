@@ -48,6 +48,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   const columnName = headerText || column.id;
   const value = column.getFilterValue();
   const active = (filter.isActive ?? defaultIsActive)(value);
+  const fieldLabel = formatLabel(labels.filterValue, { column: columnName });
 
   const ctx: TableColumnFilterContext = {
     value,
@@ -55,6 +56,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
     clear: () => column.setFilterValue(undefined),
     column,
     close: () => setOpen(false),
+    fieldLabel,
   };
 
   // `Popover.Trigger` / `Popover.Content` are owner nodes (each emits its own
@@ -75,13 +77,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
           {filter.render ? (
             filter.render(ctx)
           ) : (
-            <PresetFilterControl
-              filter={filter}
-              ctx={ctx}
-              container={panel}
-              fieldLabel={formatLabel(labels.filterValue, { column: columnName })}
-              selectPlaceholder={labels.filterSelectPlaceholder}
-            />
+            <PresetFilterControl filter={filter} ctx={ctx} container={panel} fieldLabel={fieldLabel} selectPlaceholder={labels.filterSelectPlaceholder} />
           )}
         </div>
         {active && (

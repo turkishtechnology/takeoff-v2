@@ -435,6 +435,22 @@ describe('Select (compound)', () => {
       expect(listbox).toHaveAttribute('aria-labelledby', 'cabin-trigger');
     });
 
+    it('keeps a consumer aria-labelledby on the trigger (Table filters rely on it)', () => {
+      render(
+        <>
+          <span id="cabin-name">Cabin</span>
+          <Select id="cabin">
+            <Select.Trigger placeholder={PLACEHOLDER} aria-labelledby="cabin-name cabin-trigger" />
+            <Select.Content>{cabinItems}</Select.Content>
+          </Select>
+        </>,
+      );
+
+      const trigger = screen.getByRole('combobox', { name: /^Cabin/ });
+      expect(trigger).toHaveAttribute('aria-labelledby', 'cabin-name cabin-trigger');
+      expect(trigger).not.toHaveAttribute('aria-label');
+    });
+
     it('reports the default bottom/center placement on the content and the arrow', () => {
       render(
         <Select defaultOpen>

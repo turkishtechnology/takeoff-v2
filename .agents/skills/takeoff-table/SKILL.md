@@ -143,8 +143,9 @@ Clear button text: `labels.filterClear` on the root (see Labels below).
 Preset `type` values: `text` (Input/substring), `select` and `radio` (equality),
 `checkbox` and `multi-select` (membership). For anything else (number/date
 range, combobox, async), pass a `filter.render` receiving
-`{ value, setValue, clear, column, close }`, plus a `filterFn` (client mode) and
-optional `isActive`:
+`{ value, setValue, clear, column, close, fieldLabel }` (put `fieldLabel` on the
+control's `aria-label`), plus a `filterFn` (client mode) and optional
+`isActive`:
 
 ```tsx
 import { Table, Input } from '@takeoff-ui/react-spar';
@@ -158,9 +159,10 @@ import { Table, Input } from '@takeoff-ui/react-spar';
     isActive: (value) => value != null && value !== '',
     filterFn: (row, columnId, value) =>
       value == null || value === '' ? true : row.getValue(columnId) >= Number(value),
-    render: ({ value, setValue }) => (
+    render: ({ value, setValue, fieldLabel }) => (
       <Input>
         <Input.Field
+          aria-label={fieldLabel}
           type="number"
           placeholder="Min score"
           value={value ?? ''}

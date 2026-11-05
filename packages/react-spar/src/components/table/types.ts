@@ -96,6 +96,12 @@ export interface TableColumnFilterContext<TData = unknown> {
   column: Column<TData, unknown>;
   /** Close the filter popover (e.g. an apply-and-close button). */
   close: () => void;
+  /**
+   * Accessible name for the filter field: `labels.filterValue` with `{column}`
+   * filled in (e.g. `'Filter Name value'`). Put it on your control's
+   * `aria-label` so custom filters are named like the presets.
+   */
+  fieldLabel: string;
 }
 
 /**

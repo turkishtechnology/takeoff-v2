@@ -29,3 +29,11 @@ overrides that match on them):
   `slotProps.filterButton` / `pagination` / `expandButton` is now ignored.
 - An empty `filter.placeholder` on a `select` filter falls back to the default
   text (`labels.filterSelectPlaceholder`) instead of rendering an empty trigger.
+
+Custom `filter.render` controls receive `fieldLabel` (the formatted
+`labels.filterValue`) to use as their accessible name.
+
+The checkbox and multi-select filter options now sit in a named group styled by
+the new `tk-table-filter-options` class, so update `@takeoff-design/tokens`
+together with this release; with an older tokens version the options lay out in
+a row instead of a column.
