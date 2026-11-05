@@ -32,7 +32,8 @@ export type ChatbotIconType = 'primary' | 'dark' | 'light' | 'white';
 /** Mark colour and face fill of each icon type. */
 export const chatbotIconStyles: Record<ChatbotIconType, { mark: string; face?: string }> = {
   primary: { mark: 'text-primary-base', face: 'fill-frames-lightest' },
-  dark: { mark: 'text-neutral-900', face: 'fill-frames-lightest' },
+  // Flips to near-white in dark mode, so the mark stays visible on dark surfaces.
+  dark: { mark: 'text-neutral-900 in-data-[theme=dark]:text-neutral-100', face: 'fill-frames-lightest' },
   light: { mark: 'text-neutral-200', face: 'fill-frames-lightest' },
   white: { mark: 'text-static-white' },
 };
