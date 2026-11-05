@@ -8,19 +8,25 @@
  *
  * Design: Figma → Takeoff - Blocks → Chatbot.
  */
-import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactNode, type SVGProps, useEffect, useId, useRef, useState } from 'react';
+import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactNode, type RefObject, type SVGProps, useEffect, useId, useRef, useState } from 'react';
 import { Badge, Button, Card, Dropdown, Input } from '@takeoff-ui/react-spar';
 import { AddCircleIconFilledTk } from '@takeoff-icons/react/add-circle';
 import { AttachIconOutlinedRounded } from '@takeoff-icons/react/attach';
 import { CameraIconOutlinedRounded } from '@takeoff-icons/react/camera';
 import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
+import { ClockIconOutlinedRounded } from '@takeoff-icons/react/clock';
 import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
+import { CopyIconOutlinedRounded } from '@takeoff-icons/react/copy';
 import { DoneAllIconOutlinedRounded } from '@takeoff-icons/react/done-all';
 import { FileIconOutlinedRounded } from '@takeoff-icons/react/file';
 import { FlashIconFilledRounded } from '@takeoff-icons/react/flash';
 import { PdfIconOutlinedRounded } from '@takeoff-icons/react/pdf';
 import { PersonIconFilledRounded } from '@takeoff-icons/react/person';
+import { RefreshRightIconOutlinedRounded } from '@takeoff-icons/react/refresh-right';
 import { SendIconFilledRounded } from '@takeoff-icons/react/send';
+import { ThumbDownIconFilledRounded, ThumbDownIconOutlinedRounded } from '@takeoff-icons/react/thumb-down';
+import { ThumbUpIconFilledRounded, ThumbUpIconOutlinedRounded } from '@takeoff-icons/react/thumb-up';
+import { WarningCircleIconFilledRounded } from '@takeoff-icons/react/warning-circle';
 
 const DEFAULT_TITLE = 'Takeoff bot';
 
@@ -61,9 +67,17 @@ export const defaultAttachmentOptions: ChatbotAttachmentOption[] = [
   { label: 'Any file', icon: <AttachIconOutlinedRounded /> },
 ];
 
+/** Who wrote an assistant message when it is not the bot, e.g. a human agent after a handoff. */
+export interface ChatbotAuthor {
+  name: string;
+  /** Image URL or element. */
+  avatar: string | ReactNode;
+}
+
 export interface ChatbotMessage {
   id: string;
-  role: 'assistant' | 'user';
+  /** `system` renders a centred note in the log, e.g. "Ayşe joined the chat". */
+  role: 'assistant' | 'user' | 'system';
   content: ReactNode;
   /** Files sent with the message. */
   attachments?: ChatbotAttachment[];
@@ -71,8 +85,27 @@ export interface ChatbotMessage {
   extra?: ReactNode;
   /** Shown under the bubble, e.g. `20:13`. */
   time?: string;
-  /** Delivery state of a user message. `read` shows the double tick. */
-  status?: 'sent' | 'read';
+  /**
+   * Delivery state. User messages show a clock while `sending`, one tick when
+   * `sent` and a double tick when `read`. `failed` marks either side as not
+   * delivered and offers Retry when `onRetry` is set.
+   */
+  status?: 'sending' | 'sent' | 'read' | 'failed';
+  /** Replaces the user's message with a "retracted" note. */
+  retracted?: boolean;
+  /** Offers Undo under the user's message while true, when `onUndo` is set. Clear it when the undo window ends. */
+  undoable?: boolean;
+  /** The reader's rating of an assistant message. */
+  feedback?: 'up' | 'down';
+  /** Shows this author's avatar instead of the bot icon. */
+  author?: ChatbotAuthor;
+}
+
+/** An item of the more (⋮) menu in the header. */
+export interface ChatbotMenuItem {
+  label: string;
+  icon?: ReactNode;
+  onSelect: () => void;
 }
 
 export interface ChatbotProps {
@@ -91,7 +124,12 @@ export interface ChatbotProps {
   userBubble?: ChatbotType;
   title?: string;
   subtitle?: string;
+  /** A human agent who took over the chat: the header shows their name and avatar. */
+  agent?: ChatbotAuthor;
+  /** `false` shows an "Offline" badge, disables the composer and shows `offlineNotice`. */
   online?: boolean;
+  /** Shown above the disabled composer while offline. */
+  offlineNotice?: ReactNode;
   placeholder?: string;
   /** Image URL or element for the user's avatar. Defaults to a person icon. */
   userAvatar?: string | ReactNode;
@@ -102,10 +140,20 @@ export interface ChatbotProps {
    * option, the plus button opens the file picker directly.
    */
   attachmentOptions?: ChatbotAttachmentOption[];
-  /** Renders the more button and calls this when it is pressed. */
-  onMenu?: () => void;
+  /** Items of the more (⋮) menu. The button is shown when there is at least one. */
+  menuItems?: ChatbotMenuItem[];
   /** Renders the close button and calls this when it is pressed. */
   onClose?: () => void;
+  /** Offers Retry on `failed` messages. */
+  onRetry?: (message: ChatbotMessage) => void;
+  /** Offers Undo on user messages that are `undoable`. */
+  onUndo?: (message: ChatbotMessage) => void;
+  /** Shows thumbs up and down under assistant messages. `value` is undefined when a rating is taken back. */
+  onFeedback?: (message: ChatbotMessage, value: ChatbotMessage['feedback']) => void;
+  /** Shows a regenerate button under assistant messages. */
+  onRegenerate?: (message: ChatbotMessage) => void;
+  /** Shows a copy button under assistant messages, which copies the message text. */
+  copyable?: boolean;
   /** Content shown when there are no messages, e.g. prompt starters. */
   emptyState?: ReactNode;
   className?: string;
@@ -141,8 +189,9 @@ const bubbleStyles: Record<ChatbotType, { assistant: string; user: string }> = {
   },
 };
 
-const footerStyles: Record<ChatbotType, { footer: string; box: string; boxDivider: string; field: string; divider: string; attach: string; send: string }> = {
+const footerStyles: Record<ChatbotType, { footer: string; box: string; boxDivider: string; field: string; divider: string; attach: string; send: string; notice: string }> = {
   basic: {
+    notice: 'text-text-base',
     footer: 'bg-frames-lightest',
     box: 'border-border-light bg-frames-lightest focus-within:border-primary-base',
     boxDivider: 'border-border-light',
@@ -152,6 +201,7 @@ const footerStyles: Record<ChatbotType, { footer: string; box: string; boxDivide
     send: '!text-primary-base',
   },
   divided: {
+    notice: 'text-text-base',
     footer: 'border-t border-border-light bg-frames-lightest',
     box: 'border-border-light bg-frames-lightest focus-within:border-primary-base',
     boxDivider: 'border-border-light',
@@ -161,6 +211,7 @@ const footerStyles: Record<ChatbotType, { footer: string; box: string; boxDivide
     send: '!text-primary-base',
   },
   light: {
+    notice: 'text-text-base',
     footer: 'border-t border-border-light bg-background-lightest',
     box: 'border-border-light bg-frames-lightest focus-within:border-primary-base',
     boxDivider: 'border-border-light',
@@ -170,6 +221,7 @@ const footerStyles: Record<ChatbotType, { footer: string; box: string; boxDivide
     send: '!text-primary-base',
   },
   dark: {
+    notice: 'text-neutral-300',
     footer: 'bg-neutral-800',
     box: 'border-neutral-600 focus-within:border-neutral-400',
     boxDivider: 'border-neutral-600',
@@ -179,6 +231,7 @@ const footerStyles: Record<ChatbotType, { footer: string; box: string; boxDivide
     send: '!text-neutral-50',
   },
   primary: {
+    notice: 'text-static-white',
     footer: 'bg-primary-base',
     box: 'border-primary-sub-base focus-within:border-static-white',
     boxDivider: 'border-primary-sub-base',
@@ -277,10 +330,22 @@ function MoreIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function UserAvatar({ avatar }: { avatar?: string | ReactNode }) {
+/**
+ * A round avatar: an image URL fills it, an element sits in it, nothing shows
+ * a person icon. `cover` crops a photo to the circle; without it the image
+ * stands on the bottom edge, as the Figma user avatar illustration does.
+ */
+function Avatar({ avatar, cover = false, className = 'size-8' }: { avatar?: string | ReactNode; cover?: boolean; className?: string }) {
   return (
-    <span className="flex size-8 shrink-0 items-end justify-center overflow-hidden rounded-full border border-static-white bg-background-light text-text-base" aria-hidden="true">
-      {typeof avatar === 'string' ? <img src={avatar} alt="" className="h-7 w-auto" /> : (avatar ?? <PersonIconFilledRounded width={20} height={20} className="mb-1" />)}
+    <span
+      className={`flex shrink-0 items-end justify-center overflow-hidden rounded-full border border-static-white bg-background-light text-text-base ${className}`}
+      aria-hidden="true"
+    >
+      {typeof avatar === 'string' ? (
+        <img src={avatar} alt="" className={cover ? 'size-full object-cover' : 'h-[87.5%] w-auto'} />
+      ) : (
+        (avatar ?? <PersonIconFilledRounded width={20} height={20} className="mb-1" />)
+      )}
     </span>
   );
 }
@@ -289,12 +354,15 @@ export interface ChatbotHeaderProps {
   type?: ChatbotType;
   title?: string;
   subtitle?: string;
+  /** Shows this person's avatar in place of the bot icon, e.g. a human agent. */
+  avatar?: string | ReactNode;
+  /** `true` shows an "Online" badge, `false` an "Offline" one. */
   online?: boolean;
   /** Shows "Typing…" in place of "Online". */
   typing?: boolean;
   /** Id for the title, so a region can be labelled by it. */
   titleId?: string;
-  onMenu?: () => void;
+  menuItems?: ChatbotMenuItem[];
   onClose?: () => void;
   className?: string;
 }
@@ -304,10 +372,11 @@ export function ChatbotHeader({
   type = 'basic',
   title = DEFAULT_TITLE,
   subtitle = 'Chat with',
+  avatar,
   online = true,
   typing = false,
   titleId,
-  onMenu,
+  menuItems = [],
   onClose,
   className = '',
 }: ChatbotHeaderProps) {
@@ -316,23 +385,46 @@ export function ChatbotHeader({
   return (
     <Card.Header headerType={type} className={`!flex-row items-center justify-between gap-3 !p-3 ${className}`}>
       <div className="flex min-w-0 items-center gap-1.5">
-        <ChatbotIcon face={s.face} className={`size-10 shrink-0 ${s.avatar}`} />
+        {avatar ? <Avatar avatar={avatar} cover className="size-10" /> : <ChatbotIcon face={s.face} className={`size-10 shrink-0 ${s.avatar}`} />}
         <div className="min-w-0">
           <div className={`text-[11px] leading-4 uppercase ${s.subtitle}`}>{subtitle}</div>
           <div className="flex items-center gap-1">
             <Card.Title id={titleId} level={2} className="truncate !text-xl !leading-[30px]">
               {title}
             </Card.Title>
-            {online && (
+            {online ? (
               <Badge variant="success" appearance="filledLight" size="small" rounded startContent={<FlashIconFilledRounded />} className="shrink-0">
                 {typing ? 'Typing…' : 'Online'}
+              </Badge>
+            ) : (
+              <Badge variant="neutral" appearance="filledLight" size="small" rounded className="shrink-0">
+                Offline
               </Badge>
             )}
           </div>
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-1">
-        {onMenu && <Button variant="neutral" appearance="text" aria-label="More options" startContent={<MoreIcon />} onClick={onMenu} classNames={{ content: s.button }} />}
+        {menuItems.length > 0 && (
+          <Dropdown size="small">
+            {/* Dropdown.Trigger only styles its root, so the icon carries the colour. */}
+            <Dropdown.Trigger as={Button} variant="neutral" appearance="text" aria-label="More options" startContent={<MoreIcon className={s.button} />} />
+            <Dropdown.Content align="end">
+              {menuItems.map(item => (
+                <Dropdown.Item key={item.label} textValue={item.label} onSelect={item.onSelect}>
+                  <span className="flex items-center gap-2">
+                    {item.icon && (
+                      <span className="flex size-5 shrink-0 text-text-base [&_svg]:size-5" aria-hidden="true">
+                        {item.icon}
+                      </span>
+                    )}
+                    {item.label}
+                  </span>
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Content>
+          </Dropdown>
+        )}
         {onClose && (
           <Button variant="neutral" appearance="text" aria-label="Close chat" startContent={<CloseIconOutlinedRounded />} onClick={onClose} classNames={{ content: s.button }} />
         )}
@@ -383,39 +475,196 @@ function Attachments({ items }: { items: ChatbotAttachment[] }) {
   );
 }
 
-function Message({ message, bubble, icon, userAvatar }: { message: ChatbotMessage; bubble: string; icon: ChatbotIconType; userAvatar?: string | ReactNode }) {
+const statusLabels = { sending: 'Sending', sent: 'Sent', read: 'Read', failed: 'Not delivered' } as const;
+
+/** A small text button for the row under a bubble: Retry, Undo. */
+function MetaButton({ children, onClick, className = '' }: { children: ReactNode; onClick: () => void; className?: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`cursor-pointer rounded border-0 bg-transparent p-0 text-[11px] leading-4 font-semibold underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Copy, thumbs up and down and regenerate under an assistant message. */
+function MessageActions({
+  message,
+  bubbleRef,
+  copyable,
+  onFeedback,
+  onRegenerate,
+}: {
+  message: ChatbotMessage;
+  bubbleRef: RefObject<HTMLDivElement | null>;
+  copyable: boolean;
+  onFeedback?: ChatbotProps['onFeedback'];
+  onRegenerate?: ChatbotProps['onRegenerate'];
+}) {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return;
+    const timer = setTimeout(() => setCopied(false), 1500);
+    return () => clearTimeout(timer);
+  }, [copied]);
+
+  // Copies the rendered text, so it also works for markdown or other elements.
+  const copy = async () => {
+    const text = typeof message.content === 'string' ? message.content : (bubbleRef.current?.innerText ?? '');
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+    } catch {
+      // Clipboard access can be denied, e.g. in an iframe without permission.
+    }
+  };
+
+  const action = (label: string, icon: ReactNode, onClick: () => void, pressed?: boolean) => (
+    <Button
+      variant="neutral"
+      appearance="text"
+      size="small"
+      aria-label={label}
+      aria-pressed={pressed}
+      startContent={icon}
+      onClick={onClick}
+      classNames={{ content: pressed ? '!text-primary-base' : '!text-text-base' }}
+    />
+  );
+
+  return (
+    <div className="-ml-1.5 flex items-center">
+      {copyable && action(copied ? 'Copied' : 'Copy', copied ? <CheckIconOutlinedRounded /> : <CopyIconOutlinedRounded />, copy)}
+      {onFeedback && (
+        <>
+          {action(
+            'Good response',
+            message.feedback === 'up' ? <ThumbUpIconFilledRounded /> : <ThumbUpIconOutlinedRounded />,
+            () => onFeedback(message, message.feedback === 'up' ? undefined : 'up'),
+            message.feedback === 'up',
+          )}
+          {action(
+            'Bad response',
+            message.feedback === 'down' ? <ThumbDownIconFilledRounded /> : <ThumbDownIconOutlinedRounded />,
+            () => onFeedback(message, message.feedback === 'down' ? undefined : 'down'),
+            message.feedback === 'down',
+          )}
+        </>
+      )}
+      {onRegenerate && action('Regenerate response', <RefreshRightIconOutlinedRounded />, () => onRegenerate(message))}
+      {/* Announce the copy, which has no other visible effect for screen readers. */}
+      <span className="sr-only" role="status">
+        {copied ? 'Copied to clipboard' : ''}
+      </span>
+    </div>
+  );
+}
+
+interface MessageProps extends Pick<ChatbotProps, 'onRetry' | 'onUndo' | 'onFeedback' | 'onRegenerate'> {
+  message: ChatbotMessage;
+  bubble: string;
+  icon: ChatbotIconType;
+  userAvatar?: string | ReactNode;
+  copyable: boolean;
+}
+
+function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo, onFeedback, onRegenerate }: MessageProps) {
+  const bubbleRef = useRef<HTMLDivElement>(null);
+
+  if (message.role === 'system') {
+    return (
+      <div role="note" className={`mx-auto max-w-[85%] rounded-full bg-background-light px-3 py-1 text-center text-xs leading-4 text-text-base ${enter}`}>
+        {message.content}
+      </div>
+    );
+  }
+
   const isUser = message.role === 'user';
+  const failed = message.status === 'failed';
+  const retracted = isUser && message.retracted;
   const hasContent = message.content !== '' && message.content != null;
-  const hasMeta = Boolean(message.time || message.status);
+  const hasBody = retracted || hasContent || Boolean(message.attachments?.length) || Boolean(message.extra);
+  const canRetry = failed && Boolean(onRetry);
+  const canUndo = isUser && !retracted && message.undoable && Boolean(onUndo);
+  // No actions on a message that is still empty (a stream that has not started) or failed.
+  const hasActions = !isUser && hasContent && !failed && (copyable || Boolean(onFeedback) || Boolean(onRegenerate));
+  const hasMeta = Boolean(message.time || (isUser && message.status && !retracted) || canRetry || canUndo);
+
+  const bubbleClass = retracted
+    ? 'border border-dashed border-border-light px-3 py-2 italic text-text-base'
+    : failed && !isUser
+      ? 'border border-states-danger-light bg-states-danger-lightest p-3 text-states-danger-darkest'
+      : bubble;
 
   return (
     <div className={`flex items-end gap-2 ${isUser ? 'flex-row-reverse' : ''} ${enter}`}>
-      {/* The avatar lines up with the bubble, not with the time below it. */}
-      {isUser ? (
-        <span className={hasMeta ? 'mb-5' : ''}>
-          <UserAvatar avatar={userAvatar} />
-        </span>
-      ) : (
-        <ChatbotIcon face={chatbotIconStyles[icon].face} className={`size-8 shrink-0 ${chatbotIconStyles[icon].mark} ${hasMeta ? 'mb-5' : ''}`} />
-      )}
+      {/* The avatar lines up with the bubble, not with the rows below it. */}
+      <span className="shrink-0" style={{ marginBottom: (hasMeta ? 20 : 0) + (hasActions ? 36 : 0) }}>
+        {isUser ? (
+          <Avatar avatar={userAvatar} />
+        ) : message.author ? (
+          <Avatar avatar={message.author.avatar} cover />
+        ) : (
+          <ChatbotIcon face={chatbotIconStyles[icon].face} className={`block size-8 ${chatbotIconStyles[icon].mark}`} />
+        )}
+      </span>
       <div className={`flex max-w-[80%] min-w-0 flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
-        {(hasContent || Boolean(message.attachments?.length) || Boolean(message.extra)) && (
-          <div className={`flex flex-col gap-3 rounded-lg text-sm leading-5 break-words ${bubble}`}>
-            {message.attachments?.length ? <Attachments items={message.attachments} /> : null}
-            {/* Keep typed line breaks for plain text only: rendered markdown
-                emits newline text nodes between blocks that pre-wrap would show. */}
-            {hasContent && <div className={typeof message.content === 'string' ? 'whitespace-pre-wrap' : ''}>{message.content}</div>}
-            {message.extra}
+        {message.author && <span className="text-[11px] leading-4 text-text-base">{message.author.name}</span>}
+        {hasBody && (
+          <div ref={bubbleRef} className={`flex flex-col gap-3 rounded-lg text-sm leading-5 break-words ${bubbleClass}`}>
+            {retracted ? (
+              'You retracted this message'
+            ) : (
+              <>
+                {message.attachments?.length ? <Attachments items={message.attachments} /> : null}
+                {failed && !isUser && (
+                  <span className="flex items-center gap-1.5 font-semibold">
+                    <WarningCircleIconFilledRounded width={16} height={16} className="shrink-0" aria-hidden="true" />
+                    Something went wrong
+                  </span>
+                )}
+                {/* Keep typed line breaks for plain text only: rendered markdown
+                    emits newline text nodes between blocks that pre-wrap would show. */}
+                {hasContent && <div className={typeof message.content === 'string' ? 'whitespace-pre-wrap' : ''}>{message.content}</div>}
+                {message.extra}
+              </>
+            )}
           </div>
         )}
         {hasMeta && (
           <div className="flex h-4 items-center gap-1 text-[11px] leading-4 text-text-base">
             {message.time && <span>{message.time}</span>}
-            {message.status === 'read' && <DoneAllIconOutlinedRounded width={16} height={16} className="text-primary-sub-base" />}
-            {message.status === 'sent' && <CheckIconOutlinedRounded width={16} height={16} className="text-text-base" />}
-            {message.status && <span className="sr-only">{message.status === 'read' ? 'Read' : 'Sent'}</span>}
+            {isUser && !retracted && message.status && (
+              <>
+                {message.status === 'sending' && <ClockIconOutlinedRounded width={14} height={14} aria-hidden="true" />}
+                {message.status === 'sent' && <CheckIconOutlinedRounded width={16} height={16} aria-hidden="true" />}
+                {message.status === 'read' && <DoneAllIconOutlinedRounded width={16} height={16} className="text-primary-sub-base" aria-hidden="true" />}
+                {failed ? (
+                  <span className="flex items-center gap-1 text-states-danger-base">
+                    <WarningCircleIconFilledRounded width={14} height={14} aria-hidden="true" />
+                    Not sent
+                  </span>
+                ) : (
+                  <span className="sr-only">{statusLabels[message.status]}</span>
+                )}
+              </>
+            )}
+            {canUndo && (
+              <MetaButton onClick={() => onUndo?.(message)} className="ml-1 text-primary-base">
+                Undo
+              </MetaButton>
+            )}
+            {canRetry && (
+              <MetaButton onClick={() => onRetry?.(message)} className="ml-1 text-states-danger-base">
+                Retry
+              </MetaButton>
+            )}
           </div>
         )}
+        {hasActions && <MessageActions message={message} bubbleRef={bubbleRef} copyable={copyable} onFeedback={onFeedback} onRegenerate={onRegenerate} />}
       </div>
     </div>
   );
@@ -451,18 +700,26 @@ export function Chatbot({
   iconType = 'primary',
   title = DEFAULT_TITLE,
   subtitle = 'Chat with',
+  agent,
   online = true,
+  offlineNotice = 'We are offline right now. Please come back later.',
   placeholder = 'Type your message here',
   userAvatar,
   allowAttachments = true,
   attachmentOptions = defaultAttachmentOptions,
-  onMenu,
+  menuItems,
   onClose,
+  onRetry,
+  onUndo,
+  onFeedback,
+  onRegenerate,
+  copyable = false,
   emptyState,
   className = '',
 }: ChatbotProps) {
   const f = footerStyles[type];
   const titleId = useId();
+  const noticeId = useId();
   const [draft, setDraft] = useState('');
   const { files, previews, setFiles } = usePickedFiles();
   const logRef = useRef<HTMLDivElement>(null);
@@ -471,7 +728,8 @@ export function Chatbot({
   // Input.Field types its ref for both the input and textarea forms.
   const fieldRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
   const stickToBottom = useRef(true);
-  const canSend = draft.trim() !== '' || files.length > 0;
+  const offline = !online;
+  const canSend = !offline && (draft.trim() !== '' || files.length > 0);
 
   // Follow new messages only while the reader is already at the bottom, so
   // scrolling up to re-read an earlier answer is never interrupted.
@@ -558,12 +816,13 @@ export function Chatbot({
     >
       <ChatbotHeader
         type={type}
-        title={title}
+        title={agent?.name ?? title}
         subtitle={subtitle}
+        avatar={agent?.avatar}
         online={online}
         typing={typing}
         titleId={titleId}
-        onMenu={onMenu}
+        menuItems={menuItems}
         onClose={onClose}
         className="relative z-10 !shadow-2-default-lg"
       />
@@ -585,20 +844,30 @@ export function Chatbot({
                 <Message
                   key={message.id}
                   message={message}
-                  bubble={bubbleStyles[message.role === 'user' ? userBubble : assistantBubble][message.role]}
+                  bubble={bubbleStyles[message.role === 'user' ? userBubble : assistantBubble][message.role === 'user' ? 'user' : 'assistant']}
                   icon={iconType}
                   userAvatar={userAvatar}
+                  copyable={copyable}
+                  onRetry={onRetry}
+                  onUndo={onUndo}
+                  onFeedback={onFeedback}
+                  onRegenerate={onRegenerate}
                 />
               ))}
-          {typing && <TypingIndicator label={`${title} is typing`} surface={bubbleStyles[assistantBubble].assistant} icon={iconType} />}
+          {typing && <TypingIndicator label={`${agent?.name ?? title} is typing`} surface={bubbleStyles[assistantBubble].assistant} icon={iconType} />}
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className={`p-3 ${f.footer}`}>
+      <form onSubmit={handleSubmit} className={`flex flex-col gap-2 p-3 ${f.footer}`}>
+        {offline && offlineNotice && (
+          <p id={noticeId} className={`!m-0 text-center text-xs leading-4 ${f.notice}`}>
+            {offlineNotice}
+          </p>
+        )}
         {/* One composer box: picked files sit in their own tray above the
             text field, split off by a divider, so they never read as part
             of the conversation. */}
-        <div className={`overflow-hidden rounded-lg border transition-colors ${f.box}`}>
+        <div className={`overflow-hidden rounded-lg border transition-colors ${f.box} ${offline ? 'opacity-50' : ''}`}>
           {files.length > 0 && (
             <ul aria-label="Attachments" className={`!m-0 flex list-none gap-2 overflow-x-auto border-b !p-2 !pt-3 ${f.boxDivider} ${scrollbar}`}>
               {files.map((file, index) => (
@@ -638,6 +907,7 @@ export function Chatbot({
                     appearance="text"
                     size="small"
                     aria-label="Attach files"
+                    disabled={offline}
                     startContent={<AddCircleIconFilledTk className={f.attach} />}
                     onClick={() => pickFiles(attachmentOptions[0])}
                   />
@@ -649,6 +919,7 @@ export function Chatbot({
                       appearance="text"
                       size="small"
                       aria-label="Attach files"
+                      disabled={offline}
                       startContent={<AddCircleIconFilledTk className={f.attach} />}
                     />
                     <Dropdown.Content side="top" align="start">
@@ -678,6 +949,8 @@ export function Chatbot({
               onChange={event => setDraft(event.currentTarget.value)}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
+              disabled={offline}
+              aria-describedby={offline && offlineNotice ? noticeId : undefined}
               aria-label="Message"
               className={`max-h-32 !resize-none self-center !py-1.5 [field-sizing:content] ${scrollbar} ${f.field}`}
             />
@@ -704,14 +977,47 @@ export interface ChatbotLauncherProps extends Omit<ChatbotProps, 'onClose'> {
   defaultOpen?: boolean;
   /** Positioning of the launcher. Defaults to the bottom-right of the viewport. */
   positionClassName?: string;
+  /** Number of unread messages, shown as a badge on the launcher while the panel is closed. */
+  unread?: number;
+  /** A short message shown next to the closed launcher, e.g. a greeting. The reader can dismiss it. */
+  greeting?: ReactNode;
+  /**
+   * Opens the panel full screen: `true` always, `'mobile'` (default) on
+   * screens narrower than 640px, `false` never.
+   */
+  fullScreen?: boolean | 'mobile';
+  /** Called when the panel opens or closes, e.g. to clear `unread`. */
+  onOpenChange?: (open: boolean) => void;
 }
 
+const fullScreenStyles = {
+  // The panel covers its containing block: the viewport, or the nearest
+  // ancestor with a transform, as in the docs preview frame.
+  always: { panel: 'fixed inset-0 z-10 !h-full !w-full', card: '!max-w-full !rounded-none' },
+  mobile: {
+    panel: 'max-sm:fixed max-sm:inset-0 max-sm:z-10 max-sm:!h-full max-sm:!w-full',
+    card: 'max-sm:!max-w-full max-sm:!rounded-none',
+  },
+  never: { panel: '', card: '' },
+};
+
 /** A floating action button (Figma `chatbot-fab`) that opens the chatbot in a panel above it. */
-export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixed bottom-6 right-6', ...chatbotProps }: ChatbotLauncherProps) {
+export function ChatbotLauncher({
+  defaultOpen = false,
+  positionClassName = 'fixed bottom-6 right-6',
+  unread = 0,
+  greeting,
+  fullScreen = 'mobile',
+  onOpenChange,
+  ...chatbotProps
+}: ChatbotLauncherProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const [greetingDismissed, setGreetingDismissed] = useState(false);
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const full = fullScreenStyles[fullScreen === true ? 'always' : fullScreen === 'mobile' ? 'mobile' : 'never'];
+  const title = chatbotProps.agent?.name ?? chatbotProps.title ?? DEFAULT_TITLE;
 
   // Move focus into the composer only when the user opens the panel, never on
   // mount: a `defaultOpen` launcher must not pull the page to itself on load.
@@ -725,11 +1031,15 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
 
   const openPanel = () => {
     openedByUser.current = true;
+    // Once the chat has been opened, the greeting has done its job.
+    setGreetingDismissed(true);
     setOpen(true);
+    onOpenChange?.(true);
   };
 
   const close = () => {
     setOpen(false);
+    onOpenChange?.(false);
     triggerRef.current?.focus();
   };
 
@@ -744,6 +1054,9 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
     close();
   };
 
+  const showGreeting = Boolean(greeting) && !open && !greetingDismissed;
+  const unreadLabel = unread > 0 ? `, ${unread} unread ${unread === 1 ? 'message' : 'messages'}` : '';
+
   return (
     <div ref={rootRef} className={`z-50 flex flex-col items-end gap-3 ${positionClassName}`} onKeyDown={handleKeyDown}>
       {/* Kept mounted so the draft survives closing. Closing scales and fades
@@ -753,22 +1066,51 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
         id={panelId}
         ref={panelRef}
         inert={!open}
-        className={`h-[min(560px,calc(100dvh-7rem))] w-[min(400px,calc(100vw-2rem))] origin-bottom-right transition-[opacity,scale,translate,visibility] duration-200 ease-out motion-reduce:transition-none ${
+        className={`h-[min(560px,calc(100dvh-7rem))] w-[min(400px,calc(100vw-2rem))] origin-bottom-right transition-[opacity,scale,translate,visibility] duration-200 ease-out motion-reduce:transition-none ${full.panel} ${
           open ? 'visible translate-y-0 scale-100 opacity-100' : 'invisible translate-y-2 scale-95 opacity-0'
         }`}
       >
-        <Chatbot {...chatbotProps} onClose={close} className={`!h-full ${chatbotProps.className ?? ''}`} />
+        <Chatbot {...chatbotProps} onClose={close} className={`!h-full ${full.card} ${chatbotProps.className ?? ''}`} />
       </div>
+      {showGreeting && (
+        <div className={`relative flex max-w-64 items-start gap-1 rounded-xl rounded-br-sm bg-frames-lightest py-2 pr-1 pl-3 shadow-1-default-base ${enter}`}>
+          {/* The greeting opens the chat; a separate button dismisses it. */}
+          <button
+            type="button"
+            onClick={openPanel}
+            className="cursor-pointer border-0 bg-transparent p-0 py-1 text-left text-sm leading-5 text-text-darkest focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base"
+          >
+            {greeting}
+          </button>
+          <Button
+            variant="neutral"
+            appearance="text"
+            size="small"
+            aria-label="Dismiss message"
+            startContent={<CloseIconOutlinedRounded />}
+            onClick={() => setGreetingDismissed(true)}
+            classNames={{ content: '!text-text-base' }}
+          />
+        </div>
+      )}
       <button
         ref={triggerRef}
         type="button"
-        aria-label={open ? 'Hide chat' : `Chat with ${chatbotProps.title ?? DEFAULT_TITLE}`}
+        aria-label={open ? 'Hide chat' : `Chat with ${title}${unreadLabel}`}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => (open ? close() : openPanel())}
-        className="group flex size-12 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-primary-base transition-[color,box-shadow,scale] duration-150 hover:text-primary-dark hover:shadow-1-hover-base focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base active:scale-95 active:text-primary-base aria-expanded:hover:text-primary-dark motion-reduce:transition-none"
+        className="group relative flex size-12 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-primary-base transition-[color,box-shadow,scale] duration-150 hover:text-primary-dark hover:shadow-1-hover-base focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base active:scale-95 active:text-primary-base aria-expanded:hover:text-primary-dark motion-reduce:transition-none"
       >
         <FabIcon />
+        {unread > 0 && !open && (
+          <span
+            aria-hidden="true"
+            className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-states-danger-base px-1 text-[11px] leading-4 font-semibold text-static-white ring-2 ring-frames-lightest"
+          >
+            {unread > 9 ? '9+' : unread}
+          </span>
+        )}
       </button>
     </div>
   );
