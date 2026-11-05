@@ -7,7 +7,8 @@ import { Chatbot, type ChatbotMessage } from '../Chatbot';
 import { useDemoConversation } from '../useDemoConversation';
 
 // The quick replies live inside message content, which is created outside
-// the component; a context hands them the conversation's `submit`.
+// the component; a context hands them the conversation's `submit`. They sit
+// on a white surface so they stand out from the tinted bubble.
 const ReplyContext = createContext<(text: string) => void>(() => {});
 
 function CityChips() {
@@ -16,7 +17,7 @@ function CityChips() {
   return (
     <div className="flex flex-wrap gap-1.5">
       {['London', 'Paris', 'New York'].map(city => (
-        <Chip key={city} variant="primary" appearance="outlined" clickable onClick={() => reply(city)}>
+        <Chip key={city} variant="primary" appearance="outlined" clickable onClick={() => reply(city)} className="!bg-frames-lightest">
           <AirplaneIconOutlinedRounded width={16} height={16} aria-hidden="true" />
           {city}
         </Chip>
@@ -51,10 +52,10 @@ function FareCard() {
         </Card.Footer>
       </Card>
       <div className="flex gap-2">
-        <Button variant="primary" appearance="outlined" className="flex-1" onClick={() => reply('Yes')}>
+        <Button variant="primary" appearance="outlined" className="flex-1 !bg-frames-lightest hover:!bg-background-lightest" onClick={() => reply('Yes')}>
           Yes
         </Button>
-        <Button variant="primary" appearance="outlined" className="flex-1" onClick={() => reply('No')}>
+        <Button variant="primary" appearance="outlined" className="flex-1 !bg-frames-lightest hover:!bg-background-lightest" onClick={() => reply('No')}>
           No
         </Button>
       </div>
