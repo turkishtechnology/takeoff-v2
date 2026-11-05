@@ -503,7 +503,7 @@ function MetaButton({ children, onClick, className = '' }: { children: ReactNode
     <button
       type="button"
       onClick={onClick}
-      className={`cursor-pointer rounded border-0 bg-transparent p-0 text-[11px] leading-4 font-semibold underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base ${className}`}
+      className={`inline-flex cursor-pointer items-center gap-0.5 rounded border-0 bg-transparent p-0 font-[inherit] text-[11px] leading-4 font-medium underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base ${className}`}
     >
       {children}
     </button>
@@ -617,7 +617,9 @@ function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo,
     ? 'border border-dashed border-border-light px-3 py-2 italic text-text-base'
     : failed && !isUser
       ? 'border border-states-danger-light bg-states-danger-lightest p-3 text-states-danger-darkest'
-      : bubble;
+      : failed
+        ? `${bubble} !border !border-solid !border-states-danger-light`
+        : bubble;
 
   return (
     <div className={`flex items-end gap-2 ${isUser ? 'flex-row-reverse' : ''} ${enter}`}>
@@ -665,10 +667,8 @@ function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo,
                 {message.status === 'sent' && <CheckIconOutlinedRounded width={16} height={16} aria-hidden="true" />}
                 {message.status === 'read' && <DoneAllIconOutlinedRounded width={16} height={16} className="text-primary-sub-base" aria-hidden="true" />}
                 {failed ? (
-                  <span className="flex items-center gap-1 text-states-danger-base">
-                    <WarningCircleIconFilledRounded width={14} height={14} aria-hidden="true" />
-                    Not sent
-                  </span>
+                  // The bubble's red border marks the failure; the row only names it.
+                  <span className="text-states-danger-base">Not sent</span>
                 ) : (
                   <span className="sr-only">{statusLabels[message.status]}</span>
                 )}
@@ -680,9 +680,13 @@ function Message({ message, bubble, icon, userAvatar, copyable, onRetry, onUndo,
               </MetaButton>
             )}
             {canRetry && (
-              <MetaButton onClick={() => onRetry?.(message)} className="ml-1 text-states-danger-base">
-                Retry
-              </MetaButton>
+              <>
+                <span aria-hidden="true">·</span>
+                <MetaButton onClick={() => onRetry?.(message)} className="text-states-danger-base">
+                  <RefreshRightIconOutlinedRounded width={14} height={14} aria-hidden="true" />
+                  Retry
+                </MetaButton>
+              </>
             )}
           </div>
         )}
