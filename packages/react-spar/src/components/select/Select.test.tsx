@@ -451,6 +451,23 @@ describe('Select (compound)', () => {
       expect(trigger).not.toHaveAttribute('aria-label');
     });
 
+    it('keeps a consumer aria-labelledby on the listbox (Table filters rely on it)', async () => {
+      const user = userEvent.setup();
+      render(
+        <>
+          <span id="cabin-name">Cabin class</span>
+          <Select id="cabin">
+            <Select.Trigger placeholder={PLACEHOLDER} />
+            <Select.Content aria-labelledby="cabin-name">{cabinItems}</Select.Content>
+          </Select>
+        </>,
+      );
+
+      const listbox = await openByClick(user);
+      expect(listbox).toHaveAttribute('aria-labelledby', 'cabin-name');
+      expect(listbox).toHaveAccessibleName('Cabin class');
+    });
+
     it('reports the default bottom/center placement on the content and the arrow', () => {
       render(
         <Select defaultOpen>
