@@ -1046,8 +1046,9 @@ function usePickedFiles() {
 }
 
 /**
- * The card's frame. Each state sets every property, so a frameless chatbot
- * never depends on two competing `!important` classes. The `max-sm:` ones
+ * The card's frame. Only one state's classes are applied, so a frameless
+ * chatbot never depends on two competing `!important` classes; `on` keeps
+ * the Card's own border. The `max-sm:` ones
  * come later in the stylesheet than the plain ones, so they win below 640px.
  */
 const frameStyles = {
@@ -1134,8 +1135,10 @@ export function Chatbot({
   const last = useRef({ firstId: messages[0]?.id, lastId: messages[messages.length - 1]?.id, height: 0, loading });
 
   // The log announces what is added to it. Loaded history is not new, so mute
-  // the log for a moment while it is inserted. Set before the browser paints,
-  // so screen readers see the change as made in a muted region.
+  // the log for a second once it is inserted. The attribute is set in the
+  // same task as the insertion, before screen readers are told about it, which
+  // works in Chromium but is not guaranteed everywhere. A reply that arrives
+  // within that second is not announced either.
   const muteTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(muteTimer.current), []);
   const muteLog = (log: HTMLElement) => {
@@ -1310,9 +1313,9 @@ export function Chatbot({
             {hasOlder && !loading && (
               <div className="flex justify-center">
                 {loadingOlder ? (
-                  <Skeleton width={160} height={20} className="!rounded-full" aria-label={l.loading} />
+                  <Skeleton width={150} height={32} className="!rounded-full" aria-label={l.loading} />
                 ) : (
-                  // A pill, the shape of the skeleton that replaces it while loading.
+                  // A pill, the size of the skeleton that replaces it while loading.
                   <Button variant="neutral" appearance="outlined" size="small" rounded startContent={<HistoryIconOutlinedRounded />} onClick={onLoadOlder}>
                     {l.loadOlder}
                   </Button>
