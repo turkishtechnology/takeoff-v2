@@ -89,10 +89,10 @@ renderer your app already uses.
   readers announce new messages without moving focus.
 - New messages scroll into view only while the reader is at the bottom;
   scrolling up to re-read is never interrupted.
-- Enter sends and Shift+Enter adds a line. Enter does not send while an IME
-  composition is open.
-- The typing indicator is a `role="status"` with a text label, and its animation
-  stops under `prefers-reduced-motion`.
+- Enter sends and Shift+Enter adds a line. Enter does not send, and Escape does
+  not close, while an IME composition is open.
+- The typing indicator is added to the log with a text label, so it is announced
+  once, and its animation stops under `prefers-reduced-motion`.
 - Icon-only buttons carry an `aria-label`, and the launcher exposes
   `aria-expanded`.
 

@@ -133,6 +133,15 @@ const styles: Record<
   },
 };
 
+/**
+ * True while an IME composition is open. Safari reports the keydown that
+ * commits a composition with `isComposing === false`, so also check the
+ * legacy 229 key code it uses for composition events.
+ */
+function isComposing(event: { nativeEvent: globalThis.KeyboardEvent; keyCode: number }) {
+  return event.nativeEvent.isComposing || event.keyCode === 229;
+}
+
 /** The Takeoff bot mark. Colour follows `currentColor`. */
 export function ChatbotIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -145,14 +154,14 @@ export function ChatbotIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function TypingIndicator({ label }: { label: string }) {
+function TypingIndicator({ label, surface }: { label: string; surface: string }) {
   return (
     <div className="flex items-end gap-2">
       <ChatbotIcon className="size-8 shrink-0 text-primary-base" />
-      <div className="flex h-9 items-center gap-1 rounded-lg bg-background-lightest px-3" role="status">
+      <div className={`flex h-9 items-center gap-1 rounded-lg !px-3 !py-0 ${surface}`}>
         <span className="sr-only">{label}</span>
         {[0, 150, 300].map(delay => (
-          <span key={delay} className="size-1.5 animate-bounce rounded-full bg-neutral-400 motion-reduce:animate-none" style={{ animationDelay: `${delay}ms` }} />
+          <span key={delay} className="size-1.5 animate-bounce rounded-full bg-current opacity-60 motion-reduce:animate-none" style={{ animationDelay: `${delay}ms` }} />
         ))}
       </div>
     </div>
@@ -176,7 +185,11 @@ function Message({ message, type }: { message: ChatbotMessage; type: ChatbotType
         <ChatbotIcon className="size-8 shrink-0 text-primary-base" />
       )}
       <div className={`flex max-w-[75%] flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
-        <div className={`rounded-lg text-sm leading-5 whitespace-pre-wrap ${isUser ? s.userBubble : s.bubble}`}>{message.content}</div>
+        {/* Keep typed line breaks for plain text only: rendered markdown emits
+            newline text nodes between blocks that pre-wrap would show. */}
+        <div className={`rounded-lg text-sm leading-5 ${typeof message.content === 'string' ? 'whitespace-pre-wrap' : ''} ${isUser ? s.userBubble : s.bubble}`}>
+          {message.content}
+        </div>
         {(message.time || message.status) && (
           <div className="flex items-center gap-1 text-[11px] leading-4 text-text-base">
             {message.time && <span>{message.time}</span>}
@@ -242,7 +255,7 @@ export function Chatbot({
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     // Enter sends, Shift+Enter adds a line. Never send while an IME
     // composition (e.g. Japanese or Korean input) is still open.
-    if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+    if (event.key === 'Enter' && !event.shiftKey && !isComposing(event)) {
       event.preventDefault();
       send();
     }
@@ -278,17 +291,18 @@ export function Chatbot({
         ref={logRef}
         role="log"
         aria-live="polite"
+        aria-relevant="additions"
         aria-label={`Conversation with ${title}`}
         tabIndex={0}
         onScroll={handleScroll}
         className="flex flex-1 flex-col gap-4 overflow-y-auto bg-frames-lightest p-4 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary-base"
       >
         {messages.length === 0 && !typing ? emptyState : messages.map(message => <Message key={message.id} message={message} type={type} />)}
-        {typing && <TypingIndicator label={`${title} is typing`} />}
+        {typing && <TypingIndicator label={`${title} is typing`} surface={s.bubble} />}
       </div>
 
       <form onSubmit={handleSubmit} className={`p-3 ${s.footer}`}>
-        <Input className={`items-end !gap-2 !p-1 ${s.composer}`}>
+        <Input className={`!items-end !gap-2 !p-1 ${s.composer}`}>
           {onAttach && (
             <>
               <Button variant="neutral" appearance="text" size="small" aria-label="Attach a file" onClick={onAttach} className={s.attach}>
@@ -305,7 +319,7 @@ export function Chatbot({
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             aria-label="Message"
-            className={`max-h-32 !resize-none self-center py-1.5 [field-sizing:content] ${s.field}`}
+            className={`max-h-32 !resize-none self-center !py-1.5 [field-sizing:content] ${s.field}`}
           />
           <Button type="submit" variant="neutral" appearance="text" size="small" aria-label="Send message" disabled={!draft.trim()} className={`disabled:opacity-40 ${s.send}`}>
             <SendIconFilledRounded width={20} height={20} />
@@ -351,7 +365,7 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
   };
 
   return (
-    <div className={`z-50 flex flex-col items-end gap-3 ${positionClassName}`} onKeyDown={event => event.key === 'Escape' && !event.nativeEvent.isComposing && open && close()}>
+    <div className={`z-50 flex flex-col items-end gap-3 ${positionClassName}`} onKeyDown={event => event.key === 'Escape' && !isComposing(event) && open && close()}>
       {open && (
         <div id={panelId} ref={panelRef} className="w-[min(400px,calc(100vw-2rem))]">
           <Chatbot {...chatbotProps} onClose={close} />

@@ -86,6 +86,8 @@ const config: Config = {
   plugins: [
     tailwindPlugin,
     packageChangelogsPlugin,
+    // Keep after plugins that add JS/TS loaders: it only patches rules that
+    // exist when it runs, so `?raw` imports skip them.
     rawSourcePlugin,
     [
       '@docusaurus/plugin-content-docs',

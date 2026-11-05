@@ -76,6 +76,7 @@ const SECTIONS = [
   { title: 'Foundations', match: p => p.startsWith('foundations/') },
   { title: 'Components', match: p => p.startsWith('components/') },
   { title: 'Forms', match: p => p.startsWith('forms/') },
+  { title: 'Blocks', match: p => p.startsWith('blocks/') },
   { title: 'Icons', match: () => false },
 ];
 
@@ -185,6 +186,27 @@ function mdxToMarkdown(rawBody) {
     rawExports.set(name, code);
     return '';
   });
+
+  // 1b. Blocks show their real source through `import x from '@site/…?raw'`
+  //     + `<CodeBlock …>{x}</CodeBlock>`. Read those files now, before step 3
+  //     drops the imports, so the mirror carries the copyable source too.
+  const rawImports = new Map();
+  for (const [, name, specifier] of body.matchAll(/^import\s+(\w+)\s+from\s+'@site\/([^']+)\?raw';/gmu)) {
+    try {
+      rawImports.set(name, readFileSync(join(DOCS_APP_DIR, specifier), 'utf8'));
+    } catch {
+      // unreadable source: the CodeBlock falls back to the demo note below
+    }
+  }
+  body = body.replace(/<CodeBlock\b([^>]*)>\s*\{(\w+)\}\s*<\/CodeBlock>/gu, (_, attrs, name) => {
+    if (!rawImports.has(name)) return '> _Source — see the online docs._';
+    const language = attrs.match(/\blanguage=(["'])(\w+)\1/u)?.[2] ?? '';
+    const title = attrs.match(/\btitle=(["'])([^"']+)\1/u)?.[2];
+    const fence = protect('```' + language + '\n' + normalizeDemo(rawImports.get(name)) + '\n```');
+    return title ? `**${title}**\n\n${fence}` : fence;
+  });
+  // Live block previews have no Markdown form.
+  body = body.replace(/<BlockPreview\b[^>]*>[\s\S]*?<\/BlockPreview>/gu, '> _Interactive demo — see the online docs._');
 
   // 2. Drop JSX comments ({/* ... */}), including the api-tables + prettier
   //    markers.
