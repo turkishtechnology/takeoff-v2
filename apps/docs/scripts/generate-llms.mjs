@@ -188,7 +188,8 @@ function mdxToMarkdown(rawBody) {
   });
 
   // 1b. Blocks show their real source through `import x from '@site/…?raw'`
-  //     + `<CodeBlock …>{x}</CodeBlock>`. Read those files now, before step 3
+  //     + `<BlockPreview code={x}>`, `<BlockSource code={x} />` or
+  //     `<CodeBlock …>{x}</CodeBlock>`. Read those files now, before step 3
   //     drops the imports, so the mirror carries the copyable source too.
   const rawImports = new Map();
   for (const [, name, specifier] of body.matchAll(/^import\s+(\w+)\s+from\s+'@site\/([^']+)\?raw';/gmu)) {

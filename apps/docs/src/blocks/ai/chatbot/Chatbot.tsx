@@ -1320,11 +1320,11 @@ export function Chatbot({
                   type="button"
                   onClick={loadingOlder ? undefined : onLoadOlder}
                   aria-disabled={loadingOlder || undefined}
-                  className={`flex cursor-pointer items-center gap-1 rounded border-0 bg-transparent px-1 py-0.5 font-[inherit] text-xs leading-4 font-medium text-text-base hover:text-text-darkest focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base aria-disabled:cursor-default aria-disabled:hover:text-text-base`}
+                  className="flex cursor-pointer items-center gap-1 rounded border-0 bg-transparent px-1 py-0.5 font-[inherit] text-[11px] leading-4 font-medium text-text-base hover:text-text-darkest focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base aria-disabled:cursor-default aria-disabled:hover:text-text-base"
                 >
                   {loadingOlder ? (
                     <>
-                      {/* A 14px ring, the size of the icon it replaces. */}
+                      {/* A 14px ring plus a 1px margin: the 16px of the icon it replaces. */}
                       <span
                         className="m-px size-3.5 animate-spin rounded-full border-2 border-solid border-current border-t-transparent motion-reduce:animate-none"
                         aria-hidden="true"
