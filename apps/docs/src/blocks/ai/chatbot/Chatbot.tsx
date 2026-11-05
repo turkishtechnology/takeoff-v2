@@ -127,10 +127,11 @@ const bubbleStyles: Record<ChatbotType, { assistant: string; user: string }> = {
   },
 };
 
-const footerStyles: Record<ChatbotType, { footer: string; composer: string; field: string; divider: string; attach: string; send: string }> = {
+const footerStyles: Record<ChatbotType, { footer: string; box: string; boxDivider: string; field: string; divider: string; attach: string; send: string }> = {
   basic: {
     footer: 'bg-frames-lightest',
-    composer: '',
+    box: 'border-border-light bg-frames-lightest focus-within:border-primary-base',
+    boxDivider: 'border-border-light',
     field: '',
     divider: 'bg-background-light',
     attach: '!text-neutral-600',
@@ -138,7 +139,8 @@ const footerStyles: Record<ChatbotType, { footer: string; composer: string; fiel
   },
   divided: {
     footer: 'border-t border-border-light bg-frames-lightest',
-    composer: '',
+    box: 'border-border-light bg-frames-lightest focus-within:border-primary-base',
+    boxDivider: 'border-border-light',
     field: '',
     divider: 'bg-background-light',
     attach: '!text-neutral-600',
@@ -146,7 +148,8 @@ const footerStyles: Record<ChatbotType, { footer: string; composer: string; fiel
   },
   light: {
     footer: 'border-t border-border-light bg-background-lightest',
-    composer: '',
+    box: 'border-border-light bg-frames-lightest focus-within:border-primary-base',
+    boxDivider: 'border-border-light',
     field: '',
     divider: 'bg-background-light',
     attach: '!text-neutral-600',
@@ -154,7 +157,8 @@ const footerStyles: Record<ChatbotType, { footer: string; composer: string; fiel
   },
   dark: {
     footer: 'bg-neutral-800',
-    composer: '!border-neutral-600 !bg-transparent',
+    box: 'border-neutral-600 focus-within:border-neutral-400',
+    boxDivider: 'border-neutral-600',
     field: '!text-neutral-50 placeholder:!text-neutral-500',
     divider: 'bg-neutral-600',
     attach: '!text-neutral-200',
@@ -162,7 +166,8 @@ const footerStyles: Record<ChatbotType, { footer: string; composer: string; fiel
   },
   primary: {
     footer: 'bg-primary-base',
-    composer: '!border-primary-sub-base !bg-transparent',
+    box: 'border-primary-sub-base focus-within:border-static-white',
+    boxDivider: 'border-primary-sub-base',
     field: '!text-static-white placeholder:!text-static-white/70',
     divider: 'bg-primary-sub-base',
     attach: '!text-static-white',
@@ -171,14 +176,14 @@ const footerStyles: Record<ChatbotType, { footer: string; composer: string; fiel
 };
 
 /**
- * Takeoff scrollbar colours (tokens `takeoff-scrollbar` mixin) for a scroll
- * container. Chromium 121+ and Firefox use the standard `scrollbar-*`
+ * Takeoff scrollbar thumb (tokens `takeoff-scrollbar` mixin) for a scroll
+ * container, on a transparent track so no strip shows beside the content. Chromium 121+ and Firefox use the standard `scrollbar-*`
  * properties, so they get the colours on a thin native scrollbar; Safari
  * uses the `::-webkit-scrollbar` rules, which also carry the 4px size and
  * the rounded thumb.
  */
 const scrollbar =
-  '[scrollbar-color:var(--secondary-sub-base)_var(--background-lightest)] [scrollbar-width:thin] [&::-webkit-scrollbar]:size-1 [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-secondary-sub-base [&::-webkit-scrollbar-thumb:hover]:bg-secondary-dark [&::-webkit-scrollbar-track]:rounded-sm [&::-webkit-scrollbar-track]:bg-background-lightest';
+  '[scrollbar-color:var(--secondary-sub-base)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:size-1 [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-secondary-sub-base [&::-webkit-scrollbar-thumb:hover]:bg-secondary-dark [&::-webkit-scrollbar-track]:bg-transparent';
 
 /** Messages and the typing indicator fade in when they are added. */
 const enter = 'motion-safe:transition-[opacity,translate] motion-safe:duration-300 motion-safe:starting:translate-y-2 motion-safe:starting:opacity-0';
@@ -367,6 +372,12 @@ function Message({ message, bubble, userAvatar }: { message: ChatbotMessage; bub
   );
 }
 
+function formatSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 /** Files picked in the composer, with a preview URL for each image. */
 function usePickedFiles() {
   const [files, setFiles] = useState<File[]>([]);
@@ -528,95 +539,105 @@ export function Chatbot({
       </div>
 
       <form onSubmit={handleSubmit} className={`p-3 ${f.footer}`}>
-        {files.length > 0 && (
-          <ul aria-label="Attachments" className={`!m-0 !mb-2 flex list-none gap-2 overflow-x-auto !p-0 !pt-1.5 !pr-1.5 ${scrollbar}`}>
-            {files.map((file, index) => (
-              <li key={`${file.name}-${index}`} className="relative !m-0 shrink-0">
-                {previews[index] ? (
-                  <img src={previews[index]} alt={file.name} className="size-14 rounded-lg border border-border-light object-cover" />
-                ) : (
-                  <span className="flex h-14 max-w-40 items-center gap-1.5 rounded-lg border border-border-light bg-background-lightest px-2 text-xs text-text-darkest">
-                    <FileIconOutlinedRounded width={20} height={20} className="shrink-0" />
-                    <span className="truncate">{file.name}</span>
-                  </span>
-                )}
-                <button
-                  type="button"
-                  aria-label={`Remove ${file.name}`}
-                  onClick={() => removeFile(index)}
-                  className="absolute -top-1.5 -right-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full border-0 bg-neutral-900 p-0 text-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-base"
-                >
-                  <CloseIconOutlinedRounded width={14} height={14} />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-        <Input className={`!items-end !gap-2 !p-1 ${f.composer}`}>
-          {allowAttachments && (
-            <>
-              <input ref={fileRef} type="file" multiple onChange={handleFiles} className="hidden" tabIndex={-1} aria-hidden="true" />
-              {attachmentOptions.length === 1 ? (
-                <Button
-                  variant="neutral"
-                  appearance="text"
-                  size="small"
-                  aria-label="Attach files"
-                  startContent={<AddCircleIconFilledTk className={f.attach} />}
-                  onClick={() => pickFiles(attachmentOptions[0])}
-                />
-              ) : (
-                <Dropdown size="small">
-                  <Dropdown.Trigger
-                    as={Button}
+        {/* One composer box: picked files sit in their own tray above the
+            text field, split off by a divider, so they never read as part
+            of the conversation. */}
+        <div className={`overflow-hidden rounded-lg border transition-colors ${f.box}`}>
+          {files.length > 0 && (
+            <ul aria-label="Attachments" className={`!m-0 flex list-none gap-2 overflow-x-auto border-b !p-2 !pt-3 ${f.boxDivider} ${scrollbar}`}>
+              {files.map((file, index) => (
+                <li key={`${file.name}-${index}`} className="relative !m-0 shrink-0">
+                  {previews[index] ? (
+                    <img src={previews[index]} alt={file.name} className="block size-14 rounded-md object-cover" />
+                  ) : (
+                    <span className="flex h-14 w-44 items-center gap-2 rounded-md bg-background-light px-2 text-text-darkest">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary-base text-static-white">
+                        <FileIconOutlinedRounded width={20} height={20} />
+                      </span>
+                      <span className="flex min-w-0 flex-col text-xs leading-4">
+                        <span className="truncate font-medium">{file.name}</span>
+                        <span className="text-text-base">{formatSize(file.size)}</span>
+                      </span>
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    aria-label={`Remove ${file.name}`}
+                    onClick={() => removeFile(index)}
+                    className="absolute -top-1.5 -right-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full border-2 border-solid border-frames-lightest bg-neutral-900 p-0 text-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-base"
+                  >
+                    <CloseIconOutlinedRounded width={12} height={12} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <Input className="!items-end !gap-2 !rounded-none !border-0 !bg-transparent !p-1 !shadow-none !outline-none">
+            {allowAttachments && (
+              <>
+                <input ref={fileRef} type="file" multiple onChange={handleFiles} className="hidden" tabIndex={-1} aria-hidden="true" />
+                {attachmentOptions.length === 1 ? (
+                  <Button
                     variant="neutral"
                     appearance="text"
                     size="small"
                     aria-label="Attach files"
                     startContent={<AddCircleIconFilledTk className={f.attach} />}
+                    onClick={() => pickFiles(attachmentOptions[0])}
                   />
-                  <Dropdown.Content side="top" align="start">
-                    {attachmentOptions.map(option => (
-                      <Dropdown.Item key={option.label} textValue={option.label} onSelect={() => pickFiles(option)}>
-                        <span className="flex items-center gap-2">
-                          {option.icon && (
-                            <span className="flex size-5 shrink-0 text-text-base [&_svg]:size-5" aria-hidden="true">
-                              {option.icon}
-                            </span>
-                          )}
-                          {option.label}
-                        </span>
-                      </Dropdown.Item>
-                    ))}
-                  </Dropdown.Content>
-                </Dropdown>
-              )}
-              <span className={`h-6 w-px shrink-0 self-center ${f.divider}`} aria-hidden="true" />
-            </>
-          )}
-          <Input.Field
-            ref={fieldRef}
-            as="textarea"
-            rows={1}
-            value={draft}
-            onChange={event => setDraft(event.currentTarget.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            aria-label="Message"
-            className={`max-h-32 !resize-none self-center !py-1.5 [field-sizing:content] ${scrollbar} ${f.field}`}
-          />
-          <Button
-            type="submit"
-            variant="neutral"
-            appearance="text"
-            size="small"
-            aria-label="Send message"
-            startContent={<SendIconFilledRounded />}
-            disabled={!canSend}
-            className="disabled:opacity-40"
-            classNames={{ content: f.send }}
-          />
-        </Input>
+                ) : (
+                  <Dropdown size="small">
+                    <Dropdown.Trigger
+                      as={Button}
+                      variant="neutral"
+                      appearance="text"
+                      size="small"
+                      aria-label="Attach files"
+                      startContent={<AddCircleIconFilledTk className={f.attach} />}
+                    />
+                    <Dropdown.Content side="top" align="start">
+                      {attachmentOptions.map(option => (
+                        <Dropdown.Item key={option.label} textValue={option.label} onSelect={() => pickFiles(option)}>
+                          <span className="flex items-center gap-2">
+                            {option.icon && (
+                              <span className="flex size-5 shrink-0 text-text-base [&_svg]:size-5" aria-hidden="true">
+                                {option.icon}
+                              </span>
+                            )}
+                            {option.label}
+                          </span>
+                        </Dropdown.Item>
+                      ))}
+                    </Dropdown.Content>
+                  </Dropdown>
+                )}
+                <span className={`h-6 w-px shrink-0 self-center ${f.divider}`} aria-hidden="true" />
+              </>
+            )}
+            <Input.Field
+              ref={fieldRef}
+              as="textarea"
+              rows={1}
+              value={draft}
+              onChange={event => setDraft(event.currentTarget.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={placeholder}
+              aria-label="Message"
+              className={`max-h-32 !resize-none self-center !py-1.5 [field-sizing:content] ${scrollbar} ${f.field}`}
+            />
+            <Button
+              type="submit"
+              variant="neutral"
+              appearance="text"
+              size="small"
+              aria-label="Send message"
+              startContent={<SendIconFilledRounded />}
+              disabled={!canSend}
+              className="disabled:opacity-40"
+              classNames={{ content: f.send }}
+            />
+          </Input>
+        </div>
       </form>
     </Card>
   );
