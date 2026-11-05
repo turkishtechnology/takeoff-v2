@@ -31,9 +31,9 @@ export type ChatbotIconType = 'primary' | 'dark' | 'light' | 'white';
 
 /** Mark colour and face fill of each icon type. */
 export const chatbotIconStyles: Record<ChatbotIconType, { mark: string; face?: string }> = {
-  primary: { mark: 'text-primary-base', face: 'fill-static-white' },
-  dark: { mark: 'text-neutral-900', face: 'fill-static-white' },
-  light: { mark: 'text-neutral-200', face: 'fill-static-white' },
+  primary: { mark: 'text-primary-base', face: 'fill-frames-lightest' },
+  dark: { mark: 'text-neutral-900', face: 'fill-frames-lightest' },
+  light: { mark: 'text-neutral-200', face: 'fill-frames-lightest' },
   white: { mark: 'text-static-white' },
 };
 
@@ -113,9 +113,9 @@ export interface ChatbotProps {
 // Dark and primary headers stay dark and red in both colour modes, so their
 // icons use static white rather than the `white` button variant, which flips.
 const headerStyles: Record<ChatbotType, { subtitle: string; avatar: string; face?: string; button: string }> = {
-  basic: { subtitle: 'text-text-base', avatar: 'text-primary-base', face: 'fill-static-white', button: '' },
-  divided: { subtitle: 'text-text-base', avatar: 'text-primary-base', face: 'fill-static-white', button: '' },
-  light: { subtitle: 'text-text-base', avatar: 'text-primary-base', face: 'fill-static-white', button: '' },
+  basic: { subtitle: 'text-text-base', avatar: 'text-primary-base', face: 'fill-frames-lightest', button: '' },
+  divided: { subtitle: 'text-text-base', avatar: 'text-primary-base', face: 'fill-frames-lightest', button: '' },
+  light: { subtitle: 'text-text-base', avatar: 'text-primary-base', face: 'fill-frames-lightest', button: '' },
   dark: { subtitle: 'text-neutral-400', avatar: 'text-neutral-200', button: '!text-static-white' },
   primary: { subtitle: 'text-static-white', avatar: 'text-static-white', button: '!text-static-white' },
 };
@@ -216,7 +216,8 @@ function isComposing(event: { nativeEvent: globalThis.KeyboardEvent; keyCode: nu
  * `text-primary-base`, `text-neutral-900`, `text-neutral-200` or
  * `text-static-white` give the primary, dark, light and white types. The face
  * is cut out, so it shows the surface behind the mark; pass a fill class as
- * `face` (e.g. `fill-static-white`) to fill it instead. Size it with `size-8`
+ * `face` (e.g. `fill-frames-lightest`, which follows the colour mode so the
+ * face never glares on a dark page) to fill it instead. Size it with `size-8`
  * (small), `size-10` (base) or `size-12` (large).
  */
 export function ChatbotIcon({ face, ...props }: SVGProps<SVGSVGElement> & { face?: string }) {
@@ -227,6 +228,39 @@ export function ChatbotIcon({ face, ...props }: SVGProps<SVGSVGElement> & { face
       <path d="M15.37 19.37c-.38.64-.87.5-1.61.3a6.81 6.81 0 0 0-1.85-.3c-.75 0-1.35.17-1.84.3-.75.2-1.23.34-1.61-.3-.62-1.02 1.08-3.54 3.45-3.54 2.38 0 4.07 2.52 3.46 3.54Z" />
       <path d="M29.93 19.67c.74.2 1.23.34 1.61-.3.61-1.02-1.08-3.54-3.45-3.54-2.38 0-4.07 2.52-3.46 3.54.38.64.87.5 1.61.3.49-.13 1.09-.3 1.84-.3.76 0 1.36.17 1.85.3Z" />
       <path d="M20 24.17c-1.33 0-2.21-1.15-2.25-1.2a.65.65 0 0 1 .08-.86.55.55 0 0 1 .8.09c.01.01.59.73 1.37.73.78 0 1.36-.73 1.37-.74a.55.55 0 0 1 .8-.09c.24.22.28.6.08.87-.04.05-.92 1.2-2.25 1.2Z" />
+    </svg>
+  );
+}
+
+/**
+ * The launcher mark (Figma `chatbot-fab`). The face changes with the state:
+ * eyes down while closed (inactive), a wide smile on hover or keyboard focus,
+ * and the open face while the panel is open (active). It reads the state
+ * from the button around it (`group`, `aria-expanded`).
+ */
+function FabIcon() {
+  return (
+    <svg viewBox="0 0 48 48" fill="currentColor" aria-hidden="true" className="size-12">
+      <circle cx="24" cy="24" r="22" className="fill-frames-lightest" />
+      <path d="M44 0H24C17.37 0 11.37 2.685 7.03 7.03 2.685 11.375 0 17.375 0 24c0 13.255 10.745 24 24 24s24-10.745 24-24V4c0-2.205-1.795-4-4-4ZM35.315 35.315A15.95 15.95 0 0 1 24 40c-8.84 0-16-7.16-16-16 0-4.415 1.79-8.415 4.685-11.315A15.95 15.95 0 0 1 24 8c4.42 0 8.42 1.79 11.315 4.685A15.98 15.98 0 0 1 40 24c0 4.415-1.79 8.42-4.685 11.315Z" />
+      {/* Inactive: closed and not hovered. */}
+      <g className="group-hover:hidden group-focus-visible:hidden group-aria-expanded:hidden">
+        <path d="M37.84 28.42c-.48.79-1.09.21-2.03-.05-.61-.17-1.36-.37-2.31-.37-.95 0-1.7.2-2.31.37-.94.26-1.55.84-2.03.05-.77-1.28 1.35-4.42 4.34-4.42 2.99 0 5.11 3.14 4.34 4.42Z" />
+        <path d="M16.81 28.37c.94.26 1.55.84 2.03.05.77-1.27-1.35-4.42-4.34-4.42-2.99 0-5.11 3.14-4.34 4.42.48.79 1.09.21 2.03-.05.61-.17 1.36-.37 2.31-.37.95 0 1.7.2 2.31.37Z" />
+        <path d="M24 34c-1.68 0-2.79-1.56-2.84-1.62-.25-.36-.21-.89.1-1.19.31-.29.76-.24 1.01.12.01.02.74 1.01 1.73 1.01.99 0 1.72-1 1.73-1.01.25-.36.7-.41 1.01-.12.31.29.35.83.1 1.18-.05.07-1.16 1.63-2.84 1.63Z" />
+      </g>
+      {/* Active: the panel is open. */}
+      <g className="hidden group-hover:hidden group-focus-visible:hidden group-aria-expanded:block">
+        <path d="M18.44 23.25c-.46.76-1.04.6-1.93.36a7.89 7.89 0 0 0-2.21-.36c-.9 0-1.62.2-2.21.36-.9.25-1.48.41-1.94-.36-.73-1.23 1.29-4.25 4.15-4.25 2.85 0 4.88 3.02 4.14 4.25Z" />
+        <path d="M35.91 23.6c.9.25 1.48.41 1.94-.35.73-1.23-1.29-4.25-4.15-4.25-2.85 0-4.88 3.02-4.14 4.25.46.76 1.04.6 1.93.35.59-.16 1.31-.35 2.21-.35.91 0 1.63.19 2.21.35Z" />
+        <path d="M24 29c-1.6 0-2.65-1.37-2.7-1.43a.74.74 0 0 1 .1-1.04.67.67 0 0 1 .96.1c.01.02.7.89 1.64.89.94 0 1.63-.88 1.64-.89a.67.67 0 0 1 .96-.1c.29.26.33.72.1 1.04-.05.06-1.1 1.43-2.7 1.43Z" />
+      </g>
+      {/* Hover: a wide smile. */}
+      <g className="hidden group-hover:block group-focus-visible:block">
+        <path d="M37.84 22.42c-.48.79-1.09.62-2.03.37-.61-.17-1.36-.37-2.31-.37-.95 0-1.7.2-2.31.37-.94.25-1.55.42-2.03-.37-.77-1.28 1.35-4.42 4.34-4.42 2.99 0 5.11 3.14 4.34 4.42Z" />
+        <path d="M16.81 22.79c.94.25 1.55.42 2.03-.37.77-1.28-1.35-4.42-4.34-4.42-2.99 0-5.11 3.14-4.34 4.42.48.79 1.09.62 2.03.37.61-.17 1.36-.37 2.31-.37.95 0 1.7.2 2.31.37Z" />
+        <path d="M24 29c-2.24 0-3.72-2.94-3.78-3.04-.34-.51-.28-1.27.13-1.69.41-.42 1.02-.34 1.35.17.02.03.99.99 2.3.99 1.32 0 2.29-.98 2.3-.99.34-.51.94-.59 1.35-.17.41.42.47 1.18.13 1.69-.06.1-1.54 3.04-3.78 3.04Z" />
+      </g>
     </svg>
   );
 }
@@ -731,9 +765,9 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => (open ? close() : openPanel())}
-        className="flex size-12 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-primary-base transition-[color,box-shadow,scale] duration-150 hover:text-primary-dark hover:shadow-1-hover-base focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base active:scale-95 active:text-primary-base motion-reduce:transition-none"
+        className="group flex size-12 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-primary-base transition-[color,box-shadow,scale] duration-150 hover:text-primary-dark hover:shadow-1-hover-base focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base active:scale-95 active:text-primary-base aria-expanded:hover:text-primary-dark motion-reduce:transition-none"
       >
-        <ChatbotIcon face="fill-static-white" className="size-12" />
+        <FabIcon />
       </button>
     </div>
   );
