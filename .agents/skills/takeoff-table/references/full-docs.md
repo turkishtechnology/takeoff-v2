@@ -179,9 +179,9 @@ with `type` (+ `options` for the choice controls):
 
 <small>
   ¹ Spar's `Select` has no multi mode yet, so `multi-select` currently renders
-  the same `Checkbox` list as `checkbox`. The options sit in a named group with
-  the `tk-table-filter-options` class (from `@takeoff-design/tokens`), which
-  themes can target to restyle the list.
+  the same `Checkbox` list as `checkbox`. The `checkbox` and `multi-select`
+  options sit in a named group with the `tk-table-filter-options` class (from
+  `@takeoff-design/tokens`), which themes can target to restyle the list.
 </small>
 
 ```tsx
