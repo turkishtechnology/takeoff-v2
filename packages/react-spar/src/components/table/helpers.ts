@@ -361,10 +361,6 @@ export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: Sti
   return hasWidth ? { width: column.getSize() } : undefined;
 };
 
-/** Fill a `labels` template: every `{key}` is replaced by its value. */
-export const formatLabel = (template: string, values: Record<string, number | string>): string =>
-  template.replace(/\{(\w+)\}/g, (match, key: string) => (Object.prototype.hasOwnProperty.call(values, key) ? String(values[key]) : match));
-
 // The design system ships no sr-only utility and the recipe must stay a purely
 // visual dependency, so header text meant only for assistive technology hides
 // itself inline.

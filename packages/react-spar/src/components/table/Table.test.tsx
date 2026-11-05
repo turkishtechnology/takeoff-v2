@@ -12,7 +12,8 @@ import { render as renderPlain, renderWithProvider as render, screen, within } f
 import { Table } from './Table';
 import { TableBody } from './TableBody';
 import { resetTableDevWarnings } from './TableColumnFilter';
-import { formatLabel, getExportRows } from './helpers';
+import { getExportRows } from './helpers';
+import { formatLabel } from '../../utils';
 import type { TableColumnDef, TableLabels, TableSlot } from './types';
 
 // Spar Select/Popover content observe their anchor; jsdom lacks ResizeObserver.

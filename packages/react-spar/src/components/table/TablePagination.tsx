@@ -6,9 +6,9 @@ import { DoubleChevronRightIconOutlinedRounded } from '@takeoff-icons/react/doub
 import { Button } from '../button';
 import { Input } from '../input';
 import { Select } from '../select';
+import { formatLabel } from '../../utils';
 
 import { useTableContext } from './context';
-import { formatLabel } from './helpers';
 
 type PaginationItem = number | 'start-ellipsis' | 'end-ellipsis';
 

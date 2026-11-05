@@ -8,10 +8,10 @@ import { Input } from '../input';
 import { Popover } from '../popover';
 import { Radio } from '../radio';
 import { Select } from '../select';
-import { isDevelopment } from '../../utils';
+import { formatLabel, isDevelopment } from '../../utils';
 
 import { useTableContext } from './context';
-import { formatLabel, isEmptyFilterValue, visuallyHidden } from './helpers';
+import { isEmptyFilterValue, visuallyHidden } from './helpers';
 import type { TableColumnFilter as TableColumnFilterConfig, TableColumnFilterContext, TableColumnFilterOption } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
