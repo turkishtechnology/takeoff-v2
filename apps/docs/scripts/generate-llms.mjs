@@ -196,7 +196,7 @@ function mdxToMarkdown(rawBody) {
     try {
       rawImports.set(name, readFileSync(join(DOCS_APP_DIR, specifier), 'utf8'));
     } catch {
-      // unreadable source: the CodeBlock falls back to the demo note below
+      // unreadable source: each handler below falls back to a note
     }
   }
   body = body.replace(/<CodeBlock\b([^>]*)>\s*\{(\w+)\}\s*<\/CodeBlock>/gu, (_, attrs, name) => {

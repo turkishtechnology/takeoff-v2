@@ -1298,6 +1298,11 @@ export function Chatbot({
       />
 
       <div className="relative flex min-h-0 flex-1 flex-col">
+        {/* Always rendered and outside the busy log, so screen readers
+            announce the text when older messages start loading. */}
+        <span className="sr-only" role="status">
+          {loadingOlder ? l.loading : ''}
+        </span>
         <div
           ref={logRef}
           role="log"
@@ -1329,7 +1334,7 @@ export function Chatbot({
                         className="m-px size-3.5 animate-spin rounded-full border-2 border-solid border-current border-t-transparent motion-reduce:animate-none"
                         aria-hidden="true"
                       />
-                      <span role="status">{l.loading}</span>
+                      {l.loading}
                     </>
                   ) : (
                     <>
