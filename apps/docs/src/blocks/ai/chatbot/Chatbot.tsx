@@ -1311,15 +1311,34 @@ export function Chatbot({
           {/* Messages stack from the bottom, as in a chat app. */}
           <div ref={contentRef} className="flex min-h-full flex-col justify-end gap-6 px-3 py-6">
             {hasOlder && !loading && (
-              <div className="flex justify-center">
-                {loadingOlder ? (
-                  <Skeleton width={150} height={32} className="!rounded-full" aria-label={l.loading} />
-                ) : (
-                  // A pill, the size of the skeleton that replaces it while loading.
-                  <Button variant="neutral" appearance="outlined" size="small" rounded startContent={<HistoryIconOutlinedRounded />} onClick={onLoadOlder}>
-                    {l.loadOlder}
-                  </Button>
-                )}
+              // Styled like the day dividers, so it reads as part of the log's
+              // structure, not as a message. One button throughout, so focus
+              // stays on it while the older messages load.
+              <div className="flex h-6 items-center gap-3 text-text-base">
+                <span className="h-px flex-1 bg-current opacity-25" />
+                <button
+                  type="button"
+                  onClick={loadingOlder ? undefined : onLoadOlder}
+                  aria-disabled={loadingOlder || undefined}
+                  className={`flex cursor-pointer items-center gap-1 rounded border-0 bg-transparent px-1 py-0.5 font-[inherit] text-xs leading-4 font-medium text-text-base hover:text-text-darkest focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base aria-disabled:cursor-default aria-disabled:hover:text-text-base`}
+                >
+                  {loadingOlder ? (
+                    <>
+                      {/* A 14px ring, the size of the icon it replaces. */}
+                      <span
+                        className="m-px size-3.5 animate-spin rounded-full border-2 border-solid border-current border-t-transparent motion-reduce:animate-none"
+                        aria-hidden="true"
+                      />
+                      <span role="status">{l.loading}</span>
+                    </>
+                  ) : (
+                    <>
+                      <HistoryIconOutlinedRounded width={16} height={16} aria-hidden="true" />
+                      {l.loadOlder}
+                    </>
+                  )}
+                </button>
+                <span className="h-px flex-1 bg-current opacity-25" />
               </div>
             )}
             {loading ? (
