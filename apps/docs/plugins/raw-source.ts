@@ -1,6 +1,6 @@
 import type { Plugin } from '@docusaurus/types';
 
-const RAW_QUERY = /raw/;
+const RAW_QUERY = /^\?raw$/;
 
 /**
  * Lets docs import a file's text with a `?raw` suffix, e.g.
@@ -9,6 +9,7 @@ const RAW_QUERY = /raw/;
  *
  * The existing rules (babel for .tsx, css, …) are told to skip `?raw`
  * requests; otherwise they would transpile the file before it is read as text.
+ * Only rules already registered when this plugin runs are patched.
  */
 export default function rawSourcePlugin(): Plugin {
   return {

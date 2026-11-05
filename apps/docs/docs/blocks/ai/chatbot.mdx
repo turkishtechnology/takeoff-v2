@@ -24,8 +24,17 @@ composer. It is a **block**: there is no `Chatbot` export in
 `@takeoff-ui/react-spar`. Copy [the source](#source) into your app and connect
 it to your own backend or AI SDK.
 
-The block is built from `Card`, `Badge`, `Button`, `Chip` and `Input` and needs
-no extra dependencies.
+The block is built from `Card`, `Badge`, `Button` and `Input`, and imports its
+icons from `@takeoff-icons/react`. Add that package to your app if it is not
+already a direct dependency:
+
+```bash
+pnpm add @takeoff-icons/react
+```
+
+The prompt starters in the embedded demo use `Chip`. The composer grows with its
+content through `field-sizing: content`; browsers without it (Firefox, older
+Safari) keep a single row that scrolls.
 
 ## Floating
 

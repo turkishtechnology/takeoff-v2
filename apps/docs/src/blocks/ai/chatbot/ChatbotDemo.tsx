@@ -7,6 +7,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Chip } from '@takeoff-ui/react-spar';
 import { Chatbot, type ChatbotMessage, type ChatbotType, ChatbotLauncher } from './Chatbot';
 
+let nextId = 0;
+const newId = () => `message-${++nextId}`;
+
 const now = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
 const starters = ['Where is my baggage?', 'Change my seat', 'Flight status TK1'];
@@ -29,7 +32,8 @@ async function reply(text: string): Promise<string> {
 
 function useConversation(initial: ChatbotMessage[]) {
   const [messages, setMessages] = useState(initial);
-  const [typing, setTyping] = useState(false);
+  // Count pending replies so overlapping sends keep the indicator on.
+  const [pending, setPending] = useState(0);
   const mounted = useRef(true);
 
   useEffect(() => {
@@ -40,18 +44,18 @@ function useConversation(initial: ChatbotMessage[]) {
   }, []);
 
   const submit = async (text: string) => {
-    setMessages(current => [...current, { id: crypto.randomUUID(), role: 'user', content: text, time: now(), status: 'sent' }]);
-    setTyping(true);
+    setMessages(current => [...current, { id: newId(), role: 'user', content: text, time: now(), status: 'sent' }]);
+    setPending(count => count + 1);
     const answer = await reply(text);
     if (!mounted.current) return;
-    setTyping(false);
+    setPending(count => count - 1);
     setMessages(current => [
       ...current.map(message => (message.role === 'user' ? { ...message, status: 'read' as const } : message)),
-      { id: crypto.randomUUID(), role: 'assistant', content: answer, time: now() },
+      { id: newId(), role: 'assistant', content: answer, time: now() },
     ]);
   };
 
-  return { messages, typing, submit };
+  return { messages, typing: pending > 0, submit };
 }
 
 function Starters({ onPick }: { onPick: (text: string) => void }) {
@@ -92,5 +96,5 @@ export function ChatbotEmbeddedDemo() {
 export function ChatbotTypeDemo({ type }: { type: ChatbotType }) {
   const { messages, typing, submit } = useConversation(sample);
 
-  return <Chatbot type={type} messages={messages} typing={typing} onSubmit={submit} onAttach={() => {}} onClose={() => {}} className="!h-[480px]" />;
+  return <Chatbot type={type} messages={messages} typing={typing} onSubmit={submit} onAttach={() => {}} className="!h-[480px]" />;
 }

@@ -178,10 +178,11 @@ function Message({ message, type }: { message: ChatbotMessage; type: ChatbotType
       <div className={`flex max-w-[75%] flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
         <div className={`rounded-lg text-sm leading-5 whitespace-pre-wrap ${isUser ? s.userBubble : s.bubble}`}>{message.content}</div>
         {(message.time || message.status) && (
-          <div className="flex items-center gap-1 text-[11px] leading-4 text-neutral-300">
+          <div className="flex items-center gap-1 text-[11px] leading-4 text-text-base">
             {message.time && <span>{message.time}</span>}
-            {message.status === 'read' && <DoneAllIconOutlinedRounded width={16} height={16} className="text-primary-sub-base" aria-label="Read" />}
-            {message.status === 'sent' && <CheckIconOutlinedRounded width={16} height={16} className="text-neutral-300" aria-label="Sent" />}
+            {message.status === 'read' && <DoneAllIconOutlinedRounded width={16} height={16} className="text-primary-sub-base" />}
+            {message.status === 'sent' && <CheckIconOutlinedRounded width={16} height={16} className="text-text-base" />}
+            {message.status && <span className="sr-only">{message.status === 'read' ? 'Read' : 'Sent'}</span>}
           </div>
         )}
       </div>
@@ -255,7 +256,7 @@ export function Chatbot({
           <div className="min-w-0">
             <div className={`text-[11px] leading-4 ${s.subtitle}`}>{subtitle}</div>
             <div className="flex items-center gap-1">
-              <Card.Title id={titleId} as="h2" className="truncate !text-xl !leading-[30px]">
+              <Card.Title id={titleId} level={2} className="truncate !text-xl !leading-[30px]">
                 {title}
               </Card.Title>
               {online && (
@@ -329,11 +330,20 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
+  // Move focus into the composer only when the user opens the panel, never on
+  // mount: a `defaultOpen` launcher must not pull the page to itself on load.
+  const openedByUser = useRef(false);
   useEffect(() => {
-    if (open) {
+    if (open && openedByUser.current) {
+      openedByUser.current = false;
       panelRef.current?.querySelector('textarea')?.focus();
     }
   }, [open]);
+
+  const openPanel = () => {
+    openedByUser.current = true;
+    setOpen(true);
+  };
 
   const close = () => {
     setOpen(false);
@@ -341,7 +351,7 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
   };
 
   return (
-    <div className={`z-50 flex flex-col items-end gap-3 ${positionClassName}`} onKeyDown={event => event.key === 'Escape' && open && close()}>
+    <div className={`z-50 flex flex-col items-end gap-3 ${positionClassName}`} onKeyDown={event => event.key === 'Escape' && !event.nativeEvent.isComposing && open && close()}>
       {open && (
         <div id={panelId} ref={panelRef} className="w-[min(400px,calc(100vw-2rem))]">
           <Chatbot {...chatbotProps} onClose={close} />
@@ -350,10 +360,10 @@ export function ChatbotLauncher({ defaultOpen = false, positionClassName = 'fixe
       <button
         ref={triggerRef}
         type="button"
-        aria-label={open ? 'Close chat' : `Chat with ${chatbotProps.title ?? 'Takeoff bot'}`}
+        aria-label={open ? 'Hide chat' : `Chat with ${chatbotProps.title ?? 'Takeoff bot'}`}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        onClick={() => (open ? close() : setOpen(true))}
+        onClick={() => (open ? close() : openPanel())}
         className="flex size-12 items-center justify-center rounded-full bg-static-white text-primary-base shadow-lg transition-colors hover:text-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base"
       >
         <ChatbotIcon className="size-12" />
