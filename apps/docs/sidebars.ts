@@ -59,6 +59,20 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: ['forms/react-hook-form', 'forms/tanstack-form'],
     },
+    {
+      type: 'category',
+      label: 'Blocks',
+      collapsed: false,
+      items: [
+        'blocks/index',
+        {
+          type: 'category',
+          label: 'AI',
+          collapsed: false,
+          items: ['blocks/ai/chatbot'],
+        },
+      ],
+    },
   ],
 };
 

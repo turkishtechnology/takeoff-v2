@@ -6,6 +6,7 @@ import { themes as prismThemes } from 'prism-react-renderer';
 import reactSparPackage from '../../packages/react-spar/package.json';
 import tailwindPlugin from './plugins/tailwind';
 import packageChangelogsPlugin from './plugins/package-changelogs';
+import rawSourcePlugin from './plugins/raw-source';
 
 function loadEnvFile(fileName: string): void {
   const filePath = resolve(process.cwd(), fileName);
@@ -85,6 +86,7 @@ const config: Config = {
   plugins: [
     tailwindPlugin,
     packageChangelogsPlugin,
+    rawSourcePlugin,
     [
       '@docusaurus/plugin-content-docs',
       {

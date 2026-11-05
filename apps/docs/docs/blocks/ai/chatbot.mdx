@@ -1,0 +1,101 @@
+---
+title: Chatbot
+description:
+  A copy-paste chatbot block composed from Card, Badge, Button and Input — a
+  floating launcher or an embedded panel, in the five Figma styles.
+sidebar_label: Chatbot
+slug: /blocks/ai/chatbot
+---
+
+import CodeBlock from '@theme/CodeBlock';
+import BlockPreview from '@site/src/components/BlockPreview';
+import {
+  ChatbotEmbeddedDemo,
+  ChatbotFloatingDemo,
+  ChatbotTypeDemo,
+} from '@site/src/blocks/ai/chatbot/ChatbotDemo';
+import chatbotSource from '@site/src/blocks/ai/chatbot/Chatbot.tsx?raw';
+import demoSource from '@site/src/blocks/ai/chatbot/ChatbotDemo.tsx?raw';
+
+# Chatbot
+
+A chat assistant panel with a header, a scrolling conversation and a message
+composer. It is a **block**: there is no `Chatbot` export in
+`@takeoff-ui/react-spar`. Copy [the source](#source) into your app and connect
+it to your own backend or AI SDK.
+
+The block is built from `Card`, `Badge`, `Button`, `Chip` and `Input` and needs
+no extra dependencies.
+
+## Floating
+
+`ChatbotLauncher` renders a floating button that opens the panel above it.
+Escape or the close button returns focus to the launcher.
+
+<BlockPreview minHeight={720}>
+  <ChatbotFloatingDemo />
+</BlockPreview>
+
+## Embedded
+
+Render `Chatbot` directly to place it in a page or a side panel. Pass
+`emptyState` to show prompt starters before the first message.
+
+<BlockPreview minHeight={600}>
+  <ChatbotEmbeddedDemo />
+</BlockPreview>
+
+## Types
+
+`type` follows the Figma variants and styles the header, the bubbles and the
+composer together.
+
+<BlockPreview minHeight={540}>
+  <div className="grid gap-6 lg:grid-cols-2">
+    <ChatbotTypeDemo type="basic" />
+    <ChatbotTypeDemo type="divided" />
+    <ChatbotTypeDemo type="light" />
+    <ChatbotTypeDemo type="dark" />
+    <ChatbotTypeDemo type="primary" />
+  </div>
+</BlockPreview>
+
+## Connecting your data
+
+The block keeps only the draft text. Your code owns the conversation:
+
+- Pass the conversation as `messages`. Each message has an `id`, a `role`
+  (`assistant` or `user`), `content`, and optionally `time` and `status`.
+- `onSubmit(text)` fires with the trimmed text when the user sends. Append the
+  user message, set `typing` while you wait, then append the answer.
+- To stream a reply, append an empty assistant message and update its `content`
+  as chunks arrive.
+
+`content` is a `ReactNode`, so you can render markdown or rich cards with the
+renderer your app already uses.
+
+## Accessibility
+
+- The conversation is a `role="log"` region with `aria-live="polite"`, so screen
+  readers announce new messages without moving focus.
+- New messages scroll into view only while the reader is at the bottom;
+  scrolling up to re-read is never interrupted.
+- Enter sends and Shift+Enter adds a line. Enter does not send while an IME
+  composition is open.
+- The typing indicator is a `role="status"` with a text label, and its animation
+  stops under `prefers-reduced-motion`.
+- Icon-only buttons carry an `aria-label`, and the launcher exposes
+  `aria-expanded`.
+
+## Source
+
+Copy `Chatbot.tsx` into your app. `ChatbotDemo.tsx` shows how the previews on
+this page keep the conversation in state.
+
+<CodeBlock language="tsx" title="Chatbot.tsx" showLineNumbers>
+  {chatbotSource}
+</CodeBlock>
+
+<CodeBlock language="tsx" title="ChatbotDemo.tsx">
+  {demoSource}
+</CodeBlock>
