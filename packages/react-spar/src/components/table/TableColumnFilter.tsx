@@ -199,8 +199,8 @@ const SelectFilter = ({
       <span id={labelId} style={visuallyHidden}>
         {label}
       </span>
-      {/* Spar's trigger forwards a consumer `aria-labelledby` as-is (covered
-          by the Table filter tests), so the hidden label and value span name it. */}
+      {/* Spar's trigger forwards a consumer `aria-labelledby` as-is (pinned in
+          Select.test.tsx), so the hidden label and value span name it. */}
       <Select.Trigger aria-labelledby={`${labelId} ${valueId}`}>
         <span id={valueId}>{selected ? selected.label : placeholder}</span>
       </Select.Trigger>
