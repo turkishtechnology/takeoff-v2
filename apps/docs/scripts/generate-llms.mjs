@@ -224,6 +224,19 @@ function mdxToMarkdown(rawBody) {
     return `${note}\n\n${title ? `**${title}**\n\n` : ''}${fence}`;
   });
 
+  // A block's source file on its own: `<BlockSource code={x} title="…" />`.
+  body = body.replace(/<BlockSource\b([^>]*?)\/>/gu, (_, attrs) => {
+    const name = attrs.match(/\bcode=\{(\w+)\}/u)?.[1];
+    if (!name || !rawImports.has(name)) {
+      console.warn(`gen:llms — <BlockSource code={${name}}> has no readable '@site/…?raw' import; its source is left out of the mirror`);
+      return '> _Source — see the online docs._';
+    }
+    const title = attrs.match(/\btitle=(["'])([^"']+)\1/u)?.[2];
+    const language = title?.endsWith('.ts') ? 'ts' : 'tsx';
+    const fence = protect('```' + language + '\n' + normalizeDemo(rawImports.get(name)) + '\n```');
+    return title ? `**${title}**\n\n${fence}` : fence;
+  });
+
   // 2. Drop JSX comments ({/* ... */}), including the api-tables + prettier
   //    markers.
   body = body.replace(/\{\/\*[\s\S]*?\*\/\}/gu, '');

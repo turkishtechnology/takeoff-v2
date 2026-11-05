@@ -8,8 +8,7 @@ sidebar_label: Chatbot
 slug: /blocks/ai/chatbot
 ---
 
-import CodeBlock from '@theme/CodeBlock';
-import BlockPreview from '@site/src/components/BlockPreview';
+import BlockPreview, { BlockSource } from '@site/src/components/BlockPreview';
 import FloatingExample from '@site/src/blocks/ai/chatbot/examples/FloatingExample';
 import EmbeddedExample from '@site/src/blocks/ai/chatbot/examples/EmbeddedExample';
 import RichMessageExample from '@site/src/blocks/ai/chatbot/examples/RichMessageExample';
@@ -499,10 +498,6 @@ app already uses.
 Copy `Chatbot.tsx` into your app. `useDemoConversation.ts` is only the demo
 state the examples use; you do not need it.
 
-<CodeBlock language="tsx" title="Chatbot.tsx" showLineNumbers>
-  {chatbotSource}
-</CodeBlock>
+<BlockSource code={chatbotSource} title="Chatbot.tsx" />
 
-<CodeBlock language="tsx" title="useDemoConversation.ts">
-  {conversationSource}
-</CodeBlock>
+<BlockSource code={conversationSource} title="useDemoConversation.ts" />

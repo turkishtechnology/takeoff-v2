@@ -8,9 +8,11 @@ interface CollapsibleCodeBlockProps {
   headerActions?: ReactNode;
   isCollapsed: boolean;
   onToggle: () => void;
+  /** Text of the toggle. Defaults to "Code"; e.g. a file name. */
+  label?: ReactNode;
 }
 
-export const CollapsibleCodeBlock = ({ children, headerActions, isCollapsed, onToggle }: CollapsibleCodeBlockProps) => {
+export const CollapsibleCodeBlock = ({ children, headerActions, isCollapsed, onToggle, label }: CollapsibleCodeBlockProps) => {
   const { error } = useContext(LiveContext);
   const contentId = useId();
   const previousErrorRef = useRef(error);
@@ -29,9 +31,7 @@ export const CollapsibleCodeBlock = ({ children, headerActions, isCollapsed, onT
       <div className="collapsible-header">
         <button className="collapsible-toggle" onClick={onToggle} type="button" aria-controls={contentId} aria-expanded={!isCollapsed}>
           <ArrowCodeIconOutlinedRounded className="toggle-icon" />
-          <span className="toggle-text">
-            <Translate id="liveCode.codeToggle">Code</Translate>
-          </span>
+          <span className="toggle-text">{label ?? <Translate id="liveCode.codeToggle">Code</Translate>}</span>
         </button>
 
         {!isCollapsed && headerActions && <div className="collapsible-header-actions">{headerActions}</div>}
