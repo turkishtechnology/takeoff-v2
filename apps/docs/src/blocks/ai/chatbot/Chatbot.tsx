@@ -180,10 +180,11 @@ const footerStyles: Record<ChatbotType, { footer: string; box: string; boxDivide
  * container, on a transparent track so no strip shows beside the content. Chromium 121+ and Firefox use the standard `scrollbar-*`
  * properties, so they get the colours on a thin native scrollbar; Safari
  * uses the `::-webkit-scrollbar` rules, which also carry the 4px size and
- * the rounded thumb.
+ * the rounded thumb. The standard properties are `!important` so a global
+ * `* { scrollbar-color }` rule in the app's base CSS cannot override them.
  */
 const scrollbar =
-  '[scrollbar-color:var(--secondary-sub-base)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:size-1 [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-secondary-sub-base [&::-webkit-scrollbar-thumb:hover]:bg-secondary-dark [&::-webkit-scrollbar-track]:bg-transparent';
+  '![scrollbar-color:var(--secondary-sub-base)_transparent] ![scrollbar-width:thin] [&::-webkit-scrollbar]:size-1 [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-secondary-sub-base [&::-webkit-scrollbar-thumb:hover]:bg-secondary-dark [&::-webkit-scrollbar-track]:bg-transparent';
 
 /** Messages and the typing indicator fade in when they are added. */
 const enter = 'motion-safe:transition-[opacity,translate] motion-safe:duration-300 motion-safe:starting:translate-y-2 motion-safe:starting:opacity-0';
