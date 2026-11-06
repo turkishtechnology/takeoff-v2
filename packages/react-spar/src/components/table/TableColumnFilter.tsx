@@ -51,12 +51,7 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   // `aria-labelledby` (which would outrank it) is dropped from the spread and
   // reported once in development. Read before the early return so the effect
   // runs unconditionally. The panel wrapper IS a Table-owned slot node.
-  const {
-    'data-slot': _filterButtonSlot,
-    'aria-label': ignoredAriaLabel,
-    'aria-labelledby': ignoredAriaLabelledBy,
-    ...filterButtonAttrs
-  } = slotAttrs('filterButton') as ReturnType<typeof slotAttrs> & { 'aria-label'?: string; 'aria-labelledby'?: string };
+  const { 'data-slot': _filterButtonSlot, 'aria-label': ignoredAriaLabel, 'aria-labelledby': ignoredAriaLabelledBy, ...filterButtonAttrs } = slotAttrs('filterButton');
   useEffect(() => warnIgnoredFilterButtonName(ignoredAriaLabel, ignoredAriaLabelledBy), [ignoredAriaLabel, ignoredAriaLabelledBy]);
 
   if (!filter) return null;
@@ -64,7 +59,9 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   // `{column}` in the filter labels: `filter.label`, else the header text, else
   // the id (an empty, node or render-function header has no text to use).
   const headerText = typeof column.columnDef.header === 'string' ? column.columnDef.header.trim() : '';
-  const columnName = filter.label?.trim() || headerText || column.id;
+  // `filter.label` is typed as a string but may come from loose data; guard it.
+  const labelText = typeof filter.label === 'string' ? filter.label.trim() : '';
+  const columnName = labelText || headerText || column.id;
   const value = column.getFilterValue();
   const active = (filter.isActive ?? defaultIsActive)(value);
   const fieldLabel = formatLabel(labels.filterValue, { column: columnName });
@@ -203,8 +200,8 @@ const SelectFilter = ({
   container: HTMLElement | null;
 }) => {
   const selected = options.find(option => option.value === value);
-  const nameId = useId();
   const labelId = useId();
+  const valueId = useId();
   // The listbox is portalled INTO the filter panel rather than `document.body`.
   // Spar's Popover treats any pointer-down or focus outside its content node as
   // a dismiss, and the focus path cannot be vetoed (`focusin` is not
@@ -212,21 +209,18 @@ const SelectFilter = ({
   // Select opened and focused it. Keeping the listbox inside the panel makes it
   // an "inside" interaction with no wrapper-side dismiss logic.
   //
-  // The column label sits visually hidden INSIDE the trigger, so its text reads
-  // "<label> <value>". A combobox does not take its name from content, so the
-  // trigger points `aria-labelledby` at that span (keeping what is shown in the
-  // name, WCAG 2.5.3). Spar labels the listbox by the trigger, which a name
-  // computation reads as the chosen option only, so the listbox is pointed at
-  // the column label directly (a consumer `aria-labelledby` wins in Spar).
+  // A combobox does not take its name from content, so the trigger is named by
+  // a hidden column label plus its own visible value (WCAG 2.5.3, label in
+  // name). Spar labels the listbox by the trigger, which a name computation
+  // reads as the chosen option only, so the listbox is pointed at the column
+  // label directly (a consumer `aria-labelledby` wins in Spar).
   return (
     <Select value={value} onChange={onChange}>
-      <Select.Trigger aria-labelledby={nameId}>
-        <span id={nameId}>
-          <span id={labelId} style={visuallyHidden}>
-            {label}
-          </span>{' '}
-          {selected ? selected.label : placeholder}
-        </span>
+      <span id={labelId} style={visuallyHidden}>
+        {label}
+      </span>
+      <Select.Trigger aria-labelledby={`${labelId} ${valueId}`}>
+        <span id={valueId}>{selected ? selected.label : placeholder}</span>
       </Select.Trigger>
       <Select.Content container={container} aria-labelledby={labelId}>
         {options.map(option => (
@@ -252,10 +246,12 @@ const CheckboxListFilter = ({
   value: string[];
   onChange: (value: string[] | undefined) => void;
 }) => {
+  // A named group (`filterOptions` slot) that stacks the options like the panel
+  // body. Its role and name come from Table and `labels`, so slotProps naming
+  // attributes are dropped from the spread.
+  const { 'role': _role, 'aria-label': _ariaLabel, 'aria-labelledby': _ariaLabelledBy, ...groupAttrs } = attrs;
   return (
-    // A named group (`filterOptions` slot) that stacks the options like the panel
-    // body. Its name comes from `labels`, so it is set after the slot spread.
-    <div {...attrs} role="group" aria-label={label}>
+    <div {...groupAttrs} role="group" aria-label={label}>
       {options.map(option => {
         const checked = value.includes(option.value);
         return (

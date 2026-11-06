@@ -876,10 +876,11 @@ override one string and keep the rest.
 </TakeoffSparProvider>
 ```
 
-The filter-trigger, pagination and expand-button names come only from `labels`;
-an `aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
-`slotProps.expandButton` is ignored, as is an `aria-labelledby` on
-`slotProps.filterButton`. `filterValue` names the text filter input (a
+The filter-trigger, pagination and expand-button names come from `labels`: an
+`aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
+`slotProps.expandButton` is ignored. On the filter trigger and the checkbox
+filter group (`filterOptions`) an `aria-labelledby` is dropped too, so `labels`
+always names them. `filterValue` names the text filter input (a
 `filter.placeholder` stays a visible hint), the radio and checkbox groups, and
 the select trigger together with its visible value. `{column}` in `filterButton`
 / `filterValue` is the column's `filter.label`, else its header text, else its

@@ -999,6 +999,33 @@ describe('Table (props-first)', () => {
       expect(screen.getByRole('button', { name: 'Role sütununu filtrele' })).toBeInTheDocument();
     });
 
+    it('ignores a non-string `filter.label` and falls back to the header text', () => {
+      // Loose data (e.g. JSON) can put a non-string where `label` is typed as one.
+      const filter = { type: 'text', label: 42 } as unknown as TableColumnDef<User>['filter'];
+      render(<Table data={users} columns={[{ id: 'name', header: 'Name', accessor: 'name', filter }]} getRowId={getRowId} />);
+      expect(screen.getByRole('button', { name: 'Filter Name' })).toBeInTheDocument();
+    });
+
+    it('keeps the checkbox filter group named by `labels`, ignoring slotProps naming attributes', async () => {
+      const user = userEvent.setup();
+      render(
+        <>
+          <span id="outside-group-name">Outside</span>
+          <Table
+            data={users}
+            columns={[{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'checkbox', options: [{ label: 'Admin', value: 'admin' }] } }]}
+            getRowId={getRowId}
+            slotProps={{ filterOptions: { 'role': 'list', 'aria-label': 'Custom', 'aria-labelledby': 'outside-group-name', 'title': 'kept' } }}
+          />
+        </>,
+      );
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const group = await screen.findByRole('group', { name: 'Filter Role value' });
+      expect(group).not.toHaveAttribute('aria-labelledby');
+      // Non-naming attributes still pass through.
+      expect(group).toHaveAttribute('title', 'kept');
+    });
+
     it('names each filter trigger and filter field after its column through `{column}`', async () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [

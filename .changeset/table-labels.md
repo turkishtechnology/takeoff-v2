@@ -45,4 +45,6 @@ built by hand (e.g. in a unit test) still type-checks.
 
 The checkbox and multi-select filter options now sit in a named group, the new
 `filterOptions` slot (`tk-table-filter-options`), styled by the matching
-`@takeoff-design/tokens` release.
+`@takeoff-design/tokens` release. Its role and name come from Table and
+`labels.filterValue`; slotProps `role` / `aria-label` / `aria-labelledby` on it
+are ignored.

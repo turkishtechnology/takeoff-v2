@@ -438,8 +438,8 @@ export interface TableProps<TData = any> {
    * over it key by key. `emptyState` still wins over `labels.noData`, even when
    * it comes from the provider's `defaultProps`, while an
    * `aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
-   * `slotProps.expandButton` (and an `aria-labelledby` on `filterButton`) is
-   * ignored in favour of `labels`.
+   * `slotProps.expandButton` is ignored in favour of `labels` (on `filterButton`
+   * and `filterOptions` an `aria-labelledby` is dropped too).
    * See {@link TableLabels}.
    */
   labels?: Partial<TableLabels>;
@@ -463,8 +463,9 @@ export interface TableProps<TData = any> {
   classNames?: ClassNamesMap<TableSlot>;
   /**
    * Per-slot HTML attribute overrides. An `aria-label` here is ignored for
-   * `filterButton`, `pagination` and `expandButton`, whose names come from `labels`;
-   * so is an `aria-labelledby` on `filterButton`.
+   * `filterButton`, `pagination`, `expandButton` and `filterOptions`, whose names
+   * come from `labels`; on `filterButton` and `filterOptions` an
+   * `aria-labelledby` (and the group's `role`) is dropped too.
    */
   slotProps?: SlotPropsMap<TableSlot>;
   /** Ref to the root scroll container. */
