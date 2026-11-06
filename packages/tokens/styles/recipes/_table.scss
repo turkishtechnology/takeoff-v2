@@ -488,9 +488,9 @@
       min-height: 32px;
     }
 
-    // The 0.5.0 chevrons fill more of their grid than the double chevrons, so
-    // a 20px button icon box made the single arrows look oversized next to the
-    // page numbers. 16px keeps the arrow row in scale with the 12px text.
+    // The 0.5.0 chevrons fill more of their grid than the Figma drawings, so
+    // the whole arrow row (single and double) uses a 16px icon box instead of
+    // the 20px button default; the go-to-page arrow below matches it.
     > .tk-button .tk-button-content svg {
       width: 16px;
       height: 16px;
@@ -520,6 +520,11 @@
     display: flex;
     align-items: center;
     min-width: 72px;
+
+    .tk-button .tk-button-content svg {
+      width: 16px;
+      height: 16px;
+    }
   }
 }
 
