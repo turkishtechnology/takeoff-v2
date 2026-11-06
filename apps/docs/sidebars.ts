@@ -51,6 +51,20 @@ const sidebars: SidebarsConfig = {
         'components/toast',
         'components/tooltip',
         'components/upload',
+        {
+          type: 'category',
+          label: 'Blocks',
+          collapsed: false,
+          items: [
+            'blocks/index',
+            {
+              type: 'category',
+              label: 'AI',
+              collapsed: false,
+              items: ['blocks/ai/chatbot'],
+            },
+          ],
+        },
       ],
     },
     {

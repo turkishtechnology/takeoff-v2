@@ -1,0 +1,503 @@
+---
+title: Chatbot
+description:
+  A copy-paste chatbot block composed from Card, Badge, Button and Input — a
+  floating launcher or an embedded panel, in the five Figma styles, with
+  attachments, typing and rich messages.
+sidebar_label: Chatbot
+slug: /blocks/ai/chatbot
+---
+
+import BlockPreview, { BlockSource } from '@site/src/components/BlockPreview';
+import FloatingExample from '@site/src/blocks/ai/chatbot/examples/FloatingExample';
+import EmbeddedExample from '@site/src/blocks/ai/chatbot/examples/EmbeddedExample';
+import RichMessageExample from '@site/src/blocks/ai/chatbot/examples/RichMessageExample';
+import TypesExample from '@site/src/blocks/ai/chatbot/examples/TypesExample';
+import IconExample from '@site/src/blocks/ai/chatbot/examples/IconExample';
+import StatusExample from '@site/src/blocks/ai/chatbot/examples/StatusExample';
+import ErrorExample from '@site/src/blocks/ai/chatbot/examples/ErrorExample';
+import FeedbackExample from '@site/src/blocks/ai/chatbot/examples/FeedbackExample';
+import MarkdownExample from '@site/src/blocks/ai/chatbot/examples/MarkdownExample';
+import HandoffExample from '@site/src/blocks/ai/chatbot/examples/HandoffExample';
+import OfflineExample from '@site/src/blocks/ai/chatbot/examples/OfflineExample';
+import NotificationExample from '@site/src/blocks/ai/chatbot/examples/NotificationExample';
+import MobileExample from '@site/src/blocks/ai/chatbot/examples/MobileExample';
+import floatingSource from '@site/src/blocks/ai/chatbot/examples/FloatingExample.tsx?raw';
+import embeddedSource from '@site/src/blocks/ai/chatbot/examples/EmbeddedExample.tsx?raw';
+import richSource from '@site/src/blocks/ai/chatbot/examples/RichMessageExample.tsx?raw';
+import typesSource from '@site/src/blocks/ai/chatbot/examples/TypesExample.tsx?raw';
+import iconSource from '@site/src/blocks/ai/chatbot/examples/IconExample.tsx?raw';
+import statusSource from '@site/src/blocks/ai/chatbot/examples/StatusExample.tsx?raw';
+import errorSource from '@site/src/blocks/ai/chatbot/examples/ErrorExample.tsx?raw';
+import feedbackSource from '@site/src/blocks/ai/chatbot/examples/FeedbackExample.tsx?raw';
+import markdownSource from '@site/src/blocks/ai/chatbot/examples/MarkdownExample.tsx?raw';
+import handoffSource from '@site/src/blocks/ai/chatbot/examples/HandoffExample.tsx?raw';
+import offlineSource from '@site/src/blocks/ai/chatbot/examples/OfflineExample.tsx?raw';
+import notificationSource from '@site/src/blocks/ai/chatbot/examples/NotificationExample.tsx?raw';
+import mobileSource from '@site/src/blocks/ai/chatbot/examples/MobileExample.tsx?raw';
+import TurkishExample from '@site/src/blocks/ai/chatbot/examples/TurkishExample';
+import SuggestionsExample from '@site/src/blocks/ai/chatbot/examples/SuggestionsExample';
+import SourcesExample from '@site/src/blocks/ai/chatbot/examples/SourcesExample';
+import DisclaimerExample from '@site/src/blocks/ai/chatbot/examples/DisclaimerExample';
+import ExpandExample from '@site/src/blocks/ai/chatbot/examples/ExpandExample';
+import DatesExample from '@site/src/blocks/ai/chatbot/examples/DatesExample';
+import NewMessagesExample from '@site/src/blocks/ai/chatbot/examples/NewMessagesExample';
+import RatingExample from '@site/src/blocks/ai/chatbot/examples/RatingExample';
+import VoiceExample from '@site/src/blocks/ai/chatbot/examples/VoiceExample';
+import LimitsExample from '@site/src/blocks/ai/chatbot/examples/LimitsExample';
+import DrawerExample from '@site/src/blocks/ai/chatbot/examples/DrawerExample';
+import HistoryExample from '@site/src/blocks/ai/chatbot/examples/HistoryExample';
+import ConsentExample from '@site/src/blocks/ai/chatbot/examples/ConsentExample';
+import turkishSource from '@site/src/blocks/ai/chatbot/examples/TurkishExample.tsx?raw';
+import suggestionsSource from '@site/src/blocks/ai/chatbot/examples/SuggestionsExample.tsx?raw';
+import sourcesSource from '@site/src/blocks/ai/chatbot/examples/SourcesExample.tsx?raw';
+import disclaimerSource from '@site/src/blocks/ai/chatbot/examples/DisclaimerExample.tsx?raw';
+import expandSource from '@site/src/blocks/ai/chatbot/examples/ExpandExample.tsx?raw';
+import datesSource from '@site/src/blocks/ai/chatbot/examples/DatesExample.tsx?raw';
+import newMessagesSource from '@site/src/blocks/ai/chatbot/examples/NewMessagesExample.tsx?raw';
+import ratingSource from '@site/src/blocks/ai/chatbot/examples/RatingExample.tsx?raw';
+import voiceSource from '@site/src/blocks/ai/chatbot/examples/VoiceExample.tsx?raw';
+import limitsSource from '@site/src/blocks/ai/chatbot/examples/LimitsExample.tsx?raw';
+import drawerSource from '@site/src/blocks/ai/chatbot/examples/DrawerExample.tsx?raw';
+import historySource from '@site/src/blocks/ai/chatbot/examples/HistoryExample.tsx?raw';
+import consentSource from '@site/src/blocks/ai/chatbot/examples/ConsentExample.tsx?raw';
+import chatbotSource from '@site/src/blocks/ai/chatbot/Chatbot.tsx?raw';
+import conversationSource from '@site/src/blocks/ai/chatbot/useDemoConversation.ts?raw';
+
+# Chatbot
+
+A chat assistant panel with a header, a scrolling conversation and a message
+composer. It is a **block**: there is no `Chatbot` export in
+`@takeoff-ui/react-spar`. Copy [`Chatbot.tsx`](#source) into your app and
+connect it to your own backend or AI SDK.
+
+The block is built from `Card`, `Badge`, `Button`, `Chip`, `Dropdown`, `Input`
+and `Skeleton`, and imports its icons from `@takeoff-icons/react`. Add that
+package to your app if it is not already a direct dependency:
+
+```bash
+pnpm add @takeoff-icons/react
+```
+
+Requirements:
+
+- `@takeoff-ui/react-spar` 0.6.0 or later and `@takeoff-icons/react` 0.4.0 or
+  later.
+- Tailwind CSS v4 with `@takeoff-design/tailwind`. The block uses v4-only
+  variants such as `starting:` and `in-data-[theme=dark]:`. Make sure Tailwind
+  scans the folder you copy `Chatbot.tsx` into.
+
+## Quick start
+
+1. Copy [`Chatbot.tsx`](#source) into your app, for example to
+   `src/components/Chatbot.tsx`. It is the only file you need; the file is yours
+   to change.
+2. Render `ChatbotLauncher` for the floating button, or `Chatbot` to place the
+   panel in a page.
+3. Keep the conversation in your own state and answer from your backend or AI
+   SDK in `onSubmit`:
+
+```tsx
+import { useState } from 'react';
+import { ChatbotLauncher, type ChatbotMessage } from './components/Chatbot';
+
+export function SupportChat() {
+  const [messages, setMessages] = useState<ChatbotMessage[]>([
+    {
+      id: 'welcome',
+      role: 'assistant',
+      content: 'Hi, how can I help with your trip?',
+    },
+  ]);
+  const [typing, setTyping] = useState(false);
+
+  const send = async (text: string) => {
+    const id = crypto.randomUUID();
+    setMessages(current => [
+      ...current,
+      { id, role: 'user', content: text, status: 'sent' },
+    ]);
+    setTyping(true);
+    try {
+      const answer = await askMyAssistant(text); // your API or AI SDK
+      setMessages(current => [
+        ...current,
+        { id: crypto.randomUUID(), role: 'assistant', content: answer },
+      ]);
+    } catch {
+      // Mark the message as not sent; pass onRetry to offer Retry.
+      setMessages(current =>
+        current.map(message =>
+          message.id === id ? { ...message, status: 'failed' } : message,
+        ),
+      );
+    } finally {
+      setTyping(false);
+    }
+  };
+
+  return (
+    <ChatbotLauncher messages={messages} typing={typing} onSubmit={send} />
+  );
+}
+```
+
+Everything else is opt-in through props, and each example below shows one of
+them with its code. The examples share [`useDemoConversation`](#source), a
+demo-only hook that answers with a canned reply in place of a backend. Do not
+copy it; use your own state and service as above.
+
+## Floating
+
+`ChatbotLauncher` renders the floating button (Figma `chatbot-fab`) that opens
+the panel above it with a short scale-and-fade animation. The button darkens and
+lifts on hover and presses in when clicked. Escape or the close button closes
+the panel and returns focus to the launcher; the draft is kept.
+
+Use `assistantBubble` and `userBubble` to style the two sides separately, as in
+the Figma widget, and `userAvatar` for the user's picture. `menuItems` fills the
+more (⋮) menu in the header; this example offers a new chat, a download of the
+conversation and mute.
+
+<BlockPreview minHeight={720} code={floatingSource} title="FloatingExample.tsx">
+  <FloatingExample />
+</BlockPreview>
+
+## Unread badge and greeting
+
+While the panel is closed, `unread` shows a count on the launcher and `greeting`
+shows a short message next to it. Selecting the greeting opens the chat, and its
+close button dismisses it. Use `onOpenChange` to clear the count when the chat
+opens.
+
+<BlockPreview
+  minHeight={720}
+  code={notificationSource}
+  title="NotificationExample.tsx"
+>
+  <NotificationExample />
+</BlockPreview>
+
+## Mobile
+
+On screens narrower than 640px the launcher opens the panel full screen. Set
+`fullScreen` to `true` to always do that, or to `false` to keep the floating
+panel. This example forces it inside a phone-sized frame.
+
+<BlockPreview minHeight={680} code={mobileSource} title="MobileExample.tsx">
+  <MobileExample />
+</BlockPreview>
+
+## Embedded
+
+Render `Chatbot` directly to place it in a page or a side panel. Pass
+`emptyState` to show prompt starters before the first message.
+
+<BlockPreview minHeight={600} code={embeddedSource} title="EmbeddedExample.tsx">
+  <EmbeddedExample />
+</BlockPreview>
+
+## Message status and undo
+
+A user message shows a clock while `status` is `sending`, one tick when `sent`
+and a double tick when `read`. While a message is `undoable` and `onUndo` is
+set, Undo appears under it; your code clears `undoable` when the undo window
+ends. A message with `retracted` is replaced by a note. This example offers Undo
+for up to 5 seconds, until the bot reads the message; send a message to try it.
+
+<BlockPreview minHeight={600} code={statusSource} title="StatusExample.tsx">
+  <StatusExample />
+</BlockPreview>
+
+## Errors and retry
+
+Set `status: 'failed'` on a user message that could not be sent, or on an answer
+that could not be produced. With `onRetry`, both offer Retry.
+
+<BlockPreview minHeight={600} code={errorSource} title="ErrorExample.tsx">
+  <ErrorExample />
+</BlockPreview>
+
+## Answer actions
+
+`copyable` adds a copy button under each answer, `onFeedback` adds thumbs up and
+down (the message's `feedback` holds the rating), and `onRegenerate` adds a
+button that asks for a new answer.
+
+<BlockPreview minHeight={600} code={feedbackSource} title="FeedbackExample.tsx">
+  <FeedbackExample />
+</BlockPreview>
+
+## Formatted answers
+
+`content` is a `ReactNode`, so an answer can hold lists, links, emphasis and
+code. Render the model's markdown with the renderer your app already uses and
+give its elements classes like the ones in this example.
+
+<BlockPreview minHeight={600} code={markdownSource} title="MarkdownExample.tsx">
+  <MarkdownExample />
+</BlockPreview>
+
+## Attachments and rich messages
+
+The plus button opens a menu where the user picks what to attach: a photo or
+video, a document, or any file. The choice sets what the file picker accepts.
+Picked files appear above the composer, where each one can be removed, and are
+passed to `onSubmit(text, files)`. A message can carry `attachments`, which
+render as thumbnails for images and as file links otherwise. Change the choices
+with `attachmentOptions` (a single option skips the menu), or hide the button
+with `allowAttachments={false}`.
+
+Anything in a message's `extra` renders inside its bubble, under the text. This
+example uses it for suggestion chips, a flight card with an image, and Yes / No
+buttons, as in the Figma structured response.
+
+<BlockPreview minHeight={700} code={richSource} title="RichMessageExample.tsx">
+  <RichMessageExample />
+</BlockPreview>
+
+## Handoff to an agent
+
+When a person takes over, pass them as `agent`: the header shows their name and
+avatar. Give their messages an `author` so the avatar next to each one changes
+too, and use `role: 'system'` messages for notes such as "Connecting you to an
+agent…". Select **Talk to an agent** to try it.
+
+<BlockPreview minHeight={600} code={handoffSource} title="HandoffExample.tsx">
+  <HandoffExample />
+</BlockPreview>
+
+## Offline
+
+With `online={false}` the header badge reads "Offline", the composer is disabled
+and `offlineNotice` explains why.
+
+<BlockPreview minHeight={480} code={offlineSource} title="OfflineExample.tsx">
+  <OfflineExample />
+</BlockPreview>
+
+## Full screen
+
+`expandable` adds a full screen button to the launcher's header. On phones the
+panel already opens full screen (`fullScreen="mobile"`), so the button matters
+on larger screens. Closing the panel leaves full screen.
+
+<BlockPreview minHeight={720} code={expandSource} title="ExpandExample.tsx">
+  <ExpandExample />
+</BlockPreview>
+
+## Side panel
+
+To keep the chat next to the page at full height, put the `Chatbot` in a
+`Drawer.Panel`. The chatbot brings its own header, so pass `onClose` to close
+the drawer from it, and give the panel an `aria-label`.
+
+<BlockPreview minHeight={200} code={drawerSource} title="DrawerExample.tsx">
+  <DrawerExample />
+</BlockPreview>
+
+## Follow-up suggestions
+
+Give an answer `suggestions` to show them as chips under it while it is the last
+message. Pressing one sends it as the user's message, through `onSubmit`.
+
+<BlockPreview
+  minHeight={600}
+  code={suggestionsSource}
+  title="SuggestionsExample.tsx"
+>
+  <SuggestionsExample />
+</BlockPreview>
+
+## Sources
+
+Give an answer `sources` (`title` and `url`) to list the pages it is based on
+under the text. They open in a new tab.
+
+<BlockPreview minHeight={520} code={sourcesSource} title="SourcesExample.tsx">
+  <SourcesExample />
+</BlockPreview>
+
+## AI disclaimer
+
+`disclaimer` shows a short note under the composer, e.g. that answers are
+written by AI. It can hold links.
+
+<BlockPreview
+  minHeight={460}
+  code={disclaimerSource}
+  title="DisclaimerExample.tsx"
+>
+  <DisclaimerExample />
+</BlockPreview>
+
+## Day dividers
+
+Give each message the label of its `day`, e.g. "Today" or "3 November". A
+divider with the label is shown above the first message of each day.
+
+<BlockPreview minHeight={600} code={datesSource} title="DatesExample.tsx">
+  <DatesExample />
+</BlockPreview>
+
+## New messages
+
+When a message arrives while the reader is scrolled up, the log does not jump. A
+"New messages" divider marks where they start and a button counts them; pressing
+it, or scrolling to the bottom, clears both. Scroll up and select **Receive a
+message** to try it.
+
+<BlockPreview
+  minHeight={560}
+  code={newMessagesSource}
+  title="NewMessagesExample.tsx"
+>
+  <NewMessagesExample />
+</BlockPreview>
+
+## Loading history
+
+`loading` shows skeleton messages while the conversation loads. With `hasOlder`,
+a Load older messages button sits at the top of the log; it and scrolling to the
+top call `onLoadOlder`. Prepend the older messages to `messages` and the reader
+stays on the message they were reading. Set `loadingOlder` while they load.
+
+<BlockPreview minHeight={520} code={historySource} title="HistoryExample.tsx">
+  <HistoryExample />
+</BlockPreview>
+
+## Consent
+
+`consent` replaces the composer with a notice and a Start chat button until the
+reader agrees, e.g. for a privacy notice. `onAcceptConsent` fires when they do;
+clear `consent` then and the composer takes its place.
+
+<BlockPreview minHeight={480} code={consentSource} title="ConsentExample.tsx">
+  <ConsentExample />
+</BlockPreview>
+
+## Length and rate limits
+
+`maxLength` shows a counter near the limit and turns Send off over it.
+`disabled` with a `notice` turns the composer off while the online badge stays,
+e.g. after your service answers 429 Too Many Requests. Send three messages to
+see it.
+
+<BlockPreview minHeight={600} code={limitsSource} title="LimitsExample.tsx">
+  <LimitsExample />
+</BlockPreview>
+
+## Voice input
+
+`onVoiceInput` adds a microphone button to the composer, and `listening` shows
+it recording. The block only shows the state: record with the Web Speech API or
+`MediaRecorder` and send the transcript through your own `onSubmit`.
+
+<BlockPreview minHeight={480} code={voiceSource} title="VoiceExample.tsx">
+  <VoiceExample />
+</BlockPreview>
+
+## Rating
+
+`ChatbotRating` asks for a 1 to 5 star rating. Put it in `endContent`, which is
+shown after the last message, when the chat ends.
+
+<BlockPreview minHeight={600} code={ratingSource} title="RatingExample.tsx">
+  <RatingExample />
+</BlockPreview>
+
+## Language
+
+Every text the block shows or announces comes from `labels`, including the
+screen reader labels. Pass a `ChatbotLabels` object, or only the texts you
+change; the rest stays in English. Translate `attachmentOptions` and your
+`menuItems` too.
+
+<BlockPreview minHeight={600} code={turkishSource} title="TurkishExample.tsx">
+  <TurkishExample />
+</BlockPreview>
+
+## Types
+
+`type` follows the Figma variants and styles the header, the bubbles and the
+composer together. `iconType` picks the bot icon next to messages: `primary`,
+`dark`, `light`, or `white` for dark surfaces. In dark mode `dark` turns
+near-white so it stays visible.
+
+<BlockPreview minHeight={540} code={typesSource} title="TypesExample.tsx">
+  <TypesExample />
+</BlockPreview>
+
+## Icon
+
+`ChatbotIcon` is the bot mark. Its colour follows `currentColor`, and its face
+is cut out, so the surface behind it shows through.
+
+<BlockPreview code={iconSource} title="IconExample.tsx">
+  <IconExample />
+</BlockPreview>
+
+## Connecting your data
+
+The block keeps only the draft text and the picked files. Your code owns the
+conversation:
+
+- Pass the conversation as `messages`. Each message has an `id`, a `role`
+  (`assistant`, `user` or `system`), `content`, and optionally `attachments`,
+  `extra`, `time`, `day`, `status`, `retracted`, `undoable`, `feedback`,
+  `author`, `streaming`, `sources` and `suggestions`.
+- `onSubmit(text, files)` fires when the user sends. Upload the files, append
+  the user message, set `typing` while you wait, then append the answer.
+- To stream a reply, append an empty assistant message with `streaming: true`
+  and update its `content` as chunks arrive. Set `streaming` back to `false`
+  when the stream ends or fails; until then the answer actions stay hidden. The
+  log announces added messages, not text that changes inside one, so screen
+  readers do not hear streamed text. If that matters for your product, append
+  the finished reply as its own message, or announce it in a visually hidden
+  `role="status"` element when the stream ends.
+
+`content` is a `ReactNode`, so you can render markdown with the renderer your
+app already uses.
+
+## Accessibility
+
+- The conversation is a `role="log"` region, so screen readers announce new
+  messages without moving focus. Sending keeps focus in the composer.
+- New messages scroll into view only while the reader is at the bottom;
+  scrolling up to re-read is never interrupted.
+- Enter sends and Shift+Enter adds a line. Enter does not send, and Escape does
+  not close, while an IME composition is open.
+- The typing indicator is added to the log with a text label, so it is announced
+  once. Its animation, the message fade-in and the panel animation stop under
+  `prefers-reduced-motion`.
+- Icon-only buttons carry an `aria-label`, each picked file has a labelled
+  remove button, and the launcher exposes `aria-expanded`. The closed panel is
+  `inert`.
+- Delivery states have a visually hidden label, the unread count is part of the
+  launcher's label, the thumbs are toggle buttons (`aria-pressed`), and copying
+  is announced.
+- While offline or disabled, the message field is read-only and `aria-disabled`,
+  so it keeps focus, and it is described by the notice, and near `maxLength` by
+  the character count.
+- Suggestions are a labelled group of buttons. Pressing one keeps focus in the
+  composer, and accepting consent moves focus there.
+- The jump button and the dividers are visible cues only: the log already
+  announces new messages. Day and new-message dividers are `role="separator"`
+  with a label.
+- The microphone is a toggle button (`aria-pressed`), the stars of
+  `ChatbotRating` are labelled toggle buttons in a labelled group, and the
+  thanks is announced.
+- While loading, the log is `aria-busy` and the skeleton has a status label.
+  Loaded history, the first page and older pages, is added while the log is
+  muted for a moment, so screen readers do not read it out as new messages.
+- The composer grows with its content through `field-sizing: content`; browsers
+  without it (Firefox, older Safari) keep a single row that scrolls.
+
+## Source
+
+Copy `Chatbot.tsx` into your app. `useDemoConversation.ts` is only the demo
+state the examples use; you do not need it.
+
+<BlockSource code={chatbotSource} title="Chatbot.tsx" />
+
+<BlockSource code={conversationSource} title="useDemoConversation.ts" />
