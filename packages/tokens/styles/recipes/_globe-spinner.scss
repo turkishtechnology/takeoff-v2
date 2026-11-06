@@ -1,0 +1,151 @@
+// ---------------------------------------------------------------------------
+// GlobeSpinner recipe — apply to `.tk-globe-spinner` root.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-globe-spinner           — root (span, accessibility owner)
+//   .tk-globe-spinner-indicator — aria-hidden wrapper of the SVG
+//   .tk-globe-spinner-label     — SVG <text> riding the arc (GlobeSpinner.Label)
+//
+// Fixed inner classes (no slot): -globe, -ocean, -land, -track, -orbit, -arc,
+// -plane.
+//
+// State/variant attributes on root:
+//   data-variant — accent color of the arc
+//   data-size    — base | large | xlarge
+//
+// Custom properties (set on the root to go off-palette):
+//   --tk-globe-spinner-accent, --tk-globe-spinner-track,
+//   --tk-globe-spinner-ocean, --tk-globe-spinner-land,
+//   --tk-globe-spinner-plane, --tk-globe-spinner-label-color
+// ---------------------------------------------------------------------------
+
+@mixin globe-spinner-keyframes {
+  @keyframes tk-globe-spinner-orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  // One LAND_PATH width (360 units) — the second copy takes its place, so the
+  // loop is seamless.
+  @keyframes tk-globe-spinner-spin {
+    to {
+      transform: translateX(-360px);
+    }
+  }
+}
+
+@mixin globe-spinner {
+  --tk-globe-spinner-size: 8rem;
+  --tk-globe-spinner-orbit-duration: 2.4s;
+  --tk-globe-spinner-globe-duration: 12s;
+  --tk-globe-spinner-accent: var(--primary-base);
+  --tk-globe-spinner-track: var(--background-light);
+  --tk-globe-spinner-ocean: var(--background-lightest);
+  --tk-globe-spinner-land: var(--text-sub-base);
+  --tk-globe-spinner-plane: var(--text-darkest);
+  --tk-globe-spinner-label-color: var(--static-light, #fff);
+
+  display: inline-flex;
+  flex-shrink: 0;
+  vertical-align: middle;
+
+  .tk-globe-spinner-indicator {
+    display: block;
+    width: var(--tk-globe-spinner-size);
+    height: var(--tk-globe-spinner-size);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+  }
+
+  .tk-globe-spinner-ocean {
+    fill: var(--tk-globe-spinner-ocean);
+    stroke: var(--tk-globe-spinner-land);
+    stroke-width: 1.5;
+  }
+
+  .tk-globe-spinner-land {
+    fill: var(--tk-globe-spinner-land);
+    animation: tk-globe-spinner-spin var(--tk-globe-spinner-globe-duration) linear infinite;
+  }
+
+  .tk-globe-spinner-track,
+  .tk-globe-spinner-arc {
+    fill: none;
+    stroke-width: 14;
+  }
+
+  .tk-globe-spinner-track {
+    stroke: var(--tk-globe-spinner-track);
+  }
+
+  .tk-globe-spinner-arc {
+    stroke: var(--tk-globe-spinner-accent);
+  }
+
+  .tk-globe-spinner-orbit {
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    animation: tk-globe-spinner-orbit var(--tk-globe-spinner-orbit-duration) linear infinite;
+  }
+
+  .tk-globe-spinner-plane {
+    fill: var(--tk-globe-spinner-plane);
+  }
+
+  .tk-globe-spinner-label {
+    font-family: var(--family-body, 'tk-text', sans-serif);
+    font-size: 7.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    fill: var(--tk-globe-spinner-label-color);
+  }
+
+  &[data-size='large'] {
+    --tk-globe-spinner-size: 12rem;
+  }
+
+  &[data-size='xlarge'] {
+    --tk-globe-spinner-size: 16rem;
+  }
+
+  &[data-variant='primary'] {
+    --tk-globe-spinner-accent: var(--primary-base);
+  }
+
+  &[data-variant='secondary'] {
+    --tk-globe-spinner-accent: var(--secondary-base);
+  }
+
+  &[data-variant='neutral'] {
+    --tk-globe-spinner-accent: var(--background-darkest);
+  }
+
+  &[data-variant='info'] {
+    --tk-globe-spinner-accent: var(--states-info-base);
+  }
+
+  &[data-variant='success'] {
+    --tk-globe-spinner-accent: var(--states-success-base);
+  }
+
+  &[data-variant='danger'] {
+    --tk-globe-spinner-accent: var(--states-danger-base);
+  }
+
+  &[data-variant='warning'] {
+    --tk-globe-spinner-accent: var(--states-warning-base);
+  }
+
+  // Slow down rather than stop: a loader that does not move reads as frozen.
+  @media (prefers-reduced-motion: reduce) {
+    --tk-globe-spinner-orbit-duration: 4.8s;
+    --tk-globe-spinner-globe-duration: 24s;
+  }
+}
