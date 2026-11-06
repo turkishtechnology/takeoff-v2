@@ -170,10 +170,11 @@
     font-size: var(--desktop-body-s-size);
     line-height: 1;
 
+    // Figma draws the separator icon in the full 20px symbol box.
     > svg,
     > img {
-      width: 16px;
-      height: 16px;
+      width: var(--breadcrumb-symbol-size);
+      height: var(--breadcrumb-symbol-size);
     }
   }
 
@@ -200,12 +201,6 @@
 
     .tk-breadcrumb-separator {
       font-size: var(--desktop-body-m-base-size);
-
-      > svg,
-      > img {
-        width: 18px;
-        height: 18px;
-      }
     }
   }
 

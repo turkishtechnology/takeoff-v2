@@ -139,9 +139,9 @@
   justify-content: center;
   flex-shrink: 0;
   line-height: 1;
-  // Takeoff icons render at `1em`; pin the box to 16px so the chevron stays a
-  // stable size independent of the trigger's text scale.
-  font-size: 1rem;
+  // Takeoff icons render at `1em`; pin the box to the Figma icon box (20px)
+  // so the chevron stays a stable size independent of the trigger's text scale.
+  font-size: 1.25rem;
   color: var(--text-dark);
   transition: color 0.2s ease-in-out;
 }
