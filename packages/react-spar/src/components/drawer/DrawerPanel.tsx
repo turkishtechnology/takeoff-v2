@@ -1,7 +1,8 @@
 import type { ElementType } from 'react';
 import { DialogContent as SparDialogContent } from '@turkish-technology/spar';
 
-import { blockDismiss, composeRootAttrs } from '../../core';
+import { composeRootAttrs } from '../../core';
+import { useNestedLayerDismissHandlers } from '../../hooks';
 import { useComponentTheme } from '../../provider';
 
 import { DrawerPanelBase } from './base';
@@ -20,11 +21,10 @@ export const DrawerPanel = <T extends ElementType = 'div'>(props: DrawerPanelPro
 
   const { container, children, ref, ...panelProps } = rest;
 
-  const dismissHandlers = !dismissible && {
-    onEscapeKeyDown: blockDismiss(panelProps.onEscapeKeyDown),
-    onPointerDownOutside: blockDismiss(panelProps.onPointerDownOutside),
-    onInteractOutside: blockDismiss(panelProps.onInteractOutside),
-  };
+  // Presses inside a portaled descendant (Select / Popover / Dropdown content)
+  // are not outside presses; see `useNestedLayerDismissHandlers`.
+  const dismissHandlers = useNestedLayerDismissHandlers({ dismissible, instanceProps: panelProps, rootAttrs });
+
   return (
     <SparDialogContent {...panelProps} container={container} ref={ref} {...rootAttrs} {...dismissHandlers}>
       {children}
