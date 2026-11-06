@@ -291,6 +291,10 @@
   // Reverse geometry: the trigger's padding reserves exactly the absolute
   // indicator's box; the content margin owns the indicator gap, mirroring the
   // per-size margin-top of the default layout.
+  //
+  // Icon box: Figma draws the step icon in a 20px box inside the 32px base
+  // indicator (62.5%), so every size scales the svg/img box by that ratio
+  // instead of filling the indicator.
 
   &[data-size='xsmall'] {
     .tk-stepper-indicator {
@@ -306,8 +310,8 @@
 
       > svg,
       > img {
-        width: 16px;
-        height: 16px;
+        width: 10px;
+        height: 10px;
       }
     }
 
@@ -377,8 +381,8 @@
 
       > svg,
       > img {
-        width: 24px;
-        height: 24px;
+        width: 15px;
+        height: 15px;
       }
     }
 
@@ -453,8 +457,8 @@
 
       > svg,
       > img {
-        width: 32px;
-        height: 32px;
+        width: 20px;
+        height: 20px;
       }
     }
 
@@ -529,8 +533,8 @@
 
       > svg,
       > img {
-        width: 40px;
-        height: 40px;
+        width: 25px;
+        height: 25px;
       }
     }
 
