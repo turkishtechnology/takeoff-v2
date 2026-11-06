@@ -488,6 +488,14 @@
       min-height: 32px;
     }
 
+    // The 0.5.0 chevrons fill more of their grid than the double chevrons, so
+    // a 20px button icon box made the single arrows look oversized next to the
+    // page numbers. 16px keeps the arrow row in scale with the 12px text.
+    > .tk-button .tk-button-content svg {
+      width: 16px;
+      height: 16px;
+    }
+
     > span {
       display: inline-flex;
       align-items: center;

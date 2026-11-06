@@ -170,11 +170,12 @@
     font-size: var(--desktop-body-s-size);
     line-height: 1;
 
-    // Figma draws the separator icon in the full 20px symbol box.
+    // The 0.5.0 chevron fills more of its grid than the Figma drawing (9.3px
+    // wide in a 20px box), so a 14px box (16px in large) keeps it in scale.
     > svg,
     > img {
-      width: var(--breadcrumb-symbol-size);
-      height: var(--breadcrumb-symbol-size);
+      width: 14px;
+      height: 14px;
     }
   }
 
@@ -201,6 +202,12 @@
 
     .tk-breadcrumb-separator {
       font-size: var(--desktop-body-m-base-size);
+
+      > svg,
+      > img {
+        width: 16px;
+        height: 16px;
+      }
     }
   }
 
