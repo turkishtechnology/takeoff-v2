@@ -86,6 +86,21 @@ leaves no trace in the repo.
 - Don't use a caret (`^`) range when one workspace package depends on another.
   Internal deps are exact-pinned to prevent runtime version drift in consumers.
 
+## Security overrides
+
+`pnpm audit` findings in transitive packages are fixed through `pnpm.overrides`
+in the root `package.json`. Two things are easy to miss:
+
+- The pins go stale. Re-run `pnpm audit` after a Dependabot batch lands and
+  raise or drop overrides that no longer apply. Use `pnpm audit --prod` to see
+  what can reach consumers; everything else is docs or tooling.
+- The root `vite` devDependency only exists so vitest's `vite` peer resolves to
+  a patched release (an override does not move a peer). Drop it once vitest's
+  own resolution is past the advisory.
+
+`pnpm-lock.yaml` is in `.prettierignore`: pnpm writes it, and a Prettier pass
+from the pre-commit hook would rewrite every line.
+
 ## Two changelogs, one source of truth
 
 We publish release information in two places, with **different audiences**:
