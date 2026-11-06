@@ -293,8 +293,8 @@
   // per-size margin-top of the default layout.
   //
   // Icon box: Figma draws the step icon in a 20px box inside the 32px base
-  // indicator (62.5%), so every size scales the svg/img box by that ratio
-  // instead of filling the indicator.
+  // indicator (62.5%), so every size scales the svg box by that ratio
+  // instead of filling the indicator. Images (avatars, logos) still fill it.
 
   &[data-size='xsmall'] {
     .tk-stepper-indicator {
@@ -308,10 +308,14 @@
         height: 6px;
       }
 
-      > svg,
-      > img {
+      > svg {
         width: 10px;
         height: 10px;
+      }
+
+      > img {
+        width: 16px;
+        height: 16px;
       }
     }
 
@@ -379,10 +383,14 @@
         height: 9px;
       }
 
-      > svg,
-      > img {
+      > svg {
         width: 15px;
         height: 15px;
+      }
+
+      > img {
+        width: 24px;
+        height: 24px;
       }
     }
 
@@ -455,10 +463,14 @@
         height: 12px;
       }
 
-      > svg,
-      > img {
+      > svg {
         width: 20px;
         height: 20px;
+      }
+
+      > img {
+        width: 32px;
+        height: 32px;
       }
     }
 
@@ -531,10 +543,14 @@
         height: 15px;
       }
 
-      > svg,
-      > img {
+      > svg {
         width: 25px;
         height: 25px;
+      }
+
+      > img {
+        width: 40px;
+        height: 40px;
       }
     }
 
