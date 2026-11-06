@@ -70,14 +70,6 @@ export const fileType = (item: UploadFile): string | undefined => item.type ?? i
 export const fileStatus = (item: UploadFile): UploadFileStatus => item.status ?? DEFAULT_STATUS;
 
 /**
- * Fills a label template with the file it names: every `{name}` is replaced,
- * and a template with none is used as written. The placeholder is what lets a
- * translation move the name inside the sentence — concatenating a verb and a
- * name only ever produces one word order, and it is English's.
- */
-export const formatFileLabel = (template: string, name: string): string => template.split('{name}').join(name);
-
-/**
  * Whether the consumer's handlers vetoed the built-in behavior, given whether
  * the event was already prevented when the handler was entered.
  *

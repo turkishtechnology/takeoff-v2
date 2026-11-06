@@ -5,6 +5,7 @@ import { ChevronRightIconOutlinedRounded } from '@takeoff-icons/react/chevron-ri
 
 import { Checkbox } from '../checkbox';
 import { Radio } from '../radio';
+import { visuallyHidden } from '../../utils';
 
 import { useTableContext } from './context';
 import { UTILITY_COLUMN_WIDTH } from './defaults';
@@ -12,25 +13,10 @@ import { EXPAND_COLUMN_KEY, resolveStickyCell, SELECTION_COLUMN_KEY } from './he
 
 const mergeStyle = (...styles: (CSSProperties | undefined)[]): CSSProperties => Object.assign({}, ...styles);
 
-// The design system ships no sr-only utility and the recipe must stay a purely
-// visual dependency, so header text meant only for assistive technology hides
-// itself inline.
-const visuallyHidden: CSSProperties = {
-  position: 'absolute',
-  width: 1,
-  height: 1,
-  margin: -1,
-  padding: 0,
-  overflow: 'hidden',
-  clip: 'rect(0 0 0 0)',
-  whiteSpace: 'nowrap',
-  border: 0,
-};
-
 // ── Selection ───────────────────────────────────────────────────────────────
 
 export const SelectionHeaderCell = () => {
-  const { table, slotAttrs, selectionMode, stickyLayout, stickyHeader } = useTableContext('Table.SelectionHeaderCell');
+  const { table, slotAttrs, selectionMode, stickyLayout, stickyHeader, labels } = useTableContext('Table.SelectionHeaderCell');
   const sticky = resolveStickyCell(stickyLayout, SELECTION_COLUMN_KEY, { isHeader: true, stickyHeader });
   const attrs = slotAttrs('selectionCell');
   const allSelected = table.getIsAllPageRowsSelected();
@@ -41,7 +27,7 @@ export const SelectionHeaderCell = () => {
           names the column, or the header reads as empty. */}
       {selectionMode === 'multiple' ? (
         <Checkbox
-          aria-label="Select all rows"
+          aria-label={labels.selectAllRows}
           checked={allSelected}
           indeterminate={table.getIsSomePageRowsSelected() && !allSelected}
           onChange={checked => table.toggleAllPageRowsSelected(checked)}
@@ -49,7 +35,7 @@ export const SelectionHeaderCell = () => {
           <Checkbox.Indicator />
         </Checkbox>
       ) : (
-        <span style={visuallyHidden}>Row selection</span>
+        <span style={visuallyHidden}>{labels.rowSelection}</span>
       )}
     </th>
   );
@@ -59,7 +45,7 @@ SelectionHeaderCell.displayName = 'Table.SelectionHeaderCell';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const SelectionBodyCell = ({ row }: { row: Row<any> }) => {
-  const { slotAttrs, selectionMode, stickyLayout, stickyHeader } = useTableContext('Table.SelectionBodyCell');
+  const { slotAttrs, selectionMode, stickyLayout, stickyHeader, labels } = useTableContext('Table.SelectionBodyCell');
   const sticky = resolveStickyCell(stickyLayout, SELECTION_COLUMN_KEY, { isHeader: false, stickyHeader });
   const attrs = slotAttrs('selectionCell');
 
@@ -79,12 +65,12 @@ export const SelectionBodyCell = ({ row }: { row: Row<any> }) => {
           group. */}
       {selectionMode === 'single' ? (
         <Radio value={row.getIsSelected() ? row.id : ''} onChange={() => row.toggleSelected(true)}>
-          <Radio.Item value={row.id} aria-label="Select row" disabled={!row.getCanSelect()}>
+          <Radio.Item value={row.id} aria-label={labels.selectRow} disabled={!row.getCanSelect()}>
             <Radio.Indicator />
           </Radio.Item>
         </Radio>
       ) : (
-        <Checkbox aria-label="Select row" checked={row.getIsSelected()} disabled={!row.getCanSelect()} onChange={checked => row.toggleSelected(checked)}>
+        <Checkbox aria-label={labels.selectRow} checked={row.getIsSelected()} disabled={!row.getCanSelect()} onChange={checked => row.toggleSelected(checked)}>
           <Checkbox.Indicator />
         </Checkbox>
       )}
@@ -97,13 +83,13 @@ SelectionBodyCell.displayName = 'Table.SelectionBodyCell';
 // ── Expansion ────────────────────────────────────────────────────────────────
 
 export const ExpandHeaderCell = () => {
-  const { slotAttrs, stickyLayout, stickyHeader } = useTableContext('Table.ExpandHeaderCell');
+  const { slotAttrs, stickyLayout, stickyHeader, labels } = useTableContext('Table.ExpandHeaderCell');
   const sticky = resolveStickyCell(stickyLayout, EXPAND_COLUMN_KEY, { isHeader: true, stickyHeader });
   const attrs = slotAttrs('expandCell');
 
   return (
     <th {...attrs} scope="col" data-sticky={sticky.dataSticky} style={mergeStyle(attrs.style, sticky.style, { width: UTILITY_COLUMN_WIDTH })}>
-      <span style={visuallyHidden}>Row details</span>
+      <span style={visuallyHidden}>{labels.rowDetails}</span>
     </th>
   );
 };
@@ -112,7 +98,7 @@ ExpandHeaderCell.displayName = 'Table.ExpandHeaderCell';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ExpandBodyCell = ({ row }: { row: Row<any> }) => {
-  const { slotAttrs, stickyLayout, stickyHeader } = useTableContext('Table.ExpandBodyCell');
+  const { slotAttrs, stickyLayout, stickyHeader, labels } = useTableContext('Table.ExpandBodyCell');
   const sticky = resolveStickyCell(stickyLayout, EXPAND_COLUMN_KEY, { isHeader: false, stickyHeader });
   const attrs = slotAttrs('expandCell');
   const expanded = row.getIsExpanded();
@@ -123,7 +109,7 @@ export const ExpandBodyCell = ({ row }: { row: Row<any> }) => {
         <button
           {...slotAttrs('expandButton')}
           type="button"
-          aria-label={expanded ? 'Collapse row' : 'Expand row'}
+          aria-label={expanded ? labels.collapseRow : labels.expandRow}
           aria-expanded={expanded}
           onClick={row.getToggleExpandedHandler()}
         >

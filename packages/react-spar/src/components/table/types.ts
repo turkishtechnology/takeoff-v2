@@ -56,6 +56,7 @@ export type TableSlot =
   | 'expandedRow'
   | 'filterButton'
   | 'filterPanel'
+  | 'filterOptions'
   | 'pagination'
   | 'paginationInfo'
   | 'paginationNav'
@@ -96,6 +97,14 @@ export interface TableColumnFilterContext<TData = unknown> {
   column: Column<TData, unknown>;
   /** Close the filter popover (e.g. an apply-and-close button). */
   close: () => void;
+  /**
+   * Accessible name for the filter field: `labels.filterValue` with `{column}`
+   * filled in (e.g. `'Filter Name value'`). Put it on your control's
+   * `aria-label` so custom filters are named like the presets. Table always
+   * sets it; it is optional only so a hand-built context (e.g. in a unit test
+   * of your `render`) still type-checks.
+   */
+  fieldLabel?: string;
 }
 
 /**
@@ -143,6 +152,13 @@ export interface TableColumnFilter<TData = unknown> {
   options?: TableColumnFilterOption[];
   /** Placeholder for the `text` preset's input / `select` triggers. */
   placeholder?: string;
+  /**
+   * Plain-text column name for the `{column}` placeholder in
+   * `labels.filterButton` / `labels.filterValue`. Wins over a string `header`;
+   * set it when `header` is a node or function, which otherwise falls back to
+   * the column `id`. Used only for accessible names; it is never rendered.
+   */
+  label?: string;
   /**
    * Escape hatch: render the filter control yourself. Receives the column's
    * value + setter (see {@link TableColumnFilterContext}). When present, the
@@ -284,6 +300,71 @@ export interface TableDataRequest {
 }
 
 /**
+ * User-facing strings of a Table. Dynamic entries are templates whose
+ * `{placeholders}` Table fills in (like Upload's `{name}` labels), so word
+ * order stays with the translation and the whole object can live in a JSON
+ * translation file.
+ */
+export interface TableLabels {
+  /** Empty-table text when `emptyState` is not given. @defaultValue 'No data' */
+  noData: string;
+  /** Accessible name of the loading spinner; when unset, Spinner's own (provider) default applies. @defaultValue 'Loading' */
+  loading: string;
+  /** Accessible name of each column's filter trigger; `{column}` is `filter.label`, else the header text, else the id. @defaultValue 'Filter {column}' */
+  filterButton: string;
+  /**
+   * Accessible name of a preset filter's field: the `text` input (a `filter.placeholder` stays a visible hint),
+   * the `radio` / `checkbox` group, and the `select` trigger, which also announces its visible value.
+   * `{column}` as in `filterButton`. @defaultValue 'Filter {column} value'
+   */
+  filterValue: string;
+  /** Clear button in the filter panel (presets and custom `render` panels). @defaultValue 'Clear' */
+  filterClear: string;
+  /** `select` filter trigger text when nothing is picked; `filter.placeholder` overrides it. @defaultValue 'Select' */
+  filterSelectPlaceholder: string;
+  /** Accessible name of the pagination region. @defaultValue 'Pagination' */
+  pagination: string;
+  /** Page indicator. @defaultValue 'Page {page} of {pageCount}' */
+  pageStatus: string;
+  /** Page indicator while the page count is unknown (0). @defaultValue 'Page {page}' */
+  pageStatusUnknown: string;
+  /** Visible item range (1-based). @defaultValue 'Items {start}-{end} of {total}' */
+  itemsRange: string;
+  /** Item range text when there are no rows (`{total}` is 0). @defaultValue '0 items' */
+  noItems: string;
+  /** @defaultValue 'First page' */
+  firstPage: string;
+  /** @defaultValue 'Previous page' */
+  previousPage: string;
+  /** @defaultValue 'Next page' */
+  nextPage: string;
+  /** @defaultValue 'Last page' */
+  lastPage: string;
+  /** Accessible name of a page-number button. @defaultValue 'Go to page {page}' */
+  goToPageNumber: string;
+  /** Accessible name of the current page's button. @defaultValue 'Page {page}, current page' */
+  currentPage: string;
+  /** Accessible name of the page-size select. @defaultValue 'Rows per page' */
+  rowsPerPage: string;
+  /** Accessible name of the page-jump input. @defaultValue 'Go to page' */
+  goToPage: string;
+  /** Accessible name of the page-jump submit button. @defaultValue 'Go' */
+  goToPageSubmit: string;
+  /** @defaultValue 'Select all rows' */
+  selectAllRows: string;
+  /** @defaultValue 'Select row' */
+  selectRow: string;
+  /** Hidden header of the single-selection column. @defaultValue 'Row selection' */
+  rowSelection: string;
+  /** @defaultValue 'Expand row' */
+  expandRow: string;
+  /** @defaultValue 'Collapse row' */
+  collapseRow: string;
+  /** Hidden header of the expansion column. @defaultValue 'Row details' */
+  rowDetails: string;
+}
+
+/**
  * Public props for `Table`. Props-first (RFC §3.1, Tier 1): a common table is
  * a single `<Table data columns getRowId />` call. `getRowId` is **mandatory**
  * — the single identity source TanStack's `RowSelectionState` keys on (RFC §2.3).
@@ -343,8 +424,25 @@ export interface TableProps<TData = any> {
    * @defaultValue false
    */
   loading?: boolean;
-  /** Content rendered when there are no rows. */
+  /**
+   * Content rendered when there are no rows. Defaults to `labels.noData`; pass
+   * `null` (or `false`) to leave the empty cell blank.
+   */
   emptyState?: ReactNode;
+  /**
+   * Every user-facing string Table renders — visible text and accessible
+   * names — to translate or reword. Pass only the keys you need; the rest keep their
+   * English defaults, and an empty or whitespace-only string also falls back to the default. Set
+   * it app-wide through `TakeoffSparProvider`
+   * `components.Table.defaultProps.labels`; an instance `labels` is merged
+   * over it key by key. `emptyState` still wins over `labels.noData`, even when
+   * it comes from the provider's `defaultProps`, while an
+   * `aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
+   * `slotProps.expandButton` is ignored in favour of `labels` (on `filterButton`
+   * and `filterOptions` an `aria-labelledby` is dropped too).
+   * See {@link TableLabels}.
+   */
+  labels?: Partial<TableLabels>;
   /**
    * Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with
    * `expansion` (sans `render`) so expanding a row reveals its flattened
@@ -363,7 +461,12 @@ export interface TableProps<TData = any> {
   className?: string;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<TableSlot>;
-  /** Per-slot HTML attribute overrides. */
+  /**
+   * Per-slot HTML attribute overrides. An `aria-label` here is ignored for
+   * `filterButton`, `pagination`, `expandButton` and `filterOptions`, whose names
+   * come from `labels`; on `filterButton` and `filterOptions` an
+   * `aria-labelledby` (and the group's `role`) is dropped too.
+   */
   slotProps?: SlotPropsMap<TableSlot>;
   /** Ref to the root scroll container. */
   ref?: Ref<HTMLDivElement>;

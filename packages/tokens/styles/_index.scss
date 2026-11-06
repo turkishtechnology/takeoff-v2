@@ -614,6 +614,10 @@
   @include table.table-filter-panel-body;
 }
 
+.tk-table-filter-options {
+  @include table.table-filter-options;
+}
+
 .tk-table-pagination {
   @include table.table-pagination;
 }

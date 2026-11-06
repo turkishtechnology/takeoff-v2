@@ -179,7 +179,11 @@ with `type` (+ `options` for the choice controls):
 
 <small>
   ¹ Spar's `Select` has no multi mode yet, so `multi-select` currently renders
-  the same `Checkbox` list as `checkbox`.
+  the same `Checkbox` list as `checkbox`. The `checkbox` and `multi-select`
+  options sit in a named group with the `tk-table-filter-options` class (from
+  `@takeoff-design/tokens`), exposed as the `filterOptions` slot, so
+  `classNames.filterOptions` / `slotProps.filterOptions` or a theme can restyle
+  the list.
 </small>
 
 ```tsx
@@ -213,14 +217,18 @@ function FilterPresetDemo() {
 render(<FilterPresetDemo />);
 ```
 
+While a filter is active its panel shows a **Clear** button. Its text comes from
+`labels.filterClear` (see [Labels](#labels)), for presets and custom `render`
+panels alike.
+
 ### Custom filters (escape hatch)
 
 When no preset fits — a number range, a date range, a combobox, async-loaded
 options — pass `render` instead. It receives
-`{ value, setValue, clear, column, close }` and returns any control; Table still
-owns the surrounding popover. `value` is whatever shape your control writes, so
-pair it with a `filterFn` (client mode) and, if the default non-empty heuristic
-is wrong, an `isActive` predicate for the active dot.
+`{ value, setValue, clear, column, close, fieldLabel }` and returns any control;
+Table still owns the surrounding popover. `value` is whatever shape your control
+writes, so pair it with a `filterFn` (client mode) and, if the default non-empty
+heuristic is wrong, an `isActive` predicate for the active dot.
 
 <Alert variant="info" appearance="outlined" className="my-8 w-full">
   <Alert.Content>
@@ -259,9 +267,10 @@ function FilterCustomDemo() {
           value == null || value === ''
             ? true
             : row.getValue(columnId) >= Number(value),
-        render: ({ value, setValue }) => (
+        render: ({ value, setValue, fieldLabel }) => (
           <Input>
             <Input.Field
+              aria-label={fieldLabel}
               type="number"
               placeholder="Min score"
               value={value ?? ''}
@@ -699,8 +708,9 @@ render(<DensityDemo />);
 ## Empty state
 
 When `data` is empty, Table renders a single full-width cell. The default copy
-is `No data`; pass `emptyState` to supply your own node. While `loading` is true
-the empty copy is suppressed so it does not flash mid-fetch.
+is `No data` (`labels.noData`); pass `emptyState` to supply your own node, or
+`emptyState={null}` to leave the cell blank. While `loading` is true the empty
+copy is suppressed so it does not flash mid-fetch.
 
 ```tsx
 function EmptyDemo() {
@@ -828,6 +838,80 @@ const tableRef = useRef(null);
 const rowsToExport = getExportRows(tableRef.current); // Array<Record<columnId, value>>
 ```
 
+## Labels
+
+Every string Table renders — visible text and accessible names — comes from the
+`labels` prop, whether you are translating it or just rewording it. Pass only
+the keys you need; the rest keep their English defaults, and an empty or
+whitespace-only string also falls back to the default. Dynamic entries are
+templates whose `{placeholders}` Table fills in, so word order stays with the
+translation and the object can live in a JSON translation file.
+
+```tsx
+<Table
+  data={rows}
+  columns={columns}
+  labels={{
+    noData: 'Veri yok',
+    filterClear: 'Temizle',
+    filterButton: '{column} sütununu filtrele',
+    filterValue: '{column} filtre değeri',
+    filterSelectPlaceholder: 'Seçiniz',
+    pageStatus: 'Sayfa {page} / {pageCount}',
+    itemsRange: '{total} kayıttan {start}-{end}',
+    goToPageNumber: '{page}. sayfaya git',
+  }}
+/>
+```
+
+To localize every Table in the app at once, set it as provider `defaultProps`.
+An instance `labels` is merged over it key by key, so a single table can
+override one string and keep the rest.
+
+```tsx
+<TakeoffSparProvider
+  components={{ Table: { defaultProps: { labels: trTableLabels } } }}
+>
+  <App />
+</TakeoffSparProvider>
+```
+
+The filter-trigger, pagination and expand-button names come from `labels`: an
+`aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
+`slotProps.expandButton` is ignored. On the filter trigger and the checkbox
+filter group (`filterOptions`) an `aria-labelledby` is dropped too, so `labels`
+always names them. `filterValue` names the text filter input (a
+`filter.placeholder` stays a visible hint), the radio and checkbox groups, and
+the select trigger together with its visible value. `{column}` in `filterButton`
+/ `filterValue` is the column's `filter.label`, else its header text, else its
+`id` (for an empty, node or function `header`, so set `filter.label` there).
+Template numbers are inserted as-is (`1234`, not `1.234`), and templates have no
+plural rules.
+
+| Key                                                    | Default                              | Used for                                            |
+| ------------------------------------------------------ | ------------------------------------ | --------------------------------------------------- |
+| `noData`                                               | `'No data'`                          | Empty table (any `emptyState` wins, provider too)   |
+| `loading`                                              | `'Loading'`                          | Loading spinner's accessible name                   |
+| `filterButton`                                         | `'Filter {column}'`                  | Filter trigger's name (`{column}`)                  |
+| `filterValue`                                          | `'Filter {column} value'`            | Filter field / group name (`{column}`)              |
+| `filterClear`                                          | `'Clear'`                            | Filter panel Clear button                           |
+| `filterSelectPlaceholder`                              | `'Select'`                           | `select` filter trigger (`filter.placeholder` wins) |
+| `pagination`                                           | `'Pagination'`                       | Pagination region's accessible name                 |
+| `pageStatus`                                           | `'Page {page} of {pageCount}'`       | Page indicator                                      |
+| `pageStatusUnknown`                                    | `'Page {page}'`                      | Page indicator while the page count is 0            |
+| `itemsRange`                                           | `'Items {start}-{end} of {total}'`   | Item range                                          |
+| `noItems`                                              | `'0 items'`                          | Item range with no rows (`{total}`, always `0`)     |
+| `firstPage` / `previousPage` / `nextPage` / `lastPage` | `'First page'` …                     | Pagination buttons                                  |
+| `goToPageNumber`                                       | `'Go to page {page}'`                | Page-number buttons                                 |
+| `currentPage`                                          | `'Page {page}, current page'`        | Current page's button                               |
+| `rowsPerPage`                                          | `'Rows per page'`                    | Page-size select                                    |
+| `goToPage`                                             | `'Go to page'`                       | Page-jump input                                     |
+| `goToPageSubmit`                                       | `'Go'`                               | Page-jump submit (translate with `goToPage`)        |
+| `selectAllRows` / `selectRow`                          | `'Select all rows'` / `'Select row'` | Selection controls                                  |
+| `rowSelection`                                         | `'Row selection'`                    | Hidden header of the single-selection column        |
+| `expandRow` / `collapseRow`                            | `'Expand row'` / `'Collapse row'`    | Expand button                                       |
+| `rowDetails`                                           | `'Row details'`                      | Hidden header of the expansion column               |
+
 ## Accessibility
 
 - Renders a native `<table>` / `<thead>` / `<tbody>` / `<th scope="col">` /
@@ -872,7 +956,8 @@ for primitive behavior.
 | expansion    | `TableExpansionConfig<TData>`                                   | -       | Expandable rows with a render-prop body.                                                                                                                                                                                                                                                                                              |
 | pagination   | `boolean \| TablePaginationConfig`                              | -       | Pagination. `true` enables it with defaults; an object configures it.                                                                                                                                                                                                                                                                 |
 | loading      | `boolean`                                                       | false   | Loading state → `data-loading` + a loading overlay.                                                                                                                                                                                                                                                                                   |
-| emptyState   | `React.ReactNode`                                               | -       | Content rendered when there are no rows.                                                                                                                                                                                                                                                                                              |
+| emptyState   | `React.ReactNode`                                               | -       | Content rendered when there are no rows. Defaults to `labels.noData`; pass `null` (or `false`) to leave the empty cell blank.                                                                                                                                                                                                         |
+| labels       | `Partial<TableLabels>`                                          | -       | Every user-facing string (visible text and accessible names) to translate or reword. See Labels.                                                                                                                                                                                                                                      |
 | getSubRows   | `(row: TData) => TData[]`                                       | -       | Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with `expansion` (sans `render`) so expanding a row reveals its flattened sub-rows. When `getSubRows` is omitted, expansion falls back to the detail-panel mode driven by `expansion.render`. Supplying both keeps tree mode and suppresses the detail panel. |
 | tableRef     | `Ref<TanStackTable<TData> \| null>`                             | -       | Escape hatch for the rare imperative need — receives the TanStack table instance (RFC §2.3: controlled props + an optional instance ref, never an imperative `@Method` surface). Also the access point for `getExportRows()`.                                                                                                         |
 | classNames   | `Partial<Record<TableSlot, string>>`                            | -       | Per-slot class name overrides.                                                                                                                                                                                                                                                                                                        |
@@ -904,12 +989,12 @@ for primitive behavior.
 
 ### Type Definitions {#table-type-definitions}
 
-| Name                  | Definition                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| TableSize             | `'xsmall' \| 'small' \| 'base'`                                                                                                                                                                                                                                                                                                                                                                                                |
-| TableSelectionConfig  | `{ mode: 'single' \| 'multiple' }`                                                                                                                                                                                                                                                                                                                                                                                             |
-| TableSortingConfig    | `{ multi?: boolean }`                                                                                                                                                                                                                                                                                                                                                                                                          |
-| TableFilteringConfig  | `{ value?: T; defaultValue?: T; onChange?: (value: T) => void }`                                                                                                                                                                                                                                                                                                                                                               |
-| TablePaginationConfig | `{ pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) => void }`                                                                                                                                                                                                                                                                                   |
-| TableSlot             | `\| 'root' \| 'tableViewport' \| 'table' \| 'header' \| 'headerRow' \| 'headerCell' \| 'headerContent' \| 'sortTrigger' \| 'sortIcon' \| 'body' \| 'row' \| 'cell' \| 'selectionCell' \| 'expandCell' \| 'expandButton' \| 'expandedRow' \| 'filterButton' \| 'filterPanel' \| 'pagination' \| 'paginationInfo' \| 'paginationNav' \| 'paginationActions' \| 'paginationSize' \| 'paginationGoToPage' \| 'empty' \| 'loading'` |
-| TableDataRequest      | `{ pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState }`                                                                                                                                                                                                                                                                                                                                          |
+| Name                  | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TableSize             | `'xsmall' \| 'small' \| 'base'`                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| TableSelectionConfig  | `{ mode: 'single' \| 'multiple' }`                                                                                                                                                                                                                                                                                                                                                                                                                |
+| TableSortingConfig    | `{ multi?: boolean }`                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| TableFilteringConfig  | `{ value?: T; defaultValue?: T; onChange?: (value: T) => void }`                                                                                                                                                                                                                                                                                                                                                                                  |
+| TablePaginationConfig | `{ pageSize?: number; pageIndex?: number; pageSizeOptions?: number[]; rowCount?: number; onChange?: (pagination: PaginationState) => void }`                                                                                                                                                                                                                                                                                                      |
+| TableSlot             | `\| 'root' \| 'tableViewport' \| 'table' \| 'header' \| 'headerRow' \| 'headerCell' \| 'headerContent' \| 'sortTrigger' \| 'sortIcon' \| 'body' \| 'row' \| 'cell' \| 'selectionCell' \| 'expandCell' \| 'expandButton' \| 'expandedRow' \| 'filterButton' \| 'filterPanel' \| 'filterOptions' \| 'pagination' \| 'paginationInfo' \| 'paginationNav' \| 'paginationActions' \| 'paginationSize' \| 'paginationGoToPage' \| 'empty' \| 'loading'` |
+| TableDataRequest      | `{ pagination: PaginationState; sorting: SortingState; filters: ColumnFiltersState }`                                                                                                                                                                                                                                                                                                                                                             |

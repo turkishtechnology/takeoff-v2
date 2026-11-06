@@ -6,6 +6,7 @@ import { DoubleChevronRightIconOutlinedRounded } from '@takeoff-icons/react/doub
 import { Button } from '../button';
 import { Input } from '../input';
 import { Select } from '../select';
+import { formatLabel } from '../../utils';
 
 import { useTableContext } from './context';
 
@@ -24,7 +25,7 @@ const getPaginationItems = (pageIndex: number, pageCount: number): PaginationIte
  * `<table>` so it carries no table semantics.
  */
 export const TablePagination = () => {
-  const { table, slotAttrs, pageSizeOptions } = useTableContext('Table.Pagination');
+  const { table, slotAttrs, pageSizeOptions, labels } = useTableContext('Table.Pagination');
   const { pageIndex, pageSize } = table.getState().pagination;
   const pageCount = table.getPageCount();
   const paginationItems = getPaginationItems(pageIndex, pageCount);
@@ -33,7 +34,7 @@ export const TablePagination = () => {
   const totalRows = table.getRowCount();
   const startItem = pageIndex * pageSize + 1;
   const endItem = Math.min((pageIndex + 1) * pageSize, totalRows);
-  const itemsLabel = totalRows === 0 ? '0 items' : `Items ${startItem}-${endItem} of ${totalRows}`;
+  const itemsLabel = totalRows === 0 ? formatLabel(labels.noItems, { total: 0 }) : formatLabel(labels.itemsRange, { start: startItem, end: endItem, total: totalRows });
 
   // The active `pageSize` can come from a `pagination.pageSize` prop that isn't
   // one of `pageSizeOptions`. Fold it in (sorted) so the Select always has a
@@ -50,9 +51,9 @@ export const TablePagination = () => {
   };
 
   return (
-    <div {...slotAttrs('pagination')} role="navigation" aria-label="Pagination">
+    <div {...slotAttrs('pagination')} role="navigation" aria-label={labels.pagination}>
       <div {...slotAttrs('paginationInfo')}>
-        <span aria-live="polite">{pageCount > 0 ? `Page ${pageIndex + 1} of ${pageCount}` : `Page ${pageIndex + 1}`}</span>
+        <span aria-live="polite">{formatLabel(pageCount > 0 ? labels.pageStatus : labels.pageStatusUnknown, { page: pageIndex + 1, pageCount })}</span>
         <span aria-live="polite">{itemsLabel}</span>
       </div>
       <div {...slotAttrs('paginationNav')}>
@@ -60,7 +61,7 @@ export const TablePagination = () => {
           size="small"
           variant="neutral"
           appearance="text"
-          aria-label="First page"
+          aria-label={labels.firstPage}
           startContent={<DoubleChevronLeftIconOutlinedRounded />}
           disabled={!table.getCanPreviousPage()}
           onClick={() => table.setPageIndex(0)}
@@ -69,7 +70,7 @@ export const TablePagination = () => {
           size="small"
           variant="neutral"
           appearance="text"
-          aria-label="Previous page"
+          aria-label={labels.previousPage}
           startContent={<ChevronLeftIconOutlinedRounded />}
           disabled={!table.getCanPreviousPage()}
           onClick={() => table.previousPage()}
@@ -92,7 +93,7 @@ export const TablePagination = () => {
               size="small"
               variant="neutral"
               appearance={current ? 'outlined' : 'text'}
-              aria-label={current ? `Page ${pageNumber}, current page` : `Go to page ${pageNumber}`}
+              aria-label={formatLabel(current ? labels.currentPage : labels.goToPageNumber, { page: pageNumber })}
               aria-current={current ? 'page' : undefined}
               onClick={() => table.setPageIndex(item)}
             >
@@ -104,7 +105,7 @@ export const TablePagination = () => {
           size="small"
           variant="neutral"
           appearance="text"
-          aria-label="Next page"
+          aria-label={labels.nextPage}
           startContent={<ChevronRightIconOutlinedRounded />}
           disabled={!table.getCanNextPage() || pageCount <= 0}
           onClick={() => table.nextPage()}
@@ -113,7 +114,7 @@ export const TablePagination = () => {
           size="small"
           variant="neutral"
           appearance="text"
-          aria-label="Last page"
+          aria-label={labels.lastPage}
           startContent={<DoubleChevronRightIconOutlinedRounded />}
           disabled={!table.getCanNextPage() || pageCount <= 0}
           onClick={() => table.setPageIndex(pageCount - 1)}
@@ -122,7 +123,7 @@ export const TablePagination = () => {
       <div {...slotAttrs('paginationActions')}>
         <div {...slotAttrs('paginationSize')}>
           <Select size="small" value={String(pageSize)} onChange={value => table.setPageSize(Number(value))}>
-            <Select.Trigger aria-label="Rows per page">{pageSize}</Select.Trigger>
+            <Select.Trigger aria-label={labels.rowsPerPage}>{pageSize}</Select.Trigger>
             <Select.Content>
               {sizeOptions.map(option => (
                 <Select.Item key={option} value={String(option)}>
@@ -139,7 +140,7 @@ export const TablePagination = () => {
               min={1}
               max={Math.max(pageCount, 1)}
               inputMode="numeric"
-              aria-label="Go to page"
+              aria-label={labels.goToPage}
               placeholder={String(pageIndex + 1)}
               value={pageInput}
               disabled={pageCount <= 0}
@@ -156,7 +157,7 @@ export const TablePagination = () => {
               appearance="text"
               rounded
               size="small"
-              aria-label="Go to page"
+              aria-label={labels.goToPageSubmit}
               disabled={pageCount <= 0}
               onClick={goToPage}
               startContent={<ChevronRightIconOutlinedRounded />}

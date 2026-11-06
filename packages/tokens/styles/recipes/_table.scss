@@ -459,6 +459,13 @@
   gap: var(--popconfirm-base-gap);
 }
 
+// Named group wrapping the checkbox / multi-select preset options. Stacks the
+// options the same way the panel body does, so the extra group element doesn't
+// change the layout.
+@mixin table-filter-options {
+  @include table-filter-panel-body;
+}
+
 // ---------------------------------------------------------------------------
 // Pagination (composed Select + Buttons), empty + loading states
 // ---------------------------------------------------------------------------

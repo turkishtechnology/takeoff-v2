@@ -22,12 +22,12 @@ import { Spinner } from '../spinner';
 
 import { TableBase } from './base';
 import { TableProvider, type SlotAttrs, type TableContextValue } from './context';
-import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE } from './defaults';
+import { DEFAULT_LABELS, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE } from './defaults';
 import { buildOrderedColumns, computeStickyLayout, toTanStackColumns } from './helpers';
 import { TableBody } from './TableBody';
 import { TableHeader } from './TableHeader';
 import { TablePagination } from './TablePagination';
-import type { TableProps } from './types';
+import type { TableLabels, TableProps } from './types';
 
 // Stable empty defaults so uncontrolled state values keep a constant identity
 // across renders (the `onDataRequest` effect keys on reference equality).
@@ -35,6 +35,30 @@ const EMPTY_SORTING: SortingState = [];
 const EMPTY_FILTERS: ColumnFiltersState = [];
 const EMPTY_SELECTION: RowSelectionState = {};
 const EMPTY_EXPANDED: ExpandedState = {};
+
+// Layers defaults <- provider `defaultProps.labels` <- instance `labels`, so a
+// per-table override keeps the app-wide strings for every other key. Missing,
+// empty, whitespace-only and non-string values (e.g. from a loose JSON file)
+// fall back, so no control is ever left without a name and templates never throw.
+const isUsableLabel = (value: unknown): value is string => typeof value === 'string' && value.trim() !== '';
+
+// Resolves the labels and reports which keys a layer actually set, so the
+// spinner can tell "left at the default" apart without re-checking the layers.
+const resolveLabels = (...layers: (Partial<TableLabels> | undefined)[]): { labels: TableLabels; setKeys: Set<keyof TableLabels> } => {
+  const labels = { ...DEFAULT_LABELS };
+  const setKeys = new Set<keyof TableLabels>();
+  for (const layer of layers) {
+    if (!layer) continue;
+    for (const key of Object.keys(layer) as (keyof TableLabels)[]) {
+      const value: unknown = layer[key];
+      if (isUsableLabel(value) && Object.prototype.hasOwnProperty.call(DEFAULT_LABELS, key)) {
+        labels[key] = value;
+        setKeys.add(key);
+      }
+    }
+  }
+  return { labels, setKeys };
+};
 
 export const Table = <TData,>(props: TableProps<TData>) => {
   const theme = useComponentTheme('Table');
@@ -92,6 +116,13 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const paginationConfig = typeof pagination === 'object' ? pagination : undefined;
   const paginationEnabled = pagination === true || !!paginationConfig;
   const pageSizeOptions = paginationConfig?.pageSizeOptions ?? DEFAULT_PAGE_SIZE_OPTIONS;
+  // `labels` is merged per key rather than taken from the shallow props merge,
+  // so read both layers off the originals.
+  const themeLabels = theme?.defaultProps?.labels;
+  const { labels, setKeys } = resolveLabels(themeLabels, props.labels);
+  // Only name the spinner when `labels.loading` was actually set, so an
+  // app-wide `components.Spinner.defaultProps['aria-label']` keeps applying.
+  const loadingLabelSet = setKeys.has('loading');
   const [tableViewportScrolled, setTableViewportScrolled] = useState(false);
 
   // ── Controlled/uncontrolled state slices ─────────────────────────────────
@@ -276,6 +307,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     emptyState,
     paginationEnabled,
     pageSizeOptions,
+    labels,
     slotAttrs,
   };
 
@@ -297,11 +329,11 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         </div>
         {paginationEnabled && <TablePagination />}
         {loading && (
-          // No `aria-hidden`: the Spar Spinner ships `role="status"` +
-          // `aria-label="Loading"`, so the overlay politely announces the
-          // loading transition (the table also carries `aria-busy`).
+          // No `aria-hidden`: the Spar Spinner ships `role="status"`, named by
+          // `labels.loading` (or Spinner's own default), so the overlay politely
+          // announces the loading transition (the table also carries `aria-busy`).
           <div {...slotAttrs('loading')}>
-            <Spinner />
+            <Spinner aria-label={loadingLabelSet ? labels.loading : undefined} />
           </div>
         )}
       </div>
