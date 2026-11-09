@@ -1706,7 +1706,7 @@ export function ChatbotLauncher({
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => (open ? close() : openPanel())}
-        className="group relative flex size-12 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-primary-base transition-[color,box-shadow,scale,translate] duration-200 ease-out motion-safe:hover:-translate-y-0.5 hover:text-primary-dark hover:shadow-1-hover-base motion-safe:focus-visible:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base active:translate-y-0 active:scale-95 active:text-primary-base aria-expanded:hover:text-primary-dark motion-reduce:transition-none"
+        className="group relative flex size-12 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-primary-base transition-[color,box-shadow,scale,translate] duration-200 ease-out motion-safe:hover:-translate-y-0.5 hover:text-primary-dark hover:shadow-1-hover-base motion-safe:focus-visible:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-base motion-safe:active:translate-y-0 active:scale-95 active:text-primary-base aria-expanded:hover:text-primary-dark motion-reduce:transition-none"
       >
         <FabIcon />
         {unread > 0 && !open && (
