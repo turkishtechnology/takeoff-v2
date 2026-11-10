@@ -8,6 +8,9 @@ import type { ClassNamesMap, ComponentsThemeMap, ComponentThemeConfig, SlotProps
 import { TakeoffSparProvider } from '../../provider';
 import { render, screen, within } from '../../test-utils';
 import { Button } from '../button';
+import { Dropdown } from '../dropdown';
+import { Popover } from '../popover';
+import { Select } from '../select';
 
 import {
   Dialog,
@@ -804,6 +807,222 @@ describe('Dialog (compound)', () => {
         expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
         expect(getPanel()).toHaveAttribute('data-state', 'closed');
       });
+    });
+  });
+
+  describe('nested floating layers', () => {
+    // Select / Popover / Dropdown content is portaled to `document.body`, so it
+    // is never a DOM descendant of the panel. Pressing inside it must not be
+    // treated as an outside press.
+    // jsdom ships no ResizeObserver; Select.Content and Floating UI need one.
+    const OriginalResizeObserver = globalThis.ResizeObserver;
+    beforeAll(() => {
+      globalThis.ResizeObserver = class {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      } as unknown as typeof ResizeObserver;
+    });
+    afterAll(() => {
+      globalThis.ResizeObserver = OriginalResizeObserver;
+    });
+
+    const NestedDialog = ({ onOpenChange, dismissible }: Pick<DialogProps, 'onOpenChange' | 'dismissible'>) => (
+      <>
+        <button type="button">Elsewhere</button>
+        <Dialog defaultOpen onOpenChange={onOpenChange} dismissible={dismissible}>
+          <Dialog.Overlay />
+          <Dialog.Panel>
+            <Dialog.Title>{TITLE}</Dialog.Title>
+            <Select>
+              <Select.Trigger placeholder="Cabin" />
+              <Select.Content>
+                <Select.Item value="economy" label="Economy">
+                  Economy
+                </Select.Item>
+                <Select.Item value="business" label="Business">
+                  Business
+                </Select.Item>
+              </Select.Content>
+            </Select>
+            <Popover>
+              <Popover.Trigger>Open popover</Popover.Trigger>
+              <Popover.Content>
+                <button type="button">Inside popover</button>
+              </Popover.Content>
+            </Popover>
+            <Dropdown>
+              <Dropdown.Trigger>Actions</Dropdown.Trigger>
+              <Dropdown.Content>
+                <Dropdown.Item>Edit</Dropdown.Item>
+              </Dropdown.Content>
+            </Dropdown>
+          </Dialog.Panel>
+        </Dialog>
+      </>
+    );
+
+    it('stays open when an option of a nested Select is picked', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      render(<NestedDialog onOpenChange={onOpenChange} />);
+
+      await user.click(screen.getByRole('combobox'));
+      const option = screen.getByRole('option', { name: 'Business' });
+      expect(getPanel().contains(option)).toBe(false);
+      await user.click(option);
+
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(getPanel()).toHaveAttribute('data-state', 'open');
+      expect(screen.getByRole('combobox')).toHaveTextContent('Business');
+    });
+
+    it('stays open when pressing inside a nested Popover', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      render(<NestedDialog onOpenChange={onOpenChange} />);
+
+      await user.click(screen.getByRole('button', { name: 'Open popover' }));
+      const inside = screen.getByRole('button', { name: 'Inside popover' });
+      expect(getPanel().contains(inside)).toBe(false);
+      await user.click(inside);
+
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(getPanel()).toHaveAttribute('data-state', 'open');
+    });
+
+    it('stays open when an item of a nested Dropdown is picked', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      render(<NestedDialog onOpenChange={onOpenChange} />);
+
+      await user.click(screen.getByRole('button', { name: 'Actions' }));
+      await user.click(screen.getByRole('menuitem', { name: 'Edit' }));
+
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(getPanel()).toHaveAttribute('data-state', 'open');
+    });
+
+    it('does not report presses inside nested layers to onPointerDownOutside / onInteractOutside', async () => {
+      const user = userEvent.setup();
+      const onPointerDownOutside = vi.fn();
+      const onInteractOutside = vi.fn();
+      const onPointerDownCapture = vi.fn();
+      render(
+        <Dialog defaultOpen>
+          <Dialog.Panel onPointerDownOutside={onPointerDownOutside} onInteractOutside={onInteractOutside} onPointerDownCapture={onPointerDownCapture}>
+            <Dialog.Title>{TITLE}</Dialog.Title>
+            <Select>
+              <Select.Trigger placeholder="Cabin" />
+              <Select.Content>
+                <Select.Item value="economy" label="Economy">
+                  Economy
+                </Select.Item>
+              </Select.Content>
+            </Select>
+          </Dialog.Panel>
+        </Dialog>,
+      );
+
+      await user.click(screen.getByRole('combobox'));
+      await user.click(screen.getByRole('option', { name: 'Economy' }));
+
+      expect(onPointerDownOutside).not.toHaveBeenCalled();
+      expect(onInteractOutside).not.toHaveBeenCalled();
+      // The consumer's own capture handler is still composed in.
+      expect(onPointerDownCapture).toHaveBeenCalled();
+    });
+
+    it('keeps a slotProps.root onPointerDownCapture working', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      const onPointerDownCapture = vi.fn();
+      render(
+        <Dialog defaultOpen onOpenChange={onOpenChange}>
+          <Dialog.Panel slotProps={{ root: { onPointerDownCapture } }}>
+            <Dialog.Title>{TITLE}</Dialog.Title>
+            <Select>
+              <Select.Trigger placeholder="Cabin" />
+              <Select.Content>
+                <Select.Item value="economy" label="Economy">
+                  Economy
+                </Select.Item>
+              </Select.Content>
+            </Select>
+          </Dialog.Panel>
+        </Dialog>,
+      );
+
+      await user.click(screen.getByRole('combobox'));
+      await user.click(screen.getByRole('option', { name: 'Economy' }));
+
+      expect(onPointerDownCapture).toHaveBeenCalled();
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(getPanel()).toHaveAttribute('data-state', 'open');
+    });
+
+    it.each([
+      { name: 'focus trapped', trapFocus: undefined },
+      { name: 'trapFocus={false}', trapFocus: false },
+    ])('stays open with modal={false} ($name) when focus and pointer move into a nested Select', async ({ trapFocus }) => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      render(
+        <>
+          <button type="button">Elsewhere</button>
+          <Dialog defaultOpen modal={false} onOpenChange={onOpenChange}>
+            <Dialog.Panel trapFocus={trapFocus}>
+              <Dialog.Title>{TITLE}</Dialog.Title>
+              <Select>
+                <Select.Trigger placeholder="Cabin" />
+                <Select.Content>
+                  <Select.Item value="business" label="Business">
+                    Business
+                  </Select.Item>
+                </Select.Content>
+              </Select>
+            </Dialog.Panel>
+          </Dialog>
+        </>,
+      );
+
+      await user.click(screen.getByRole('combobox'));
+      const option = screen.getByRole('option', { name: 'Business' });
+      // Select.Content takes focus when it opens, outside the panel's DOM.
+      expect(screen.getByRole('listbox').contains(document.activeElement)).toBe(true);
+      expect(getPanel().contains(document.activeElement)).toBe(false);
+      await user.click(option);
+
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(getPanel()).toHaveAttribute('data-state', 'open');
+      expect(screen.getByRole('combobox')).toHaveTextContent('Business');
+
+      await user.click(screen.getByRole('button', { name: 'Elsewhere' }));
+      expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
+    });
+
+    it('still closes on a genuine outside press', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      render(<NestedDialog onOpenChange={onOpenChange} />);
+
+      await user.click(getPart('tk-dialog-overlay'));
+
+      expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
+      expect(getPanel()).toHaveAttribute('data-state', 'closed');
+    });
+
+    it('keeps blocking genuine outside presses when dismissible={false}', async () => {
+      const user = userEvent.setup();
+      const onOpenChange = vi.fn();
+      render(<NestedDialog onOpenChange={onOpenChange} dismissible={false} />);
+
+      await user.click(screen.getByRole('combobox'));
+      await user.click(screen.getByRole('option', { name: 'Economy' }));
+      await user.click(getPart('tk-dialog-overlay'));
+
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(getPanel()).toHaveAttribute('data-state', 'open');
     });
   });
 
