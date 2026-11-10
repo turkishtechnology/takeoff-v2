@@ -5,5 +5,3 @@ export type { ContentWidthMode } from './useContentWidthStyle';
 export { useControllableState } from './useControllableState';
 export { useDatePicker } from './useDatePicker';
 export type { DateFormatter, UseDatePickerOptions, UseDatePickerResult } from './useDatePicker';
-export { useNestedLayerDismissGuard, useNestedLayerDismissHandlers } from './useNestedLayerDismissGuard';
-export type { NestedLayerDismissOptions } from './useNestedLayerDismissGuard';

@@ -6,10 +6,11 @@
 press inside a `Popover`, `Dropdown` or date-picker popover, that is rendered
 inside the panel.
 
-Those floating layers are portaled to `document.body`, so Spar's outside-press
+Those floating layers are portaled to `document.body`, and Spar's outside-press
 check (a DOM `contains` test on the panel) treated every press inside them as a
-press outside the dialog and closed it, losing the form state. `Dialog.Panel`
-and `Drawer.Panel` now recognise presses that start in their own React subtree,
-including portaled descendants, and do not report them to `onPointerDownOutside`
-/ `onInteractOutside`. Genuine outside presses still close the panel, and
-`dismissible={false}` behaves as before.
+press outside the dialog and closed it, losing the form state. The fix lives in
+`@turkish-technology/spar` 0.3.1, which now counts presses that start anywhere
+in the panel's React subtree, portaled descendants included, as inside; this
+package now depends on that release. Such presses are no longer reported to
+`onPointerDownOutside` / `onInteractOutside`. Genuine outside presses still
+close the panel, and `dismissible={false}` behaves as before.
