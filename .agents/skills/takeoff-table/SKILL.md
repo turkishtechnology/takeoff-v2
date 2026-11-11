@@ -5,10 +5,10 @@ description:
   (Takeoff UI / Spar React). Use WHENEVER building, adding, importing, styling,
   or fixing a table, data grid, data table, rows/columns view,
   sortable/filterable/paginated list, selectable rows, expandable/tree rows,
-  sticky columns, or server-paged table in a React app that uses
-  @takeoff-ui/react-spar / Takeoff / Spar. Triggers: 'data table', 'add a grid',
-  'sortable columns', 'row selection', 'pagination', 'column filters', 'export
-  rows to CSV'."
+  sticky columns, resizable columns, or server-paged table in a React app that
+  uses @takeoff-ui/react-spar / Takeoff / Spar. Triggers: 'data table', 'add a
+  grid', 'sortable columns', 'row selection', 'pagination', 'column filters',
+  'resize columns', 'export rows to CSV'."
 ---
 
 # Table — @takeoff-ui/react-spar
@@ -18,9 +18,9 @@ A props-first, TanStack-backed data grid: a common table is a single
 for customization.
 
 **When to use:** Rendering tabular data with any of sorting, filtering,
-pagination, row selection, expandable/tree rows, sticky columns, loading/empty
-states, or server-side paging. `getRowId` is mandatory — it is the identity
-source row selection keys on.
+pagination, row selection, expandable/tree rows, sticky columns, user-resizable
+columns, loading/empty states, or server-side paging. `getRowId` is mandatory —
+it is the identity source row selection keys on.
 
 ## Setup
 
@@ -243,6 +243,47 @@ indent. Supplying both `getSubRows` and `expansion.render` keeps tree mode.
 keeps existing rows visible; `emptyState` shows only when `data` is empty and
 not loading.
 
+### Resizable columns
+
+`columnResizing` puts a drag handle on each resizable header edge (pointer,
+touch, and Left/Right arrows; double-click resets to the declared `width`).
+`onChange` fires once per resize with `{ [columnId]: px }`, so persist it
+directly and pass it back to restore the layout. Opt a column out with
+`resizable: false` and bound it with `minWidth` (default `50`) / `maxWidth`.
+
+```tsx
+const [widths, setWidths] = useState(() => loadWidths());
+
+<Table
+  data={rows}
+  columns={[
+    {
+      id: 'flight',
+      header: 'Flight',
+      accessor: 'flight',
+      width: 120,
+      minWidth: 90,
+    },
+    { id: 'route', header: 'Route', accessor: 'route' },
+    { id: 'gate', header: 'Gate', accessor: 'gate' },
+  ]}
+  getRowId={row => row.id}
+  columnResizing={{
+    value: widths,
+    onChange: next => {
+      setWidths(next);
+      saveWidths(next);
+    },
+  }}
+/>;
+```
+
+In the default `fit` mode the table stays as wide as its container: the last
+unpinned column without a declared `width` has no handle and takes up the slack,
+so give a column that must keep its width (an actions column) a `width` and
+`resizable: false`. Pass `columnResizing={{ mode: 'expand' }}` when the table
+should grow past its container and scroll instead.
+
 ### Server (manual) data + export
 
 In `manual` mode Table processes nothing in-memory and emits one bundled
@@ -281,25 +322,26 @@ const rowsToExport = getExportRows(tableRef.current);
 
 ## Key props
 
-| Prop                       | Type                                                                      | Default   | Notes                                                                                              |
-| -------------------------- | ------------------------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------- |
-| `data`                     | `TData[]`                                                                 | —         | Row data (the current server page in `manual` mode).                                               |
-| `columns`                  | `TableColumnDef<TData>[]`                                                 | —         | Column defs: `id`, `header`, `accessor`, `cell`, `filter`, `align`, `sortable`, `sticky`, `width`. |
-| `getRowId`                 | `(row, index) => string`                                                  | —         | **Required.** Stable row identity.                                                                 |
-| `size`                     | `'xsmall' \| 'small' \| 'base'`                                           | `'base'`  | Density (cell padding).                                                                            |
-| `striped` / `bordered`     | `boolean`                                                                 | `false`   | Zebra rows / column separators.                                                                    |
-| `selection`                | `{ mode: 'single' \| 'multiple' }`                                        | —         | Row selection (Checkbox/Radio; select-all is multiple-only).                                       |
-| `sorting`                  | `{ multi?: boolean }` or controlled `{ value, onChange }`                 | —         | Multi-sort opt-in.                                                                                 |
-| `filtering`                | `{ value?, defaultValue?, onChange? }`                                    | —         | Controlled column-filter state.                                                                    |
-| `pagination`               | `boolean \| { pageSize, pageIndex, pageSizeOptions, rowCount, onChange }` | —         | `true` enables defaults; `rowCount` required in `manual` mode.                                     |
-| `expansion`                | `{ render?, defaultValue?, ... }`                                         | —         | Detail panel (`render`) or tree toggle (with `getSubRows`).                                        |
-| `getSubRows`               | `(row) => TData[]`                                                        | —         | Children reader for tree data.                                                                     |
-| `manual`                   | `boolean`                                                                 | `false`   | Server mode; pairs with `onDataRequest`.                                                           |
-| `loading`                  | `boolean`                                                                 | `false`   | Spinner overlay + `aria-busy`.                                                                     |
-| `emptyState`               | `ReactNode`                                                               | `No data` | Shown when `data` is empty (suppressed while loading).                                             |
-| `tableRef`                 | `Ref<TanStackTable>`                                                      | —         | Imperative instance; access point for `getExportRows()`.                                           |
-| `onDataRequest`            | `(req: TableDataRequest) => void`                                         | —         | Bundled server request (manual mode).                                                              |
-| `classNames` / `slotProps` | per-slot overrides                                                        | —         | Keyed by `TableSlot` (e.g. `tableViewport`).                                                       |
+| Prop                       | Type                                                                      | Default   | Notes                                                                                                                                   |
+| -------------------------- | ------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `data`                     | `TData[]`                                                                 | —         | Row data (the current server page in `manual` mode).                                                                                    |
+| `columns`                  | `TableColumnDef<TData>[]`                                                 | —         | Column defs: `id`, `header`, `accessor`, `cell`, `filter`, `align`, `sortable`, `sticky`, `width`, `resizable`, `minWidth`, `maxWidth`. |
+| `getRowId`                 | `(row, index) => string`                                                  | —         | **Required.** Stable row identity.                                                                                                      |
+| `size`                     | `'xsmall' \| 'small' \| 'base'`                                           | `'base'`  | Density (cell padding).                                                                                                                 |
+| `striped` / `bordered`     | `boolean`                                                                 | `false`   | Zebra rows / column separators.                                                                                                         |
+| `selection`                | `{ mode: 'single' \| 'multiple' }`                                        | —         | Row selection (Checkbox/Radio; select-all is multiple-only).                                                                            |
+| `sorting`                  | `{ multi?: boolean }` or controlled `{ value, onChange }`                 | —         | Multi-sort opt-in.                                                                                                                      |
+| `filtering`                | `{ value?, defaultValue?, onChange? }`                                    | —         | Controlled column-filter state.                                                                                                         |
+| `pagination`               | `boolean \| { pageSize, pageIndex, pageSizeOptions, rowCount, onChange }` | —         | `true` enables defaults; `rowCount` required in `manual` mode.                                                                          |
+| `columnResizing`           | `boolean \| { value?, defaultValue?, onChange? }`                         | —         | User-resizable columns; `onChange` fires once per resize.                                                                               |
+| `expansion`                | `{ render?, defaultValue?, ... }`                                         | —         | Detail panel (`render`) or tree toggle (with `getSubRows`).                                                                             |
+| `getSubRows`               | `(row) => TData[]`                                                        | —         | Children reader for tree data.                                                                                                          |
+| `manual`                   | `boolean`                                                                 | `false`   | Server mode; pairs with `onDataRequest`.                                                                                                |
+| `loading`                  | `boolean`                                                                 | `false`   | Spinner overlay + `aria-busy`.                                                                                                          |
+| `emptyState`               | `ReactNode`                                                               | `No data` | Shown when `data` is empty (suppressed while loading).                                                                                  |
+| `tableRef`                 | `Ref<TanStackTable>`                                                      | —         | Imperative instance; access point for `getExportRows()`.                                                                                |
+| `onDataRequest`            | `(req: TableDataRequest) => void`                                         | —         | Bundled server request (manual mode).                                                                                                   |
+| `classNames` / `slotProps` | per-slot overrides                                                        | —         | Keyed by `TableSlot` (e.g. `tableViewport`).                                                                                            |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
@@ -316,6 +358,9 @@ Full props, events, data attributes & type definitions: see
   `Select` and nav buttons carry `aria-label`s.
 - The loading overlay surfaces a Spar `Spinner` (`role="status"`); the table is
   `aria-busy` while `loading`.
+- Column resize handles are focusable `role="separator"`s with a
+  `Resize <header> column` name and px `aria-value*`; Left/Right resize by 10px
+  (Shift: 50px).
 
 ## Reference
 

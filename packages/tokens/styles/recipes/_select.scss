@@ -139,9 +139,12 @@
   justify-content: center;
   flex-shrink: 0;
   line-height: 1;
-  // Takeoff icons render at `1em`; pin the box to 16px so the chevron stays a
-  // stable size independent of the trigger's text scale.
-  font-size: 1rem;
+  // Takeoff icons render at `1em`; pin the box to 14px so the chevron stays
+  // a stable size independent of the trigger's text scale. Figma draws a
+  // 20px box, but the 0.5.0 chevron fills more of it than the drawing
+  // there, so 14px keeps the visible glyph (about 10px wide) close to the
+  // design.
+  font-size: 0.875rem;
   color: var(--text-dark);
   transition: color 0.2s ease-in-out;
 }
