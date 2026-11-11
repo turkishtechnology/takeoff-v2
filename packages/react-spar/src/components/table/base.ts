@@ -16,12 +16,15 @@ import type { TableProps, TableSlot } from './types';
  * v2-owned react-enhancement with no upstream primitive, so it introduces its
  * own hooks; recorded under "Component-specific decisions → Table"):
  *   Root:        data-size, data-striped, data-bordered, data-sticky-header,
- *                data-loading
+ *                data-loading, data-fixed-layout (presence once columns are
+ *                user-sized), data-resize-mode (fit|expand with
+ *                columnResizing)
  *   Viewport:    data-scrolled (presence while scrollTop > 0)
  *   Header/cell: data-align (start|center|end), data-sticky (left|right),
  *                data-sortable (presence) + aria-sort (a11y source of truth)
  *   Sort icon:   data-direction (asc|desc|none) — node-local styling hook, NOT
  *                a duplicate of the <th>'s aria-sort
+ *   Resize:      data-resizing (presence) on the handle being dragged
  *   Row:         data-selected (presence)
  *   Utility:     data-selection-mode (single|multiple) on the selection cell
  *   Filter:      data-active (presence) on the (Popover-owned) filter trigger
@@ -36,8 +39,10 @@ export const TableBase = createComponentBase<TableProps, TableSlot>({
     'headerRow',
     'headerCell',
     'headerContent',
+    'headerLabel',
     'sortTrigger',
     'sortIcon',
+    'resizeHandle',
     'body',
     'row',
     'cell',
@@ -64,8 +69,10 @@ export const TableBase = createComponentBase<TableProps, TableSlot>({
     headerRow: 'tk-table-header-row',
     headerCell: 'tk-table-header-cell',
     headerContent: 'tk-table-header-content',
+    headerLabel: 'tk-table-header-label',
     sortTrigger: 'tk-table-sort-trigger',
     sortIcon: 'tk-table-sort-icon',
+    resizeHandle: 'tk-table-resize-handle',
     body: 'tk-table-body',
     row: 'tk-table-row',
     cell: 'tk-table-cell',

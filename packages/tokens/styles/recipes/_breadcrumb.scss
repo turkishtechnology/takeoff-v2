@@ -170,10 +170,12 @@
     font-size: var(--desktop-body-s-size);
     line-height: 1;
 
+    // The 0.5.0 chevron fills more of its grid than the Figma drawing (9.3px
+    // wide in a 20px box), so a 14px box (16px in large) keeps it in scale.
     > svg,
     > img {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
     }
   }
 
@@ -203,8 +205,8 @@
 
       > svg,
       > img {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
       }
     }
   }

@@ -3,6 +3,7 @@ import type {
   CellContext,
   Column,
   ColumnFiltersState,
+  ColumnSizingState,
   ExpandedState,
   FilterFn,
   HeaderContext,
@@ -45,8 +46,10 @@ export type TableSlot =
   | 'headerRow'
   | 'headerCell'
   | 'headerContent'
+  | 'headerLabel'
   | 'sortTrigger'
   | 'sortIcon'
+  | 'resizeHandle'
   | 'body'
   | 'row'
   | 'cell'
@@ -215,8 +218,25 @@ export interface TableColumnDef<TData> {
    * the sticky-offset math (the later pin overlaps the gap); dev builds warn.
    */
   sticky?: TableStickySide;
-  /** Fixed column width (px). Feeds sticky-offset math and `col` sizing. */
+  /**
+   * Fixed column width (px). Feeds sticky-offset math and `col` sizing. With
+   * {@link TableProps.columnResizing} on, it is also the width a double-click on
+   * the resize handle returns the column to.
+   */
   width?: number;
+  /**
+   * Let the user drag this column's edge to resize it. Only takes effect when
+   * the table opts in with {@link TableProps.columnResizing}.
+   * @defaultValue true
+   */
+  resizable?: boolean;
+  /**
+   * Narrowest width (px) a user resize can reach. Defaults to `50`, or to the
+   * declared `width` / `maxWidth` when either is narrower.
+   */
+  minWidth?: number;
+  /** Widest width (px) a user resize can reach. Unbounded when omitted. */
+  maxWidth?: number;
   /** Cell content alignment. */
   align?: TableAlign;
   /** Cell-container escape hatch → TanStack `columnDef.meta`. */
@@ -239,6 +259,32 @@ export interface TableSortingConfig extends ControlledState<SortingState> {
 }
 
 export type TableFilteringConfig = ControlledState<ColumnFiltersState>;
+
+/**
+ * Column widths in px, keyed by column id (TanStack's `ColumnSizingState`).
+ * Empty until the first resize; that resize freezes every visible column (in
+ * `fit` mode, all but the absorber, which takes up the leftover width) at its
+ * current width, so from then on the map holds all of them. Persist it and pass it back
+ * as `defaultValue` (or `value`) to restore a layout.
+ */
+export type TableColumnSizing = ColumnSizingState;
+
+/** Column resizing. `onChange` fires once per resize, not on every pointer move. */
+export interface TableColumnResizingConfig extends ControlledState<TableColumnSizing> {
+  /**
+   * Where a growing column gets its room. `fit`: the table keeps its
+   * container's width and the last unpinned column without a `width` takes up
+   * the slack. `expand`: every column keeps its width and the table scrolls.
+   * Fit-mode widths have no entry for that column, so when switching it at
+   * runtime, reset the stored widths too (a fresh `value`, or a new `key` for
+   * `defaultValue`).
+   * @defaultValue 'fit'
+   */
+  mode?: TableColumnResizingMode;
+}
+
+/** See {@link TableColumnResizingConfig.mode}. */
+export type TableColumnResizingMode = 'fit' | 'expand';
 
 export interface TableSelectionConfig extends ControlledState<RowSelectionState> {
   /** `single` renders radios + caps selection at one row; `multiple` renders checkboxes + a select-all header. */
@@ -336,6 +382,12 @@ export interface TableProps<TData = any> {
   expansion?: TableExpansionConfig<TData>;
   /** Pagination. `true` enables it with defaults; an object configures it. */
   pagination?: TablePaginationConfig | boolean;
+  /**
+   * User-resizable columns: a handle on each resizable header edge (drag or
+   * Left/Right arrows). `true` keeps the widths uncontrolled; an object adds
+   * `value` / `defaultValue` / `onChange` and `mode`.
+   */
+  columnResizing?: TableColumnResizingConfig | boolean;
   /** Bundled server data-request callback (`manual` mode). See {@link TableDataRequest}. */
   onDataRequest?: (request: TableDataRequest) => void;
   /**
@@ -384,6 +436,8 @@ declare module '@tanstack/react-table' {
     align?: TableAlign;
     sticky?: TableStickySide;
     width?: number;
+    minWidth?: number;
+    maxWidth?: number;
     className?: string;
     headerClassName?: string;
     headerAlign?: TableAlign;
