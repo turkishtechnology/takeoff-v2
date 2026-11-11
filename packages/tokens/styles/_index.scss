@@ -17,6 +17,8 @@
 @use 'recipes/drawer';
 @use 'recipes/dropdown';
 @use 'recipes/field';
+@use 'recipes/flight-loader';
+@use 'recipes/globe-spinner';
 @use 'recipes/input';
 @use 'recipes/label';
 @use 'recipes/popover';
@@ -40,6 +42,8 @@
 @include progress.progress-keyframes;
 @include skeleton.skeleton-keyframes;
 @include spinner.spinner-keyframes;
+@include flight-loader.flight-loader-keyframes;
+@include globe-spinner.globe-spinner-keyframes;
 @include tooltip.tooltip-keyframes;
 
 .tk-button {
@@ -423,6 +427,14 @@
 
 .tk-spinner {
   @include spinner.spinner;
+}
+
+.tk-flight-loader {
+  @include flight-loader.flight-loader;
+}
+
+.tk-globe-spinner {
+  @include globe-spinner.globe-spinner;
 }
 
 .tk-progress {

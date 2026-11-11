@@ -106,7 +106,8 @@ description, and error context for nested controls)
 
 **Feedback & status:** `takeoff-alert` · `takeoff-badge` · `takeoff-chip` ·
 `takeoff-progress` · `takeoff-skeleton` · `takeoff-spinner` · `takeoff-tooltip`
-· `takeoff-toast`
+· `takeoff-toast` · `takeoff-globe-spinner` (branded circular loader) ·
+`takeoff-flight-loader` (branded loading card)
 
 **Content & overlays:** `takeoff-calendar` (inline month grid: single, range,
 multiple) · `takeoff-card` · `takeoff-dialog` · `takeoff-divider` ·
