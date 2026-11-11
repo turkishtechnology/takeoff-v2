@@ -275,7 +275,9 @@ export interface TableColumnResizingConfig extends ControlledState<TableColumnSi
    * Where a growing column gets its room. `fit`: the table keeps its
    * container's width and the last unpinned column without a `width` takes up
    * the slack. `expand`: every column keeps its width and the table scrolls.
-   * Reset the stored widths when switching it at runtime.
+   * Fit-mode widths have no entry for that column, so when switching it at
+   * runtime, reset the stored widths too (a fresh `value`, or a new `key` for
+   * `defaultValue`).
    * @defaultValue 'fit'
    */
   mode?: TableColumnResizingMode;

@@ -2522,6 +2522,18 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({ name: 120, role: 131, age: 121 });
     });
 
+    it('takes the rounding back from the columns rounded up the most, not the widest', () => {
+      // 200 + 100.5 + 100.5 fill 401px; rounded up 402. Name was drawn whole,
+      // so a rounded-up column gives the pixel back instead.
+      mockHeaderWidth(100.5, { Name: 200 });
+      mockViewportWidth(401);
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ mode: 'expand', onChange }} />);
+
+      drag(handleFor('Name'), 0, 10);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 210, role: 100, age: 101 });
+    });
+
     it('reads the grow plan again on each new drag', () => {
       let absorberWidth = 100;
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {

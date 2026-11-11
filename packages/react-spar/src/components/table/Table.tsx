@@ -508,12 +508,24 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       // Without an absorber (`expand` mode, or every column pinned) the frozen
       // columns alone fill the table. The auto layout fit them in the
       // container, so rounding up may overflow it by a pixel or two (and show a
-      // scrollbar): take that back from the widest frozen columns, a pixel each.
-      const unrounded = absorber ? 0 : getColumnRoom(headerCellsRef.current.get(frozen[0]?.column.id ?? ''), (hasSelectionRef.current ? 1 : 0) + (hasExpansionRef.current ? 1 : 0));
-      if (unrounded > 0) {
+      // scrollbar): take that back, a pixel each, from the columns rounded up
+      // the most (so each ends up closest to its drawn width), never below
+      // the bounds `getSize()` applies.
+      const room = absorber ? 0 : getColumnRoom(headerCellsRef.current.get(frozen[0]?.column.id ?? ''), (hasSelectionRef.current ? 1 : 0) + (hasExpansionRef.current ? 1 : 0));
+      if (room > 0) {
         const total = table.getVisibleLeafColumns().reduce((sum, column) => sum + (base[column.id] ?? column.getSize()), 0);
-        const widest = [...ceiled.keys()].sort((a, b) => (base[b] ?? 0) - (base[a] ?? 0));
-        for (const id of widest.slice(0, Math.max(0, Math.min(Math.ceil(total - unrounded), Math.ceil(roundingUp))))) base[id] -= 1;
+        let overflow = Math.min(Math.ceil(total - room), Math.ceil(roundingUp));
+        const byRounding = frozen
+          .filter(({ width }) => width > 0)
+          .map(({ column, width }) => ({ column, roundedBy: Math.ceil(width) - width }))
+          .sort((a, b) => b.roundedBy - a.roundedBy || (base[b.column.id] ?? 0) - (base[a.column.id] ?? 0));
+        for (const { column } of byRounding) {
+          if (overflow <= 0) break;
+          const trimmed = freeze(column, (base[column.id] ?? 0) - 1);
+          if (trimmed === base[column.id]) continue;
+          base[column.id] = trimmed;
+          overflow -= 1;
+        }
       }
       // Already fixed: an unsized column renders at its `getSize()`.
       for (const column of table.getVisibleLeafColumns()) {
