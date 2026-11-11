@@ -287,8 +287,8 @@
   color: var(--icon-base);
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
   }
 
   &[data-direction='asc'],
@@ -427,8 +427,8 @@
   color: var(--icon-base);
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
   }
 
   &:hover {
@@ -495,6 +495,14 @@
       min-height: 32px;
     }
 
+    // The 0.5.0 chevrons fill more of their grid than the Figma drawings, so
+    // the whole arrow row (single and double) uses a 16px icon box instead of
+    // the 20px button default; the go-to-page arrow below matches it.
+    > .tk-button .tk-button-content svg {
+      width: 16px;
+      height: 16px;
+    }
+
     > span {
       display: inline-flex;
       align-items: center;
@@ -519,6 +527,11 @@
     display: flex;
     align-items: center;
     min-width: 72px;
+
+    .tk-button .tk-button-content svg {
+      width: 16px;
+      height: 16px;
+    }
   }
 }
 
