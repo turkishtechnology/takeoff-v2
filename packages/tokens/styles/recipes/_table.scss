@@ -5,8 +5,8 @@
 //
 // Slot identity is class-based (`.tk-table-*`); state/variant flags are data
 // attributes emitted by the wrapper (`data-size`, `data-striped`,
-// `data-bordered`, `data-sticky-header`, `data-loading`, `data-align`,
-// `data-sticky`, `data-selected`, `aria-sort`).
+// `data-bordered`, `data-sticky-header`, `data-loading`, `data-fixed-layout`,
+// `data-align`, `data-sticky`, `data-selected`, `data-resizing`, `aria-sort`).
 //
 // Sticky contract (RFC §6.5): the table uses `border-collapse: separate` +
 // `border-spacing: 0` so `position: sticky` cells keep their borders (a known
@@ -147,6 +147,60 @@
   &[data-sticky-header] .tk-table-viewport[data-scrolled] .tk-table-header-cell {
     box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.12);
   }
+
+  // User-sized columns (`columnResizing`). Once a column has been resized every
+  // column carries an explicit width, so the table switches to the fixed
+  // algorithm: widths are honored even below the content's min width, and (in
+  // `fit` mode) the absorber is the one auto column that takes up the slack.
+  // `expand` mode: the table carries its columns' sum as its width, so the
+  // bordered viewport hugs it (and scrolls once it outgrows the container)
+  // instead of leaving empty bordered room at the inline end. Pagination and
+  // the loading overlay stay on the root, so they keep the container's width.
+  &[data-fixed-layout][data-resize-mode='expand'] .tk-table-viewport {
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  &[data-fixed-layout] {
+    .tk-table-table {
+      table-layout: fixed;
+    }
+
+    // `clip` rather than `hidden`: the cell is not a scroll container (focusing
+    // a control inside cannot scroll it), and where `overflow-clip-margin` is
+    // supported the focus ring of a control flush with the edge stays whole.
+    .tk-table-header-cell,
+    .tk-table-cell {
+      overflow: hidden;
+      overflow: clip;
+      overflow-clip-margin: 4px;
+    }
+
+    // The exception: the last column's inline-end edge is the table's own.
+    // Chrome counts text clipped by `overflow: clip` there as scrollable
+    // overflow (even with `overflow-clip-margin: 0`), so a narrow last column
+    // would grow a few-pixel horizontal scrollbar under the table. `hidden`
+    // keeps it inside, at the cost of the clip margin: a focus ring flush with
+    // that edge is cut, and the cell is a scroll container.
+    .tk-table-header-cell:last-child,
+    .tk-table-cell:last-child {
+      overflow: hidden;
+    }
+
+    // A narrowed column keeps its rows one line high: text ends in an ellipsis
+    // instead of breaking letter by letter.
+    .tk-table-cell {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  // While a handle is dragged the pointer may leave it; keep the resize cursor
+  // and stop the drag from selecting cell text anywhere in the table.
+  &:has(.tk-table-resize-handle[data-resizing]) {
+    cursor: col-resize;
+    user-select: none;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -255,6 +309,19 @@
   }
 }
 
+// Header text. A flex item with `min-width: 0` so it can shrink below its
+// content; once columns are user-sized it ends in an ellipsis. The clipping is
+// scoped to that layout so a focusable header render-prop keeps its focus ring
+// on tables that never resize.
+@mixin table-header-label {
+  min-width: 0;
+
+  .tk-table[data-fixed-layout] & {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 // Sort affordance — a real button so Enter/Space toggle sorting.
 @mixin table-sort-trigger {
   @include mixins.host-button-reset;
@@ -294,6 +361,54 @@
   &[data-direction='asc'],
   &[data-direction='desc'] {
     color: var(--icon-darkest);
+  }
+}
+
+// Column resize handle: a focusable `role="separator"` inside the header cell,
+// along the edge that faces the absorber column (the inline end by default, the
+// inline start with `data-edge="start"`). The hit area is wider than the line
+// it draws, and `touch-action: none` lets a touch drag resize instead of
+// scrolling.
+@mixin table-resize-handle {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  z-index: 1;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+
+  &::after {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 2px;
+    background-color: transparent;
+    content: '';
+    transition: background-color 0.15s ease-in-out;
+  }
+
+  &:hover::after,
+  &:focus-visible::after,
+  &[data-resizing]::after {
+    background-color: var(--primary-base);
+  }
+
+  &:focus-visible {
+    outline: 2px solid transparent;
+  }
+
+  // A column after the absorber grows toward the inline start, so its handle
+  // sits on that edge.
+  &[data-edge='start'] {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+
+    &::after {
+      inset-inline-start: 0;
+      inset-inline-end: auto;
+    }
   }
 }
 

@@ -1,13 +1,84 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import type { Table as TanStackTable } from '@tanstack/react-table';
+import type { ColumnSizingState, Table as TanStackTable } from '@tanstack/react-table';
 
 import { createSafeContext } from '../../hooks';
 
-import type { StickyLayout } from './helpers';
+import type { StickyLayout, TableStore } from './helpers';
 import type { TableSize, TableSlot } from './types';
 
 /** Attrs returned by {@link TableContextValue.slotAttrs} — spreadable onto any rendered slot node. */
 export type SlotAttrs = HTMLAttributes<HTMLElement> & Record<`data-${string}`, string | undefined>;
+
+/** An in-flight pointer resize: the frozen layout it started from plus the live width of the dragged column. */
+export interface TableResizeDraft {
+  base: ColumnSizingState;
+  columnId: string;
+  width: number;
+  /** Narrowed widths of the columns after it that gave up room for it. */
+  donors?: ColumnSizingState;
+}
+
+/** A later move of a drag, drawn through the live-draft store (see `setDraft`). */
+export interface TableLiveDraft {
+  draft: TableResizeDraft;
+  /** The table's min-width under this draft (also its width in `expand` mode). */
+  minWidth: number;
+}
+
+/** Where a growing column takes its room from (see `getGrowPlan`). */
+export interface TableGrowPlan {
+  /** What the absorber can give up before its content is cut; `Infinity` when there is none or nothing can be measured. */
+  absorberSpare: number;
+  /** What it can give up beyond that, down to its min width (taken only once every `spare` is used). */
+  absorberExtra: number;
+  /** Then the sized columns between the growing column and the absorber, nearest first: their width and what each can give up. */
+  donors: Array<{ id: string; width: number; spare: number; extra: number }>;
+}
+
+/**
+ * Resize plumbing threaded to the header cells' resize handles. Present only
+ * when the table opts in with `columnResizing`.
+ */
+export interface TableColumnResizingContext {
+  /**
+   * The full layout a resize starts from: the committed widths, with every
+   * other visible column filled in — measured from the DOM while the table is
+   * still auto-laid-out, so the first resize freezes the layout without a jump.
+   */
+  getBaseSizing: () => ColumnSizingState;
+  /**
+   * Show (or clear, with `null`) a live drag width without committing it. The
+   * first draft of a drag renders the table (it freezes the layout); later
+   * drafts of the same drag on an unpinned column go through `liveDraft`, so
+   * only the affected header cells and the `<table>` re-render per pointer
+   * move, not the body.
+   */
+  setDraft: (draft: TableResizeDraft | null) => void;
+  /** The newest draft of a drag on top of the rendered one, and the table's min-width under it. */
+  liveDraft: TableStore<TableLiveDraft | null>;
+  /** Watch a header cell's and its table's rendered width through the table's one shared `ResizeObserver`. */
+  observeWidth: (cell: HTMLElement, listener: () => void) => () => void;
+  /** Commit a new layout → `columnResizing.onChange`. */
+  commit: (sizing: ColumnSizingState) => void;
+  /**
+   * Drop one column's user width so it falls back to its declared `width`, or
+   * fit it to its content when it declares none and other columns stay sized.
+   */
+  reset: (columnId: string) => void;
+  /**
+   * Where a column can take room from when it grows, so a resize never pushes
+   * the table past its container: first the absorber, then the resizable,
+   * unpinned columns between them (nearest first), each down to the width its
+   * content needs, then (in a second pass, same order) down to its min width.
+   * `shrunkBy` is how far the column is currently drawn below the width the
+   * resize started from: the absorber is that much wider on screen than its
+   * share at the start. `contentWidths` caches the measured content widths
+   * across calls (a run of key presses), since measuring clones the column.
+   */
+  getGrowPlan: (columnId: string, base: ColumnSizingState, shrunkBy?: number, contentWidths?: Map<string, number>) => TableGrowPlan;
+  /** Header cells register their `<th>` so a first resize can measure the auto layout. */
+  registerHeaderCell: (columnId: string, element: HTMLElement | null) => void;
+}
 
 /**
  * Shared state for Table's internal render parts. In Phase 1 the parts are
@@ -36,6 +107,26 @@ export interface TableContextValue {
   expansionRender?: (row: any) => ReactNode;
   hasColumnFilters: boolean;
   stickyLayout: StickyLayout;
+  /**
+   * Columns are user-sized → `table-layout: fixed`, and every column but the
+   * absorber carries an explicit width.
+   */
+  fixedLayout: boolean;
+  /**
+   * With `columnResizing`, the column that takes up the leftover width (see
+   * `getAbsorberColumnId`): it renders no resize handle and, once the layout is
+   * fixed, no explicit width.
+   */
+  absorberColumnId?: string;
+  /** `columnResizing.mode`: `expand` has no absorber, and the last column gets a handle. */
+  resizeMode: 'fit' | 'expand';
+  /**
+   * With `columnResizing`, the edge each resizable column's handle sits on
+   * (`start` after the absorber); a column without an entry has no handle.
+   */
+  resizeEdges?: ReadonlyMap<string, 'start' | 'end'>;
+  /** Resize plumbing; `undefined` when `columnResizing` is off. */
+  columnResizing?: TableColumnResizingContext;
   /** Visible column count incl. utility cells — for `colSpan` (empty/expanded rows). */
   totalColumnCount: number;
   emptyState?: ReactNode;
