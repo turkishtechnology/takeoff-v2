@@ -4,12 +4,13 @@ import { CloseCircleIconFilledRounded } from '@takeoff-icons/react/close-circle'
 
 import { buildSlotAttrs, composeRootAttrs, isRenderableNode } from '../../core';
 import { useComponentTheme } from '../../provider';
+import { formatLabel } from '../../utils';
 import { Progress } from '../progress';
 import { Spinner } from '../spinner';
 
 import { UploadItemContentBase } from './base';
 import { useUploadContext, useUploadItemContext, type UploadContextValue } from './context';
-import { fileName, fileSize, fileStatus, formatFileLabel, formatFileSize } from './helpers';
+import { fileName, fileSize, fileStatus, formatFileSize } from './helpers';
 import type { UploadFileStatus, UploadItemContentOwnProps, UploadItemContentProps, UploadItemContentSlot } from './types';
 
 type UploadItemContentResolvedProps = Omit<UploadItemContentOwnProps, 'classNames' | 'slotProps'> & {
@@ -108,7 +109,7 @@ export const UploadItemContent = <T extends ElementType = 'div'>(props: UploadIt
           {/* Named per file, like the row's actions: several rows can upload at
               once, and three bars all called "Upload progress" are the same
               control to a screen reader. */}
-          <Progress value={item.progress} size="small" aria-label={formatFileLabel(progressLabel, name)} />
+          <Progress value={item.progress} size="small" aria-label={formatLabel(progressLabel, { name })} />
         </div>
       )}
     </>

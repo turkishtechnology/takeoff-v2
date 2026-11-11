@@ -138,11 +138,14 @@ const columns = [
 ];
 ```
 
+Clear button text: `labels.filterClear` on the root (see Labels below).
+
 Preset `type` values: `text` (Input/substring), `select` and `radio` (equality),
 `checkbox` and `multi-select` (membership). For anything else (number/date
 range, combobox, async), pass a `filter.render` receiving
-`{ value, setValue, clear, column, close }`, plus a `filterFn` (client mode) and
-optional `isActive`:
+`{ value, setValue, clear, column, close, fieldLabel }` (put `fieldLabel` on the
+control's `aria-label`), plus a `filterFn` (client mode) and optional
+`isActive`:
 
 ```tsx
 import { Table, Input } from '@takeoff-ui/react-spar';
@@ -156,9 +159,10 @@ import { Table, Input } from '@takeoff-ui/react-spar';
     isActive: (value) => value != null && value !== '',
     filterFn: (row, columnId, value) =>
       value == null || value === '' ? true : row.getValue(columnId) >= Number(value),
-    render: ({ value, setValue }) => (
+    render: ({ value, setValue, fieldLabel }) => (
       <Input>
         <Input.Field
+          aria-label={fieldLabel}
           type="number"
           placeholder="Min score"
           value={value ?? ''}
@@ -296,13 +300,45 @@ const rowsToExport = getExportRows(tableRef.current);
 | `getSubRows`               | `(row) => TData[]`                                                        | —         | Children reader for tree data.                                                                     |
 | `manual`                   | `boolean`                                                                 | `false`   | Server mode; pairs with `onDataRequest`.                                                           |
 | `loading`                  | `boolean`                                                                 | `false`   | Spinner overlay + `aria-busy`.                                                                     |
-| `emptyState`               | `ReactNode`                                                               | `No data` | Shown when `data` is empty (suppressed while loading).                                             |
+| `emptyState`               | `ReactNode`                                                               | `No data` | Shown when `data` is empty (suppressed while loading); `null`/`false` leaves the cell blank.       |
+| `labels`                   | `Partial<TableLabels>`                                                    | English   | Every user-facing string, to translate or reword (see Labels).                                     |
 | `tableRef`                 | `Ref<TanStackTable>`                                                      | —         | Imperative instance; access point for `getExportRows()`.                                           |
 | `onDataRequest`            | `(req: TableDataRequest) => void`                                         | —         | Bundled server request (manual mode).                                                              |
 | `classNames` / `slotProps` | per-slot overrides                                                        | —         | Keyed by `TableSlot` (e.g. `tableViewport`).                                                       |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
+
+## Labels
+
+All strings come from `labels` (partial; missing or empty keys keep the English
+default). Templates use `{placeholders}`: `pageStatus` (`{page}`,
+`{pageCount}`), `pageStatusUnknown` (`{page}`), `itemsRange` (`{start}`,
+`{end}`, `{total}`), `noItems` (`{total}`, always `0`), `goToPageNumber` /
+`currentPage` (`{page}`), `filterButton` / `filterValue` (`{column}`:
+`filter.label`, else header text, else id; set `filter.label` for a node or
+function `header`). Other keys: `noData`, `loading`, `filterClear`,
+`filterSelectPlaceholder`, `pagination`, `firstPage`, `previousPage`,
+`nextPage`, `lastPage`, `rowsPerPage`, `goToPage`, `goToPageSubmit`,
+`selectAllRows`, `selectRow`, `rowSelection`, `expandRow`, `collapseRow`,
+`rowDetails`. App-wide: `TakeoffSparProvider`
+`components.Table.defaultProps.labels` (an instance `labels` merges over it per
+key).
+
+```tsx
+<Table
+  data={rows}
+  columns={columns}
+  labels={{
+    noData: 'Veri yok',
+    filterClear: 'Temizle',
+    filterButton: '{column} sütununu filtrele',
+    filterValue: '{column} filtre değeri',
+    filterSelectPlaceholder: 'Seçiniz',
+    pageStatus: 'Sayfa {page} / {pageCount}',
+  }}
+/>
+```
 
 ## Accessibility
 
