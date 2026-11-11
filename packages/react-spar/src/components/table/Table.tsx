@@ -505,6 +505,16 @@ export const Table = <TData,>(props: TableProps<TData>) => {
       for (const { column, width } of frozen) {
         if (width > 0) base[column.id] = freeze(column, round(width));
       }
+      // Without an absorber (`expand` mode, or every column pinned) the frozen
+      // columns alone fill the table. The auto layout fit them in the
+      // container, so rounding up may overflow it by a pixel or two (and show a
+      // scrollbar): take that back from the widest frozen columns, a pixel each.
+      const unrounded = absorber ? 0 : getColumnRoom(headerCellsRef.current.get(frozen[0]?.column.id ?? ''), (hasSelectionRef.current ? 1 : 0) + (hasExpansionRef.current ? 1 : 0));
+      if (unrounded > 0) {
+        const total = table.getVisibleLeafColumns().reduce((sum, column) => sum + (base[column.id] ?? column.getSize()), 0);
+        const widest = [...ceiled.keys()].sort((a, b) => (base[b] ?? 0) - (base[a] ?? 0));
+        for (const id of widest.slice(0, Math.max(0, Math.min(Math.ceil(total - unrounded), Math.ceil(roundingUp))))) base[id] -= 1;
+      }
       // Already fixed: an unsized column renders at its `getSize()`.
       for (const column of table.getVisibleLeafColumns()) {
         if (column.id !== absorberColumnIdRef.current && base[column.id] == null) base[column.id] = column.getSize();

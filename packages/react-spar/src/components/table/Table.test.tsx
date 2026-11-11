@@ -2510,6 +2510,18 @@ describe('Table (props-first)', () => {
       expect(onChange).toHaveBeenLastCalledWith({ name: 130, role: 110 });
     });
 
+    it('does not let rounding up overflow the container in expand mode', () => {
+      // Three columns drawn 120.5px wide fill a 362px viewport; rounded up they
+      // would need 363px and show a scrollbar.
+      mockHeaderWidth(120.5);
+      mockViewportWidth(362);
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ mode: 'expand', onChange }} />);
+
+      drag(handleFor('Role'), 0, 10);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 120, role: 131, age: 121 });
+    });
+
     it('reads the grow plan again on each new drag', () => {
       let absorberWidth = 100;
       vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
