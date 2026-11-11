@@ -90,12 +90,12 @@ export default {
         {
           attribute: 'data-fixed-layout',
           appliedWhen: 'With `columnResizing`, once any column has a user width.',
-          purpose: 'Switches the table to `table-layout: fixed`; the absorber column (the last unpinned one without a declared `width`) takes the leftover width.',
+          purpose: 'Switches the table to `table-layout: fixed`.',
         },
         {
           attribute: 'data-resize-mode',
           appliedWhen: 'With `columnResizing`: `fit` (default) or `expand`.',
-          purpose: 'In `expand` mode with a fixed layout, the bordered viewport hugs the table, so its border narrows when the table does.',
+          purpose: 'In `expand` mode the bordered viewport hugs the table.',
         },
         {
           attribute: 'data-resizing',
