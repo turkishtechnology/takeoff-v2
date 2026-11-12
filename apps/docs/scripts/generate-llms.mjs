@@ -76,6 +76,7 @@ const SECTIONS = [
   { title: 'Foundations', match: p => p.startsWith('foundations/') },
   { title: 'Components', match: p => p.startsWith('components/') },
   { title: 'Forms', match: p => p.startsWith('forms/') },
+  { title: 'Blocks', match: p => p.startsWith('blocks/') },
   { title: 'Icons', match: () => false },
 ];
 
@@ -184,6 +185,57 @@ function mdxToMarkdown(rawBody) {
   body = body.replace(/export\s+const\s+(\w+)\s*=\s*String\.raw`([\s\S]*?)`;?/gu, (_, name, code) => {
     rawExports.set(name, code);
     return '';
+  });
+
+  // 1b. Blocks show their real source through `import x from '@site/…?raw'`
+  //     + `<BlockPreview code={x}>`, `<BlockSource code={x} />` or
+  //     `<CodeBlock …>{x}</CodeBlock>`. Read those files now, before step 3
+  //     drops the imports, so the mirror carries the copyable source too.
+  const rawImports = new Map();
+  for (const [, name, specifier] of body.matchAll(/^import\s+(\w+)\s+from\s+'@site\/([^']+)\?raw';/gmu)) {
+    try {
+      rawImports.set(name, readFileSync(join(DOCS_APP_DIR, specifier), 'utf8'));
+    } catch {
+      // unreadable source: each handler below falls back to a note
+    }
+  }
+  body = body.replace(/<CodeBlock\b([^>]*)>\s*\{(\w+)\}\s*<\/CodeBlock>/gu, (_, attrs, name) => {
+    if (!rawImports.has(name)) {
+      // Only `import x from '@site/…?raw';` (single quotes, semicolon) is read.
+      console.warn(`gen:llms — <CodeBlock>{${name}}</CodeBlock> has no readable '@site/…?raw' import; its source is left out of the mirror`);
+      return '> _Source — see the online docs._';
+    }
+    const language = attrs.match(/\blanguage=(["'])(\w+)\1/u)?.[2] ?? '';
+    const title = attrs.match(/\btitle=(["'])([^"']+)\1/u)?.[2];
+    const fence = protect('```' + language + '\n' + normalizeDemo(rawImports.get(name)) + '\n```');
+    return title ? `**${title}**\n\n${fence}` : fence;
+  });
+  // Live block previews have no Markdown form; keep the example's source
+  // when the preview carries it as `code={x}`.
+  body = body.replace(/<BlockPreview\b([^>]*)>[\s\S]*?<\/BlockPreview>/gu, (_, attrs) => {
+    const note = '> _Interactive demo — see the online docs._';
+    const name = attrs.match(/\bcode=\{(\w+)\}/u)?.[1];
+    if (!name) return note;
+    if (!rawImports.has(name)) {
+      console.warn(`gen:llms — <BlockPreview code={${name}}> has no readable '@site/…?raw' import; its source is left out of the mirror`);
+      return note;
+    }
+    const title = attrs.match(/\btitle=(["'])([^"']+)\1/u)?.[2];
+    const fence = protect('```tsx\n' + normalizeDemo(rawImports.get(name)) + '\n```');
+    return `${note}\n\n${title ? `**${title}**\n\n` : ''}${fence}`;
+  });
+
+  // A block's source file on its own: `<BlockSource code={x} title="…" />`.
+  body = body.replace(/<BlockSource\b([^>]*?)\/>/gu, (_, attrs) => {
+    const name = attrs.match(/\bcode=\{(\w+)\}/u)?.[1];
+    if (!name || !rawImports.has(name)) {
+      console.warn(`gen:llms — <BlockSource code={${name}}> has no readable '@site/…?raw' import; its source is left out of the mirror`);
+      return '> _Source — see the online docs._';
+    }
+    const title = attrs.match(/\btitle=(["'])([^"']+)\1/u)?.[2];
+    const language = title?.endsWith('.ts') ? 'ts' : 'tsx';
+    const fence = protect('```' + language + '\n' + normalizeDemo(rawImports.get(name)) + '\n```');
+    return title ? `**${title}**\n\n${fence}` : fence;
   });
 
   // 2. Drop JSX comments ({/* ... */}), including the api-tables + prettier
