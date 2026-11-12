@@ -14,3 +14,7 @@ packages/*/dist/
 # re-formats them to pretty-printed, so every `dev:docs`/`gen:icons` run shows
 # a spurious diff against the committed files. Never hand-edited.
 apps/docs/static/icon-svg/*.json
+
+# Written by pnpm. Prettier would requote every key and turn each lockfile
+# change into a whole-file diff.
+pnpm-lock.yaml
