@@ -1,5 +1,77 @@
 # @takeoff-ui/react-spar
 
+## 0.7.0
+
+### Minor Changes
+
+- [#259](https://github.com/turkishtechnology/takeoff-v2/pull/259)
+  [`4b5e5fc`](https://github.com/turkishtechnology/takeoff-v2/commit/4b5e5fc421c16dc204d98c6b4618f520ed1373fe)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Table:
+  user-controlled column resizing.
+
+  - New `columnResizing` prop (`true`, or `{ value, defaultValue, onChange }`
+    over `{ [columnId]: px }`) puts a drag handle on each header edge. It works
+    with a mouse, pen or touch, and with Left/Right arrows (Shift for 50px
+    steps). A double-click returns the column to its declared `width`, or fits
+    it to its content when it declares none. `onChange` fires once per resize,
+    not on every pointer move, so it can be persisted directly.
+  - `columnResizing.mode`: `'fit'` (default) keeps the table at its container's
+    width as described below; `'expand'` keeps every column's width, so a
+    growing column widens the table and its container scrolls, and a shrinking
+    one narrows the table and its border (new `TableColumnResizingMode` type;
+    the root carries `data-resize-mode`).
+  - New column options: `resizable` (default `true`), `minWidth` (default `50`)
+    and `maxWidth`.
+  - The table keeps its auto layout until the first resize, then switches to
+    `table-layout: fixed` (`data-fixed-layout` on the root), so a column can
+    shrink below its content. The last unpinned column without a declared
+    `width` has no handle and absorbs the leftover width (a fixed-width trailing
+    column keeps its width), so the table's own width never changes; a growing
+    column takes room from that column first, then from the columns between it
+    and that column, each down to the width its content needs first and only
+    then on down to its min width (fit-to-content too); each handle sits on the
+    edge facing that column (the start edge for a column after it, e.g. a right
+    pin), Alt/Ctrl/Meta + arrows are left to the browser, and a press that moves
+    less than 3px is a click. Once a table is resized (or opens with stored
+    widths), every body cell stays on one line: plain text ends in an ellipsis,
+    richer cell content is clipped.
+  - Header text is now wrapped in a new `headerLabel` slot
+    (`.tk-table-header-label`) on every table, so a narrowed header of a resized
+    table ends in an ellipsis.
+  - New `resizeHandle` slot, `TableColumnSizing` and `TableColumnResizingConfig`
+    types, and the matching `.tk-table-resize-handle` recipe styles in
+    `@takeoff-design/tokens`.
+
+### Patch Changes
+
+- [#258](https://github.com/turkishtechnology/takeoff-v2/pull/258)
+  [`f1e686c`](https://github.com/turkishtechnology/takeoff-v2/commit/f1e686c6c696be1ddd7131eca0e8c39d4a9f5081)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - `Dialog`
+  and `Drawer` no longer close when you pick an option in a `Select`, or press
+  inside a `Popover`, `Dropdown` or date-picker popover, that is rendered inside
+  the panel.
+
+  Those floating layers are portaled to `document.body`, and Spar's
+  outside-press check (a DOM `contains` test on the panel) treated every press
+  inside them as a press outside the dialog and closed it, losing the form
+  state. The fix lives in `@turkish-technology/spar` 0.3.1, which now counts
+  presses that start anywhere in the panel's React subtree, portaled descendants
+  included, as inside; this package now depends on that release. Such presses
+  are no longer reported to `onPointerDownOutside` / `onInteractOutside`.
+  Genuine outside presses still close the panel, and `dismissible={false}`
+  behaves as before.
+
+- [#262](https://github.com/turkishtechnology/takeoff-v2/pull/262)
+  [`40b8303`](https://github.com/turkishtechnology/takeoff-v2/commit/40b8303f1a3e0841c086588f883081e08e8e3d6a)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Bump
+  `@takeoff-icons/react` to `^0.5.0`, which brings the latest Figma icon sync
+  (1252 icons total) into the icon set available through react-spar. The chevron
+  and arrow glyphs used by Accordion, Select, Calendar, Table, Breadcrumb and
+  Input were redrawn upstream and now render larger. Accordion, Select,
+  Breadcrumb and the Table pagination arrows use smaller icon boxes to offset
+  the larger chevrons, and the Table sort and filter icons move to 20px (see the
+  tokens changeset).
+
 ## 0.6.0
 
 ### Minor Changes
