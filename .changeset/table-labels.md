@@ -31,20 +31,20 @@ overrides that match on them):
   `'{column} sütununu filtrele'`).
 - A whitespace-only `labels` value falls back to the default, like an empty
   string.
-- `@takeoff-design/tokens` peer range is now `>=0.5.2`, the release that ships
-  the `tk-table-filter-options` class used by the checkbox filter.
-- An empty `filter.placeholder` on a `select` filter falls back to the default
-  text (`labels.filterSelectPlaceholder`) instead of rendering an empty trigger.
+- An empty or whitespace-only `filter.placeholder` on a `select` filter falls
+  back to the default text (`labels.filterSelectPlaceholder`) instead of
+  rendering an empty trigger.
 
 A column's new `filter.label` sets the plain-text name used for `{column}`
 (needed when `header` is a node or function, which otherwise falls back to the
-column `id`). Custom `filter.render` controls receive `fieldLabel` (the
-formatted `labels.filterValue`) to use as their accessible name. Table always
-provides it; it is optional on `TableColumnFilterContext` only so a context
-built by hand (e.g. in a unit test) still type-checks.
+column `id`, with a one-time development warning per column). Custom
+`filter.render` controls receive `fieldLabel` (the formatted
+`labels.filterValue`) to use as their accessible name. Table always provides it;
+it is optional on `TableColumnFilterContext` only so a context built by hand
+(e.g. in a unit test) still type-checks.
 
 The checkbox and multi-select filter options now sit in a named group, the new
-`filterOptions` slot (`tk-table-filter-options`), styled by the matching
-`@takeoff-design/tokens` release. Its role and name come from Table and
-`labels.filterValue`; slotProps `role` / `aria-label` / `aria-labelledby` on it
-are ignored.
+`filterOptions` slot, which reuses the `tk-table-filter-panel-body` stacking
+class, so no new `@takeoff-design/tokens` release is needed. Its role and name
+come from Table and `labels.filterValue`; slotProps `role` / `aria-label` /
+`aria-labelledby` on it are ignored.

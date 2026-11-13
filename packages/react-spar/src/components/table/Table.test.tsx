@@ -759,6 +759,41 @@ describe('Table (props-first)', () => {
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Seçiniz');
     });
 
+    it('falls back from a whitespace-only select `filter.placeholder` and hides the column-label span', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', placeholder: '  ', options: [{ label: 'Admin', value: 'admin' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
+      expect(within(panel).getByRole('combobox', { name: 'Filter Role value Select' })).toHaveTextContent('Select');
+      // The span only feeds aria-labelledby; browse mode must not read it twice.
+      const labelSpan = within(panel).getByText('Filter Role value');
+      expect(labelSpan).toHaveAttribute('aria-hidden', 'true');
+    });
+
+    it('warns once per column when a filter name falls back to the column id', () => {
+      resetTableDevWarnings();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const columns: TableColumnDef<User>[] = [
+        { id: 'createdAt', header: () => 'Created', accessor: 'name', filter: 'text' },
+        { id: 'role', header: () => 'Role', accessor: 'role', filter: { type: 'text', label: 'Role' } },
+        { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+      ];
+      const { rerender } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
+      rerender(<Table data={users} columns={columns} getRowId={getRowId} striped />);
+      // A second table with the same column id does not warn again.
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      expect(screen.getAllByRole('button', { name: 'Filter createdAt' })).toHaveLength(2);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('"createdAt"');
+      expect(warn.mock.calls[0][0]).toContain('filter.label');
+      warn.mockRestore();
+    });
+
     it('takes filter-trigger, pagination and expand names from `labels`, ignoring slotProps aria-labels', async () => {
       const user = userEvent.setup();
       resetTableDevWarnings();
@@ -945,7 +980,7 @@ describe('Table (props-first)', () => {
 
       await user.click(screen.getByRole('button', { name: 'Filter City' }));
       expect(await screen.findByRole('group', { name: 'Filter City value' })).toContainElement(screen.getByRole('checkbox', { name: 'Istanbul' }));
-      expect(screen.getByRole('group', { name: 'Filter City value' })).toHaveClass('tk-table-filter-options');
+      expect(screen.getByRole('group', { name: 'Filter City value' })).toHaveClass('tk-table-filter-panel-body');
     });
 
     it('exposes the checkbox options group as the filterOptions slot', async () => {
@@ -961,7 +996,7 @@ describe('Table (props-first)', () => {
 
       await user.click(screen.getByRole('button', { name: 'Filter City' }));
       const group = await screen.findByRole('group', { name: 'Filter City value' });
-      expect(group).toHaveClass('tk-table-filter-options', 'theme-options', 'my-options');
+      expect(group).toHaveClass('tk-table-filter-panel-body', 'theme-options', 'my-options');
       expect(group).toHaveAttribute('data-slot', 'filter-options');
     });
 

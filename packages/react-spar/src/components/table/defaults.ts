@@ -9,9 +9,9 @@ export const DEFAULT_PAGE_SIZE_OPTIONS: number[] = [10, 25, 50, 100];
 // provider `defaultProps`).
 export const DEFAULT_LABELS: TableLabels = {
   noData: 'No data',
-  // Only used when `labels.loading` is set; otherwise Spinner's own (provider)
-  // default names the overlay, which is also 'Loading' out of the box.
-  loading: 'Loading',
+  // Unset by default so Spinner's own (provider) default names the overlay
+  // ('Loading' out of the box); listed so `resolveLabels` accepts the key.
+  loading: undefined,
   filterButton: 'Filter {column}',
   filterValue: 'Filter {column} value',
   filterClear: 'Clear',

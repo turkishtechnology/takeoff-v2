@@ -479,11 +479,12 @@ New components make every visible string and accessible name customizable, with
 the English default in the component's `defaults.ts`. A component with a few
 strings takes flat `*Label` props (as Upload does). A component with many takes
 one `labels?: Partial<…Labels>` object instead (Table), merged per key over
-provider `defaultProps`, so a whole translation fits one JSON entry. Dynamic
-strings are `{placeholder}` templates, never functions. Document what an empty
-string means: Table treats it as "use the default" so no control loses its name,
-while Upload uses it to hide a visible status line. Older components (Stepper,
-Toast, Input sub-buttons) predate this and do not all follow it yet.
+provider `defaultProps` with `resolveLabels` from `src/utils` (memoized), so a
+whole translation fits one JSON entry. Dynamic strings are `{placeholder}`
+templates, never functions. Document what an empty string means: Table treats it
+as "use the default" so no control loses its name, while Upload uses it to hide
+a visible status line. Older components (Stepper, Toast, Input sub-buttons)
+predate this and do not all follow it yet.
 
 ## Review checklist
 

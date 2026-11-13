@@ -76,7 +76,9 @@ export const TableBase = createComponentBase<TableProps, TableSlot>({
     expandedRow: 'tk-table-expanded-row',
     filterButton: 'tk-table-filter-button',
     filterPanel: 'tk-table-filter-panel-body',
-    filterOptions: 'tk-table-filter-options',
+    // Reuses the panel-body class: it stacks the options the same way, and
+    // needs no new tokens release.
+    filterOptions: 'tk-table-filter-panel-body',
     pagination: 'tk-table-pagination',
     paginationInfo: 'tk-table-pagination-info',
     paginationNav: 'tk-table-pagination-nav',

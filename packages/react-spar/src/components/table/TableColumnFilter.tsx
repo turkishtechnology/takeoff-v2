@@ -11,7 +11,7 @@ import { Select } from '../select';
 import { formatLabel, visuallyHidden } from '../../utils';
 
 import { useTableContext, type SlotAttrs } from './context';
-import { warnIgnoredFilterButtonName } from './devWarnings';
+import { warnFilterLabelFallsBackToId, warnIgnoredFilterButtonName } from './devWarnings';
 import { isEmptyFilterValue } from './helpers';
 import type { TableColumnFilter as TableColumnFilterConfig, TableColumnFilterContext, TableColumnFilterOption } from './types';
 
@@ -54,13 +54,18 @@ export const TableColumnFilter = ({ header }: { header: AnyHeader }) => {
   const { 'data-slot': _filterButtonSlot, 'aria-label': ignoredAriaLabel, 'aria-labelledby': ignoredAriaLabelledBy, ...filterButtonAttrs } = slotAttrs('filterButton');
   useEffect(() => warnIgnoredFilterButtonName(ignoredAriaLabel, ignoredAriaLabelledBy), [ignoredAriaLabel, ignoredAriaLabelledBy]);
 
-  if (!filter) return null;
-
   // `{column}` in the filter labels: `filter.label`, else the header text, else
   // the id (an empty, node or render-function header has no text to use).
   const headerText = typeof column.columnDef.header === 'string' ? column.columnDef.header.trim() : '';
   // `filter.label` is typed as a string but may come from loose data; guard it.
-  const labelText = typeof filter.label === 'string' ? filter.label.trim() : '';
+  const labelText = typeof filter?.label === 'string' ? filter.label.trim() : '';
+  const fallsBackToId = !!filter && !labelText && !headerText;
+  useEffect(() => {
+    if (fallsBackToId) warnFilterLabelFallsBackToId(column.id);
+  }, [fallsBackToId, column.id]);
+
+  if (!filter) return null;
+
   const columnName = labelText || headerText || column.id;
   const value = column.getFilterValue();
   const active = (filter.isActive ?? defaultIsActive)(value);
@@ -153,7 +158,8 @@ const PresetFilterControl = ({
       <SelectFilter
         options={options}
         label={fieldLabel}
-        placeholder={placeholder || selectPlaceholder}
+        // Empty or whitespace-only falls back, like every `labels` value.
+        placeholder={typeof placeholder === 'string' && placeholder.trim() !== '' ? placeholder : selectPlaceholder}
         value={typeof value === 'string' ? value : ''}
         onChange={next => setValue(next || undefined)}
         container={container}
@@ -213,10 +219,12 @@ const SelectFilter = ({
   // a hidden column label plus its own visible value (WCAG 2.5.3, label in
   // name). Spar labels the listbox by the trigger, which a name computation
   // reads as the chosen option only, so the listbox is pointed at the column
-  // label directly (a consumer `aria-labelledby` wins in Spar).
+  // label directly (a consumer `aria-labelledby` wins in Spar). The label span
+  // is `aria-hidden` so browse mode doesn't read it as stray panel text;
+  // `aria-labelledby` still resolves hidden nodes.
   return (
     <Select value={value} onChange={onChange}>
-      <span id={labelId} style={visuallyHidden}>
+      <span id={labelId} style={visuallyHidden} aria-hidden="true">
         {label}
       </span>
       <Select.Trigger aria-labelledby={`${labelId} ${valueId}`}>

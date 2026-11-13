@@ -566,12 +566,20 @@
   @include table.table-header-content;
 }
 
+.tk-table-header-label {
+  @include table.table-header-label;
+}
+
 .tk-table-sort-trigger {
   @include table.table-sort-trigger;
 }
 
 .tk-table-sort-icon {
   @include table.table-sort-icon;
+}
+
+.tk-table-resize-handle {
+  @include table.table-resize-handle;
 }
 
 .tk-table-body {
@@ -612,10 +620,6 @@
 
 .tk-table-filter-panel-body {
   @include table.table-filter-panel-body;
-}
-
-.tk-table-filter-options {
-  @include table.table-filter-options;
 }
 
 .tk-table-pagination {

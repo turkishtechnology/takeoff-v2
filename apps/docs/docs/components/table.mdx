@@ -510,8 +510,8 @@ with `type` (+ `options` for the choice controls):
 <small>
   ¹ Spar's `Select` has no multi mode yet, so `multi-select` currently renders
   the same `Checkbox` list as `checkbox`. The `checkbox` and `multi-select`
-  options sit in a named group with the `tk-table-filter-options` class (from
-  `@takeoff-design/tokens`), exposed as the `filterOptions` slot, so
+  options sit in a named group, exposed as the `filterOptions` slot (it reuses
+  the panel body's `tk-table-filter-panel-body` stacking class), so
   `classNames.filterOptions` / `slotProps.filterOptions` or a theme can restyle
   the list.
 </small>
@@ -755,7 +755,7 @@ plural rules.
 | Key                                                    | Default                              | Used for                                            |
 | ------------------------------------------------------ | ------------------------------------ | --------------------------------------------------- |
 | `noData`                                               | `'No data'`                          | Empty table (any `emptyState` wins, provider too)   |
-| `loading`                                              | `'Loading'`                          | Loading spinner's accessible name                   |
+| `loading`                                              | Spinner's own (`'Loading'`)          | Loading spinner's accessible name                   |
 | `filterButton`                                         | `'Filter {column}'`                  | Filter trigger's name (`{column}`)                  |
 | `filterValue`                                          | `'Filter {column} value'`            | Filter field / group name (`{column}`)              |
 | `filterClear`                                          | `'Clear'`                            | Filter panel Clear button                           |
