@@ -388,6 +388,8 @@
       }
 
       .tk-chat-message-bubble {
+        // Mirror the tail: the small corner faces the sender's side.
+        border-end-start-radius: var(--radius-xl);
         border-end-end-radius: var(--radius-xs);
         background: var(--primary-base);
         color: var(--static-white);
