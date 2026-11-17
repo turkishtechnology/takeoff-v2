@@ -13,7 +13,7 @@ type AnyCell = Cell<any, unknown>;
  * (align, sticky, width) are Table-owned.
  */
 export const TableCell = ({ cell }: { cell: AnyCell }) => {
-  const { slotAttrs, stickyLayout, stickyHeader } = useTableContext('Table.Cell');
+  const { slotAttrs, stickyLayout, stickyHeader, fixedLayout, absorberColumnId } = useTableContext('Table.Cell');
   const column = cell.column;
   const meta = column.columnDef.meta;
 
@@ -23,7 +23,12 @@ export const TableCell = ({ cell }: { cell: AnyCell }) => {
   const content = flexRender(column.columnDef.cell, cell.getContext());
 
   return (
-    <td {...attrs} data-align={meta?.align} data-sticky={sticky.dataSticky} style={{ ...attrs.style, ...sticky.style, ...resolveCellWidth(column, stickyLayout) }}>
+    <td
+      {...attrs}
+      data-align={meta?.align}
+      data-sticky={sticky.dataSticky}
+      style={{ ...attrs.style, ...sticky.style, ...resolveCellWidth(column, stickyLayout, fixedLayout, absorberColumnId) }}
+    >
       {content}
     </td>
   );
