@@ -866,7 +866,7 @@ describe('Chat (compound)', () => {
       const user = userEvent.setup();
       render(<TestChat allowCopy readOnly messages={[msg('1', { senderId: 'ayse', text: 'Gate F4' })]} />);
       await openActions(user, 'Gate F4');
-      await user.click(screen.getByRole('menuitem', { name: 'Copy text' }));
+      await user.click(screen.getByRole('menuitem', { name: 'Copy' }));
       await vi.waitFor(() => expect(row('Gate F4').querySelector('.tk-chat-message-copied')).toHaveTextContent('Copied'));
       expect(screen.getByRole('status')).toHaveTextContent('Copied');
       expect(await navigator.clipboard.readText()).toBe('Gate F4');
@@ -882,7 +882,7 @@ describe('Chat (compound)', () => {
         </Chat>,
       );
       await openActions(user, 'Mine');
-      expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual(['Reply', 'Copy text', 'Edit', 'Delete']);
+      expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual(['Reply', 'Copy', 'Edit', 'Delete']);
     });
 
     it('offers no Copy without text, on deleted messages, when turned off, or without a clipboard', () => {
@@ -905,7 +905,7 @@ describe('Chat (compound)', () => {
       vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('denied'));
       render(<TestChat allowCopy messages={[msg('1', { text: 'secret' })]} />);
       await openActions(user, 'secret');
-      await user.click(screen.getByRole('menuitem', { name: 'Copy text' }));
+      await user.click(screen.getByRole('menuitem', { name: 'Copy' }));
       await new Promise(resolve => setTimeout(resolve, 20));
       expect(row('secret').querySelector('.tk-chat-message-copied')).toBeNull();
     });

@@ -631,12 +631,12 @@ function AttachmentsDemo() {
 ## Message actions
 
 A message's menu lists what applies to it: **Reply** (with `allowReplies`),
-**Copy text** (on by default for messages with text; `allowCopy={false}` turns
-it off), and on the user's own messages **Edit** and **Delete** while their
-windows are open. Compose `Chat.MessageActions` inside `Chat.Message` to add
-your own items after them — here **Pin**, which the app shows under the header.
-The edit and delete windows are 30 seconds, so those two disappear shortly after
-a message is sent.
+**Copy** (on by default for messages with text; `allowCopy={false}` turns it
+off), and on the user's own messages **Edit** and **Delete** while their windows
+are open. Compose `Chat.MessageActions` inside `Chat.Message` to add your own
+items after them — here **Pin**, which the app shows under the header. The edit
+and delete windows are 30 seconds, so those two disappear shortly after a
+message is sent.
 
 ```tsx
 function ActionsDemo() {
@@ -762,7 +762,7 @@ function LocalizationDemo() {
     edit: 'Düzenle',
     delete: 'Sil',
     undo: 'Geri al',
-    copy: 'Metni kopyala',
+    copy: 'Kopyala',
     copied: 'Kopyalandı',
     reply: 'Yanıtla',
     replyingTo: '{name} kişisine yanıt',
@@ -860,7 +860,7 @@ function LocalizationDemo() {
   hover and keyboard focus. A right click on the bubble opens the same menu
   (unless text in it is selected, so it can still be copied), and on touch
   screens a long press opens it.
-- **Copy text** confirms with a "Copied" note under the message, which a polite
+- **Copy** confirms with a "Copied" note under the message, which a polite
   status region also reads out.
 - A quote is read as "In reply to" its author and text; when the original is
   loaded it is a button that scrolls to it. While answering, the field is named

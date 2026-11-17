@@ -31,7 +31,7 @@ export const DEFAULT_LABELS: ChatLabels = {
   failed: 'Not delivered',
   retry: 'Retry',
   unread: '{count} unread messages',
-  copy: 'Copy text',
+  copy: 'Copy',
   copied: 'Copied',
   reply: 'Reply',
   replyingTo: 'Replying to {name}',
