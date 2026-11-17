@@ -215,14 +215,23 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
       onDelete?.(message);
       return false;
     }
-    const timer = setTimeout(
-      () => {
-        settle(message.id);
-        onDeleteRef.current?.(message);
-      },
-      Math.min(undoWindow, MAX_TIMEOUT_MS),
-    );
-    pending.current.set(message.id, { message, timer });
+    // setTimeout cannot wait longer than MAX_TIMEOUT_MS (about 24.8 days), so
+    // a longer window waits again until its real end.
+    const deadline = Date.now() + undoWindow;
+    const schedule = (): ReturnType<typeof setTimeout> =>
+      setTimeout(
+        () => {
+          if (Date.now() < deadline) {
+            entry.timer = schedule();
+            return;
+          }
+          settle(message.id);
+          onDeleteRef.current?.(message);
+        },
+        Math.min(deadline - Date.now(), MAX_TIMEOUT_MS),
+      );
+    const entry: PendingDelete = { message, timer: schedule() };
+    pending.current.set(message.id, entry);
     setPendingDeletes(previous => new Set(previous).add(message.id));
     return true;
   };

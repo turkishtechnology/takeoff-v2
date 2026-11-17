@@ -81,18 +81,16 @@ const useReadTracking = (viewport: RefObject<HTMLDivElement | null>, currentUser
       }
       const unread = message.senderId !== currentUserId && !message.deleted && message.status !== 'read';
       if (!element || !unread || !onReadRef.current || reported.current.has(message.id)) return;
+      // Without IntersectionObserver nothing can tell whether a message was
+      // on screen, so none is reported: a "read" the reader never saw would
+      // mislead the sender.
+      const io = getObserver();
+      if (!io) return;
       elements.current.set(message.id, element);
       byElement.current.set(element, message);
-      const io = getObserver();
-      if (io) io.observe(element);
-      else {
-        // No IntersectionObserver (old browsers, test environments): a
-        // rendered message counts as seen.
-        visible.current.set(message.id, message);
-        queueFlush();
-      }
+      io.observe(element);
     },
-    [currentUserId, getObserver, queueFlush],
+    [currentUserId, getObserver],
   );
 
   // Messages that became visible while the tab was in the background are

@@ -282,7 +282,9 @@ export interface ChatOwnProps {
   /**
    * Called with incoming messages that are not `'read'` yet once they are on
    * screen while the page is visible — mark them read on the server and set
-   * their `status` to `'read'`. A message is reported once.
+   * their `status` to `'read'`. A message is reported once. Needs
+   * `IntersectionObserver`; where it is missing (e.g. jsdom) nothing is
+   * reported, so mock it in tests.
    */
   onRead?: (messages: ChatMessage[]) => void;
   /**

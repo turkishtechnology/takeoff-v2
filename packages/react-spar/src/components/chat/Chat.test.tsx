@@ -613,6 +613,23 @@ describe('Chat (compound)', () => {
       expect(onDelete).not.toHaveBeenCalled();
     });
 
+    it('waits out an undo window longer than setTimeout can hold', async () => {
+      const user = userEvent.setup();
+      const onDelete = vi.fn();
+      const DAY = 24 * 60 * MINUTE;
+      render(<TestChat messages={[msg('1', { text: 'long undo' })]} onDelete={onDelete} undoWindow={30 * DAY} />);
+      await openActions(user, 'long undo');
+      // Fake timers from the delete on; user-event itself waits on real ones.
+      vi.useFakeTimers();
+      vi.setSystemTime(NOW);
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Delete' }));
+      act(() => vi.advanceTimersByTime(25 * DAY));
+      expect(onDelete).not.toHaveBeenCalled();
+      expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument();
+      act(() => vi.advanceTimersByTime(5 * DAY));
+      expect(onDelete).toHaveBeenCalledOnce();
+    });
+
     it('calls onDelete for a pending delete when the chat unmounts', async () => {
       const user = userEvent.setup();
       const onDelete = vi.fn();
@@ -1241,9 +1258,26 @@ describe('Chat (compound)', () => {
   });
 
   describe('read tracking', () => {
-    it('reports incoming unread messages once when no IntersectionObserver exists', async () => {
+    it('reports nothing without IntersectionObserver, rather than a read nobody saw', async () => {
       vi.stubGlobal('IntersectionObserver', undefined);
       const onRead = vi.fn();
+      render(<TestChat messages={[msg('1', { senderId: 'ayse', text: 'unread', status: 'delivered' })]} onRead={onRead} />);
+      await new Promise(resolve => setTimeout(resolve, 10));
+      expect(onRead).not.toHaveBeenCalled();
+    });
+
+    it('watches only incoming unread messages, and each once', () => {
+      const observed: Element[] = [];
+      vi.stubGlobal(
+        'IntersectionObserver',
+        class {
+          observe(element: Element) {
+            observed.push(element);
+          }
+          unobserve() {}
+          disconnect() {}
+        },
+      );
       const messages = [
         msg('1', { senderId: 'ayse', text: 'unread a', status: 'delivered' }),
         msg('2', { senderId: 'ayse', text: 'unread b', status: undefined }),
@@ -1251,12 +1285,8 @@ describe('Chat (compound)', () => {
         msg('4', { senderId: 'ayse', text: 'deleted', deleted: true }),
         msg('5', { text: 'mine' }),
       ];
-      const { rerender } = render(<TestChat messages={messages} onRead={onRead} />);
-      await vi.waitFor(() => expect(onRead).toHaveBeenCalledTimes(1));
-      expect(onRead.mock.calls[0][0].map((message: ChatMessage) => message.id)).toEqual(['1', '2']);
-      rerender(<TestChat messages={[...messages]} onRead={onRead} />);
-      await Promise.resolve();
-      expect(onRead).toHaveBeenCalledTimes(1);
+      render(<TestChat messages={messages} onRead={vi.fn()} />);
+      expect(observed).toEqual([row('unread a'), row('unread b')]);
     });
 
     it('does nothing without onRead', async () => {

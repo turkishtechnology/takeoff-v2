@@ -361,6 +361,8 @@ Empty strings fall back to the English default, so no control loses its name.
 - **`status` on incoming messages means "read by me".** Anything but `'read'` is
   reported once through `onRead` when it is on screen; set it to `'read'`
   afterwards.
+- **Read tracking needs `IntersectionObserver`.** Without it (jsdom) `onRead`
+  never fires — a read nobody saw would mislead the sender. Mock it in tests.
 - **Edits are text only.** `onEdit` gets the new trimmed text; custom bubble
   content passed as `Chat.Message` children is yours to update.
 - **Windows are UI only.** `editWindow` / `deleteWindow` hide the actions in
