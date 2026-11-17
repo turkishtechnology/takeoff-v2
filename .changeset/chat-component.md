@@ -20,6 +20,8 @@ layout that collapses to one pane below 640px.
   `onDelete` runs. The actions disappear when the window closes, and a right
   click or a touch long press opens a message's menu; ArrowUp in an empty
   composer edits the last message and Escape leaves editing.
+- Copy: on by default for messages with text (`allowCopy`), with a "Copied" note
+  that is also announced; it stays available read-only.
 - Replies: `allowReplies` adds Reply to the message menu, a reply banner to the
   composer and `details.replyTo` to `onSend`; a message's `replyTo` draws a
   quote that follows the original and jumps to it.

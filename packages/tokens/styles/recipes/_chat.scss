@@ -24,7 +24,7 @@
 //     .tk-chat-jump                 — Button
 //   .tk-chat-message                — one message row
 //     -avatar / -body / -author / -bubble / -text / -meta / -time /
-//     -edited / -status / -retry / -undo
+//     -edited / -status / -retry / -undo / -copied
 //     -attachments                  — the message's files (Upload rows)
 //     -image                        — an image attachment's preview link
 //     -quote / -quote-author / -quote-text — the message it answers
@@ -594,6 +594,12 @@
     line-height: var(--desktop-body-xs-line-height);
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+  }
+
+  // Brief "Copied" confirmation in the meta line.
+  .tk-chat-message-copied {
+    color: var(--states-success-base);
+    font-weight: 600;
   }
 
   .tk-chat-message-retry,

@@ -43,6 +43,11 @@ export interface ChatContextValue {
   /** Focuses a pending message's Undo button. */
   focusUndo: (id: string) => void;
   canReply: (message: ChatMessage) => boolean;
+  canCopy: (message: ChatMessage) => boolean;
+  /** Copies a message's text to the clipboard and confirms it. */
+  copyMessage: (message: ChatMessage) => void;
+  /** The message whose text was just copied. */
+  copiedId: string | null;
   /** The message the composer is answering, if any. */
   replying: ChatMessage | undefined;
   startReplying: (message: ChatMessage) => void;

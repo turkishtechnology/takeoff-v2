@@ -97,6 +97,7 @@ export const ChatMessageBase = createComponentBase<ChatMessageProps, ChatMessage
     'quote',
     'quoteAuthor',
     'quoteText',
+    'copied',
   ] as const,
   classes: {
     root: 'tk-chat-message',
@@ -116,6 +117,7 @@ export const ChatMessageBase = createComponentBase<ChatMessageProps, ChatMessage
     quote: 'tk-chat-message-quote',
     quoteAuthor: 'tk-chat-message-quote-author',
     quoteText: 'tk-chat-message-quote-text',
+    copied: 'tk-chat-message-copied',
   },
 });
 

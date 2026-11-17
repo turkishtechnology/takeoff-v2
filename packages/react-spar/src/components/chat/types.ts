@@ -26,7 +26,8 @@ export type ChatMessageSlot =
   | 'image'
   | 'quote'
   | 'quoteAuthor'
-  | 'quoteText';
+  | 'quoteText'
+  | 'copied';
 export type ChatMessageActionsSlot = 'root';
 export type ChatEmptySlot = 'root';
 export type ChatComposerSlot = 'root' | 'editing' | 'cancel' | 'replying' | 'cancelReply' | 'controls' | 'send' | 'upload' | 'attach' | 'attachments';
@@ -184,6 +185,10 @@ export interface ChatLabels {
   retry: string;
   /** Accessible text for a conversation's unread count. `{count}` is the number. */
   unread: string;
+  /** Menu item that copies a message's text. */
+  copy: string;
+  /** Note under a message whose text was just copied; also announced. */
+  copied: string;
   /** Menu item that answers a message. */
   reply: string;
   /** Banner above the composer while answering a message. `{name}` is its author. */
@@ -244,6 +249,12 @@ export interface ChatOwnProps {
    */
   allowReplies?: boolean;
   /**
+   * Copy in the menu of every message with text. It also works in a
+   * `readOnly` or `disabled` chat, since it changes nothing.
+   * @defaultValue true
+   */
+  allowCopy?: boolean;
+  /**
    * Called when the user deletes one of their messages, once `undoWindow` has
    * passed without an undo. Setting it turns on the Delete action.
    */
@@ -291,9 +302,9 @@ export interface ChatOwnProps {
   defaultConversationId?: string | null;
   /** Called when the user opens a conversation, or goes back to the list (`null`). */
   onConversationChange?: (id: string | null) => void;
-  /** Turns the composer and the message actions off, e.g. while offline. */
+  /** Turns the composer and the message actions (except Copy) off, e.g. while offline. */
   disabled?: boolean;
-  /** View-only conversation: no composer and no message actions. */
+  /** View-only conversation: no composer, and Copy is the only message action. */
   readOnly?: boolean;
   /**
    * BCP 47 locale for times and dates, e.g. `'tr-TR'`.
@@ -384,14 +395,15 @@ export interface ChatMessageOwnProps {
 export type ChatMessageProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, ChatMessageOwnProps>;
 
 export interface ChatMessageActionsOwnProps {
-  /** Extra `Dropdown.Item`s, listed after the built-in Reply, Edit and Delete. */
+  /** Extra `Dropdown.Item`s, listed after the built-in Reply, Copy, Edit and Delete. */
   children?: ReactNode;
   classNames?: ClassNamesMap<ChatMessageActionsSlot>;
   slotProps?: SlotPropsMap<ChatMessageActionsSlot>;
 }
 
 /**
- * The message's menu button. Lists Reply while `allowReplies` is set, Edit and
+ * The message's menu button. Lists Reply while `allowReplies` is set, Copy on
+ * messages with text (unless `allowCopy` is off), Edit and
  * Delete on the user's own messages while `onEdit` / `onDelete` are set and
  * their windows are open, then its children. Renders nothing when it has no
  * items.

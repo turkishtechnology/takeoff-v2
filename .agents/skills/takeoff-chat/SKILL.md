@@ -266,6 +266,7 @@ failed, as Upload rows with a download button.
 | `participants`          | `ChatParticipant[]`                 | `[]`    | Names/avatars. More than one other participant = group chat.                            |
 | `onSend`                | `(text, attachments, details)`      | -       | Trimmed text (empty for files only), the composer's files, `details.replyTo`.           |
 | `allowReplies`          | `boolean`                           | `false` | Reply in every menu; composer shows what is answered; store it on `replyTo`.            |
+| `allowCopy`             | `boolean`                           | `true`  | Copy in the menu of messages with text; works read-only too.                            |
 | `onEdit`                | `(message, text) => void`           | -       | Turns on Edit for own messages. Not called if the text did not change.                  |
 | `onDelete`              | `(message) => void`                 | -       | Turns on Delete for own messages.                                                       |
 | `onRetry`               | `(message) => void`                 | -       | Retry button under `'failed'` own messages.                                             |
@@ -371,8 +372,9 @@ Empty strings fall back to the English default, so no control loses its name.
   image previews from its `file` until then.
 - **Replying and editing share the composer.** Starting one ends the other; a
   reply also ends when its message is deleted.
-- **Reply is built in.** Don't add a Reply `Dropdown.Item` of your own — set
-  `allowReplies`.
+- **Reply and Copy are built in.** Don't add your own Reply or Copy
+  `Dropdown.Item` — set `allowReplies`; Copy is on unless `allowCopy={false}`.
+  Menu order: Reply, Copy, Edit, Delete, then your items.
 - **Every part must sit inside `Chat`**, and `Chat.MessageActions` inside
   `Chat.Message` — each throws otherwise.
 

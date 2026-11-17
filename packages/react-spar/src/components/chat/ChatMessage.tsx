@@ -133,6 +133,8 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
     canEdit,
     canDelete,
     canReply,
+    canCopy,
+    copiedId,
     pendingDeletes,
     undoDelete,
     registerUndo,
@@ -187,7 +189,7 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
   const { content, actions } = partition(children);
   // Composed actions may still render nothing; the gestures only need to
   // know a menu can be there, and an empty one never opens.
-  const hasMenu = !deleted && (actions.length > 0 || canReply(message) || canEdit(message) || canDelete(message));
+  const hasMenu = !deleted && (actions.length > 0 || canReply(message) || canCopy(message) || canEdit(message) || canDelete(message));
   // A menu whose message loses its actions (deleted, window closed) stays
   // closed when they come back, e.g. after Undo.
   useEffect(() => {
@@ -256,6 +258,12 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
               <span {...slot('status')} data-status={status} title={labels[status]}>
                 {STATUS_ICON[status]}
                 <span style={visuallyHidden}>{labels[status]}</span>
+              </span>
+            )}
+            {/* Visible confirmation; the root's status region reads it out. */}
+            {copiedId === message.id && (
+              <span {...slot('copied')} aria-hidden="true">
+                {labels.copied}
               </span>
             )}
             {canRetry && (

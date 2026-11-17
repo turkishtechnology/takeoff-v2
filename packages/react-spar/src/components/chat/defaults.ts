@@ -31,6 +31,8 @@ export const DEFAULT_LABELS: ChatLabels = {
   failed: 'Not delivered',
   retry: 'Retry',
   unread: '{count} unread messages',
+  copy: 'Copy text',
+  copied: 'Copied',
   reply: 'Reply',
   replyingTo: 'Replying to {name}',
   cancelReply: 'Cancel reply',
@@ -66,6 +68,9 @@ export const UNDO_WINDOW_MS = 5000;
 
 // How long (ms) a message stays highlighted after a quote jumps to it.
 export const HIGHLIGHT_MS = 1600;
+
+// How long (ms) the "Copied" note stays under a message.
+export const COPIED_MS = 1500;
 
 // A touch held this long (ms) without moving opens a message's menu.
 export const LONG_PRESS_MS = 500;

@@ -630,43 +630,56 @@ function AttachmentsDemo() {
 
 ## Message actions
 
-Compose `Chat.MessageActions` inside `Chat.Message` to add your own menu items
-after the built-in Reply, Edit and Delete — here **Copy text**. The edit and
-delete windows are 30 seconds, so the built-in items disappear shortly after a
-message is sent.
+A message's menu lists what applies to it: **Reply** (with `allowReplies`),
+**Copy text** (on by default for messages with text; `allowCopy={false}` turns
+it off), and on the user's own messages **Edit** and **Delete** while their
+windows are open. Compose `Chat.MessageActions` inside `Chat.Message` to add
+your own items after them — here **Pin**, which the app shows under the header.
+The edit and delete windows are 30 seconds, so those two disappear shortly after
+a message is sent.
 
 ```tsx
 function ActionsDemo() {
+  const minutesAgo = minutes => new Date(Date.now() - minutes * 60000);
   const [messages, setMessages] = useState([
     {
       id: '1',
       senderId: 'ayse',
-      text: 'Shall we move the meeting?',
-      createdAt: new Date(Date.now() - 60000),
+      text: 'New boarding time for TK1979 is 14:20.',
+      createdAt: minutesAgo(20),
       status: 'read',
     },
     {
       id: '2',
+      senderId: 'mehmet',
+      text: 'Shall we move the briefing then?',
+      createdAt: minutesAgo(2),
+      status: 'read',
+    },
+    {
+      id: '3',
       senderId: 'me',
-      text: 'Yes, to 15:00',
-      createdAt: new Date(),
+      text: 'Yes, to 13:30',
+      createdAt: minutesAgo(1),
       status: 'read',
     },
   ]);
-  const [copied, setCopied] = useState(null);
+  const [pinnedId, setPinnedId] = useState('1');
+  const pinned = messages.find(m => m.id === pinnedId && !m.deleted);
   const update = (id, patch) =>
     setMessages(list => list.map(m => (m.id === id ? { ...m, ...patch } : m)));
-  const copy = message => {
-    navigator.clipboard?.writeText(message.text);
-    setCopied(message.id);
-    setTimeout(() => setCopied(null), 1500);
-  };
 
   return (
-    <Card className="h-110 w-full max-w-110 overflow-hidden">
+    <Card className="h-120 w-full max-w-110 overflow-hidden">
       <Chat
         messages={messages}
         currentUserId="me"
+        participants={[
+          { id: 'me', name: 'You' },
+          { id: 'ayse', name: 'Ayşe Yılmaz' },
+          { id: 'mehmet', name: 'Mehmet Kaya' },
+        ]}
+        allowReplies
         editWindow={30000}
         deleteWindow={30000}
         onSend={text =>
@@ -686,12 +699,38 @@ function ActionsDemo() {
         }
         onDelete={message => update(message.id, { deleted: true })}
       >
+        <Chat.Header>
+          <Chat.Title>Ops team</Chat.Title>
+        </Chat.Header>
+        {pinned && (
+          <div className="flex items-center gap-2 border-b border-(--border-light) px-4 py-1.5 text-sm">
+            <KeepIconOutlinedRounded
+              aria-hidden="true"
+              className="shrink-0 text-(--primary-base)"
+            />
+            <span className="min-w-0 flex-1 truncate">{pinned.text}</span>
+            <Button
+              variant="neutral"
+              appearance="text"
+              size="small"
+              onClick={() => setPinnedId(null)}
+            >
+              Unpin
+            </Button>
+          </div>
+        )}
         <Chat.Messages>
           {message => (
             <Chat.Message message={message}>
               <Chat.MessageActions>
-                <Dropdown.Item onSelect={() => copy(message)}>
-                  {copied === message.id ? 'Copied' : 'Copy text'}
+                <Dropdown.Separator />
+                <Dropdown.Item
+                  onSelect={() =>
+                    setPinnedId(message.id === pinnedId ? null : message.id)
+                  }
+                >
+                  <KeepIconOutlinedRounded aria-hidden="true" />
+                  {message.id === pinnedId ? 'Unpin' : 'Pin'}
                 </Dropdown.Item>
               </Chat.MessageActions>
             </Chat.Message>
@@ -723,6 +762,8 @@ function LocalizationDemo() {
     edit: 'Düzenle',
     delete: 'Sil',
     undo: 'Geri al',
+    copy: 'Metni kopyala',
+    copied: 'Kopyalandı',
     reply: 'Yanıtla',
     replyingTo: '{name} kişisine yanıt',
     cancelReply: 'Yanıtı iptal et',
@@ -819,6 +860,8 @@ function LocalizationDemo() {
   hover and keyboard focus. A right click on the bubble opens the same menu
   (unless text in it is selected, so it can still be copied), and on touch
   screens a long press opens it.
+- **Copy text** confirms with a "Copied" note under the message, which a polite
+  status region also reads out.
 - A quote is read as "In reply to" its author and text; when the original is
   loaded it is a button that scrolls to it. While answering, the field is named
   "Replying to" the author, and <kbd>Esc</kbd> stops answering.
@@ -841,6 +884,7 @@ function LocalizationDemo() {
 | `currentUserId`         | <code>string</code>                                                                       | -                    | The signed-in user. Messages whose `senderId` matches are drawn as the user's own.                                                                                                                                                            |
 | `participants`          | <code><a href="#chat-td-chatparticipant">ChatParticipant</a>[]</code>                     | -                    | Everyone in the conversation, for names and avatars. With more than one other participant the chat is drawn as a group: incoming messages show their author's name and avatar.                                                                |
 | `allowReplies`          | <code>boolean</code>                                                                      | -                    | Adds Reply to every message's menu. The composer then shows what is being answered, and `onSend` gets it as `details.replyTo` — store it on the new message's `replyTo`.                                                                      |
+| `allowCopy`             | <code>boolean</code>                                                                      | true                 | Copy in the menu of every message with text. It also works in a `readOnly` or `disabled` chat, since it changes nothing.                                                                                                                      |
 | `editWindow`            | <code>number</code>                                                                       | -                    | How long after `createdAt` a message can still be edited, in milliseconds. Leave it unset for no limit. The Edit action disappears once it passes.                                                                                            |
 | `deleteWindow`          | <code>number</code>                                                                       | -                    | How long after `createdAt` a message can still be deleted, in milliseconds. Leave it unset for no limit. The Delete action disappears once it passes.                                                                                         |
 | `undoWindow`            | <code>number</code>                                                                       | 5000                 | How long a deleted message can still be restored, in milliseconds. Until then it shows as deleted with an Undo button, and `onDelete` is called when the time is up — or right away if the chat unmounts first. `0` calls `onDelete` at once. |
@@ -849,8 +893,8 @@ function LocalizationDemo() {
 | `isLoadingOlder`        | <code>boolean</code>                                                                      | -                    | Older messages are loading: the button shows a spinner and the log is marked busy.                                                                                                                                                            |
 | `conversationId`        | <code>string &#124; null</code>                                                           | -                    | The open conversation (controlled), for chats with a `Chat.ConversationList`. `null` means none is open. Pair with `onConversationChange`.                                                                                                    |
 | `defaultConversationId` | <code>string &#124; null</code>                                                           | -                    | The conversation open at first (uncontrolled).                                                                                                                                                                                                |
-| `disabled`              | <code>boolean</code>                                                                      | -                    | Turns the composer and the message actions off, e.g. while offline.                                                                                                                                                                           |
-| `readOnly`              | <code>boolean</code>                                                                      | -                    | View-only conversation: no composer and no message actions.                                                                                                                                                                                   |
+| `disabled`              | <code>boolean</code>                                                                      | -                    | Turns the composer and the message actions (except Copy) off, e.g. while offline.                                                                                                                                                             |
+| `readOnly`              | <code>boolean</code>                                                                      | -                    | View-only conversation: no composer, and Copy is the only message action.                                                                                                                                                                     |
 | `locale`                | <code>string</code>                                                                       | the browser's locale | BCP 47 locale for times and dates, e.g. `'tr-TR'`.                                                                                                                                                                                            |
 | `labels`                | <code>Partial&lt;<a href="#chat-td-chatlabels">ChatLabels</a>&gt;</code>                  | -                    | Texts of the chat, e.g. a translation. Anything left out stays in English.                                                                                                                                                                    |
 | `children`              | <code>React.ReactNode</code>                                                              | -                    | The parts: `Chat.Header`, `Chat.Messages`, `Chat.Empty`, `Chat.Composer`, and optionally `Chat.ConversationList` + `Chat.Thread`.                                                                                                             |
@@ -1017,17 +1061,17 @@ function LocalizationDemo() {
 
 ### Type Definitions {#chat-type-definitions}
 
-| Name                   | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ChatMessage`          | <code>&#123; id: string; senderId: string; text: string; createdAt: ChatTimestamp; editedAt?: ChatTimestamp; deleted?: boolean; status?: ChatMessageStatus; attachments?: <a href="#chat-td-chatattachment">ChatAttachment</a>[]; replyTo?: ChatReply &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `ChatParticipant`      | <code>&#123; id: string; name: string; avatar?: string &#124; ReactNode &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `ChatLabels`           | <code>&#123; conversations: string; back: string; messages: string; loadOlder: string; today: string; yesterday: string; typing: string; typingMany: string; jumpToLatest: string; newMessages: string; placeholder: string; send: string; save: string; editing: string; cancelEdit: string; messageActions: string; edit: string; delete: string; undo: string; edited: string; deleted: string; sending: string; sent: string; delivered: string; read: string; failed: string; retry: string; unread: string; reply: string; replyingTo: string; cancelReply: string; inReplyTo: string; you: string; originalMessage: string; attach: string; attachments: string; removeAttachment: string; downloadAttachment: string; openAttachment: string; uploading: string; uploadFailed: string; uploadProgress: string &#125;</code> |
-| `ChatAttachment`       | <code>&#123; id: string; file?: File; name?: string; size?: number; type?: string; url?: string; thumbUrl?: string; status?: UploadFileStatus; progress?: number; error?: string &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `ChatSendDetails`      | <code>&#123; replyTo?: <a href="#chat-td-chatmessage">ChatMessage</a> &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `ChatConversation`     | <code>&#123; id: string; title: string; avatar?: string &#124; ReactNode; preview?: ReactNode; updatedAt?: ChatTimestamp; unreadCount?: number &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `ChatConversationSlot` | <code>'root' &#124; 'avatar' &#124; 'body' &#124; 'title' &#124; 'preview' &#124; 'time' &#124; 'unread'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `ChatHeaderSlot`       | <code>'root' &#124; 'back'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `ChatMessagesSlot`     | <code>'root' &#124; 'viewport' &#124; 'content' &#124; 'loadOlder' &#124; 'divider' &#124; 'typing' &#124; 'typingDots' &#124; 'jump'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `ChatMessageSlot`      | <code>'root' &#124; 'avatar' &#124; 'body' &#124; 'author' &#124; 'bubble' &#124; 'text' &#124; 'meta' &#124; 'time' &#124; 'edited' &#124; 'status' &#124; 'retry' &#124; 'undo' &#124; 'attachments' &#124; 'image' &#124; 'quote' &#124; 'quoteAuthor' &#124; 'quoteText'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `ChatComposerSlot`     | <code>'root' &#124; 'editing' &#124; 'cancel' &#124; 'replying' &#124; 'cancelReply' &#124; 'controls' &#124; 'send' &#124; 'upload' &#124; 'attach' &#124; 'attachments'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `UploadRejection`      | <code>&#124; &#123; file: File; code: 'file-invalid-type'; /** The `accept` list the file failed to match. \*/ accept: string; &#125; &#124; &#123; file: File; code: 'file-too-large'; /** The `maxFileSize` (bytes) the file exceeded. _/ maxFileSize: number; &#125; &#124; &#123; file: File; code: 'too-many-files'; /\*\* How many files were allowed — `maxFileCount`, or 1 without `multiple`. _/ maxFileCount: number; &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                       |
+| Name                   | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ChatMessage`          | <code>&#123; id: string; senderId: string; text: string; createdAt: ChatTimestamp; editedAt?: ChatTimestamp; deleted?: boolean; status?: ChatMessageStatus; attachments?: <a href="#chat-td-chatattachment">ChatAttachment</a>[]; replyTo?: ChatReply &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `ChatParticipant`      | <code>&#123; id: string; name: string; avatar?: string &#124; ReactNode &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `ChatLabels`           | <code>&#123; conversations: string; back: string; messages: string; loadOlder: string; today: string; yesterday: string; typing: string; typingMany: string; jumpToLatest: string; newMessages: string; placeholder: string; send: string; save: string; editing: string; cancelEdit: string; messageActions: string; edit: string; delete: string; undo: string; edited: string; deleted: string; sending: string; sent: string; delivered: string; read: string; failed: string; retry: string; unread: string; copy: string; copied: string; reply: string; replyingTo: string; cancelReply: string; inReplyTo: string; you: string; originalMessage: string; attach: string; attachments: string; removeAttachment: string; downloadAttachment: string; openAttachment: string; uploading: string; uploadFailed: string; uploadProgress: string &#125;</code> |
+| `ChatAttachment`       | <code>&#123; id: string; file?: File; name?: string; size?: number; type?: string; url?: string; thumbUrl?: string; status?: UploadFileStatus; progress?: number; error?: string &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `ChatSendDetails`      | <code>&#123; replyTo?: <a href="#chat-td-chatmessage">ChatMessage</a> &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `ChatConversation`     | <code>&#123; id: string; title: string; avatar?: string &#124; ReactNode; preview?: ReactNode; updatedAt?: ChatTimestamp; unreadCount?: number &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `ChatConversationSlot` | <code>'root' &#124; 'avatar' &#124; 'body' &#124; 'title' &#124; 'preview' &#124; 'time' &#124; 'unread'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `ChatHeaderSlot`       | <code>'root' &#124; 'back'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `ChatMessagesSlot`     | <code>'root' &#124; 'viewport' &#124; 'content' &#124; 'loadOlder' &#124; 'divider' &#124; 'typing' &#124; 'typingDots' &#124; 'jump'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `ChatMessageSlot`      | <code>&#124; 'root' &#124; 'avatar' &#124; 'body' &#124; 'author' &#124; 'bubble' &#124; 'text' &#124; 'meta' &#124; 'time' &#124; 'edited' &#124; 'status' &#124; 'retry' &#124; 'undo' &#124; 'attachments' &#124; 'image' &#124; 'quote' &#124; 'quoteAuthor' &#124; 'quoteText' &#124; 'copied'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `ChatComposerSlot`     | <code>'root' &#124; 'editing' &#124; 'cancel' &#124; 'replying' &#124; 'cancelReply' &#124; 'controls' &#124; 'send' &#124; 'upload' &#124; 'attach' &#124; 'attachments'</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `UploadRejection`      | <code>&#124; &#123; file: File; code: 'file-invalid-type'; /** The `accept` list the file failed to match. \*/ accept: string; &#125; &#124; &#123; file: File; code: 'file-too-large'; /** The `maxFileSize` (bytes) the file exceeded. _/ maxFileSize: number; &#125; &#124; &#123; file: File; code: 'too-many-files'; /\*\* How many files were allowed — `maxFileCount`, or 1 without `multiple`. _/ maxFileCount: number; &#125;</code>                                                                                                                                                                                                                                                                                                                                                                                                                     |

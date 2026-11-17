@@ -3,11 +3,11 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState, type ElementT
 import { composeRootAttrs } from '../../core';
 import { useControllableState } from '../../hooks';
 import { useComponentTheme } from '../../provider';
-import { resolveLabels } from '../../utils';
+import { resolveLabels, visuallyHidden } from '../../utils';
 
 import { ChatBase } from './base';
 import { ChatProvider, type ChatContextValue, type ComposerField } from './context';
-import { DEFAULT_LABELS, HIGHLIGHT_MS, UNDO_WINDOW_MS } from './defaults';
+import { COPIED_MS, DEFAULT_LABELS, HIGHLIGHT_MS, UNDO_WINDOW_MS } from './defaults';
 import { isWithinWindow, nextWindowClose } from './helpers';
 import type { ChatAttachment, ChatMessage, ChatOwnProps, ChatProps } from './types';
 
@@ -48,6 +48,7 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
     participants = EMPTY_PARTICIPANTS,
     onSend,
     allowReplies = false,
+    allowCopy = true,
     onEdit,
     onDelete,
     onRetry,
@@ -156,6 +157,23 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
   const replyingMessage = replyingId === null || editing ? undefined : messages.find(message => message.id === replyingId);
   const replying = replyingMessage && canReply(replyingMessage) ? replyingMessage : undefined;
 
+  // Copy changes nothing, so it stays on in a read-only or disabled chat.
+  const canCopy = (message: ChatMessage) =>
+    allowCopy && !message.deleted && !pendingDeletes.has(message.id) && message.text.trim() !== '' && typeof navigator !== 'undefined' && Boolean(navigator.clipboard);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  useEffect(() => {
+    if (copiedId === null) return;
+    const timer = setTimeout(() => setCopiedId(null), COPIED_MS);
+    return () => clearTimeout(timer);
+  }, [copiedId]);
+  const copyMessage = (message: ChatMessage) => {
+    // A refused write (no permission, page not focused) just shows no note.
+    navigator.clipboard.writeText(message.text).then(
+      () => setCopiedId(message.id),
+      () => undefined,
+    );
+  };
+
   // Quotes jump to the message they answer: rows register here, and the
   // target is highlighted for a moment.
   const rows = useRef(new Map<string, Element>());
@@ -234,6 +252,9 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
     },
     stopEditing: () => setEditingId(null),
     canReply,
+    canCopy,
+    copyMessage,
+    copiedId,
     replying,
     startReplying: message => {
       if (!canReply(message)) return;
@@ -279,6 +300,11 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
         data-readonly={readOnly ? '' : undefined}
         ref={ref}
       >
+        {/* One polite region for short confirmations, so they are read out
+            without moving focus. */}
+        <span role="status" style={visuallyHidden}>
+          {copiedId === null ? '' : labels.copied}
+        </span>
         {children}
       </Component>
     </ChatProvider>
