@@ -109,8 +109,9 @@ description, and error context for nested controls)
 · `takeoff-toast`
 
 **Content & overlays:** `takeoff-calendar` (inline month grid: single, range,
-multiple) · `takeoff-card` · `takeoff-dialog` · `takeoff-divider` ·
-`takeoff-drawer` · `takeoff-popover` · `takeoff-table`
+multiple) · `takeoff-card` · `takeoff-chat` (messaging: conversation log, read
+receipts, timed edit/delete, conversation list) · `takeoff-dialog` ·
+`takeoff-divider` · `takeoff-drawer` · `takeoff-popover` · `takeoff-table`
 
 ## Patterns → composition skills
 

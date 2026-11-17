@@ -437,6 +437,27 @@ follow the standard conventions (presence = `''`, finite = string).
   filter button/panel are styled by class (`.tk-table-filter-button` /
   `.tk-table-filter-panel`) rather than a Table `data-slot` anchor.
 
+### Chat
+
+Chat is **v2-owned** with no upstream Spar primitive, so its vocabulary is
+wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the layout:** `data-layout` (`single` | `split` — a
+  `Chat.ConversationList` is mounted) and `data-view` (`list` | `thread` — which
+  pane a narrow split chat shows; the recipe reads it only together with
+  `data-layout="split"` inside a container query), plus `data-disabled` /
+  `data-readonly`.
+- **State that belongs to one message lives on its row:** `data-own` (presence),
+  `data-status` (`sending` | `sent` | `delivered` | `read` | `failed` —
+  consumer-driven, like Upload's per-item `data-status`), `data-deleted`,
+  `data-grouped` (continues the previous message's group) and `data-editing`
+  (the composer is editing it). The status glyph re-emits `data-status` so the
+  recipe colours it without an ancestor lookup.
+- **`data-selected` / `data-unread` (State, presence) on `Chat.Conversation`.**
+  `aria-current="true"` carries the selection for assistive technology.
+- **`data-editing` (State, presence) on `Chat.Composer`** while it edits a
+  message.
+
 ### Upload
 
 Upload is **v2-owned** with no upstream Spar primitive, so its vocabulary is
