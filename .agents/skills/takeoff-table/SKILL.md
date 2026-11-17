@@ -314,12 +314,13 @@ Full props, events, data attributes & type definitions: see
 All strings come from `labels` (partial; missing or empty keys keep the English
 default). Templates use `{placeholders}`: `pageStatus` (`{page}`,
 `{pageCount}`), `pageStatusUnknown` (`{page}`), `itemsRange` (`{start}`,
-`{end}`, `{total}`), `noItems` (`{total}`, always `0`), `goToPageNumber` /
-`currentPage` (`{page}`), `filterButton` / `filterValue` (`{column}`:
+`{end}`, `{total}`), `noItems` (`{total}`, always `0`), `pageButton` /
+`currentPageButton` (`{page}`), `filterButton` / `filterValue` (`{column}`:
 `filter.label`, else header text, else id; set `filter.label` for a node or
-function `header`). Other keys: `noData`, `loading`, `filterClear`,
-`filterSelectPlaceholder`, `pagination`, `firstPage`, `previousPage`,
-`nextPage`, `lastPage`, `rowsPerPage`, `goToPage`, `goToPageSubmit`,
+function `header`; `filter.label` names one column, `labels` holds Table's own
+strings). Other keys: `noData`, `loading`, `filterClear`,
+`filterSelectPlaceholder`, `paginationLandmark`, `firstPage`, `previousPage`,
+`nextPage`, `lastPage`, `rowsPerPage`, `pageJumpInput`, `pageJumpSubmit`,
 `selectAllRows`, `selectRow`, `rowSelection`, `expandRow`, `collapseRow`,
 `rowDetails`. App-wide: `TakeoffSparProvider`
 `components.Table.defaultProps.labels` (an instance `labels` merges over it per

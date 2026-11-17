@@ -322,8 +322,8 @@ export interface TableLabels {
   filterClear: string;
   /** `select` filter trigger text when nothing is picked; `filter.placeholder` overrides it. @defaultValue 'Select' */
   filterSelectPlaceholder: string;
-  /** Accessible name of the pagination region. @defaultValue 'Pagination' */
-  pagination: string;
+  /** Accessible name of the pagination `nav` landmark. @defaultValue 'Pagination' */
+  paginationLandmark: string;
   /** Page indicator. @defaultValue 'Page {page} of {pageCount}' */
   pageStatus: string;
   /** Page indicator while the page count is unknown (0). @defaultValue 'Page {page}' */
@@ -341,15 +341,15 @@ export interface TableLabels {
   /** @defaultValue 'Last page' */
   lastPage: string;
   /** Accessible name of a page-number button. @defaultValue 'Go to page {page}' */
-  goToPageNumber: string;
+  pageButton: string;
   /** Accessible name of the current page's button. @defaultValue 'Page {page}, current page' */
-  currentPage: string;
+  currentPageButton: string;
   /** Accessible name of the page-size select. @defaultValue 'Rows per page' */
   rowsPerPage: string;
   /** Accessible name of the page-jump input. @defaultValue 'Go to page' */
-  goToPage: string;
+  pageJumpInput: string;
   /** Accessible name of the page-jump submit button. @defaultValue 'Go' */
-  goToPageSubmit: string;
+  pageJumpSubmit: string;
   /** @defaultValue 'Select all rows' */
   selectAllRows: string;
   /** @defaultValue 'Select row' */

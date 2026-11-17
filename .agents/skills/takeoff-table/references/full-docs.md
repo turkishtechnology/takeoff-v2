@@ -859,7 +859,7 @@ translation and the object can live in a JSON translation file.
     filterSelectPlaceholder: 'Seçiniz',
     pageStatus: 'Sayfa {page} / {pageCount}',
     itemsRange: '{total} kayıttan {start}-{end}',
-    goToPageNumber: '{page}. sayfaya git',
+    pageButton: '{page}. sayfaya git',
   }}
 />
 ```
@@ -884,9 +884,10 @@ always names them. `filterValue` names the text filter input (a
 `filter.placeholder` stays a visible hint), the radio and checkbox groups, and
 the select trigger together with its visible value. `{column}` in `filterButton`
 / `filterValue` is the column's `filter.label`, else its header text, else its
-`id` (for an empty, node or function `header`, so set `filter.label` there).
-Template numbers are inserted as-is (`1234`, not `1.234`), and templates have no
-plural rules.
+`id` (for an empty, node or function `header`, so set `filter.label` there). Do
+not confuse the two: `filter.label` names one column, while the root `labels`
+prop holds the strings Table itself renders. Template numbers are inserted as-is
+(`1234`, not `1.234`), and templates have no plural rules.
 
 | Key                                                    | Default                              | Used for                                            |
 | ------------------------------------------------------ | ------------------------------------ | --------------------------------------------------- |
@@ -896,17 +897,17 @@ plural rules.
 | `filterValue`                                          | `'Filter {column} value'`            | Filter field / group name (`{column}`)              |
 | `filterClear`                                          | `'Clear'`                            | Filter panel Clear button                           |
 | `filterSelectPlaceholder`                              | `'Select'`                           | `select` filter trigger (`filter.placeholder` wins) |
-| `pagination`                                           | `'Pagination'`                       | Pagination region's accessible name                 |
+| `paginationLandmark`                                   | `'Pagination'`                       | Pagination `nav` landmark's name                    |
 | `pageStatus`                                           | `'Page {page} of {pageCount}'`       | Page indicator                                      |
 | `pageStatusUnknown`                                    | `'Page {page}'`                      | Page indicator while the page count is 0            |
 | `itemsRange`                                           | `'Items {start}-{end} of {total}'`   | Item range                                          |
 | `noItems`                                              | `'0 items'`                          | Item range with no rows (`{total}`, always `0`)     |
 | `firstPage` / `previousPage` / `nextPage` / `lastPage` | `'First page'` …                     | Pagination buttons                                  |
-| `goToPageNumber`                                       | `'Go to page {page}'`                | Page-number buttons                                 |
-| `currentPage`                                          | `'Page {page}, current page'`        | Current page's button                               |
+| `pageButton`                                           | `'Go to page {page}'`                | Page-number buttons                                 |
+| `currentPageButton`                                    | `'Page {page}, current page'`        | Current page's button                               |
 | `rowsPerPage`                                          | `'Rows per page'`                    | Page-size select                                    |
-| `goToPage`                                             | `'Go to page'`                       | Page-jump input                                     |
-| `goToPageSubmit`                                       | `'Go'`                               | Page-jump submit (translate with `goToPage`)        |
+| `pageJumpInput`                                        | `'Go to page'`                       | Page-jump input                                     |
+| `pageJumpSubmit`                                       | `'Go'`                               | Page-jump submit (translate with `pageJumpInput`)   |
 | `selectAllRows` / `selectRow`                          | `'Select all rows'` / `'Select row'` | Selection controls                                  |
 | `rowSelection`                                         | `'Row selection'`                    | Hidden header of the single-selection column        |
 | `expandRow` / `collapseRow`                            | `'Expand row'` / `'Collapse row'`    | Expand button                                       |

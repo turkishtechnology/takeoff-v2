@@ -805,7 +805,7 @@ describe('Table (props-first)', () => {
           pagination
           expansion={{ render: () => 'detail' }}
           columns={[{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }]}
-          labels={{ pagination: 'Sayfalama', expandRow: 'Satırı aç', collapseRow: 'Satırı kapat', filterButton: 'Sütunu filtrele' }}
+          labels={{ paginationLandmark: 'Sayfalama', expandRow: 'Satırı aç', collapseRow: 'Satırı kapat', filterButton: 'Sütunu filtrele' }}
           slotProps={{ pagination: { 'aria-label': 'Sonuçlar' }, expandButton: { 'aria-label': 'Detay' }, filterButton: { 'aria-label': 'Ada göre filtrele' } }}
         />,
       );
@@ -911,8 +911,8 @@ describe('Table (props-first)', () => {
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Select');
     });
 
-    it('keeps the page-jump submit named `Go` when only `goToPage` is translated', () => {
-      render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination={{ pageSize: 10 }} labels={{ goToPage: 'Sayfaya git' }} />);
+    it('keeps the page-jump submit named `Go` when only `pageJumpInput` is translated', () => {
+      render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination={{ pageSize: 10 }} labels={{ pageJumpInput: 'Sayfaya git' }} />);
       expect(screen.getByRole('spinbutton', { name: 'Sayfaya git' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Go' })).toBeInTheDocument();
     });
@@ -1083,18 +1083,18 @@ describe('Table (props-first)', () => {
       const labels = {
         noData: 'Veri yok',
         loading: 'Yükleniyor',
-        pagination: 'Sayfalama',
+        paginationLandmark: 'Sayfalama',
         pageStatus: 'Sayfa {page} / {pageCount}',
         itemsRange: '{total} kayıttan {start}-{end}',
         firstPage: 'İlk sayfa',
         previousPage: 'Önceki sayfa',
         nextPage: 'Sonraki sayfa',
         lastPage: 'Son sayfa',
-        goToPageNumber: '{page}. sayfaya git',
-        currentPage: '{page}. sayfa, geçerli sayfa',
+        pageButton: '{page}. sayfaya git',
+        currentPageButton: '{page}. sayfa, geçerli sayfa',
         rowsPerPage: 'Sayfa başına satır',
-        goToPage: 'Sayfaya git',
-        goToPageSubmit: 'Git',
+        pageJumpInput: 'Sayfaya git',
+        pageJumpSubmit: 'Git',
         selectAllRows: 'Tüm satırları seç',
         selectRow: 'Satırı seç',
         expandRow: 'Satırı aç',

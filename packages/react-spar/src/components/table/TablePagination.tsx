@@ -51,7 +51,7 @@ export const TablePagination = () => {
   };
 
   return (
-    <div {...slotAttrs('pagination')} role="navigation" aria-label={labels.pagination}>
+    <div {...slotAttrs('pagination')} role="navigation" aria-label={labels.paginationLandmark}>
       <div {...slotAttrs('paginationInfo')}>
         <span aria-live="polite">{formatLabel(pageCount > 0 ? labels.pageStatus : labels.pageStatusUnknown, { page: pageIndex + 1, pageCount })}</span>
         <span aria-live="polite">{itemsLabel}</span>
@@ -93,7 +93,7 @@ export const TablePagination = () => {
               size="small"
               variant="neutral"
               appearance={current ? 'outlined' : 'text'}
-              aria-label={formatLabel(current ? labels.currentPage : labels.goToPageNumber, { page: pageNumber })}
+              aria-label={formatLabel(current ? labels.currentPageButton : labels.pageButton, { page: pageNumber })}
               aria-current={current ? 'page' : undefined}
               onClick={() => table.setPageIndex(item)}
             >
@@ -140,7 +140,7 @@ export const TablePagination = () => {
               min={1}
               max={Math.max(pageCount, 1)}
               inputMode="numeric"
-              aria-label={labels.goToPage}
+              aria-label={labels.pageJumpInput}
               placeholder={String(pageIndex + 1)}
               value={pageInput}
               disabled={pageCount <= 0}
@@ -157,7 +157,7 @@ export const TablePagination = () => {
               appearance="text"
               rounded
               size="small"
-              aria-label={labels.goToPageSubmit}
+              aria-label={labels.pageJumpSubmit}
               disabled={pageCount <= 0}
               onClick={goToPage}
               startContent={<ChevronRightIconOutlinedRounded />}

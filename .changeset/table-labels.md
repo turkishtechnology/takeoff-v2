@@ -14,7 +14,7 @@ key by key. `filterButton` and the new `filterValue` take a `{column}`
 placeholder. `filterValue` names the preset filter fields, which had no
 accessible name: the text input (a `filter.placeholder` stays a visible hint),
 the radio and checkbox groups, and the select trigger, whose name also carries
-its visible value. The page-jump submit has its own `goToPageSubmit` key.
+its visible value. The page-jump submit has its own `pageJumpSubmit` key.
 
 **Behaviour changes** (accessible names and fallbacks; review any tests or
 overrides that match on them):
