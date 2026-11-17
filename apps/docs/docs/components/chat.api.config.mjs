@@ -86,7 +86,8 @@ export default {
         { attribute: 'data-deleted', appliedWhen: 'When `deleted`, or deleted and waiting out `undoWindow`', purpose: 'Deleted-message treatment.' },
         { attribute: 'data-deleting', appliedWhen: 'While a delete can still be undone', purpose: 'Dims the message until `onDelete` runs.' },
         { attribute: 'data-grouped', appliedWhen: 'When it continues the previous message’s group', purpose: 'Tighter spacing; hides the repeated avatar.' },
-        { attribute: 'data-editing', appliedWhen: 'While the composer edits it', purpose: 'Highlights the message being edited.' },
+        { attribute: 'data-editing', appliedWhen: 'While the composer edits or answers it', purpose: 'Outlines the message the composer is working on.' },
+        { attribute: 'data-highlighted', appliedWhen: 'For a moment after a quote jumps to it', purpose: 'Flashes the bubble so the eye finds it.' },
       ],
     }),
     part('ChatMessageActionsProps', 'Chat.MessageActions', 'chat-message-actions', {

@@ -22,6 +22,7 @@ import { SendIconFilledRounded } from '@takeoff-icons/react/send';
 import { composeRootAttrs } from '../../core';
 import { useControllableState } from '../../hooks';
 import { useComponentTheme } from '../../provider';
+import { formatLabel } from '../../utils';
 import { Button } from '../button';
 import { Input } from '../input';
 import { Upload } from '../upload';
@@ -30,7 +31,8 @@ import { dragStateFor, type DragState } from '../upload/helpers';
 
 import { ChatComposerBase } from './base';
 import { useChatContext } from './context';
-import { isComposing, slotAttrsFor } from './helpers';
+import { describeQuote, isComposing, slotAttrsFor } from './helpers';
+import { ReplyIcon } from './icons';
 import type { ChatAttachment, ChatComposerOwnProps, ChatComposerProps } from './types';
 
 type ChatComposerResolvedProps = Omit<ChatComposerOwnProps, 'classNames' | 'slotProps'> & {
@@ -81,7 +83,8 @@ const carriesFiles = (event: DragEvent) => Array.from(event.dataTransfer.types).
 
 export const ChatComposer = <T extends ElementType = 'form'>(props: ChatComposerProps<T>) => {
   const theme = useComponentTheme('ChatComposer');
-  const { labels, disabled, readOnly, editing, startEditing, stopEditing, submit, messages, currentUserId, canEdit, composerFieldRef } = useChatContext('Chat.Composer');
+  const { labels, disabled, readOnly, editing, startEditing, stopEditing, replying, stopReplying, submit, messages, currentUserId, participants, canEdit, composerFieldRef } =
+    useChatContext('Chat.Composer');
 
   const [files, setFiles] = useState<ChatAttachment[]>([]);
   const [dragState, setDragState] = useState<DragState | null>(null);
@@ -146,7 +149,19 @@ export const ChatComposer = <T extends ElementType = 'form'>(props: ChatComposer
     return () => clearTimeout(timer);
   }, [editingId, editingText, composerFieldRef]);
 
+  // Starting a reply brings the field into focus, after the menu that
+  // started it has handed focus back to its trigger.
+  const replyingId = replying?.id;
+  useEffect(() => {
+    if (replyingId === undefined) return;
+    const timer = setTimeout(() => composerFieldRef.current?.focus());
+    return () => clearTimeout(timer);
+  }, [replyingId, composerFieldRef]);
+
   if (readOnly) return null;
+
+  const quote = replying && describeQuote({ id: replying.id }, replying, { labels, participants, currentUserId });
+  const replyLabel = quote ? formatLabel(labels.replyingTo, { name: quote.author }) : undefined;
 
   // Files wait while a message is edited: an edit changes text only.
   const attachable = allowAttachments && !editing && !disabled;
@@ -174,6 +189,11 @@ export const ChatComposer = <T extends ElementType = 'form'>(props: ChatComposer
     composerFieldRef.current?.focus();
   };
 
+  const cancelReply = () => {
+    stopReplying();
+    composerFieldRef.current?.focus();
+  };
+
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (isComposing(event)) return;
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -184,6 +204,10 @@ export const ChatComposer = <T extends ElementType = 'form'>(props: ChatComposer
       event.preventDefault();
       event.stopPropagation();
       cancelEditing();
+    } else if (event.key === 'Escape' && replying) {
+      event.preventDefault();
+      event.stopPropagation();
+      cancelReply();
     } else if (event.key === 'ArrowUp' && !editing && draft === '') {
       const lastEditable = [...messages].reverse().find(message => message.senderId === currentUserId && canEdit(message));
       if (lastEditable) {
@@ -214,6 +238,25 @@ export const ChatComposer = <T extends ElementType = 'form'>(props: ChatComposer
           />
         </div>
       )}
+      {quote && (
+        <div {...slot('replying')}>
+          <ReplyIcon />
+          <span>
+            <strong>{replyLabel}</strong> <span>{quote.text}</span>
+          </span>
+          <Button
+            {...slot('cancelReply')}
+            type="button"
+            variant="neutral"
+            appearance="text"
+            size="small"
+            rounded
+            aria-label={labels.cancelReply}
+            startContent={<CloseIconOutlinedRounded aria-hidden="true" focusable="false" />}
+            onClick={cancelReply}
+          />
+        </div>
+      )}
       {attachable && (
         <Upload.List {...slot('attachments')} role="group" aria-label={labels.attachments}>
           {items =>
@@ -238,7 +281,7 @@ export const ChatComposer = <T extends ElementType = 'form'>(props: ChatComposer
             placeholder={placeholder ?? labels.placeholder}
             // While editing, the field is named after what it is doing, so
             // moving focus into it says so.
-            aria-label={editing ? labels.editing : (placeholder ?? labels.placeholder)}
+            aria-label={editing ? labels.editing : (replyLabel ?? placeholder ?? labels.placeholder)}
             onChange={(event: { target: { value: string } }) => setDraft(event.target.value)}
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}

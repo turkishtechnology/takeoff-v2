@@ -79,7 +79,25 @@ export const ChatMessagesBase = createComponentBase<ChatMessagesProps, ChatMessa
 // is replaced through children.
 export const ChatMessageBase = createComponentBase<ChatMessageProps, ChatMessageSlot>({
   name: 'ChatMessage',
-  slots: ['root', 'avatar', 'body', 'author', 'bubble', 'text', 'meta', 'time', 'edited', 'status', 'retry', 'undo', 'attachments', 'image'] as const,
+  slots: [
+    'root',
+    'avatar',
+    'body',
+    'author',
+    'bubble',
+    'text',
+    'meta',
+    'time',
+    'edited',
+    'status',
+    'retry',
+    'undo',
+    'attachments',
+    'image',
+    'quote',
+    'quoteAuthor',
+    'quoteText',
+  ] as const,
   classes: {
     root: 'tk-chat-message',
     avatar: 'tk-chat-message-avatar',
@@ -95,6 +113,9 @@ export const ChatMessageBase = createComponentBase<ChatMessageProps, ChatMessage
     undo: 'tk-chat-message-undo',
     attachments: 'tk-chat-message-attachments',
     image: 'tk-chat-message-image',
+    quote: 'tk-chat-message-quote',
+    quoteAuthor: 'tk-chat-message-quote-author',
+    quoteText: 'tk-chat-message-quote-text',
   },
 });
 
@@ -118,11 +139,13 @@ export const ChatEmptyBase = createComponentBase<ChatEmptyProps, 'root'>({
 // send button are internal slots.
 export const ChatComposerBase = createComponentBase<ChatComposerProps, ChatComposerSlot>({
   name: 'ChatComposer',
-  slots: ['root', 'editing', 'cancel', 'controls', 'send', 'upload', 'attach', 'attachments'] as const,
+  slots: ['root', 'editing', 'cancel', 'replying', 'cancelReply', 'controls', 'send', 'upload', 'attach', 'attachments'] as const,
   classes: {
     root: 'tk-chat-composer',
     editing: 'tk-chat-composer-editing',
     cancel: 'tk-chat-composer-cancel',
+    replying: 'tk-chat-composer-replying',
+    cancelReply: 'tk-chat-composer-cancel-reply',
     controls: 'tk-chat-composer-controls',
     send: 'tk-chat-composer-send',
     upload: 'tk-chat-composer-upload',

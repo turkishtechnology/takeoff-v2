@@ -30,7 +30,7 @@ import { ChatAvatar } from './ChatAvatar';
 import { ChatMessageActions, ChatMessageItemContext } from './ChatMessageActions';
 import { ChatRowContext, useChatContext, useObserveRow } from './context';
 import { LONG_PRESS_MOVE_PX, LONG_PRESS_MS } from './defaults';
-import { formatTime, slotAttrsFor, toTime } from './helpers';
+import { describeQuote, formatTime, slotAttrsFor, toTime } from './helpers';
 import type { ChatMessageOwnProps, ChatMessageProps, ChatMessageStatus } from './types';
 
 type ChatMessageResolvedProps = Omit<ChatMessageOwnProps, 'classNames' | 'slotProps'> & {
@@ -118,8 +118,28 @@ const useMenuGestures = (enabled: boolean, open: () => void, own: BubbleHandlers
 
 export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessageProps<T>) => {
   const theme = useComponentTheme('ChatMessage');
-  const { currentUserId, participants, isGroup, labels, locale, onRetry, disabled, readOnly, editing, canEdit, canDelete, pendingDeletes, undoDelete, registerUndo } =
-    useChatContext('Chat.Message');
+  const {
+    messages,
+    currentUserId,
+    participants,
+    isGroup,
+    labels,
+    locale,
+    onRetry,
+    disabled,
+    readOnly,
+    editing,
+    replying,
+    canEdit,
+    canDelete,
+    canReply,
+    pendingDeletes,
+    undoDelete,
+    registerUndo,
+    registerRow,
+    showMessage,
+    highlightedId,
+  } = useChatContext('Chat.Message');
   const { grouped } = useContext(ChatRowContext);
   const observeRow = useObserveRow();
 
@@ -137,7 +157,8 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
       'data-deleted': deleted ? '' : undefined,
       'data-deleting': deleting ? '' : undefined,
       'data-grouped': grouped ? '' : undefined,
-      'data-editing': editing?.id === message.id ? '' : undefined,
+      'data-editing': editing?.id === message.id || replying?.id === message.id ? '' : undefined,
+      'data-highlighted': highlightedId === message.id ? '' : undefined,
     }),
   });
   const { as, message: _message, children, ref, ...nativeProps } = rest as ChatMessageResolvedProps;
@@ -149,9 +170,10 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
   const setRef = useCallback(
     (node: Element | null) => {
       element.current = node;
+      registerRow(message.id, node);
       assignRef(ref, node);
     },
-    [ref],
+    [ref, registerRow, message.id],
   );
   useEffect(() => {
     if (!observeRow) return;
@@ -165,7 +187,7 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
   const { content, actions } = partition(children);
   // Composed actions may still render nothing; the gestures only need to
   // know a menu can be there, and an empty one never opens.
-  const hasMenu = !deleted && (actions.length > 0 || canEdit(message) || canDelete(message));
+  const hasMenu = !deleted && (actions.length > 0 || canReply(message) || canEdit(message) || canDelete(message));
   // A menu whose message loses its actions (deleted, window closed) stays
   // closed when they come back, e.g. after Undo.
   useEffect(() => {
@@ -192,7 +214,12 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
   const attachments = deleted ? [] : (message.attachments ?? []);
   const hasCustomContent = content.some(node => node != null && node !== false);
   // A files-only message is just its files; anything else keeps its bubble.
-  const showBubble = deleted || hasCustomContent || message.text !== '' || attachments.length === 0;
+  const reply = deleted ? undefined : message.replyTo;
+  const original = reply && messages.find(candidate => candidate.id === reply.id);
+  const quote = reply && describeQuote(reply, original, { labels, participants, currentUserId });
+  const showBubble = deleted || hasCustomContent || message.text !== '' || attachments.length === 0 || Boolean(reply);
+  // A loaded original can be jumped to; otherwise the quote is just text.
+  const QuoteElement = original ? 'button' : 'div';
 
   const sender = participants.get(message.senderId);
   const senderName = sender?.name ?? message.senderId;
@@ -210,7 +237,13 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
           {showAuthor && !grouped && <span {...slot('author')}>{senderName}</span>}
           {showBubble && (
             <div {...bubbleAttrs} {...gestures}>
-              {deleted ? <p {...slot('text')}>{labels.deleted}</p> : hasCustomContent ? content : <p {...slot('text')}>{message.text}</p>}
+              {quote && (
+                <QuoteElement {...slot('quote')} {...(original ? { type: 'button', onClick: () => showMessage(original.id) } : {})}>
+                  {/* Spaces between the parts keep the accessible name readable. */}
+                  <span style={visuallyHidden}>{labels.inReplyTo}</span> <span {...slot('quoteAuthor')}>{quote.author}</span> <span {...slot('quoteText')}>{quote.text}</span>
+                </QuoteElement>
+              )}
+              {deleted ? <p {...slot('text')}>{labels.deleted}</p> : hasCustomContent ? content : message.text !== '' && <p {...slot('text')}>{message.text}</p>}
             </div>
           )}
           {attachments.length > 0 && <ChatAttachments attachments={attachments} root={{ ...filesAttrs, ...fileGestures }} image={slot('image')} />}

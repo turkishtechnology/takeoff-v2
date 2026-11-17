@@ -197,6 +197,33 @@ open, then the thread with a back button in `Chat.Header`.
 </Chat.Messages>
 ```
 
+### Replies
+
+```tsx
+<Chat
+  messages={messages}
+  currentUserId="me"
+  allowReplies
+  onSend={(text, attachments, { replyTo }) =>
+    addMessage({
+      text,
+      // A copy of what is quoted, shown while the original is not loaded.
+      replyTo: replyTo && {
+        id: replyTo.id,
+        senderId: replyTo.senderId,
+        text: replyTo.text,
+      },
+    })
+  }
+>
+  <Chat.Messages />
+  <Chat.Composer />
+</Chat>
+```
+
+The quote follows the loaded original (edits, deletes) and jumps to it when
+pressed; Escape or the banner's close button stops answering.
+
 ### Attachments
 
 ```tsx
@@ -237,7 +264,8 @@ failed, as Upload rows with a download button.
 | `messages`              | `ChatMessage[]`                     | -       | Oldest first. Required. On `Chat`.                                                      |
 | `currentUserId`         | `string`                            | -       | Messages with this `senderId` are the user's own. Required.                             |
 | `participants`          | `ChatParticipant[]`                 | `[]`    | Names/avatars. More than one other participant = group chat.                            |
-| `onSend`                | `(text, attachments) => void`       | -       | Trimmed text (empty for files only) and the composer's files. Without it nothing sends. |
+| `onSend`                | `(text, attachments, details)`      | -       | Trimmed text (empty for files only), the composer's files, `details.replyTo`.           |
+| `allowReplies`          | `boolean`                           | `false` | Reply in every menu; composer shows what is answered; store it on `replyTo`.            |
 | `onEdit`                | `(message, text) => void`           | -       | Turns on Edit for own messages. Not called if the text did not change.                  |
 | `onDelete`              | `(message) => void`                 | -       | Turns on Delete for own messages.                                                       |
 | `onRetry`               | `(message) => void`                 | -       | Retry button under `'failed'` own messages.                                             |
@@ -272,7 +300,7 @@ failed, as Upload rows with a download button.
 | `onFilesReject`         | `(rejections: UploadRejection[])`   | -       | Files turned down; the composer shows nothing, so tell the user. On `Chat.Composer`.    |
 
 `ChatMessage` is
-`{ id, senderId, text, createdAt, editedAt?, deleted?, status?, attachments? }`
+`{ id, senderId, text, createdAt, editedAt?, deleted?, status?, attachments?, replyTo? }`
 with `status` one of `'sending' | 'sent' | 'delivered' | 'read' | 'failed'`.
 `createdAt` / `editedAt` take a `Date`, an ISO string or epoch ms. `attachments`
 are `ChatAttachment` — the same `UploadFile` entries `Upload` uses (`id`,
@@ -296,6 +324,9 @@ once) and `locale`:
     edit: 'Düzenle',
     delete: 'Sil',
     undo: 'Geri al',
+    reply: 'Yanıtla',
+    replyingTo: '{name} kişisine yanıt',
+    you: 'Siz',
     attach: 'Dosya ekle',
     removeAttachment: '{name} dosyasını kaldır',
     downloadAttachment: '{name} dosyasını indir',
@@ -338,6 +369,10 @@ Empty strings fall back to the English default, so no control loses its name.
 - **`onSend` gets `File`s, not URLs.** Uploading is yours: update the
   attachment's `status` / `progress`, then set `url` (and `thumbUrl`). A local
   image previews from its `file` until then.
+- **Replying and editing share the composer.** Starting one ends the other; a
+  reply also ends when its message is deleted.
+- **Reply is built in.** Don't add a Reply `Dropdown.Item` of your own — set
+  `allowReplies`.
 - **Every part must sit inside `Chat`**, and `Chat.MessageActions` inside
   `Chat.Message` — each throws otherwise.
 

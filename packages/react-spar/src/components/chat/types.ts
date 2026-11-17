@@ -9,10 +9,27 @@ export type ChatThreadSlot = 'root';
 export type ChatHeaderSlot = 'root' | 'back';
 export type ChatTitleSlot = 'root';
 export type ChatMessagesSlot = 'root' | 'viewport' | 'content' | 'loadOlder' | 'divider' | 'typing' | 'typingDots' | 'jump';
-export type ChatMessageSlot = 'root' | 'avatar' | 'body' | 'author' | 'bubble' | 'text' | 'meta' | 'time' | 'edited' | 'status' | 'retry' | 'undo' | 'attachments' | 'image';
+export type ChatMessageSlot =
+  | 'root'
+  | 'avatar'
+  | 'body'
+  | 'author'
+  | 'bubble'
+  | 'text'
+  | 'meta'
+  | 'time'
+  | 'edited'
+  | 'status'
+  | 'retry'
+  | 'undo'
+  | 'attachments'
+  | 'image'
+  | 'quote'
+  | 'quoteAuthor'
+  | 'quoteText';
 export type ChatMessageActionsSlot = 'root';
 export type ChatEmptySlot = 'root';
-export type ChatComposerSlot = 'root' | 'editing' | 'cancel' | 'controls' | 'send' | 'upload' | 'attach' | 'attachments';
+export type ChatComposerSlot = 'root' | 'editing' | 'cancel' | 'replying' | 'cancelReply' | 'controls' | 'send' | 'upload' | 'attach' | 'attachments';
 export type ChatConversationListSlot = 'root';
 export type ChatConversationSlot = 'root' | 'avatar' | 'body' | 'title' | 'preview' | 'time' | 'unread';
 
@@ -62,6 +79,25 @@ export interface ChatMessage {
    * download button.
    */
   attachments?: ChatAttachment[];
+  /**
+   * The message this one answers. The quote above the text shows the original
+   * while it is in `messages` — current, so an edit or delete shows — and
+   * falls back to `senderId` / `text` here when it is not loaded.
+   */
+  replyTo?: ChatReply;
+}
+
+/** A reference to the message being answered, with what to show while the original is not loaded. */
+export interface ChatReply {
+  id: string;
+  senderId?: string;
+  text?: string;
+}
+
+/** What `onSend` knows about a message beyond its text and files. */
+export interface ChatSendDetails {
+  /** The message the user is answering, while `allowReplies` is set. */
+  replyTo?: ChatMessage;
 }
 
 /**
@@ -148,6 +184,18 @@ export interface ChatLabels {
   retry: string;
   /** Accessible text for a conversation's unread count. `{count}` is the number. */
   unread: string;
+  /** Menu item that answers a message. */
+  reply: string;
+  /** Banner above the composer while answering a message. `{name}` is its author. */
+  replyingTo: string;
+  /** Accessible name of the button that stops answering. */
+  cancelReply: string;
+  /** Lead-in read before a quoted message. */
+  inReplyTo: string;
+  /** The user's own name in quotes and the reply banner. */
+  you: string;
+  /** Quote text when the original is not loaded and the reply carries none. */
+  originalMessage: string;
   /** Accessible name of the composer's attach button. */
   attach: string;
   /** Accessible name of the composer's list of files waiting to be sent. */
@@ -183,12 +231,18 @@ export interface ChatOwnProps {
    * text is empty when only files are sent. Each file carries a fresh `id`
    * and its `file`; upload it and put it on the message as an attachment.
    */
-  onSend?: (text: string, attachments: ChatAttachment[]) => void;
+  onSend?: (text: string, attachments: ChatAttachment[], details: ChatSendDetails) => void;
   /**
    * Called with the message and its new trimmed text when an edit is saved.
    * Setting it turns on the Edit action for the user's own messages.
    */
   onEdit?: (message: ChatMessage, text: string) => void;
+  /**
+   * Adds Reply to every message's menu. The composer then shows what is being
+   * answered, and `onSend` gets it as `details.replyTo` — store it on the new
+   * message's `replyTo`.
+   */
+  allowReplies?: boolean;
   /**
    * Called when the user deletes one of their messages, once `undoWindow` has
    * passed without an undo. Setting it turns on the Delete action.
@@ -330,16 +384,17 @@ export interface ChatMessageOwnProps {
 export type ChatMessageProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, ChatMessageOwnProps>;
 
 export interface ChatMessageActionsOwnProps {
-  /** Extra `Dropdown.Item`s, listed after the built-in Edit and Delete. */
+  /** Extra `Dropdown.Item`s, listed after the built-in Reply, Edit and Delete. */
   children?: ReactNode;
   classNames?: ClassNamesMap<ChatMessageActionsSlot>;
   slotProps?: SlotPropsMap<ChatMessageActionsSlot>;
 }
 
 /**
- * The message's menu button. Lists Edit and Delete on the user's own messages
- * while `onEdit` / `onDelete` are set and their windows are open, then its
- * children. Renders nothing when it has no items.
+ * The message's menu button. Lists Reply while `allowReplies` is set, Edit and
+ * Delete on the user's own messages while `onEdit` / `onDelete` are set and
+ * their windows are open, then its children. Renders nothing when it has no
+ * items.
  */
 export type ChatMessageActionsProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, ChatMessageActionsOwnProps>;
 

@@ -1,9 +1,10 @@
 import type { KeyboardEvent } from 'react';
 
 import { buildSlotAttrs, type ClassNamesMap, type ComponentBase, type SlotPropsMap } from '../../core';
+import { fileName } from '../upload/helpers';
 
 import { GROUP_GAP_MS } from './defaults';
-import type { ChatLabels, ChatMessage, ChatTimestamp } from './types';
+import type { ChatLabels, ChatMessage, ChatParticipant, ChatReply, ChatTimestamp } from './types';
 
 export const toTime = (value: ChatTimestamp): number => (value instanceof Date ? value.getTime() : new Date(value).getTime());
 
@@ -98,3 +99,21 @@ export const slotAttrsFor =
       instanceSlotProps: props.slotProps,
       instanceClassNames: props.classNames,
     });
+
+/**
+ * Who and what a quote shows. The loaded original wins, so an edit or a delete
+ * shows in every quote of it; the reply's own copy covers an original that is
+ * not loaded.
+ */
+export const describeQuote = (
+  reply: ChatReply,
+  original: ChatMessage | undefined,
+  { labels, participants, currentUserId }: { labels: ChatLabels; participants: Map<string, ChatParticipant>; currentUserId: string },
+): { author: string; text: string } => {
+  const senderId = original?.senderId ?? reply.senderId;
+  const author = senderId === undefined ? '' : senderId === currentUserId ? labels.you : (participants.get(senderId)?.name ?? senderId);
+  if (!original) return { author, text: reply.text || labels.originalMessage };
+  if (original.deleted) return { author, text: labels.deleted };
+  const firstFile = original.attachments?.[0];
+  return { author, text: original.text || (firstFile ? fileName(firstFile) : labels.originalMessage) };
+};

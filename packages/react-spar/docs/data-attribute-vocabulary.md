@@ -452,9 +452,10 @@ wrapper-emitted. Recorded here per rule 10.
   consumer-driven, like Upload's per-item `data-status`), `data-deleted`,
   `data-deleting` (deleted, but still restorable during `undoWindow`; set
   together with `data-deleted`), `data-grouped` (continues the previous
-  message's group) and `data-editing` (the composer is editing it). The status
-  glyph re-emits `data-status` so the recipe colours it without an ancestor
-  lookup.
+  message's group), `data-editing` (the composer is editing or answering it) and
+  `data-highlighted` (a quote just jumped to it; cleared after a moment). The
+  status glyph re-emits `data-status` so the recipe colours it without an
+  ancestor lookup.
 - **`data-drag-state` (`accept` | `reject`) on `Chat.Composer` while files are
   dragged over it (`allowAttachments`) — Upload dropzone's attribute and
   resolver, plus `reject` while a message is being edited.

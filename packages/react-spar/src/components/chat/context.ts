@@ -42,6 +42,17 @@ export interface ChatContextValue {
   registerUndo: (id: string, element: HTMLElement | null) => void;
   /** Focuses a pending message's Undo button. */
   focusUndo: (id: string) => void;
+  canReply: (message: ChatMessage) => boolean;
+  /** The message the composer is answering, if any. */
+  replying: ChatMessage | undefined;
+  startReplying: (message: ChatMessage) => void;
+  stopReplying: () => void;
+  /** Registers a message's row, so a quote can scroll to it. */
+  registerRow: (id: string, element: Element | null) => void;
+  /** Scrolls the log to a message and highlights it for a moment. */
+  showMessage: (id: string) => void;
+  /** The message a quote just jumped to. */
+  highlightedId: string | null;
   /** The message the composer is editing, if any. */
   editing: ChatMessage | undefined;
   startEditing: (message: ChatMessage) => void;

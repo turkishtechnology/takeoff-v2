@@ -31,6 +31,12 @@ export const DEFAULT_LABELS: ChatLabels = {
   failed: 'Not delivered',
   retry: 'Retry',
   unread: '{count} unread messages',
+  reply: 'Reply',
+  replyingTo: 'Replying to {name}',
+  cancelReply: 'Cancel reply',
+  inReplyTo: 'In reply to',
+  you: 'You',
+  originalMessage: 'Original message',
   attach: 'Attach files',
   attachments: 'Files to send',
   removeAttachment: 'Remove {name}',
@@ -57,6 +63,9 @@ export const READ_VISIBILITY_THRESHOLD = 0.6;
 
 // How long a deleted message can be restored before `onDelete` is called.
 export const UNDO_WINDOW_MS = 5000;
+
+// How long (ms) a message stays highlighted after a quote jumps to it.
+export const HIGHLIGHT_MS = 1600;
 
 // A touch held this long (ms) without moving opens a message's menu.
 export const LONG_PRESS_MS = 500;

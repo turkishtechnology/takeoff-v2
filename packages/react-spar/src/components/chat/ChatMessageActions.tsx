@@ -10,6 +10,7 @@ import { Dropdown } from '../dropdown';
 
 import { ChatMessageActionsBase } from './base';
 import { useChatContext } from './context';
+import { ReplyIcon } from './icons';
 import type { ChatMessage, ChatMessageActionsOwnProps, ChatMessageActionsProps } from './types';
 
 type ChatMessageActionsResolvedProps = Omit<ChatMessageActionsOwnProps, 'classNames' | 'slotProps'> & {
@@ -41,7 +42,7 @@ const MoreIcon = () => (
 
 export const ChatMessageActions = <T extends ElementType = 'div'>(props: ChatMessageActionsProps<T>) => {
   const theme = useComponentTheme('ChatMessageActions');
-  const { canEdit, canDelete, startEditing, deleteMessage, focusComposer, focusUndo, labels } = useChatContext('Chat.MessageActions');
+  const { canEdit, canDelete, canReply, startEditing, startReplying, deleteMessage, focusComposer, focusUndo, labels } = useChatContext('Chat.MessageActions');
   const item = useContext(ChatMessageItemContext);
   if (!item) throw new Error('Chat.MessageActions must be used within Chat.Message');
   const { message, menuOpen, setMenuOpen } = item;
@@ -49,10 +50,11 @@ export const ChatMessageActions = <T extends ElementType = 'div'>(props: ChatMes
   const { rootAttrs, rest } = composeRootAttrs(ChatMessageActionsBase, props as ChatMessageActionsProps<'div'>, theme);
   const { as, children, ref, ...nativeProps } = rest as ChatMessageActionsResolvedProps;
 
+  const replyable = canReply(message);
   const editable = canEdit(message);
   const deletable = canDelete(message);
   const hasExtra = isRenderableNode(children);
-  if (!editable && !deletable && !hasExtra) return null;
+  if (!replyable && !editable && !deletable && !hasExtra) return null;
 
   const Component = (as ?? 'div') as ElementType;
 
@@ -61,6 +63,12 @@ export const ChatMessageActions = <T extends ElementType = 'div'>(props: ChatMes
       <Dropdown size="small" open={menuOpen} onOpenChange={setMenuOpen}>
         <Dropdown.Trigger as={Button} variant="neutral" appearance="text" size="small" rounded aria-label={labels.messageActions} startContent={<MoreIcon />} />
         <Dropdown.Content>
+          {replyable && (
+            <Dropdown.Item data-action="reply" onSelect={() => startReplying(message)}>
+              <ReplyIcon />
+              {labels.reply}
+            </Dropdown.Item>
+          )}
           {editable && (
             <Dropdown.Item data-action="edit" onSelect={() => startEditing(message)}>
               <EditIconOutlinedRounded aria-hidden="true" focusable="false" />

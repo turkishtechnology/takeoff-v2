@@ -27,22 +27,34 @@
 //     -edited / -status / -retry / -undo
 //     -attachments                  — the message's files (Upload rows)
 //     -image                        — an image attachment's preview link
+//     -quote / -quote-author / -quote-text — the message it answers
 //   .tk-chat-message-actions        — the row's menu (Dropdown)
 //   .tk-chat-empty                  — empty state
 //   .tk-chat-composer               — the composer form
-//     -editing / -cancel / -controls / -send
+//     -editing / -cancel / -replying / -cancel-reply / -controls / -send
 //     -upload                       — the Upload root (layout-neutral)
 //     -attach / -attachments        — attach button / files waiting to send
 //
 // State attributes (each has a consumer below — rule 9):
 //   .tk-chat[data-layout='single' | 'split'][data-view='list' | 'thread']
-//   .tk-chat-message[data-own][data-grouped][data-deleted][data-deleting][data-editing]
+//   .tk-chat-message[data-own][data-grouped][data-deleted][data-deleting][data-editing][data-highlighted]
 //   .tk-chat-message[data-status] / .tk-chat-message-status[data-status]
 //   .tk-chat-conversation[data-selected][data-unread]
 //   .tk-chat-composer[data-editing][data-drag-state='accept' | 'reject']
 // ---------------------------------------------------------------------------
 
 @mixin chat-keyframes {
+  @keyframes tk-chat-highlight {
+    0%,
+    40% {
+      box-shadow: 0 0 0 4px var(--primary-light);
+    }
+
+    100% {
+      box-shadow: 0 0 0 4px transparent;
+    }
+  }
+
   @keyframes tk-chat-typing {
     0%,
     60%,
@@ -416,9 +428,15 @@
       opacity: 0.72;
     }
 
+    // Being edited or answered in the composer.
     &[data-editing] .tk-chat-message-bubble {
       outline: 2px solid var(--primary-light);
       outline-offset: 2px;
+    }
+
+    // A quote just jumped here: flash the bubble so the eye finds it.
+    &[data-highlighted] .tk-chat-message-bubble {
+      animation: tk-chat-highlight 1.6s ease-out;
     }
 
     // The menu button shows on hover or keyboard focus, and stays while its
@@ -529,6 +547,55 @@
     }
   }
 
+  // The message this one answers, at the top of the bubble. Tinted from the
+  // bubble's own text colour so it reads on both sides.
+  .tk-chat-message-quote {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    margin: 0 0 6px;
+    padding: 6px 10px;
+    border: 0;
+    border-inline-start: 3px solid currentColor;
+    border-radius: var(--radius-s);
+    background: color-mix(in srgb, currentColor 10%, transparent);
+    color: inherit;
+    font: inherit;
+    text-align: start;
+
+    &:is(button) {
+      cursor: pointer;
+
+      &:hover {
+        background: color-mix(in srgb, currentColor 16%, transparent);
+      }
+
+      &:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .tk-chat-message-quote-author {
+    @include truncate;
+
+    font-weight: 600;
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+  }
+
+  .tk-chat-message-quote-text {
+    display: -webkit-box;
+    overflow: hidden;
+    opacity: 0.85;
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
   .tk-chat-message-retry,
   .tk-chat-message-undo {
     min-height: 0;
@@ -616,7 +683,9 @@
     overflow-y: auto;
   }
 
-  .tk-chat-composer-editing {
+  // Editing and replying borrow the composer the same way: one banner.
+  .tk-chat-composer-editing,
+  .tk-chat-composer-replying {
     display: flex;
     gap: 8px;
     align-items: center;

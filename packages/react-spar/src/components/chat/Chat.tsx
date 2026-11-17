@@ -7,7 +7,7 @@ import { resolveLabels } from '../../utils';
 
 import { ChatBase } from './base';
 import { ChatProvider, type ChatContextValue, type ComposerField } from './context';
-import { DEFAULT_LABELS, UNDO_WINDOW_MS } from './defaults';
+import { DEFAULT_LABELS, HIGHLIGHT_MS, UNDO_WINDOW_MS } from './defaults';
 import { isWithinWindow, nextWindowClose } from './helpers';
 import type { ChatAttachment, ChatMessage, ChatOwnProps, ChatProps } from './types';
 
@@ -47,6 +47,7 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
     currentUserId,
     participants = EMPTY_PARTICIPANTS,
     onSend,
+    allowReplies = false,
     onEdit,
     onDelete,
     onRetry,
@@ -139,11 +140,31 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
   const canEdit = (message: ChatMessage) => interactive && Boolean(onEdit) && isEditable(message) && isWithinWindow(message, editWindow, now);
   const canDelete = (message: ChatMessage) => interactive && Boolean(onDelete) && isLive(message) && message.status !== 'sending' && isWithinWindow(message, deleteWindow, now);
 
+  // Anyone's message can be answered once it has reached the server.
+  const canReply = (message: ChatMessage) =>
+    interactive && allowReplies && Boolean(onSend) && !message.deleted && !pendingDeletes.has(message.id) && message.status !== 'sending' && message.status !== 'failed';
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const editingMessage = editingId === null ? undefined : messages.find(message => message.id === editingId);
   // An edit ends by itself when its message goes away, is deleted, or leaves
   // the edit window while the user is still typing.
   const editing = editingMessage && canEdit(editingMessage) ? editingMessage : undefined;
+
+  // A reply ends the same way when its message can no longer be answered.
+  // Editing and replying share the composer, so starting one ends the other.
+  const [replyingId, setReplyingId] = useState<string | null>(null);
+  const replyingMessage = replyingId === null || editing ? undefined : messages.find(message => message.id === replyingId);
+  const replying = replyingMessage && canReply(replyingMessage) ? replyingMessage : undefined;
+
+  // Quotes jump to the message they answer: rows register here, and the
+  // target is highlighted for a moment.
+  const rows = useRef(new Map<string, Element>());
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  useEffect(() => {
+    if (highlightedId === null) return;
+    const timer = setTimeout(() => setHighlightedId(null), HIGHLIGHT_MS);
+    return () => clearTimeout(timer);
+  }, [highlightedId]);
 
   const submit = (text: string, attachments: ChatAttachment[] = []): boolean => {
     const trimmed = text.trim();
@@ -156,7 +177,8 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
     }
     if (!onSend || (trimmed === '' && attachments.length === 0)) return false;
     stickToBottom.current = true;
-    onSend(trimmed, attachments);
+    onSend(trimmed, attachments, { replyTo: replying });
+    setReplyingId(null);
     return true;
   };
 
@@ -206,9 +228,29 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
     focusUndo: id => undoButtons.current.get(id)?.focus(),
     editing,
     startEditing: message => {
-      if (canEdit(message)) setEditingId(message.id);
+      if (!canEdit(message)) return;
+      setReplyingId(null);
+      setEditingId(message.id);
     },
     stopEditing: () => setEditingId(null),
+    canReply,
+    replying,
+    startReplying: message => {
+      if (!canReply(message)) return;
+      setEditingId(null);
+      setReplyingId(message.id);
+    },
+    stopReplying: () => setReplyingId(null),
+    registerRow: (id, element) => {
+      if (element) rows.current.set(id, element);
+      else rows.current.delete(id);
+    },
+    showMessage: id => {
+      const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      rows.current.get(id)?.scrollIntoView({ block: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
+      setHighlightedId(id);
+    },
+    highlightedId,
     submit,
     stickToBottom,
     focusComposer,

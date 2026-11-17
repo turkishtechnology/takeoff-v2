@@ -311,7 +311,7 @@ describe('Chat (compound)', () => {
       await user.type(field(), '  Hello  ');
       expect(send).toBeEnabled();
       await user.keyboard('{Enter}');
-      expect(onSend).toHaveBeenCalledExactlyOnceWith('Hello', []);
+      expect(onSend).toHaveBeenCalledExactlyOnceWith('Hello', [], {});
       expect(field()).toHaveValue('');
       expect(field()).toHaveFocus();
     });
@@ -324,7 +324,7 @@ describe('Chat (compound)', () => {
       await user.type(field(), 'one{Shift>}{Enter}{/Shift}two');
       expect(onSend).not.toHaveBeenCalled();
       await user.click(screen.getByRole('button', { name: 'Send message' }));
-      expect(onSend).toHaveBeenCalledWith('one\ntwo', []);
+      expect(onSend).toHaveBeenCalledWith('one\ntwo', [], {});
       expect(onSubmit).toHaveBeenCalledTimes(1);
     });
 
@@ -367,7 +367,7 @@ describe('Chat (compound)', () => {
       render(<Controlled />);
       expect(field()).toHaveValue('start');
       await user.type(field(), '!{Enter}');
-      expect(onSend).toHaveBeenCalledWith('start!', []);
+      expect(onSend).toHaveBeenCalledWith('start!', [], {});
       expect(onValueChange).toHaveBeenLastCalledWith('');
     });
 
@@ -708,12 +708,12 @@ describe('Chat (compound)', () => {
       expect(list).toHaveClass('tk-chat-composer-attachments');
       expect(within(list).getByText('report.pdf')).toBeInTheDocument();
       await user.click(screen.getByRole('button', { name: 'Send message' }));
-      expect(onSend).toHaveBeenCalledExactlyOnceWith('', [expect.objectContaining({ name: 'report.pdf', file: expect.any(File) })]);
+      expect(onSend).toHaveBeenCalledExactlyOnceWith('', [expect.objectContaining({ name: 'report.pdf', file: expect.any(File) })], {});
       expect(screen.queryByRole('group', { name: 'Files to send' })).not.toBeInTheDocument();
 
       await user.upload(fileInput(), pdf());
       await user.type(field(), 'see attached{Enter}');
-      expect(onSend).toHaveBeenLastCalledWith('see attached', [expect.objectContaining({ name: 'report.pdf' })]);
+      expect(onSend).toHaveBeenLastCalledWith('see attached', [expect.objectContaining({ name: 'report.pdf' })], {});
     });
 
     it('takes a file back out of the composer', async () => {
@@ -857,6 +857,150 @@ describe('Chat (compound)', () => {
       await user.click(screen.getByRole('button', { name: 'Message actions' }));
       expect(screen.queryByRole('menuitem', { name: 'Edit' })).not.toBeInTheDocument();
       expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
+    });
+  });
+
+  describe('replies', () => {
+    beforeEach(() => {
+      Element.prototype.scrollIntoView = vi.fn();
+    });
+
+    const question = msg('1', { senderId: 'ayse', text: 'Shall we move the meeting?' });
+
+    it('answers a message from its menu and sends the reply with it', async () => {
+      const user = userEvent.setup();
+      const onSend = vi.fn();
+      render(<TestChat allowReplies messages={[question]} onSend={onSend} />);
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+
+      const banner = document.querySelector('.tk-chat-composer-replying') as HTMLElement;
+      expect(banner).toHaveTextContent('Replying to Ayşe Yılmaz');
+      expect(banner).toHaveTextContent('Shall we move the meeting?');
+      expect(row('Shall we move the meeting?')).toHaveAttribute('data-editing');
+      await vi.waitFor(() => expect(field()).toHaveFocus());
+      expect(field()).toHaveAccessibleName('Replying to Ayşe Yılmaz');
+
+      await user.type(field(), 'Yes, to 15:00{Enter}');
+      expect(onSend).toHaveBeenCalledExactlyOnceWith('Yes, to 15:00', [], { replyTo: question });
+      expect(document.querySelector('.tk-chat-composer-replying')).toBeNull();
+    });
+
+    it('stops replying with the cancel button or Escape', async () => {
+      const user = userEvent.setup();
+      const onKeyDown = vi.fn();
+      render(
+        <div onKeyDown={onKeyDown}>
+          <TestChat allowReplies messages={[question]} onSend={vi.fn()} />
+        </div>,
+      );
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+      await user.click(screen.getByRole('button', { name: 'Cancel reply' }));
+      expect(document.querySelector('.tk-chat-composer-replying')).toBeNull();
+      expect(field()).toHaveFocus();
+
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+      await vi.waitFor(() => expect(field()).toHaveFocus());
+      onKeyDown.mockClear();
+      await user.keyboard('{Escape}');
+      expect(document.querySelector('.tk-chat-composer-replying')).toBeNull();
+      expect(onKeyDown).not.toHaveBeenCalled();
+    });
+
+    it('lets editing and replying take turns in the composer', async () => {
+      const user = userEvent.setup();
+      const mine = msg('2', { text: 'Mine' });
+      render(<TestChat allowReplies onEdit={vi.fn()} messages={[question, mine]} onSend={vi.fn()} />);
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+      await openActions(user, 'Mine');
+      await user.click(screen.getByRole('menuitem', { name: 'Edit' }));
+      expect(document.querySelector('.tk-chat-composer-replying')).toBeNull();
+      expect(field()).toHaveValue('Mine');
+
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+      expect(document.querySelector('.tk-chat-composer-editing')).toBeNull();
+      expect(document.querySelector('.tk-chat-composer-replying')).not.toBeNull();
+    });
+
+    it('offers Reply only while replies are on and the message can be answered', () => {
+      const { rerender } = render(<TestChat messages={[question]} onSend={vi.fn()} />);
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      rerender(<TestChat allowReplies messages={[question, msg('2', { text: 'pending', status: 'sending' })]} />);
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      rerender(<TestChat allowReplies readOnly messages={[question]} onSend={vi.fn()} />);
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+    });
+
+    it('ends a reply whose message is deleted', async () => {
+      const user = userEvent.setup();
+      const { rerender } = render(<TestChat allowReplies messages={[question]} onSend={vi.fn()} />);
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+      rerender(<TestChat allowReplies messages={[{ ...question, deleted: true }]} onSend={vi.fn()} />);
+      expect(document.querySelector('.tk-chat-composer-replying')).toBeNull();
+    });
+
+    it('quotes the original and jumps to it', async () => {
+      const user = userEvent.setup();
+      render(<TestChat messages={[question, msg('2', { text: 'Yes, to 15:00', replyTo: { id: '1' } }), msg('3', { text: 'Own quote', replyTo: { id: '2' } })]} />);
+      const quote = row('Yes, to 15:00').querySelector('.tk-chat-message-quote') as HTMLElement;
+      expect(quote.tagName).toBe('BUTTON');
+      expect(quote).toHaveAccessibleName('In reply to Ayşe Yılmaz Shall we move the meeting?');
+      expect(quote.querySelector('.tk-chat-message-quote-author')).toHaveTextContent('Ayşe Yılmaz');
+      expect(row('Own quote').querySelector('.tk-chat-message-quote-author')).toHaveTextContent('You');
+
+      await user.click(quote);
+      const target = row('Shall we move the meeting?');
+      expect(target.scrollIntoView).toHaveBeenCalledWith({ block: 'center', behavior: 'smooth' });
+      expect(target).toHaveAttribute('data-highlighted');
+      await vi.waitFor(() => expect(target).not.toHaveAttribute('data-highlighted'), { timeout: 2500 });
+    });
+
+    it('jumps without animation when the reader prefers reduced motion', async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('reduce') }));
+      render(<TestChat messages={[question, msg('2', { text: 'Answer', replyTo: { id: '1' } })]} />);
+      await user.click(row('Answer').querySelector('.tk-chat-message-quote') as HTMLElement);
+      expect(row('Shall we move the meeting?').scrollIntoView).toHaveBeenCalledWith({ block: 'center', behavior: 'auto' });
+    });
+
+    it('falls back to the reply copy when the original is not loaded, and follows edits and deletes', () => {
+      const { rerender } = render(
+        <TestChat
+          messages={[msg('5', { text: 'Old answer', replyTo: { id: 'gone', senderId: 'ayse', text: 'Earlier question' } }), msg('6', { text: 'Bare', replyTo: { id: 'gone2' } })]}
+        />,
+      );
+      const quote = row('Old answer').querySelector('.tk-chat-message-quote') as HTMLElement;
+      expect(quote.tagName).toBe('DIV');
+      expect(quote).toHaveTextContent('Ayşe Yılmaz Earlier question');
+      expect(row('Bare').querySelector('.tk-chat-message-quote-text')).toHaveTextContent('Original message');
+
+      const files = msg('7', { senderId: 'ayse', text: '', attachments: [{ id: 'f', name: 'plan.pdf', url: 'https://example.com/p.pdf' }] });
+      rerender(
+        <TestChat
+          messages={[
+            files,
+            { ...question, deleted: true },
+            msg('8', { text: 'On files', replyTo: { id: '7' } }),
+            msg('9', { text: 'On deleted', replyTo: { id: '1' } }),
+            msg('10', { text: 'On empty', replyTo: { id: '11' } }),
+            msg('11', { senderId: 'ayse', text: '' }),
+          ]}
+        />,
+      );
+      expect(row('On files').querySelector('.tk-chat-message-quote-text')).toHaveTextContent('plan.pdf');
+      expect(row('On deleted').querySelector('.tk-chat-message-quote-text')).toHaveTextContent('This message was deleted');
+      expect(row('On empty').querySelector('.tk-chat-message-quote-text')).toHaveTextContent('Original message');
+    });
+
+    it('draws a bubble for a files-only reply so the quote shows', () => {
+      render(<TestChat messages={[question, msg('2', { text: '', replyTo: { id: '1' }, attachments: [{ id: 'f', name: 'a.pdf', url: 'https://example.com/a.pdf' }] })]} />);
+      expect(document.querySelectorAll('.tk-chat-message-quote')).toHaveLength(1);
+      expect(screen.getByText('a.pdf').closest('.tk-chat-message')?.querySelector('.tk-chat-message-bubble')).not.toBeNull();
     });
   });
 
