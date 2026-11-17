@@ -25,17 +25,21 @@
 //   .tk-chat-message                — one message row
 //     -avatar / -body / -author / -bubble / -text / -meta / -time /
 //     -edited / -status / -retry / -undo
+//     -attachments                  — the message's files (Upload rows)
+//     -image                        — an image attachment's preview link
 //   .tk-chat-message-actions        — the row's menu (Dropdown)
 //   .tk-chat-empty                  — empty state
 //   .tk-chat-composer               — the composer form
 //     -editing / -cancel / -controls / -send
+//     -upload                       — the Upload root (layout-neutral)
+//     -attach / -attachments        — attach button / files waiting to send
 //
 // State attributes (each has a consumer below — rule 9):
 //   .tk-chat[data-layout='single' | 'split'][data-view='list' | 'thread']
 //   .tk-chat-message[data-own][data-grouped][data-deleted][data-deleting][data-editing]
 //   .tk-chat-message[data-status] / .tk-chat-message-status[data-status]
 //   .tk-chat-conversation[data-selected][data-unread]
-//   .tk-chat-composer[data-editing]
+//   .tk-chat-composer[data-editing][data-drag-state='accept' | 'reject']
 // ---------------------------------------------------------------------------
 
 @mixin chat-keyframes {
@@ -492,6 +496,39 @@
     }
   }
 
+  // Files under (or instead of) the bubble, on the sender's side.
+  .tk-chat-message-attachments {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: inherit;
+    width: min(320px, 100%);
+
+    .tk-upload {
+      width: 100%;
+    }
+  }
+
+  .tk-chat-message-image {
+    display: block;
+    overflow: hidden;
+    max-width: 100%;
+    border-radius: var(--radius-xl);
+    background: var(--background-light);
+
+    img {
+      display: block;
+      max-width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary-base);
+      outline-offset: 2px;
+    }
+  }
+
   .tk-chat-message-retry,
   .tk-chat-message-undo {
     min-height: 0;
@@ -552,6 +589,31 @@
     margin: 0;
     padding: 12px 16px;
     border-top: 1px solid var(--border-light);
+
+    // Files dragged over the composer: it is the drop target, or says it
+    // will not take them (wrong type, or a message is being edited).
+    &[data-drag-state] {
+      outline: 2px dashed var(--primary-base);
+      outline-offset: -4px;
+      background: var(--primary-lightest);
+    }
+
+    &[data-drag-state='reject'] {
+      outline-color: var(--states-danger-base);
+      background: var(--states-danger-lightest);
+    }
+  }
+
+  // The Upload root only provides state; its children lay out in the composer.
+  .tk-chat-composer-upload {
+    display: contents;
+  }
+
+  // Files waiting to be sent: Upload rows, capped so a long list scrolls
+  // instead of pushing the log away.
+  .tk-chat-composer-attachments {
+    max-height: 168px;
+    overflow-y: auto;
   }
 
   .tk-chat-composer-editing {

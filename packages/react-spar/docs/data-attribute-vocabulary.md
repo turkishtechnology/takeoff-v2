@@ -455,6 +455,9 @@ wrapper-emitted. Recorded here per rule 10.
   message's group) and `data-editing` (the composer is editing it). The status
   glyph re-emits `data-status` so the recipe colours it without an ancestor
   lookup.
+- **`data-drag-state` (`accept` | `reject`) on `Chat.Composer` while files are
+  dragged over it (`allowAttachments`) — Upload dropzone's attribute and
+  resolver, plus `reject` while a message is being edited.
 - **`data-selected` / `data-unread` (State, presence) on `Chat.Conversation`.**
   `aria-current="true"` carries the selection for assistive technology.
 - **`data-editing` (State, presence) on `Chat.Composer`** while it edits a

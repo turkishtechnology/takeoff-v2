@@ -20,6 +20,10 @@ layout that collapses to one pane below 640px.
   `onDelete` runs. The actions disappear when the window closes, and a right
   click or a touch long press opens a message's menu; ArrowUp in an empty
   composer edits the last message and Escape leaves editing.
+- File attachments: `allowAttachments` on `Chat.Composer` adds an attach button,
+  drop and paste; `onSend(text, attachments)` hands over the files. Messages
+  show `attachments` (the same entries `Upload` uses) as image previews or file
+  rows with upload progress and download.
 - Every string is in `labels` (with `locale` for times), so the whole chat
   translates through the provider.
 

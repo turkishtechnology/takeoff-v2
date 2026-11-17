@@ -28,6 +28,7 @@ export { Chat };
 // No value exports: messages, participants and conversations are plain
 // objects the consumer builds and updates.
 export type {
+  ChatAttachment,
   ChatComposerProps,
   ChatComposerSlot,
   ChatConversation,

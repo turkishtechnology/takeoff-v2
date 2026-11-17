@@ -25,6 +25,7 @@ import { visuallyHidden } from '../../utils';
 import { Button } from '../button';
 
 import { ChatMessageBase } from './base';
+import { ChatAttachments } from './ChatAttachments';
 import { ChatAvatar } from './ChatAvatar';
 import { ChatMessageActions, ChatMessageItemContext } from './ChatMessageActions';
 import { ChatRowContext, useChatContext, useObserveRow } from './context';
@@ -172,6 +173,26 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
   }, [hasMenu]);
   const { onContextMenu, onPointerDown, onPointerMove, onPointerUp, onPointerCancel, ...bubbleAttrs } = slot('bubble') as ReturnType<typeof slot> & BubbleHandlers;
   const gestures = useMenuGestures(hasMenu, () => setMenuOpen(true), { onContextMenu, onPointerDown, onPointerMove, onPointerUp, onPointerCancel });
+  // Files open the same menu, so a message with no text still has it.
+  const {
+    onContextMenu: filesContextMenu,
+    onPointerDown: filesPointerDown,
+    onPointerMove: filesPointerMove,
+    onPointerUp: filesPointerUp,
+    onPointerCancel: filesPointerCancel,
+    ...filesAttrs
+  } = slot('attachments') as ReturnType<typeof slot> & BubbleHandlers;
+  const fileGestures = useMenuGestures(hasMenu, () => setMenuOpen(true), {
+    onContextMenu: filesContextMenu,
+    onPointerDown: filesPointerDown,
+    onPointerMove: filesPointerMove,
+    onPointerUp: filesPointerUp,
+    onPointerCancel: filesPointerCancel,
+  });
+  const attachments = deleted ? [] : (message.attachments ?? []);
+  const hasCustomContent = content.some(node => node != null && node !== false);
+  // A files-only message is just its files; anything else keeps its bubble.
+  const showBubble = deleted || hasCustomContent || message.text !== '' || attachments.length === 0;
 
   const sender = participants.get(message.senderId);
   const senderName = sender?.name ?? message.senderId;
@@ -187,15 +208,12 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
         {showAuthor && <ChatAvatar {...slot('avatar')} name={senderName} avatar={sender?.avatar} />}
         <div {...slot('body')}>
           {showAuthor && !grouped && <span {...slot('author')}>{senderName}</span>}
-          <div {...bubbleAttrs} {...gestures}>
-            {deleted ? (
-              <p {...slot('text')}>{labels.deleted}</p>
-            ) : content.length > 0 && content.some(node => node != null && node !== false) ? (
-              content
-            ) : (
-              <p {...slot('text')}>{message.text}</p>
-            )}
-          </div>
+          {showBubble && (
+            <div {...bubbleAttrs} {...gestures}>
+              {deleted ? <p {...slot('text')}>{labels.deleted}</p> : hasCustomContent ? content : <p {...slot('text')}>{message.text}</p>}
+            </div>
+          )}
+          {attachments.length > 0 && <ChatAttachments attachments={attachments} root={{ ...filesAttrs, ...fileGestures }} image={slot('image')} />}
           <div {...slot('meta')}>
             <time {...slot('time')} dateTime={new Date(time).toISOString()}>
               {formatTime(time, locale)}

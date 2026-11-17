@@ -197,6 +197,39 @@ open, then the thread with a back button in `Chat.Header`.
 </Chat.Messages>
 ```
 
+### Attachments
+
+```tsx
+<Chat
+  messages={messages}
+  currentUserId="me"
+  onSend={(text, attachments) => {
+    // Put the files on the message as 'uploading', then update each one's
+    // progress, and its status / url when the upload finishes.
+    addMessage({
+      text,
+      attachments: attachments.map(f => ({
+        ...f,
+        status: 'uploading',
+        progress: 0,
+      })),
+    });
+    attachments.forEach(uploadFile);
+  }}
+>
+  <Chat.Messages />
+  <Chat.Composer
+    allowAttachments
+    accept="image/*,.pdf"
+    maxFileSize={10 * 1024 * 1024}
+    onFilesReject={showToast}
+  />
+</Chat>
+```
+
+Uploaded images show as previews; other files, and anything still uploading or
+failed, as Upload rows with a download button.
+
 ## Key props
 
 | Prop                    | Type                                | Default | Notes                                                                                   |
@@ -204,7 +237,7 @@ open, then the thread with a back button in `Chat.Header`.
 | `messages`              | `ChatMessage[]`                     | -       | Oldest first. Required. On `Chat`.                                                      |
 | `currentUserId`         | `string`                            | -       | Messages with this `senderId` are the user's own. Required.                             |
 | `participants`          | `ChatParticipant[]`                 | `[]`    | Names/avatars. More than one other participant = group chat.                            |
-| `onSend`                | `(text: string) => void`            | -       | Trimmed text. Without it the composer does not send.                                    |
+| `onSend`                | `(text, attachments) => void`       | -       | Trimmed text (empty for files only) and the composer's files. Without it nothing sends. |
 | `onEdit`                | `(message, text) => void`           | -       | Turns on Edit for own messages. Not called if the text did not change.                  |
 | `onDelete`              | `(message) => void`                 | -       | Turns on Delete for own messages.                                                       |
 | `onRetry`               | `(message) => void`                 | -       | Retry button under `'failed'` own messages.                                             |
@@ -230,13 +263,21 @@ open, then the thread with a back button in `Chat.Header`.
 | `onValueChange`         | `(value: string) => void`           | -       | Every draft change, including the clear after sending.                                  |
 | `maxLength`             | `number`                            | -       | On `Chat.Composer`.                                                                     |
 | `placeholder`           | `string`                            | label   | On `Chat.Composer`.                                                                     |
-| `startContent`          | `ReactNode`                         | -       | Controls before the field (attach). On `Chat.Composer`.                                 |
+| `startContent`          | `ReactNode`                         | -       | Controls before the field. On `Chat.Composer`.                                          |
 | `endContent`            | `ReactNode`                         | -       | Controls before the send button (emoji). On `Chat.Composer`.                            |
+| `allowAttachments`      | `boolean`                           | `false` | Attach button, drop and paste. Files go to `onSend`. On `Chat.Composer`.                |
+| `accept`                | `string`                            | -       | File types, as `<input type="file">` `accept`. On `Chat.Composer`.                      |
+| `maxFileSize`           | `number` (bytes)                    | -       | Largest file taken. On `Chat.Composer`.                                                 |
+| `maxFileCount`          | `number`                            | -       | Most files per message. On `Chat.Composer`.                                             |
+| `onFilesReject`         | `(rejections: UploadRejection[])`   | -       | Files turned down; the composer shows nothing, so tell the user. On `Chat.Composer`.    |
 
 `ChatMessage` is
-`{ id, senderId, text, createdAt, editedAt?, deleted?, status? }` with `status`
-one of `'sending' | 'sent' | 'delivered' | 'read' | 'failed'`. `createdAt` /
-`editedAt` take a `Date`, an ISO string or epoch ms.
+`{ id, senderId, text, createdAt, editedAt?, deleted?, status?, attachments? }`
+with `status` one of `'sending' | 'sent' | 'delivered' | 'read' | 'failed'`.
+`createdAt` / `editedAt` take a `Date`, an ISO string or epoch ms. `attachments`
+are `ChatAttachment` — the same `UploadFile` entries `Upload` uses (`id`,
+`file?`, `name?`, `size?`, `type?`, `url?`, `thumbUrl?`, `status?`, `progress?`,
+`error?`).
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
@@ -255,6 +296,9 @@ once) and `locale`:
     edit: 'Düzenle',
     delete: 'Sil',
     undo: 'Geri al',
+    attach: 'Dosya ekle',
+    removeAttachment: '{name} dosyasını kaldır',
+    downloadAttachment: '{name} dosyasını indir',
     edited: 'Düzenlendi',
     deleted: 'Bu mesaj silindi',
     read: 'Okundu',
@@ -271,9 +315,9 @@ Empty strings fall back to the English default, so no control loses its name.
 
 `classNames` / `slotProps` reach every slot — e.g. `Chat.Message`'s `bubble`,
 `text`, `meta`, `status`; `Chat.Messages`' `viewport`, `divider`, `typing`;
-`Chat.Composer`'s `controls`, `send`. Rows expose `data-own`, `data-status`,
-`data-deleted`, `data-deleting`, `data-grouped` and `data-editing` for
-selectors.
+`Chat.Composer`'s `controls`, `send`, `attach`, `attachments`; `Chat.Message`'s
+`attachments`, `image`. Rows expose `data-own`, `data-status`, `data-deleted`,
+`data-deleting`, `data-grouped` and `data-editing` for selectors.
 
 ## Gotchas
 
@@ -289,6 +333,11 @@ selectors.
 - **`onDelete` is deferred.** It runs after `undoWindow` (5 s default), not on
   the click; the row shows as deleted with Undo meanwhile. Tests that expect an
   immediate call should pass `undoWindow={0}`.
+- **Edits are text only, and files wait.** While a message is edited the
+  composer's files stay aside (attach is off); a files-only message has no Edit.
+- **`onSend` gets `File`s, not URLs.** Uploading is yours: update the
+  attachment's `status` / `progress`, then set `url` (and `thumbUrl`). A local
+  image previews from its `file` until then.
 - **Every part must sit inside `Chat`**, and `Chat.MessageActions` inside
   `Chat.Message` — each throws otherwise.
 

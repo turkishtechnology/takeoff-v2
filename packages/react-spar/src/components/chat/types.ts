@@ -2,16 +2,17 @@ import type { ElementType, ReactNode } from 'react';
 import type { PolymorphicProps } from '@turkish-technology/spar';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
+import type { UploadFile, UploadRejection } from '../upload';
 
 export type ChatSlot = 'root';
 export type ChatThreadSlot = 'root';
 export type ChatHeaderSlot = 'root' | 'back';
 export type ChatTitleSlot = 'root';
 export type ChatMessagesSlot = 'root' | 'viewport' | 'content' | 'loadOlder' | 'divider' | 'typing' | 'typingDots' | 'jump';
-export type ChatMessageSlot = 'root' | 'avatar' | 'body' | 'author' | 'bubble' | 'text' | 'meta' | 'time' | 'edited' | 'status' | 'retry' | 'undo';
+export type ChatMessageSlot = 'root' | 'avatar' | 'body' | 'author' | 'bubble' | 'text' | 'meta' | 'time' | 'edited' | 'status' | 'retry' | 'undo' | 'attachments' | 'image';
 export type ChatMessageActionsSlot = 'root';
 export type ChatEmptySlot = 'root';
-export type ChatComposerSlot = 'root' | 'editing' | 'cancel' | 'controls' | 'send';
+export type ChatComposerSlot = 'root' | 'editing' | 'cancel' | 'controls' | 'send' | 'upload' | 'attach' | 'attachments';
 export type ChatConversationListSlot = 'root';
 export type ChatConversationSlot = 'root' | 'avatar' | 'body' | 'title' | 'preview' | 'time' | 'unread';
 
@@ -55,7 +56,20 @@ export interface ChatMessage {
   deleted?: boolean;
   /** Delivery state. See {@link ChatMessageStatus}. */
   status?: ChatMessageStatus;
+  /**
+   * Files sent with the message. Images show as previews once uploaded;
+   * other files, and anything still uploading or failed, as file rows with a
+   * download button.
+   */
+  attachments?: ChatAttachment[];
 }
+
+/**
+ * A file on a message or in the composer — the same entry `Upload` uses. Set
+ * `url` (and `thumbUrl` for a smaller preview) once it is on the server;
+ * `status` / `progress` / `error` while it uploads.
+ */
+export type ChatAttachment = UploadFile;
 
 /** A conversation in `Chat.ConversationList`. */
 export interface ChatConversation {
@@ -134,6 +148,22 @@ export interface ChatLabels {
   retry: string;
   /** Accessible text for a conversation's unread count. `{count}` is the number. */
   unread: string;
+  /** Accessible name of the composer's attach button. */
+  attach: string;
+  /** Accessible name of the composer's list of files waiting to be sent. */
+  attachments: string;
+  /** Button that takes a file out of the composer. `{name}` is the file name. */
+  removeAttachment: string;
+  /** Button that downloads a file on a message. `{name}` is the file name. */
+  downloadAttachment: string;
+  /** Link around an image preview. `{name}` is the file name. */
+  openAttachment: string;
+  /** Status of a file that is uploading. */
+  uploading: string;
+  /** Status of a file whose upload failed. */
+  uploadFailed: string;
+  /** Accessible name of a file's progress bar. `{name}` is the file name. */
+  uploadProgress: string;
 }
 
 export interface ChatOwnProps {
@@ -147,8 +177,13 @@ export interface ChatOwnProps {
    * their author's name and avatar.
    */
   participants?: ChatParticipant[];
-  /** Called with the trimmed text when the user sends a message. */
-  onSend?: (text: string) => void;
+  /**
+   * Called when the user sends a message, with its trimmed text and the
+   * files added in the composer (`Chat.Composer`'s `allowAttachments`). The
+   * text is empty when only files are sent. Each file carries a fresh `id`
+   * and its `file`; upload it and put it on the message as an attachment.
+   */
+  onSend?: (text: string, attachments: ChatAttachment[]) => void;
   /**
    * Called with the message and its new trimmed text when an edit is saved.
    * Setting it turns on the Edit action for the user's own messages.
@@ -332,6 +367,22 @@ export interface ChatComposerOwnProps {
   startContent?: ReactNode;
   /** Controls between the text field and the send button, e.g. an emoji picker. */
   endContent?: ReactNode;
+  /**
+   * Lets the user add files: an attach button, dropping files on the
+   * composer, and pasting them. They go to `onSend` with the text.
+   */
+  allowAttachments?: boolean;
+  /** File types the composer takes, as in an `<input type="file">` `accept`, e.g. `'image/*,.pdf'`. */
+  accept?: string;
+  /** Largest file the composer takes, in bytes. */
+  maxFileSize?: number;
+  /** Most files one message can carry. */
+  maxFileCount?: number;
+  /**
+   * Called with the files the composer turned down (type, size or count) —
+   * the composer shows nothing for them, so tell the user, e.g. with a toast.
+   */
+  onFilesReject?: (rejections: UploadRejection[]) => void;
   classNames?: ClassNamesMap<ChatComposerSlot>;
   slotProps?: SlotPropsMap<ChatComposerSlot>;
 }

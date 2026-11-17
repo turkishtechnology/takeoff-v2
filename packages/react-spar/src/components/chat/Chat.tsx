@@ -9,7 +9,7 @@ import { ChatBase } from './base';
 import { ChatProvider, type ChatContextValue, type ComposerField } from './context';
 import { DEFAULT_LABELS, UNDO_WINDOW_MS } from './defaults';
 import { isWithinWindow, nextWindowClose } from './helpers';
-import type { ChatMessage, ChatOwnProps, ChatProps } from './types';
+import type { ChatAttachment, ChatMessage, ChatOwnProps, ChatProps } from './types';
 
 type ChatResolvedProps = Omit<ChatOwnProps, 'classNames' | 'slotProps'> & {
   'as'?: ElementType;
@@ -134,7 +134,8 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
 
   const interactive = !disabled && !readOnly;
   const isLive = (message: ChatMessage) => message.senderId === currentUserId && !message.deleted && !pendingDeletes.has(message.id);
-  const isEditable = (message: ChatMessage) => isLive(message) && message.status !== 'sending' && message.status !== 'failed';
+  // A files-only message has no text to edit.
+  const isEditable = (message: ChatMessage) => isLive(message) && message.text.trim() !== '' && message.status !== 'sending' && message.status !== 'failed';
   const canEdit = (message: ChatMessage) => interactive && Boolean(onEdit) && isEditable(message) && isWithinWindow(message, editWindow, now);
   const canDelete = (message: ChatMessage) => interactive && Boolean(onDelete) && isLive(message) && message.status !== 'sending' && isWithinWindow(message, deleteWindow, now);
 
@@ -144,17 +145,18 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
   // the edit window while the user is still typing.
   const editing = editingMessage && canEdit(editingMessage) ? editingMessage : undefined;
 
-  const submit = (text: string): boolean => {
+  const submit = (text: string, attachments: ChatAttachment[] = []): boolean => {
     const trimmed = text.trim();
-    if (!interactive || trimmed === '') return false;
+    if (!interactive) return false;
     if (editing) {
+      if (trimmed === '') return false;
       if (trimmed !== editing.text) onEdit?.(editing, trimmed);
       setEditingId(null);
       return true;
     }
-    if (!onSend) return false;
+    if (!onSend || (trimmed === '' && attachments.length === 0)) return false;
     stickToBottom.current = true;
-    onSend(trimmed);
+    onSend(trimmed, attachments);
     return true;
   };
 

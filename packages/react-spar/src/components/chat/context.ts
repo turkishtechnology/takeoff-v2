@@ -2,7 +2,7 @@ import { createContext, useContext, type MutableRefObject } from 'react';
 
 import { createSafeContext } from '../../hooks';
 
-import type { ChatLabels, ChatMessage, ChatParticipant } from './types';
+import type { ChatAttachment, ChatLabels, ChatMessage, ChatParticipant } from './types';
 
 /** Input.Field types its ref for both its input and textarea forms. */
 export type ComposerField = HTMLInputElement & HTMLTextAreaElement;
@@ -46,8 +46,8 @@ export interface ChatContextValue {
   editing: ChatMessage | undefined;
   startEditing: (message: ChatMessage) => void;
   stopEditing: () => void;
-  /** Sends a new message, or saves the edit in progress. Returns whether the text was taken. */
-  submit: (text: string) => boolean;
+  /** Sends a new message, or saves the edit in progress. Returns whether it was taken. */
+  submit: (text: string, attachments?: ChatAttachment[]) => boolean;
   /**
    * Whether the log follows new messages. Shared so that sending pins the log
    * to the bottom even while the reader had scrolled up.

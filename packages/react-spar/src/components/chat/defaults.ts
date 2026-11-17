@@ -31,6 +31,14 @@ export const DEFAULT_LABELS: ChatLabels = {
   failed: 'Not delivered',
   retry: 'Retry',
   unread: '{count} unread messages',
+  attach: 'Attach files',
+  attachments: 'Files to send',
+  removeAttachment: 'Remove {name}',
+  downloadAttachment: 'Download {name}',
+  openAttachment: 'Open {name}',
+  uploading: 'Uploading…',
+  uploadFailed: 'Upload failed',
+  uploadProgress: '{name} upload progress',
 };
 
 // Consecutive messages from one sender closer than this share a group: one

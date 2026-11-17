@@ -311,7 +311,7 @@ describe('Chat (compound)', () => {
       await user.type(field(), '  Hello  ');
       expect(send).toBeEnabled();
       await user.keyboard('{Enter}');
-      expect(onSend).toHaveBeenCalledExactlyOnceWith('Hello');
+      expect(onSend).toHaveBeenCalledExactlyOnceWith('Hello', []);
       expect(field()).toHaveValue('');
       expect(field()).toHaveFocus();
     });
@@ -324,7 +324,7 @@ describe('Chat (compound)', () => {
       await user.type(field(), 'one{Shift>}{Enter}{/Shift}two');
       expect(onSend).not.toHaveBeenCalled();
       await user.click(screen.getByRole('button', { name: 'Send message' }));
-      expect(onSend).toHaveBeenCalledWith('one\ntwo');
+      expect(onSend).toHaveBeenCalledWith('one\ntwo', []);
       expect(onSubmit).toHaveBeenCalledTimes(1);
     });
 
@@ -367,7 +367,7 @@ describe('Chat (compound)', () => {
       render(<Controlled />);
       expect(field()).toHaveValue('start');
       await user.type(field(), '!{Enter}');
-      expect(onSend).toHaveBeenCalledWith('start!');
+      expect(onSend).toHaveBeenCalledWith('start!', []);
       expect(onValueChange).toHaveBeenLastCalledWith('');
     });
 
@@ -675,6 +675,188 @@ describe('Chat (compound)', () => {
       expect(screen.queryByRole('menuitem', { name: 'Delete' })).not.toBeInTheDocument();
       await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
       expect(onReply).toHaveBeenCalled();
+    });
+  });
+
+  describe('attachments', () => {
+    const pdf = () => new File(['%PDF'], 'report.pdf', { type: 'application/pdf' });
+    const png = () => new File(['png'], 'photo.png', { type: 'image/png' });
+    const fileInput = () => document.querySelector('.tk-chat-composer input[type="file"]') as HTMLInputElement;
+    const attachRow = (name: string) => screen.getByText(name).closest('.tk-upload-item') as HTMLElement;
+    const transfer = (files: File[]) => ({ dataTransfer: { types: ['Files'], files } });
+
+    beforeEach(() => {
+      vi.stubGlobal('URL', Object.assign(URL, { createObjectURL: vi.fn(() => 'blob:local'), revokeObjectURL: vi.fn() }));
+    });
+
+    it('has no attach button unless allowAttachments is set', () => {
+      render(<TestChat onSend={vi.fn()} />);
+      expect(screen.queryByRole('button', { name: 'Attach files' })).not.toBeInTheDocument();
+      expect(fileInput()).toBeNull();
+    });
+
+    it('sends picked files with the text, or on their own', async () => {
+      const user = userEvent.setup();
+      const onSend = vi.fn();
+      render(<TestChat onSend={onSend} composer={<Chat.Composer allowAttachments />} />);
+      const attach = screen.getByRole('button', { name: 'Attach files' });
+      expect(attach).toHaveClass('tk-chat-composer-attach');
+      expect(screen.getByRole('button', { name: 'Send message' })).toBeDisabled();
+
+      await user.upload(fileInput(), pdf());
+      const list = screen.getByRole('group', { name: 'Files to send' });
+      expect(list).toHaveClass('tk-chat-composer-attachments');
+      expect(within(list).getByText('report.pdf')).toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Send message' }));
+      expect(onSend).toHaveBeenCalledExactlyOnceWith('', [expect.objectContaining({ name: 'report.pdf', file: expect.any(File) })]);
+      expect(screen.queryByRole('group', { name: 'Files to send' })).not.toBeInTheDocument();
+
+      await user.upload(fileInput(), pdf());
+      await user.type(field(), 'see attached{Enter}');
+      expect(onSend).toHaveBeenLastCalledWith('see attached', [expect.objectContaining({ name: 'report.pdf' })]);
+    });
+
+    it('takes a file back out of the composer', async () => {
+      const user = userEvent.setup();
+      render(<TestChat onSend={vi.fn()} composer={<Chat.Composer allowAttachments />} />);
+      await user.upload(fileInput(), pdf());
+      await user.click(within(attachRow('report.pdf')).getByRole('button', { name: 'Remove report.pdf' }));
+      expect(screen.queryByText('report.pdf')).not.toBeInTheDocument();
+    });
+
+    it('takes pasted files but leaves pasted text alone', () => {
+      render(<TestChat onSend={vi.fn()} composer={<Chat.Composer allowAttachments />} />);
+      expect(fireEvent.paste(field(), { clipboardData: { files: [] } })).toBe(true);
+      expect(fireEvent.paste(field(), { clipboardData: { files: [png()] } })).toBe(false);
+      expect(screen.getByText('photo.png')).toBeInTheDocument();
+    });
+
+    it('takes dropped files and marks the composer while they are dragged over it', () => {
+      render(<TestChat onSend={vi.fn()} composer={<Chat.Composer allowAttachments />} />);
+      const composer = document.querySelector('.tk-chat-composer') as HTMLElement;
+
+      fireEvent.dragOver(composer, { dataTransfer: { types: ['text/plain'], files: [] } });
+      expect(composer).not.toHaveAttribute('data-drag-state');
+      fireEvent.dragOver(composer, transfer([pdf()]));
+      expect(composer).toHaveAttribute('data-drag-state', 'accept');
+      // jsdom has no DragEvent to carry `relatedTarget`; a MouseEvent does.
+      const leave = (to: Element) => fireEvent(composer, new MouseEvent('dragleave', { bubbles: true, relatedTarget: to }));
+      leave(field());
+      expect(composer).toHaveAttribute('data-drag-state', 'accept');
+      leave(document.body);
+      expect(composer).not.toHaveAttribute('data-drag-state');
+
+      fireEvent.dragOver(composer, transfer([pdf()]));
+      fireEvent.drop(composer, transfer([pdf()]));
+      expect(composer).not.toHaveAttribute('data-drag-state');
+      expect(screen.getByText('report.pdf')).toBeInTheDocument();
+      expect(fireEvent.drop(composer, { dataTransfer: { types: ['text/plain'], files: [] } })).toBe(true);
+    });
+
+    it('marks a drag of the wrong type as rejected', () => {
+      render(<TestChat onSend={vi.fn()} composer={<Chat.Composer allowAttachments accept="image/*" />} />);
+      const composer = document.querySelector('.tk-chat-composer') as HTMLElement;
+      fireEvent.dragOver(composer, { dataTransfer: { types: ['Files'], files: [], items: [{ kind: 'file', type: 'application/pdf' }] } });
+      expect(composer).toHaveAttribute('data-drag-state', 'reject');
+    });
+
+    it('reports files it turns down', async () => {
+      const user = userEvent.setup({ applyAccept: false });
+      const onFilesReject = vi.fn();
+      render(<TestChat onSend={vi.fn()} composer={<Chat.Composer allowAttachments accept="image/*" maxFileSize={10} maxFileCount={2} onFilesReject={onFilesReject} />} />);
+      await user.upload(fileInput(), pdf());
+      expect(onFilesReject).toHaveBeenCalledWith([expect.objectContaining({ code: 'file-invalid-type' })]);
+      expect(screen.queryByText('report.pdf')).not.toBeInTheDocument();
+    });
+
+    it('keeps files aside while a message is edited', async () => {
+      const user = userEvent.setup();
+      const onEdit = vi.fn();
+      const onSend = vi.fn();
+      render(<TestChat messages={[msg('1', { text: 'typo' })]} onSend={onSend} onEdit={onEdit} composer={<Chat.Composer allowAttachments />} />);
+      await user.upload(fileInput(), pdf());
+      await openActions(user, 'typo');
+      await user.click(screen.getByRole('menuitem', { name: 'Edit' }));
+
+      expect(screen.queryByText('report.pdf')).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Attach files' })).toBeDisabled();
+      const composer = document.querySelector('.tk-chat-composer') as HTMLElement;
+      // Still claims the drop, so the browser does not open the file.
+      fireEvent.dragOver(composer, transfer([png()]));
+      expect(composer).toHaveAttribute('data-drag-state', 'reject');
+      expect(fireEvent.drop(composer, transfer([png()]))).toBe(false);
+      expect(screen.queryByText('photo.png')).not.toBeInTheDocument();
+      expect(fireEvent.paste(field(), { clipboardData: { files: [png()] } })).toBe(true);
+
+      await user.clear(field());
+      await user.type(field(), 'fixed{Enter}');
+      expect(onEdit).toHaveBeenCalledWith(expect.objectContaining({ id: '1' }), 'fixed');
+      expect(onSend).not.toHaveBeenCalled();
+      expect(screen.getByText('report.pdf')).toBeInTheDocument();
+    });
+
+    it('shows uploaded images as previews and other files as rows', () => {
+      render(
+        <TestChat
+          messages={[
+            msg('1', {
+              text: 'Trip photos',
+              attachments: [
+                { id: 'a', name: 'beach.jpg', type: 'image/jpeg', url: 'https://example.com/beach.jpg', thumbUrl: 'https://example.com/beach-s.jpg' },
+                { id: 'b', name: 'plan.pdf', type: 'application/pdf', size: 2048, url: 'https://example.com/plan.pdf', status: 'completed' },
+                { id: 'c', name: 'big.png', type: 'image/png', status: 'uploading', progress: 40, file: png() },
+                { id: 'd', name: 'lost.pdf', type: 'application/pdf', status: 'error' },
+              ],
+            }),
+          ]}
+        />,
+      );
+      const files = row('Trip photos').querySelector('.tk-chat-message-attachments') as HTMLElement;
+      const image = within(files).getByRole('link', { name: 'Open beach.jpg' });
+      expect(image).toHaveClass('tk-chat-message-image');
+      expect(image).toHaveAttribute('href', 'https://example.com/beach.jpg');
+      expect(image.querySelector('img')).toHaveAttribute('src', 'https://example.com/beach-s.jpg');
+
+      expect(within(files).getByRole('button', { name: 'Download plan.pdf' })).toBeInTheDocument();
+      expect(within(files).queryByText('Completed')).not.toBeInTheDocument();
+      expect(within(files).queryByRole('link', { name: 'Open big.png' })).not.toBeInTheDocument();
+      expect(within(files).getByText('Uploading…')).toBeInTheDocument();
+      expect(within(files).getByText('Upload failed')).toBeInTheDocument();
+      expect(within(files).queryByRole('button', { name: /Remove/ })).not.toBeInTheDocument();
+    });
+
+    it('previews a local image until it has a URL, and draws no bubble without text', () => {
+      const local = png();
+      const { unmount } = render(<TestChat messages={[msg('1', { text: '', attachments: [{ id: 'a', file: local }] })]} />);
+      const link = screen.getByRole('link', { name: 'Open photo.png' });
+      expect(link).toHaveAttribute('href', 'blob:local');
+      expect(URL.createObjectURL).toHaveBeenCalledWith(local);
+      expect(link.closest('.tk-chat-message')?.querySelector('.tk-chat-message-bubble')).toBeNull();
+      unmount();
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:local');
+    });
+
+    it('hides the files of a deleted message, and opens the menu from them', () => {
+      render(
+        <TestChat
+          onDelete={vi.fn()}
+          messages={[
+            msg('1', { text: '', attachments: [{ id: 'a', name: 'kept.pdf', url: 'https://example.com/k.pdf' }] }),
+            msg('2', { text: 'gone', deleted: true, attachments: [{ id: 'b', name: 'gone.pdf', url: 'https://example.com/g.pdf' }] }),
+          ]}
+        />,
+      );
+      expect(screen.queryByText('gone.pdf')).not.toBeInTheDocument();
+      fireEvent.contextMenu(screen.getByText('kept.pdf'));
+      expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
+    });
+
+    it('does not offer Edit on a files-only message', async () => {
+      const user = userEvent.setup();
+      render(<TestChat onEdit={vi.fn()} onDelete={vi.fn()} messages={[msg('1', { text: '', attachments: [{ id: 'a', name: 'only.pdf', url: 'https://example.com/o.pdf' }] })]} />);
+      await user.click(screen.getByRole('button', { name: 'Message actions' }));
+      expect(screen.queryByRole('menuitem', { name: 'Edit' })).not.toBeInTheDocument();
+      expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
     });
   });
 
@@ -1122,6 +1304,28 @@ describe('Chat (compound)', () => {
           messages={[msg('1', { senderId: 'ayse', text: 'Hi' }), msg('2', { text: 'Hello', status: 'read', editedAt: at(0) })]}
         />,
       );
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('has no axe violations with attachments', async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <TestChat
+          onSend={vi.fn()}
+          composer={<Chat.Composer allowAttachments />}
+          messages={[
+            msg('1', {
+              text: '',
+              attachments: [
+                { id: 'a', name: 'beach.jpg', type: 'image/jpeg', url: 'https://example.com/beach.jpg' },
+                { id: 'b', name: 'plan.pdf', type: 'application/pdf', url: 'https://example.com/plan.pdf' },
+                { id: 'c', name: 'big.pdf', type: 'application/pdf', status: 'uploading', progress: 40 },
+              ],
+            }),
+          ]}
+        />,
+      );
+      await user.upload(document.querySelector('.tk-chat-composer input[type="file"]') as HTMLInputElement, new File(['x'], 'notes.txt', { type: 'text/plain' }));
       expect(await axe(container)).toHaveNoViolations();
     });
   });

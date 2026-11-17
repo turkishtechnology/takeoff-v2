@@ -99,7 +99,14 @@ export default {
     }),
     part('ChatComposerProps', 'Chat.Composer', 'chat-composer', {
       prependPropNames: ['value', 'defaultValue', 'onValueChange'],
-      dataAttributes: [{ attribute: 'data-editing', appliedWhen: 'While a message is being edited', purpose: 'Editing treatment of the composer.' }],
+      dataAttributes: [
+        { attribute: 'data-editing', appliedWhen: 'While a message is being edited', purpose: 'Editing treatment of the composer.' },
+        {
+          attribute: 'data-drag-state',
+          appliedWhen: 'While files are dragged over it (`allowAttachments`)',
+          purpose: '`accept` | `reject` — the drop-target treatment; `reject` for types outside `accept` or while editing.',
+        },
+      ],
     }),
   ],
 };
