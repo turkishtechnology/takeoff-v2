@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react';
 import type { Column } from '@tanstack/react-table';
 
+import { formatLabel } from '../../utils';
+
 import { useTableContext, type TableGrowPlan } from './context';
 import { RESIZE_DRAG_THRESHOLD, RESIZE_KEYBOARD_STEP, RESIZE_KEYBOARD_STEP_LARGE } from './defaults';
 import { clampColumnWidth, getColumnResizeBounds, resolveGrowth, type ResolvedGrowth } from './helpers';
-import type { TableColumnSizing } from './types';
+import type { TableColumnFilter, TableColumnSizing } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyColumn = Column<any, unknown>;
@@ -42,7 +44,7 @@ const growthSign = (element: HTMLElement, edge: 'start' | 'end'): 1 | -1 => (rea
  * commits once on release, so `columnResizing.onChange` fires per resize.
  */
 export const TableResizeHandle = ({ column, edge = 'end' }: { column: AnyColumn; edge?: 'start' | 'end' }) => {
-  const { slotAttrs, columnResizing } = useTableContext('Table.ResizeHandle');
+  const { slotAttrs, columnResizing, labels } = useTableContext('Table.ResizeHandle');
   const sessionRef = useRef<DragSession | null>(null);
   const keyContentWidthsRef = useRef<Map<string, number> | undefined>(undefined);
   const [dragging, setDragging] = useState(false);
@@ -93,11 +95,14 @@ export const TableResizeHandle = ({ column, edge = 'end' }: { column: AnyColumn;
   if (!columnResizing) return null;
 
   const [min, max] = getColumnResizeBounds(column);
+  // `{column}` resolves like the filter labels: `filter.label`, else the header
+  // text, else the id (a rendered header has no text to read here). A
+  // `slotProps.resizeHandle['aria-label']` still overrides the whole name.
   const header = column.columnDef.header;
-  // A rendered header has no text to read here; the column id still tells the
-  // handles apart for assistive tech (`slotProps.resizeHandle['aria-label']`
-  // overrides it).
-  const label = `Resize ${typeof header === 'string' ? header : column.id} column`;
+  const filterLabel = (column.columnDef.meta?.filter as TableColumnFilter | undefined)?.label;
+  const headerText = typeof header === 'string' ? header.trim() : '';
+  const columnName = (typeof filterLabel === 'string' ? filterLabel.trim() : '') || headerText || column.id;
+  const label = formatLabel(labels.resizeHandle, { column: columnName });
   const attrs = slotAttrs('resizeHandle');
   // Clamped so it never sits outside the range announced next to it (the auto
   // layout ignores the bounds until the first resize).
