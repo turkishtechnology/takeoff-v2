@@ -27,9 +27,11 @@ export type ChatMessageSlot =
   | 'quote'
   | 'quoteAuthor'
   | 'quoteText'
-  | 'copied';
+  | 'copied'
+  | 'pinned';
 export type ChatMessageActionsSlot = 'root';
 export type ChatEmptySlot = 'root';
+export type ChatPinnedSlot = 'root' | 'jump' | 'label' | 'text' | 'unpin';
 export type ChatComposerSlot = 'root' | 'editing' | 'cancel' | 'replying' | 'cancelReply' | 'controls' | 'send' | 'upload' | 'attach' | 'attachments';
 export type ChatConversationListSlot = 'root';
 export type ChatConversationSlot = 'root' | 'avatar' | 'body' | 'title' | 'preview' | 'time' | 'unread';
@@ -187,6 +189,14 @@ export interface ChatLabels {
   unread: string;
   /** Menu item that copies a message's text. */
   copy: string;
+  /** Menu item that pins a message. */
+  pin: string;
+  /** Menu item and `Chat.Pinned` button that unpin a message. */
+  unpin: string;
+  /** `Chat.Pinned`'s heading, and the note on a pinned message. */
+  pinned: string;
+  /** Position in `Chat.Pinned` with several pinned messages. `{index}` and `{count}` are numbers. */
+  pinnedPosition: string;
   /** Note under a message whose text was just copied; also announced. */
   copied: string;
   /** Menu item that answers a message. */
@@ -243,11 +253,19 @@ export interface ChatOwnProps {
    */
   onEdit?: (message: ChatMessage, text: string) => void;
   /**
-   * Adds Reply to every message's menu. The composer then shows what is being
-   * answered, and `onSend` gets it as `details.replyTo` — store it on the new
-   * message's `replyTo`.
+   * Reply in every message's menu, while `onSend` is set. The composer then
+   * shows what is being answered, and `onSend` gets it as `details.replyTo` —
+   * store it on the new message's `replyTo`.
+   * @defaultValue true
    */
   allowReplies?: boolean;
+  /** Ids of the pinned messages, oldest pin first. Pair with `onPinChange`. */
+  pinnedIds?: string[];
+  /**
+   * Called when the user pins or unpins a message. Setting it turns on Pin /
+   * Unpin in every message's menu; `Chat.Pinned` shows the pinned ones.
+   */
+  onPinChange?: (message: ChatMessage, pinned: boolean) => void;
   /**
    * Copy in the menu of every message with text. It also works in a
    * `readOnly` or `disabled` chat, since it changes nothing.
@@ -395,7 +413,7 @@ export interface ChatMessageOwnProps {
 export type ChatMessageProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, ChatMessageOwnProps>;
 
 export interface ChatMessageActionsOwnProps {
-  /** Extra `Dropdown.Item`s, listed after the built-in Reply, Copy, Edit and Delete. */
+  /** Extra `Dropdown.Item`s, listed after the built-in Reply, Copy, Pin, Edit and Delete. */
   children?: ReactNode;
   classNames?: ClassNamesMap<ChatMessageActionsSlot>;
   slotProps?: SlotPropsMap<ChatMessageActionsSlot>;
@@ -403,12 +421,25 @@ export interface ChatMessageActionsOwnProps {
 
 /**
  * The message's menu button. Lists Reply while `allowReplies` is set, Copy on
- * messages with text (unless `allowCopy` is off), Edit and
+ * messages with text (unless `allowCopy` is off), Pin / Unpin while
+ * `onPinChange` is set, Edit and
  * Delete on the user's own messages while `onEdit` / `onDelete` are set and
  * their windows are open, then its children. Renders nothing when it has no
  * items.
  */
 export type ChatMessageActionsProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, ChatMessageActionsOwnProps>;
+
+export interface ChatPinnedOwnProps {
+  classNames?: ClassNamesMap<ChatPinnedSlot>;
+  slotProps?: SlotPropsMap<ChatPinnedSlot>;
+}
+
+/**
+ * A bar with the pinned messages, under the header. Pressing it scrolls to
+ * the message shown and moves on to the one pinned before it. Renders nothing
+ * while no pinned message is loaded.
+ */
+export type ChatPinnedProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, ChatPinnedOwnProps>;
 
 export interface ChatEmptyOwnProps {
   children?: ReactNode;
@@ -495,6 +526,7 @@ declare module '../../core/theme' {
     ChatMessage: import('../../core').ComponentThemeConfig<ChatMessageProps, ChatMessageSlot>;
     ChatMessageActions: import('../../core').ComponentThemeConfig<ChatMessageActionsProps, ChatMessageActionsSlot>;
     ChatEmpty: import('../../core').ComponentThemeConfig<ChatEmptyProps, ChatEmptySlot>;
+    ChatPinned: import('../../core').ComponentThemeConfig<ChatPinnedProps, ChatPinnedSlot>;
     ChatComposer: import('../../core').ComponentThemeConfig<ChatComposerProps, ChatComposerSlot>;
     ChatConversationList: import('../../core').ComponentThemeConfig<ChatConversationListProps, ChatConversationListSlot>;
     ChatConversation: import('../../core').ComponentThemeConfig<ChatConversationProps, ChatConversationSlot>;

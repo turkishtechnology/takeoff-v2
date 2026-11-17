@@ -3,6 +3,8 @@ import { createContext, useContext, type ElementType, type ReactNode, type Ref }
 import { CopyIconOutlinedRounded } from '@takeoff-icons/react/copy';
 import { DeleteIconOutlinedRounded } from '@takeoff-icons/react/delete';
 import { EditIconOutlinedRounded } from '@takeoff-icons/react/edit';
+import { KeepIconOutlinedRounded } from '@takeoff-icons/react/keep';
+import { KeepOffIconOutlinedRounded } from '@takeoff-icons/react/keep-off';
 
 import { composeRootAttrs, isRenderableNode } from '../../core';
 import { useComponentTheme } from '../../provider';
@@ -43,7 +45,7 @@ const MoreIcon = () => (
 
 export const ChatMessageActions = <T extends ElementType = 'div'>(props: ChatMessageActionsProps<T>) => {
   const theme = useComponentTheme('ChatMessageActions');
-  const { canEdit, canDelete, canReply, canCopy, copyMessage, startEditing, startReplying, deleteMessage, focusComposer, focusUndo, labels } =
+  const { canEdit, canDelete, canReply, canCopy, canPin, isPinned, setPinned, copyMessage, startEditing, startReplying, deleteMessage, focusComposer, focusUndo, labels } =
     useChatContext('Chat.MessageActions');
   const item = useContext(ChatMessageItemContext);
   if (!item) throw new Error('Chat.MessageActions must be used within Chat.Message');
@@ -54,10 +56,12 @@ export const ChatMessageActions = <T extends ElementType = 'div'>(props: ChatMes
 
   const replyable = canReply(message);
   const copyable = canCopy(message);
+  const pinnable = canPin(message);
+  const pinned = isPinned(message);
   const editable = canEdit(message);
   const deletable = canDelete(message);
   const hasExtra = isRenderableNode(children);
-  if (!replyable && !copyable && !editable && !deletable && !hasExtra) return null;
+  if (!replyable && !copyable && !pinnable && !editable && !deletable && !hasExtra) return null;
 
   const Component = (as ?? 'div') as ElementType;
 
@@ -76,6 +80,12 @@ export const ChatMessageActions = <T extends ElementType = 'div'>(props: ChatMes
             <Dropdown.Item data-action="copy" onSelect={() => copyMessage(message)}>
               <CopyIconOutlinedRounded aria-hidden="true" focusable="false" />
               {labels.copy}
+            </Dropdown.Item>
+          )}
+          {pinnable && (
+            <Dropdown.Item data-action={pinned ? 'unpin' : 'pin'} onSelect={() => setPinned(message, !pinned)}>
+              {pinned ? <KeepOffIconOutlinedRounded aria-hidden="true" focusable="false" /> : <KeepIconOutlinedRounded aria-hidden="true" focusable="false" />}
+              {pinned ? labels.unpin : labels.pin}
             </Dropdown.Item>
           )}
           {editable && (

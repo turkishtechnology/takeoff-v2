@@ -20,6 +20,9 @@ layout that collapses to one pane below 640px.
   `onDelete` runs. The actions disappear when the window closes, and a right
   click or a touch long press opens a message's menu; ArrowUp in an empty
   composer edits the last message and Escape leaves editing.
+- Pins: `pinnedIds` / `onPinChange` add Pin / Unpin to the menu and a pin mark
+  to the message; `Chat.Pinned` is a bar that jumps through the pins.
+- Replies are on by default (`allowReplies={false}` turns them off).
 - Copy: on by default for messages with text (`allowCopy`), with a "Copied" note
   that is also announced; it stays available read-only.
 - Replies: `allowReplies` adds Reply to the message menu, a reply banner to the

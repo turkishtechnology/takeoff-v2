@@ -7,6 +7,7 @@ import { ChatHeader } from './ChatHeader';
 import { ChatMessage } from './ChatMessage';
 import { ChatMessageActions } from './ChatMessageActions';
 import { ChatMessages } from './ChatMessages';
+import { ChatPinned } from './ChatPinned';
 import { ChatThread } from './ChatThread';
 import { ChatTitle } from './ChatTitle';
 
@@ -16,6 +17,7 @@ const Chat = Object.assign(ChatRoot, {
   Thread: ChatThread,
   Header: ChatHeader,
   Title: ChatTitle,
+  Pinned: ChatPinned,
   Messages: ChatMessages,
   Message: ChatMessage,
   MessageActions: ChatMessageActions,
@@ -50,6 +52,10 @@ export type {
   ChatMessagesSlot,
   ChatMessageStatus,
   ChatParticipant,
+  ChatPinnedProps,
+  ChatPinnedSlot,
+  ChatReply,
+  ChatSendDetails,
   ChatProps,
   ChatSlot,
   ChatThreadProps,

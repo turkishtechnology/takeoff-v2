@@ -7,6 +7,7 @@ import type {
   ChatConversationProps,
   ChatConversationSlot,
   ChatEmptyProps,
+  ChatPinnedProps,
   ChatHeaderProps,
   ChatHeaderSlot,
   ChatMessageActionsProps,
@@ -98,6 +99,7 @@ export const ChatMessageBase = createComponentBase<ChatMessageProps, ChatMessage
     'quoteAuthor',
     'quoteText',
     'copied',
+    'pinned',
   ] as const,
   classes: {
     root: 'tk-chat-message',
@@ -118,6 +120,7 @@ export const ChatMessageBase = createComponentBase<ChatMessageProps, ChatMessage
     quoteAuthor: 'tk-chat-message-quote-author',
     quoteText: 'tk-chat-message-quote-text',
     copied: 'tk-chat-message-copied',
+    pinned: 'tk-chat-message-pinned',
   },
 });
 
@@ -130,6 +133,20 @@ export const ChatMessageActionsBase = createComponentBase<ChatMessageActionsProp
 });
 
 // @archetype react-enhancement — content-bearing empty state.
+// @archetype react-enhancement — the pinned-messages bar. Public: where it
+// sits (usually under the header) is the consumer's layout.
+export const ChatPinnedBase = createComponentBase<ChatPinnedProps, 'root' | 'jump' | 'label' | 'text' | 'unpin'>({
+  name: 'ChatPinned',
+  slots: ['root', 'jump', 'label', 'text', 'unpin'] as const,
+  classes: {
+    root: 'tk-chat-pinned',
+    jump: 'tk-chat-pinned-jump',
+    label: 'tk-chat-pinned-label',
+    text: 'tk-chat-pinned-text',
+    unpin: 'tk-chat-pinned-unpin',
+  },
+});
+
 export const ChatEmptyBase = createComponentBase<ChatEmptyProps, 'root'>({
   name: 'ChatEmpty',
   slots: ['root'] as const,

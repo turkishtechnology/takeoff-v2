@@ -44,6 +44,12 @@ export interface ChatContextValue {
   focusUndo: (id: string) => void;
   canReply: (message: ChatMessage) => boolean;
   canCopy: (message: ChatMessage) => boolean;
+  canPin: (message: ChatMessage) => boolean;
+  /** Pinned message ids, oldest pin first. */
+  pinnedIds: string[];
+  isPinned: (message: ChatMessage) => boolean;
+  /** Pins or unpins a message through `onPinChange`. */
+  setPinned: (message: ChatMessage, pinned: boolean) => void;
   /** Copies a message's text to the clipboard and confirms it. */
   copyMessage: (message: ChatMessage) => void;
   /** The message whose text was just copied. */

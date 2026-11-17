@@ -24,11 +24,13 @@
 //     .tk-chat-jump                 — Button
 //   .tk-chat-message                — one message row
 //     -avatar / -body / -author / -bubble / -text / -meta / -time /
-//     -edited / -status / -retry / -undo / -copied
+//     -edited / -status / -retry / -undo / -copied / -pinned
 //     -attachments                  — the message's files (Upload rows)
 //     -image                        — an image attachment's preview link
 //     -quote / -quote-author / -quote-text — the message it answers
 //   .tk-chat-message-actions        — the row's menu (Dropdown)
+//   .tk-chat-pinned                 — pinned-messages bar
+//     -jump / -label / -text / -unpin
 //   .tk-chat-empty                  — empty state
 //   .tk-chat-composer               — the composer form
 //     -editing / -cancel / -replying / -cancel-reply / -controls / -send
@@ -37,7 +39,7 @@
 //
 // State attributes (each has a consumer below — rule 9):
 //   .tk-chat[data-layout='single' | 'split'][data-view='list' | 'thread']
-//   .tk-chat-message[data-own][data-grouped][data-deleted][data-deleting][data-editing][data-highlighted]
+//   .tk-chat-message[data-own][data-grouped][data-deleted][data-deleting][data-editing][data-highlighted][data-pinned]
 //   .tk-chat-message[data-status] / .tk-chat-message-status[data-status]
 //   .tk-chat-conversation[data-selected][data-unread]
 //   .tk-chat-composer[data-editing][data-drag-state='accept' | 'reject']
@@ -594,6 +596,78 @@
     line-height: var(--desktop-body-xs-line-height);
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+  }
+
+  // Pin mark in the meta line of a pinned message.
+  .tk-chat-message[data-pinned] .tk-chat-message-pinned {
+    display: inline-flex;
+    color: var(--primary-base);
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  // ----- Pinned bar ---------------------------------------------------------
+
+  .tk-chat-pinned {
+    display: flex;
+    flex: none;
+    gap: 4px;
+    align-items: center;
+    padding: 4px 8px 4px 16px;
+    border-bottom: 1px solid var(--border-light);
+    background: var(--background-base);
+  }
+
+  .tk-chat-pinned-jump {
+    display: flex;
+    flex: 1 1 auto;
+    gap: 8px;
+    align-items: center;
+    min-width: 0;
+    padding: 4px 0;
+    border: 0;
+    background: none;
+    color: var(--text-darkest);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+
+    > svg {
+      flex: none;
+      width: 18px;
+      height: 18px;
+      color: var(--primary-base);
+    }
+
+    &:focus-visible {
+      border-radius: var(--radius-s);
+      outline: 2px solid var(--primary-base);
+      outline-offset: 2px;
+    }
+  }
+
+  .tk-chat-pinned-label {
+    flex: none;
+    color: var(--primary-base);
+    font-weight: 600;
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+  }
+
+  .tk-chat-pinned-text {
+    @include truncate;
+
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: var(--desktop-body-s-size);
+    line-height: var(--desktop-body-s-line-height);
+  }
+
+  .tk-chat-pinned-unpin {
+    flex: none;
   }
 
   // Brief "Copied" confirmation in the meta line.

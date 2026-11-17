@@ -22,6 +22,7 @@ type ChatResolvedProps = Omit<ChatOwnProps, 'classNames' | 'slotProps'> & {
 const MAX_TIMEOUT_MS = 2_147_483_647;
 
 const EMPTY_TYPING: string[] = [];
+const EMPTY_IDS: string[] = [];
 const EMPTY_PARTICIPANTS: NonNullable<ChatOwnProps['participants']> = [];
 const NO_PENDING: ReadonlySet<string> = new Set();
 
@@ -47,8 +48,10 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
     currentUserId,
     participants = EMPTY_PARTICIPANTS,
     onSend,
-    allowReplies = false,
+    allowReplies = true,
     allowCopy = true,
+    pinnedIds = EMPTY_IDS,
+    onPinChange,
     onEdit,
     onDelete,
     onRetry,
@@ -157,6 +160,11 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
   const replyingMessage = replyingId === null || editing ? undefined : messages.find(message => message.id === replyingId);
   const replying = replyingMessage && canReply(replyingMessage) ? replyingMessage : undefined;
 
+  // Pins live on the server: `onPinChange` turns them on, like `onEdit`.
+  const canPin = (message: ChatMessage) =>
+    interactive && Boolean(onPinChange) && !message.deleted && !pendingDeletes.has(message.id) && message.status !== 'sending' && message.status !== 'failed';
+  const isPinned = (message: ChatMessage) => pinnedIds.includes(message.id);
+
   // Copy changes nothing, so it stays on in a read-only or disabled chat.
   const canCopy = (message: ChatMessage) =>
     allowCopy && !message.deleted && !pendingDeletes.has(message.id) && message.text.trim() !== '' && typeof navigator !== 'undefined' && Boolean(navigator.clipboard);
@@ -253,6 +261,12 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
     stopEditing: () => setEditingId(null),
     canReply,
     canCopy,
+    canPin,
+    pinnedIds,
+    isPinned,
+    setPinned: (message, pinned) => {
+      if (canPin(message) && isPinned(message) !== pinned) onPinChange?.(message, pinned);
+    },
     copyMessage,
     copiedId,
     replying,

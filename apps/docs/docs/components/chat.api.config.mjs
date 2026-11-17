@@ -73,6 +73,7 @@ export default {
       prependPropNames: ['children'],
       propOverrides: { children: childrenOverride("The conversation's name. Labels the chat region.") },
     }),
+    part('ChatPinnedProps', 'Chat.Pinned', 'chat-pinned'),
     part('ChatMessagesProps', 'Chat.Messages', 'chat-messages', {
       prependPropNames: ['children'],
       propOverrides: { children: { type: '(message: ChatMessage) => React.ReactNode', description: 'Renders one message. Defaults to `<Chat.Message message={message} />`.' } },
@@ -87,6 +88,7 @@ export default {
         { attribute: 'data-deleting', appliedWhen: 'While a delete can still be undone', purpose: 'Dims the message until `onDelete` runs.' },
         { attribute: 'data-grouped', appliedWhen: 'When it continues the previous message’s group', purpose: 'Tighter spacing; hides the repeated avatar.' },
         { attribute: 'data-editing', appliedWhen: 'While the composer edits or answers it', purpose: 'Outlines the message the composer is working on.' },
+        { attribute: 'data-pinned', appliedWhen: 'When its id is in `pinnedIds`', purpose: 'Shows the pin in the meta line.' },
         { attribute: 'data-highlighted', appliedWhen: 'For a moment after a quote jumps to it', purpose: 'Flashes the bubble so the eye finds it.' },
       ],
     }),

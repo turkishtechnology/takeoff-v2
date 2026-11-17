@@ -41,15 +41,17 @@ import { Chat } from '@takeoff-ui/react-spar';
 
 - `Chat.Header` / `Chat.Title` — bar above the log; the title labels the chat
   region.
+- `Chat.Pinned` — bar of pinned messages under the header; pressing it jumps to
+  the one shown and steps back to older pins. Renders nothing without pins.
 - `Chat.Messages` — the scrolling `role="log"`. Stays at the bottom while the
   reader is there, shows a "N new" jump button otherwise, adds day dividers and
   the typing line, and reports read messages. Function children render a row.
 - `Chat.Message` — one message: bubble, time, "Edited", delivery ticks, menu.
   Children replace the bubble content.
-- `Chat.MessageActions` — the message's menu. Lists Edit/Delete when allowed,
-  then your `Dropdown.Item` children.
+- `Chat.MessageActions` — the message's menu. Lists Reply, Copy, Pin, Edit and
+  Delete when they apply, then your `Dropdown.Item` children.
 - `Chat.Empty` — shown while there are no messages.
-- `Chat.Composer` — the field and send button. Also the editing UI.
+- `Chat.Composer` — the field and send button. Also the editing and reply UI.
 - `Chat.ConversationList` / `Chat.Conversation` — the conversation list; its
   presence switches to the split layout.
 - `Chat.Thread` — wraps the thread parts next to a conversation list.
@@ -203,7 +205,6 @@ open, then the thread with a back button in `Chat.Header`.
 <Chat
   messages={messages}
   currentUserId="me"
-  allowReplies
   onSend={(text, attachments, { replyTo }) =>
     addMessage({
       text,
@@ -265,7 +266,9 @@ failed, as Upload rows with a download button.
 | `currentUserId`         | `string`                            | -       | Messages with this `senderId` are the user's own. Required.                             |
 | `participants`          | `ChatParticipant[]`                 | `[]`    | Names/avatars. More than one other participant = group chat.                            |
 | `onSend`                | `(text, attachments, details)`      | -       | Trimmed text (empty for files only), the composer's files, `details.replyTo`.           |
-| `allowReplies`          | `boolean`                           | `false` | Reply in every menu; composer shows what is answered; store it on `replyTo`.            |
+| `allowReplies`          | `boolean`                           | `true`  | Reply in every menu while `onSend` is set; `details.replyTo` goes to `onSend`.          |
+| `pinnedIds`             | `string[]`                          | `[]`    | Pinned message ids, oldest pin first.                                                   |
+| `onPinChange`           | `(message, pinned) => void`         | -       | Turns on Pin / Unpin; `Chat.Pinned` shows the pins.                                     |
 | `allowCopy`             | `boolean`                           | `true`  | Copy in the menu of messages with text; works read-only too.                            |
 | `onEdit`                | `(message, text) => void`           | -       | Turns on Edit for own messages. Not called if the text did not change.                  |
 | `onDelete`              | `(message) => void`                 | -       | Turns on Delete for own messages.                                                       |
@@ -372,9 +375,10 @@ Empty strings fall back to the English default, so no control loses its name.
   image previews from its `file` until then.
 - **Replying and editing share the composer.** Starting one ends the other; a
   reply also ends when its message is deleted.
-- **Reply and Copy are built in.** Don't add your own Reply or Copy
-  `Dropdown.Item` — set `allowReplies`; Copy is on unless `allowCopy={false}`.
-  Menu order: Reply, Copy, Edit, Delete, then your items.
+- **Reply, Copy and Pin are built in.** Don't add your own items for them. Reply
+  and Copy are on by default (`allowReplies` / `allowCopy` turn them off); Pin
+  appears with `onPinChange`. Menu order: Reply, Copy, Pin, Edit, Delete, then
+  your items.
 - **Every part must sit inside `Chat`**, and `Chat.MessageActions` inside
   `Chat.Message` — each throws otherwise.
 

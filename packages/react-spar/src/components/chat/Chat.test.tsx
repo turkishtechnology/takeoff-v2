@@ -25,8 +25,8 @@ const msg = (id: string, over: Partial<ChatMessage> = {}): ChatMessage => ({ id,
 type TestChatProps = Partial<ChatProps> & { composer?: ReactNode; header?: ReactNode };
 
 const TestChat = ({ composer, header, children, ...props }: TestChatProps) => (
-  // Copy is on by default; tests about the other actions leave it out.
-  <Chat messages={[]} currentUserId={ME} participants={[ayse]} allowCopy={false} {...props}>
+  // Reply and Copy are on by default; tests about the other actions leave them out.
+  <Chat messages={[]} currentUserId={ME} participants={[ayse]} allowReplies={false} allowCopy={false} {...props}>
     {header ?? (
       <Chat.Header>
         <Chat.Title>Ayşe</Chat.Title>
@@ -911,6 +911,101 @@ describe('Chat (compound)', () => {
     });
   });
 
+  describe('pinning', () => {
+    beforeEach(() => {
+      Element.prototype.scrollIntoView = vi.fn();
+    });
+
+    const thread = [msg('1', { senderId: 'ayse', text: 'Boarding 14:20' }), msg('2', { senderId: 'ayse', text: 'Gate F4' }), msg('3', { text: 'Thanks' })];
+
+    const PinnedChat = (props: Partial<ChatProps>) => (
+      <TestChat
+        messages={thread}
+        header={
+          <Chat.Header>
+            <Chat.Title>Ops</Chat.Title>
+          </Chat.Header>
+        }
+        {...props}
+      >
+        <Chat.Pinned data-testid="pinned" />
+      </TestChat>
+    );
+
+    it('pins and unpins from the menu', async () => {
+      const user = userEvent.setup();
+      const onPinChange = vi.fn();
+      const { rerender } = render(<PinnedChat pinnedIds={[]} onPinChange={onPinChange} />);
+      await openActions(user, 'Gate F4');
+      await user.click(screen.getByRole('menuitem', { name: 'Pin' }));
+      expect(onPinChange).toHaveBeenCalledExactlyOnceWith(thread[1], true);
+
+      rerender(<PinnedChat pinnedIds={['2']} onPinChange={onPinChange} />);
+      expect(row('Gate F4')).toHaveAttribute('data-pinned');
+      expect(row('Gate F4').querySelector('.tk-chat-message-pinned')).toHaveAccessibleName('Pinned message');
+      await openActions(user, 'Gate F4');
+      await user.click(screen.getByRole('menuitem', { name: 'Unpin' }));
+      expect(onPinChange).toHaveBeenLastCalledWith(thread[1], false);
+    });
+
+    it('offers no Pin without onPinChange, or on messages that cannot be pinned', () => {
+      render(<PinnedChat pinnedIds={['1']} messages={[...thread, msg('4', { text: 'pending', status: 'sending' })]} />);
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      expect(within(screen.getByTestId('pinned')).queryByRole('button', { name: 'Unpin' })).not.toBeInTheDocument();
+    });
+
+    it('shows the newest pin, jumps to it and walks back through older ones', async () => {
+      const user = userEvent.setup();
+      render(<PinnedChat pinnedIds={['1', '2']} onPinChange={vi.fn()} />);
+      const bar = screen.getByTestId('pinned');
+      expect(bar).toHaveClass('tk-chat-pinned');
+      const jump = bar.querySelector('.tk-chat-pinned-jump') as HTMLElement;
+      expect(jump).toHaveAccessibleName('Pinned message · 2 of 2 Gate F4');
+
+      await user.click(jump);
+      expect(row('Gate F4').scrollIntoView).toHaveBeenCalled();
+      expect(row('Gate F4')).toHaveAttribute('data-highlighted');
+      expect(jump).toHaveTextContent('1 of 2');
+      expect(jump).toHaveTextContent('Boarding 14:20');
+
+      await user.click(jump);
+      expect(row('Boarding 14:20').scrollIntoView).toHaveBeenCalled();
+      expect(jump).toHaveTextContent('Gate F4');
+    });
+
+    it('unpins from the bar and hides itself without loaded pins', async () => {
+      const user = userEvent.setup();
+      const onPinChange = vi.fn();
+      const { rerender } = render(<PinnedChat pinnedIds={['2']} onPinChange={onPinChange} />);
+      expect(screen.getByTestId('pinned')).toHaveTextContent('Pinned message');
+      expect(screen.getByTestId('pinned')).not.toHaveTextContent('of');
+      await user.click(within(screen.getByTestId('pinned')).getByRole('button', { name: 'Unpin' }));
+      expect(onPinChange).toHaveBeenCalledWith(thread[1], false);
+
+      rerender(<PinnedChat pinnedIds={['missing']} onPinChange={onPinChange} />);
+      expect(screen.queryByTestId('pinned')).not.toBeInTheDocument();
+      rerender(<PinnedChat pinnedIds={['2']} messages={[thread[0], { ...thread[1], deleted: true }]} onPinChange={onPinChange} />);
+      expect(screen.queryByTestId('pinned')).not.toBeInTheDocument();
+      expect(row('This message was deleted')).not.toHaveAttribute('data-pinned');
+    });
+
+    it('has no axe violations with pins', async () => {
+      const { container } = render(<PinnedChat pinnedIds={['1', '2']} onPinChange={vi.fn()} />);
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('lists Pin between Copy and Edit', async () => {
+      const user = userEvent.setup();
+      render(
+        <Chat messages={[msg('1', { text: 'Mine' })]} currentUserId={ME} onSend={vi.fn()} onEdit={vi.fn()} onDelete={vi.fn()} onPinChange={vi.fn()}>
+          <Chat.Messages />
+        </Chat>,
+      );
+      await openActions(user, 'Mine');
+      expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual(['Reply', 'Copy', 'Pin', 'Edit', 'Delete']);
+    });
+  });
+
   describe('replies', () => {
     beforeEach(() => {
       Element.prototype.scrollIntoView = vi.fn();
@@ -977,12 +1072,28 @@ describe('Chat (compound)', () => {
       expect(document.querySelector('.tk-chat-composer-replying')).not.toBeNull();
     });
 
-    it('offers Reply only while replies are on and the message can be answered', () => {
-      const { rerender } = render(<TestChat messages={[question]} onSend={vi.fn()} />);
+    it('offers Reply by default, and only while the message can be answered', async () => {
+      const user = userEvent.setup();
+      const { rerender, unmount } = render(
+        <Chat messages={[question]} currentUserId={ME} allowCopy={false} onSend={vi.fn()}>
+          <Chat.Messages />
+        </Chat>,
+      );
+      await openActions(user, 'Shall we move the meeting?');
+      expect(screen.getByRole('menuitem', { name: 'Reply' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+      rerender(
+        <Chat messages={[question]} currentUserId={ME} allowCopy={false}>
+          <Chat.Messages />
+        </Chat>,
+      );
       expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
-      rerender(<TestChat allowReplies messages={[question, msg('2', { text: 'pending', status: 'sending' })]} />);
+      unmount();
+      const second = render(<TestChat messages={[question]} onSend={vi.fn()} />);
       expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
-      rerender(<TestChat allowReplies readOnly messages={[question]} onSend={vi.fn()} />);
+      second.rerender(<TestChat allowReplies messages={[question, msg('2', { text: 'pending', status: 'sending' })]} />);
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      second.rerender(<TestChat allowReplies readOnly messages={[question]} onSend={vi.fn()} />);
       expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
     });
 

@@ -17,6 +17,7 @@ import {
 import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
 import { ClockIconOutlinedRounded } from '@takeoff-icons/react/clock';
 import { DoneAllIconOutlinedRounded } from '@takeoff-icons/react/done-all';
+import { KeepIconOutlinedRounded } from '@takeoff-icons/react/keep';
 import { WarningCircleIconOutlinedRounded } from '@takeoff-icons/react/warning-circle';
 
 import { composeRootAttrs } from '../../core';
@@ -134,6 +135,8 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
     canDelete,
     canReply,
     canCopy,
+    canPin,
+    isPinned,
     copiedId,
     pendingDeletes,
     undoDelete,
@@ -151,6 +154,7 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
   const deleting = pendingDeletes.has(message.id);
   const deleted = Boolean(message.deleted) || deleting;
   const status = deleted ? undefined : message.status;
+  const pinned = !deleted && isPinned(message);
 
   const { rootAttrs, rest } = composeRootAttrs(ChatMessageBase, props as ChatMessageProps<'div'>, theme, {
     stateAttrs: () => ({
@@ -161,6 +165,7 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
       'data-grouped': grouped ? '' : undefined,
       'data-editing': editing?.id === message.id || replying?.id === message.id ? '' : undefined,
       'data-highlighted': highlightedId === message.id ? '' : undefined,
+      'data-pinned': pinned ? '' : undefined,
     }),
   });
   const { as, message: _message, children, ref, ...nativeProps } = rest as ChatMessageResolvedProps;
@@ -189,7 +194,7 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
   const { content, actions } = partition(children);
   // Composed actions may still render nothing; the gestures only need to
   // know a menu can be there, and an empty one never opens.
-  const hasMenu = !deleted && (actions.length > 0 || canReply(message) || canCopy(message) || canEdit(message) || canDelete(message));
+  const hasMenu = !deleted && (actions.length > 0 || canReply(message) || canCopy(message) || canPin(message) || canEdit(message) || canDelete(message));
   // A menu whose message loses its actions (deleted, window closed) stays
   // closed when they come back, e.g. after Undo.
   useEffect(() => {
@@ -250,6 +255,12 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
           )}
           {attachments.length > 0 && <ChatAttachments attachments={attachments} root={{ ...filesAttrs, ...fileGestures }} image={slot('image')} />}
           <div {...slot('meta')}>
+            {pinned && (
+              <span {...slot('pinned')} title={labels.pinned}>
+                <KeepIconOutlinedRounded aria-hidden="true" focusable="false" />
+                <span style={visuallyHidden}>{labels.pinned}</span>
+              </span>
+            )}
             <time {...slot('time')} dateTime={new Date(time).toISOString()}>
               {formatTime(time, locale)}
             </time>
