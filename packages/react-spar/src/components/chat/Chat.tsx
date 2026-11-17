@@ -7,7 +7,7 @@ import { resolveLabels } from '../../utils';
 
 import { ChatBase } from './base';
 import { ChatProvider, type ChatContextValue, type ComposerField } from './context';
-import { DEFAULT_LABELS } from './defaults';
+import { DEFAULT_LABELS, UNDO_WINDOW_MS } from './defaults';
 import { isWithinWindow, nextWindowClose } from './helpers';
 import type { ChatMessage, ChatOwnProps, ChatProps } from './types';
 
@@ -23,6 +23,12 @@ const MAX_TIMEOUT_MS = 2_147_483_647;
 
 const EMPTY_TYPING: string[] = [];
 const EMPTY_PARTICIPANTS: NonNullable<ChatOwnProps['participants']> = [];
+const NO_PENDING: ReadonlySet<string> = new Set();
+
+interface PendingDelete {
+  message: ChatMessage;
+  timer: ReturnType<typeof setTimeout>;
+}
 
 export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => {
   const theme = useComponentTheme('Chat');
@@ -47,6 +53,7 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
     onRead,
     editWindow,
     deleteWindow,
+    undoWindow = UNDO_WINDOW_MS,
     typing = EMPTY_TYPING,
     hasOlder = false,
     isLoadingOlder = false,
@@ -82,21 +89,60 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
   const isGroup = participants.filter(participant => participant.id !== currentUserId).length > 1;
   const typingNames = typing.filter(id => id !== currentUserId).map(id => participantMap.get(id)?.name ?? id);
 
+  const stickToBottom = useRef(true);
+  const composerFieldRef = useRef<ComposerField | null>(null);
+  const focusComposer = useCallback(() => composerFieldRef.current?.focus(), []);
+
+  // Deletes wait out `undoWindow` before `onDelete` runs. The timers live in a
+  // ref so a commit always reaches the latest `onDelete`.
+  const [pendingDeletes, setPendingDeletes] = useState(NO_PENDING);
+  const pending = useRef(new Map<string, PendingDelete>());
+  const undoButtons = useRef(new Map<string, HTMLElement | null>());
+  const onDeleteRef = useRef(onDelete);
+  useEffect(() => {
+    onDeleteRef.current = onDelete;
+  }, [onDelete]);
+
+  /** Ends a pending delete, by Undo or once its window has passed. */
+  const settle = useCallback(
+    (id: string) => {
+      clearTimeout(pending.current.get(id)?.timer);
+      pending.current.delete(id);
+      // Its Undo button is about to go; keep focus inside the chat.
+      if (undoButtons.current.get(id) === document.activeElement) focusComposer();
+      undoButtons.current.delete(id);
+      setPendingDeletes(previous => {
+        const next = new Set(previous);
+        next.delete(id);
+        return next;
+      });
+    },
+    [focusComposer],
+  );
+
+  // A chat closed during the undo window still deletes what the user deleted.
+  useEffect(() => {
+    const entries = pending.current;
+    return () => {
+      entries.forEach(({ message, timer }) => {
+        clearTimeout(timer);
+        onDeleteRef.current?.(message);
+      });
+      entries.clear();
+    };
+  }, []);
+
   const interactive = !disabled && !readOnly;
-  const isEditable = (message: ChatMessage) => message.senderId === currentUserId && !message.deleted && message.status !== 'sending' && message.status !== 'failed';
+  const isLive = (message: ChatMessage) => message.senderId === currentUserId && !message.deleted && !pendingDeletes.has(message.id);
+  const isEditable = (message: ChatMessage) => isLive(message) && message.status !== 'sending' && message.status !== 'failed';
   const canEdit = (message: ChatMessage) => interactive && Boolean(onEdit) && isEditable(message) && isWithinWindow(message, editWindow, now);
-  const canDelete = (message: ChatMessage) =>
-    interactive && Boolean(onDelete) && message.senderId === currentUserId && !message.deleted && message.status !== 'sending' && isWithinWindow(message, deleteWindow, now);
+  const canDelete = (message: ChatMessage) => interactive && Boolean(onDelete) && isLive(message) && message.status !== 'sending' && isWithinWindow(message, deleteWindow, now);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const editingMessage = editingId === null ? undefined : messages.find(message => message.id === editingId);
   // An edit ends by itself when its message goes away, is deleted, or leaves
   // the edit window while the user is still typing.
   const editing = editingMessage && canEdit(editingMessage) ? editingMessage : undefined;
-
-  const stickToBottom = useRef(true);
-  const composerFieldRef = useRef<ComposerField | null>(null);
-  const focusComposer = useCallback(() => composerFieldRef.current?.focus(), []);
 
   const submit = (text: string): boolean => {
     const trimmed = text.trim();
@@ -113,9 +159,22 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
   };
 
   const deleteMessage = (message: ChatMessage) => {
-    if (!canDelete(message)) return;
+    if (!canDelete(message)) return false;
     if (editingId === message.id) setEditingId(null);
-    onDelete?.(message);
+    if (undoWindow <= 0) {
+      onDelete?.(message);
+      return false;
+    }
+    const timer = setTimeout(
+      () => {
+        settle(message.id);
+        onDeleteRef.current?.(message);
+      },
+      Math.min(undoWindow, MAX_TIMEOUT_MS),
+    );
+    pending.current.set(message.id, { message, timer });
+    setPendingDeletes(previous => new Set(previous).add(message.id));
+    return true;
   };
 
   const context: ChatContextValue = {
@@ -137,6 +196,12 @@ export const Chat = <T extends ElementType = 'section'>(props: ChatProps<T>) => 
     canEdit,
     canDelete,
     deleteMessage,
+    pendingDeletes,
+    undoDelete: settle,
+    registerUndo: (id, element) => {
+      undoButtons.current.set(id, element);
+    },
+    focusUndo: id => undoButtons.current.get(id)?.focus(),
     editing,
     startEditing: message => {
       if (canEdit(message)) setEditingId(message.id);

@@ -450,9 +450,11 @@ wrapper-emitted. Recorded here per rule 10.
 - **State that belongs to one message lives on its row:** `data-own` (presence),
   `data-status` (`sending` | `sent` | `delivered` | `read` | `failed` —
   consumer-driven, like Upload's per-item `data-status`), `data-deleted`,
-  `data-grouped` (continues the previous message's group) and `data-editing`
-  (the composer is editing it). The status glyph re-emits `data-status` so the
-  recipe colours it without an ancestor lookup.
+  `data-deleting` (deleted, but still restorable during `undoWindow`; set
+  together with `data-deleted`), `data-grouped` (continues the previous
+  message's group) and `data-editing` (the composer is editing it). The status
+  glyph re-emits `data-status` so the recipe colours it without an ancestor
+  lookup.
 - **`data-selected` / `data-unread` (State, presence) on `Chat.Conversation`.**
   `aria-current="true"` carries the selection for assistive technology.
 - **`data-editing` (State, presence) on `Chat.Composer`** while it edits a

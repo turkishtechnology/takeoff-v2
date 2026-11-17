@@ -16,9 +16,10 @@ layout that collapses to one pane below 640px.
   `onRead` reports incoming messages once they are on screen while the page is
   visible.
 - Editing and deleting within a time window: `onEdit` / `onDelete` with
-  `editWindow` / `deleteWindow` (ms). The actions disappear when the window
-  closes; ArrowUp in an empty composer edits the last message and Escape leaves
-  editing.
+  `editWindow` / `deleteWindow` (ms), and an Undo period (`undoWindow`) before
+  `onDelete` runs. The actions disappear when the window closes, and a right
+  click or a touch long press opens a message's menu; ArrowUp in an empty
+  composer edits the last message and Escape leaves editing.
 - Every string is in `labels` (with `locale` for times), so the whole chat
   translates through the provider.
 

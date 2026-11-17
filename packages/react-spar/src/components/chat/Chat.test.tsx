@@ -548,11 +548,11 @@ describe('Chat (compound)', () => {
   });
 
   describe('deleting', () => {
-    it('deletes an own message from its menu', async () => {
+    it('deletes an own message from its menu at once without an undo window', async () => {
       const user = userEvent.setup();
       const onDelete = vi.fn();
       const mine = msg('1', { text: 'remove me' });
-      render(<TestChat messages={[mine]} onDelete={onDelete} />);
+      render(<TestChat messages={[mine]} onDelete={onDelete} undoWindow={0} />);
       await openActions(user, 'remove me');
       expect(screen.queryByRole('menuitem', { name: 'Edit' })).not.toBeInTheDocument();
       await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
@@ -564,7 +564,7 @@ describe('Chat (compound)', () => {
       const user = userEvent.setup();
       const mine = msg('1', { text: 'both' });
       const onDelete = vi.fn();
-      render(<TestChat messages={[mine]} onDelete={onDelete} onEdit={vi.fn()} />);
+      render(<TestChat messages={[mine]} onDelete={onDelete} onEdit={vi.fn()} undoWindow={0} />);
       await openActions(user, 'both');
       await user.click(screen.getByRole('menuitem', { name: 'Edit' }));
       expect(field()).toHaveValue('both');
@@ -572,6 +572,71 @@ describe('Chat (compound)', () => {
       await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
       expect(onDelete).toHaveBeenCalledWith(mine);
       expect(field()).toHaveValue('');
+    });
+
+    it('holds a delete for the undo window, then calls onDelete', async () => {
+      const user = userEvent.setup();
+      const onDelete = vi.fn();
+      const mine = msg('1', { text: 'second thoughts' });
+      render(<TestChat messages={[mine]} onDelete={onDelete} undoWindow={80} />);
+      await openActions(user, 'second thoughts');
+      await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
+
+      const pendingRow = row('This message was deleted');
+      expect(pendingRow).toHaveAttribute('data-deleted');
+      expect(pendingRow).toHaveAttribute('data-deleting');
+      expect(within(pendingRow).queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      expect(onDelete).not.toHaveBeenCalled();
+      const undo = within(pendingRow).getByRole('button', { name: 'Undo' });
+      expect(undo).toHaveClass('tk-chat-message-undo');
+      await vi.waitFor(() => expect(undo).toHaveFocus());
+
+      await vi.waitFor(() => expect(onDelete).toHaveBeenCalledExactlyOnceWith(mine));
+      expect(screen.queryByRole('button', { name: 'Undo' })).not.toBeInTheDocument();
+      expect(field()).toHaveFocus();
+    });
+
+    it('restores a message with Undo and never calls onDelete', async () => {
+      const user = userEvent.setup();
+      const onDelete = vi.fn();
+      render(<TestChat messages={[msg('1', { text: 'keep me' })]} onDelete={onDelete} undoWindow={80} />);
+      await openActions(user, 'keep me');
+      await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
+      await user.click(screen.getByRole('button', { name: 'Undo' }));
+
+      expect(row('keep me')).not.toHaveAttribute('data-deleting');
+      expect(within(row('keep me')).getByRole('button', { name: 'Message actions' })).toBeInTheDocument();
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+      expect(field()).toHaveFocus();
+      await new Promise(resolve => setTimeout(resolve, 120));
+      expect(onDelete).not.toHaveBeenCalled();
+    });
+
+    it('calls onDelete for a pending delete when the chat unmounts', async () => {
+      const user = userEvent.setup();
+      const onDelete = vi.fn();
+      const mine = msg('1', { text: 'closing' });
+      const { unmount } = render(<TestChat messages={[mine]} onDelete={onDelete} undoWindow={60_000} />);
+      await openActions(user, 'closing');
+      await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
+      expect(onDelete).not.toHaveBeenCalled();
+      unmount();
+      expect(onDelete).toHaveBeenCalledExactlyOnceWith(mine);
+    });
+
+    it('uses the latest onDelete when the window ends', async () => {
+      const user = userEvent.setup();
+      const first = vi.fn();
+      const second = vi.fn();
+      const mine = msg('1', { text: 'swap' });
+      const { rerender } = render(<TestChat messages={[mine]} onDelete={first} undoWindow={80} />);
+      await openActions(user, 'swap');
+      await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
+      rerender(<TestChat messages={[mine]} onDelete={second} undoWindow={80} />);
+      // Focus left the Undo button: the commit leaves it where it is.
+      act(() => log().focus());
+      await vi.waitFor(() => expect(second).toHaveBeenCalledWith(mine));
+      expect(first).not.toHaveBeenCalled();
     });
 
     it('closes the delete window on time', () => {
@@ -610,6 +675,80 @@ describe('Chat (compound)', () => {
       expect(screen.queryByRole('menuitem', { name: 'Delete' })).not.toBeInTheDocument();
       await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
       expect(onReply).toHaveBeenCalled();
+    });
+  });
+
+  describe('menu gestures', () => {
+    const bubble = (text: string) => row(text).querySelector('.tk-chat-message-bubble') as HTMLElement;
+    const touch = (type: string, element: HTMLElement, x = 10, y = 10) => {
+      const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y });
+      Object.defineProperty(event, 'pointerType', { value: 'touch' });
+      act(() => {
+        element.dispatchEvent(event);
+      });
+    };
+
+    it('opens the actions menu on a right click', () => {
+      render(<TestChat messages={[msg('1', { text: 'right click me' })]} onDelete={vi.fn()} />);
+      const event = fireEvent.contextMenu(bubble('right click me'));
+      expect(event).toBe(false);
+      expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
+    });
+
+    it('keeps the browser menu over selected text and on messages without actions', () => {
+      render(<TestChat messages={[msg('1', { text: 'copy me' }), msg('2', { senderId: 'ayse', text: 'theirs' })]} onDelete={vi.fn()} />);
+      expect(fireEvent.contextMenu(bubble('theirs'))).toBe(true);
+
+      const text = within(bubble('copy me')).getByText('copy me');
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      window.getSelection()?.removeAllRanges();
+      window.getSelection()?.addRange(range);
+      expect(fireEvent.contextMenu(bubble('copy me'))).toBe(true);
+      window.getSelection()?.removeAllRanges();
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    });
+
+    it('leaves a right click the consumer handled alone', () => {
+      const onContextMenu = vi.fn((event: { preventDefault: () => void }) => event.preventDefault());
+      render(
+        <Chat messages={[msg('1', { text: 'custom' })]} currentUserId={ME} onDelete={vi.fn()}>
+          <Chat.Messages>{message => <Chat.Message message={message} slotProps={{ bubble: { onContextMenu } }} />}</Chat.Messages>
+        </Chat>,
+      );
+      fireEvent.contextMenu(bubble('custom'));
+      expect(onContextMenu).toHaveBeenCalled();
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    });
+
+    it('opens the actions menu on a long press, not on a scroll or a mouse press', () => {
+      vi.useFakeTimers();
+      render(<TestChat messages={[msg('1', { text: 'hold me' })]} onDelete={vi.fn()} />);
+      const target = bubble('hold me');
+
+      fireEvent.pointerDown(target, { pointerType: 'mouse' });
+      act(() => vi.advanceTimersByTime(600));
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+
+      touch('pointerdown', target);
+      touch('pointermove', target, 10, 40);
+      act(() => vi.advanceTimersByTime(600));
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+
+      touch('pointerdown', target);
+      touch('pointerup', target);
+      act(() => vi.advanceTimersByTime(600));
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+
+      touch('pointerdown', target);
+      touch('pointercancel', target);
+      act(() => vi.advanceTimersByTime(600));
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+
+      touch('pointerdown', target);
+      touch('pointermove', target, 12, 12);
+      act(() => vi.advanceTimersByTime(500));
+      expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
     });
   });
 

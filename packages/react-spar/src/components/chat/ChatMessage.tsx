@@ -1,4 +1,18 @@
-import { Children, Fragment, isValidElement, useCallback, useContext, useEffect, useRef, type ElementType, type ReactNode, type Ref } from 'react';
+import {
+  Children,
+  Fragment,
+  isValidElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ElementType,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode,
+  type Ref,
+} from 'react';
 
 import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
 import { ClockIconOutlinedRounded } from '@takeoff-icons/react/clock';
@@ -14,6 +28,7 @@ import { ChatMessageBase } from './base';
 import { ChatAvatar } from './ChatAvatar';
 import { ChatMessageActions, ChatMessageItemContext } from './ChatMessageActions';
 import { ChatRowContext, useChatContext, useObserveRow } from './context';
+import { LONG_PRESS_MOVE_PX, LONG_PRESS_MS } from './defaults';
 import { formatTime, slotAttrsFor, toTime } from './helpers';
 import type { ChatMessageOwnProps, ChatMessageProps, ChatMessageStatus } from './types';
 
@@ -45,21 +60,81 @@ const partition = (children: ReactNode, content: ReactNode[] = [], actions: Reac
   return { content, actions };
 };
 
+type BubbleHandlers = {
+  onContextMenu?: (event: ReactMouseEvent<HTMLDivElement>) => void;
+  onPointerDown?: (event: ReactPointerEvent<HTMLDivElement>) => void;
+  onPointerMove?: (event: ReactPointerEvent<HTMLDivElement>) => void;
+  onPointerUp?: (event: ReactPointerEvent<HTMLDivElement>) => void;
+  onPointerCancel?: (event: ReactPointerEvent<HTMLDivElement>) => void;
+};
+
+/** Text the reader has selected inside `element`; a right click on it keeps the browser's menu for copying. */
+const hasSelectionIn = (element: Element) => {
+  const selection = window.getSelection();
+  return Boolean(selection && !selection.isCollapsed && selection.anchorNode && element.contains(selection.anchorNode));
+};
+
+/**
+ * Opens the row's menu on a right click or a touch held still for
+ * `LONG_PRESS_MS`, the gestures people expect from a message. Handlers the
+ * consumer passes to the bubble run first and can cancel it.
+ */
+const useMenuGestures = (enabled: boolean, open: () => void, own: BubbleHandlers) => {
+  const press = useRef<{ x: number; y: number; timer: ReturnType<typeof setTimeout> } | null>(null);
+  const cancel = useCallback(() => {
+    if (press.current) clearTimeout(press.current.timer);
+    press.current = null;
+  }, []);
+  useEffect(() => cancel, [cancel]);
+
+  return {
+    onContextMenu: (event: ReactMouseEvent<HTMLDivElement>) => {
+      own.onContextMenu?.(event);
+      if (!enabled || event.defaultPrevented || hasSelectionIn(event.currentTarget)) return;
+      event.preventDefault();
+      open();
+    },
+    onPointerDown: (event: ReactPointerEvent<HTMLDivElement>) => {
+      own.onPointerDown?.(event);
+      cancel();
+      if (!enabled || event.defaultPrevented || event.pointerType !== 'touch') return;
+      press.current = { x: event.clientX, y: event.clientY, timer: setTimeout(open, LONG_PRESS_MS) };
+    },
+    onPointerMove: (event: ReactPointerEvent<HTMLDivElement>) => {
+      own.onPointerMove?.(event);
+      if (press.current && Math.hypot(event.clientX - press.current.x, event.clientY - press.current.y) > LONG_PRESS_MOVE_PX) cancel();
+    },
+    onPointerUp: (event: ReactPointerEvent<HTMLDivElement>) => {
+      own.onPointerUp?.(event);
+      cancel();
+    },
+    onPointerCancel: (event: ReactPointerEvent<HTMLDivElement>) => {
+      own.onPointerCancel?.(event);
+      cancel();
+    },
+  };
+};
+
 export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessageProps<T>) => {
   const theme = useComponentTheme('ChatMessage');
-  const { currentUserId, participants, isGroup, labels, locale, onRetry, disabled, readOnly, editing } = useChatContext('Chat.Message');
+  const { currentUserId, participants, isGroup, labels, locale, onRetry, disabled, readOnly, editing, canEdit, canDelete, pendingDeletes, undoDelete, registerUndo } =
+    useChatContext('Chat.Message');
   const { grouped } = useContext(ChatRowContext);
   const observeRow = useObserveRow();
 
   const { message } = props as ChatMessageProps<'div'>;
   const own = message.senderId === currentUserId;
-  const status = message.deleted ? undefined : message.status;
+  // Deleted by the user, but `onDelete` waits for the undo window.
+  const deleting = pendingDeletes.has(message.id);
+  const deleted = Boolean(message.deleted) || deleting;
+  const status = deleted ? undefined : message.status;
 
   const { rootAttrs, rest } = composeRootAttrs(ChatMessageBase, props as ChatMessageProps<'div'>, theme, {
     stateAttrs: () => ({
       'data-own': own ? '' : undefined,
       'data-status': status,
-      'data-deleted': message.deleted ? '' : undefined,
+      'data-deleted': deleted ? '' : undefined,
+      'data-deleting': deleting ? '' : undefined,
       'data-grouped': grouped ? '' : undefined,
       'data-editing': editing?.id === message.id ? '' : undefined,
     }),
@@ -83,7 +158,21 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
     return () => observeRow(message, null);
   }, [observeRow, message]);
 
+  const undoRef = useCallback((node: HTMLElement | null) => registerUndo(message.id, node), [registerUndo, message.id]);
+
+  const [menuOpen, setMenuOpen] = useState(false);
   const { content, actions } = partition(children);
+  // Composed actions may still render nothing; the gestures only need to
+  // know a menu can be there, and an empty one never opens.
+  const hasMenu = !deleted && (actions.length > 0 || canEdit(message) || canDelete(message));
+  // A menu whose message loses its actions (deleted, window closed) stays
+  // closed when they come back, e.g. after Undo.
+  useEffect(() => {
+    if (!hasMenu) setMenuOpen(false);
+  }, [hasMenu]);
+  const { onContextMenu, onPointerDown, onPointerMove, onPointerUp, onPointerCancel, ...bubbleAttrs } = slot('bubble') as ReturnType<typeof slot> & BubbleHandlers;
+  const gestures = useMenuGestures(hasMenu, () => setMenuOpen(true), { onContextMenu, onPointerDown, onPointerMove, onPointerUp, onPointerCancel });
+
   const sender = participants.get(message.senderId);
   const senderName = sender?.name ?? message.senderId;
   const showAuthor = !own && isGroup;
@@ -93,13 +182,13 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
   const Component = (as ?? 'div') as ElementType;
 
   return (
-    <ChatMessageItemContext.Provider value={message}>
+    <ChatMessageItemContext.Provider value={{ message, menuOpen, setMenuOpen }}>
       <Component {...nativeProps} {...rootAttrs} ref={setRef}>
         {showAuthor && <ChatAvatar {...slot('avatar')} name={senderName} avatar={sender?.avatar} />}
         <div {...slot('body')}>
           {showAuthor && !grouped && <span {...slot('author')}>{senderName}</span>}
-          <div {...slot('bubble')}>
-            {message.deleted ? (
+          <div {...bubbleAttrs} {...gestures}>
+            {deleted ? (
               <p {...slot('text')}>{labels.deleted}</p>
             ) : content.length > 0 && content.some(node => node != null && node !== false) ? (
               content
@@ -111,7 +200,7 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
             <time {...slot('time')} dateTime={new Date(time).toISOString()}>
               {formatTime(time, locale)}
             </time>
-            {message.editedAt !== undefined && !message.deleted && <span {...slot('edited')}>{labels.edited}</span>}
+            {message.editedAt !== undefined && !deleted && <span {...slot('edited')}>{labels.edited}</span>}
             {own && status && (
               <span {...slot('status')} data-status={status} title={labels[status]}>
                 {STATUS_ICON[status]}
@@ -123,9 +212,14 @@ export const ChatMessage = <T extends ElementType = 'div'>(props: ChatMessagePro
                 {labels.retry}
               </Button>
             )}
+            {deleting && (
+              <Button {...slot('undo')} ref={undoRef} type="button" variant="primary" appearance="text" size="small" onClick={() => undoDelete(message.id)}>
+                {labels.undo}
+              </Button>
+            )}
           </div>
         </div>
-        {!message.deleted && (actions.length > 0 ? actions : <ChatMessageActions />)}
+        {!deleted && (actions.length > 0 ? actions : <ChatMessageActions />)}
       </Component>
     </ChatMessageItemContext.Provider>
   );

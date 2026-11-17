@@ -29,7 +29,19 @@ export interface ChatContextValue {
   onRead: ((messages: ChatMessage[]) => void) | undefined;
   canEdit: (message: ChatMessage) => boolean;
   canDelete: (message: ChatMessage) => boolean;
-  deleteMessage: (message: ChatMessage) => void;
+  /**
+   * Deletes a message: at once, or after `undoWindow` while it can be
+   * restored. Returns whether the delete is waiting for that window.
+   */
+  deleteMessage: (message: ChatMessage) => boolean;
+  /** Messages deleted by the user whose `onDelete` waits for `undoWindow` to pass. */
+  pendingDeletes: ReadonlySet<string>;
+  /** Restores a message whose delete is still pending. */
+  undoDelete: (id: string) => void;
+  /** Registers a pending message's Undo button, so focus can go there after Delete. */
+  registerUndo: (id: string, element: HTMLElement | null) => void;
+  /** Focuses a pending message's Undo button. */
+  focusUndo: (id: string) => void;
   /** The message the composer is editing, if any. */
   editing: ChatMessage | undefined;
   startEditing: (message: ChatMessage) => void;

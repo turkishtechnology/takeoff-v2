@@ -24,7 +24,7 @@
 //     .tk-chat-jump                 — Button
 //   .tk-chat-message                — one message row
 //     -avatar / -body / -author / -bubble / -text / -meta / -time /
-//     -edited / -status / -retry
+//     -edited / -status / -retry / -undo
 //   .tk-chat-message-actions        — the row's menu (Dropdown)
 //   .tk-chat-empty                  — empty state
 //   .tk-chat-composer               — the composer form
@@ -32,7 +32,7 @@
 //
 // State attributes (each has a consumer below — rule 9):
 //   .tk-chat[data-layout='single' | 'split'][data-view='list' | 'thread']
-//   .tk-chat-message[data-own][data-grouped][data-deleted][data-editing]
+//   .tk-chat-message[data-own][data-grouped][data-deleted][data-deleting][data-editing]
 //   .tk-chat-message[data-status] / .tk-chat-message-status[data-status]
 //   .tk-chat-conversation[data-selected][data-unread]
 //   .tk-chat-composer[data-editing]
@@ -407,6 +407,11 @@
       font-style: italic;
     }
 
+    // Deleted, but still restorable with Undo: dimmed until it settles.
+    &[data-deleting] .tk-chat-message-bubble {
+      opacity: 0.72;
+    }
+
     &[data-editing] .tk-chat-message-bubble {
       outline: 2px solid var(--primary-light);
       outline-offset: 2px;
@@ -487,18 +492,41 @@
     }
   }
 
-  .tk-chat-message-retry {
+  .tk-chat-message-retry,
+  .tk-chat-message-undo {
     min-height: 0;
     padding-block: 0;
   }
 
+  // Next to the top of the bubble, so long messages keep it in reach.
   .tk-chat-message-actions {
-    align-self: center;
+    align-self: flex-start;
     opacity: 0;
     transition: opacity 0.15s ease;
+  }
 
-    @media (hover: none) {
-      opacity: 1;
+  // Touch has no hover: a long press opens the menu instead. The button
+  // moves out beside the row, where it takes no width from the bubble, and
+  // shows only while the menu it anchors is open (or it has focus).
+  @media (hover: none) {
+    .tk-chat-message {
+      position: relative;
+    }
+
+    .tk-chat-message-bubble {
+      -webkit-touch-callout: none;
+    }
+
+    .tk-chat-message-actions {
+      position: absolute;
+      top: 0;
+      inset-inline-start: 100%;
+      margin-inline-start: 4px;
+    }
+
+    .tk-chat-message[data-own] .tk-chat-message-actions {
+      inset-inline: auto 100%;
+      margin-inline: 0 4px;
     }
   }
 

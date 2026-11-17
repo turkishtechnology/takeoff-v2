@@ -83,7 +83,8 @@ export default {
       dataAttributes: [
         { attribute: 'data-own', appliedWhen: "On the current user's messages", purpose: 'Aligns the row to the end and colours the bubble.' },
         { attribute: 'data-status', appliedWhen: 'When the message has a `status`', purpose: 'Delivery state: `sending` | `sent` | `delivered` | `read` | `failed`.' },
-        { attribute: 'data-deleted', appliedWhen: 'When `deleted`', purpose: 'Deleted-message treatment.' },
+        { attribute: 'data-deleted', appliedWhen: 'When `deleted`, or deleted and waiting out `undoWindow`', purpose: 'Deleted-message treatment.' },
+        { attribute: 'data-deleting', appliedWhen: 'While a delete can still be undone', purpose: 'Dims the message until `onDelete` runs.' },
         { attribute: 'data-grouped', appliedWhen: 'When it continues the previous message’s group', purpose: 'Tighter spacing; hides the repeated avatar.' },
         { attribute: 'data-editing', appliedWhen: 'While the composer edits it', purpose: 'Highlights the message being edited.' },
       ],

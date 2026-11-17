@@ -211,6 +211,7 @@ open, then the thread with a back button in `Chat.Header`.
 | `onRead`                | `(messages: ChatMessage[]) => void` | -       | Incoming non-`read` messages seen on screen; each reported once.                        |
 | `editWindow`            | `number` (ms)                       | -       | No limit when unset.                                                                    |
 | `deleteWindow`          | `number` (ms)                       | -       | No limit when unset.                                                                    |
+| `undoWindow`            | `number` (ms)                       | `5000`  | Undo period before `onDelete` runs (also runs on unmount). `0` deletes at once.         |
 | `typing`                | `string[]`                          | `[]`    | Participant ids typing now.                                                             |
 | `hasOlder`              | `boolean`                           | `false` | Load-older button; scrolling to the top loads too.                                      |
 | `isLoadingOlder`        | `boolean`                           | `false` | Spinner on the button, `aria-busy` on the log.                                          |
@@ -253,6 +254,7 @@ once) and `locale`:
     send: 'Gönder',
     edit: 'Düzenle',
     delete: 'Sil',
+    undo: 'Geri al',
     edited: 'Düzenlendi',
     deleted: 'Bu mesaj silindi',
     read: 'Okundu',
@@ -270,7 +272,8 @@ Empty strings fall back to the English default, so no control loses its name.
 `classNames` / `slotProps` reach every slot — e.g. `Chat.Message`'s `bubble`,
 `text`, `meta`, `status`; `Chat.Messages`' `viewport`, `divider`, `typing`;
 `Chat.Composer`'s `controls`, `send`. Rows expose `data-own`, `data-status`,
-`data-deleted`, `data-grouped` and `data-editing` for selectors.
+`data-deleted`, `data-deleting`, `data-grouped` and `data-editing` for
+selectors.
 
 ## Gotchas
 
@@ -283,6 +286,9 @@ Empty strings fall back to the English default, so no control loses its name.
   content passed as `Chat.Message` children is yours to update.
 - **Windows are UI only.** `editWindow` / `deleteWindow` hide the actions in
   time, but the server must reject late edits too.
+- **`onDelete` is deferred.** It runs after `undoWindow` (5 s default), not on
+  the click; the row shows as deleted with Undo meanwhile. Tests that expect an
+  immediate call should pass `undoWindow={0}`.
 - **Every part must sit inside `Chat`**, and `Chat.MessageActions` inside
   `Chat.Message` — each throws otherwise.
 
@@ -293,7 +299,9 @@ Empty strings fall back to the English default, so no control loses its name.
 - Enter sends, Shift+Enter adds a line, IME composition is respected; ArrowUp in
   an empty field edits the last editable message; Escape leaves editing without
   closing a surrounding Drawer.
-- The message menu button shows on hover and keyboard focus, always on touch.
+- The message menu button shows on hover and keyboard focus. Right click on the
+  bubble (without a text selection) and a touch long press open the same menu.
+  After Delete, focus goes to Undo.
 
 ## Reference
 

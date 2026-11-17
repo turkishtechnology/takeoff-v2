@@ -21,6 +21,7 @@ export const DEFAULT_LABELS: ChatLabels = {
   messageActions: 'Message actions',
   edit: 'Edit',
   delete: 'Delete',
+  undo: 'Undo',
   edited: 'Edited',
   deleted: 'This message was deleted',
   sending: 'Sending',
@@ -45,3 +46,12 @@ export const LOAD_OLDER_THRESHOLD_PX = 40;
 
 // Share of a message that has to be on screen before it counts as read.
 export const READ_VISIBILITY_THRESHOLD = 0.6;
+
+// How long a deleted message can be restored before `onDelete` is called.
+export const UNDO_WINDOW_MS = 5000;
+
+// A touch held this long (ms) without moving opens a message's menu.
+export const LONG_PRESS_MS = 500;
+
+// Moving the finger further than this (px) is a scroll, not a long press.
+export const LONG_PRESS_MOVE_PX = 10;

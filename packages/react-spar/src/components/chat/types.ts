@@ -8,7 +8,7 @@ export type ChatThreadSlot = 'root';
 export type ChatHeaderSlot = 'root' | 'back';
 export type ChatTitleSlot = 'root';
 export type ChatMessagesSlot = 'root' | 'viewport' | 'content' | 'loadOlder' | 'divider' | 'typing' | 'typingDots' | 'jump';
-export type ChatMessageSlot = 'root' | 'avatar' | 'body' | 'author' | 'bubble' | 'text' | 'meta' | 'time' | 'edited' | 'status' | 'retry';
+export type ChatMessageSlot = 'root' | 'avatar' | 'body' | 'author' | 'bubble' | 'text' | 'meta' | 'time' | 'edited' | 'status' | 'retry' | 'undo';
 export type ChatMessageActionsSlot = 'root';
 export type ChatEmptySlot = 'root';
 export type ChatComposerSlot = 'root' | 'editing' | 'cancel' | 'controls' | 'send';
@@ -114,6 +114,8 @@ export interface ChatLabels {
   edit: string;
   /** Menu item that deletes a message. */
   delete: string;
+  /** Button on a just-deleted message that restores it, shown for `undoWindow`. */
+  undo: string;
   /** Note under an edited message. */
   edited: string;
   /** Text shown in place of a deleted message. */
@@ -152,7 +154,10 @@ export interface ChatOwnProps {
    * Setting it turns on the Edit action for the user's own messages.
    */
   onEdit?: (message: ChatMessage, text: string) => void;
-  /** Called when the user deletes one of their messages. Setting it turns on the Delete action. */
+  /**
+   * Called when the user deletes one of their messages, once `undoWindow` has
+   * passed without an undo. Setting it turns on the Delete action.
+   */
   onDelete?: (message: ChatMessage) => void;
   /** Called from the Retry button under a `'failed'` message. The button is shown only when this is set. */
   onRetry?: (message: ChatMessage) => void;
@@ -172,6 +177,14 @@ export interface ChatOwnProps {
    * Leave it unset for no limit. The Delete action disappears once it passes.
    */
   deleteWindow?: number;
+  /**
+   * How long a deleted message can still be restored, in milliseconds. Until
+   * then it shows as deleted with an Undo button, and `onDelete` is called
+   * when the time is up — or right away if the chat unmounts first. `0`
+   * calls `onDelete` at once.
+   * @defaultValue 5000
+   */
+  undoWindow?: number;
   /** Ids of the participants who are typing right now. Shows the typing line at the end of the log. */
   typing?: string[];
   /** Shows a Load older messages button at the top of the log. Scrolling to the top loads them too. */
@@ -275,8 +288,9 @@ export interface ChatMessageOwnProps {
 
 /**
  * One message: bubble, time, edited note, delivery status and the actions
- * menu. `data-own`, `data-status`, `data-deleted` and `data-grouped` describe
- * it for styling.
+ * menu. `data-own`, `data-status`, `data-deleted`, `data-deleting` and
+ * `data-grouped` describe it for styling. A long press (touch) or a right
+ * click on the bubble opens the actions menu too.
  */
 export type ChatMessageProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, ChatMessageOwnProps>;
 

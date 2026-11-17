@@ -18,8 +18,17 @@ type ChatMessageActionsResolvedProps = Omit<ChatMessageActionsOwnProps, 'classNa
   ref?: Ref<Element>;
 };
 
-/** The message a `Chat.MessageActions` belongs to, published by `Chat.Message`. */
-export const ChatMessageItemContext = createContext<ChatMessage | null>(null);
+/**
+ * Published by `Chat.Message` for its `Chat.MessageActions`: the message, and
+ * the menu's open state, which the row opens on a long press or right click.
+ */
+export interface ChatMessageItemContextValue {
+  message: ChatMessage;
+  menuOpen: boolean;
+  setMenuOpen: (open: boolean) => void;
+}
+
+export const ChatMessageItemContext = createContext<ChatMessageItemContextValue | null>(null);
 
 // Takeoff icons ship no "more" glyph yet; three vertical dots.
 const MoreIcon = () => (
@@ -32,9 +41,10 @@ const MoreIcon = () => (
 
 export const ChatMessageActions = <T extends ElementType = 'div'>(props: ChatMessageActionsProps<T>) => {
   const theme = useComponentTheme('ChatMessageActions');
-  const { canEdit, canDelete, startEditing, deleteMessage, focusComposer, labels } = useChatContext('Chat.MessageActions');
-  const message = useContext(ChatMessageItemContext);
-  if (!message) throw new Error('Chat.MessageActions must be used within Chat.Message');
+  const { canEdit, canDelete, startEditing, deleteMessage, focusComposer, focusUndo, labels } = useChatContext('Chat.MessageActions');
+  const item = useContext(ChatMessageItemContext);
+  if (!item) throw new Error('Chat.MessageActions must be used within Chat.Message');
+  const { message, menuOpen, setMenuOpen } = item;
 
   const { rootAttrs, rest } = composeRootAttrs(ChatMessageActionsBase, props as ChatMessageActionsProps<'div'>, theme);
   const { as, children, ref, ...nativeProps } = rest as ChatMessageActionsResolvedProps;
@@ -48,7 +58,7 @@ export const ChatMessageActions = <T extends ElementType = 'div'>(props: ChatMes
 
   return (
     <Component {...nativeProps} {...rootAttrs} ref={ref}>
-      <Dropdown size="small">
+      <Dropdown size="small" open={menuOpen} onOpenChange={setMenuOpen}>
         <Dropdown.Trigger as={Button} variant="neutral" appearance="text" size="small" rounded aria-label={labels.messageActions} startContent={<MoreIcon />} />
         <Dropdown.Content>
           {editable && (
@@ -61,10 +71,11 @@ export const ChatMessageActions = <T extends ElementType = 'div'>(props: ChatMes
             <Dropdown.Item
               data-action="delete"
               onSelect={() => {
-                deleteMessage(message);
+                const undoable = deleteMessage(message);
                 // The row's menu button goes away with the message's actions;
-                // wait for the menu to hand focus back before moving it.
-                setTimeout(focusComposer);
+                // wait for the menu to hand focus back before moving it — to
+                // the Undo button while the delete can still be undone.
+                setTimeout(() => (undoable ? focusUndo(message.id) : focusComposer()));
               }}
             >
               <DeleteIconOutlinedRounded aria-hidden="true" focusable="false" />

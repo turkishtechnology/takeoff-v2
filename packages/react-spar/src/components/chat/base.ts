@@ -79,7 +79,7 @@ export const ChatMessagesBase = createComponentBase<ChatMessagesProps, ChatMessa
 // is replaced through children.
 export const ChatMessageBase = createComponentBase<ChatMessageProps, ChatMessageSlot>({
   name: 'ChatMessage',
-  slots: ['root', 'avatar', 'body', 'author', 'bubble', 'text', 'meta', 'time', 'edited', 'status', 'retry'] as const,
+  slots: ['root', 'avatar', 'body', 'author', 'bubble', 'text', 'meta', 'time', 'edited', 'status', 'retry', 'undo'] as const,
   classes: {
     root: 'tk-chat-message',
     avatar: 'tk-chat-message-avatar',
@@ -92,6 +92,7 @@ export const ChatMessageBase = createComponentBase<ChatMessageProps, ChatMessage
     edited: 'tk-chat-message-edited',
     status: 'tk-chat-message-status',
     retry: 'tk-chat-message-retry',
+    undo: 'tk-chat-message-undo',
   },
 });
 
