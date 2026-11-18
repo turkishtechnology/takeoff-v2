@@ -1,0 +1,156 @@
+import type { ElementType, ReactNode } from 'react';
+import type { Orientation, PolymorphicProps } from '../../types';
+import type { ButtonOwnProps } from '../Button/types';
+
+export type TabsActivationMode = 'automatic' | 'manual';
+
+/**
+ * Own props for Tabs root component
+ */
+export interface TabsOwnProps {
+  /**
+   * Custom base ID for ARIA relationships.
+   * If not provided, one will be generated automatically.
+   * Sub-element IDs are derived as `${id}-trigger-${value}` and `${id}-panel-${value}`.
+   */
+  id?: string;
+
+  /**
+   * Controlled selected tab value
+   */
+  value?: string;
+
+  /**
+   * Uncontrolled initial tab selection. When omitted (and `value` is not set),
+   * the first tab in DOM order is selected without calling `onValueChange`.
+   * @defaultValue First tab value
+   */
+  defaultValue?: string;
+
+  /**
+   * Callback when the selected tab changes through user interaction (click,
+   * keyboard activation or `select()`). Not called for the automatic
+   * first-tab selection on mount, nor when the already selected tab is
+   * activated again.
+   * @param value - The new selected tab value
+   */
+  onValueChange?: (value: string) => void;
+
+  /**
+   * Tabs orientation affecting keyboard navigation
+   * @defaultValue 'horizontal'
+   */
+  orientation?: Orientation;
+
+  /**
+   * Whether tabs activate on focus or require explicit activation
+   * @defaultValue 'automatic'
+   */
+  activationMode?: TabsActivationMode;
+}
+
+/**
+ * Props for Tabs root component
+ * @remarks Fully accessible, headless tabbed interface
+ */
+export type TabsProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, TabsOwnProps>;
+
+/**
+ * Props for TabsList component
+ * @remarks Container for tab trigger buttons with keyboard navigation
+ */
+export type TabsListProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T>;
+
+/**
+ * Render props provided to children function for TabsTrigger
+ */
+export interface TabsTriggerRenderProps {
+  /**
+   * Whether this tab is currently selected
+   */
+  isSelected: boolean;
+  /**
+   * Function to select this tab programmatically
+   */
+  select: () => void;
+  /**
+   * Whether this tab is disabled
+   */
+  disabled: boolean;
+  /**
+   * Whether this tab is currently focused
+   */
+  isFocused: boolean;
+  /**
+   * The tab's orientation
+   */
+  orientation: Orientation;
+}
+
+/**
+ * Own props for TabsTrigger component
+ */
+export interface TabsTriggerOwnProps extends ButtonOwnProps {
+  /**
+   * Unique identifier for the tab
+   */
+  value: string;
+
+  /**
+   * Children content or render function
+   */
+  children?: ReactNode | ((state: TabsTriggerRenderProps) => ReactNode);
+}
+
+/**
+ * Props for TabsTrigger component
+ * @remarks Interactive tab button that selects a panel
+ */
+export type TabsTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<
+  'button',
+  T,
+  TabsTriggerOwnProps
+>;
+
+/**
+ * Own props for TabsContent component
+ */
+export interface TabsContentOwnProps {
+  /**
+   * Unique identifier matching a TabsTrigger value
+   */
+  value: string;
+
+  /**
+   * Force content to remain mounted when not active
+   * @defaultValue false
+   */
+  forceMount?: boolean;
+}
+
+/**
+ * Props for TabsContent component
+ * @remarks Panel content displayed when its matching tab is selected
+ */
+export type TabsContentProps<T extends ElementType = 'div'> = PolymorphicProps<
+  'div',
+  T,
+  TabsContentOwnProps
+>;
+
+/**
+ * Context value provided by Tabs root component
+ * @internal
+ */
+export interface TabsContextValue {
+  selectedValue: string | undefined;
+  onValueChange: (value: string) => void;
+  orientation: Orientation;
+  activationMode: TabsActivationMode;
+  baseId: string;
+  tabItems: Map<string, HTMLElement>;
+  registerTab: (value: string, element: HTMLElement) => void;
+  unregisterTab: (value: string) => void;
+  getTabIndex: (value: string) => number;
+  focusTab: (value: string) => void;
+}

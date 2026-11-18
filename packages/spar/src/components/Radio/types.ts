@@ -1,0 +1,164 @@
+import type { ElementType, ReactNode } from 'react';
+import type { Orientation, PolymorphicProps } from '../../types';
+
+/**
+ * Own props for Radio component
+ */
+export interface RadioOwnProps {
+  /**
+   * Custom base ID used for generating the form `name` attribute.
+   * If not provided, one will be generated automatically.
+   */
+  id?: string;
+
+  /**
+   * Controlled value of selected radio item
+   */
+  value?: string;
+
+  /**
+   * Uncontrolled default selected value
+   */
+  defaultValue?: string;
+
+  /**
+   * Callback when selection changes
+   * @param value - The new selected value
+   */
+  onChange?: (value: string) => void;
+
+  /**
+   * HTML name attribute for form submission
+   */
+  name?: string;
+
+  /**
+   * Disables entire radio group
+   * @defaultValue false
+   */
+  disabled?: boolean;
+
+  /**
+   * Marks group as required for form validation
+   * @defaultValue false
+   */
+  required?: boolean;
+
+  /**
+   * Read-only state. A read-only radio group can be inspected but its value
+   * cannot change. When inside a `<Field>`, inherited automatically.
+   * @defaultValue false
+   */
+  readOnly?: boolean;
+
+  /**
+   * Marks the group as invalid for ARIA wiring (`aria-invalid`). When nested
+   * inside a `<Field>` with `invalid`, this is inherited automatically; a
+   * direct prop on `<Radio>` always wins.
+   * @defaultValue false
+   */
+  invalid?: boolean;
+
+  /**
+   * Layout direction affecting keyboard navigation
+   * @defaultValue 'vertical'
+   */
+  orientation?: Orientation;
+
+  /**
+   * Whether arrow key navigation automatically selects the focused radio item
+   * Changes keyboard behavior per WAI-ARIA guidelines:
+   * - true: Arrow keys move focus and select (standard radio group behavior)
+   * - false: Arrow keys only move focus, Space/Enter on an item selects it (toolbar behavior)
+   * @defaultValue true
+   */
+  selectOnFocus?: boolean;
+
+  /**
+   * Whether to focus the first focusable radio item on mount
+   * @defaultValue false
+   */
+  autoFocus?: boolean;
+}
+
+/**
+ * Props for Radio component
+ * @remarks Fully accessible, headless radio group component (renders `role="radiogroup"`).
+ */
+export type RadioProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, RadioOwnProps>;
+
+/**
+ * Render props provided to children function for RadioItem
+ */
+export interface RadioItemRenderProps {
+  /**
+   * Whether this radio item is currently checked
+   */
+  isChecked: boolean;
+  /**
+   * Function to select this radio item
+   */
+  select: () => void;
+  /**
+   * Whether this radio item is disabled
+   */
+  disabled: boolean;
+  /**
+   * Whether this radio item is currently focused
+   */
+  isFocused: boolean;
+}
+
+/**
+ * Own props for RadioItem component
+ */
+export interface RadioItemOwnProps {
+  /**
+   * Unique value for this radio item
+   */
+  value: string;
+
+  /**
+   * Disables this specific radio item
+   * @defaultValue false
+   */
+  disabled?: boolean;
+
+  /**
+   * Children content or render function
+   */
+  children?: ReactNode | ((state: RadioItemRenderProps) => ReactNode);
+}
+
+/**
+ * Props for RadioItem component
+ * @remarks Individual radio option within a Radio (radiogroup). Renders a
+ * `<span role="radio">` by default; use `as` for another element that may
+ * carry `role="radio"` (not `<label>`, which allows no ARIA role).
+ */
+export type RadioItemProps<T extends ElementType = 'span'> = PolymorphicProps<
+  'span',
+  T,
+  RadioItemOwnProps
+>;
+
+/**
+ * Internal context interface for Radio.
+ * @internal
+ */
+export interface RadioContextValue {
+  value: string | undefined;
+  onChange: (value: string) => void;
+  disabled: boolean;
+  readOnly: boolean;
+  required: boolean;
+  name: string;
+  /** Value of the single item that currently holds `tabIndex={0}`. */
+  tabStopValue: string | null;
+  focusedValue: string | null;
+  setFocusedValue: (value: string | null) => void;
+  orientation: Orientation;
+  selectOnFocus: boolean;
+  registerItem: (value: string, element: HTMLElement, disabled: boolean) => void;
+  unregisterItem: (value: string) => void;
+}
