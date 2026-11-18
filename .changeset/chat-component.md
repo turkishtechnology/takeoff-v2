@@ -1,0 +1,38 @@
+---
+'@takeoff-ui/react-spar': minor
+'@takeoff-design/tokens': minor
+---
+
+Add `Chat`, a compound messaging component for conversations between people. The
+root is controlled (`messages`, `currentUserId`, `onSend`) and the parts lay it
+out: `Chat.Header`, `Chat.Title`, `Chat.Messages` (a `role="log"` that stays at
+the bottom, offers a "new messages" jump button, adds day dividers and a typing
+line), `Chat.Message`, `Chat.MessageActions`, `Chat.Empty`, `Chat.Composer`, and
+an optional `Chat.ConversationList` / `Chat.Conversation` / `Chat.Thread` split
+layout that collapses to one pane below 640px.
+
+- Delivery and read receipts: each message's `status` (`sending` / `sent` /
+  `delivered` / `read` / `failed`) draws a clock, one tick, or two ticks;
+  `onRead` reports incoming messages once they are on screen while the page is
+  visible.
+- Editing and deleting within a time window: `onEdit` / `onDelete` with
+  `editWindow` / `deleteWindow` (ms), and an Undo period (`undoWindow`) before
+  `onDelete` runs. The actions disappear when the window closes, and a right
+  click or a touch long press opens a message's menu; ArrowUp in an empty
+  composer edits the last message and Escape leaves editing.
+- Pins: `pinnedIds` / `onPinChange` add Pin / Unpin to the menu and a pin mark
+  to the message; `Chat.Pinned` is a bar that jumps through the pins.
+- Replies are on by default (`allowReplies={false}` turns them off).
+- Copy: on by default for messages with text (`allowCopy`), with a "Copied" note
+  that is also announced; it stays available read-only.
+- Replies: `allowReplies` adds Reply to the message menu, a reply banner to the
+  composer and `details.replyTo` to `onSend`; a message's `replyTo` draws a
+  quote that follows the original and jumps to it.
+- File attachments: `allowAttachments` on `Chat.Composer` adds an attach button,
+  drop and paste; `onSend(text, attachments)` hands over the files. Messages
+  show `attachments` (the same entries `Upload` uses) as image previews or file
+  rows with upload progress and download.
+- Every string is in `labels` (with `locale` for times), so the whole chat
+  translates through the provider.
+
+`@takeoff-design/tokens` ships the `tk-chat-*` recipe.

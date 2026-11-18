@@ -5,11 +5,12 @@ import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
 
 import { composeRootAttrs, isRenderableNode } from '../../core';
 import { useComponentTheme } from '../../provider';
+import { formatLabel } from '../../utils';
 import { Button, type ButtonAppearance, type ButtonSize, type ButtonVariant } from '../button';
 
 import { UploadItemActionBase } from './base';
 import { useUploadContext, useUploadItemContext } from './context';
-import { canSaveUploadFile, fileName, formatFileLabel, isConsumerVeto, saveUploadFile } from './helpers';
+import { canSaveUploadFile, fileName, isConsumerVeto, saveUploadFile } from './helpers';
 import type { UploadItemActionOwnProps, UploadItemActionProps } from './types';
 
 type UploadItemActionResolvedProps = Omit<UploadItemActionOwnProps, 'classNames' | 'slotProps'> & {
@@ -207,7 +208,7 @@ export const UploadItemAction = <T extends ElementType = 'button'>(props: Upload
       // Icon-only actions still need a name, and it is per file: the template
       // comes from `action` / `label`, the file fills its `{name}`. An explicit
       // `aria-label` wins.
-      aria-label={ariaLabel ?? (nameTemplate ? formatFileLabel(nameTemplate, fileName(item)) : undefined)}
+      aria-label={ariaLabel ?? (nameTemplate ? formatLabel(nameTemplate, { name: fileName(item) }) : undefined)}
       onClick={handleClick}
       // `startContent` (not children) keeps Button's icon-only anatomy — it is
       // what emits `data-icon-only` and sizes the glyph. Tested with
