@@ -22,15 +22,7 @@ Breadcrumb.Link = BreadcrumbLink;
 Breadcrumb.Page = BreadcrumbPage;
 Breadcrumb.Separator = BreadcrumbSeparator;
 
-export {
-  Breadcrumb,
-  BreadcrumbRoot,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-};
+export { Breadcrumb, BreadcrumbRoot, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator };
 
 export type {
   BreadcrumbProps,

@@ -87,13 +87,13 @@ export const BreadcrumbLink = <T extends ElementType = 'a'>({
 
   const linkProps = {
     ...props,
-    href: linkIsDisabled ? undefined : href,
-    target: isExternal ? target || '_blank' : target,
-    rel: isExternal ? rel || 'noopener noreferrer' : rel,
+    'href': linkIsDisabled ? undefined : href,
+    'target': isExternal ? target || '_blank' : target,
+    'rel': isExternal ? rel || 'noopener noreferrer' : rel,
     'aria-disabled': linkIsDisabled || undefined,
-    tabIndex: linkIsDisabled ? -1 : undefined,
-    onClick: handleClick,
-    onKeyDown: handleKeyDown,
+    'tabIndex': linkIsDisabled ? -1 : undefined,
+    'onClick': handleClick,
+    'onKeyDown': handleKeyDown,
     'data-disabled': linkIsDisabled ? '' : undefined,
     'data-external': isExternal ? '' : undefined,
   };

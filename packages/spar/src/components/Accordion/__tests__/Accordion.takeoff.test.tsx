@@ -1,13 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionHeader,
-  AccordionTrigger,
-  AccordionContent,
-} from '../index';
+import { Accordion, AccordionItem, AccordionHeader, AccordionTrigger, AccordionContent } from '../index';
 
 const item = (value: string | number, label = `Item ${value}`, forceMount = false) => (
   <AccordionItem key={value} value={value} data-testid={`item-${value}`}>
@@ -21,22 +15,16 @@ const item = (value: string | number, label = `Item ${value}`, forceMount = fals
 describe('Accordion value API', () => {
   it('opens the matching item from defaultValue', () => {
     render(
-      <Accordion defaultValue='b'>
+      <Accordion defaultValue="b">
         {item('a')}
         {item('b')}
         {item('c')}
       </Accordion>,
     );
 
-    expect(screen.getByRole('button', { name: 'Item a' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
+    expect(screen.getByRole('button', { name: 'Item a' })).toHaveAttribute('aria-expanded', 'false');
     expect(screen.getByRole('button', { name: 'Item b' })).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getByRole('button', { name: 'Item c' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
+    expect(screen.getByRole('button', { name: 'Item c' })).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('starts closed and updates internal state when uncontrolled', async () => {
@@ -77,39 +65,30 @@ describe('Accordion value API', () => {
 
   it('uses defaultValue only as uncontrolled initial state', () => {
     const { rerender } = render(
-      <Accordion defaultValue='fare'>
+      <Accordion defaultValue="fare">
         {item('fare')}
         {item('bag')}
       </Accordion>,
     );
 
-    expect(screen.getByRole('button', { name: 'Item fare' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    );
+    expect(screen.getByRole('button', { name: 'Item fare' })).toHaveAttribute('aria-expanded', 'true');
 
     rerender(
-      <Accordion defaultValue='bag'>
+      <Accordion defaultValue="bag">
         {item('fare')}
         {item('bag')}
       </Accordion>,
     );
 
-    expect(screen.getByRole('button', { name: 'Item fare' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    );
-    expect(screen.getByRole('button', { name: 'Item bag' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
+    expect(screen.getByRole('button', { name: 'Item fare' })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('button', { name: 'Item bag' })).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('calls onValueChange without mutating UI until controlled value updates', async () => {
     const user = userEvent.setup();
     const onValueChange = jest.fn();
     const { rerender } = render(
-      <Accordion value='a' onValueChange={onValueChange}>
+      <Accordion value="a" onValueChange={onValueChange}>
         {item('a')}
         {item('b')}
       </Accordion>,
@@ -125,7 +104,7 @@ describe('Accordion value API', () => {
     expect(itemB).toHaveAttribute('aria-expanded', 'false');
 
     rerender(
-      <Accordion value='b' onValueChange={onValueChange}>
+      <Accordion value="b" onValueChange={onValueChange}>
         {item('a')}
         {item('b')}
       </Accordion>,
@@ -173,16 +152,13 @@ describe('Accordion value API', () => {
     const onValueChange = jest.fn();
 
     render(
-      <Accordion defaultValue='fare' onValueChange={onValueChange}>
+      <Accordion defaultValue="fare" onValueChange={onValueChange}>
         {item('fare')}
         {item('bag')}
       </Accordion>,
     );
 
-    expect(screen.getByRole('button', { name: 'Item fare' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    );
+    expect(screen.getByRole('button', { name: 'Item fare' })).toHaveAttribute('aria-expanded', 'true');
 
     await user.click(screen.getByRole('button', { name: 'Item bag' }));
 
@@ -193,7 +169,7 @@ describe('Accordion value API', () => {
     const user = userEvent.setup();
 
     render(
-      <Accordion defaultValue='a'>
+      <Accordion defaultValue="a">
         {item('a', 'Item a', true)}
         {item('b', 'Item b', true)}
       </Accordion>,

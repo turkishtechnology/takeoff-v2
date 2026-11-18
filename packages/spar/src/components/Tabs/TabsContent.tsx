@@ -5,13 +5,7 @@ import type { TabsContentProps } from './types';
 /**
  * TabsContent component that displays content for the active tab with lazy rendering support
  */
-export const TabsContent = <T extends ElementType = 'div'>({
-  value,
-  forceMount = false,
-  as,
-  children,
-  ...props
-}: TabsContentProps<T>) => {
+export const TabsContent = <T extends ElementType = 'div'>({ value, forceMount = false, as, children, ...props }: TabsContentProps<T>) => {
   const Component = as || 'div';
   const { selectedValue, orientation, baseId } = useTabsContext();
   const panelId = `${baseId}-panel-${value}`;
@@ -27,7 +21,7 @@ export const TabsContent = <T extends ElementType = 'div'>({
   return (
     <Component
       id={panelId}
-      role='tabpanel'
+      role="tabpanel"
       aria-labelledby={triggerId}
       data-state={isSelected ? 'active' : 'inactive'}
       data-orientation={orientation}

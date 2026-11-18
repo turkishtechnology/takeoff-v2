@@ -14,35 +14,12 @@
  * `./caret.ts`, event handling in `../hooks/useMask.ts`.
  */
 
-import type {
-  Mask,
-  MaskDateOptions,
-  MaskNumberOptions,
-  MaskPattern,
-  MaskPreset,
-  MaskRegexOptions,
-  MaskResolver,
-  MaskShapeOptions,
-  MaskTimeOptions,
-} from '@/types';
-import {
-  applyCase,
-  applyCharFilter,
-  capacityOf,
-  distribute,
-  getGapDelimiters,
-  stripDelimiters,
-} from './mask-shared';
+import type { Mask, MaskDateOptions, MaskNumberOptions, MaskPattern, MaskPreset, MaskRegexOptions, MaskResolver, MaskShapeOptions, MaskTimeOptions } from '@/types';
+import { applyCase, applyCharFilter, capacityOf, distribute, getGapDelimiters, stripDelimiters } from './mask-shared';
 import { createDateMask, dateBlocks } from './mask-date';
 import { createNumberMask } from './mask-number';
 import { createTimeMask, timeBlocks } from './mask-time';
-import {
-  DONE,
-  FAILED,
-  createIncrementalMatcher,
-  stripAnchors,
-  type MatcherCompileResult,
-} from './regex-mask';
+import { DONE, FAILED, createIncrementalMatcher, stripAnchors, type MatcherCompileResult } from './regex-mask';
 
 /** Outcome of applying an engine pattern to a candidate string. */
 export interface MaskResult {
@@ -69,20 +46,16 @@ export interface MaskResult {
 export const isMaskResolver = (mask: Mask): mask is MaskResolver => typeof mask === 'function';
 
 /** True for an L3 regex pattern. */
-export const isRegexMask = (mask: MaskPattern | MaskPreset): mask is MaskRegexOptions =>
-  'regex' in mask;
+export const isRegexMask = (mask: MaskPattern | MaskPreset): mask is MaskRegexOptions => 'regex' in mask;
 
 /** True for the `date` sugar. */
-export const isDateMask = (mask: MaskPattern | MaskPreset): mask is MaskDateOptions =>
-  'date' in mask;
+export const isDateMask = (mask: MaskPattern | MaskPreset): mask is MaskDateOptions => 'date' in mask;
 
 /** True for the `time` sugar. */
-export const isTimeMask = (mask: MaskPattern | MaskPreset): mask is MaskTimeOptions =>
-  'time' in mask;
+export const isTimeMask = (mask: MaskPattern | MaskPreset): mask is MaskTimeOptions => 'time' in mask;
 
 /** True for the `number` sugar. */
-export const isNumberMask = (mask: MaskPattern | MaskPreset): mask is MaskNumberOptions =>
-  'number' in mask;
+export const isNumberMask = (mask: MaskPattern | MaskPreset): mask is MaskNumberOptions => 'number' in mask;
 
 // ── Sugar expansion ─────────────────────────────────────────────────────────
 
@@ -202,5 +175,4 @@ const maskRegex = (input: string, pattern: MaskRegexOptions): MaskResult => {
  * @param pattern - An L1 `blocks` or L3 `regex` pattern. `date` / `time` are
  * resolvers; run them through {@link presetResolver} instead.
  */
-export const applyMaskPattern = (input: string, pattern: MaskPattern): MaskResult =>
-  isRegexMask(pattern) ? maskRegex(input, pattern) : maskShape(input, pattern);
+export const applyMaskPattern = (input: string, pattern: MaskPattern): MaskResult => (isRegexMask(pattern) ? maskRegex(input, pattern) : maskShape(input, pattern));

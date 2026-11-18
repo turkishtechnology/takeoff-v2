@@ -55,9 +55,7 @@ export const DropdownMenuItem = <T extends ElementType = 'div'>({
 
   const isHighlighted = collection.isItemHighlighted(itemId);
 
-  const runSelection = (
-    event: ReactMouseEvent<HTMLDivElement> | ReactKeyboardEvent<HTMLDivElement>,
-  ) => {
+  const runSelection = (event: ReactMouseEvent<HTMLDivElement> | ReactKeyboardEvent<HTMLDivElement>) => {
     if (disabled) {
       return;
     }

@@ -39,18 +39,8 @@ interface CreateArrowComponentOptions {
  * width, height, polygon) are applied. When rendered as another element via
  * the `as` prop, SVG-specific attributes are omitted.
  */
-export const createArrowComponent = ({
-  displayName,
-  useRootContext,
-  useContentContext,
-}: CreateArrowComponentOptions) => {
-  const ArrowComponent = <T extends ElementType = 'svg'>({
-    as,
-    ref,
-    style,
-    children,
-    ...props
-  }: FloatingArrowProps<T>) => {
+export const createArrowComponent = ({ displayName, useRootContext, useContentContext }: CreateArrowComponentOptions) => {
+  const ArrowComponent = <T extends ElementType = 'svg'>({ as, ref, style, children, ...props }: FloatingArrowProps<T>) => {
     const Component = as || 'svg';
     const { arrowRef } = useRootContext();
     const { arrowStyles, side, align } = useContentContext();
@@ -61,13 +51,13 @@ export const createArrowComponent = ({
     return (
       <Component
         ref={mergedRef}
-        aria-hidden='true'
+        aria-hidden="true"
         data-placement={placement}
         {...(isSvg ? { width: 10, height: 5, viewBox: '0 0 10 5' } : {})}
         style={{ ...arrowStyles, ...style }}
         {...props}
       >
-        {children ?? (isSvg ? <polygon points='0,0 5,5 10,0' fill='currentColor' /> : null)}
+        {children ?? (isSvg ? <polygon points="0,0 5,5 10,0" fill="currentColor" /> : null)}
       </Component>
     );
   };

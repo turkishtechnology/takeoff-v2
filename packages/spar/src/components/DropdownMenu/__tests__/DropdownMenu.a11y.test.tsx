@@ -1,15 +1,7 @@
 import { render, screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-  DropdownMenuGroup,
-} from '../';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel, DropdownMenuGroup } from '../';
 
 expect.extend(toHaveNoViolations);
 
@@ -449,7 +441,7 @@ describe('DropdownMenu Accessibility', () => {
       });
 
       const items = screen.getAllByRole('menuitem');
-      items.forEach((item) => {
+      items.forEach(item => {
         expect(document.activeElement).not.toBe(item);
       });
     });

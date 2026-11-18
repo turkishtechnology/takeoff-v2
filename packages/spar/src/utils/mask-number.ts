@@ -69,9 +69,9 @@ const PROBE = -11234567.5;
 const readConfig = (locale: string | undefined): NumberLocaleConfig => {
   const parts = new Intl.NumberFormat(locale).formatToParts(PROBE);
 
-  const group = parts.find((part) => part.type === 'group')?.value ?? '';
-  const decimal = parts.find((part) => part.type === 'decimal')?.value ?? '.';
-  const integers = parts.filter((part) => part.type === 'integer').map((part) => part.value.length);
+  const group = parts.find(part => part.type === 'group')?.value ?? '';
+  const decimal = parts.find(part => part.type === 'decimal')?.value ?? '.';
+  const integers = parts.filter(part => part.type === 'integer').map(part => part.value.length);
 
   // Group sizes are read from the right: the last chunk is the primary group,
   // the one before it the secondary. A locale that does not group at all leaves
@@ -120,12 +120,7 @@ const isDigit = (char: string): boolean => char >= '0' && char <= '9';
  * then secondary groups. `primary` of 3 and `secondary` of 3 give thousands;
  * 3 and 2 give lakh.
  */
-export const groupDigits = (
-  digits: string,
-  primary: number,
-  secondary: number,
-  separator: string,
-): string => {
+export const groupDigits = (digits: string, primary: number, secondary: number, separator: string): string => {
   if (!separator || primary < 1 || secondary < 1 || digits.length <= primary) return digits;
 
   const chunks = [digits.slice(-primary)];
@@ -167,8 +162,7 @@ const format = (input: string, options: MaskNumberOptions): MaskResolverResult =
   // a locale where `.` is unused. In `tr-TR` (`.` groups, `,` decides) it is not
   // an alias, which is what keeps a pasted `1.234` intact.
   const dotIsAlias = decimalMark !== '.' && group !== '.';
-  const isDecimalMark = (char: string): boolean =>
-    char === decimalMark || (dotIsAlias && char === '.');
+  const isDecimalMark = (char: string): boolean => char === decimalMark || (dotIsAlias && char === '.');
 
   let integerDigits = '';
   let fractionDigits = '';
@@ -234,7 +228,7 @@ const format = (input: string, options: MaskNumberOptions): MaskResolverResult =
  * ```
  */
 export const createNumberMask = (options: MaskNumberOptions): MaskResolver => {
-  const resolver: MaskResolver = (raw) => format(raw, options);
+  const resolver: MaskResolver = raw => format(raw, options);
   if (options.backspace !== undefined) resolver.backspace = options.backspace;
   return resolver;
 };

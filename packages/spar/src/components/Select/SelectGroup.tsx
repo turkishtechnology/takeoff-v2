@@ -5,11 +5,7 @@ import type { SelectGroupProps, SelectGroupContextValue } from './types';
 /**
  * Groups related select items together with an optional label. Provides semantic structure and accessibility.
  */
-export const SelectGroup = <T extends ElementType = 'div'>({
-  as,
-  children,
-  ...props
-}: SelectGroupProps<T>) => {
+export const SelectGroup = <T extends ElementType = 'div'>({ as, children, ...props }: SelectGroupProps<T>) => {
   const Component = as || 'div';
   const labelId = useId();
 
@@ -22,7 +18,7 @@ export const SelectGroup = <T extends ElementType = 'div'>({
 
   return (
     <SelectGroupContext.Provider value={contextValue}>
-      <Component role='group' aria-labelledby={labelId} {...props}>
+      <Component role="group" aria-labelledby={labelId} {...props}>
         {children}
       </Component>
     </SelectGroupContext.Provider>

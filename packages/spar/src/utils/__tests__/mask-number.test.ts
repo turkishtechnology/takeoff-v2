@@ -43,23 +43,15 @@ describe('mask - L2 number', () => {
   });
 
   it('reads separators and group sizes off Intl rather than a locale table', () => {
-    expect(apply('11234567', { numberLocale: 'en-US', numberDecimalScale: 0 }).value).toBe(
-      '11,234,567',
-    );
-    expect(apply('11234567', { numberLocale: 'de-DE', numberDecimalScale: 0 }).value).toBe(
-      '11.234.567',
-    );
+    expect(apply('11234567', { numberLocale: 'en-US', numberDecimalScale: 0 }).value).toBe('11,234,567');
+    expect(apply('11234567', { numberLocale: 'de-DE', numberDecimalScale: 0 }).value).toBe('11.234.567');
     // Lakh grouping: 3 then 2, derived from `en-IN` — no `numeralThousandsGroupStyle`.
-    expect(apply('11234567', { numberLocale: 'en-IN', numberDecimalScale: 0 }).value).toBe(
-      '1,12,34,567',
-    );
+    expect(apply('11234567', { numberLocale: 'en-IN', numberDecimalScale: 0 }).value).toBe('1,12,34,567');
   });
 
   it('separates the grouping *pattern* from the grouping *character*', () => {
     // Lakh sizes, dots between them — a combination cleave's enum cannot express.
-    expect(
-      apply('11234567', { numberLocale: 'en-IN', delimiter: '.', numberDecimalScale: 0 }).value,
-    ).toBe('1.12.34.567');
+    expect(apply('11234567', { numberLocale: 'en-IN', delimiter: '.', numberDecimalScale: 0 }).value).toBe('1.12.34.567');
   });
 
   it('turns grouping off with an empty delimiter', () => {

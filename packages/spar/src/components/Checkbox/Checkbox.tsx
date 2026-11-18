@@ -52,11 +52,7 @@ export const Checkbox = <T extends ElementType = 'span'>({
   const resolvedReadOnly = readOnly ?? fieldCtx?.readOnly ?? false;
 
   // State management - controlled/uncontrolled
-  const [checkedState = defaultChecked, updateChecked] = useControlledState<CheckedState>(
-    controlledChecked,
-    defaultChecked,
-    onChange,
-  );
+  const [checkedState = defaultChecked, updateChecked] = useControlledState<CheckedState>(controlledChecked, defaultChecked, onChange);
 
   // `indeterminate` layers over the checked state without owning it: the
   // uncontrolled boolean keeps advancing underneath, so a consumer can clear the
@@ -152,8 +148,7 @@ export const Checkbox = <T extends ElementType = 'span'>({
 
   // Data attributes for styling
   const dataAttributes: Record<string, string | undefined> = {
-    'data-state':
-      checked === 'indeterminate' ? 'indeterminate' : checked === true ? 'checked' : 'unchecked',
+    'data-state': checked === 'indeterminate' ? 'indeterminate' : checked === true ? 'checked' : 'unchecked',
     'data-checked': checked === true ? '' : undefined,
     'data-indeterminate': checked === 'indeterminate' ? '' : undefined,
     'data-disabled': resolvedDisabled ? '' : undefined,
@@ -187,7 +182,7 @@ export const Checkbox = <T extends ElementType = 'span'>({
   // ARIA attributes
   const ariaAttributes = useMemo(() => {
     const attrs: Record<string, boolean | string> = {
-      role: 'checkbox',
+      'role': 'checkbox',
       'aria-checked': checked === 'indeterminate' ? 'mixed' : checked,
     };
 
@@ -215,15 +210,7 @@ export const Checkbox = <T extends ElementType = 'span'>({
     }
 
     return attrs;
-  }, [
-    checked,
-    resolvedDisabled,
-    resolvedReadOnly,
-    resolvedRequired,
-    resolvedInvalid,
-    Component,
-    fieldCtx,
-  ]);
+  }, [checked, resolvedDisabled, resolvedReadOnly, resolvedRequired, resolvedInvalid, Component, fieldCtx]);
 
   // Build props for the element
   const isNativeButton = Component === 'button';
@@ -266,15 +253,13 @@ export const Checkbox = <T extends ElementType = 'span'>({
 
   return (
     <>
-      <Component {...elementProps}>
-        {typeof children === 'function' ? children(renderProps) : children}
-      </Component>
+      <Component {...elementProps}>{typeof children === 'function' ? children(renderProps) : children}</Component>
 
       {/* Hidden input for form integration */}
       {name && (
         <input
           ref={hiddenInputRef}
-          type='checkbox'
+          type="checkbox"
           name={name}
           value={value}
           form={form}
@@ -284,7 +269,7 @@ export const Checkbox = <T extends ElementType = 'span'>({
           onChange={() => {}} // Controlled by main component
           style={visuallyHidden}
           tabIndex={-1}
-          aria-hidden='true'
+          aria-hidden="true"
         />
       )}
     </>

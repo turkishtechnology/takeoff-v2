@@ -7,22 +7,8 @@ import type { ButtonProps } from '../Button/types';
 /**
  * Collapsible trigger component that toggles the visibility of collapsible content.
  */
-export const CollapsibleTrigger = <T extends ElementType = 'button'>({
-  as,
-  disabled: disabledProp,
-  children,
-  onClick,
-  ...props
-}: CollapsibleTriggerProps<T>) => {
-  const {
-    isOpen,
-    open,
-    close,
-    toggle,
-    disabled: contextDisabled,
-    triggerId,
-    contentId,
-  } = useCollapsibleContext();
+export const CollapsibleTrigger = <T extends ElementType = 'button'>({ as, disabled: disabledProp, children, onClick, ...props }: CollapsibleTriggerProps<T>) => {
+  const { isOpen, open, close, toggle, disabled: contextDisabled, triggerId, contentId } = useCollapsibleContext();
 
   // Use prop if explicitly provided, otherwise use context
   const disabled = disabledProp ?? contextDisabled;
@@ -50,20 +36,16 @@ export const CollapsibleTrigger = <T extends ElementType = 'button'>({
 
   const buttonProps = {
     ...(as && { as }),
-    id: triggerId,
+    'id': triggerId,
     disabled,
     'aria-expanded': isOpen,
     'aria-controls': contentId,
     'data-state': dataState,
-    onClick: handleClick,
+    'onClick': handleClick,
     ...props,
   } as ButtonProps<T>;
 
-  return (
-    <Button {...buttonProps}>
-      {typeof children === 'function' ? children(renderProps) : children}
-    </Button>
-  );
+  return <Button {...buttonProps}>{typeof children === 'function' ? children(renderProps) : children}</Button>;
 };
 
 CollapsibleTrigger.displayName = 'CollapsibleTrigger';

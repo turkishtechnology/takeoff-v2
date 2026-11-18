@@ -34,24 +34,24 @@ const FormTabs = () => {
     <div>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value='personal'>Personal Info</TabsTrigger>
-          <TabsTrigger value='address' disabled={!formData.personal.name}>
+          <TabsTrigger value="personal">Personal Info</TabsTrigger>
+          <TabsTrigger value="address" disabled={!formData.personal.name}>
             Address
           </TabsTrigger>
-          <TabsTrigger value='review' disabled={!formData.address.street}>
+          <TabsTrigger value="review" disabled={!formData.address.street}>
             Review
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value='personal'>
-          <form onSubmit={(e) => e.preventDefault()}>
+        <TabsContent value="personal">
+          <form onSubmit={e => e.preventDefault()}>
             <div>
-              <label htmlFor='name'>Name</label>
+              <label htmlFor="name">Name</label>
               <input
-                id='name'
+                id="name"
                 value={formData.personal.name}
-                onChange={(e) =>
-                  setFormData((prev) => ({
+                onChange={e =>
+                  setFormData(prev => ({
                     ...prev,
                     personal: { ...prev.personal, name: e.target.value },
                   }))
@@ -60,19 +60,19 @@ const FormTabs = () => {
                 aria-describedby={errors.name ? 'name-error' : undefined}
               />
               {errors.name && (
-                <div id='name-error' role='alert'>
+                <div id="name-error" role="alert">
                   {errors.name}
                 </div>
               )}
             </div>
             <div>
-              <label htmlFor='email'>Email</label>
+              <label htmlFor="email">Email</label>
               <input
-                id='email'
-                type='email'
+                id="email"
+                type="email"
                 value={formData.personal.email}
-                onChange={(e) =>
-                  setFormData((prev) => ({
+                onChange={e =>
+                  setFormData(prev => ({
                     ...prev,
                     personal: { ...prev.personal, email: e.target.value },
                   }))
@@ -81,26 +81,26 @@ const FormTabs = () => {
                 aria-describedby={errors.email ? 'email-error' : undefined}
               />
               {errors.email && (
-                <div id='email-error' role='alert'>
+                <div id="email-error" role="alert">
                   {errors.email}
                 </div>
               )}
             </div>
-            <button type='button' onClick={handleNext}>
+            <button type="button" onClick={handleNext}>
               Next
             </button>
           </form>
         </TabsContent>
 
-        <TabsContent value='address'>
+        <TabsContent value="address">
           <form>
             <div>
-              <label htmlFor='street'>Street</label>
+              <label htmlFor="street">Street</label>
               <input
-                id='street'
+                id="street"
                 value={formData.address.street}
-                onChange={(e) =>
-                  setFormData((prev) => ({
+                onChange={e =>
+                  setFormData(prev => ({
                     ...prev,
                     address: { ...prev.address, street: e.target.value },
                   }))
@@ -108,28 +108,28 @@ const FormTabs = () => {
               />
             </div>
             <div>
-              <label htmlFor='city'>City</label>
+              <label htmlFor="city">City</label>
               <input
-                id='city'
+                id="city"
                 value={formData.address.city}
-                onChange={(e) =>
-                  setFormData((prev) => ({
+                onChange={e =>
+                  setFormData(prev => ({
                     ...prev,
                     address: { ...prev.address, city: e.target.value },
                   }))
                 }
               />
             </div>
-            <button type='button' onClick={() => setActiveTab('personal')}>
+            <button type="button" onClick={() => setActiveTab('personal')}>
               Back
             </button>
-            <button type='button' onClick={handleNext}>
+            <button type="button" onClick={handleNext}>
               Next
             </button>
           </form>
         </TabsContent>
 
-        <TabsContent value='review'>
+        <TabsContent value="review">
           <div>
             <h3>Review Your Information</h3>
             <p>Name: {formData.personal.name}</p>
@@ -138,7 +138,7 @@ const FormTabs = () => {
             <p>City: {formData.address.city}</p>
             <button
               onClick={() =>
-                setFormData((prev) => ({
+                setFormData(prev => ({
                   ...prev,
                   review: { confirmed: true },
                 }))
@@ -151,7 +151,7 @@ const FormTabs = () => {
       </Tabs>
 
       {formData.review.confirmed && (
-        <div role='status' aria-live='polite'>
+        <div role="status" aria-live="polite">
           Form submitted successfully!
         </div>
       )}
@@ -165,8 +165,8 @@ const AsyncContentTabs = () => {
 
   const simulateAsyncLoad = async (tabValue: string) => {
     setLoadingTab(tabValue);
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    setLoadedContent((prev) => ({
+    await new Promise(resolve => setTimeout(resolve, 100));
+    setLoadedContent(prev => ({
       ...prev,
       [tabValue]: `Loaded content for ${tabValue}`,
     }));
@@ -175,7 +175,7 @@ const AsyncContentTabs = () => {
 
   return (
     <Tabs
-      onValueChange={(value) => {
+      onValueChange={value => {
         // The automatic first-tab selection is not reported here, so every
         // call is a real user switch.
         if (!loadedContent[value]) {
@@ -184,14 +184,14 @@ const AsyncContentTabs = () => {
       }}
     >
       <TabsList>
-        <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
-        <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
-        <TabsTrigger value='tab3'>Tab 3</TabsTrigger>
+        <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+        <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+        <TabsTrigger value="tab3">Tab 3</TabsTrigger>
       </TabsList>
 
-      <TabsContent value='tab1'>
+      <TabsContent value="tab1">
         {loadingTab === 'tab1' ? (
-          <div role='status' aria-live='polite'>
+          <div role="status" aria-live="polite">
             Loading...
           </div>
         ) : (
@@ -199,9 +199,9 @@ const AsyncContentTabs = () => {
         )}
       </TabsContent>
 
-      <TabsContent value='tab2'>
+      <TabsContent value="tab2">
         {loadingTab === 'tab2' ? (
-          <div role='status' aria-live='polite'>
+          <div role="status" aria-live="polite">
             Loading...
           </div>
         ) : (
@@ -209,9 +209,9 @@ const AsyncContentTabs = () => {
         )}
       </TabsContent>
 
-      <TabsContent value='tab3'>
+      <TabsContent value="tab3">
         {loadingTab === 'tab3' ? (
-          <div role='status' aria-live='polite'>
+          <div role="status" aria-live="polite">
             Loading...
           </div>
         ) : (
@@ -224,36 +224,36 @@ const AsyncContentTabs = () => {
 
 const NestedTabsExample = () => {
   return (
-    <Tabs defaultValue='main1'>
+    <Tabs defaultValue="main1">
       <TabsList>
-        <TabsTrigger value='main1'>Main 1</TabsTrigger>
-        <TabsTrigger value='main2'>Main 2</TabsTrigger>
+        <TabsTrigger value="main1">Main 1</TabsTrigger>
+        <TabsTrigger value="main2">Main 2</TabsTrigger>
       </TabsList>
 
-      <TabsContent value='main1'>
+      <TabsContent value="main1">
         <div>
           <h3>Main Content 1</h3>
-          <Tabs defaultValue='sub1a'>
+          <Tabs defaultValue="sub1a">
             <TabsList>
-              <TabsTrigger value='sub1a'>Sub 1A</TabsTrigger>
-              <TabsTrigger value='sub1b'>Sub 1B</TabsTrigger>
+              <TabsTrigger value="sub1a">Sub 1A</TabsTrigger>
+              <TabsTrigger value="sub1b">Sub 1B</TabsTrigger>
             </TabsList>
-            <TabsContent value='sub1a'>Nested content 1A</TabsContent>
-            <TabsContent value='sub1b'>Nested content 1B</TabsContent>
+            <TabsContent value="sub1a">Nested content 1A</TabsContent>
+            <TabsContent value="sub1b">Nested content 1B</TabsContent>
           </Tabs>
         </div>
       </TabsContent>
 
-      <TabsContent value='main2'>
+      <TabsContent value="main2">
         <div>
           <h3>Main Content 2</h3>
-          <Tabs defaultValue='sub2a'>
+          <Tabs defaultValue="sub2a">
             <TabsList>
-              <TabsTrigger value='sub2a'>Sub 2A</TabsTrigger>
-              <TabsTrigger value='sub2b'>Sub 2B</TabsTrigger>
+              <TabsTrigger value="sub2a">Sub 2A</TabsTrigger>
+              <TabsTrigger value="sub2b">Sub 2B</TabsTrigger>
             </TabsList>
-            <TabsContent value='sub2a'>Nested content 2A</TabsContent>
-            <TabsContent value='sub2b'>Nested content 2B</TabsContent>
+            <TabsContent value="sub2a">Nested content 2A</TabsContent>
+            <TabsContent value="sub2b">Nested content 2B</TabsContent>
           </Tabs>
         </div>
       </TabsContent>
@@ -272,10 +272,7 @@ describe('Tabs Integration Tests', () => {
       render(<FormTabs />);
 
       // Initial state - address and review should be disabled
-      expect(screen.getByRole('tab', { name: 'Personal Info' })).toHaveAttribute(
-        'aria-selected',
-        'true',
-      );
+      expect(screen.getByRole('tab', { name: 'Personal Info' })).toHaveAttribute('aria-selected', 'true');
       expect(screen.getByRole('tab', { name: 'Address' })).toBeDisabled();
       expect(screen.getByRole('tab', { name: 'Review' })).toBeDisabled();
 
@@ -330,10 +327,7 @@ describe('Tabs Integration Tests', () => {
       // Go back to personal info
       await user.click(screen.getByRole('button', { name: 'Back' }));
 
-      expect(screen.getByRole('tab', { name: 'Personal Info' })).toHaveAttribute(
-        'aria-selected',
-        'true',
-      );
+      expect(screen.getByRole('tab', { name: 'Personal Info' })).toHaveAttribute('aria-selected', 'true');
       expect(screen.getByDisplayValue('Test User')).toBeInTheDocument();
     });
 
@@ -465,13 +459,13 @@ describe('Tabs Integration Tests', () => {
         <div onClick={onTabsClick}>
           <Tabs>
             <TabsList onClick={onListClick}>
-              <TabsTrigger value='tab1' onClick={onTriggerClick}>
+              <TabsTrigger value="tab1" onClick={onTriggerClick}>
                 Tab 1
               </TabsTrigger>
-              <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+              <TabsTrigger value="tab2">Tab 2</TabsTrigger>
             </TabsList>
-            <TabsContent value='tab1'>Content 1</TabsContent>
-            <TabsContent value='tab2'>Content 2</TabsContent>
+            <TabsContent value="tab1">Content 1</TabsContent>
+            <TabsContent value="tab2">Content 2</TabsContent>
           </Tabs>
         </div>,
       );
@@ -486,17 +480,17 @@ describe('Tabs Integration Tests', () => {
     it('supports stopping event propagation', async () => {
       const user = userEvent.setup();
       const onParentClick = jest.fn();
-      const onTriggerClick = jest.fn((e) => e.stopPropagation());
+      const onTriggerClick = jest.fn(e => e.stopPropagation());
 
       render(
         <div onClick={onParentClick}>
           <Tabs>
             <TabsList>
-              <TabsTrigger value='tab1' onClick={onTriggerClick}>
+              <TabsTrigger value="tab1" onClick={onTriggerClick}>
                 Tab 1
               </TabsTrigger>
             </TabsList>
-            <TabsContent value='tab1'>Content 1</TabsContent>
+            <TabsContent value="tab1">Content 1</TabsContent>
           </Tabs>
         </div>,
       );
@@ -533,13 +527,13 @@ describe('Tabs Integration Tests', () => {
         return (
           <Tabs value={currentTab} onValueChange={handleTabChange}>
             <TabsList>
-              <TabsTrigger value='home'>Home</TabsTrigger>
-              <TabsTrigger value='about'>About</TabsTrigger>
-              <TabsTrigger value='contact'>Contact</TabsTrigger>
+              <TabsTrigger value="home">Home</TabsTrigger>
+              <TabsTrigger value="about">About</TabsTrigger>
+              <TabsTrigger value="contact">Contact</TabsTrigger>
             </TabsList>
-            <TabsContent value='home'>Home page content</TabsContent>
-            <TabsContent value='about'>About page content</TabsContent>
-            <TabsContent value='contact'>Contact page content</TabsContent>
+            <TabsContent value="home">Home page content</TabsContent>
+            <TabsContent value="about">About page content</TabsContent>
+            <TabsContent value="contact">Contact page content</TabsContent>
           </Tabs>
         );
       };

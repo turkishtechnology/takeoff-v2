@@ -6,16 +6,7 @@ import { useTooltipProviderContext, TooltipContext } from './hooks';
 /**
  * Root component that manages tooltip state and provides context to child components
  */
-export const Tooltip = ({
-  id: providedId,
-  children,
-  open: controlledOpen,
-  defaultOpen = false,
-  onOpenChange,
-  delay,
-  hideDelay = 0,
-  disabled = false,
-}: TooltipProps) => {
+export const Tooltip = ({ id: providedId, children, open: controlledOpen, defaultOpen = false, onOpenChange, delay, hideDelay = 0, disabled = false }: TooltipProps) => {
   const provider = useTooltipProviderContext();
   const generatedId = useId();
   const baseId = providedId ?? generatedId;
@@ -85,21 +76,7 @@ export const Tooltip = ({
       cancelHideTimer,
       onEscapeKeyDownRef,
     }),
-    [
-      isOpen,
-      handleOpenChange,
-      effectiveDelay,
-      hideDelay,
-      effectiveDisableHover,
-      triggerId,
-      contentId,
-      disabled,
-      triggerRef,
-      contentRef,
-      arrowRef,
-      startHideTimer,
-      cancelHideTimer,
-    ],
+    [isOpen, handleOpenChange, effectiveDelay, hideDelay, effectiveDisableHover, triggerId, contentId, disabled, triggerRef, contentRef, arrowRef, startHideTimer, cancelHideTimer],
   );
 
   return <TooltipContext.Provider value={contextValue}>{children}</TooltipContext.Provider>;

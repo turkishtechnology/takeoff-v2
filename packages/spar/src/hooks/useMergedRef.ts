@@ -18,10 +18,7 @@ import { useCallback } from 'react';
  * };
  * ```
  */
-export const useMergedRef = <T extends Element>(
-  internalRef: React.RefObject<T | null>,
-  externalRef?: React.Ref<T> | null,
-) => {
+export const useMergedRef = <T extends Element>(internalRef: React.RefObject<T | null>, externalRef?: React.Ref<T> | null) => {
   return useCallback(
     (node: T | null) => {
       // Update internal ref

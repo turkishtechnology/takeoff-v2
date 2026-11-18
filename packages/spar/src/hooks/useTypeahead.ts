@@ -2,8 +2,7 @@ import { useRef, useCallback, useEffect, type KeyboardEvent as ReactKeyboardEven
 
 const TYPEAHEAD_TIMEOUT = 700;
 
-const isCharacterKey = (event: ReactKeyboardEvent<HTMLElement>): boolean =>
-  event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey;
+const isCharacterKey = (event: ReactKeyboardEvent<HTMLElement>): boolean => event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey;
 
 const normalizeValue = (value: string): string => value.trim().toLocaleLowerCase();
 
@@ -45,12 +44,7 @@ export interface UseTypeaheadReturn {
  * - Wrap-around search: starts from the item after the current highlight
  * - Auto-reset after `timeout` ms of inactivity
  */
-export const useTypeahead = ({
-  items,
-  highlightedId,
-  onHighlight,
-  timeout = TYPEAHEAD_TIMEOUT,
-}: UseTypeaheadOptions): UseTypeaheadReturn => {
+export const useTypeahead = ({ items, highlightedId, onHighlight, timeout = TYPEAHEAD_TIMEOUT }: UseTypeaheadOptions): UseTypeaheadReturn => {
   const bufferRef = useRef('');
   const timeoutRef = useRef<number | null>(null);
 
@@ -71,21 +65,18 @@ export const useTypeahead = ({
 
       const nextSearch = `${bufferRef.current}${key}`;
       // Repeated key (e.g. "aaa") → cycle through items starting with that char
-      const isRepeatedKey =
-        nextSearch.length > 1 && nextSearch.split('').every((char) => char === nextSearch[0]);
+      const isRepeatedKey = nextSearch.length > 1 && nextSearch.split('').every(char => char === nextSearch[0]);
       const search = isRepeatedKey ? key : nextSearch;
       if (!search) return false;
 
       const enabledItems = items
-        .filter((item) => !item.disabled)
-        .map((item) => ({ item, value: normalizeValue(item.textValue) }))
-        .filter((entry) => entry.value.length > 0);
+        .filter(item => !item.disabled)
+        .map(item => ({ item, value: normalizeValue(item.textValue) }))
+        .filter(entry => entry.value.length > 0);
 
       if (!enabledItems.length) return false;
 
-      const currentIndex = highlightedId
-        ? enabledItems.findIndex((entry) => entry.item.id === highlightedId)
-        : -1;
+      const currentIndex = highlightedId ? enabledItems.findIndex(entry => entry.item.id === highlightedId) : -1;
 
       // Wrap-around search starting from the item after the current highlight
       const findMatch = (startIndex: number) => {

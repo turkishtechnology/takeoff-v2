@@ -28,8 +28,4 @@ export interface ButtonOwnProps {
  * Props for Button component
  * @remarks Fully accessible, headless component
  */
-export type ButtonProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  ButtonOwnProps
->;
+export type ButtonProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, ButtonOwnProps>;

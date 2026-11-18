@@ -72,11 +72,7 @@ export interface BreadcrumbOwnProps {
  * Props for Breadcrumb
  * @remarks Navigation landmark container for breadcrumb trail
  */
-export type BreadcrumbProps<T extends ElementType = 'nav'> = PolymorphicProps<
-  'nav',
-  T,
-  BreadcrumbOwnProps
->;
+export type BreadcrumbProps<T extends ElementType = 'nav'> = PolymorphicProps<'nav', T, BreadcrumbOwnProps>;
 
 /**
  * Props for BreadcrumbList
@@ -98,11 +94,7 @@ export interface BreadcrumbItemOwnProps {
  * Props for BreadcrumbItem
  * @remarks List item wrapper for breadcrumb content
  */
-export type BreadcrumbItemProps<T extends ElementType = 'li'> = PolymorphicProps<
-  'li',
-  T,
-  BreadcrumbItemOwnProps
->;
+export type BreadcrumbItemProps<T extends ElementType = 'li'> = PolymorphicProps<'li', T, BreadcrumbItemOwnProps>;
 
 /**
  * Own props for BreadcrumbLink
@@ -137,11 +129,7 @@ export interface BreadcrumbLinkOwnProps {
  * Props for BreadcrumbLink
  * @remarks Interactive link for navigation
  */
-export type BreadcrumbLinkProps<T extends ElementType = 'a'> = PolymorphicProps<
-  'a',
-  T,
-  BreadcrumbLinkOwnProps
->;
+export type BreadcrumbLinkProps<T extends ElementType = 'a'> = PolymorphicProps<'a', T, BreadcrumbLinkOwnProps>;
 
 /**
  * Props for BreadcrumbPage

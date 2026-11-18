@@ -2,11 +2,7 @@ import React, { useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import {
-  composeInsideHandlers,
-  useInteractOutside,
-  type UseInteractOutsideOptions,
-} from '../useInteractOutside';
+import { composeInsideHandlers, useInteractOutside, type UseInteractOutsideOptions } from '../useInteractOutside';
 
 const NO_REFS: never[] = [];
 
@@ -14,9 +10,9 @@ const Layer = (options: UseInteractOutsideOptions) => {
   const ref = useRef<HTMLDivElement>(null);
   const insideHandlers = useInteractOutside([ref], options);
   return (
-    <div ref={ref} data-testid='layer' {...insideHandlers}>
-      <button type='button'>In DOM</button>
-      {createPortal(<button type='button'>Portaled child</button>, document.body)}
+    <div ref={ref} data-testid="layer" {...insideHandlers}>
+      <button type="button">In DOM</button>
+      {createPortal(<button type="button">Portaled child</button>, document.body)}
     </div>
   );
 };
@@ -26,13 +22,8 @@ const renderLayer = (options: UseInteractOutsideOptions = {}) => {
   const onFocusOutside = jest.fn();
   render(
     <>
-      <button type='button'>Outside</button>
-      <Layer
-        includeFocus
-        onPointerDownOutside={onPointerDownOutside}
-        onFocusOutside={onFocusOutside}
-        {...options}
-      />
+      <button type="button">Outside</button>
+      <Layer includeFocus onPointerDownOutside={onPointerDownOutside} onFocusOutside={onFocusOutside} {...options} />
     </>,
   );
   return { onPointerDownOutside, onFocusOutside };
@@ -57,7 +48,7 @@ describe('useInteractOutside', () => {
       const insideHandlers = useInteractOutside(NO_REFS, options);
       return (
         <div {...insideHandlers}>
-          <button type='button'>Handler only</button>
+          <button type="button">Handler only</button>
         </div>
       );
     };
@@ -65,12 +56,8 @@ describe('useInteractOutside', () => {
     const onFocusOutside = jest.fn();
     render(
       <>
-        <button type='button'>Outside</button>
-        <NoRefLayer
-          includeFocus
-          onPointerDownOutside={onPointerDownOutside}
-          onFocusOutside={onFocusOutside}
-        />
+        <button type="button">Outside</button>
+        <NoRefLayer includeFocus onPointerDownOutside={onPointerDownOutside} onFocusOutside={onFocusOutside} />
       </>,
     );
 

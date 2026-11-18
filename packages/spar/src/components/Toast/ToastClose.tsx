@@ -2,14 +2,7 @@ import { ElementType, MouseEvent } from 'react';
 import { useToastContext } from './hooks';
 import type { ToastCloseProps } from './types';
 
-export const ToastClose = <T extends ElementType = 'button'>({
-  as,
-  children,
-  onClick,
-  ref,
-  type,
-  ...props
-}: ToastCloseProps<T>) => {
+export const ToastClose = <T extends ElementType = 'button'>({ as, children, onClick, ref, type, ...props }: ToastCloseProps<T>) => {
   const Component = (as ?? 'button') as ElementType;
   const { toast, toaster } = useToastContext('Toast.Close');
   const isNativeButton = Component === 'button';
@@ -30,7 +23,7 @@ export const ToastClose = <T extends ElementType = 'button'>({
       ref={ref}
       type={isNativeButton ? (type ?? 'button') : undefined}
       aria-label={props['aria-label'] ?? (hasChildren ? undefined : 'Dismiss notification')}
-      data-toast-close=''
+      data-toast-close=""
       onClick={handleClick}
     >
       {children}

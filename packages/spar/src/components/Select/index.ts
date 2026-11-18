@@ -7,12 +7,7 @@ import { SelectGroup } from './SelectGroup';
 import { SelectLabel } from './SelectLabel';
 import { SelectSeparator } from './SelectSeparator';
 import { SelectArrow } from './SelectArrow';
-export {
-  useSelectContext,
-  useSelectGroupContext,
-  useSelectItemContext,
-  useSelectCollectionContext,
-} from './hooks';
+export { useSelectContext, useSelectGroupContext, useSelectItemContext, useSelectCollectionContext } from './hooks';
 
 const Select = SelectRoot as typeof SelectRoot & {
   Root: typeof SelectRoot;
@@ -36,18 +31,7 @@ Select.Label = SelectLabel;
 Select.Separator = SelectSeparator;
 Select.Arrow = SelectArrow;
 
-export {
-  Select,
-  SelectRoot,
-  SelectTrigger,
-  SelectContent,
-  SelectViewport,
-  SelectItem,
-  SelectGroup,
-  SelectLabel,
-  SelectSeparator,
-  SelectArrow,
-};
+export { Select, SelectRoot, SelectTrigger, SelectContent, SelectViewport, SelectItem, SelectGroup, SelectLabel, SelectSeparator, SelectArrow };
 
 export type {
   SelectProps,

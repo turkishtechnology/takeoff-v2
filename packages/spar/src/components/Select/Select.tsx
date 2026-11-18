@@ -44,11 +44,7 @@ export const Select = <T extends ElementType = 'div'>({
 
   // State management - controlled/uncontrolled
   const [currentValue, setValueState] = useControlledState(controlledValue, defaultValue, onChange);
-  const [currentOpen = false, setOpenState] = useControlledState(
-    controlledOpen,
-    defaultOpen,
-    onOpenChange,
-  );
+  const [currentOpen = false, setOpenState] = useControlledState(controlledOpen, defaultOpen, onOpenChange);
 
   // Refs
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -170,15 +166,7 @@ export const Select = <T extends ElementType = 'div'>({
         {children}
       </Component>
       {/* Hidden input for form integration */}
-      {name && currentValue !== undefined && (
-        <input
-          type='hidden'
-          name={name}
-          value={currentValue}
-          required={resolvedRequired}
-          disabled={resolvedDisabled}
-        />
-      )}
+      {name && currentValue !== undefined && <input type="hidden" name={name} value={currentValue} required={resolvedRequired} disabled={resolvedDisabled} />}
     </SelectContext.Provider>
   );
 };

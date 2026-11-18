@@ -18,7 +18,7 @@ describe('Button Accessibility', () => {
     rerender(<Button isLoading>Action</Button>);
     expect(await axe(container)).toHaveNoViolations();
 
-    rerender(<Button as='div'>Action</Button>);
+    rerender(<Button as="div">Action</Button>);
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -37,7 +37,7 @@ describe('Button Accessibility', () => {
     expect(nativeButton).not.toHaveAttribute('aria-disabled');
 
     rerender(
-      <Button as='div' disabled>
+      <Button as="div" disabled>
         Custom disabled
       </Button>,
     );
@@ -63,7 +63,7 @@ describe('Button Accessibility', () => {
     const onClick = jest.fn();
 
     render(
-      <Button as='div' onClick={onClick}>
+      <Button as="div" onClick={onClick}>
         Keyboard action
       </Button>,
     );

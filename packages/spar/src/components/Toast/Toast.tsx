@@ -55,7 +55,7 @@ export const Toast = <T extends ElementType = 'div'>({
         role={role}
         aria-live={toast.announcement}
         tabIndex={props.tabIndex ?? 0}
-        data-toast=''
+        data-toast=""
         data-toast-id={toast.id}
         data-status={toast.status}
         data-type={toast.type}

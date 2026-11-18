@@ -7,12 +7,7 @@ import type { FieldErrorMessageProps } from './types';
  * `true`.  Announced to screen readers via `role="alert"` (which implies
  * `aria-live="assertive"` and `aria-atomic="true"` per WAI-ARIA 1.2 spec).
  */
-export const FieldErrorMessage = <T extends ElementType = 'div'>({
-  as,
-  children,
-  ref,
-  ...props
-}: FieldErrorMessageProps<T>) => {
+export const FieldErrorMessage = <T extends ElementType = 'div'>({ as, children, ref, ...props }: FieldErrorMessageProps<T>) => {
   const Component = as || 'div';
   const context = useFieldContext();
 
@@ -27,7 +22,7 @@ export const FieldErrorMessage = <T extends ElementType = 'div'>({
   };
 
   return (
-    <Component {...props} ref={ref} id={context.errorId} role='alert' {...dataAttributes}>
+    <Component {...props} ref={ref} id={context.errorId} role="alert" {...dataAttributes}>
       {children}
     </Component>
   );

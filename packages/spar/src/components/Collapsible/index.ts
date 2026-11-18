@@ -15,9 +15,4 @@ Collapsible.Content = CollapsibleContent;
 
 export { Collapsible, CollapsibleRoot, CollapsibleTrigger, CollapsibleContent };
 
-export type {
-  CollapsibleProps,
-  CollapsibleTriggerProps,
-  CollapsibleTriggerRenderProps,
-  CollapsibleContentProps,
-} from './types';
+export type { CollapsibleProps, CollapsibleTriggerProps, CollapsibleTriggerRenderProps, CollapsibleContentProps } from './types';

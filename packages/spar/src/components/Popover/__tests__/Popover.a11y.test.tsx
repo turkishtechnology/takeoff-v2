@@ -47,7 +47,7 @@ describe('Popover Accessibility', () => {
     const user = userEvent.setup();
 
     render(
-      <Popover id='a11y-popover'>
+      <Popover id="a11y-popover">
         <PopoverTrigger>Open</PopoverTrigger>
         <PopoverContent>Content</PopoverContent>
       </Popover>,

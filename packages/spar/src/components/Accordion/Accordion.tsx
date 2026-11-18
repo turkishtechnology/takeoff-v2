@@ -1,18 +1,9 @@
 import { useMemo, useCallback, ElementType } from 'react';
 import { useItemRegistry, useControlledState } from '@/hooks';
-import type {
-  AccordionContextValue,
-  AccordionCurrentValue,
-  AccordionFocusTarget,
-  AccordionProps,
-  AccordionValue,
-} from './types';
+import type { AccordionContextValue, AccordionCurrentValue, AccordionFocusTarget, AccordionProps, AccordionValue } from './types';
 import { AccordionContext } from './hooks';
 
-const normalizeValue = (
-  input: AccordionCurrentValue | undefined,
-  multiple: boolean,
-): AccordionCurrentValue => {
+const normalizeValue = (input: AccordionCurrentValue | undefined, multiple: boolean): AccordionCurrentValue => {
   if (multiple) {
     if (input === undefined) return [];
     return Array.isArray(input) ? input : [input];
@@ -27,9 +18,7 @@ const normalizeValue = (
 // Read the live DOM so a trigger disabled after it registered (item or root
 // `disabled`) is still skipped. Covers native buttons and `as` elements.
 const isDisabledTrigger = (element: HTMLElement): boolean =>
-  element.hasAttribute('disabled') ||
-  element.getAttribute('aria-disabled') === 'true' ||
-  element.hasAttribute('data-disabled');
+  element.hasAttribute('disabled') || element.getAttribute('aria-disabled') === 'true' || element.hasAttribute('data-disabled');
 
 /**
  * Accordion root component providing context and state management for accordion items.
@@ -53,8 +42,7 @@ export const Accordion = <T extends ElementType = 'div'>({
   const effectiveMultiple = multiple ?? false;
   const effectiveCollapsible = collapsible ?? true;
 
-  const normalizedControlled =
-    controlledValue !== undefined ? normalizeValue(controlledValue, effectiveMultiple) : undefined;
+  const normalizedControlled = controlledValue !== undefined ? normalizeValue(controlledValue, effectiveMultiple) : undefined;
   const normalizedInitial = normalizeValue(defaultValue, effectiveMultiple);
 
   const handleChange = useCallback(
@@ -64,18 +52,9 @@ export const Accordion = <T extends ElementType = 'div'>({
     [onValueChange],
   );
 
-  const [currentValue = normalizedInitial, setValue] = useControlledState<AccordionCurrentValue>(
-    normalizedControlled,
-    normalizedInitial,
-    handleChange,
-  );
+  const [currentValue = normalizedInitial, setValue] = useControlledState<AccordionCurrentValue>(normalizedControlled, normalizedInitial, handleChange);
 
-  const {
-    items: accordionItems,
-    registerItem,
-    unregisterItem,
-    getItemIds,
-  } = useItemRegistry<HTMLElement>();
+  const { items: accordionItems, registerItem, unregisterItem, getItemIds } = useItemRegistry<HTMLElement>();
 
   // Keyboard navigation follows DOM order (the registry sorts by document
   // position), skips disabled triggers and wraps around at both ends.
@@ -124,9 +103,7 @@ export const Accordion = <T extends ElementType = 'div'>({
       } else {
         const currentArray = Array.isArray(currentValue) ? currentValue : [];
         const isExpanded = currentArray.includes(itemValue);
-        nextValue = isExpanded
-          ? currentArray.filter((value) => value !== itemValue)
-          : [...currentArray, itemValue];
+        nextValue = isExpanded ? currentArray.filter(value => value !== itemValue) : [...currentArray, itemValue];
       }
 
       setValue(nextValue);
@@ -146,27 +123,12 @@ export const Accordion = <T extends ElementType = 'div'>({
       unregisterItem,
       focusItem,
     }),
-    [
-      effectiveMultiple,
-      effectiveCollapsible,
-      currentValue,
-      handleItemToggle,
-      disabled,
-      orientation,
-      registerItem,
-      unregisterItem,
-      focusItem,
-    ],
+    [effectiveMultiple, effectiveCollapsible, currentValue, handleItemToggle, disabled, orientation, registerItem, unregisterItem, focusItem],
   );
 
   return (
     <AccordionContext.Provider value={contextValue}>
-      <Component
-        ref={ref}
-        {...props}
-        data-orientation={orientation}
-        data-type={effectiveMultiple ? 'multiple' : 'single'}
-      >
+      <Component ref={ref} {...props} data-orientation={orientation} data-type={effectiveMultiple ? 'multiple' : 'single'}>
         {children}
       </Component>
     </AccordionContext.Provider>

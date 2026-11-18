@@ -73,7 +73,7 @@ describe('Popover', () => {
     const user = userEvent.setup();
 
     render(
-      <Popover id='profile'>
+      <Popover id="profile">
         <PopoverTrigger>Open</PopoverTrigger>
         <PopoverContent>Profile content</PopoverContent>
       </Popover>,
@@ -89,7 +89,7 @@ describe('Popover', () => {
 
   it('assigns the documented `${id}-trigger` id to the trigger and lets props override it', () => {
     const { rerender } = render(
-      <Popover id='profile'>
+      <Popover id="profile">
         <PopoverTrigger>Open</PopoverTrigger>
         <PopoverContent>Profile content</PopoverContent>
       </Popover>,
@@ -100,8 +100,8 @@ describe('Popover', () => {
     expect(trigger).toHaveAttribute('aria-controls', 'profile-content');
 
     rerender(
-      <Popover id='profile'>
-        <PopoverTrigger id='custom-trigger'>Open</PopoverTrigger>
+      <Popover id="profile">
+        <PopoverTrigger id="custom-trigger">Open</PopoverTrigger>
         <PopoverContent>Profile content</PopoverContent>
       </Popover>,
     );
@@ -165,7 +165,7 @@ describe('Popover', () => {
     render(
       <Popover defaultOpen>
         <PopoverTrigger>Open</PopoverTrigger>
-        <PopoverContent onEscapeKeyDown={(event) => event.preventDefault()}>Content</PopoverContent>
+        <PopoverContent onEscapeKeyDown={event => event.preventDefault()}>Content</PopoverContent>
       </Popover>,
     );
 
@@ -220,9 +220,7 @@ describe('Popover', () => {
   });
 
   describe('focus moving outside', () => {
-    const renderWithOutsideButton = async (
-      contentProps: Partial<React.ComponentProps<typeof PopoverContent>> = {},
-    ) => {
+    const renderWithOutsideButton = async (contentProps: Partial<React.ComponentProps<typeof PopoverContent>> = {}) => {
       const user = userEvent.setup();
       render(
         <div>
@@ -281,9 +279,7 @@ describe('Popover', () => {
     });
 
     it('stays open when onInteractOutside prevents default on the focus path', async () => {
-      const onInteractOutside = jest.fn((event: PointerEvent | FocusEvent) =>
-        event.preventDefault(),
-      );
+      const onInteractOutside = jest.fn((event: PointerEvent | FocusEvent) => event.preventDefault());
 
       await renderWithOutsideButton({ onInteractOutside });
       expect(await screen.findByRole('button', { name: 'Inside' })).toHaveFocus();
@@ -334,7 +330,7 @@ describe('Popover', () => {
     rerender(
       <Popover>
         <PopoverTrigger>Open</PopoverTrigger>
-        <PopoverContent onCloseAutoFocus={(event) => event.preventDefault()}>
+        <PopoverContent onCloseAutoFocus={event => event.preventDefault()}>
           <PopoverClose>Close</PopoverClose>
         </PopoverContent>
       </Popover>,
@@ -351,15 +347,9 @@ describe('Popover', () => {
   it('throws when parts are used outside Popover context', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    expect(() => render(<PopoverTrigger>Trigger</PopoverTrigger>)).toThrow(
-      'Popover components must be used within Popover',
-    );
-    expect(() => render(<PopoverContent>Content</PopoverContent>)).toThrow(
-      'Popover components must be used within Popover',
-    );
-    expect(() => render(<PopoverClose>Close</PopoverClose>)).toThrow(
-      'Popover components must be used within Popover',
-    );
+    expect(() => render(<PopoverTrigger>Trigger</PopoverTrigger>)).toThrow('Popover components must be used within Popover');
+    expect(() => render(<PopoverContent>Content</PopoverContent>)).toThrow('Popover components must be used within Popover');
+    expect(() => render(<PopoverClose>Close</PopoverClose>)).toThrow('Popover components must be used within Popover');
 
     jest.restoreAllMocks();
   });

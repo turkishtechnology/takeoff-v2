@@ -1,15 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  Dialog,
-  DialogTrigger,
-  DialogOverlay,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from '../index';
+import { Dialog, DialogTrigger, DialogOverlay, DialogContent, DialogTitle, DialogDescription, DialogClose } from '../index';
 
 // Mock portal rendering for testing
 jest.mock('react-dom', () => ({
@@ -33,18 +25,18 @@ describe('Dialog Integration Tests', () => {
               <DialogTitle>Settings</DialogTitle>
               <DialogDescription>Configure your preferences</DialogDescription>
               <form
-                onSubmit={(e) => {
+                onSubmit={e => {
                   e.preventDefault();
                   onSubmit();
                 }}
               >
-                <label htmlFor='username'>Username:</label>
-                <input id='username' name='username' defaultValue='john' />
-                <label htmlFor='email'>Email:</label>
-                <input id='email' name='email' type='email' defaultValue='john@example.com' />
+                <label htmlFor="username">Username:</label>
+                <input id="username" name="username" defaultValue="john" />
+                <label htmlFor="email">Email:</label>
+                <input id="email" name="email" type="email" defaultValue="john@example.com" />
                 <div>
-                  <button type='submit'>Save</button>
-                  <DialogClose type='button'>Cancel</DialogClose>
+                  <button type="submit">Save</button>
+                  <DialogClose type="button">Cancel</DialogClose>
                 </div>
               </form>
             </DialogContent>
@@ -99,11 +91,9 @@ describe('Dialog Integration Tests', () => {
           <DialogTrigger>Delete Item</DialogTrigger>
 
           <DialogOverlay>
-            <DialogContent role='alertdialog'>
+            <DialogContent role="alertdialog">
               <DialogTitle>Confirm Deletion</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to delete this item? This action cannot be undone.
-              </DialogDescription>
+              <DialogDescription>Are you sure you want to delete this item? This action cannot be undone.</DialogDescription>
               <div>
                 <button
                   onClick={() => {
@@ -151,26 +141,26 @@ describe('Dialog Integration Tests', () => {
         <Dialog defaultOpen={true}>
           <DialogContent>
             <DialogTitle>Advanced Settings</DialogTitle>
-            <div role='tablist'>
-              <button role='tab' aria-selected={true} onClick={() => onTabSelect('general')}>
+            <div role="tablist">
+              <button role="tab" aria-selected={true} onClick={() => onTabSelect('general')}>
                 General
               </button>
-              <button role='tab' aria-selected={false} onClick={() => onTabSelect('security')}>
+              <button role="tab" aria-selected={false} onClick={() => onTabSelect('security')}>
                 Security
               </button>
             </div>
-            <div role='tabpanel'>
+            <div role="tabpanel">
               <h3>General Settings</h3>
               <label>
-                <input type='checkbox' defaultChecked />
+                <input type="checkbox" defaultChecked />
                 Enable notifications
               </label>
               <label>
-                <input type='radio' name='theme' value='light' defaultChecked />
+                <input type="radio" name="theme" value="light" defaultChecked />
                 Light theme
               </label>
               <label>
-                <input type='radio' name='theme' value='dark' />
+                <input type="radio" name="theme" value="dark" />
                 Dark theme
               </label>
             </div>
@@ -204,7 +194,7 @@ describe('Dialog Integration Tests', () => {
           <Dialog>
             <DialogTrigger>Open Dialog 1</DialogTrigger>
 
-            <DialogContent onInteractOutside={(e) => e.preventDefault()}>
+            <DialogContent onInteractOutside={e => e.preventDefault()}>
               <DialogTitle>Dialog 1</DialogTitle>
               <DialogClose>Close</DialogClose>
             </DialogContent>
@@ -213,7 +203,7 @@ describe('Dialog Integration Tests', () => {
           <Dialog>
             <DialogTrigger>Open Dialog 2</DialogTrigger>
 
-            <DialogContent onInteractOutside={(e) => e.preventDefault()}>
+            <DialogContent onInteractOutside={e => e.preventDefault()}>
               <DialogTitle>Dialog 2</DialogTitle>
               <DialogClose>Close</DialogClose>
             </DialogContent>
@@ -307,7 +297,7 @@ describe('Dialog Integration Tests', () => {
       render(
         <Dialog defaultOpen={true}>
           <DialogContent
-            onKeyDown={(event) => {
+            onKeyDown={event => {
               if (event.key !== 'Escape') return;
               event.preventDefault();
             }}
@@ -393,13 +383,13 @@ describe('Dialog Integration Tests', () => {
 
       render(
         <Dialog defaultOpen={true}>
-          <DialogOverlay data-testid='overlay'>
-            <DialogContent data-testid='content'>
+          <DialogOverlay data-testid="overlay">
+            <DialogContent data-testid="content">
               <DialogTitle>Dialog with Nested Content</DialogTitle>
-              <div data-testid='nested-div'>
-                <button data-testid='nested-button'>Nested Button</button>
-                <div data-testid='deeply-nested'>
-                  <span data-testid='deep-span'>Deep content</span>
+              <div data-testid="nested-div">
+                <button data-testid="nested-button">Nested Button</button>
+                <div data-testid="deeply-nested">
+                  <span data-testid="deep-span">Deep content</span>
                 </div>
               </div>
             </DialogContent>
@@ -440,7 +430,7 @@ describe('Dialog Integration Tests', () => {
               <DialogTitle>Sign In to Your Account</DialogTitle>
               <DialogDescription>Enter your credentials to access your account</DialogDescription>
               <form
-                onSubmit={(e) => {
+                onSubmit={e => {
                   e.preventDefault();
                   const formData = new FormData(e.currentTarget);
                   onLogin({
@@ -450,28 +440,22 @@ describe('Dialog Integration Tests', () => {
                 }}
               >
                 <div>
-                  <label htmlFor='email'>Email:</label>
-                  <input id='email' name='email' type='email' required autoComplete='email' />
+                  <label htmlFor="email">Email:</label>
+                  <input id="email" name="email" type="email" required autoComplete="email" />
                 </div>
                 <div>
-                  <label htmlFor='password'>Password:</label>
-                  <input
-                    id='password'
-                    name='password'
-                    type='password'
-                    required
-                    autoComplete='current-password'
-                  />
+                  <label htmlFor="password">Password:</label>
+                  <input id="password" name="password" type="password" required autoComplete="current-password" />
                 </div>
                 <div>
                   <label>
-                    <input type='checkbox' name='remember' />
+                    <input type="checkbox" name="remember" />
                     Remember me
                   </label>
                 </div>
                 <div>
-                  <button type='submit'>Sign In</button>
-                  <DialogClose type='button'>Cancel</DialogClose>
+                  <button type="submit">Sign In</button>
+                  <DialogClose type="button">Cancel</DialogClose>
                 </div>
               </form>
             </DialogContent>
@@ -489,9 +473,7 @@ describe('Dialog Integration Tests', () => {
 
       // Submit using the submit button inside the form
       const allSignInButtons = screen.getAllByRole('button', { name: 'Sign In' });
-      const formSubmitButton = allSignInButtons.find(
-        (button) => (button as HTMLButtonElement).type === 'submit',
-      );
+      const formSubmitButton = allSignInButtons.find(button => (button as HTMLButtonElement).type === 'submit');
       await user.click(formSubmitButton!);
 
       expect(onLogin).toHaveBeenCalledWith({
@@ -512,31 +494,23 @@ describe('Dialog Integration Tests', () => {
 
         return (
           <div>
-            {images.map((image) => (
+            {images.map(image => (
               <button key={image.id} onClick={() => setSelectedImage(image.id)}>
                 View {image.alt}
               </button>
             ))}
 
-            <Dialog
-              open={selectedImage !== null}
-              onOpenChange={(open) => !open && setSelectedImage(null)}
-            >
+            <Dialog open={selectedImage !== null} onOpenChange={open => !open && setSelectedImage(null)}>
               <DialogOverlay>
-                <DialogContent role='dialog'>
+                <DialogContent role="dialog">
                   <DialogTitle>Image Viewer</DialogTitle>
                   {selectedImage && (
                     <div>
-                      <img
-                        src={images.find((img) => img.id === selectedImage)?.src}
-                        alt={images.find((img) => img.id === selectedImage)?.alt}
-                      />
+                      <img src={images.find(img => img.id === selectedImage)?.src} alt={images.find(img => img.id === selectedImage)?.alt} />
                       <div>
                         <button
                           onClick={() => {
-                            const currentIndex = images.findIndex(
-                              (img) => img.id === selectedImage,
-                            );
+                            const currentIndex = images.findIndex(img => img.id === selectedImage);
                             const prevIndex = (currentIndex - 1 + images.length) % images.length;
                             setSelectedImage(images[prevIndex]!.id);
                           }}
@@ -546,9 +520,7 @@ describe('Dialog Integration Tests', () => {
                         </button>
                         <button
                           onClick={() => {
-                            const currentIndex = images.findIndex(
-                              (img) => img.id === selectedImage,
-                            );
+                            const currentIndex = images.findIndex(img => img.id === selectedImage);
                             const nextIndex = (currentIndex + 1) % images.length;
                             setSelectedImage(images[nextIndex]!.id);
                           }}

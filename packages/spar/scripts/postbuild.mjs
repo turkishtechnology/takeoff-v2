@@ -42,7 +42,7 @@ function parseComponentIndex(filePath) {
   while ((typeMatch = typeRegex.exec(content)) !== null) {
     const names = typeMatch[1]
       .split(',')
-      .map((s) => s.trim())
+      .map(s => s.trim())
       .filter(Boolean);
     typeExports.push(...names);
   }
@@ -65,7 +65,7 @@ function parseComponentIndex(filePath) {
   while ((match = hookRegex.exec(content)) !== null) {
     const names = match[1]
       .split(',')
-      .map((s) => s.trim())
+      .map(s => s.trim())
       .filter(Boolean);
     hooks.push(...names);
   }
@@ -79,7 +79,7 @@ function parseComponentIndex(filePath) {
   while ((match = singleRegex.exec(content)) !== null) {
     const names = match[1]
       .split(',')
-      .map((s) => s.trim())
+      .map(s => s.trim())
       .filter(Boolean);
     singleExports.push(...names);
   }
@@ -94,7 +94,7 @@ function parseComponentIndex(filePath) {
   while ((match = localRegex.exec(content)) !== null) {
     const names = match[1]
       .split(',')
-      .map((s) => s.trim())
+      .map(s => s.trim())
       .filter(Boolean);
     singleExports.push(...names);
   }
@@ -109,9 +109,7 @@ function parseComponentIndex(filePath) {
 
 function buildExportClause(exports) {
   return Object.entries(exports)
-    .map(([shortName, fullName]) =>
-      shortName === fullName ? fullName : `${fullName} as ${shortName}`,
-    )
+    .map(([shortName, fullName]) => (shortName === fullName ? fullName : `${fullName} as ${shortName}`))
     .join(', ');
 }
 
@@ -122,13 +120,9 @@ function generateESM(exports, hooks) {
 }
 
 function generateCJS(exports, hooks) {
-  const allEntries = [...Object.entries(exports), ...hooks.map((h) => [h, h])];
+  const allEntries = [...Object.entries(exports), ...hooks.map(h => [h, h])];
   const assigns = allEntries
-    .map(([shortName, fullName]) =>
-      shortName === fullName
-        ? `exports.${fullName} = _spar.${fullName};`
-        : `exports.${shortName} = _spar.${fullName};`,
-    )
+    .map(([shortName, fullName]) => (shortName === fullName ? `exports.${fullName} = _spar.${fullName};` : `exports.${shortName} = _spar.${fullName};`))
     .join('\n');
   return `"use client";\nconst _spar = require('./index.cjs');\n${assigns}\n`;
 }
@@ -136,8 +130,7 @@ function generateCJS(exports, hooks) {
 function generateDTS(exports, hooks, typeExports) {
   const parts = [buildExportClause(exports)];
   if (hooks.length > 0) parts.push(hooks.join(', '));
-  const typeClause =
-    typeExports.length > 0 ? `export type { ${typeExports.join(', ')} } from './index';\n` : '';
+  const typeClause = typeExports.length > 0 ? `export type { ${typeExports.join(', ')} } from './index';\n` : '';
   return `export { ${parts.join(', ')} } from './index';\n${typeClause}`;
 }
 

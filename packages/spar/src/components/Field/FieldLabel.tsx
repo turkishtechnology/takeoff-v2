@@ -7,12 +7,7 @@ import type { FieldLabelProps } from './types';
  * Accessible label for a field. Automatically wired to the field's control
  * via `htmlFor` using the coordinated ID from Field context.
  */
-export const FieldLabel = <T extends ElementType = 'label'>({
-  as,
-  children,
-  ref,
-  ...props
-}: FieldLabelProps<T>) => {
+export const FieldLabel = <T extends ElementType = 'label'>({ as, children, ref, ...props }: FieldLabelProps<T>) => {
   const context = useFieldContext();
 
   return (

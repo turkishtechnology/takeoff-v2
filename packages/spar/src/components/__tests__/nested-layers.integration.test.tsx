@@ -3,12 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Dialog, DialogContent, DialogOverlay, DialogTitle, DialogTrigger } from '../Dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../DropdownMenu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../DropdownMenu';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../Select';
 
 // Real portals on purpose: the bug only exists because nested layers are
@@ -16,12 +11,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from '../Select';
 
 const CabinSelect = ({ onChange }: { onChange?: (value: string) => void }) => (
   <Select onChange={onChange}>
-    <SelectTrigger aria-label='Cabin' placeholder='Pick a cabin' />
+    <SelectTrigger aria-label="Cabin" placeholder="Pick a cabin" />
     <SelectContent>
-      <SelectItem value='economy' label='Economy'>
+      <SelectItem value="economy" label="Economy">
         Economy
       </SelectItem>
-      <SelectItem value='business' label='Business'>
+      <SelectItem value="business" label="Business">
         Business
       </SelectItem>
     </SelectContent>
@@ -35,7 +30,7 @@ describe('Nested floating layers', () => {
     const renderDialog = (onOpenChange = jest.fn(), onChange = jest.fn()) => {
       render(
         <>
-          <button type='button'>Elsewhere</button>
+          <button type="button">Elsewhere</button>
           <Dialog defaultOpen onOpenChange={onOpenChange}>
             <DialogTrigger>Open</DialogTrigger>
             <DialogOverlay />
@@ -45,7 +40,7 @@ describe('Nested floating layers', () => {
               <Popover>
                 <PopoverTrigger>Baggage</PopoverTrigger>
                 <PopoverContent>
-                  <button type='button'>Inside popover</button>
+                  <button type="button">Inside popover</button>
                 </PopoverContent>
               </Popover>
               <DropdownMenu>
@@ -116,10 +111,7 @@ describe('Nested floating layers', () => {
       const onPointerDownCapture = jest.fn();
       render(
         <Dialog defaultOpen>
-          <DialogContent
-            onPointerDownOutside={onPointerDownOutside}
-            onPointerDownCapture={onPointerDownCapture}
-          >
+          <DialogContent onPointerDownOutside={onPointerDownOutside} onPointerDownCapture={onPointerDownCapture}>
             <DialogTitle>Passenger</DialogTitle>
             <CabinSelect />
           </DialogContent>
@@ -141,14 +133,14 @@ describe('Nested floating layers', () => {
       const onOpenChange = jest.fn();
       render(
         <>
-          <button type='button'>Elsewhere</button>
+          <button type="button">Elsewhere</button>
           <DropdownMenu defaultOpen onOpenChange={onOpenChange}>
             <DropdownMenuTrigger>Actions</DropdownMenuTrigger>
-            <DropdownMenuContent aria-label='Actions menu'>
+            <DropdownMenuContent aria-label="Actions menu">
               <Popover>
                 <PopoverTrigger>Seat details</PopoverTrigger>
                 <PopoverContent>
-                  <button type='button'>Inside popover</button>
+                  <button type="button">Inside popover</button>
                 </PopoverContent>
               </Popover>
             </DropdownMenuContent>
@@ -177,10 +169,10 @@ describe('Nested floating layers', () => {
       const onChange = jest.fn();
       render(
         <>
-          <button type='button'>Elsewhere</button>
+          <button type="button">Elsewhere</button>
           <Popover defaultOpen onOpenChange={onOpenChange}>
             <PopoverTrigger>Filters</PopoverTrigger>
-            <PopoverContent aria-label='Filters panel'>
+            <PopoverContent aria-label="Filters panel">
               <CabinSelect onChange={onChange} />
             </PopoverContent>
           </Popover>

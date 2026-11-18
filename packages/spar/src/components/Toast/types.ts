@@ -1,13 +1,7 @@
 import type { ElementType, ReactNode } from 'react';
 import type { PolymorphicProps } from '../../types';
 
-export type ToastPlacement =
-  | 'top-start'
-  | 'top'
-  | 'top-end'
-  | 'bottom-start'
-  | 'bottom'
-  | 'bottom-end';
+export type ToastPlacement = 'top-start' | 'top' | 'top-end' | 'bottom-start' | 'bottom' | 'bottom-end';
 
 export type ToastStatus = 'queued' | 'visible' | 'dismissing';
 

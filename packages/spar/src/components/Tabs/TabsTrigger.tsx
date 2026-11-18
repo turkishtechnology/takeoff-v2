@@ -21,8 +21,7 @@ export const TabsTrigger = <T extends ElementType = 'button'>({
   ref,
   ...props
 }: TabsTriggerProps<T>) => {
-  const { selectedValue, onValueChange, orientation, registerTab, unregisterTab, baseId } =
-    useTabsContext();
+  const { selectedValue, onValueChange, orientation, registerTab, unregisterTab, baseId } = useTabsContext();
   const internalRef = useRef<HTMLButtonElement>(null);
   const mergedRef = useMergedRef(internalRef, ref);
   const triggerId = `${baseId}-trigger-${value}`;
@@ -84,28 +83,24 @@ export const TabsTrigger = <T extends ElementType = 'button'>({
 
   const buttonProps = {
     ...(as && { as }),
-    ref: mergedRef,
-    id: triggerId,
+    'ref': mergedRef,
+    'id': triggerId,
     disabled,
     autoFocus,
-    role: 'tab' as const,
+    'role': 'tab' as const,
     'aria-selected': isSelected,
     'aria-controls': panelId,
     'data-state': isSelected ? 'active' : 'inactive',
     'data-orientation': orientation,
     'data-value': value,
-    tabIndex: isSelected ? 0 : -1,
-    onClick: handleClick,
-    onFocus: handleFocus,
-    onBlur: handleBlur,
+    'tabIndex': isSelected ? 0 : -1,
+    'onClick': handleClick,
+    'onFocus': handleFocus,
+    'onBlur': handleBlur,
     ...props,
   } as ButtonProps<T>;
 
-  return (
-    <Button {...buttonProps}>
-      {typeof children === 'function' ? children(renderProps) : children}
-    </Button>
-  );
+  return <Button {...buttonProps}>{typeof children === 'function' ? children(renderProps) : children}</Button>;
 };
 
 TabsTrigger.displayName = 'TabsTrigger';

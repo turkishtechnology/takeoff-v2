@@ -9,14 +9,7 @@
  */
 
 import type { MaskResolver, MaskResolverResult, MaskTimeOptions, MaskTimeToken } from '@/types';
-import {
-  capacityOf,
-  distribute,
-  getGapDelimiters,
-  pad2,
-  splitIntoParts,
-  toDigits,
-} from './mask-shared';
+import { capacityOf, distribute, getGapDelimiters, pad2, splitIntoParts, toDigits } from './mask-shared';
 
 const DEFAULT_PATTERN: readonly MaskTimeToken[] = ['h', 'm'];
 
@@ -27,8 +20,7 @@ const MAX_MINUTES = 59;
 const MAX_SECONDS = 59;
 
 /** Every time block is two digits wide. */
-export const timeBlocks = (tokens: readonly MaskTimeToken[] = DEFAULT_PATTERN): number[] =>
-  tokens.map(() => 2);
+export const timeBlocks = (tokens: readonly MaskTimeToken[] = DEFAULT_PATTERN): number[] => tokens.map(() => 2);
 
 const format = (input: string, options: MaskTimeOptions): MaskResolverResult => {
   const tokens = options.timePattern ?? DEFAULT_PATTERN;
@@ -43,7 +35,7 @@ const format = (input: string, options: MaskTimeOptions): MaskResolverResult => 
   let rest = toDigits(input, delimiters, capacity);
   let raw = '';
 
-  tokens.forEach((token) => {
+  tokens.forEach(token => {
     if (!rest.length) return;
 
     let block = rest.slice(0, 2);
@@ -83,15 +75,13 @@ const format = (input: string, options: MaskTimeOptions): MaskResolverResult => 
     const second = Math.min(valueOf('s'), MAX_SECONDS);
 
     raw = tokens
-      .map((token) => {
+      .map(token => {
         if (token === 'h') return pad2(hour);
         return pad2(token === 's' ? second : minute);
       })
       .join('');
 
-    iso = tokens.includes('s')
-      ? `${pad2(hour)}:${pad2(minute)}:${pad2(second)}`
-      : `${pad2(hour)}:${pad2(minute)}`;
+    iso = tokens.includes('s') ? `${pad2(hour)}:${pad2(minute)}:${pad2(second)}` : `${pad2(hour)}:${pad2(minute)}`;
   }
 
   return {
@@ -116,7 +106,7 @@ const format = (input: string, options: MaskTimeOptions): MaskResolverResult => 
  * ```
  */
 export const createTimeMask = (options: MaskTimeOptions): MaskResolver => {
-  const resolver: MaskResolver = (raw) => format(raw, options);
+  const resolver: MaskResolver = raw => format(raw, options);
   if (options.backspace !== undefined) resolver.backspace = options.backspace;
   return resolver;
 };

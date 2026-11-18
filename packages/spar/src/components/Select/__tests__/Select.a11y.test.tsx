@@ -2,26 +2,18 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectGroup,
-  SelectLabel,
-  SelectSeparator,
-} from '../index';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectGroup, SelectLabel, SelectSeparator } from '../index';
 
 expect.extend(toHaveNoViolations);
 
 const BasicSelect = ({ id }: { id?: string }) => (
   <Select id={id}>
-    <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+    <SelectTrigger aria-label="Choose option" placeholder="Select..." />
     <SelectContent>
-      <SelectItem value='option1' label='Option 1'>
+      <SelectItem value="option1" label="Option 1">
         Option 1
       </SelectItem>
-      <SelectItem value='option2' disabled label='Option 2'>
+      <SelectItem value="option2" disabled label="Option 2">
         Option 2
       </SelectItem>
     </SelectContent>
@@ -53,7 +45,7 @@ describe('Select Accessibility', () => {
   it('keeps trigger/listbox ARIA relationships in sync', async () => {
     const user = userEvent.setup();
 
-    render(<BasicSelect id='a11y-select' />);
+    render(<BasicSelect id="a11y-select" />);
 
     const trigger = screen.getByRole('combobox');
     expect(trigger).toHaveAttribute('aria-controls', 'a11y-select-content');
@@ -69,13 +61,13 @@ describe('Select Accessibility', () => {
     const user = userEvent.setup();
 
     render(
-      <Select value='option1'>
-        <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+      <Select value="option1">
+        <SelectTrigger aria-label="Choose option" placeholder="Select..." />
         <SelectContent>
-          <SelectItem value='option1' label='Option 1'>
+          <SelectItem value="option1" label="Option 1">
             Option 1
           </SelectItem>
-          <SelectItem value='option2' disabled label='Option 2'>
+          <SelectItem value="option2" disabled label="Option 2">
             Option 2
           </SelectItem>
         </SelectContent>
@@ -84,14 +76,8 @@ describe('Select Accessibility', () => {
 
     await user.click(screen.getByRole('combobox'));
 
-    expect(screen.getByRole('option', { name: 'Option 1' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
-    expect(screen.getByRole('option', { name: 'Option 2' })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    expect(screen.getByRole('option', { name: 'Option 1' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('option', { name: 'Option 2' })).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('focuses listbox on open and returns focus to trigger after selection', async () => {
@@ -114,15 +100,15 @@ describe('Select Accessibility', () => {
 
     render(
       <Select>
-        <SelectTrigger aria-label='Choose grouped option' placeholder='Select...' />
+        <SelectTrigger aria-label="Choose grouped option" placeholder="Select..." />
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Fruits</SelectLabel>
-            <SelectItem value='apple' label='Apple'>
+            <SelectItem value="apple" label="Apple">
               Apple
             </SelectItem>
           </SelectGroup>
-          <SelectSeparator data-testid='separator' />
+          <SelectSeparator data-testid="separator" />
         </SelectContent>
       </Select>,
     );
@@ -147,18 +133,18 @@ describe('Select Accessibility', () => {
 
     render(
       <Select>
-        <SelectTrigger aria-label='Choose grouped option' placeholder='Select...' />
+        <SelectTrigger aria-label="Choose grouped option" placeholder="Select..." />
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Fruits</SelectLabel>
-            <SelectItem value='apple' label='Apple'>
+            <SelectItem value="apple" label="Apple">
               Apple
             </SelectItem>
           </SelectGroup>
           <SelectSeparator />
           <SelectGroup>
             <SelectLabel>Vegetables</SelectLabel>
-            <SelectItem value='carrot' label='Carrot'>
+            <SelectItem value="carrot" label="Carrot">
               Carrot
             </SelectItem>
           </SelectGroup>
@@ -186,13 +172,13 @@ describe('Select Accessibility', () => {
 
     render(
       <Select>
-        <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+        <SelectTrigger aria-label="Choose option" placeholder="Select..." />
         <SelectContent>
-          <SelectItem value='a' label='A'>
+          <SelectItem value="a" label="A">
             A
           </SelectItem>
-          <SelectSeparator role='separator' aria-orientation='horizontal' />
-          <SelectItem value='b' label='B'>
+          <SelectSeparator role="separator" aria-orientation="horizontal" />
+          <SelectItem value="b" label="B">
             B
           </SelectItem>
         </SelectContent>
@@ -208,6 +194,6 @@ describe('Select Accessibility', () => {
     // Sanity check that the rule the default protects against is live: the
     // opt-in separator role is exactly what `aria-required-children` rejects.
     const results = await axe(document.body, { rules: { region: { enabled: false } } });
-    expect(results.violations.map((violation) => violation.id)).toContain('aria-required-children');
+    expect(results.violations.map(violation => violation.id)).toContain('aria-required-children');
   });
 });

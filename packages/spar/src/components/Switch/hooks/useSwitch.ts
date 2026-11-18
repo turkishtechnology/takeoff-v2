@@ -7,20 +7,10 @@ import type { UseSwitchProps, UseSwitchReturn } from '../types';
  * Custom hook for managing switch state and behavior
  */
 export const useSwitch = (props: UseSwitchProps): UseSwitchReturn => {
-  const {
-    checked: controlledChecked,
-    defaultChecked = false,
-    onChange,
-    disabled = false,
-    readOnly = false,
-  } = props;
+  const { checked: controlledChecked, defaultChecked = false, onChange, disabled = false, readOnly = false } = props;
 
   // State management - controlled/uncontrolled
-  const [checked = false, setCheckedValue] = useControlledState(
-    controlledChecked,
-    defaultChecked,
-    onChange,
-  );
+  const [checked = false, setCheckedValue] = useControlledState(controlledChecked, defaultChecked, onChange);
 
   // State for interaction tracking
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -102,7 +92,7 @@ export const useSwitch = (props: UseSwitchProps): UseSwitchReturn => {
 
   // Generate switch props
   const switchProps = {
-    role: 'switch' as const,
+    'role': 'switch' as const,
     'aria-checked': checked,
     ...(readOnly && { 'aria-readonly': true }),
     'data-switch': '' as const,
@@ -113,26 +103,26 @@ export const useSwitch = (props: UseSwitchProps): UseSwitchReturn => {
     ...(isFocused && { 'data-focus': '' as const }),
     ...(isHovered && { 'data-hover': '' as const }),
     ...(isActive && { 'data-active': '' as const }),
-    tabIndex: disabled ? -1 : 0,
-    onKeyDown: handleKeyDown,
-    onClick: handleClick,
-    onFocus: handleFocus,
-    onBlur: handleBlur,
-    onPointerEnter: handlePointerEnter,
-    onPointerLeave: handlePointerLeave,
-    onPointerDown: handlePointerDown,
-    onPointerUp: handlePointerUp,
-    onPointerCancel: handlePointerCancel,
+    'tabIndex': disabled ? -1 : 0,
+    'onKeyDown': handleKeyDown,
+    'onClick': handleClick,
+    'onFocus': handleFocus,
+    'onBlur': handleBlur,
+    'onPointerEnter': handlePointerEnter,
+    'onPointerLeave': handlePointerLeave,
+    'onPointerDown': handlePointerDown,
+    'onPointerUp': handlePointerUp,
+    'onPointerCancel': handlePointerCancel,
   };
 
   // Hidden input props for form integration
   const hiddenInputProps = {
-    type: 'checkbox' as const,
+    'type': 'checkbox' as const,
     checked,
-    onChange: () => {}, // Handled by the switch element
-    tabIndex: -1 as const,
+    'onChange': () => {}, // Handled by the switch element
+    'tabIndex': -1 as const,
     'aria-hidden': true as const,
-    style: visuallyHidden,
+    'style': visuallyHidden,
   };
 
   return {

@@ -13,33 +13,19 @@
  */
 
 import type { MaskDateOptions, MaskDateToken, MaskResolver, MaskResolverResult } from '@/types';
-import {
-  capacityOf,
-  distribute,
-  getGapDelimiters,
-  pad2,
-  pad4,
-  splitIntoParts,
-  toDigits,
-} from './mask-shared';
+import { capacityOf, distribute, getGapDelimiters, pad2, pad4, splitIntoParts, toDigits } from './mask-shared';
 
 const BLOCK_SIZE: Record<MaskDateToken, number> = { d: 2, m: 2, y: 2, Y: 4 };
 
 const DEFAULT_PATTERN: readonly MaskDateToken[] = ['d', 'm', 'Y'];
 
 /** Block sizes implied by a date pattern's tokens. */
-export const dateBlocks = (tokens: readonly MaskDateToken[] = DEFAULT_PATTERN): number[] =>
-  tokens.map((token) => BLOCK_SIZE[token]);
+export const dateBlocks = (tokens: readonly MaskDateToken[] = DEFAULT_PATTERN): number[] => tokens.map(token => BLOCK_SIZE[token]);
 
-const isLeapYear = (year: number): boolean =>
-  (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+const isLeapYear = (year: number): boolean => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 
 /** Per-block clamp applied while typing, before the value is complete. */
-const clampParts = (
-  digits: string,
-  tokens: readonly MaskDateToken[],
-  blocks: readonly number[],
-): string => {
+const clampParts = (digits: string, tokens: readonly MaskDateToken[], blocks: readonly number[]): string => {
   let rest = digits;
   let result = '';
 
@@ -97,19 +83,18 @@ const clampDayToMonth = (day: number, month: number, year: number): number => {
 const parseBound = (bound: string | undefined): [number, number, number] | null => {
   if (!bound) return null;
 
-  const parts = bound.split('-').map((part) => Number.parseInt(part, 10));
+  const parts = bound.split('-').map(part => Number.parseInt(part, 10));
   const [year, month, day] = parts;
 
   if (parts.length !== 3 || year === undefined || month === undefined || day === undefined) {
     return null;
   }
-  if ([year, month, day].some((part) => Number.isNaN(part))) return null;
+  if ([year, month, day].some(part => Number.isNaN(part))) return null;
 
   return [year, month, day];
 };
 
-const compareDate = (a: [number, number, number], b: [number, number, number]): number =>
-  a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
+const compareDate = (a: [number, number, number], b: [number, number, number]): number => a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
 
 const format = (input: string, options: MaskDateOptions): MaskResolverResult => {
   const tokens = options.datePattern ?? DEFAULT_PATTERN;
@@ -148,7 +133,7 @@ const format = (input: string, options: MaskDateOptions): MaskResolverResult => 
     }
 
     raw = tokens
-      .map((token) => {
+      .map(token => {
         if (token === 'd') return pad2(day);
         if (token === 'm') return pad2(month);
         return token === 'Y' ? pad4(year) : pad2(year % 100);
@@ -183,7 +168,7 @@ const format = (input: string, options: MaskDateOptions): MaskResolverResult => 
  * ```
  */
 export const createDateMask = (options: MaskDateOptions): MaskResolver => {
-  const resolver: MaskResolver = (raw) => format(raw, options);
+  const resolver: MaskResolver = raw => format(raw, options);
   if (options.backspace !== undefined) resolver.backspace = options.backspace;
   return resolver;
 };

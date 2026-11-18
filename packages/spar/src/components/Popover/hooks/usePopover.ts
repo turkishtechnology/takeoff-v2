@@ -6,14 +6,7 @@ import type { PopoverProps } from '../types';
  * Custom hook for popover state management
  */
 export const usePopover = (props: Omit<PopoverProps, 'children'>) => {
-  const {
-    id: providedId,
-    open: controlledOpen,
-    onOpenChange,
-    defaultOpen = false,
-    modal = false,
-    disabled = false,
-  } = props;
+  const { id: providedId, open: controlledOpen, onOpenChange, defaultOpen = false, modal = false, disabled = false } = props;
 
   const generatedId = useId();
   const baseId = providedId ?? generatedId;

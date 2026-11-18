@@ -134,8 +134,4 @@ export interface CheckboxOwnProps {
  * Props for Checkbox component
  * @remarks Fully accessible, headless checkbox component providing dual-state and tri-state functionality
  */
-export type CheckboxProps<T extends ElementType = 'span'> = PolymorphicProps<
-  'span',
-  T,
-  CheckboxOwnProps
->;
+export type CheckboxProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, CheckboxOwnProps>;

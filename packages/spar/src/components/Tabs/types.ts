@@ -106,11 +106,7 @@ export interface TabsTriggerOwnProps extends ButtonOwnProps {
  * Props for TabsTrigger component
  * @remarks Interactive tab button that selects a panel
  */
-export type TabsTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  TabsTriggerOwnProps
->;
+export type TabsTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, TabsTriggerOwnProps>;
 
 /**
  * Own props for TabsContent component
@@ -132,11 +128,7 @@ export interface TabsContentOwnProps {
  * Props for TabsContent component
  * @remarks Panel content displayed when its matching tab is selected
  */
-export type TabsContentProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  TabsContentOwnProps
->;
+export type TabsContentProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, TabsContentOwnProps>;
 
 /**
  * Context value provided by Tabs root component

@@ -19,20 +19,16 @@ describe('Popover Integration Tests', () => {
           <PopoverTrigger>Settings</PopoverTrigger>
           <PopoverContent>
             <form
-              onSubmit={(event) => {
+              onSubmit={event => {
                 event.preventDefault();
                 onSubmit({ notifications });
               }}
             >
               <label>
-                <input
-                  type='checkbox'
-                  checked={notifications}
-                  onChange={(event) => setNotifications(event.target.checked)}
-                />
+                <input type="checkbox" checked={notifications} onChange={event => setNotifications(event.target.checked)} />
                 Enable notifications
               </label>
-              <button type='submit'>Save</button>
+              <button type="submit">Save</button>
               <PopoverClose>Cancel</PopoverClose>
             </form>
           </PopoverContent>
@@ -79,14 +75,12 @@ describe('Popover Integration Tests', () => {
 
       return (
         <div>
-          <button onClick={() => setOpen((value) => !value)}>
-            {open ? 'Close' : 'Open'} External
-          </button>
+          <button onClick={() => setOpen(value => !value)}>{open ? 'Close' : 'Open'} External</button>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger>Internal Toggle</PopoverTrigger>
             <PopoverContent>
               <p>Count: {count}</p>
-              <button onClick={() => setCount((value) => value + 1)}>Increment</button>
+              <button onClick={() => setCount(value => value + 1)}>Increment</button>
               <PopoverClose>Close</PopoverClose>
             </PopoverContent>
           </Popover>

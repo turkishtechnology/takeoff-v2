@@ -18,14 +18,7 @@ const getHiddenAttribute = (isOpen: boolean, forceMount: boolean) => {
 /**
  * Collapsible content component containing the collapsible content.
  */
-export const CollapsibleContent = <T extends ElementType = 'div'>({
-  as,
-  ref,
-  forceMount = false,
-  children,
-  onBeforeMatch,
-  ...props
-}: CollapsibleContentProps<T>) => {
+export const CollapsibleContent = <T extends ElementType = 'div'>({ as, ref, forceMount = false, children, onBeforeMatch, ...props }: CollapsibleContentProps<T>) => {
   const Component = as || 'div';
   const { isOpen, disabled, contentId, toggle } = useCollapsibleContext();
   const contentRef = useRef<HTMLElement>(null);
@@ -60,14 +53,7 @@ export const CollapsibleContent = <T extends ElementType = 'div'>({
   const hiddenAttribute = getHiddenAttribute(isOpen, forceMount);
 
   return (
-    <Component
-      ref={mergedRef}
-      id={contentId}
-      hidden={hiddenAttribute}
-      data-state={dataState}
-      data-disabled={disabled ? '' : undefined}
-      {...props}
-    >
+    <Component ref={mergedRef} id={contentId} hidden={hiddenAttribute} data-state={dataState} data-disabled={disabled ? '' : undefined} {...props}>
       {children}
     </Component>
   );

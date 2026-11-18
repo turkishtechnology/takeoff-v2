@@ -7,7 +7,7 @@ expect.extend(toHaveNoViolations);
 
 const getRadioByText = (text: string) => {
   const radios = screen.getAllByRole('radio', { name: text });
-  const interactiveRadio = radios.find((radio) => radio.tagName !== 'INPUT');
+  const interactiveRadio = radios.find(radio => radio.tagName !== 'INPUT');
   if (!interactiveRadio) {
     throw new Error(`Interactive radio with text "${text}" not found`);
   }
@@ -18,9 +18,9 @@ describe('Radio Accessibility', () => {
   describe('Automated A11y Testing', () => {
     it('should pass accessibility checks for radiogroup structure', async () => {
       const { container } = render(
-        <Radio aria-label='Choose your option'>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
+        <Radio aria-label="Choose your option">
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
         </Radio>,
       );
 
@@ -31,10 +31,10 @@ describe('Radio Accessibility', () => {
 
     it('passes axe on the documented anatomy with checked and disabled items', async () => {
       const { container } = render(
-        <Radio.Root aria-label='Subscription plan' defaultValue='pro'>
-          <Radio.Item value='basic'>Basic</Radio.Item>
-          <Radio.Item value='pro'>Pro</Radio.Item>
-          <Radio.Item value='enterprise' disabled>
+        <Radio.Root aria-label="Subscription plan" defaultValue="pro">
+          <Radio.Item value="basic">Basic</Radio.Item>
+          <Radio.Item value="pro">Pro</Radio.Item>
+          <Radio.Item value="enterprise" disabled>
             Enterprise
           </Radio.Item>
         </Radio.Root>,
@@ -49,9 +49,9 @@ describe('Radio Accessibility', () => {
 
     it('names each item by its text and keeps the native input out of the AT tree', () => {
       render(
-        <Radio aria-label='Subscription plan' value='pro'>
-          <RadioItem value='basic'>Basic</RadioItem>
-          <RadioItem value='pro'>Pro</RadioItem>
+        <Radio aria-label="Subscription plan" value="pro">
+          <RadioItem value="basic">Basic</RadioItem>
+          <RadioItem value="pro">Pro</RadioItem>
         </Radio>,
       );
 
@@ -59,24 +59,24 @@ describe('Radio Accessibility', () => {
       // are excluded from the accessibility tree.
       const radios = screen.getAllByRole('radio');
       expect(radios).toHaveLength(2);
-      radios.forEach((radio) => expect(radio.tagName).toBe('SPAN'));
+      radios.forEach(radio => expect(radio.tagName).toBe('SPAN'));
 
       expect(screen.getByRole('radio', { name: 'Basic' })).toHaveAccessibleName('Basic');
       expect(screen.getByRole('radio', { name: 'Pro' })).toHaveAttribute('aria-checked', 'true');
 
       const nativeInputs = document.querySelectorAll('input[type="radio"]');
       expect(nativeInputs).toHaveLength(2);
-      nativeInputs.forEach((input) => expect(input).toHaveAttribute('aria-hidden', 'true'));
+      nativeInputs.forEach(input => expect(input).toHaveAttribute('aria-hidden', 'true'));
     });
 
     it('should pass accessibility checks with form association', async () => {
       const { container } = render(
         <form>
           <fieldset>
-            <legend id='group-legend'>Choose your preference</legend>
-            <Radio aria-labelledby='group-legend' name='preference'>
-              <RadioItem value='yes'>Yes</RadioItem>
-              <RadioItem value='no'>No</RadioItem>
+            <legend id="group-legend">Choose your preference</legend>
+            <Radio aria-labelledby="group-legend" name="preference">
+              <RadioItem value="yes">Yes</RadioItem>
+              <RadioItem value="no">No</RadioItem>
             </Radio>
           </fieldset>
         </form>,
@@ -91,9 +91,9 @@ describe('Radio Accessibility', () => {
   describe('ARIA Attributes', () => {
     it('should have proper radiogroup role and attributes', () => {
       render(
-        <Radio aria-label='Choose option' required>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
+        <Radio aria-label="Choose option" required>
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
         </Radio>,
       );
 
@@ -105,9 +105,9 @@ describe('Radio Accessibility', () => {
 
     it('should have proper radio roles and attributes for items', () => {
       render(
-        <Radio value='option1'>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
+        <Radio value="option1">
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
         </Radio>,
       );
 
@@ -125,8 +125,8 @@ describe('Radio Accessibility', () => {
 
       render(
         <Radio>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
         </Radio>,
       );
 
@@ -145,8 +145,8 @@ describe('Radio Accessibility', () => {
     it('should expose disabled state through aria-disabled', () => {
       render(
         <Radio>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2' disabled>
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2" disabled>
             Option 2
           </RadioItem>
         </Radio>,
@@ -165,10 +165,10 @@ describe('Radio Accessibility', () => {
       const user = userEvent.setup();
 
       render(
-        <Radio defaultValue='option1'>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
-          <RadioItem value='option3'>Option 3</RadioItem>
+        <Radio defaultValue="option1">
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
+          <RadioItem value="option3">Option 3</RadioItem>
         </Radio>,
       );
 
@@ -187,8 +187,8 @@ describe('Radio Accessibility', () => {
 
       render(
         <Radio selectOnFocus={false}>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
         </Radio>,
       );
 
@@ -213,10 +213,10 @@ describe('Radio Accessibility', () => {
   describe('Focus Management', () => {
     it('implements roving tabindex', () => {
       const { container } = render(
-        <Radio value='option2'>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
-          <RadioItem value='option3'>Option 3</RadioItem>
+        <Radio value="option2">
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
+          <RadioItem value="option3">Option 3</RadioItem>
         </Radio>,
       );
 
@@ -232,11 +232,11 @@ describe('Radio Accessibility', () => {
 
       render(
         <>
-          <button type='button'>Before</button>
+          <button type="button">Before</button>
           <Radio>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>
         </>,
       );
@@ -255,9 +255,9 @@ describe('Radio Accessibility', () => {
     it('should auto-focus when autoFocus is true', async () => {
       const { container } = render(
         <Radio autoFocus>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
-          <RadioItem value='option3'>Option 3</RadioItem>
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
+          <RadioItem value="option3">Option 3</RadioItem>
         </Radio>,
       );
 
@@ -271,10 +271,10 @@ describe('Radio Accessibility', () => {
 
     it('should auto-focus selected item when autoFocus is true', async () => {
       const { container } = render(
-        <Radio autoFocus value='option2'>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
-          <RadioItem value='option3'>Option 3</RadioItem>
+        <Radio autoFocus value="option2">
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
+          <RadioItem value="option3">Option 3</RadioItem>
         </Radio>,
       );
 
@@ -287,8 +287,8 @@ describe('Radio Accessibility', () => {
     it('should not auto-focus by default', () => {
       const { container } = render(
         <Radio>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
         </Radio>,
       );
 
@@ -300,28 +300,28 @@ describe('Radio Accessibility', () => {
   describe('Screen Reader Support', () => {
     it('should have proper labeling for screen readers', () => {
       const { container } = render(
-        <Radio aria-label='Choose option'>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
+        <Radio aria-label="Choose option">
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
         </Radio>,
       );
 
       const labels = container.querySelectorAll('[role="radio"]');
-      labels.forEach((label) => {
+      labels.forEach(label => {
         expect(label).toHaveTextContent(/Option \d/);
       });
     });
 
     it('should work with complex content', () => {
       const { container } = render(
-        <Radio aria-label='Choose plan'>
-          <RadioItem value='basic'>
+        <Radio aria-label="Choose plan">
+          <RadioItem value="basic">
             <div>
               <strong>Basic Plan</strong>
               <p>$10/month</p>
             </div>
           </RadioItem>
-          <RadioItem value='premium'>
+          <RadioItem value="premium">
             <div>
               <strong>Premium Plan</strong>
               <p>$20/month</p>
@@ -341,10 +341,10 @@ describe('Radio Accessibility', () => {
       render(
         <form>
           <fieldset>
-            <legend id='group-legend'>Choose your preference</legend>
-            <Radio aria-labelledby='group-legend' name='preference'>
-              <RadioItem value='yes'>Yes</RadioItem>
-              <RadioItem value='no'>No</RadioItem>
+            <legend id="group-legend">Choose your preference</legend>
+            <Radio aria-labelledby="group-legend" name="preference">
+              <RadioItem value="yes">Yes</RadioItem>
+              <RadioItem value="no">No</RadioItem>
             </Radio>
           </fieldset>
         </form>,
@@ -357,12 +357,12 @@ describe('Radio Accessibility', () => {
     it('should work with form validation states', () => {
       render(
         <div>
-          <p id='error-message' role='alert'>
+          <p id="error-message" role="alert">
             Please select an option
           </p>
-          <Radio aria-label='Required choice' aria-describedby='error-message' required>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio aria-label="Required choice" aria-describedby="error-message" required>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>
         </div>,
       );
@@ -374,9 +374,9 @@ describe('Radio Accessibility', () => {
 
     it('should handle invalid state correctly', () => {
       render(
-        <Radio aria-label='Required choice' aria-invalid='true'>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
+        <Radio aria-label="Required choice" aria-invalid="true">
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
         </Radio>,
       );
 
@@ -389,9 +389,9 @@ describe('Radio Accessibility', () => {
       const user = userEvent.setup();
 
       const { container } = render(
-        <Radio value='option1' onChange={handleChange}>
-          <RadioItem value='option1'>Option 1</RadioItem>
-          <RadioItem value='option2'>Option 2</RadioItem>
+        <Radio value="option1" onChange={handleChange}>
+          <RadioItem value="option1">Option 1</RadioItem>
+          <RadioItem value="option2">Option 2</RadioItem>
         </Radio>,
       );
 

@@ -9,24 +9,20 @@ const FormWithCollapsible = () => {
 
   return (
     <form>
-      <label htmlFor='name'>Name</label>
-      <input id='name' />
+      <label htmlFor="name">Name</label>
+      <input id="name" />
 
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger>Advanced options</CollapsibleTrigger>
         <CollapsibleContent>
           <label>
-            <input
-              type='checkbox'
-              checked={newsletter}
-              onChange={(event) => setNewsletter(event.target.checked)}
-            />
+            <input type="checkbox" checked={newsletter} onChange={event => setNewsletter(event.target.checked)} />
             Receive newsletter
           </label>
         </CollapsibleContent>
       </Collapsible>
 
-      <button type='submit'>Submit</button>
+      <button type="submit">Submit</button>
     </form>
   );
 };
@@ -81,10 +77,7 @@ describe('Collapsible integration', () => {
     expect(screen.queryByText('Level 2 content')).not.toBeInTheDocument();
 
     await user.click(level1Trigger);
-    expect(screen.getByRole('button', { name: level2TriggerName })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
+    expect(screen.getByRole('button', { name: level2TriggerName })).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('keeps trigger click event propagation behavior customizable', async () => {

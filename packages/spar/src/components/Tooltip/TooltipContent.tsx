@@ -1,11 +1,6 @@
 import React, { useEffect, useCallback, useState, type ElementType, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  useMergedRef,
-  useFloating,
-  type UseFloatingOptions,
-  type UseFloatingReturn,
-} from '@/hooks';
+import { useMergedRef, useFloating, type UseFloatingOptions, type UseFloatingReturn } from '@/hooks';
 import { useTooltipContext, TooltipContentContext } from './hooks';
 import type { TooltipContentProps } from './types';
 import type { Side, Align } from '../../types';
@@ -46,12 +41,7 @@ export const TooltipContent = <T extends ElementType = 'div'>({
     arrowRef: context.arrowRef.current,
   };
 
-  const {
-    floatingStyles,
-    arrowStyles,
-    refs,
-    placement: actualPlacement,
-  }: UseFloatingReturn = useFloating(floatingOptions);
+  const { floatingStyles, arrowStyles, refs, placement: actualPlacement }: UseFloatingReturn = useFloating(floatingOptions);
 
   // Extract placement information for data attributes
   const [currentSide, currentAlign] = useMemo(() => {
@@ -111,10 +101,7 @@ export const TooltipContent = <T extends ElementType = 'div'>({
     }
   }, [context]);
 
-  const contentContextValue = useMemo(
-    () => ({ arrowStyles, side: currentSide, align: currentAlign }),
-    [arrowStyles, currentSide, currentAlign],
-  );
+  const contentContextValue = useMemo(() => ({ arrowStyles, side: currentSide, align: currentAlign }), [arrowStyles, currentSide, currentAlign]);
 
   // Don't render if not open or disabled
   if (!context.isOpen || context.disabled) {
@@ -127,16 +114,16 @@ export const TooltipContent = <T extends ElementType = 'div'>({
   }
 
   const contentProps = {
-    ref: floatingRef,
-    id: context.contentId,
-    role: 'tooltip',
+    'ref': floatingRef,
+    'id': context.contentId,
+    'role': 'tooltip',
     className,
-    style: { ...floatingStyles, ...style },
+    'style': { ...floatingStyles, ...style },
     'data-state': context.isOpen ? 'open' : 'closed',
     'data-placement': getPlacement(currentSide, currentAlign),
-    onKeyDown: handleKeyDown,
-    onMouseEnter: handleMouseEnter,
-    onMouseLeave: handleMouseLeave,
+    'onKeyDown': handleKeyDown,
+    'onMouseEnter': handleMouseEnter,
+    'onMouseLeave': handleMouseLeave,
     ...props,
   };
 

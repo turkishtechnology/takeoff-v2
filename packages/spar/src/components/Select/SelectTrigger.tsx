@@ -86,19 +86,15 @@ export const SelectTrigger = <T extends ElementType = 'button'>({
 
   // Only point to description/error when a Field is in scope — otherwise
   // those IDs are synthetic and resolve to no DOM node.
-  const describedBy = context.hasField
-    ? context.invalid
-      ? context.errorId
-      : context.descriptionId
-    : undefined;
+  const describedBy = context.hasField ? (context.invalid ? context.errorId : context.descriptionId) : undefined;
 
   const buttonProps = {
     ...(as && { as }),
-    ref: mergedRef,
-    id: context.triggerId,
+    'ref': mergedRef,
+    'id': context.triggerId,
     disabled,
-    autoFocus: context.autoFocus,
-    role: 'combobox' as const,
+    'autoFocus': context.autoFocus,
+    'role': 'combobox' as const,
     'aria-haspopup': 'listbox' as const,
     'aria-expanded': context.open,
     'aria-controls': context.contentId,
@@ -112,8 +108,8 @@ export const SelectTrigger = <T extends ElementType = 'button'>({
     'data-required': context.required ? '' : undefined,
     'data-readonly': context.readOnly ? '' : undefined,
     'data-placeholder': !context.value ? '' : undefined,
-    onClick: handleClick,
-    onKeyDown: handleKeyDown,
+    'onClick': handleClick,
+    'onKeyDown': handleKeyDown,
     ...props,
   } as ButtonProps<T>;
 

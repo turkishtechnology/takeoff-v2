@@ -19,14 +19,7 @@ Accordion.Header = AccordionHeader;
 Accordion.Trigger = AccordionTrigger;
 Accordion.Content = AccordionContent;
 
-export {
-  Accordion,
-  AccordionRoot,
-  AccordionItem,
-  AccordionHeader,
-  AccordionTrigger,
-  AccordionContent,
-};
+export { Accordion, AccordionRoot, AccordionItem, AccordionHeader, AccordionTrigger, AccordionContent };
 
 export type {
   AccordionContentProps,

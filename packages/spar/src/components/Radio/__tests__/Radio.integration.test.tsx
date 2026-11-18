@@ -6,7 +6,7 @@ import { Field, FieldDescription, FieldErrorMessage, FieldLabel } from '../../Fi
 
 const getRadio = (name: string) => {
   const radios = screen.getAllByRole('radio', { name });
-  const interactiveRadio = radios.find((radio) => radio.tagName !== 'INPUT');
+  const interactiveRadio = radios.find(radio => radio.tagName !== 'INPUT');
   if (!interactiveRadio) {
     throw new Error(`Interactive radio with name "${name}" not found`);
   }
@@ -27,11 +27,11 @@ describe('Radio Integration Tests', () => {
 
       render(
         <form onSubmit={handleSubmit}>
-          <Radio name='plan' defaultValue='basic'>
-            <RadioItem value='basic'>Basic Plan</RadioItem>
-            <RadioItem value='premium'>Premium Plan</RadioItem>
+          <Radio name="plan" defaultValue="basic">
+            <RadioItem value="basic">Basic Plan</RadioItem>
+            <RadioItem value="premium">Premium Plan</RadioItem>
           </Radio>
-          <button type='submit'>Submit</button>
+          <button type="submit">Submit</button>
         </form>,
       );
 
@@ -53,11 +53,11 @@ describe('Radio Integration Tests', () => {
 
       render(
         <form onSubmit={handleSubmit}>
-          <Radio name='plan'>
-            <RadioItem value='basic'>Basic Plan</RadioItem>
-            <RadioItem value='premium'>Premium Plan</RadioItem>
+          <Radio name="plan">
+            <RadioItem value="basic">Basic Plan</RadioItem>
+            <RadioItem value="premium">Premium Plan</RadioItem>
           </Radio>
-          <button type='submit'>Submit</button>
+          <button type="submit">Submit</button>
         </form>,
       );
 
@@ -82,11 +82,11 @@ describe('Radio Integration Tests', () => {
         return (
           <div>
             <form onSubmit={handleSubmit}>
-              <Radio name='plan' value={selectedPlan} onChange={setSelectedPlan}>
-                <RadioItem value='basic'>Basic Plan</RadioItem>
-                <RadioItem value='premium'>Premium Plan</RadioItem>
+              <Radio name="plan" value={selectedPlan} onChange={setSelectedPlan}>
+                <RadioItem value="basic">Basic Plan</RadioItem>
+                <RadioItem value="premium">Premium Plan</RadioItem>
               </Radio>
-              <button type='submit'>Submit</button>
+              <button type="submit">Submit</button>
             </form>
             <div>{submittedPlan}</div>
           </div>
@@ -122,22 +122,16 @@ describe('Radio Integration Tests', () => {
           // browser's native required-radio enforcement (which now blocks
           // submit when no radio is selected).
           <form onSubmit={handleSubmit} noValidate>
-            <Radio
-              name='plan'
-              value={selectedPlan}
-              onChange={setSelectedPlan}
-              aria-describedby={error ? 'error-message' : undefined}
-              required
-            >
-              <RadioItem value='basic'>Basic Plan</RadioItem>
-              <RadioItem value='premium'>Premium Plan</RadioItem>
+            <Radio name="plan" value={selectedPlan} onChange={setSelectedPlan} aria-describedby={error ? 'error-message' : undefined} required>
+              <RadioItem value="basic">Basic Plan</RadioItem>
+              <RadioItem value="premium">Premium Plan</RadioItem>
             </Radio>
             {error && (
-              <div id='error-message' role='alert'>
+              <div id="error-message" role="alert">
                 {error}
               </div>
             )}
-            <button type='submit'>Submit</button>
+            <button type="submit">Submit</button>
           </form>
         );
       };
@@ -161,21 +155,21 @@ describe('Radio Integration Tests', () => {
 
       render(
         <form
-          onSubmit={(event) => {
+          onSubmit={event => {
             event.preventDefault();
             submitted = Object.fromEntries(new FormData(event.currentTarget));
           }}
         >
-          <Radio name='size' aria-label='Choose size' defaultValue='small'>
-            <RadioItem value='small'>Small</RadioItem>
-            <RadioItem value='large'>Large</RadioItem>
+          <Radio name="size" aria-label="Choose size" defaultValue="small">
+            <RadioItem value="small">Small</RadioItem>
+            <RadioItem value="large">Large</RadioItem>
           </Radio>
 
-          <Radio name='color' aria-label='Choose color' defaultValue='red'>
-            <RadioItem value='red'>Red</RadioItem>
-            <RadioItem value='blue'>Blue</RadioItem>
+          <Radio name="color" aria-label="Choose color" defaultValue="red">
+            <RadioItem value="red">Red</RadioItem>
+            <RadioItem value="blue">Blue</RadioItem>
           </Radio>
-          <button type='submit'>Submit</button>
+          <button type="submit">Submit</button>
         </form>,
       );
 
@@ -195,16 +189,16 @@ describe('Radio Integration Tests', () => {
 
         return (
           <div>
-            <button type='button' onClick={() => setShowAdditional((prev) => !prev)}>
+            <button type="button" onClick={() => setShowAdditional(prev => !prev)}>
               Toggle Additional Options
             </button>
-            <Radio name='options' value={value} onChange={setValue} aria-label='Available options'>
-              <RadioItem value='option1'>Option 1</RadioItem>
-              <RadioItem value='option2'>Option 2</RadioItem>
+            <Radio name="options" value={value} onChange={setValue} aria-label="Available options">
+              <RadioItem value="option1">Option 1</RadioItem>
+              <RadioItem value="option2">Option 2</RadioItem>
               {showAdditional && (
                 <>
-                  <RadioItem value='option3'>Option 3</RadioItem>
-                  <RadioItem value='option4'>Option 4</RadioItem>
+                  <RadioItem value="option3">Option 3</RadioItem>
+                  <RadioItem value="option4">Option 4</RadioItem>
                 </>
               )}
             </Radio>
@@ -231,11 +225,11 @@ describe('Radio Integration Tests', () => {
   describe('Field Integration', () => {
     it('reuses Field coordinated IDs for ARIA wiring', () => {
       render(
-        <Field id='shipping-method'>
+        <Field id="shipping-method">
           <FieldLabel>Shipping method</FieldLabel>
-          <Radio name='shipping'>
-            <RadioItem value='standard'>Standard</RadioItem>
-            <RadioItem value='express'>Express</RadioItem>
+          <Radio name="shipping">
+            <RadioItem value="standard">Standard</RadioItem>
+            <RadioItem value="express">Express</RadioItem>
           </Radio>
           <FieldDescription>Choose how you want it delivered</FieldDescription>
         </Field>,
@@ -253,8 +247,8 @@ describe('Radio Integration Tests', () => {
         <Field invalid disabled required>
           <FieldLabel>Plan</FieldLabel>
           <Radio>
-            <RadioItem value='basic'>Basic</RadioItem>
-            <RadioItem value='premium'>Premium</RadioItem>
+            <RadioItem value="basic">Basic</RadioItem>
+            <RadioItem value="premium">Premium</RadioItem>
           </Radio>
         </Field>,
       );
@@ -273,7 +267,7 @@ describe('Radio Integration Tests', () => {
         <Field invalid>
           <FieldLabel>Plan</FieldLabel>
           <Radio>
-            <RadioItem value='basic'>Basic</RadioItem>
+            <RadioItem value="basic">Basic</RadioItem>
           </Radio>
           <FieldDescription>Pick one</FieldDescription>
           <FieldErrorMessage>Selection required</FieldErrorMessage>
@@ -290,9 +284,9 @@ describe('Radio Integration Tests', () => {
       render(
         <Field required>
           <FieldLabel>Plan</FieldLabel>
-          <Radio name='plan'>
-            <RadioItem value='basic'>Basic</RadioItem>
-            <RadioItem value='premium'>Premium</RadioItem>
+          <Radio name="plan">
+            <RadioItem value="basic">Basic</RadioItem>
+            <RadioItem value="premium">Premium</RadioItem>
           </Radio>
         </Field>,
       );
@@ -300,11 +294,9 @@ describe('Radio Integration Tests', () => {
       // Each hidden input must carry `required` so the browser enforces a
       // selection on native form submission. The Spar Radio renders a sibling
       // `<input type="radio" aria-hidden="true">` per item for form integration.
-      const hiddenInputs = document.querySelectorAll<HTMLInputElement>(
-        'input[type="radio"][aria-hidden="true"]',
-      );
+      const hiddenInputs = document.querySelectorAll<HTMLInputElement>('input[type="radio"][aria-hidden="true"]');
       expect(hiddenInputs.length).toBeGreaterThan(0);
-      hiddenInputs.forEach((input) => {
+      hiddenInputs.forEach(input => {
         expect(input).toBeRequired();
       });
     });
@@ -314,7 +306,7 @@ describe('Radio Integration Tests', () => {
         <Field invalid disabled>
           <FieldLabel>Plan</FieldLabel>
           <Radio invalid={false} disabled={false}>
-            <RadioItem value='basic'>Basic</RadioItem>
+            <RadioItem value="basic">Basic</RadioItem>
           </Radio>
         </Field>,
       );

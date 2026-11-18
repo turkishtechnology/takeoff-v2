@@ -2,15 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import userEvent from '@testing-library/user-event';
-import {
-  Dialog,
-  DialogTrigger,
-  DialogOverlay,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from '../index';
+import { Dialog, DialogTrigger, DialogOverlay, DialogContent, DialogTitle, DialogDescription, DialogClose } from '../index';
 
 // Mock portal rendering for testing
 jest.mock('react-dom', () => ({
@@ -35,11 +27,7 @@ const DialogTestComponent = ({
   trapFocus?: boolean;
   restoreFocus?: boolean;
 }) => (
-  <Dialog
-    {...(open !== undefined && { open })}
-    {...(onOpenChange !== undefined && { onOpenChange })}
-    modal={modal}
-  >
+  <Dialog {...(open !== undefined && { open })} {...(onOpenChange !== undefined && { onOpenChange })} modal={modal}>
     <DialogTrigger>Open Dialog</DialogTrigger>
     <DialogOverlay />
     <DialogContent trapFocus={trapFocus} restoreFocus={restoreFocus}>
@@ -56,11 +44,11 @@ const AlertDialogTestComponent = () => (
   <Dialog>
     <DialogTrigger>Open Alert</DialogTrigger>
     <DialogOverlay />
-    <DialogContent role='alertdialog'>
+    <DialogContent role="alertdialog">
       <DialogTitle>Delete Confirmation</DialogTitle>
       <DialogDescription>This action cannot be undone.</DialogDescription>
-      <button type='button'>Cancel</button>
-      <button type='button'>Delete</button>
+      <button type="button">Cancel</button>
+      <button type="button">Delete</button>
       <DialogClose>Close</DialogClose>
     </DialogContent>
   </Dialog>
@@ -224,7 +212,7 @@ describe('Dialog Accessibility', () => {
       const user = userEvent.setup();
       render(
         <div>
-          <button type='button'>Outside Button</button>
+          <button type="button">Outside Button</button>
           <DialogTestComponent open={true} modal={true} trapFocus={true} />
         </div>,
       );
@@ -247,7 +235,7 @@ describe('Dialog Accessibility', () => {
     it('should allow focus to leave non-modal dialog', async () => {
       render(
         <div>
-          <button type='button'>Outside Button</button>
+          <button type="button">Outside Button</button>
           <DialogTestComponent open={true} modal={false} trapFocus={false} />
         </div>,
       );
@@ -276,9 +264,7 @@ describe('Dialog Accessibility', () => {
         expect(dialog).toBeInTheDocument();
 
         // First focusable element should be focused
-        const focusableElements = dialog.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        );
+        const focusableElements = dialog.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
         expect(document.activeElement).toBe(focusableElements[0]);
       });
     });
@@ -373,7 +359,7 @@ describe('Dialog Accessibility', () => {
                 <DialogClose>Close</DialogClose>
               </DialogContent>
             </Dialog>
-            <button type='button' ref={targetRef}>
+            <button type="button" ref={targetRef}>
               After Close Target
             </button>
           </>
@@ -406,8 +392,8 @@ describe('Dialog Accessibility', () => {
           <DialogContent initialFocus={() => customFocusElement!}>
             <DialogTitle>Title</DialogTitle>
             <button
-              type='button'
-              ref={(el) => {
+              type="button"
+              ref={el => {
                 customFocusElement = el;
               }}
             >
@@ -582,7 +568,7 @@ describe('Dialog Accessibility', () => {
       // Run axe to check if it creates accessibility issues
       const results = await axe(container);
       // While not ideal, it should not create severe violations
-      expect(results.violations.filter((v) => v.impact === 'critical')).toHaveLength(0);
+      expect(results.violations.filter(v => v.impact === 'critical')).toHaveLength(0);
     });
 
     it('should maintain accessibility when dialog content changes', async () => {
@@ -600,7 +586,7 @@ describe('Dialog Accessibility', () => {
           <DialogContent>
             <DialogTitle>Updated Title</DialogTitle>
             <DialogDescription>Updated description</DialogDescription>
-            <input type='text' placeholder='New input' />
+            <input type="text" placeholder="New input" />
             <DialogClose>Close</DialogClose>
           </DialogContent>
         </Dialog>,

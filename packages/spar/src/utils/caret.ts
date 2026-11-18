@@ -44,15 +44,11 @@ const isInsignificant = (char: string, predicate: RegExp): boolean => {
  * accepted offsets stay in UTF-16 units — the same units as
  * `HTMLInputElement.selectionStart`.
  */
-export const countSignificantBefore = (
-  value: string,
-  offset: number,
-  predicate: RegExp = DEFAULT_INSIGNIFICANT,
-): number => {
+export const countSignificantBefore = (value: string, offset: number, predicate: RegExp = DEFAULT_INSIGNIFICANT): number => {
   const limit = Math.max(0, Math.min(offset, value.length));
   let count = 0;
 
-  for (let index = 0; index < limit; ) {
+  for (let index = 0; index < limit;) {
     const char = String.fromCodePoint(value.codePointAt(index)!);
     if (!isInsignificant(char, predicate)) count += 1;
     index += char.length;
@@ -73,7 +69,7 @@ const separatorsAfterAnchor = (value: string, offset: number, predicate: RegExp)
   const limit = Math.max(0, Math.min(offset, value.length));
   let run = 0;
 
-  for (let index = 0; index < limit; ) {
+  for (let index = 0; index < limit;) {
     const char = String.fromCodePoint(value.codePointAt(index)!);
     run = isInsignificant(char, predicate) ? run + 1 : 0;
     index += char.length;
@@ -91,12 +87,7 @@ const separatorsAfterAnchor = (value: string, offset: number, predicate: RegExp)
  * A `count` larger than the number of significant characters available yields
  * `value.length`.
  */
-export const offsetAfterSignificant = (
-  value: string,
-  count: number,
-  predicate: RegExp = DEFAULT_INSIGNIFICANT,
-  skip = 0,
-): number => {
+export const offsetAfterSignificant = (value: string, count: number, predicate: RegExp = DEFAULT_INSIGNIFICANT, skip = 0): number => {
   /** Walks past up to `skip` separators from `index`. */
   const withSkipped = (index: number): number => {
     let cursor = index;
@@ -116,7 +107,7 @@ export const offsetAfterSignificant = (
 
   let remaining = count;
 
-  for (let index = 0; index < value.length; ) {
+  for (let index = 0; index < value.length;) {
     const char = String.fromCodePoint(value.codePointAt(index)!);
     const nextIndex = index + char.length;
 
@@ -132,15 +123,14 @@ export const offsetAfterSignificant = (
 };
 
 /** Two characters are the same anchor even if the mask changed their case. */
-const sameAnchor = (a: string, b: string): boolean =>
-  a === b || a.toLowerCase() === b.toLowerCase();
+const sameAnchor = (a: string, b: string): boolean => a === b || a.toLowerCase() === b.toLowerCase();
 
 /** The significant characters of `value`, up to `limit` UTF-16 units. */
 const significantChars = (value: string, predicate: RegExp, limit = value.length): string[] => {
   const stop = Math.max(0, Math.min(limit, value.length));
   const chars: string[] = [];
 
-  for (let index = 0; index < stop; ) {
+  for (let index = 0; index < stop;) {
     const char = String.fromCodePoint(value.codePointAt(index)!);
     if (!isInsignificant(char, predicate)) chars.push(char);
     index += char.length;
@@ -213,15 +203,5 @@ const anchorsBefore = (from: string, caret: number, to: string, predicate: RegEx
  * mapCaret('1,234.9', 6, '1,234.9'); // 6 — after '.', not before it
  * ```
  */
-export const mapCaret = (
-  from: string,
-  caret: number,
-  to: string,
-  predicate: RegExp = DEFAULT_INSIGNIFICANT,
-): number =>
-  offsetAfterSignificant(
-    to,
-    anchorsBefore(from, caret, to, predicate),
-    predicate,
-    separatorsAfterAnchor(from, caret, predicate),
-  );
+export const mapCaret = (from: string, caret: number, to: string, predicate: RegExp = DEFAULT_INSIGNIFICANT): number =>
+  offsetAfterSignificant(to, anchorsBefore(from, caret, to, predicate), predicate, separatorsAfterAnchor(from, caret, predicate));

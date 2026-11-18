@@ -23,16 +23,16 @@ describe('Input - Integration Tests', () => {
         <Field>
           <FieldLabel>Username</FieldLabel>
           <Input>
-            <InputField name='username' />
+            <InputField name="username" />
           </Input>
         </Field>
         <Field>
           <FieldLabel>Email</FieldLabel>
           <Input>
-            <InputField name='email' type='email' />
+            <InputField name="email" type="email" />
           </Input>
         </Field>
-        <button type='submit'>Submit</button>
+        <button type="submit">Submit</button>
       </form>,
     );
 
@@ -51,10 +51,10 @@ describe('Input - Integration Tests', () => {
         <Field>
           <FieldLabel>Username</FieldLabel>
           <Input>
-            <InputField name='username' defaultValue='initial-user' />
+            <InputField name="username" defaultValue="initial-user" />
           </Input>
         </Field>
-        <button type='reset'>Reset</button>
+        <button type="reset">Reset</button>
       </form>,
     );
 
@@ -71,10 +71,10 @@ describe('Input - Integration Tests', () => {
   it('preserves id contract with custom Field id in form context', () => {
     render(
       <form>
-        <Field id='billing-email'>
+        <Field id="billing-email">
           <FieldLabel>Email</FieldLabel>
           <Input>
-            <InputField name='email' type='email' />
+            <InputField name="email" type="email" />
           </Input>
           <FieldDescription>Invoice notifications will be sent here</FieldDescription>
         </Field>
@@ -101,7 +101,7 @@ describe('Input - Integration Tests', () => {
         <Field invalid={invalid}>
           <FieldLabel>Username</FieldLabel>
           <Input>
-            <InputField value={value} onChange={(event) => setValue(event.target.value)} />
+            <InputField value={value} onChange={event => setValue(event.target.value)} />
           </Input>
           <FieldDescription>At least 3 characters</FieldDescription>
           <FieldErrorMessage>Username must be at least 3 characters</FieldErrorMessage>
@@ -130,13 +130,7 @@ describe('Input - Integration Tests', () => {
 
     const ControlledInput = () => {
       const [value, setValue] = useState('');
-      return (
-        <InputField
-          aria-label='Controlled keyboard field'
-          value={value}
-          onChange={(event) => setValue(event.target.value)}
-        />
-      );
+      return <InputField aria-label="Controlled keyboard field" value={value} onChange={event => setValue(event.target.value)} />;
     };
 
     render(<ControlledInput />);

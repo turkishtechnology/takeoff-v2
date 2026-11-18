@@ -44,8 +44,4 @@ export interface LabelOwnProps {
  * Props for Label component
  * @remarks Fully accessible, headless label component for form controls
  */
-export type LabelProps<T extends ElementType = 'label'> = PolymorphicProps<
-  'label',
-  T,
-  LabelOwnProps
->;
+export type LabelProps<T extends ElementType = 'label'> = PolymorphicProps<'label', T, LabelOwnProps>;

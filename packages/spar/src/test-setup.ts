@@ -14,16 +14,11 @@ if (typeof HTMLFormElement.prototype.requestSubmit !== 'function') {
     if (submitter) {
       // Validate submitter is associated with this form
       if (!(submitter instanceof HTMLButtonElement) && !(submitter instanceof HTMLInputElement)) {
-        throw new TypeError(
-          "The specified element is not a submit button or is not a member of this form's elements.",
-        );
+        throw new TypeError("The specified element is not a submit button or is not a member of this form's elements.");
       }
       const form = (submitter as HTMLButtonElement | HTMLInputElement).form;
       if (form !== this) {
-        throw new DOMException(
-          'The specified element is not owned by this form element.',
-          'NotFoundError',
-        );
+        throw new DOMException('The specified element is not owned by this form element.', 'NotFoundError');
       }
     }
 
@@ -81,7 +76,7 @@ console.error = (...args: unknown[]) => {
 
   // Check if the message matches any suppressed pattern (string format)
   if (typeof message === 'string') {
-    const shouldSuppress = SUPPRESSED_ERROR_PATTERNS.some((pattern) => message.includes(pattern));
+    const shouldSuppress = SUPPRESSED_ERROR_PATTERNS.some(pattern => message.includes(pattern));
     if (shouldSuppress) {
       return;
     }
@@ -89,9 +84,7 @@ console.error = (...args: unknown[]) => {
 
   // Check Error objects (JSDOM throws Error objects for not-implemented features)
   if (message instanceof Error && message.message) {
-    const shouldSuppress = SUPPRESSED_ERROR_PATTERNS.some((pattern) =>
-      message.message.includes(pattern),
-    );
+    const shouldSuppress = SUPPRESSED_ERROR_PATTERNS.some(pattern => message.message.includes(pattern));
     if (shouldSuppress) {
       return;
     }
@@ -99,7 +92,7 @@ console.error = (...args: unknown[]) => {
 
   // Also check stringified version of all arguments (catches formatted error messages)
   const fullMessage = args
-    .map((arg) => {
+    .map(arg => {
       if (arg instanceof Error) return arg.message;
       if (typeof arg === 'string') return arg;
       try {
@@ -110,9 +103,7 @@ console.error = (...args: unknown[]) => {
     })
     .join(' ');
 
-  const shouldSuppressFull = SUPPRESSED_ERROR_PATTERNS.some((pattern) =>
-    fullMessage.includes(pattern),
-  );
+  const shouldSuppressFull = SUPPRESSED_ERROR_PATTERNS.some(pattern => fullMessage.includes(pattern));
   if (shouldSuppressFull) {
     return;
   }

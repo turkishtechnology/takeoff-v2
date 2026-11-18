@@ -2,46 +2,35 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionHeader,
-  AccordionTrigger,
-  AccordionContent,
-} from '../index';
+import { Accordion, AccordionItem, AccordionHeader, AccordionTrigger, AccordionContent } from '../index';
 
 // Extend Jest matchers
 expect.extend(toHaveNoViolations);
 
 // Test setup helpers
-const BasicAccordion = ({
-  multiple = false,
-  orientation = 'vertical',
-  children,
-  ...rest
-}: Partial<React.ComponentProps<typeof Accordion>> = {}) => (
+const BasicAccordion = ({ multiple = false, orientation = 'vertical', children, ...rest }: Partial<React.ComponentProps<typeof Accordion>> = {}) => (
   <Accordion multiple={multiple} orientation={orientation} {...rest}>
     {children || (
       <>
-        <AccordionItem value='item-1'>
+        <AccordionItem value="item-1">
           <AccordionHeader>
             <AccordionTrigger>Section 1: Introduction</AccordionTrigger>
           </AccordionHeader>
           <AccordionContent>
             <p>This is the content for section 1, providing an introduction to the topic.</p>
-            <a href='#section1'>Learn more about section 1</a>
+            <a href="#section1">Learn more about section 1</a>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value='item-2'>
+        <AccordionItem value="item-2">
           <AccordionHeader level={4}>
             <AccordionTrigger>Section 2: Details</AccordionTrigger>
           </AccordionHeader>
           <AccordionContent>
             <p>This section contains detailed information about the subject matter.</p>
-            <button type='button'>Take Action</button>
+            <button type="button">Take Action</button>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value='item-3' disabled>
+        <AccordionItem value="item-3" disabled>
           <AccordionHeader level={2}>
             <AccordionTrigger>Section 3: Advanced (Coming Soon)</AccordionTrigger>
           </AccordionHeader>
@@ -115,7 +104,7 @@ describe('Accordion Accessibility', () => {
 
       const triggers = screen.getAllByRole('button');
 
-      triggers.forEach((trigger) => {
+      triggers.forEach(trigger => {
         expect(trigger).toHaveAttribute('aria-expanded', 'false');
         expect(trigger).toHaveAttribute('aria-controls');
         expect(trigger.getAttribute('aria-controls')).toBeTruthy();
@@ -191,13 +180,13 @@ describe('Accordion Accessibility', () => {
     it('should allow custom heading levels', () => {
       render(
         <Accordion>
-          <AccordionItem value='item-1'>
+          <AccordionItem value="item-1">
             <AccordionHeader level={1}>
               <AccordionTrigger>Main Heading</AccordionTrigger>
             </AccordionHeader>
             <AccordionContent>Content</AccordionContent>
           </AccordionItem>
-          <AccordionItem value='item-2'>
+          <AccordionItem value="item-2">
             <AccordionHeader level={6}>
               <AccordionTrigger>Sub Heading</AccordionTrigger>
             </AccordionHeader>
@@ -253,7 +242,7 @@ describe('Accordion Accessibility', () => {
 
     it('should move focus with Arrow keys in vertical orientation', async () => {
       const user = userEvent.setup();
-      render(<BasicAccordion orientation='vertical' />);
+      render(<BasicAccordion orientation="vertical" />);
 
       const trigger1 = screen.getByRole('button', { name: 'Section 1: Introduction' });
       const trigger2 = screen.getByRole('button', { name: 'Section 2: Details' });
@@ -268,7 +257,7 @@ describe('Accordion Accessibility', () => {
 
     it('should move focus with Arrow keys in horizontal orientation', async () => {
       const user = userEvent.setup();
-      render(<BasicAccordion orientation='horizontal' />);
+      render(<BasicAccordion orientation="horizontal" />);
 
       const trigger1 = screen.getByRole('button', { name: 'Section 1: Introduction' });
       const trigger2 = screen.getByRole('button', { name: 'Section 2: Details' });
@@ -285,19 +274,19 @@ describe('Accordion Accessibility', () => {
       const user = userEvent.setup();
       render(
         <Accordion>
-          <AccordionItem value='item-1'>
+          <AccordionItem value="item-1">
             <AccordionHeader>
               <AccordionTrigger>First section</AccordionTrigger>
             </AccordionHeader>
             <AccordionContent>First content</AccordionContent>
           </AccordionItem>
-          <AccordionItem value='item-2'>
+          <AccordionItem value="item-2">
             <AccordionHeader>
               <AccordionTrigger>Second section</AccordionTrigger>
             </AccordionHeader>
             <AccordionContent>Second content</AccordionContent>
           </AccordionItem>
-          <AccordionItem value='item-3'>
+          <AccordionItem value="item-3">
             <AccordionHeader>
               <AccordionTrigger>Third section</AccordionTrigger>
             </AccordionHeader>
@@ -318,19 +307,19 @@ describe('Accordion Accessibility', () => {
       const user = userEvent.setup();
       render(
         <Accordion>
-          <AccordionItem value='item-1'>
+          <AccordionItem value="item-1">
             <AccordionHeader>
               <AccordionTrigger>First section</AccordionTrigger>
             </AccordionHeader>
             <AccordionContent>First content</AccordionContent>
           </AccordionItem>
-          <AccordionItem value='item-2'>
+          <AccordionItem value="item-2">
             <AccordionHeader>
               <AccordionTrigger>Second section</AccordionTrigger>
             </AccordionHeader>
             <AccordionContent>Second content</AccordionContent>
           </AccordionItem>
-          <AccordionItem value='item-3'>
+          <AccordionItem value="item-3">
             <AccordionHeader>
               <AccordionTrigger>Third section</AccordionTrigger>
             </AccordionHeader>
@@ -416,9 +405,7 @@ describe('Accordion Accessibility', () => {
 
       expect(screen.getByRole('button', { name: 'Section 1: Introduction' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Section 2: Details' })).toBeInTheDocument();
-      expect(
-        screen.getByRole('button', { name: 'Section 3: Advanced (Coming Soon)' }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Section 3: Advanced (Coming Soon)' })).toBeInTheDocument();
     });
 
     it('should announce state changes to screen readers', async () => {
@@ -484,7 +471,7 @@ describe('Accordion Accessibility', () => {
     it('should maintain accessibility when content is force mounted', async () => {
       const { container } = render(
         <Accordion>
-          <AccordionItem value='item-1'>
+          <AccordionItem value="item-1">
             <AccordionHeader>
               <AccordionTrigger>Always Mounted Content</AccordionTrigger>
             </AccordionHeader>
@@ -506,12 +493,12 @@ describe('Accordion Accessibility', () => {
 
     it('should handle accordion with custom polymorphic elements', async () => {
       const { container } = render(
-        <Accordion as='section' data-testid='custom-accordion'>
-          <AccordionItem value='item-1' as='article'>
-            <AccordionHeader as='h1'>
+        <Accordion as="section" data-testid="custom-accordion">
+          <AccordionItem value="item-1" as="article">
+            <AccordionHeader as="h1">
               <AccordionTrigger>Custom Elements</AccordionTrigger>
             </AccordionHeader>
-            <AccordionContent as='section'>
+            <AccordionContent as="section">
               <p>Content in custom elements</p>
             </AccordionContent>
           </AccordionItem>
@@ -522,9 +509,7 @@ describe('Accordion Accessibility', () => {
       expect(results).toHaveNoViolations();
 
       // Verify proper heading structure with custom element
-      expect(
-        screen.getByRole('heading', { level: 1, name: 'Custom Elements' }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: 'Custom Elements' })).toBeInTheDocument();
     });
   });
 });

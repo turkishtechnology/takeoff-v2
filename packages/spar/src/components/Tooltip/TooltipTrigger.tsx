@@ -166,24 +166,20 @@ export const TooltipTrigger = <T extends ElementType = 'button'>({
 
   const buttonProps = {
     ...(as && { as }),
-    ref: mergedRef,
-    id: context.triggerId,
-    disabled: context.disabled,
+    'ref': mergedRef,
+    'id': context.triggerId,
+    'disabled': context.disabled,
     'aria-describedby': context.isOpen && !context.disabled ? context.contentId : undefined,
     'data-state': context.isOpen ? 'open' : 'closed',
-    onPointerEnter: context.disabled ? undefined : handlePointerEnter,
-    onPointerLeave: context.disabled ? undefined : handlePointerLeave,
-    onFocus: context.disabled ? undefined : handleFocus,
-    onBlur: context.disabled ? undefined : handleBlur,
-    onKeyDown: context.disabled ? undefined : handleKeyDown,
+    'onPointerEnter': context.disabled ? undefined : handlePointerEnter,
+    'onPointerLeave': context.disabled ? undefined : handlePointerLeave,
+    'onFocus': context.disabled ? undefined : handleFocus,
+    'onBlur': context.disabled ? undefined : handleBlur,
+    'onKeyDown': context.disabled ? undefined : handleKeyDown,
     ...props,
   } as ButtonProps<T>;
 
-  return (
-    <Button {...buttonProps}>
-      {typeof children === 'function' ? children(renderProps) : children}
-    </Button>
-  );
+  return <Button {...buttonProps}>{typeof children === 'function' ? children(renderProps) : children}</Button>;
 };
 
 TooltipTrigger.displayName = 'TooltipTrigger';

@@ -142,11 +142,7 @@ export interface SelectTriggerOwnProps extends ButtonOwnProps {
  * Props for SelectTrigger component
  * @remarks Button that toggles the dropdown
  */
-export type SelectTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  SelectTriggerOwnProps
->;
+export type SelectTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, SelectTriggerOwnProps>;
 
 /**
  * Own props for SelectContent component
@@ -197,11 +193,7 @@ export interface SelectContentOwnProps {
  * Props for SelectContent component
  * @remarks The dropdown container that appears when open
  */
-export type SelectContentProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  SelectContentOwnProps
->;
+export type SelectContentProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, SelectContentOwnProps>;
 
 /**
  * Props for SelectViewport component
@@ -268,11 +260,7 @@ export interface SelectItemOwnProps {
  * Props for SelectItem component
  * @remarks Individual selectable option
  */
-export type SelectItemProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  SelectItemOwnProps
->;
+export type SelectItemProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, SelectItemOwnProps>;
 
 /**
  * Props for SelectGroup component

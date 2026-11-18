@@ -103,16 +103,16 @@ describe('Switch', () => {
 
     render(
       <form
-        onSubmit={(event) => {
+        onSubmit={event => {
           event.preventDefault();
           const formData = new FormData(event.currentTarget);
           handleSubmit(formData.get('settings'));
         }}
       >
-        <Switch name='settings' value='enabled'>
+        <Switch name="settings" value="enabled">
           Form switch
         </Switch>
-        <button type='submit'>Save</button>
+        <button type="submit">Save</button>
       </form>,
     );
 
@@ -131,9 +131,9 @@ describe('Switch', () => {
   it('forwards aria labeling relationships', () => {
     render(
       <>
-        <span id='switch-label'>Notifications</span>
-        <span id='switch-description'>Controls push notifications</span>
-        <Switch aria-labelledby='switch-label' aria-describedby='switch-description' />
+        <span id="switch-label">Notifications</span>
+        <span id="switch-description">Controls push notifications</span>
+        <Switch aria-labelledby="switch-label" aria-describedby="switch-description" />
       </>,
     );
 
@@ -145,7 +145,7 @@ describe('Switch', () => {
   it('uses provided id and generates unique ids when omitted', () => {
     const { container } = render(
       <>
-        <Switch id='custom-switch-id'>With custom id</Switch>
+        <Switch id="custom-switch-id">With custom id</Switch>
         <Switch>Generated A</Switch>
         <Switch>Generated B</Switch>
       </>,
@@ -169,7 +169,7 @@ describe('Switch', () => {
       <Switch>
         {({ checked, setChecked }) => (
           <span
-            onClick={(event) => {
+            onClick={event => {
               event.stopPropagation();
               setChecked(!checked);
             }}

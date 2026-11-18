@@ -19,7 +19,7 @@ export const Label = <T extends ElementType = 'label'>({
   const Component = as || 'label';
   const userOnClick = onClick as React.MouseEventHandler<Element> | undefined;
 
-  const handleClick: React.MouseEventHandler<Element> = (event) => {
+  const handleClick: React.MouseEventHandler<Element> = event => {
     userOnClick?.(event);
     if (event.defaultPrevented) return;
 
@@ -36,10 +36,7 @@ export const Label = <T extends ElementType = 'label'>({
     // When rendering as a native <label>, the browser already handles
     // focus and click delegation for native form elements. Only intervene
     // for custom form controls (non-native interactive elements).
-    if (
-      event.currentTarget instanceof HTMLLabelElement &&
-      event.currentTarget.control === associatedElement
-    ) {
+    if (event.currentTarget instanceof HTMLLabelElement && event.currentTarget.control === associatedElement) {
       return;
     }
 

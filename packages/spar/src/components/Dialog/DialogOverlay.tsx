@@ -10,14 +10,7 @@ import type { DialogOverlayProps } from './types';
  * `onPointerDownOutside` / `onInteractOutside` event prevention.
  * Automatically renders via portal to document.body.
  */
-export const DialogOverlay = <T extends ElementType = 'div'>({
-  as,
-  ref,
-  container,
-  onClick,
-  children,
-  ...props
-}: DialogOverlayProps<T>) => {
+export const DialogOverlay = <T extends ElementType = 'div'>({ as, ref, container, onClick, children, ...props }: DialogOverlayProps<T>) => {
   const Component = as || 'div';
   const { isOpen, forceMount } = useDialogContext();
 

@@ -13,12 +13,7 @@ const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : us
  * List item wrapper for breadcrumb content. Registers with the nearest
  * BreadcrumbList and reads its computed position in the trail from that list.
  */
-export const BreadcrumbItem = <T extends ElementType = 'li'>({
-  as,
-  children,
-  ref,
-  ...domProps
-}: BreadcrumbItemProps<T>) => {
+export const BreadcrumbItem = <T extends ElementType = 'li'>({ as, children, ref, ...domProps }: BreadcrumbItemProps<T>) => {
   const Component = (as || 'li') as ElementType;
   const { disabled: rootIsDisabled } = useBreadcrumbContext();
   const { registerItem, unregisterItem, getItemPosition } = useBreadcrumbListContext();
@@ -41,12 +36,7 @@ export const BreadcrumbItem = <T extends ElementType = 'li'>({
   };
 
   return (
-    <Component
-      {...domProps}
-      ref={mergedRef}
-      data-position={position}
-      data-current={isCurrent ? '' : undefined}
-    >
+    <Component {...domProps} ref={mergedRef} data-position={position} data-current={isCurrent ? '' : undefined}>
       {typeof children === 'function' ? children(renderProps) : children}
     </Component>
   );

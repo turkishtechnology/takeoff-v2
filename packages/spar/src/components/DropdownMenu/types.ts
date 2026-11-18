@@ -97,11 +97,7 @@ export interface DropdownMenuTriggerOwnProps extends ButtonOwnProps {
  * Props for DropdownMenuTrigger component
  * @remarks Button that toggles menu visibility
  */
-export type DropdownMenuTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  DropdownMenuTriggerOwnProps
->;
+export type DropdownMenuTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, DropdownMenuTriggerOwnProps>;
 
 /**
  * Own props for DropdownMenuContent component
@@ -151,11 +147,7 @@ export interface DropdownMenuContentOwnProps {
  * Props for DropdownMenuContent component
  * @remarks Floating content panel with positioning and keyboard navigation
  */
-export type DropdownMenuContentProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  DropdownMenuContentOwnProps
->;
+export type DropdownMenuContentProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DropdownMenuContentOwnProps>;
 
 /**
  * Props for DropdownMenuViewport component
@@ -192,11 +184,7 @@ export interface DropdownMenuItemOwnProps {
  * Props for DropdownMenuItem component
  * @remarks Actionable item within the menu
  */
-export type DropdownMenuItemProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  DropdownMenuItemOwnProps
->;
+export type DropdownMenuItemProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DropdownMenuItemOwnProps>;
 
 /**
  * Props for DropdownMenuSeparator component

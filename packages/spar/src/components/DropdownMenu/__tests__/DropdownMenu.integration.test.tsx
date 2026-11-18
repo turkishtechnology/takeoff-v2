@@ -1,13 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from '../';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '../';
 
 describe('DropdownMenu Integration', () => {
   beforeAll(() => {
@@ -164,9 +158,7 @@ describe('DropdownMenu Integration', () => {
 
         return (
           <div>
-            <button onClick={() => setItems([...items, `Item ${items.length + 1}`])}>
-              Add Item
-            </button>
+            <button onClick={() => setItems([...items, `Item ${items.length + 1}`])}>Add Item</button>
             <DropdownMenu open={open} onOpenChange={handleOpenChange}>
               <DropdownMenuTrigger>Dynamic Menu</DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -210,11 +202,7 @@ describe('DropdownMenu Integration', () => {
         return (
           <div>
             <button onClick={() => setIsControlled(!isControlled)}>Toggle Control Mode</button>
-            <DropdownMenu
-              {...(isControlled
-                ? { open: controlledOpen, onOpenChange: setControlledOpen }
-                : { defaultOpen: false })}
-            >
+            <DropdownMenu {...(isControlled ? { open: controlledOpen, onOpenChange: setControlledOpen } : { defaultOpen: false })}>
               <DropdownMenuTrigger>Switch Mode Menu</DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem>Item 1</DropdownMenuItem>

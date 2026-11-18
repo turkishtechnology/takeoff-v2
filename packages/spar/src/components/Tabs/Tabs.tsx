@@ -26,20 +26,10 @@ export const Tabs = <T extends ElementType = 'div'>({
   const baseId = providedId ?? generatedId;
 
   // Item registry for tab element references and ordered tracking
-  const {
-    items: tabItems,
-    registerItem,
-    unregisterItem,
-    getItemIds,
-    getItemIndex,
-  } = useItemRegistry<HTMLElement>();
+  const { items: tabItems, registerItem, unregisterItem, getItemIds, getItemIndex } = useItemRegistry<HTMLElement>();
 
   // Manage controlled/uncontrolled state
-  const [selectedValue, setSelectedValue] = useControlledState(
-    controlledValue,
-    defaultValue,
-    onValueChange,
-  );
+  const [selectedValue, setSelectedValue] = useControlledState(controlledValue, defaultValue, onValueChange);
 
   // Without a `value` or `defaultValue` the first tab (in DOM order) is
   // selected. It is derived rather than stored, so it is never reported
@@ -84,18 +74,7 @@ export const Tabs = <T extends ElementType = 'div'>({
       getTabIndex: getItemIndex,
       focusTab,
     }),
-    [
-      currentValue,
-      handleValueChange,
-      orientation,
-      activationMode,
-      baseId,
-      tabItems,
-      registerItem,
-      unregisterItem,
-      getItemIndex,
-      focusTab,
-    ],
+    [currentValue, handleValueChange, orientation, activationMode, baseId, tabItems, registerItem, unregisterItem, getItemIndex, focusTab],
   );
 
   return (

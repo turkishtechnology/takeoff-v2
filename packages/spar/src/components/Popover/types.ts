@@ -96,11 +96,7 @@ export interface PopoverTriggerOwnProps extends ButtonOwnProps {
  * Props for PopoverTrigger component
  * @remarks Fully accessible, headless popover trigger
  */
-export type PopoverTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  PopoverTriggerOwnProps
->;
+export type PopoverTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, PopoverTriggerOwnProps>;
 
 /**
  * Own props for PopoverContent component
@@ -177,11 +173,7 @@ export interface PopoverContentOwnProps {
  * Props for PopoverContent component
  * @remarks Fully accessible, headless popover content container
  */
-export type PopoverContentProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  PopoverContentOwnProps
->;
+export type PopoverContentProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, PopoverContentOwnProps>;
 
 /**
  * Props for PopoverArrow component
@@ -203,11 +195,7 @@ export interface PopoverCloseOwnProps extends ButtonOwnProps {
  * Props for PopoverClose component
  * @remarks Close trigger that automatically closes the popover
  */
-export type PopoverCloseProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  PopoverCloseOwnProps
->;
+export type PopoverCloseProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, PopoverCloseOwnProps>;
 
 /**
  * Context value for sharing popover state between components

@@ -109,16 +109,12 @@ export const DialogContent = <T extends ElementType = 'div'>({
         // For alert dialogs, focus the least destructive action
         const buttons = contentElement.querySelectorAll('button');
         // Look for cancel, close, or dismiss buttons first
-        const cancelButton = Array.from(buttons).find((btn) =>
-          /cancel|close|dismiss/i.test(btn.textContent || ''),
-        );
+        const cancelButton = Array.from(buttons).find(btn => /cancel|close|dismiss/i.test(btn.textContent || ''));
         if (cancelButton) return cancelButton as HTMLElement;
       }
 
       // Default: first focusable element
-      const focusableElements = contentElement.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      );
+      const focusableElements = contentElement.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
       return focusableElements[0] as HTMLElement;
     })();
 
@@ -160,7 +156,7 @@ export const DialogContent = <T extends ElementType = 'div'>({
   // Excludes triggerRef so clicking the trigger doesn't double-fire dismiss.
   const insideHandlers = useInteractOutside([contentRef, triggerRef], {
     enabled: isOpen,
-    onPointerDownOutside: (event) => {
+    onPointerDownOutside: event => {
       onPointerDownOutside?.(event);
       onInteractOutside?.(event);
 

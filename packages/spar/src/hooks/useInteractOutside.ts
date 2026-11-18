@@ -74,18 +74,8 @@ export interface UseInteractOutsideReturn {
  * return <div ref={contentRef} {...insideHandlers}>…</div>;
  * ```
  */
-export function useInteractOutside(
-  refs: Array<React.RefObject<Element | null>>,
-  options: UseInteractOutsideOptions = {},
-): UseInteractOutsideReturn {
-  const {
-    enabled = true,
-    onPointerDownOutside,
-    onFocusOutside,
-    onInteractOutside,
-    includeFocus = false,
-    preventDefault = false,
-  } = options;
+export function useInteractOutside(refs: Array<React.RefObject<Element | null>>, options: UseInteractOutsideOptions = {}): UseInteractOutsideReturn {
+  const { enabled = true, onPointerDownOutside, onFocusOutside, onInteractOutside, includeFocus = false, preventDefault = false } = options;
 
   // Native events that reached the layer through the React tree (including
   // through portals). They are inside even when the DOM says otherwise.
@@ -94,7 +84,7 @@ export function useInteractOutside(
   const isOutside = useCallback(
     (event: Event, target: Node) =>
       !insideTreeEvents.current.has(event) &&
-      refs.every((ref) => {
+      refs.every(ref => {
         const element = ref.current;
         return !element || !element.contains(target);
       }),
@@ -197,16 +187,13 @@ export interface InsideHandlerProps<E extends Element = Element> {
  * return <div {...props} {...composeInsideHandlers(insideHandlers, props)} />;
  * ```
  */
-export function composeInsideHandlers<E extends Element>(
-  insideHandlers: UseInteractOutsideReturn,
-  consumer: InsideHandlerProps<E>,
-): Required<InsideHandlerProps<E>> {
+export function composeInsideHandlers<E extends Element>(insideHandlers: UseInteractOutsideReturn, consumer: InsideHandlerProps<E>): Required<InsideHandlerProps<E>> {
   return {
-    onPointerDownCapture: (event) => {
+    onPointerDownCapture: event => {
       consumer.onPointerDownCapture?.(event);
       insideHandlers.onPointerDownCapture(event);
     },
-    onFocusCapture: (event) => {
+    onFocusCapture: event => {
       consumer.onFocusCapture?.(event);
       insideHandlers.onFocusCapture(event);
     },

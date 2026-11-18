@@ -7,16 +7,7 @@ import type { DialogProps, DialogContextValue } from './types';
  * Root component that manages dialog state and provides context to child components.
  * Supports both modal and non-modal dialogs with controlled/uncontrolled patterns.
  */
-export const Dialog = ({
-  id: providedId,
-  open: controlledOpen,
-  defaultOpen = false,
-  onOpenChange,
-  modal = true,
-  disabled = false,
-  forceMount = false,
-  children,
-}: DialogProps) => {
+export const Dialog = ({ id: providedId, open: controlledOpen, defaultOpen = false, onOpenChange, modal = true, disabled = false, forceMount = false, children }: DialogProps) => {
   // Generate unique IDs for ARIA relationships
   const generatedId = useId();
   const baseId = providedId ?? generatedId;
@@ -94,17 +85,7 @@ export const Dialog = ({
       restoreFocusPropRef,
       finalFocusPropRef,
     }),
-    [
-      isOpen,
-      setIsOpen,
-      closeDialog,
-      modal,
-      disabled,
-      forceMount,
-      titleId,
-      descriptionId,
-      contentId,
-    ],
+    [isOpen, setIsOpen, closeDialog, modal, disabled, forceMount, titleId, descriptionId, contentId],
   );
 
   return <DialogContext.Provider value={contextValue}>{children}</DialogContext.Provider>;

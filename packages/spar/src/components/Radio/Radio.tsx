@@ -1,12 +1,4 @@
-import React, {
-  useState,
-  useCallback,
-  useId,
-  useRef,
-  useEffect,
-  useMemo,
-  ElementType,
-} from 'react';
+import React, { useState, useCallback, useId, useRef, useEffect, useMemo, ElementType } from 'react';
 import { useControlledState, useItemRegistry } from '@/hooks';
 import { RadioContext } from './hooks';
 import { useOptionalFieldContext } from '../Field/hooks';
@@ -30,11 +22,11 @@ import type { RadioProps, RadioContextValue } from './types';
  */
 export const Radio = <T extends ElementType = 'div'>({
   ref,
-  id: providedId,
-  value: controlledValue,
+  'id': providedId,
+  'value': controlledValue,
   defaultValue,
   onChange,
-  name: nameProp,
+  'name': nameProp,
   disabled,
   readOnly,
   required,
@@ -63,14 +55,7 @@ export const Radio = <T extends ElementType = 'div'>({
 
   const [value, setValue] = useControlledState(controlledValue, defaultValue, onChange);
   const [focusedValue, setFocusedValue] = useState<string | null>(null);
-  const {
-    items: radioItems,
-    registerItem: registerEnabledItem,
-    unregisterItem,
-    getItemIndex,
-    getItemAtIndex,
-    count,
-  } = useItemRegistry<HTMLElement>();
+  const { items: radioItems, registerItem: registerEnabledItem, unregisterItem, getItemIndex, getItemAtIndex, count } = useItemRegistry<HTMLElement>();
   const generatedId = useId();
   // Reuse Field's coordinated fieldId when nested so FieldLabel's htmlFor and
   // aria-labelledby resolve against the radiogroup element.
@@ -189,17 +174,7 @@ export const Radio = <T extends ElementType = 'div'>({
         }
       }
     },
-    [
-      onKeyDown,
-      count,
-      focusedValue,
-      getItemIndex,
-      getItemAtIndex,
-      focusItemAtIndex,
-      selectOnFocus,
-      resolvedReadOnly,
-      handleValueChange,
-    ],
+    [onKeyDown, count, focusedValue, getItemIndex, getItemAtIndex, focusItemAtIndex, selectOnFocus, resolvedReadOnly, handleValueChange],
   );
 
   // Focus management: sync focusedValue state when focus enters the group.
@@ -212,7 +187,7 @@ export const Radio = <T extends ElementType = 'div'>({
       if (count > 0) {
         const initialFocus = value || getItemAtIndex(0);
         if (initialFocus) {
-          setFocusedValue((previous) => previous ?? initialFocus);
+          setFocusedValue(previous => previous ?? initialFocus);
         }
       }
     },
@@ -276,11 +251,7 @@ export const Radio = <T extends ElementType = 'div'>({
 
   // When inside a Field, default the ARIA wiring from Field's coordinated IDs.
   // Consumer-provided aria-* props always win.
-  const fieldDescribedBy = fieldCtx
-    ? resolvedInvalid
-      ? fieldCtx.errorId
-      : fieldCtx.descriptionId
-    : undefined;
+  const fieldDescribedBy = fieldCtx ? (resolvedInvalid ? fieldCtx.errorId : fieldCtx.descriptionId) : undefined;
 
   // `aria-readonly` is only permitted on the radiogroup (ARIA 1.2 disallows it
   // on `role="radio"`), so it lives here rather than on each item.

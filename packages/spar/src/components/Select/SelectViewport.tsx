@@ -16,12 +16,7 @@ import { useSelectCollectionContext } from './hooks';
  * into its nearest scrollable ancestor), so it works whether or not the options
  * are wrapped in a `Viewport`.
  */
-export const SelectViewport = <T extends ElementType = 'div'>({
-  as,
-  role = 'presentation',
-  ref,
-  ...props
-}: SelectViewportProps<T>) => {
+export const SelectViewport = <T extends ElementType = 'div'>({ as, role = 'presentation', ref, ...props }: SelectViewportProps<T>) => {
   const Component = as || 'div';
   // A Viewport only makes sense inside a Content; enforce that composition contract.
   useSelectCollectionContext();

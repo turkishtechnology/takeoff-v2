@@ -98,11 +98,7 @@ export interface DialogTriggerOwnProps extends ButtonOwnProps {
  * Props for DialogTrigger
  * @remarks Fully accessible, headless component
  */
-export type DialogTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  DialogTriggerOwnProps
->;
+export type DialogTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, DialogTriggerOwnProps>;
 
 /**
  * Render props provided to children function for DialogClose
@@ -125,11 +121,7 @@ export interface DialogOverlayOwnProps {
  * Props for DialogOverlay
  * @remarks Fully accessible, headless component
  */
-export type DialogOverlayProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  DialogOverlayOwnProps
->;
+export type DialogOverlayProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DialogOverlayOwnProps>;
 
 /**
  * Own props for DialogContent
@@ -204,11 +196,7 @@ export interface DialogContentOwnProps {
  * Props for DialogContent
  * @remarks Fully accessible, headless component
  */
-export type DialogContentProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  DialogContentOwnProps
->;
+export type DialogContentProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, DialogContentOwnProps>;
 
 /**
  * Own props for DialogTitle
@@ -225,11 +213,7 @@ export interface DialogTitleOwnProps {
  * Props for DialogTitle
  * @remarks Fully accessible, headless component
  */
-export type DialogTitleProps<T extends ElementType = 'h2'> = PolymorphicProps<
-  'h2',
-  T,
-  DialogTitleOwnProps
->;
+export type DialogTitleProps<T extends ElementType = 'h2'> = PolymorphicProps<'h2', T, DialogTitleOwnProps>;
 
 /**
  * Props for DialogDescription
@@ -251,11 +235,7 @@ export interface DialogCloseOwnProps extends ButtonOwnProps {
  * Props for DialogClose
  * @remarks Fully accessible, headless component
  */
-export type DialogCloseProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  DialogCloseOwnProps
->;
+export type DialogCloseProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, DialogCloseOwnProps>;
 
 /**
  * Context value for Dialog components

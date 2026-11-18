@@ -1,26 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useId } from 'react';
 import { useControlledState } from '@/hooks';
-import type {
-  DropdownMenuProps,
-  DropdownMenuContextValue,
-  DropdownMenuFocusStrategy,
-} from './types';
+import type { DropdownMenuProps, DropdownMenuContextValue, DropdownMenuFocusStrategy } from './types';
 import { DropdownMenuContext } from './hooks';
 
 /**
  * Root component that manages dropdown menu state and provides context to child components.
  * Supports controlled/uncontrolled open state, modal/non-modal modes, and full keyboard navigation.
  */
-export const DropdownMenu = ({
-  id: providedId,
-  open,
-  defaultOpen = false,
-  onOpenChange,
-  modal = true,
-  disabled = false,
-  closeOnSelect = true,
-  children,
-}: DropdownMenuProps) => {
+export const DropdownMenu = ({ id: providedId, open, defaultOpen = false, onOpenChange, modal = true, disabled = false, closeOnSelect = true, children }: DropdownMenuProps) => {
   const [isOpen = false, setIsOpen] = useControlledState(open, defaultOpen, onOpenChange);
   const triggerRef = useRef<HTMLElement | null>(null);
   const arrowRef = useRef<Element | null>(null);
@@ -67,25 +54,10 @@ export const DropdownMenu = ({
       arrowRef,
       closeMenu,
     }),
-    [
-      isOpen,
-      setIsOpen,
-      triggerId,
-      contentId,
-      modal,
-      disabled,
-      closeOnSelect,
-      focusStrategy,
-      setFocusStrategy,
-      triggerRef,
-      arrowRef,
-      closeMenu,
-    ],
+    [isOpen, setIsOpen, triggerId, contentId, modal, disabled, closeOnSelect, focusStrategy, setFocusStrategy, triggerRef, arrowRef, closeMenu],
   );
 
-  return (
-    <DropdownMenuContext.Provider value={contextValue}>{children}</DropdownMenuContext.Provider>
-  );
+  return <DropdownMenuContext.Provider value={contextValue}>{children}</DropdownMenuContext.Provider>;
 };
 
 DropdownMenu.displayName = 'DropdownMenu';

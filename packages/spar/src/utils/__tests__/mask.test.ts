@@ -91,9 +91,7 @@ describe('mask - L1 shape', () => {
   });
 
   it('lets uppercase win when both case flags are set', () => {
-    expect(applyMaskPattern('aB', { blocks: [2], uppercase: true, lowercase: true }).value).toBe(
-      'AB',
-    );
+    expect(applyMaskPattern('aB', { blocks: [2], uppercase: true, lowercase: true }).value).toBe('AB');
   });
 
   it('reports an empty pattern as incomplete rather than complete-by-vacuity', () => {
@@ -337,7 +335,7 @@ describe('mask - L3 regex', () => {
 
 describe('mask - helpers', () => {
   it('isMaskResolver distinguishes a function from a pattern', () => {
-    const resolver: Mask = (value) => ({ value });
+    const resolver: Mask = value => ({ value });
     expect(isMaskResolver(resolver)).toBe(true);
     expect(isMaskResolver({ blocks: [2] })).toBe(false);
   });

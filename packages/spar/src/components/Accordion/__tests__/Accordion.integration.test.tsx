@@ -1,20 +1,14 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionHeader,
-  AccordionTrigger,
-  AccordionContent,
-} from '../index';
+import { Accordion, AccordionItem, AccordionHeader, AccordionTrigger, AccordionContent } from '../index';
 
 // Complex FAQ component simulation
 const FAQAccordion = () => (
   <div>
     <h1>Frequently Asked Questions</h1>
     <Accordion>
-      <AccordionItem value='faq-1'>
+      <AccordionItem value="faq-1">
         <AccordionHeader>
           <AccordionTrigger>How do I get started?</AccordionTrigger>
         </AccordionHeader>
@@ -26,60 +20,57 @@ const FAQAccordion = () => (
             <li>Explore the dashboard</li>
           </ol>
           <p>
-            Need help? <a href='/support'>Contact our support team</a>.
+            Need help? <a href="/support">Contact our support team</a>.
           </p>
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value='faq-2'>
+      <AccordionItem value="faq-2">
         <AccordionHeader>
           <AccordionTrigger>What are the pricing options?</AccordionTrigger>
         </AccordionHeader>
         <AccordionContent>
           <div>
             <p>We offer several pricing tiers:</p>
-            <div role='list'>
-              <div role='listitem'>
+            <div role="list">
+              <div role="listitem">
                 <strong>Basic</strong> - $9/month
-                <button type='button'>Choose Plan</button>
+                <button type="button">Choose Plan</button>
               </div>
-              <div role='listitem'>
+              <div role="listitem">
                 <strong>Pro</strong> - $29/month
-                <button type='button'>Choose Plan</button>
+                <button type="button">Choose Plan</button>
               </div>
-              <div role='listitem'>
+              <div role="listitem">
                 <strong>Enterprise</strong> - Custom pricing
-                <button type='button'>Contact Sales</button>
+                <button type="button">Contact Sales</button>
               </div>
             </div>
           </div>
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value='faq-3'>
+      <AccordionItem value="faq-3">
         <AccordionHeader>
           <AccordionTrigger>Can I cancel anytime?</AccordionTrigger>
         </AccordionHeader>
         <AccordionContent>
-          <p>
-            Yes, you can cancel your subscription at any time. Your access will continue until the
-            end of your current billing period.
-          </p>
+          <p>Yes, you can cancel your subscription at any time. Your access will continue until the end of your current billing period.</p>
           <form>
             <fieldset>
               <legend>Reason for cancellation (optional)</legend>
               <label>
-                <input type='radio' name='reason' value='too-expensive' />
+                <input type="radio" name="reason" value="too-expensive" />
                 Too expensive
               </label>
               <label>
-                <input type='radio' name='reason' value='not-using' />
+                <input type="radio" name="reason" value="not-using" />
                 Not using enough
               </label>
               <label>
-                <input type='radio' name='reason' value='other' />
+                <input type="radio" name="reason" value="other" />
                 Other
               </label>
             </fieldset>
-            <button type='submit'>Submit Feedback</button>
+            <button type="submit">Submit Feedback</button>
           </form>
         </AccordionContent>
       </AccordionItem>
@@ -92,52 +83,52 @@ const SettingsAccordion = () => (
   <div>
     <h1>Settings</h1>
     <Accordion multiple>
-      <AccordionItem value='account'>
+      <AccordionItem value="account">
         <AccordionHeader>
           <AccordionTrigger>Account Settings</AccordionTrigger>
         </AccordionHeader>
         <AccordionContent>
           <Accordion>
-            <AccordionItem value='profile'>
+            <AccordionItem value="profile">
               <AccordionHeader level={4}>
                 <AccordionTrigger>Profile Information</AccordionTrigger>
               </AccordionHeader>
               <AccordionContent>
                 <form>
-                  <input type='text' placeholder='Name' />
-                  <input type='email' placeholder='Email' />
-                  <button type='submit'>Save Profile</button>
+                  <input type="text" placeholder="Name" />
+                  <input type="email" placeholder="Email" />
+                  <button type="submit">Save Profile</button>
                 </form>
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value='security'>
+            <AccordionItem value="security">
               <AccordionHeader level={4}>
                 <AccordionTrigger>Security</AccordionTrigger>
               </AccordionHeader>
               <AccordionContent>
-                <button type='button'>Change Password</button>
-                <button type='button'>Enable 2FA</button>
+                <button type="button">Change Password</button>
+                <button type="button">Enable 2FA</button>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value='notifications'>
+      <AccordionItem value="notifications">
         <AccordionHeader>
           <AccordionTrigger>Notification Preferences</AccordionTrigger>
         </AccordionHeader>
         <AccordionContent>
           <div>
             <label>
-              <input type='checkbox' />
+              <input type="checkbox" />
               Email notifications
             </label>
             <label>
-              <input type='checkbox' />
+              <input type="checkbox" />
               Push notifications
             </label>
             <label>
-              <input type='checkbox' />
+              <input type="checkbox" />
               SMS notifications
             </label>
           </div>
@@ -158,15 +149,11 @@ describe('Accordion Integration Tests', () => {
       render(<FAQAccordion />);
 
       // User reads the main heading
-      expect(
-        screen.getByRole('heading', { level: 1, name: 'Frequently Asked Questions' }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: 'Frequently Asked Questions' })).toBeInTheDocument();
 
       // User sees all FAQ questions
       expect(screen.getByRole('button', { name: 'How do I get started?' })).toBeInTheDocument();
-      expect(
-        screen.getByRole('button', { name: 'What are the pricing options?' }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'What are the pricing options?' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Can I cancel anytime?' })).toBeInTheDocument();
 
       // User clicks on first FAQ
@@ -210,9 +197,7 @@ describe('Accordion Integration Tests', () => {
 
       // User sees the cancellation information and form
       expect(screen.getByText(/Yes, you can cancel your subscription/)).toBeInTheDocument();
-      expect(
-        screen.getByRole('group', { name: 'Reason for cancellation (optional)' }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole('group', { name: 'Reason for cancellation (optional)' })).toBeInTheDocument();
 
       // User selects a reason for cancellation
       const tooExpensiveRadio = screen.getByRole('radio', { name: 'Too expensive' });
@@ -295,10 +280,7 @@ describe('Accordion Integration Tests', () => {
 
       // Activate nested accordion with keyboard
       await user.keyboard('{Enter}');
-      expect(screen.getByRole('button', { name: 'Profile Information' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
+      expect(screen.getByRole('button', { name: 'Profile Information' })).toHaveAttribute('aria-expanded', 'true');
 
       // Tab should navigate through form elements
       await user.tab();
@@ -324,7 +306,7 @@ describe('Accordion Integration Tests', () => {
 
         return (
           <div>
-            <button type='button' onClick={() => setItems([...items, `item-${items.length + 1}`])}>
+            <button type="button" onClick={() => setItems([...items, `item-${items.length + 1}`])}>
               Add Item
             </button>
             <Accordion multiple>
@@ -344,18 +326,14 @@ describe('Accordion Integration Tests', () => {
       render(<DynamicAccordion />);
 
       // Initially 2 items
-      expect(
-        screen.getAllByRole('button').filter((btn) => btn.textContent?.startsWith('Item')),
-      ).toHaveLength(2);
+      expect(screen.getAllByRole('button').filter(btn => btn.textContent?.startsWith('Item'))).toHaveLength(2);
 
       // Add a new item
       const addButton = screen.getByRole('button', { name: 'Add Item' });
       await user.click(addButton);
 
       // Should now have 3 items
-      expect(
-        screen.getAllByRole('button').filter((btn) => btn.textContent?.startsWith('Item')),
-      ).toHaveLength(3);
+      expect(screen.getAllByRole('button').filter(btn => btn.textContent?.startsWith('Item'))).toHaveLength(3);
 
       // New item should be fully functional
       const newItem = screen.getByRole('button', { name: 'Item 3' });
@@ -371,17 +349,17 @@ describe('Accordion Integration Tests', () => {
 
         return (
           <div>
-            <button type='button' onClick={() => setCount(count + 1)}>
+            <button type="button" onClick={() => setCount(count + 1)}>
               Re-render ({count})
             </button>
             <Accordion multiple defaultValue={['item-1']}>
-              <AccordionItem value='item-1'>
+              <AccordionItem value="item-1">
                 <AccordionHeader>
                   <AccordionTrigger>Persistent Item 1</AccordionTrigger>
                 </AccordionHeader>
                 <AccordionContent>Persistent content 1</AccordionContent>
               </AccordionItem>
-              <AccordionItem value='item-2'>
+              <AccordionItem value="item-2">
                 <AccordionHeader>
                   <AccordionTrigger>Persistent Item 2</AccordionTrigger>
                 </AccordionHeader>
@@ -411,14 +389,8 @@ describe('Accordion Integration Tests', () => {
       await user.click(reRenderButton);
 
       // State should persist after re-render
-      expect(screen.getByRole('button', { name: 'Persistent Item 1' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
-      expect(screen.getByRole('button', { name: 'Persistent Item 2' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
+      expect(screen.getByRole('button', { name: 'Persistent Item 1' })).toHaveAttribute('aria-expanded', 'true');
+      expect(screen.getByRole('button', { name: 'Persistent Item 2' })).toHaveAttribute('aria-expanded', 'true');
       expect(screen.getByText('Persistent content 1')).toBeInTheDocument();
       expect(screen.getByText('Persistent content 2')).toBeInTheDocument();
     });
@@ -432,16 +404,14 @@ describe('Accordion Integration Tests', () => {
       const BrokenComponent = () => {
         return (
           <div>
-            <AccordionItem value='broken'>
+            <AccordionItem value="broken">
               <AccordionTrigger>This will throw</AccordionTrigger>
             </AccordionItem>
           </div>
         );
       };
 
-      expect(() => render(<BrokenComponent />)).toThrow(
-        'Accordion components must be used within an Accordion',
-      );
+      expect(() => render(<BrokenComponent />)).toThrow('Accordion components must be used within an Accordion');
       jest.restoreAllMocks();
     });
 
@@ -452,18 +422,18 @@ describe('Accordion Integration Tests', () => {
 
         return (
           <div>
-            <button type='button' onClick={() => setShowSecondItem(!showSecondItem)}>
+            <button type="button" onClick={() => setShowSecondItem(!showSecondItem)}>
               Toggle Second Item
             </button>
             <Accordion>
-              <AccordionItem value='item-1'>
+              <AccordionItem value="item-1">
                 <AccordionHeader>
                   <AccordionTrigger>Always Visible</AccordionTrigger>
                 </AccordionHeader>
                 <AccordionContent>Always visible content</AccordionContent>
               </AccordionItem>
               {showSecondItem && (
-                <AccordionItem value='item-2'>
+                <AccordionItem value="item-2">
                   <AccordionHeader>
                     <AccordionTrigger>Conditionally Visible</AccordionTrigger>
                   </AccordionHeader>
@@ -491,9 +461,7 @@ describe('Accordion Integration Tests', () => {
       await user.click(toggleButton);
 
       // Conditional item should be gone
-      expect(
-        screen.queryByRole('button', { name: 'Conditionally Visible' }),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Conditionally Visible' })).not.toBeInTheDocument();
       expect(screen.queryByText('Conditionally visible content')).not.toBeInTheDocument();
 
       // Show it again
@@ -536,25 +504,25 @@ describe('Accordion Integration Tests', () => {
       // Simulate a complex component that might be used in production
       const ComplexAccordion = () => (
         <div>
-          <nav aria-label='Table of contents'>
+          <nav aria-label="Table of contents">
             <Accordion multiple>
-              <AccordionItem value='chapter-1'>
+              <AccordionItem value="chapter-1">
                 <AccordionHeader level={2}>
                   <AccordionTrigger>Chapter 1: Introduction</AccordionTrigger>
                 </AccordionHeader>
                 <AccordionContent>
                   <Accordion>
-                    <AccordionItem value='section-1-1'>
+                    <AccordionItem value="section-1-1">
                       <AccordionHeader level={3}>
                         <AccordionTrigger>1.1 Overview</AccordionTrigger>
                       </AccordionHeader>
                       <AccordionContent>
                         <p>
-                          Overview content with <a href='#ref1'>reference</a>.
+                          Overview content with <a href="#ref1">reference</a>.
                         </p>
                       </AccordionContent>
                     </AccordionItem>
-                    <AccordionItem value='section-1-2'>
+                    <AccordionItem value="section-1-2">
                       <AccordionHeader level={3}>
                         <AccordionTrigger>1.2 Getting Started</AccordionTrigger>
                       </AccordionHeader>
@@ -569,7 +537,7 @@ describe('Accordion Integration Tests', () => {
                   </Accordion>
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value='chapter-2'>
+              <AccordionItem value="chapter-2">
                 <AccordionHeader level={2}>
                   <AccordionTrigger>Chapter 2: Advanced Topics</AccordionTrigger>
                 </AccordionHeader>

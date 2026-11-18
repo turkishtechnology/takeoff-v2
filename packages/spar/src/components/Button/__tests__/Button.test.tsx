@@ -19,7 +19,7 @@ describe('Button', () => {
 
   it('supports polymorphic rendering with accessible button semantics', () => {
     render(
-      <Button as='div' id='custom-action' title='Custom action'>
+      <Button as="div" id="custom-action" title="Custom action">
         Custom action
       </Button>,
     );
@@ -60,7 +60,7 @@ describe('Button', () => {
     const onKeyDown = jest.fn();
 
     render(
-      <Button as='div' onClick={onClick} onKeyDown={onKeyDown}>
+      <Button as="div" onClick={onClick} onKeyDown={onKeyDown}>
         Keyboard trigger
       </Button>,
     );
@@ -95,10 +95,7 @@ describe('Button', () => {
 
     await user.click(button);
 
-    expect(screen.getByRole('button', { name: 'Toggle: On' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
+    expect(screen.getByRole('button', { name: 'Toggle: On' })).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('keeps pressed state prop-driven when no onPressedChange is provided', async () => {
@@ -131,7 +128,7 @@ describe('Button', () => {
       const onClick = jest.fn();
 
       render(
-        <Button as='a' href='/dashboard' disabled onClick={onClick}>
+        <Button as="a" href="/dashboard" disabled onClick={onClick}>
           Dashboard
         </Button>,
       );
@@ -151,7 +148,7 @@ describe('Button', () => {
       const onClick = jest.fn();
 
       render(
-        <Button as='a' href='/dashboard' isLoading onClick={onClick}>
+        <Button as="a" href="/dashboard" isLoading onClick={onClick}>
           Dashboard
         </Button>,
       );
@@ -174,7 +171,7 @@ describe('Button', () => {
       });
 
       render(
-        <Button as='a' href='/dashboard' onClick={onClick}>
+        <Button as="a" href="/dashboard" onClick={onClick}>
           Dashboard
         </Button>,
       );
@@ -189,15 +186,10 @@ describe('Button', () => {
 
     it('cancels the click on a disabled custom component without stripping its props', () => {
       const onClick = jest.fn();
-      const RouterLink = ({
-        to,
-        ...props
-      }: { to: string } & React.ComponentPropsWithoutRef<'a'>) => (
-        <a data-to={to} href={to} {...props} />
-      );
+      const RouterLink = ({ to, ...props }: { to: string } & React.ComponentPropsWithoutRef<'a'>) => <a data-to={to} href={to} {...props} />;
 
       render(
-        <Button as={RouterLink} to='/dashboard' disabled onClick={onClick}>
+        <Button as={RouterLink} to="/dashboard" disabled onClick={onClick}>
           Dashboard
         </Button>,
       );

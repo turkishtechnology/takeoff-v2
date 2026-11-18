@@ -83,7 +83,7 @@ export default defineConfig([
       clean: false,
     },
     externals: {
-      react: 'react',
+      'react': 'react',
       'react-dom': 'react-dom',
       'react/jsx-runtime': 'react/jsx-runtime',
       '@floating-ui/react-dom': '@floating-ui/react-dom',
@@ -93,9 +93,8 @@ export default defineConfig([
       minimize: true,
       minimizer: [
         {
-          apply: (compiler) => {
-            const SwcJsMinimizerRspackPlugin =
-              compiler.webpack.SwcJsMinimizerRspackPlugin;
+          apply: compiler => {
+            const SwcJsMinimizerRspackPlugin = compiler.webpack.SwcJsMinimizerRspackPlugin;
             new SwcJsMinimizerRspackPlugin({
               compress: {
                 passes: 2,
@@ -140,7 +139,7 @@ export default defineConfig([
       clean: false,
     },
     externals: {
-      react: 'react',
+      'react': 'react',
       'react-dom': 'react-dom',
       'react/jsx-runtime': 'react/jsx-runtime',
       '@floating-ui/react-dom': '@floating-ui/react-dom',
@@ -153,9 +152,8 @@ export default defineConfig([
       minimize: true,
       minimizer: [
         {
-          apply: (compiler) => {
-            const SwcJsMinimizerRspackPlugin =
-              compiler.webpack.SwcJsMinimizerRspackPlugin;
+          apply: compiler => {
+            const SwcJsMinimizerRspackPlugin = compiler.webpack.SwcJsMinimizerRspackPlugin;
             new SwcJsMinimizerRspackPlugin({
               compress: {
                 passes: 2,
@@ -181,5 +179,3 @@ export default defineConfig([
     devtool: false,
   },
 ]);
-
-

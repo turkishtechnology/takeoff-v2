@@ -8,25 +8,8 @@ import type { ButtonProps } from '../Button/types';
 /**
  * Trigger element that opens/closes the popover
  */
-export const PopoverTrigger = <T extends ElementType = 'button'>({
-  as,
-  children,
-  disabled: disabledProp,
-  onClick,
-  onKeyDown,
-  ref,
-  ...props
-}: PopoverTriggerProps<T>) => {
-  const {
-    isOpen,
-    triggerId,
-    contentId,
-    triggerRef,
-    togglePopover,
-    openPopover,
-    closePopover,
-    disabled: contextDisabled,
-  } = usePopoverContext();
+export const PopoverTrigger = <T extends ElementType = 'button'>({ as, children, disabled: disabledProp, onClick, onKeyDown, ref, ...props }: PopoverTriggerProps<T>) => {
+  const { isOpen, triggerId, contentId, triggerRef, togglePopover, openPopover, closePopover, disabled: contextDisabled } = usePopoverContext();
 
   // Use prop if explicitly provided, otherwise use context
   const disabled = disabledProp ?? contextDisabled;
@@ -65,11 +48,11 @@ export const PopoverTrigger = <T extends ElementType = 'button'>({
 
   const buttonProps = {
     ...(as && { as }),
-    id: triggerId,
+    'id': triggerId,
     disabled,
-    ref: mergedRef,
-    onClick: handleClick,
-    onKeyDown: handleKeyDown,
+    'ref': mergedRef,
+    'onClick': handleClick,
+    'onKeyDown': handleKeyDown,
     'aria-expanded': isOpen,
     'aria-controls': contentId,
     'aria-haspopup': 'dialog' as const,
@@ -77,11 +60,7 @@ export const PopoverTrigger = <T extends ElementType = 'button'>({
     ...props,
   } as ButtonProps<T>;
 
-  return (
-    <Button {...buttonProps}>
-      {typeof children === 'function' ? children(renderProps) : children}
-    </Button>
-  );
+  return <Button {...buttonProps}>{typeof children === 'function' ? children(renderProps) : children}</Button>;
 };
 
 PopoverTrigger.displayName = 'PopoverTrigger';

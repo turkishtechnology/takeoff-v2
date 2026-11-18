@@ -11,17 +11,13 @@ interface RegisteredItem {
  * Ordered list container for breadcrumb items. Provides semantic structure for
  * the navigation trail and derives each item's position from registered DOM order.
  */
-export const BreadcrumbList = <T extends ElementType = 'ol'>({
-  as,
-  children,
-  ...props
-}: BreadcrumbListProps<T>) => {
+export const BreadcrumbList = <T extends ElementType = 'ol'>({ as, children, ...props }: BreadcrumbListProps<T>) => {
   const Component = as || 'ol';
   const [items, setItems] = useState<RegisteredItem[]>([]);
 
   const registerItem = useCallback((id: string, ref: RefObject<HTMLElement | null>) => {
-    setItems((previous) => {
-      const next = [...previous.filter((entry) => entry.id !== id), { id, ref }];
+    setItems(previous => {
+      const next = [...previous.filter(entry => entry.id !== id), { id, ref }];
       next.sort((a, b) => {
         const aNode = a.ref.current;
         const bNode = b.ref.current;
@@ -37,12 +33,12 @@ export const BreadcrumbList = <T extends ElementType = 'ol'>({
   }, []);
 
   const unregisterItem = useCallback((id: string) => {
-    setItems((previous) => previous.filter((entry) => entry.id !== id));
+    setItems(previous => previous.filter(entry => entry.id !== id));
   }, []);
 
   const getItemPosition = useCallback(
     (id: string) => {
-      const index = items.findIndex((entry) => entry.id === id);
+      const index = items.findIndex(entry => entry.id === id);
       const isCurrent = index !== -1 && index === items.length - 1;
       const position: BreadcrumbPosition = index === 0 ? 'first' : isCurrent ? 'last' : 'middle';
       return { position, isCurrent };
@@ -50,10 +46,7 @@ export const BreadcrumbList = <T extends ElementType = 'ol'>({
     [items],
   );
 
-  const contextValue = useMemo<BreadcrumbListContextValue>(
-    () => ({ registerItem, unregisterItem, getItemPosition }),
-    [registerItem, unregisterItem, getItemPosition],
-  );
+  const contextValue = useMemo<BreadcrumbListContextValue>(() => ({ registerItem, unregisterItem, getItemPosition }), [registerItem, unregisterItem, getItemPosition]);
 
   return (
     <BreadcrumbListContext.Provider value={contextValue}>

@@ -1,15 +1,5 @@
 import { useMemo, type CSSProperties } from 'react';
-import {
-  useFloating as useFloatingUI,
-  autoUpdate,
-  arrow,
-  offset,
-  flip,
-  shift,
-  hide,
-  type Placement,
-  type Strategy,
-} from '@floating-ui/react-dom';
+import { useFloating as useFloatingUI, autoUpdate, arrow, offset, flip, shift, hide, type Placement, type Strategy } from '@floating-ui/react-dom';
 import type { Side, Align } from '../types';
 import { getPlacement } from '@/utils';
 

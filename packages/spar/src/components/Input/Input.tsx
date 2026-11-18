@@ -11,17 +11,7 @@ import type { InputContextValue, InputProps } from './types';
  * `required` and `readOnly` values automatically. Direct props on `<Input>`
  * override the inherited values.
  */
-export const Input = <T extends ElementType = 'div'>({
-  as,
-  id: providedId,
-  invalid,
-  disabled,
-  required,
-  readOnly,
-  children,
-  ref,
-  ...props
-}: InputProps<T>) => {
+export const Input = <T extends ElementType = 'div'>({ as, id: providedId, invalid, disabled, required, readOnly, children, ref, ...props }: InputProps<T>) => {
   const Component = as || 'div';
   const generatedId = useId();
   const id = providedId ?? generatedId;

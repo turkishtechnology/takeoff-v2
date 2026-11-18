@@ -18,8 +18,8 @@ import { visuallyHidden } from '@/utils';
  */
 export const RadioItem = <T extends ElementType = 'span'>({
   ref,
-  value: itemValue,
-  disabled: itemDisabled = false,
+  'value': itemValue,
+  'disabled': itemDisabled = false,
   'aria-label': ariaLabel,
   'aria-describedby': ariaDescribedBy,
   onClick,
@@ -127,7 +127,7 @@ export const RadioItem = <T extends ElementType = 'span'>({
   // `aria-readonly` is not allowed on `role="radio"`; the root exposes it on
   // the radiogroup instead.
   const ariaAttributes = {
-    role: 'radio',
+    'role': 'radio',
     'aria-checked': isChecked,
     'aria-disabled': isDisabled || undefined,
     'aria-label': ariaLabel,
@@ -147,9 +147,7 @@ export const RadioItem = <T extends ElementType = 'span'>({
 
   return (
     <>
-      <Component {...itemProps}>
-        {typeof children === 'function' ? children(renderProps) : children}
-      </Component>
+      <Component {...itemProps}>{typeof children === 'function' ? children(renderProps) : children}</Component>
       {/* Hidden radio input for form submission and native HTML5 validation.
           This is the group's only native representation of the selected
           value, so form data carries it exactly once. Rendered as a sibling
@@ -161,7 +159,7 @@ export const RadioItem = <T extends ElementType = 'span'>({
           visible role="radio" element owns interaction; this just silences
           React's controlled-input warning. */}
       <input
-        type='radio'
+        type="radio"
         name={name}
         value={itemValue}
         checked={isChecked}
@@ -170,7 +168,7 @@ export const RadioItem = <T extends ElementType = 'span'>({
         onChange={() => {}}
         style={visuallyHidden}
         tabIndex={-1}
-        aria-hidden='true'
+        aria-hidden="true"
       />
     </>
   );

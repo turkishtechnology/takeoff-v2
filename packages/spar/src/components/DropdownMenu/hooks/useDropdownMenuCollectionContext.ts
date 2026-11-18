@@ -1,8 +1,7 @@
 import { createContext, useContext } from 'react';
 import type { DropdownMenuCollectionItem, DropdownMenuCollectionContextValue } from '../types';
 
-export const DropdownMenuCollectionContext =
-  createContext<DropdownMenuCollectionContextValue | null>(null);
+export const DropdownMenuCollectionContext = createContext<DropdownMenuCollectionContextValue | null>(null);
 
 export const useDropdownMenuCollectionContext = () => {
   const context = useContext(DropdownMenuCollectionContext);

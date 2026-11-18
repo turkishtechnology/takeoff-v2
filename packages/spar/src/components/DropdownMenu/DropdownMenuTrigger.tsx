@@ -1,14 +1,5 @@
-import {
-  useCallback,
-  type ElementType,
-  type KeyboardEvent as ReactKeyboardEvent,
-  type MouseEvent as ReactMouseEvent,
-} from 'react';
-import type {
-  DropdownMenuTriggerProps,
-  DropdownMenuFocusStrategy,
-  DropdownMenuTriggerRenderProps,
-} from './types';
+import { useCallback, type ElementType, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent } from 'react';
+import type { DropdownMenuTriggerProps, DropdownMenuFocusStrategy, DropdownMenuTriggerRenderProps } from './types';
 import { useDropdownMenuContext } from './hooks';
 import { useMergedRef } from '@/hooks';
 import { Button } from '../Button';
@@ -18,15 +9,7 @@ import type { ButtonProps } from '../Button/types';
  * Trigger button that toggles the dropdown menu open/closed state.
  * Supports keyboard navigation with ArrowDown/ArrowUp to open and focus first/last item.
  */
-export const DropdownMenuTrigger = <T extends ElementType = 'button'>({
-  as,
-  disabled: disabledProp,
-  onClick,
-  onKeyDown,
-  ref,
-  children,
-  ...props
-}: DropdownMenuTriggerProps<T>) => {
+export const DropdownMenuTrigger = <T extends ElementType = 'button'>({ as, disabled: disabledProp, onClick, onKeyDown, ref, children, ...props }: DropdownMenuTriggerProps<T>) => {
   const menu = useDropdownMenuContext();
 
   // Use prop if explicitly provided, otherwise use context
@@ -100,23 +83,19 @@ export const DropdownMenuTrigger = <T extends ElementType = 'button'>({
 
   const buttonProps = {
     ...(as && { as }),
-    ref: mergedRef,
-    id: menu.triggerId,
+    'ref': mergedRef,
+    'id': menu.triggerId,
     disabled,
     'aria-haspopup': 'menu' as const,
     'aria-expanded': menu.open,
     'aria-controls': menu.contentId,
     'data-state': menu.open ? 'open' : 'closed',
-    onClick: handleClick,
-    onKeyDown: handleKeyDown,
+    'onClick': handleClick,
+    'onKeyDown': handleKeyDown,
     ...props,
   } as ButtonProps<T>;
 
-  return (
-    <Button {...buttonProps}>
-      {typeof children === 'function' ? children(renderProps) : children}
-    </Button>
-  );
+  return <Button {...buttonProps}>{typeof children === 'function' ? children(renderProps) : children}</Button>;
 };
 
 DropdownMenuTrigger.displayName = 'DropdownMenuTrigger';

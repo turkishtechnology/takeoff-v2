@@ -98,8 +98,4 @@ export interface InputFieldOwnProps {
  * Props for InputField
  * @remarks Core input element with polymorphic element support
  */
-export type InputFieldProps<T extends ElementType = 'input'> = PolymorphicProps<
-  'input',
-  T,
-  InputFieldOwnProps
->;
+export type InputFieldProps<T extends ElementType = 'input'> = PolymorphicProps<'input', T, InputFieldOwnProps>;

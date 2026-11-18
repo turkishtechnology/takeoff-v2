@@ -19,12 +19,4 @@ Field.ErrorMessage = FieldErrorMessage;
 
 export { Field, FieldRoot, FieldLabel, FieldDescription, FieldErrorMessage };
 
-export type {
-  FieldContextValue,
-  FieldOwnProps,
-  FieldProps,
-  FieldRenderProps,
-  FieldLabelProps,
-  FieldDescriptionProps,
-  FieldErrorMessageProps,
-} from './types';
+export type { FieldContextValue, FieldOwnProps, FieldProps, FieldRenderProps, FieldLabelProps, FieldDescriptionProps, FieldErrorMessageProps } from './types';

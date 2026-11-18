@@ -16,7 +16,7 @@ afterEach(() => {
 // Mock window.matchMedia for JSDOM environment
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation((query) => ({
+  value: jest.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
@@ -38,11 +38,7 @@ interface BasicTooltipProps {
   [key: string]: unknown;
 }
 
-const BasicTooltip = ({
-  children = 'Tooltip content',
-  defaultOpen = false,
-  ...props
-}: BasicTooltipProps) => (
+const BasicTooltip = ({ children = 'Tooltip content', defaultOpen = false, ...props }: BasicTooltipProps) => (
   <TooltipProvider>
     <Tooltip defaultOpen={defaultOpen} {...props}>
       <TooltipTrigger>Trigger</TooltipTrigger>
@@ -87,7 +83,7 @@ describe('TooltipProvider', () => {
 
 describe('Tooltip', () => {
   it('keeps id suffix contract and ARIA relationship with custom id', () => {
-    render(<BasicTooltip defaultOpen id='help' />);
+    render(<BasicTooltip defaultOpen id="help" />);
 
     const trigger = screen.getByRole('button', { name: 'Trigger' });
     const tooltip = screen.getByRole('tooltip');
@@ -250,9 +246,7 @@ describe('Tooltip', () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const onOpenChange = jest.fn();
 
-    const Controlled = ({ open }: { open: boolean }) => (
-      <BasicTooltip open={open} onOpenChange={onOpenChange} />
-    );
+    const Controlled = ({ open }: { open: boolean }) => <BasicTooltip open={open} onOpenChange={onOpenChange} />;
 
     const { rerender } = render(<Controlled open={false} />);
 
@@ -416,9 +410,7 @@ describe('Tooltip', () => {
     render(
       <TooltipProvider>
         <Tooltip defaultOpen>
-          <TooltipTrigger>
-            {({ isOpen }) => <span>{isOpen ? 'Open' : 'Closed'}</span>}
-          </TooltipTrigger>
+          <TooltipTrigger>{({ isOpen }) => <span>{isOpen ? 'Open' : 'Closed'}</span>}</TooltipTrigger>
           <TooltipContent>Content</TooltipContent>
         </Tooltip>
       </TooltipProvider>,

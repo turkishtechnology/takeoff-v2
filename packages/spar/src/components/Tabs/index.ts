@@ -18,11 +18,4 @@ Tabs.Content = TabsContent;
 
 export { Tabs, TabsRoot, TabsList, TabsTrigger, TabsContent };
 
-export type {
-  TabsProps,
-  TabsListProps,
-  TabsTriggerProps,
-  TabsTriggerRenderProps,
-  TabsContentProps,
-  TabsActivationMode,
-} from './types';
+export type { TabsProps, TabsListProps, TabsTriggerProps, TabsTriggerRenderProps, TabsContentProps, TabsActivationMode } from './types';

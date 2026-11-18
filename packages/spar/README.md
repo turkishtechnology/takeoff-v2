@@ -1,7 +1,7 @@
 # Spar
 
-An open-source Headless React UI library delivering unstyled, behavior-first primitives.
-Zero styling opinions, full accessibility built-in.
+An open-source Headless React UI library delivering unstyled, behavior-first
+primitives. Zero styling opinions, full accessibility built-in.
 
 ![Spar UI Hero](../../apps/docs/static/img/design-example.png)
 
@@ -23,7 +23,8 @@ bun add @turkish-technology/spar
 
 ## Documentation
 
-For full documentation, visit [Documentation Guide](https://spar.app.turkishtechlab.com/).
+For full documentation, visit
+[Documentation Guide](https://spar.app.turkishtechlab.com/).
 
 ## Contributing
 

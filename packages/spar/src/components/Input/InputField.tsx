@@ -72,8 +72,7 @@ export const InputField = <T extends ElementType = 'input'>({
     onChange?.(event);
   };
 
-  const inputType =
-    Component === 'input' ? ('type' in props ? (props.type as string) : 'text') : undefined;
+  const inputType = Component === 'input' ? ('type' in props ? (props.type as string) : 'text') : undefined;
 
   // Either source may set these, and neither may clear the other's answer: a
   // `Field` or `Input` that disables its group wins, and so does a field that

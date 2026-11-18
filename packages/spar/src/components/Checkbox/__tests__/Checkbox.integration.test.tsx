@@ -31,10 +31,10 @@ describe('Checkbox Integration Tests', () => {
 
         return (
           <form onSubmit={onSubmit}>
-            <Checkbox name='terms' checked={isAgreed} onChange={handleAgreementChange}>
+            <Checkbox name="terms" checked={isAgreed} onChange={handleAgreementChange}>
               I agree to the terms
             </Checkbox>
-            <button type='submit'>Submit</button>
+            <button type="submit">Submit</button>
           </form>
         );
       };
@@ -91,8 +91,8 @@ describe('Checkbox Integration Tests', () => {
             <Checkbox checked={isChecked} onChange={handleCheckedChange} invalid={!!error}>
               I agree to the terms
             </Checkbox>
-            {error && <div role='alert'>{error}</div>}
-            <button type='submit'>Submit</button>
+            {error && <div role="alert">{error}</div>}
+            <button type="submit">Submit</button>
           </form>
         );
       };
@@ -128,8 +128,8 @@ describe('Checkbox Integration Tests', () => {
 
       render(
         <form onSubmit={handleSubmit}>
-          <Checkbox name='terms'>I agree to the terms</Checkbox>
-          <button type='submit'>Submit</button>
+          <Checkbox name="terms">I agree to the terms</Checkbox>
+          <button type="submit">Submit</button>
         </form>,
       );
 
@@ -157,7 +157,7 @@ describe('Checkbox Integration Tests', () => {
 
         const handleSelectAll = (checked: CheckedState) => {
           if (typeof checked === 'boolean') {
-            const updatedItems = items.map((item) => ({ ...item, checked }));
+            const updatedItems = items.map(item => ({ ...item, checked }));
             setItems(updatedItems);
             handleSelectionChange({ selectAll: checked, items: updatedItems });
           }
@@ -165,13 +165,11 @@ describe('Checkbox Integration Tests', () => {
 
         const handleItemChange = (id: number, checked: CheckedState) => {
           if (typeof checked === 'boolean') {
-            const updatedItems = items.map((item) =>
-              item.id === id ? { ...item, checked } : item,
-            );
+            const updatedItems = items.map(item => (item.id === id ? { ...item, checked } : item));
             setItems(updatedItems);
 
-            const allChecked = updatedItems.every((item) => item.checked);
-            const someChecked = updatedItems.some((item) => item.checked);
+            const allChecked = updatedItems.every(item => item.checked);
+            const someChecked = updatedItems.some(item => item.checked);
 
             handleSelectionChange({
               selectAll: allChecked,
@@ -181,19 +179,15 @@ describe('Checkbox Integration Tests', () => {
           }
         };
 
-        const allChecked = items.every((item) => item.checked);
+        const allChecked = items.every(item => item.checked);
 
         return (
           <div>
             <Checkbox checked={allChecked} onChange={handleSelectAll}>
               Select All
             </Checkbox>
-            {items.map((item) => (
-              <Checkbox
-                key={item.id}
-                checked={item.checked}
-                onChange={(checked) => handleItemChange(item.id, checked)}
-              >
+            {items.map(item => (
+              <Checkbox key={item.id} checked={item.checked} onChange={checked => handleItemChange(item.id, checked)}>
                 {item.name}
               </Checkbox>
             ))}
@@ -276,22 +270,13 @@ describe('Checkbox Integration Tests', () => {
         return (
           <fieldset>
             <legend>Choose your preferences</legend>
-            <Checkbox
-              checked={selections.option1}
-              onChange={(checked) => handleChange('option1', checked)}
-            >
+            <Checkbox checked={selections.option1} onChange={checked => handleChange('option1', checked)}>
               Option 1
             </Checkbox>
-            <Checkbox
-              checked={selections.option2}
-              onChange={(checked) => handleChange('option2', checked)}
-            >
+            <Checkbox checked={selections.option2} onChange={checked => handleChange('option2', checked)}>
               Option 2
             </Checkbox>
-            <Checkbox
-              checked={selections.option3}
-              onChange={(checked) => handleChange('option3', checked)}
-            >
+            <Checkbox checked={selections.option3} onChange={checked => handleChange('option3', checked)}>
               Option 3
             </Checkbox>
           </fieldset>

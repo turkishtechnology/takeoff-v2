@@ -19,7 +19,7 @@ describe('Checkbox - Unit Tests', () => {
     });
 
     it('renders with custom element using as prop', () => {
-      render(<Checkbox as='button' />);
+      render(<Checkbox as="button" />);
       const checkbox = screen.getByRole('checkbox');
 
       expect(checkbox.tagName).toBe('BUTTON');
@@ -46,7 +46,7 @@ describe('Checkbox - Unit Tests', () => {
     });
 
     it('applies custom className and style', () => {
-      render(<Checkbox className='custom-checkbox' style={{ backgroundColor: 'red' }} />);
+      render(<Checkbox className="custom-checkbox" style={{ backgroundColor: 'red' }} />);
       const checkbox = screen.getByRole('checkbox');
 
       expect(checkbox).toHaveClass('custom-checkbox');
@@ -56,8 +56,8 @@ describe('Checkbox - Unit Tests', () => {
     it('generates unique non-empty IDs when not provided', () => {
       render(
         <>
-          <Checkbox aria-label='first checkbox' />
-          <Checkbox aria-label='second checkbox' />
+          <Checkbox aria-label="first checkbox" />
+          <Checkbox aria-label="second checkbox" />
         </>,
       );
 
@@ -70,7 +70,7 @@ describe('Checkbox - Unit Tests', () => {
     });
 
     it('uses provided ID', () => {
-      render(<Checkbox id='custom-id' />);
+      render(<Checkbox id="custom-id" />);
       const checkbox = screen.getByRole('checkbox');
 
       expect(checkbox).toHaveAttribute('id', 'custom-id');
@@ -87,7 +87,7 @@ describe('Checkbox - Unit Tests', () => {
       rerender(<Checkbox checked={true} />);
       expect(checkbox).toHaveAttribute('aria-checked', 'true');
 
-      rerender(<Checkbox checked='indeterminate' />);
+      rerender(<Checkbox checked="indeterminate" />);
       expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
     });
 
@@ -126,7 +126,7 @@ describe('Checkbox - Unit Tests', () => {
     });
 
     it('supports indeterminate default state', () => {
-      render(<Checkbox defaultChecked='indeterminate' />);
+      render(<Checkbox defaultChecked="indeterminate" />);
       const checkbox = screen.getByRole('checkbox');
 
       expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
@@ -167,7 +167,7 @@ describe('Checkbox - Unit Tests', () => {
       const user = userEvent.setup();
       const handleChange = jest.fn();
 
-      render(<Checkbox checked='indeterminate' onChange={handleChange} />);
+      render(<Checkbox checked="indeterminate" onChange={handleChange} />);
       const checkbox = screen.getByRole('checkbox');
 
       expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
@@ -177,7 +177,7 @@ describe('Checkbox - Unit Tests', () => {
     });
 
     it('shows correct data attributes for indeterminate state', () => {
-      render(<Checkbox checked='indeterminate' />);
+      render(<Checkbox checked="indeterminate" />);
       const checkbox = screen.getByRole('checkbox');
 
       expect(checkbox).toHaveAttribute('data-indeterminate', '');
@@ -233,9 +233,7 @@ describe('Checkbox - Unit Tests', () => {
       const user = userEvent.setup();
       const handleChange = jest.fn();
 
-      const { rerender } = render(
-        <Checkbox checked={false} indeterminate onChange={handleChange} />,
-      );
+      const { rerender } = render(<Checkbox checked={false} indeterminate onChange={handleChange} />);
       const checkbox = screen.getByRole('checkbox');
 
       expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
@@ -255,13 +253,13 @@ describe('Checkbox - Unit Tests', () => {
     });
 
     it('mirrors the indeterminate prop onto the hidden form input', () => {
-      const { container, rerender } = render(<Checkbox name='all' indeterminate />);
+      const { container, rerender } = render(<Checkbox name="all" indeterminate />);
       const input = container.querySelector('input[type="checkbox"]') as HTMLInputElement;
 
       expect(input.indeterminate).toBe(true);
       expect(input.checked).toBe(false);
 
-      rerender(<Checkbox name='all' indeterminate={false} />);
+      rerender(<Checkbox name="all" indeterminate={false} />);
 
       expect(input.indeterminate).toBe(false);
     });
@@ -269,7 +267,7 @@ describe('Checkbox - Unit Tests', () => {
 
   describe('Disabled State', () => {
     it('renders as disabled when disabled is true (non-button)', () => {
-      render(<Checkbox as='span' disabled />);
+      render(<Checkbox as="span" disabled />);
       const checkbox = screen.getByRole('checkbox');
       expect(checkbox).toHaveAttribute('aria-disabled', 'true');
       expect(checkbox).toHaveAttribute('data-disabled', '');
@@ -278,7 +276,7 @@ describe('Checkbox - Unit Tests', () => {
     });
 
     it('renders as disabled when disabled is true (button)', () => {
-      render(<Checkbox as='button' disabled />);
+      render(<Checkbox as="button" disabled />);
       const checkbox = screen.getByRole('checkbox');
       expect(checkbox).toHaveAttribute('disabled');
       expect(checkbox).not.toHaveAttribute('aria-disabled');
@@ -470,7 +468,7 @@ describe('Checkbox - Unit Tests', () => {
 
   describe('Form Integration', () => {
     it('creates hidden input when name is provided', () => {
-      render(<Checkbox name='subscribe' />);
+      render(<Checkbox name="subscribe" />);
 
       const hiddenInput = document.querySelector('input[type="checkbox"][name="subscribe"]');
       expect(hiddenInput).toBeInTheDocument();
@@ -479,7 +477,7 @@ describe('Checkbox - Unit Tests', () => {
     });
 
     it('keeps hidden input out of the accessibility tree', () => {
-      render(<Checkbox name='subscribe' />);
+      render(<Checkbox name="subscribe" />);
 
       const visibleCheckboxes = screen.getAllByRole('checkbox');
       expect(visibleCheckboxes).toHaveLength(1);
@@ -488,7 +486,7 @@ describe('Checkbox - Unit Tests', () => {
     it('syncs hidden input with checkbox state', async () => {
       const user = userEvent.setup();
 
-      render(<Checkbox name='subscribe' defaultChecked={false} />);
+      render(<Checkbox name="subscribe" defaultChecked={false} />);
       const checkbox = screen.getByRole('checkbox');
       const hiddenInput = document.querySelector('input[name="subscribe"]') as HTMLInputElement;
 
@@ -501,7 +499,7 @@ describe('Checkbox - Unit Tests', () => {
     });
 
     it('sets indeterminate property on hidden input', () => {
-      render(<Checkbox name='subscribe' checked='indeterminate' />);
+      render(<Checkbox name="subscribe" checked="indeterminate" />);
       const hiddenInput = document.querySelector('input[name="subscribe"]') as HTMLInputElement;
 
       expect(hiddenInput.indeterminate).toBe(true);
@@ -509,14 +507,14 @@ describe('Checkbox - Unit Tests', () => {
     });
 
     it('uses custom value for form submission', () => {
-      render(<Checkbox name='subscribe' value='yes' />);
+      render(<Checkbox name="subscribe" value="yes" />);
       const hiddenInput = document.querySelector('input[name="subscribe"]') as HTMLInputElement;
 
       expect(hiddenInput.value).toBe('yes');
     });
 
     it('sets form attribute on hidden input', () => {
-      render(<Checkbox name='subscribe' form='my-form' />);
+      render(<Checkbox name="subscribe" form="my-form" />);
       const hiddenInput = document.querySelector('input[name="subscribe"]') as HTMLInputElement;
 
       expect(hiddenInput).toHaveAttribute('form', 'my-form');
@@ -654,7 +652,7 @@ describe('Checkbox - Unit Tests', () => {
     });
 
     it('spreads additional props to root element', () => {
-      render(<Checkbox data-testid='custom-checkbox' />);
+      render(<Checkbox data-testid="custom-checkbox" />);
       const checkbox = screen.getByTestId('custom-checkbox');
 
       expect(checkbox).toHaveAttribute('role', 'checkbox');

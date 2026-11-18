@@ -1,15 +1,6 @@
 import { useEffect, useState, useCallback, useMemo, useRef, type ElementType } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  composeInsideHandlers,
-  useInteractOutside,
-  useMergedRef,
-  useFloating,
-  useDocumentEvent,
-  useFocusTrap,
-  type UseFloatingOptions,
-  type UseFloatingReturn,
-} from '@/hooks';
+import { composeInsideHandlers, useInteractOutside, useMergedRef, useFloating, useDocumentEvent, useFocusTrap, type UseFloatingOptions, type UseFloatingReturn } from '@/hooks';
 import { PopoverContentProps } from './types';
 import { usePopoverContext } from './hooks/usePopoverContext';
 import { PopoverContentContext } from './hooks/usePopoverContentContext';
@@ -40,8 +31,7 @@ export const PopoverContent = <T extends ElementType = 'div'>({
 }: PopoverContentProps<T>) => {
   const Component = as || 'div';
 
-  const { isOpen, contentId, triggerRef, contentRef, arrowRef, modal, closePopover } =
-    usePopoverContext();
+  const { isOpen, contentId, triggerRef, contentRef, arrowRef, modal, closePopover } = usePopoverContext();
 
   // Use custom Floating UI hook for positioning
   const floatingOptions: UseFloatingOptions = {
@@ -50,8 +40,7 @@ export const PopoverContent = <T extends ElementType = 'div'>({
     arrowRef: arrowRef?.current ?? null,
   };
 
-  const { floatingStyles, arrowStyles, placement, refs }: UseFloatingReturn =
-    useFloating(floatingOptions);
+  const { floatingStyles, arrowStyles, placement, refs }: UseFloatingReturn = useFloating(floatingOptions);
 
   // Set reference element synchronously so floating-ui can compute position
   // on the very first render instead of waiting for an effect.
@@ -148,7 +137,7 @@ export const PopoverContent = <T extends ElementType = 'div'>({
   const insideHandlers = useInteractOutside([contentRef, triggerRef], {
     enabled: isOpen,
     includeFocus: !isFocusTrapped, // Only include focus events if focus is not trapped
-    onPointerDownOutside: (event) => {
+    onPointerDownOutside: event => {
       onPointerDownOutside?.(event);
       onInteractOutside?.(event);
 
@@ -157,7 +146,7 @@ export const PopoverContent = <T extends ElementType = 'div'>({
         closePopover();
       }
     },
-    onFocusOutside: (nativeEvent) => {
+    onFocusOutside: nativeEvent => {
       // `focusin` is not cancelable, so hand consumers a cancelable event instead
       const event = createCancelableFocusOutsideEvent(nativeEvent);
       onFocusOutside?.(event);
@@ -176,10 +165,7 @@ export const PopoverContent = <T extends ElementType = 'div'>({
         const focusableElements = getFocusableElements(event.currentTarget);
         if (focusableElements.length > 0) {
           event.preventDefault();
-          const targetElement =
-            event.key === 'Home'
-              ? focusableElements[0]
-              : focusableElements[focusableElements.length - 1];
+          const targetElement = event.key === 'Home' ? focusableElements[0] : focusableElements[focusableElements.length - 1];
           targetElement?.focus();
         }
       }
@@ -196,15 +182,12 @@ export const PopoverContent = <T extends ElementType = 'div'>({
     return [placementSide, placementAlign];
   }, [placement]);
 
-  const contentContextValue = useMemo(
-    () => ({ arrowStyles, side: currentSide as Side, align: currentAlign as Align }),
-    [arrowStyles, currentSide, currentAlign],
-  );
+  const contentContextValue = useMemo(() => ({ arrowStyles, side: currentSide as Side, align: currentAlign as Align }), [arrowStyles, currentSide, currentAlign]);
 
   if (!isOpen || !mounted) return null;
 
   const ariaAttributes = {
-    role: modal ? 'dialog' : undefined,
+    'role': modal ? 'dialog' : undefined,
     'aria-modal': modal ? 'true' : undefined,
   };
 

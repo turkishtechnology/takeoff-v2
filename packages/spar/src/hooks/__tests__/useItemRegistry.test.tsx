@@ -5,9 +5,7 @@ import { useItemRegistry } from '../useItemRegistry';
 const makeElements = (count: number): HTMLElement[] => {
   const container = document.createElement('div');
   document.body.appendChild(container);
-  return Array.from({ length: count }, () =>
-    container.appendChild(document.createElement('button')),
-  );
+  return Array.from({ length: count }, () => container.appendChild(document.createElement('button')));
 };
 
 afterEach(() => {

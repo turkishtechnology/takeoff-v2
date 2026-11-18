@@ -1,14 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import userEvent from '@testing-library/user-event';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '../index';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '../index';
 
 expect.extend(toHaveNoViolations);
 
@@ -22,7 +15,7 @@ describe('Breadcrumb Accessibility', () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
           <BreadcrumbItem>
@@ -38,7 +31,7 @@ describe('Breadcrumb Accessibility', () => {
       <Breadcrumb disabled>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
           <BreadcrumbItem>
@@ -53,10 +46,10 @@ describe('Breadcrumb Accessibility', () => {
 
   it('exposes expected landmark, list and current-page semantics', () => {
     render(
-      <Breadcrumb aria-label='Page Navigation'>
+      <Breadcrumb aria-label="Page Navigation">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
           <BreadcrumbItem>
@@ -81,12 +74,12 @@ describe('Breadcrumb Accessibility', () => {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href='/products' disabled>
+              <BreadcrumbLink href="/products" disabled>
                 Products
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbItem>
-              <BreadcrumbLink href='/about'>About</BreadcrumbLink>
+              <BreadcrumbLink href="/about">About</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -113,10 +106,10 @@ describe('Breadcrumb Accessibility', () => {
       <Breadcrumb onNavigate={onNavigate}>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/disabled' disabled>
+            <BreadcrumbLink href="/disabled" disabled>
               Disabled
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -147,7 +140,7 @@ describe('Breadcrumb Accessibility', () => {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+              <BreadcrumbLink href="/home">Home</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

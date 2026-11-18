@@ -1,14 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useState } from 'react';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '../index';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '../index';
 
 describe('Breadcrumb Integration', () => {
   afterEach(() => {
@@ -28,11 +21,11 @@ describe('Breadcrumb Integration', () => {
       >
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/products'>Products</BreadcrumbLink>
+            <BreadcrumbLink href="/products">Products</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
           <BreadcrumbItem>
@@ -51,7 +44,7 @@ describe('Breadcrumb Integration', () => {
       <Breadcrumb disabled={disabled}>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/step-1'>Step 1</BreadcrumbLink>
+            <BreadcrumbLink href="/step-1">Step 1</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
           <BreadcrumbItem>
@@ -78,7 +71,7 @@ describe('Breadcrumb Integration', () => {
       <Breadcrumb onNavigate={onNavigate}>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
           <BreadcrumbItem>
@@ -103,14 +96,14 @@ describe('Breadcrumb Integration', () => {
         <Breadcrumb onNavigate={onNavigate1}>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href='/a'>Home A</BreadcrumbLink>
+              <BreadcrumbLink href="/a">Home A</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <Breadcrumb onNavigate={onNavigate2}>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href='/b'>Home B</BreadcrumbLink>
+              <BreadcrumbLink href="/b">Home B</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -132,9 +125,9 @@ describe('Breadcrumb Integration', () => {
     ];
 
     render(
-      <Breadcrumb id='route-breadcrumb' aria-label='Route breadcrumb'>
+      <Breadcrumb id="route-breadcrumb" aria-label="Route breadcrumb">
         <BreadcrumbList>
-          {routes.map((route) => (
+          {routes.map(route => (
             <React.Fragment key={route.href}>
               <BreadcrumbItem>
                 <BreadcrumbLink href={route.href}>{route.label}</BreadcrumbLink>
@@ -149,10 +142,7 @@ describe('Breadcrumb Integration', () => {
       </Breadcrumb>,
     );
 
-    expect(screen.getByRole('navigation', { name: 'Route breadcrumb' })).toHaveAttribute(
-      'id',
-      'route-breadcrumb',
-    );
+    expect(screen.getByRole('navigation', { name: 'Route breadcrumb' })).toHaveAttribute('id', 'route-breadcrumb');
     expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute('href', '/catalog');
     expect(screen.getByText('Current Page')).toHaveAttribute('aria-current', 'page');
   });
@@ -163,10 +153,7 @@ describe('Breadcrumb Integration', () => {
     const AsyncBreadcrumb = () => {
       const [isNavigating, setIsNavigating] = useState(false);
 
-      const handleNavigate = async (
-        _href: string,
-        event: React.MouseEvent<Element> | React.KeyboardEvent<Element>,
-      ) => {
+      const handleNavigate = async (_href: string, event: React.MouseEvent<Element> | React.KeyboardEvent<Element>) => {
         event.preventDefault();
         setIsNavigating(true);
       };
@@ -176,7 +163,7 @@ describe('Breadcrumb Integration', () => {
           <Breadcrumb onNavigate={handleNavigate} disabled={isNavigating}>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+                <BreadcrumbLink href="/home">Home</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator>/</BreadcrumbSeparator>
               <BreadcrumbItem>

@@ -14,7 +14,7 @@ afterEach(() => {
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation((query) => ({
+  value: jest.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
@@ -39,7 +39,7 @@ describe('Tooltip Integration Tests', () => {
             <TooltipTrigger>Controlled tooltip trigger</TooltipTrigger>
             <TooltipContent>This tooltip is controlled externally</TooltipContent>
           </Tooltip>
-          <button onClick={() => setOpen((prev) => !prev)}>Toggle tooltip programmatically</button>
+          <button onClick={() => setOpen(prev => !prev)}>Toggle tooltip programmatically</button>
         </TooltipProvider>
       );
     };
@@ -58,11 +58,11 @@ describe('Tooltip Integration Tests', () => {
   it('keeps ARIA links isolated across multiple tooltip instances', () => {
     render(
       <TooltipProvider>
-        <Tooltip id='first-tip' defaultOpen>
+        <Tooltip id="first-tip" defaultOpen>
           <TooltipTrigger>First</TooltipTrigger>
           <TooltipContent>First tooltip content</TooltipContent>
         </Tooltip>
-        <Tooltip id='second-tip' defaultOpen>
+        <Tooltip id="second-tip" defaultOpen>
           <TooltipTrigger>Second</TooltipTrigger>
           <TooltipContent>Second tooltip content</TooltipContent>
         </Tooltip>

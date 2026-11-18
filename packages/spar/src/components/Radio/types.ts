@@ -136,11 +136,7 @@ export interface RadioItemOwnProps {
  * `<span role="radio">` by default; use `as` for another element that may
  * carry `role="radio"` (not `<label>`, which allows no ARIA role).
  */
-export type RadioItemProps<T extends ElementType = 'span'> = PolymorphicProps<
-  'span',
-  T,
-  RadioItemOwnProps
->;
+export type RadioItemProps<T extends ElementType = 'span'> = PolymorphicProps<'span', T, RadioItemOwnProps>;
 
 /**
  * Internal context interface for Radio.

@@ -15,12 +15,7 @@ import { useDropdownMenuCollectionContext } from './hooks';
  * navigation and typeahead is handled centrally by `DropdownMenuContent`, so it
  * works whether or not the menu is wrapped in a `Viewport`.
  */
-export const DropdownMenuViewport = <T extends ElementType = 'div'>({
-  as,
-  role = 'presentation',
-  ref,
-  ...props
-}: DropdownMenuViewportProps<T>) => {
+export const DropdownMenuViewport = <T extends ElementType = 'div'>({ as, role = 'presentation', ref, ...props }: DropdownMenuViewportProps<T>) => {
   const Component = as || 'div';
   // A Viewport only makes sense inside a Content; enforce that composition contract.
   useDropdownMenuCollectionContext();

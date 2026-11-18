@@ -6,15 +6,7 @@ import { Collapsible } from '../Collapsible';
 /**
  * Individual accordion item providing context for trigger and content components.
  */
-export const AccordionItem = <T extends ElementType = 'div'>({
-  value,
-  disabled: itemDisabled = false,
-  id: providedId,
-  as,
-  children,
-  ref,
-  ...props
-}: AccordionItemProps<T>) => {
+export const AccordionItem = <T extends ElementType = 'div'>({ value, disabled: itemDisabled = false, id: providedId, as, children, ref, ...props }: AccordionItemProps<T>) => {
   const Component = as || 'div';
   const accordionContext = useAccordionContext();
   const generatedId = useId();
@@ -66,16 +58,7 @@ export const AccordionItem = <T extends ElementType = 'div'>({
 
   return (
     <AccordionItemContext.Provider value={itemContextValue}>
-      <Collapsible
-        open={isOpen}
-        onOpenChange={toggle}
-        disabled={isItemDisabled}
-        triggerId={triggerId}
-        contentId={contentId}
-        as={Component}
-        ref={ref}
-        {...props}
-      >
+      <Collapsible open={isOpen} onOpenChange={toggle} disabled={isItemDisabled} triggerId={triggerId} contentId={contentId} as={Component} ref={ref} {...props}>
         {children}
       </Collapsible>
     </AccordionItemContext.Provider>

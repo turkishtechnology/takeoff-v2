@@ -29,7 +29,7 @@ describe('Input - Accessibility Tests', () => {
       <Field invalid required>
         <FieldLabel>Email</FieldLabel>
         <Input>
-          <InputField type='email' />
+          <InputField type="email" />
         </Input>
         <FieldErrorMessage>Email is required</FieldErrorMessage>
       </Field>,
@@ -43,7 +43,7 @@ describe('Input - Accessibility Tests', () => {
       <Field>
         <FieldLabel>Password</FieldLabel>
         <Input>
-          <InputField type='password' />
+          <InputField type="password" />
         </Input>
         <FieldDescription>Use at least 8 characters</FieldDescription>
       </Field>,
@@ -61,7 +61,7 @@ describe('Input - Accessibility Tests', () => {
       <Field invalid>
         <FieldLabel>Password</FieldLabel>
         <Input>
-          <InputField type='password' />
+          <InputField type="password" />
         </Input>
         <FieldDescription>Use at least 8 characters</FieldDescription>
         <FieldErrorMessage>Password is too short</FieldErrorMessage>
@@ -87,7 +87,7 @@ describe('Input - Accessibility Tests', () => {
             <InputField />
           </Input>
         </Field>
-        <button type='button'>Next</button>
+        <button type="button">Next</button>
       </>,
     );
 
@@ -107,14 +107,14 @@ describe('Input - Accessibility Tests', () => {
 
     render(
       <>
-        <button type='button'>Before</button>
+        <button type="button">Before</button>
         <Field disabled>
           <FieldLabel>Disabled Username</FieldLabel>
           <Input>
             <InputField />
           </Input>
         </Field>
-        <button type='button'>After</button>
+        <button type="button">After</button>
       </>,
     );
 
@@ -143,7 +143,7 @@ describe('Input - Accessibility Tests', () => {
     });
     expect(compoundField).toHaveAttribute('data-autofocus', '');
 
-    rerender(<InputField autoFocus aria-label='Standalone' />);
+    rerender(<InputField autoFocus aria-label="Standalone" />);
 
     const standaloneField = screen.getByRole('textbox', { name: 'Standalone' });
     await waitFor(() => {

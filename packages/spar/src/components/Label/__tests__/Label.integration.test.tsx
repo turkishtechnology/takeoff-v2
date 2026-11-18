@@ -9,8 +9,8 @@ describe('Label Integration', () => {
 
     render(
       <div>
-        <Label htmlFor='uncontrolled-email'>Email</Label>
-        <input id='uncontrolled-email' type='email' />
+        <Label htmlFor="uncontrolled-email">Email</Label>
+        <input id="uncontrolled-email" type="email" />
       </div>,
     );
 
@@ -31,13 +31,8 @@ describe('Label Integration', () => {
 
       return (
         <div>
-          <Label htmlFor='controlled-name'>Name</Label>
-          <input
-            id='controlled-name'
-            type='text'
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-          />
+          <Label htmlFor="controlled-name">Name</Label>
+          <input id="controlled-name" type="text" value={value} onChange={event => setValue(event.target.value)} />
         </div>
       );
     };
@@ -56,11 +51,11 @@ describe('Label Integration', () => {
   it('supports independent associations for multiple fields', () => {
     render(
       <form>
-        <Label htmlFor='first-field'>First Field</Label>
-        <input id='first-field' type='text' />
+        <Label htmlFor="first-field">First Field</Label>
+        <input id="first-field" type="text" />
 
-        <Label htmlFor='second-field'>Second Field</Label>
-        <input id='second-field' type='text' />
+        <Label htmlFor="second-field">Second Field</Label>
+        <input id="second-field" type="text" />
       </form>,
     );
 
@@ -73,8 +68,8 @@ describe('Label Integration', () => {
 
     render(
       <div>
-        <Label htmlFor='newsletter'>Subscribe</Label>
-        <input id='newsletter' type='checkbox' />
+        <Label htmlFor="newsletter">Subscribe</Label>
+        <input id="newsletter" type="checkbox" />
       </div>,
     );
 
@@ -88,9 +83,9 @@ describe('Label Integration', () => {
   it('supports fieldset legends via polymorphic as prop', () => {
     render(
       <fieldset>
-        <Label as='legend'>Contact Information</Label>
-        <Label htmlFor='phone'>Phone</Label>
-        <input id='phone' type='tel' />
+        <Label as="legend">Contact Information</Label>
+        <Label htmlFor="phone">Phone</Label>
+        <input id="phone" type="tel" />
       </fieldset>,
     );
 
@@ -106,16 +101,10 @@ describe('Label Integration', () => {
 
       return (
         <div>
-          <Label as='div' htmlFor='custom-checkbox'>
+          <Label as="div" htmlFor="custom-checkbox">
             Custom Subscribe
           </Label>
-          <div
-            id='custom-checkbox'
-            role='checkbox'
-            tabIndex={0}
-            aria-checked={checked}
-            onClick={() => setChecked((prev) => !prev)}
-          >
+          <div id="custom-checkbox" role="checkbox" tabIndex={0} aria-checked={checked} onClick={() => setChecked(prev => !prev)}>
             Toggle
           </div>
         </div>
@@ -138,10 +127,10 @@ describe('Label Integration', () => {
 
     render(
       <div>
-        <Label htmlFor='prevented-checkbox' onClick={handleClick}>
+        <Label htmlFor="prevented-checkbox" onClick={handleClick}>
           Prevented
         </Label>
-        <input id='prevented-checkbox' type='checkbox' />
+        <input id="prevented-checkbox" type="checkbox" />
       </div>,
     );
 
@@ -159,10 +148,10 @@ describe('Label Integration', () => {
 
     render(
       <div>
-        <Label htmlFor='missing-target' onClick={handleClick}>
+        <Label htmlFor="missing-target" onClick={handleClick}>
           Missing Target
         </Label>
-        <input id='different-target' type='text' />
+        <input id="different-target" type="text" />
       </div>,
     );
 

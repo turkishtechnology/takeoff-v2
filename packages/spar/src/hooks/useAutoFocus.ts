@@ -7,10 +7,7 @@ import { useEffect } from 'react';
  * @param ref - The ref to the element to focus
  * @param autoFocus - Whether to focus the element
  */
-export const useAutoFocus = <T extends HTMLElement>(
-  ref: React.RefObject<T | null>,
-  autoFocus: boolean = false,
-) => {
+export const useAutoFocus = <T extends HTMLElement>(ref: React.RefObject<T | null>, autoFocus: boolean = false) => {
   useEffect(() => {
     if (!autoFocus) return;
 

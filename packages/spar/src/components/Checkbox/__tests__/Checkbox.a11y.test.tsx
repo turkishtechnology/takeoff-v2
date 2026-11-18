@@ -24,9 +24,7 @@ describe('Checkbox - Accessibility Tests', () => {
     });
 
     it('passes accessibility checks when indeterminate', async () => {
-      const { container } = render(
-        <Checkbox checked='indeterminate'>Subscribe to newsletter</Checkbox>,
-      );
+      const { container } = render(<Checkbox checked="indeterminate">Subscribe to newsletter</Checkbox>);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -46,8 +44,8 @@ describe('Checkbox - Accessibility Tests', () => {
     it('passes accessibility checks with external label', async () => {
       const { container } = render(
         <div>
-          <label id='checkbox-label'>Subscribe to newsletter</label>
-          <Checkbox aria-labelledby='checkbox-label' />
+          <label id="checkbox-label">Subscribe to newsletter</label>
+          <Checkbox aria-labelledby="checkbox-label" />
         </div>,
       );
       const results = await axe(container);
@@ -55,7 +53,7 @@ describe('Checkbox - Accessibility Tests', () => {
     });
 
     it('passes accessibility checks with aria-label', async () => {
-      const { container } = render(<Checkbox aria-label='Subscribe to newsletter' />);
+      const { container } = render(<Checkbox aria-label="Subscribe to newsletter" />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -79,7 +77,7 @@ describe('Checkbox - Accessibility Tests', () => {
       checkbox = screen.getByRole('checkbox');
       expect(checkbox).toHaveAttribute('aria-checked', 'true');
 
-      rerender(<Checkbox checked='indeterminate' />);
+      rerender(<Checkbox checked="indeterminate" />);
       checkbox = screen.getByRole('checkbox');
       expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
     });
@@ -99,7 +97,7 @@ describe('Checkbox - Accessibility Tests', () => {
     });
 
     it('supports aria-label for accessible name', () => {
-      render(<Checkbox aria-label='Subscribe to newsletter' />);
+      render(<Checkbox aria-label="Subscribe to newsletter" />);
       const checkbox = screen.getByRole('checkbox');
 
       expect(checkbox).toHaveAttribute('aria-label', 'Subscribe to newsletter');
@@ -108,8 +106,8 @@ describe('Checkbox - Accessibility Tests', () => {
     it('supports aria-labelledby for external label', () => {
       render(
         <div>
-          <span id='checkbox-label'>Subscribe to newsletter</span>
-          <Checkbox aria-labelledby='checkbox-label' />
+          <span id="checkbox-label">Subscribe to newsletter</span>
+          <Checkbox aria-labelledby="checkbox-label" />
         </div>,
       );
       const checkbox = screen.getByRole('checkbox');
@@ -120,8 +118,8 @@ describe('Checkbox - Accessibility Tests', () => {
     it('supports aria-describedby for descriptions', () => {
       render(
         <div>
-          <Checkbox aria-describedby='checkbox-desc' />
-          <span id='checkbox-desc'>Get updates about new features</span>
+          <Checkbox aria-describedby="checkbox-desc" />
+          <span id="checkbox-desc">Get updates about new features</span>
         </div>,
       );
       const checkbox = screen.getByRole('checkbox');
@@ -154,9 +152,9 @@ describe('Checkbox - Accessibility Tests', () => {
 
       render(
         <div>
-          <button type='button'>Before</button>
+          <button type="button">Before</button>
           <Checkbox disabled>Subscribe to newsletter</Checkbox>
-          <button type='button'>After</button>
+          <button type="button">After</button>
         </div>,
       );
 
@@ -326,7 +324,7 @@ describe('Checkbox - Accessibility Tests', () => {
     });
 
     it('has accessible name from aria-label', () => {
-      render(<Checkbox aria-label='Subscribe to newsletter' />);
+      render(<Checkbox aria-label="Subscribe to newsletter" />);
 
       expect(screen.getByRole('checkbox', { name: 'Subscribe to newsletter' })).toBeInTheDocument();
     });
@@ -346,7 +344,7 @@ describe('Checkbox - Accessibility Tests', () => {
     });
 
     it('announces indeterminate state correctly', () => {
-      render(<Checkbox checked='indeterminate'>Subscribe to newsletter</Checkbox>);
+      render(<Checkbox checked="indeterminate">Subscribe to newsletter</Checkbox>);
       const checkbox = screen.getByRole('checkbox');
 
       expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
@@ -381,11 +379,9 @@ describe('Checkbox - Accessibility Tests', () => {
     });
 
     it('exposes correct name via aria-label', () => {
-      render(<Checkbox aria-label='Accept terms and conditions' />);
+      render(<Checkbox aria-label="Accept terms and conditions" />);
 
-      expect(
-        screen.getByRole('checkbox', { name: 'Accept terms and conditions' }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole('checkbox', { name: 'Accept terms and conditions' })).toBeInTheDocument();
     });
 
     it('exposes correct value (checked state)', () => {
@@ -398,7 +394,7 @@ describe('Checkbox - Accessibility Tests', () => {
       checkbox = screen.getByRole('checkbox');
       expect(checkbox).toHaveAttribute('aria-checked', 'true');
 
-      rerender(<Checkbox checked='indeterminate'>Subscribe to newsletter</Checkbox>);
+      rerender(<Checkbox checked="indeterminate">Subscribe to newsletter</Checkbox>);
       checkbox = screen.getByRole('checkbox');
       expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
     });
@@ -408,10 +404,10 @@ describe('Checkbox - Accessibility Tests', () => {
     it('maintains accessibility when used with external labels', async () => {
       const { container } = render(
         <div>
-          <label htmlFor='newsletter-checkbox'>Subscribe to newsletter</label>
-          <Checkbox id='newsletter-checkbox' aria-labelledby='newsletter-label' />
-          <span id='newsletter-label'>Subscribe to newsletter</span>
-          <span id='newsletter-desc'>Get updates about new features and releases</span>
+          <label htmlFor="newsletter-checkbox">Subscribe to newsletter</label>
+          <Checkbox id="newsletter-checkbox" aria-labelledby="newsletter-label" />
+          <span id="newsletter-label">Subscribe to newsletter</span>
+          <span id="newsletter-desc">Get updates about new features and releases</span>
         </div>,
       );
 
@@ -427,10 +423,10 @@ describe('Checkbox - Accessibility Tests', () => {
         <form>
           <fieldset>
             <legend>Newsletter Preferences</legend>
-            <Checkbox name='weekly' required>
+            <Checkbox name="weekly" required>
               Weekly newsletter
             </Checkbox>
-            <Checkbox name='monthly'>Monthly newsletter</Checkbox>
+            <Checkbox name="monthly">Monthly newsletter</Checkbox>
           </fieldset>
         </form>,
       );

@@ -1,11 +1,4 @@
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useCallback,
-  useRef,
-  type ElementType,
-} from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useCallback, useRef, type ElementType } from 'react';
 import { useSelectContext, useSelectCollectionContext, SelectItemContext } from './hooks';
 import type { SelectItemProps, SelectItemContextValue, SelectItemRenderProps } from './types';
 import { useMergedRef } from '@/hooks';
@@ -133,7 +126,7 @@ export const SelectItem = <T extends ElementType = 'div'>({
   };
 
   const ariaAttributes = {
-    role: 'option',
+    'role': 'option',
     'aria-selected': isSelected,
     'aria-disabled': disabled || undefined,
   };
@@ -156,9 +149,7 @@ export const SelectItem = <T extends ElementType = 'div'>({
 
   return (
     <SelectItemContext.Provider value={itemContextValue}>
-      <Component {...itemProps}>
-        {typeof children === 'function' ? children(renderProps) : children}
-      </Component>
+      <Component {...itemProps}>{typeof children === 'function' ? children(renderProps) : children}</Component>
     </SelectItemContext.Provider>
   );
 };

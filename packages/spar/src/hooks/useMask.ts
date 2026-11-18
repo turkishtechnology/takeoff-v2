@@ -1,13 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type RefObject,
-} from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type RefObject } from 'react';
 import type { Mask, MaskChangeMeta, MaskPattern, MaskResolverResult } from '@/types';
 import { DEFAULT_INSIGNIFICANT, mapCaret } from '@/utils/caret';
 import { applyMaskPattern, isMaskResolver, presetResolver, type MaskResult } from '@/utils/mask';
@@ -129,8 +120,7 @@ type MaskRun = MaskResult & {
 };
 
 /** Default `raw`: the value with every separator removed. */
-const stripInsignificant = (value: string, predicate: RegExp): string =>
-  [...value].filter((char) => !isInsignificantChar(char, predicate)).join('');
+const stripInsignificant = (value: string, predicate: RegExp): string => [...value].filter(char => !isInsignificantChar(char, predicate)).join('');
 
 /**
  * Runs a mask over a candidate string.
@@ -142,11 +132,7 @@ const stripInsignificant = (value: string, predicate: RegExp): string =>
  * A resolver returns the formatted value only; its caret is derived by anchor
  * counting like every other layer, unless it explicitly overrides it.
  */
-const runMask = (
-  mask: Mask,
-  input: string,
-  context: { caret: number; previousValue: string; inputType?: string | undefined },
-): MaskRun => {
+const runMask = (mask: Mask, input: string, context: { caret: number; previousValue: string; inputType?: string | undefined }): MaskRun => {
   const resolver = isMaskResolver(mask) ? mask : presetResolver(mask);
 
   if (resolver) {
@@ -180,14 +166,8 @@ const runMask = (
  * toward anyway — so an edit at the end keeps the caret at the end, and only
  * mid-string edits are anchor-counted.
  */
-const resolveCaret = (
-  from: string,
-  caret: number,
-  result: { value: string; insignificant: RegExp },
-): number =>
-  caret >= from.length
-    ? result.value.length
-    : mapCaret(from, caret, result.value, result.insignificant);
+const resolveCaret = (from: string, caret: number, result: { value: string; insignificant: RegExp }): number =>
+  caret >= from.length ? result.value.length : mapCaret(from, caret, result.value, result.insignificant);
 
 /**
  * Whether Backspace on a delimiter should also remove the character before it.
@@ -195,27 +175,16 @@ const resolveCaret = (
  * Read the same way from every layer: an option on an engine pattern, a property
  * on a resolver. Both spell it `backspace`, both default to true.
  */
-const allowsBackspaceThrough = (mask: Mask): boolean =>
-  (mask as { backspace?: boolean }).backspace !== false;
+const allowsBackspaceThrough = (mask: Mask): boolean => (mask as { backspace?: boolean }).backspace !== false;
 
-export const useMask = ({
-  mask,
-  value,
-  defaultValue,
-  onValueChange,
-  elementRef,
-}: UseMaskOptions): UseMaskReturn => {
+export const useMask = ({ mask, value, defaultValue, onValueChange, elementRef }: UseMaskOptions): UseMaskReturn => {
   const active = mask !== undefined;
 
   const everActive = useRef(active);
   if (active) everActive.current = true;
   const controlled = everActive.current;
 
-  const [storedValue, setStoredValue] = useControlledState<string>(
-    value,
-    defaultValue ?? '',
-    undefined,
-  );
+  const [storedValue, setStoredValue] = useControlledState<string>(value, defaultValue ?? '', undefined);
 
   const currentValue = storedValue ?? '';
 
@@ -231,13 +200,7 @@ export const useMask = ({
 
   // Masked before render, so a consumer echoing back an unmasked value cannot
   // desync the display.
-  const rendered = useMemo(
-    () =>
-      mask
-        ? runMask(mask, currentValue, { caret: currentValue.length, previousValue: currentValue })
-        : null,
-    [mask, currentValue],
-  );
+  const rendered = useMemo(() => (mask ? runMask(mask, currentValue, { caret: currentValue.length, previousValue: currentValue }) : null), [mask, currentValue]);
 
   const displayValue = composition ?? (rendered ? rendered.value : currentValue);
 
@@ -299,10 +262,7 @@ export const useMask = ({
       // Only a re-render can move the caret out from under us, and only a change
       // to what the field currently shows causes one. Arming it unconditionally
       // leaves an offset behind that gets applied to the next unrelated render.
-      pendingCaret.current =
-        result.value === latest.current.displayValue
-          ? null
-          : { caret: nextCaret, value: result.value };
+      pendingCaret.current = result.value === latest.current.displayValue ? null : { caret: nextCaret, value: result.value };
 
       setStoredValue(result.value);
 
@@ -418,11 +378,7 @@ export const useMask = ({
        * removed is refused. Masks that *add* significant characters (a zero-pad)
        * are unaffected — only losing more than asked is disqualifying.
        */
-      const keepsTheRest = (
-        attempt: ReturnType<typeof deleteRange>,
-        from: number,
-        to: number,
-      ): boolean => {
+      const keepsTheRest = (attempt: ReturnType<typeof deleteRange>, from: number, to: number): boolean => {
         const removed = stripInsignificant(elementValue.slice(from, to), predicate).length;
         const before = stripInsignificant(elementValue, predicate).length;
         return stripInsignificant(attempt.result.value, predicate).length >= before - removed;
@@ -597,18 +553,13 @@ export const useMask = ({
       const result = runMask(currentMask, nextRaw, {
         caret: caretInRaw,
         previousValue: latest.current.displayValue,
-        ...(event.nativeEvent instanceof InputEvent && event.nativeEvent.inputType
-          ? { inputType: event.nativeEvent.inputType }
-          : {}),
+        ...(event.nativeEvent instanceof InputEvent && event.nativeEvent.inputType ? { inputType: event.nativeEvent.inputType } : {}),
       });
 
       // Nothing survived the mask: anchor counting would count the rejected
       // characters and walk the caret past them, leaving the next real one a
       // position too far right.
-      const caret =
-        origin && origin.value === result.value
-          ? origin.caret
-          : resolveCaret(nextRaw, caretInRaw, result);
+      const caret = origin && origin.value === result.value ? origin.caret : resolveCaret(nextRaw, caretInRaw, result);
 
       pushHistory({ value: result.value, caret });
       commit(result, caret);
@@ -658,10 +609,7 @@ export const useMask = ({
     // Required by the spec: an inert mask must say why. Stripped in production
     // by the `NODE_ENV` guard above.
     // eslint-disable-next-line no-console
-    console.warn(
-      `[spar] Input mask regex /${source}/ cannot be matched incrementally: ${reason}. ` +
-        'The mask is inactive for this field; input passes through unmasked.',
-    );
+    console.warn(`[spar] Input mask regex /${source}/ cannot be matched incrementally: ${reason}. ` + 'The mask is inactive for this field; input passes through unmasked.');
   }, [mask, rendered?.unsupportedReason]);
 
   return {

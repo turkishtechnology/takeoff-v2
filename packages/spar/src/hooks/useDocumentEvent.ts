@@ -21,12 +21,7 @@ import { useEffect, useRef } from 'react';
  * }, isOpen);
  * ```
  */
-export function useDocumentEvent<K extends keyof DocumentEventMap>(
-  event: K,
-  handler: (e: DocumentEventMap[K]) => void,
-  enabled = true,
-  capture = false,
-): void {
+export function useDocumentEvent<K extends keyof DocumentEventMap>(event: K, handler: (e: DocumentEventMap[K]) => void, enabled = true, capture = false): void {
   const handlerRef = useRef(handler);
   handlerRef.current = handler;
 

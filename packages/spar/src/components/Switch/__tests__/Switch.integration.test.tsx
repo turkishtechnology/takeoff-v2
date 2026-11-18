@@ -10,7 +10,7 @@ describe('Switch Integration', () => {
 
     render(
       <form
-        onSubmit={(event) => {
+        onSubmit={event => {
           event.preventDefault();
           const formData = new FormData(event.currentTarget);
           handleSubmit({
@@ -19,11 +19,11 @@ describe('Switch Integration', () => {
           });
         }}
       >
-        <Switch name='notifications' defaultChecked>
+        <Switch name="notifications" defaultChecked>
           Notifications
         </Switch>
-        <Switch name='darkMode'>Dark mode</Switch>
-        <button type='submit'>Save</button>
+        <Switch name="darkMode">Dark mode</Switch>
+        <button type="submit">Save</button>
       </form>,
     );
 
@@ -48,24 +48,18 @@ describe('Switch Integration', () => {
 
       return (
         <form
-          onSubmit={(event) => {
+          onSubmit={event => {
             event.preventDefault();
             handleSubmit(settings);
           }}
         >
-          <Switch
-            checked={settings.email}
-            onChange={(checked) => setSettings((prev) => ({ ...prev, email: checked }))}
-          >
+          <Switch checked={settings.email} onChange={checked => setSettings(prev => ({ ...prev, email: checked }))}>
             Email alerts
           </Switch>
-          <Switch
-            checked={settings.sms}
-            onChange={(checked) => setSettings((prev) => ({ ...prev, sms: checked }))}
-          >
+          <Switch checked={settings.sms} onChange={checked => setSettings(prev => ({ ...prev, sms: checked }))}>
             SMS alerts
           </Switch>
-          <button type='submit'>Submit</button>
+          <button type="submit">Submit</button>
         </form>
       );
     };
@@ -86,11 +80,11 @@ describe('Switch Integration', () => {
     const user = userEvent.setup();
 
     render(
-      <form aria-label='preferences'>
-        <Switch name='terms' required>
+      <form aria-label="preferences">
+        <Switch name="terms" required>
           Terms
         </Switch>
-        <Switch name='privacy' required>
+        <Switch name="privacy" required>
           Privacy
         </Switch>
       </form>,
@@ -142,19 +136,19 @@ describe('Switch Integration', () => {
 
     render(
       <>
-        <Switch name='marketing' form='preferences-form'>
+        <Switch name="marketing" form="preferences-form">
           Marketing emails
         </Switch>
 
         <form
-          id='preferences-form'
-          onSubmit={(event) => {
+          id="preferences-form"
+          onSubmit={event => {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
             handleSubmit(formData.get('marketing'));
           }}
         >
-          <button type='submit'>Submit preferences</button>
+          <button type="submit">Submit preferences</button>
         </form>
       </>,
     );

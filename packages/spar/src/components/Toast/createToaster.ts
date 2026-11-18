@@ -1,12 +1,4 @@
-import type {
-  CreateToasterOptions,
-  ToastData,
-  ToasterController,
-  ToastOptions,
-  ToastPromiseOptions,
-  ToastType,
-  ToastUpdateOptions,
-} from './types';
+import type { CreateToasterOptions, ToastData, ToasterController, ToastOptions, ToastPromiseOptions, ToastType, ToastUpdateOptions } from './types';
 
 const DEFAULT_DURATION = 5000;
 const DEFAULT_REMOVE_DELAY = 200;
@@ -21,8 +13,7 @@ const defaultIdFactory = () => {
   return `toast-${idCounter}`;
 };
 
-const getDefaultAnnouncement = (type: ToastType) =>
-  type === 'error' || type === 'warning' ? 'assertive' : 'polite';
+const getDefaultAnnouncement = (type: ToastType) => (type === 'error' || type === 'warning' ? 'assertive' : 'polite');
 
 export const createToaster = (options: CreateToasterOptions = {}): ToasterController => {
   const listeners = new Set<() => void>();
@@ -38,7 +29,7 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
   const idFactory = options.idFactory ?? defaultIdFactory;
 
   const emit = () => {
-    listeners.forEach((listener) => listener());
+    listeners.forEach(listener => listener());
   };
 
   const clearTimer = (id: string) => {
@@ -74,8 +65,8 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
     new Set(
       toasts
         .slice(0, maxVisibleToasts)
-        .filter((toast) => toast.status === 'visible')
-        .map((toast) => toast.id),
+        .filter(toast => toast.status === 'visible')
+        .map(toast => toast.id),
     );
 
   const pauseTimer = (toast: ToastData) => {
@@ -94,12 +85,7 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
   };
 
   const scheduleTimer = (toast: ToastData) => {
-    if (
-      timers.has(toast.id) ||
-      toast.duration === null ||
-      toast.remaining === null ||
-      toast.remaining <= 0
-    ) {
+    if (timers.has(toast.id) || toast.duration === null || toast.remaining === null || toast.remaining <= 0) {
       return toast;
     }
 
@@ -108,7 +94,7 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
       toast.id,
       setTimeout(() => {
         const currentVisibleIds = visibleToastIds();
-        const current = toasts.find((item) => item.id === toast.id);
+        const current = toasts.find(item => item.id === toast.id);
 
         if (!current || current.status !== 'visible' || !currentVisibleIds.has(current.id)) {
           return;
@@ -124,7 +110,7 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
   const syncTimers = () => {
     syncStatuses();
     const currentVisibleIds = visibleToastIds();
-    toasts = toasts.map((toast) => {
+    toasts = toasts.map(toast => {
       if (toast.status !== 'visible' || toast.duration === null || toast.remaining === null) {
         clearTimer(toast.id);
         return toast;
@@ -139,7 +125,7 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
   };
 
   const remove = (id: string) => {
-    const removed = toasts.find((toast) => toast.id === id);
+    const removed = toasts.find(toast => toast.id === id);
 
     if (!removed) {
       return;
@@ -147,7 +133,7 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
 
     clearTimer(id);
     clearRemoveTimer(id);
-    toasts = toasts.filter((toast) => toast.id !== id);
+    toasts = toasts.filter(toast => toast.id !== id);
     options.onRemove?.(removed);
     syncTimers();
     emit();
@@ -175,13 +161,13 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
 
   const createWithType = (toastOptions: ToastOptions, type?: ToastType) => {
     const toast = normalizeToast(toastOptions, type);
-    const existing = toasts.some((item) => item.id === toast.id);
+    const existing = toasts.some(item => item.id === toast.id);
 
     clearTimer(toast.id);
     clearRemoveTimer(toast.id);
-    toasts = [toast, ...toasts.filter((item) => item.id !== toast.id)];
+    toasts = [toast, ...toasts.filter(item => item.id !== toast.id)];
     syncTimers();
-    const current = toasts.find((item) => item.id === toast.id) ?? toast;
+    const current = toasts.find(item => item.id === toast.id) ?? toast;
     if (existing) {
       options.onUpdate?.(current);
     } else {
@@ -193,7 +179,7 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
   };
 
   const update = (id: string, updateOptions: ToastUpdateOptions) => {
-    const current = toasts.find((toast) => toast.id === id);
+    const current = toasts.find(toast => toast.id === id);
 
     if (!current) {
       return;
@@ -201,41 +187,35 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
 
     clearRemoveTimer(id);
 
-    const duration =
-      updateOptions.duration === undefined ? current.duration : updateOptions.duration;
+    const duration = updateOptions.duration === undefined ? current.duration : updateOptions.duration;
 
     const nextType = updateOptions.type ?? current.type;
     const next: ToastData = {
       ...current,
       title: updateOptions.title === undefined ? current.title : updateOptions.title,
-      description:
-        updateOptions.description === undefined ? current.description : updateOptions.description,
+      description: updateOptions.description === undefined ? current.description : updateOptions.description,
       type: nextType,
       duration,
       remaining: duration,
       status: 'visible',
-      announcement:
-        updateOptions.announcement ??
-        (updateOptions.type === undefined
-          ? current.announcement
-          : getDefaultAnnouncement(nextType)),
+      announcement: updateOptions.announcement ?? (updateOptions.type === undefined ? current.announcement : getDefaultAnnouncement(nextType)),
       action: updateOptions.action === undefined ? current.action : updateOptions.action,
       dismissible: updateOptions.dismissible ?? current.dismissible,
       data: updateOptions.data === undefined ? current.data : updateOptions.data,
       createdAt: now(),
     };
 
-    toasts = toasts.map((toast) => (toast.id === id ? next : toast));
+    toasts = toasts.map(toast => (toast.id === id ? next : toast));
     syncTimers();
-    options.onUpdate?.(toasts.find((toast) => toast.id === id) ?? next);
+    options.onUpdate?.(toasts.find(toast => toast.id === id) ?? next);
     emit();
   };
 
   const dismiss = (id?: string) => {
-    const ids = id ? [id] : toasts.map((toast) => toast.id);
+    const ids = id ? [id] : toasts.map(toast => toast.id);
 
-    ids.forEach((toastId) => {
-      const toast = toasts.find((item) => item.id === toastId);
+    ids.forEach(toastId => {
+      const toast = toasts.find(item => item.id === toastId);
 
       if (!toast || toast.status === 'dismissing') {
         return;
@@ -243,7 +223,7 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
 
       clearTimer(toastId);
       const dismissed = { ...toast, status: 'dismissing' as const };
-      toasts = toasts.map((item) => (item.id === toastId ? dismissed : item));
+      toasts = toasts.map(item => (item.id === toastId ? dismissed : item));
       options.onDismiss?.(dismissed);
 
       if (removeDelay <= 0) {
@@ -263,22 +243,17 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
   };
 
   const pause = (id?: string) => {
-    const ids = id ? [id] : toasts.map((toast) => toast.id);
+    const ids = id ? [id] : toasts.map(toast => toast.id);
 
-    ids.forEach((toastId) => {
-      const toast = toasts.find((item) => item.id === toastId);
+    ids.forEach(toastId => {
+      const toast = toasts.find(item => item.id === toastId);
 
-      if (
-        !toast ||
-        toast.duration === null ||
-        toast.remaining === null ||
-        toast.status !== 'visible'
-      ) {
+      if (!toast || toast.duration === null || toast.remaining === null || toast.status !== 'visible') {
         return;
       }
 
       const paused = pauseTimer(toast);
-      toasts = toasts.map((item) => (item.id === toastId ? paused : item));
+      toasts = toasts.map(item => (item.id === toastId ? paused : item));
       options.onPause?.(paused);
     });
 
@@ -286,22 +261,17 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
   };
 
   const resume = (id?: string) => {
-    const ids = id ? [id] : toasts.map((toast) => toast.id);
+    const ids = id ? [id] : toasts.map(toast => toast.id);
 
-    ids.forEach((toastId) => {
-      const toast = toasts.find((item) => item.id === toastId);
+    ids.forEach(toastId => {
+      const toast = toasts.find(item => item.id === toastId);
 
-      if (
-        !toast ||
-        toast.duration === null ||
-        toast.remaining === null ||
-        toast.status !== 'visible'
-      ) {
+      if (!toast || toast.duration === null || toast.remaining === null || toast.status !== 'visible') {
         return;
       }
 
       const resumed = { ...toast };
-      toasts = toasts.map((item) => (item.id === toastId ? resumed : item));
+      toasts = toasts.map(item => (item.id === toastId ? resumed : item));
       options.onResume?.(resumed);
     });
 
@@ -311,18 +281,18 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
 
   const clear = () => {
     const removed = toasts;
-    timers.forEach((timer) => clearTimeout(timer));
-    removeTimers.forEach((timer) => clearTimeout(timer));
+    timers.forEach(timer => clearTimeout(timer));
+    removeTimers.forEach(timer => clearTimeout(timer));
     timers.clear();
     removeTimers.clear();
     toasts = [];
-    removed.forEach((toast) => options.onRemove?.(toast));
+    removed.forEach(toast => options.onRemove?.(toast));
     emit();
   };
 
   const destroy = () => {
-    timers.forEach((timer) => clearTimeout(timer));
-    removeTimers.forEach((timer) => clearTimeout(timer));
+    timers.forEach(timer => clearTimeout(timer));
+    removeTimers.forEach(timer => clearTimeout(timer));
     timers.clear();
     removeTimers.clear();
     listeners.clear();
@@ -332,17 +302,11 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
   };
 
   const promise = async <T>(promiseValue: Promise<T>, promiseOptions: ToastPromiseOptions<T>) => {
-    const id = createWithType(
-      { duration: null, ...promiseOptions.loading },
-      promiseOptions.loading.type ?? 'loading',
-    );
+    const id = createWithType({ duration: null, ...promiseOptions.loading }, promiseOptions.loading.type ?? 'loading');
 
     try {
       const value = await promiseValue;
-      const successOptions =
-        typeof promiseOptions.success === 'function'
-          ? promiseOptions.success(value)
-          : promiseOptions.success;
+      const successOptions = typeof promiseOptions.success === 'function' ? promiseOptions.success(value) : promiseOptions.success;
 
       update(id, {
         duration: defaultDuration,
@@ -351,10 +315,7 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
       });
       return value;
     } catch (error) {
-      const errorOptions =
-        typeof promiseOptions.error === 'function'
-          ? promiseOptions.error(error)
-          : promiseOptions.error;
+      const errorOptions = typeof promiseOptions.error === 'function' ? promiseOptions.error(error) : promiseOptions.error;
 
       update(id, {
         duration: defaultDuration,
@@ -375,19 +336,18 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    pageIdleCleanup = () =>
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    pageIdleCleanup = () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }
 
   return {
     placement,
     maxVisibleToasts,
-    create: (toastOptions) => createWithType(toastOptions),
-    success: (toastOptions) => createWithType(toastOptions, 'success'),
-    error: (toastOptions) => createWithType(toastOptions, 'error'),
-    warning: (toastOptions) => createWithType(toastOptions, 'warning'),
-    info: (toastOptions) => createWithType(toastOptions, 'info'),
-    loading: (toastOptions) => createWithType({ duration: null, ...toastOptions }, 'loading'),
+    create: toastOptions => createWithType(toastOptions),
+    success: toastOptions => createWithType(toastOptions, 'success'),
+    error: toastOptions => createWithType(toastOptions, 'error'),
+    warning: toastOptions => createWithType(toastOptions, 'warning'),
+    info: toastOptions => createWithType(toastOptions, 'info'),
+    loading: toastOptions => createWithType({ duration: null, ...toastOptions }, 'loading'),
     update,
     dismiss,
     pause,
@@ -395,7 +355,7 @@ export const createToaster = (options: CreateToasterOptions = {}): ToasterContro
     clear,
     destroy,
     promise,
-    subscribe: (listener) => {
+    subscribe: listener => {
       listeners.add(listener);
       return () => listeners.delete(listener);
     },

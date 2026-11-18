@@ -5,12 +5,7 @@ import { TooltipProviderContext } from './hooks';
 /**
  * Provides shared configuration for multiple tooltip instances
  */
-export const TooltipProvider = ({
-  children,
-  delayDuration = 700,
-  skipDelayDuration = 300,
-  disableHoverableContent = false,
-}: TooltipProviderProps) => {
+export const TooltipProvider = ({ children, delayDuration = 700, skipDelayDuration = 300, disableHoverableContent = false }: TooltipProviderProps) => {
   const [skipDelay, setSkipDelay] = useState(false);
   const skipDelayTimerRef = useRef<number | null>(null);
 
@@ -56,11 +51,7 @@ export const TooltipProvider = ({
     };
   }, [clearSkipDelayTimer]);
 
-  return (
-    <TooltipProviderContext.Provider value={contextValue}>
-      {children}
-    </TooltipProviderContext.Provider>
-  );
+  return <TooltipProviderContext.Provider value={contextValue}>{children}</TooltipProviderContext.Provider>;
 };
 
 TooltipProvider.displayName = 'TooltipProvider';

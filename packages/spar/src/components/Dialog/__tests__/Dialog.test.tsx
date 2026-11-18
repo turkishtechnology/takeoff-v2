@@ -1,14 +1,6 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  Dialog,
-  DialogTrigger,
-  DialogOverlay,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from '../index';
+import { Dialog, DialogTrigger, DialogOverlay, DialogContent, DialogTitle, DialogDescription, DialogClose } from '../index';
 
 // Mock portal rendering for testing
 jest.mock('react-dom', () => ({
@@ -30,7 +22,7 @@ describe('Dialog', () => {
       const user = userEvent.setup();
 
       render(
-        <Dialog id='settings-dialog'>
+        <Dialog id="settings-dialog">
           <DialogTrigger>Open</DialogTrigger>
           <DialogContent>
             <DialogTitle>Settings</DialogTitle>
@@ -100,7 +92,7 @@ describe('Dialog', () => {
     it('should set modal to true by default', () => {
       render(
         <Dialog defaultOpen={true}>
-          <DialogOverlay data-testid='overlay' />
+          <DialogOverlay data-testid="overlay" />
         </Dialog>,
       );
 
@@ -110,7 +102,7 @@ describe('Dialog', () => {
     it('should handle non-modal dialogs', () => {
       render(
         <Dialog modal={false} defaultOpen={true}>
-          <DialogOverlay data-testid='overlay' />
+          <DialogOverlay data-testid="overlay" />
         </Dialog>,
       );
 
@@ -372,7 +364,7 @@ describe('Dialog', () => {
     it('should support polymorphic as prop', () => {
       render(
         <Dialog>
-          <DialogTrigger as='div'>Open Dialog</DialogTrigger>
+          <DialogTrigger as="div">Open Dialog</DialogTrigger>
         </Dialog>,
       );
 
@@ -415,7 +407,7 @@ describe('Dialog', () => {
     it('should not render when dialog is closed', () => {
       render(
         <Dialog>
-          <DialogOverlay data-testid='overlay' />
+          <DialogOverlay data-testid="overlay" />
         </Dialog>,
       );
 
@@ -425,7 +417,7 @@ describe('Dialog', () => {
     it('should render when dialog is open', () => {
       render(
         <Dialog defaultOpen={true}>
-          <DialogOverlay data-testid='overlay' />
+          <DialogOverlay data-testid="overlay" />
         </Dialog>,
       );
 
@@ -436,7 +428,7 @@ describe('Dialog', () => {
     it('should render when forceMount is true (without portal)', () => {
       render(
         <Dialog forceMount>
-          <DialogOverlay data-testid='overlay' />
+          <DialogOverlay data-testid="overlay" />
         </Dialog>,
       );
 
@@ -448,7 +440,7 @@ describe('Dialog', () => {
       const user = userEvent.setup();
       render(
         <Dialog defaultOpen={true}>
-          <DialogOverlay data-testid='overlay'>
+          <DialogOverlay data-testid="overlay">
             <DialogContent>
               <DialogTitle>Title</DialogTitle>
             </DialogContent>
@@ -469,8 +461,8 @@ describe('Dialog', () => {
       const user = userEvent.setup();
       render(
         <Dialog defaultOpen={true}>
-          <DialogOverlay data-testid='overlay'>
-            <DialogContent data-testid='content'>
+          <DialogOverlay data-testid="overlay">
+            <DialogContent data-testid="content">
               <DialogTitle>Title</DialogTitle>
               <button>Inside button</button>
             </DialogContent>
@@ -488,7 +480,7 @@ describe('Dialog', () => {
     it('should support polymorphic as prop', () => {
       render(
         <Dialog defaultOpen={true}>
-          <DialogOverlay as='section' data-testid='overlay' />
+          <DialogOverlay as="section" data-testid="overlay" />
         </Dialog>,
       );
 
@@ -501,7 +493,7 @@ describe('Dialog', () => {
       const onClick = jest.fn();
       render(
         <Dialog defaultOpen={true}>
-          <DialogOverlay onClick={onClick} data-testid='overlay' />
+          <DialogOverlay onClick={onClick} data-testid="overlay" />
         </Dialog>,
       );
 
@@ -542,7 +534,7 @@ describe('Dialog', () => {
     it('should support alertdialog role', () => {
       render(
         <Dialog defaultOpen={true}>
-          <DialogContent role='alertdialog'>
+          <DialogContent role="alertdialog">
             <DialogTitle>Alert Title</DialogTitle>
           </DialogContent>
         </Dialog>,
@@ -554,7 +546,7 @@ describe('Dialog', () => {
     it('should not render when dialog is closed', () => {
       render(
         <Dialog>
-          <DialogContent data-testid='content'>
+          <DialogContent data-testid="content">
             <DialogTitle>Title</DialogTitle>
           </DialogContent>
         </Dialog>,
@@ -566,7 +558,7 @@ describe('Dialog', () => {
     it('should render when forceMount is true (without portal)', () => {
       render(
         <Dialog forceMount>
-          <DialogContent data-testid='content'>
+          <DialogContent data-testid="content">
             <DialogTitle>Title</DialogTitle>
           </DialogContent>
         </Dialog>,
@@ -579,7 +571,7 @@ describe('Dialog', () => {
     it('should support polymorphic as prop', () => {
       render(
         <Dialog defaultOpen={true}>
-          <DialogContent as='section' data-testid='content'>
+          <DialogContent as="section" data-testid="content">
             <DialogTitle>Title</DialogTitle>
           </DialogContent>
         </Dialog>,
@@ -623,7 +615,7 @@ describe('Dialog', () => {
       render(
         <Dialog defaultOpen={true}>
           <DialogContent>
-            <DialogTitle as='div' data-testid='title'>
+            <DialogTitle as="div" data-testid="title">
               Dialog Title
             </DialogTitle>
           </DialogContent>
@@ -657,7 +649,7 @@ describe('Dialog', () => {
         <Dialog defaultOpen={true}>
           <DialogContent>
             <DialogTitle>Title</DialogTitle>
-            <DialogDescription as='div' data-testid='description'>
+            <DialogDescription as="div" data-testid="description">
               This is a description
             </DialogDescription>
           </DialogContent>
@@ -750,7 +742,7 @@ describe('Dialog', () => {
         <Dialog defaultOpen={true}>
           <DialogContent>
             <DialogTitle>Title</DialogTitle>
-            <DialogClose as='div' data-testid='close'>
+            <DialogClose as="div" data-testid="close">
               Close
             </DialogClose>
           </DialogContent>

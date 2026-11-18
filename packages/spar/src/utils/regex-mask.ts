@@ -61,9 +61,7 @@ export interface MatcherScanner {
 }
 
 /** Outcome of {@link createIncrementalMatcher}. */
-export type MatcherCompileResult =
-  | { ok: true; matcher: IncrementalMatcher; scan: () => MatcherScanner }
-  | { ok: false; reason: string };
+export type MatcherCompileResult = { ok: true; matcher: IncrementalMatcher; scan: () => MatcherScanner } | { ok: false; reason: string };
 
 type CharTest = (char: string) => boolean;
 
@@ -135,21 +133,21 @@ interface ParseFlags {
 
 /** Escapes that stand for a whole class of characters. */
 const CLASS_ESCAPES: Record<string, CharTest> = {
-  d: (char) => char >= '0' && char <= '9',
-  D: (char) => !(char >= '0' && char <= '9'),
-  w: (char) => /^[A-Za-z0-9_]$/u.test(char),
-  W: (char) => !/^[A-Za-z0-9_]$/u.test(char),
-  s: (char) => /^\s$/u.test(char),
-  S: (char) => !/^\s$/u.test(char),
+  d: char => char >= '0' && char <= '9',
+  D: char => !(char >= '0' && char <= '9'),
+  w: char => /^[A-Za-z0-9_]$/u.test(char),
+  W: char => !/^[A-Za-z0-9_]$/u.test(char),
+  s: char => /^\s$/u.test(char),
+  S: char => !/^\s$/u.test(char),
 };
 
 /** Escapes that stand for one non-printable character. */
 const CONTROL_LITERALS: Record<string, string> = {
-  n: '\n',
-  t: '\t',
-  r: '\r',
-  f: '\f',
-  v: '\v',
+  'n': '\n',
+  't': '\t',
+  'r': '\r',
+  'f': '\f',
+  'v': '\v',
   '0': '\0',
 };
 
@@ -174,10 +172,7 @@ const parse = (src: string, flags: ParseFlags): AstNode => {
   const codePointOf = (char: string): number => char.codePointAt(0) ?? -1;
 
   /** A single literal character; folded to both cases under `i`. */
-  const literalTest = (literal: string): CharTest =>
-    flags.ignoreCase
-      ? (char) => char === literal || char.toLowerCase() === literal.toLowerCase()
-      : (char) => char === literal;
+  const literalTest = (literal: string): CharTest => (flags.ignoreCase ? char => char === literal || char.toLowerCase() === literal.toLowerCase() : char => char === literal);
 
   /** An inclusive `lo-hi` range, compared by code point so astral bounds work. */
   const rangeTest = (lo: string, hi: string): CharTest => {
@@ -188,9 +183,7 @@ const parse = (src: string, flags: ParseFlags): AstNode => {
       return code >= low && code <= high;
     };
 
-    return flags.ignoreCase
-      ? (char) => inRange(char) || inRange(char.toLowerCase()) || inRange(char.toUpperCase())
-      : inRange;
+    return flags.ignoreCase ? char => inRange(char) || inRange(char.toLowerCase()) || inRange(char.toUpperCase()) : inRange;
   };
 
   const readHex = (count: number): string => {
@@ -245,7 +238,7 @@ const parse = (src: string, flags: ParseFlags): AstNode => {
     } catch {
       throw new UnsupportedRegexError(`\\p{${body}} is not a known unicode property`);
     }
-    return { test: (char) => property.test(char) };
+    return { test: char => property.test(char) };
   };
 
   /**
@@ -411,8 +404,8 @@ const parse = (src: string, flags: ParseFlags): AstNode => {
       type: 'char',
       // Negation applies to the union, after each member has been case-folded:
       // folding the result instead would make `[^a-z]` under `i` accept `A`.
-      match: (candidate) => {
-        const hit = tests.some((test) => test(candidate));
+      match: candidate => {
+        const hit = tests.some(test => test(candidate));
         return negated ? !hit : hit;
       },
     };
@@ -451,7 +444,7 @@ const parse = (src: string, flags: ParseFlags): AstNode => {
       next();
       return {
         type: 'char',
-        match: flags.dotAll ? () => true : (candidate) => !LINE_TERMINATOR.test(candidate),
+        match: flags.dotAll ? () => true : candidate => !LINE_TERMINATOR.test(candidate),
       };
     }
     if (char === '\\') {
@@ -495,13 +488,11 @@ const validateAnchors = (node: AstNode, atStart: boolean, atEnd: boolean): void 
       return;
 
     case 'seq':
-      node.items.forEach((item, index) =>
-        validateAnchors(item, atStart && index === 0, atEnd && index === node.items.length - 1),
-      );
+      node.items.forEach((item, index) => validateAnchors(item, atStart && index === 0, atEnd && index === node.items.length - 1));
       return;
 
     case 'alt':
-      node.opts.forEach((option) => validateAnchors(option, atStart, atEnd));
+      node.opts.forEach(option => validateAnchors(option, atStart, atEnd));
       return;
 
     case 'rep': {
@@ -560,9 +551,7 @@ const expand = (node: AstNode): AstNode => {
       // attached, where every other construct this parser cannot model degrades
       // to pass-through and says why.
       if (node.min > MAX_QUANTIFIER || (node.max !== Infinity && node.max > MAX_QUANTIFIER)) {
-        throw new UnsupportedRegexError(
-          `quantifier bound above ${MAX_QUANTIFIER} is not supported`,
-        );
+        throw new UnsupportedRegexError(`quantifier bound above ${MAX_QUANTIFIER} is not supported`);
       }
 
       const inner = expand(node.node);
@@ -601,7 +590,7 @@ interface Fragment {
 
 const compile = (ast: AstNode): NfaState => {
   const mk = (): NfaState => ({ eps: [], cons: null, to: null, accept: false });
-  const patch = (outs: Fragment['outs'], target: NfaState) => outs.forEach((set) => set(target));
+  const patch = (outs: Fragment['outs'], target: NfaState) => outs.forEach(set => set(target));
 
   const build = (node: AstNode): Fragment => {
     switch (node.type) {
@@ -610,7 +599,7 @@ const compile = (ast: AstNode): NfaState => {
         return {
           start: state,
           outs: [
-            (target) => {
+            target => {
               state.cons = node.match;
               state.to = target;
             },
@@ -619,13 +608,13 @@ const compile = (ast: AstNode): NfaState => {
       }
       case 'anchor': {
         const state = mk();
-        return { start: state, outs: [(target) => state.eps.push(target)] };
+        return { start: state, outs: [target => state.eps.push(target)] };
       }
       case 'seq': {
         const [firstItem, ...restItems] = node.items;
         if (!firstItem) {
           const state = mk();
-          return { start: state, outs: [(target) => state.eps.push(target)] };
+          return { start: state, outs: [target => state.eps.push(target)] };
         }
         let fragment = build(firstItem);
         for (const item of restItems) {
@@ -638,7 +627,7 @@ const compile = (ast: AstNode): NfaState => {
       case 'alt': {
         const state = mk();
         const outs: Fragment['outs'] = [];
-        node.opts.forEach((option) => {
+        node.opts.forEach(option => {
           const fragment = build(option);
           state.eps.push(fragment.start);
           outs.push(...fragment.outs);
@@ -649,14 +638,14 @@ const compile = (ast: AstNode): NfaState => {
         const fragment = build(node.node);
         const state = mk();
         state.eps.push(fragment.start);
-        return { start: state, outs: [...fragment.outs, (target) => state.eps.push(target)] };
+        return { start: state, outs: [...fragment.outs, target => state.eps.push(target)] };
       }
       case 'star': {
         const state = mk();
         const fragment = build(node.node);
         state.eps.push(fragment.start);
         patch(fragment.outs, state);
-        return { start: state, outs: [(target) => state.eps.push(target)] };
+        return { start: state, outs: [target => state.eps.push(target)] };
       }
       case 'rep': {
         // Reps are removed by expand(); compile the equivalent star as a safety net.
@@ -738,23 +727,20 @@ export const createIncrementalMatcher = (source: string, flags = ''): MatcherCom
   } catch (error) {
     return {
       ok: false,
-      reason:
-        error instanceof UnsupportedRegexError
-          ? error.message
-          : 'pattern could not be analysed for incremental matching',
+      reason: error instanceof UnsupportedRegexError ? error.message : 'pattern could not be analysed for incremental matching',
     };
   }
 
   const verdict = (states: Set<NfaState>): MatchState => {
     if (states.size === 0) return FAILED;
-    return [...states].some((state) => state.accept) ? DONE : MORE;
+    return [...states].some(state => state.accept) ? DONE : MORE;
   };
 
   const scan = (): MatcherScanner => {
     let current = epsClosure([start]);
 
     return {
-      push: (char) => {
+      push: char => {
         const nextStates = stepStates(current, char);
         if (nextStates.size === 0) return FAILED;
         current = nextStates;
@@ -764,7 +750,7 @@ export const createIncrementalMatcher = (source: string, flags = ''): MatcherCom
     };
   };
 
-  const matcher: IncrementalMatcher = (value) => {
+  const matcher: IncrementalMatcher = value => {
     const scanner = scan();
     for (const char of value) {
       if (scanner.push(char) === FAILED) return FAILED;

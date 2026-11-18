@@ -9,14 +9,7 @@ import type { ButtonProps } from '../Button/types';
  * Trigger button that opens the dialog when activated.
  * Supports keyboard navigation and proper ARIA attributes.
  */
-export const DialogTrigger = <T extends ElementType = 'button'>({
-  as,
-  disabled: disabledProp,
-  ref,
-  onClick,
-  children,
-  ...props
-}: DialogTriggerProps<T>) => {
+export const DialogTrigger = <T extends ElementType = 'button'>({ as, disabled: disabledProp, ref, onClick, children, ...props }: DialogTriggerProps<T>) => {
   const context = useDialogContext();
   const { isOpen, setIsOpen, triggerRef, contentId, disabled: contextDisabled } = context;
 
@@ -55,21 +48,17 @@ export const DialogTrigger = <T extends ElementType = 'button'>({
 
   const buttonProps = {
     ...(as && { as }),
-    ref: mergedRef,
+    'ref': mergedRef,
     disabled,
     'aria-haspopup': 'dialog' as const,
     'aria-expanded': isOpen,
     'aria-controls': contentId,
     'data-state': dataState,
-    onClick: handleClick,
+    'onClick': handleClick,
     ...props,
   } as ButtonProps<T>;
 
-  return (
-    <Button {...buttonProps}>
-      {typeof children === 'function' ? children(renderProps) : children}
-    </Button>
-  );
+  return <Button {...buttonProps}>{typeof children === 'function' ? children(renderProps) : children}</Button>;
 };
 
 DialogTrigger.displayName = 'DialogTrigger';

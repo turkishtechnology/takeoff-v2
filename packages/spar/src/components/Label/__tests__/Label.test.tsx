@@ -4,7 +4,7 @@ import { Label } from '../Label';
 
 describe('Label', () => {
   it('renders a label element by default', () => {
-    render(<Label htmlFor='username'>Username</Label>);
+    render(<Label htmlFor="username">Username</Label>);
 
     const label = screen.getByText('Username');
     expect(label.tagName).toBe('LABEL');
@@ -12,7 +12,7 @@ describe('Label', () => {
   });
 
   it('renders as custom element with as prop', () => {
-    render(<Label as='span'>Email</Label>);
+    render(<Label as="span">Email</Label>);
 
     expect(screen.getByText('Email').tagName).toBe('SPAN');
   });
@@ -28,7 +28,7 @@ describe('Label', () => {
 
   it('passes through native HTML attributes', () => {
     render(
-      <Label id='label-id' title='Username label'>
+      <Label id="label-id" title="Username label">
         Username
       </Label>,
     );
@@ -42,7 +42,7 @@ describe('Label', () => {
     render(
       <Label>
         Email
-        <input type='email' />
+        <input type="email" />
       </Label>,
     );
 

@@ -1,12 +1,6 @@
 import type { ElementType } from 'react';
 import type { Orientation, PolymorphicProps } from '../../types';
-import type {
-  CollapsibleTriggerRenderProps,
-  CollapsibleTriggerOwnProps,
-  CollapsibleTriggerProps,
-  CollapsibleContentOwnProps,
-  CollapsibleContentProps,
-} from '../Collapsible/types';
+import type { CollapsibleTriggerRenderProps, CollapsibleTriggerOwnProps, CollapsibleTriggerProps, CollapsibleContentOwnProps, CollapsibleContentProps } from '../Collapsible/types';
 
 export type AccordionValue = string | number;
 
@@ -69,11 +63,7 @@ export interface AccordionOwnProps {
  * Props for Accordion root component
  * @remarks Fully accessible, headless component
  */
-export type AccordionProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  AccordionOwnProps
->;
+export type AccordionProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, AccordionOwnProps>;
 
 /**
  * Own props for AccordionItem component
@@ -95,11 +85,7 @@ export interface AccordionItemOwnProps {
  * Props for AccordionItem component
  * @remarks Individual item within accordion
  */
-export type AccordionItemProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  AccordionItemOwnProps
->;
+export type AccordionItemProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, AccordionItemOwnProps>;
 
 /**
  * Own props for AccordionHeader component
@@ -116,11 +102,7 @@ export interface AccordionHeaderOwnProps {
  * Props for AccordionHeader component
  * @remarks Semantic heading wrapper for trigger
  */
-export type AccordionHeaderProps<T extends ElementType = 'h3'> = PolymorphicProps<
-  'h3',
-  T,
-  AccordionHeaderOwnProps
->;
+export type AccordionHeaderProps<T extends ElementType = 'h3'> = PolymorphicProps<'h3', T, AccordionHeaderOwnProps>;
 
 /**
  * Render props provided to children function for AccordionTrigger

@@ -41,24 +41,18 @@ export const stripDelimiters = (value: string, delimiters: readonly string[]): s
   let result = value;
   for (const delimiter of used) result = result.split(delimiter).join('');
 
-  const characters = new Set(used.flatMap((delimiter) => [...delimiter]));
-  return [...result].filter((char) => !characters.has(char)).join('');
+  const characters = new Set(used.flatMap(delimiter => [...delimiter]));
+  return [...result].filter(char => !characters.has(char)).join('');
 };
 
 /** `uppercase` wins when both flags are set. */
-export const applyCase = (
-  value: string,
-  options: { uppercase?: boolean; lowercase?: boolean },
-): string => {
+export const applyCase = (value: string, options: { uppercase?: boolean; lowercase?: boolean }): string => {
   if (options.uppercase) return value.toUpperCase();
   if (options.lowercase) return value.toLowerCase();
   return value;
 };
 
-export const applyCharFilter = (
-  value: string,
-  options: { numericOnly?: boolean; letterOnly?: boolean },
-): string => {
+export const applyCharFilter = (value: string, options: { numericOnly?: boolean; letterOnly?: boolean }): string => {
   if (options.numericOnly) return value.replace(/[^\d]/g, '');
   if (options.letterOnly) return value.replace(/[^\p{L}]/gu, '');
   return value;
@@ -69,11 +63,7 @@ export const applyCharFilter = (
  * the preceding block is full **and** characters remain — so `'12'` with blocks
  * `[2, 2]` stays `'12'` while `'123'` becomes `'12/3'`.
  */
-export const distribute = (
-  chars: string,
-  blocks: readonly number[],
-  delimiters: readonly string[],
-): string => {
+export const distribute = (chars: string, blocks: readonly number[], delimiters: readonly string[]): string => {
   let rest = chars;
   let result = '';
 
@@ -91,8 +81,7 @@ export const distribute = (
   return result;
 };
 
-export const capacityOf = (blocks: readonly number[]): number =>
-  blocks.reduce((total, size) => total + size, 0);
+export const capacityOf = (blocks: readonly number[]): number => blocks.reduce((total, size) => total + size, 0);
 
 export const pad2 = (value: number): string => (value < 10 ? `0${value}` : `${value}`);
 
@@ -115,5 +104,4 @@ export const splitIntoParts = (digits: string, blocks: readonly number[]): strin
  * Digits only, capped at the pattern's capacity — the entry step every
  * digit-shaped mask starts from.
  */
-export const toDigits = (input: string, delimiters: readonly string[], capacity: number): string =>
-  stripDelimiters(input, delimiters).replace(/[^\d]/g, '').slice(0, capacity);
+export const toDigits = (input: string, delimiters: readonly string[], capacity: number): string => stripDelimiters(input, delimiters).replace(/[^\d]/g, '').slice(0, capacity);

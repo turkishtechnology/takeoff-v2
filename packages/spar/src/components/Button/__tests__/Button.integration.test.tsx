@@ -7,11 +7,11 @@ describe('Button Integration', () => {
   describe('Form Integration', () => {
     it('should submit form when type is submit', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmit = jest.fn(e => e.preventDefault());
 
       render(
         <form onSubmit={handleSubmit}>
-          <Button type='submit'>Submit Form</Button>
+          <Button type="submit">Submit Form</Button>
         </form>,
       );
 
@@ -27,8 +27,8 @@ describe('Button Integration', () => {
 
       render(
         <form onReset={handleReset}>
-          <input defaultValue='test' />
-          <Button type='reset'>Reset Form</Button>
+          <input defaultValue="test" />
+          <Button type="reset">Reset Form</Button>
         </form>,
       );
 
@@ -40,11 +40,11 @@ describe('Button Integration', () => {
 
     it('should not submit form when disabled', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmit = jest.fn(e => e.preventDefault());
 
       render(
         <form onSubmit={handleSubmit}>
-          <Button type='submit' disabled>
+          <Button type="submit" disabled>
             Submit Disabled
           </Button>
         </form>,
@@ -58,11 +58,11 @@ describe('Button Integration', () => {
 
     it('should not submit form when loading', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmit = jest.fn(e => e.preventDefault());
 
       render(
         <form onSubmit={handleSubmit}>
-          <Button type='submit' isLoading disabled>
+          <Button type="submit" isLoading disabled>
             Submit Loading
           </Button>
         </form>,
@@ -79,7 +79,7 @@ describe('Button Integration', () => {
     it('should stop event propagation when specified', async () => {
       const user = userEvent.setup();
       const parentClick = jest.fn();
-      const buttonClick = jest.fn((e) => e.stopPropagation());
+      const buttonClick = jest.fn(e => e.stopPropagation());
 
       render(
         <div onClick={parentClick}>
@@ -140,7 +140,7 @@ describe('Button Integration', () => {
       const button3Click = jest.fn();
 
       render(
-        <div role='group' aria-label='Button Group'>
+        <div role="group" aria-label="Button Group">
           <Button onClick={button1Click}>Button 1</Button>
           <Button onClick={button2Click}>Button 2</Button>
           <Button onClick={button3Click} disabled>
@@ -173,23 +173,14 @@ describe('Button Integration', () => {
         };
 
         return (
-          <div role='group' aria-label='Toggle Group'>
-            <Button
-              isPressed={selected === 'option1'}
-              onPressedChange={() => handleToggle('option1')}
-            >
+          <div role="group" aria-label="Toggle Group">
+            <Button isPressed={selected === 'option1'} onPressedChange={() => handleToggle('option1')}>
               Option 1
             </Button>
-            <Button
-              isPressed={selected === 'option2'}
-              onPressedChange={() => handleToggle('option2')}
-            >
+            <Button isPressed={selected === 'option2'} onPressedChange={() => handleToggle('option2')}>
               Option 2
             </Button>
-            <Button
-              isPressed={selected === 'option3'}
-              onPressedChange={() => handleToggle('option3')}
-            >
+            <Button isPressed={selected === 'option3'} onPressedChange={() => handleToggle('option3')}>
               Option 3
             </Button>
           </div>
@@ -245,7 +236,7 @@ describe('Button Integration', () => {
             <Button onClick={onClick} isLoading={isLoading}>
               Process
             </Button>
-            <button type='button' onClick={() => setIsLoading(false)}>
+            <button type="button" onClick={() => setIsLoading(false)}>
               Finish
             </button>
           </>
@@ -284,7 +275,7 @@ describe('Button Integration', () => {
         });
 
         const toggleFormat = (format: keyof typeof formatting) => {
-          setFormatting((prev) => ({
+          setFormatting(prev => ({
             ...prev,
             [format]: !prev[format],
           }));
@@ -292,26 +283,14 @@ describe('Button Integration', () => {
         };
 
         return (
-          <div role='toolbar' aria-label='Text Formatting'>
-            <Button
-              isPressed={formatting.bold}
-              onPressedChange={() => toggleFormat('bold')}
-              aria-label='Bold'
-            >
+          <div role="toolbar" aria-label="Text Formatting">
+            <Button isPressed={formatting.bold} onPressedChange={() => toggleFormat('bold')} aria-label="Bold">
               B
             </Button>
-            <Button
-              isPressed={formatting.italic}
-              onPressedChange={() => toggleFormat('italic')}
-              aria-label='Italic'
-            >
+            <Button isPressed={formatting.italic} onPressedChange={() => toggleFormat('italic')} aria-label="Italic">
               I
             </Button>
-            <Button
-              isPressed={formatting.underline}
-              onPressedChange={() => toggleFormat('underline')}
-              aria-label='Underline'
-            >
+            <Button isPressed={formatting.underline} onPressedChange={() => toggleFormat('underline')} aria-label="Underline">
               U
             </Button>
           </div>
@@ -344,18 +323,18 @@ describe('Button Integration', () => {
       const handleNavigation = jest.fn();
 
       const CustomLayout = () => (
-        <div className='layout'>
+        <div className="layout">
           <nav>
-            <Button as='a' onClick={handleNavigation}>
+            <Button as="a" onClick={handleNavigation}>
               Home
             </Button>
-            <Button as='a' onClick={handleNavigation}>
+            <Button as="a" onClick={handleNavigation}>
               About
             </Button>
           </nav>
           <main>
             <article>
-              <Button as='div' className='share-button'>
+              <Button as="div" className="share-button">
                 Share Article
               </Button>
             </article>

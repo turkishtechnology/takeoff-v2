@@ -1,15 +1,6 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuViewport,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-  DropdownMenuGroup,
-} from '../';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuViewport, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel, DropdownMenuGroup } from '../';
 
 describe('DropdownMenu', () => {
   describe('DropdownMenu', () => {
@@ -68,7 +59,7 @@ describe('DropdownMenu', () => {
 
     it('should derive trigger and content ids from provided id', () => {
       render(
-        <DropdownMenu id='file-menu' defaultOpen={true}>
+        <DropdownMenu id="file-menu" defaultOpen={true}>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem>Item 1</DropdownMenuItem>
@@ -463,7 +454,7 @@ describe('DropdownMenu', () => {
       expect(screen.getByRole('menu')).toBeInTheDocument();
 
       const items = screen.getAllByRole('menuitem');
-      items.forEach((item) => {
+      items.forEach(item => {
         expect(item).not.toHaveAttribute('data-highlighted');
         expect(item).toHaveAttribute('tabIndex', '-1');
       });
@@ -472,7 +463,7 @@ describe('DropdownMenu', () => {
     it('should support custom component via as prop', () => {
       render(
         <DropdownMenu>
-          <DropdownMenuTrigger as='div'>Open Menu</DropdownMenuTrigger>
+          <DropdownMenuTrigger as="div">Open Menu</DropdownMenuTrigger>
         </DropdownMenu>,
       );
 
@@ -531,7 +522,7 @@ describe('DropdownMenu', () => {
       render(
         <DropdownMenu defaultOpen={true}>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
-          <DropdownMenuContent side='top' align='end'>
+          <DropdownMenuContent side="top" align="end">
             <DropdownMenuItem>Item 1</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>,
@@ -653,10 +644,7 @@ describe('DropdownMenu', () => {
   });
 
   describe('dismiss vetoes', () => {
-    const renderMenu = (
-      contentProps: Partial<React.ComponentProps<typeof DropdownMenuContent>> = {},
-      modal = true,
-    ) =>
+    const renderMenu = (contentProps: Partial<React.ComponentProps<typeof DropdownMenuContent>> = {}, modal = true) =>
       render(
         <div>
           <DropdownMenu defaultOpen={true} modal={modal}>
@@ -1122,7 +1110,7 @@ describe('DropdownMenu', () => {
         <DropdownMenu defaultOpen>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuViewport data-testid='viewport'>
+            <DropdownMenuViewport data-testid="viewport">
               <DropdownMenuItem>Item 1</DropdownMenuItem>
               <DropdownMenuItem>Item 2</DropdownMenuItem>
             </DropdownMenuViewport>
@@ -1158,8 +1146,8 @@ describe('DropdownMenu', () => {
         <DropdownMenu defaultOpen>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuViewport as='ul' role='group' data-testid='viewport'>
-              <DropdownMenuItem as='li'>Item 1</DropdownMenuItem>
+            <DropdownMenuViewport as="ul" role="group" data-testid="viewport">
+              <DropdownMenuItem as="li">Item 1</DropdownMenuItem>
             </DropdownMenuViewport>
           </DropdownMenuContent>
         </DropdownMenu>,
@@ -1171,9 +1159,7 @@ describe('DropdownMenu', () => {
     });
 
     it('should scroll the highlighted item into view during keyboard navigation', async () => {
-      const scrollSpy = jest
-        .spyOn(HTMLElement.prototype, 'scrollIntoView')
-        .mockImplementation(() => {});
+      const scrollSpy = jest.spyOn(HTMLElement.prototype, 'scrollIntoView').mockImplementation(() => {});
       const user = userEvent.setup();
       render(
         <DropdownMenu>
@@ -1202,9 +1188,7 @@ describe('DropdownMenu', () => {
       // Regression guard for the a11y footgun: items are focused with `preventScroll`,
       // so scroll-into-view must live in Content (not the optional Viewport) or an
       // unwrapped long menu becomes keyboard-inaccessible.
-      const scrollSpy = jest
-        .spyOn(HTMLElement.prototype, 'scrollIntoView')
-        .mockImplementation(() => {});
+      const scrollSpy = jest.spyOn(HTMLElement.prototype, 'scrollIntoView').mockImplementation(() => {});
       const user = userEvent.setup();
       render(
         <DropdownMenu>

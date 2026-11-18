@@ -9,8 +9,8 @@ describe('Label Accessibility', () => {
   it('has no axe violations for explicit htmlFor/id association', async () => {
     const { container } = render(
       <div>
-        <Label htmlFor='username'>Username</Label>
-        <input id='username' type='text' />
+        <Label htmlFor="username">Username</Label>
+        <input id="username" type="text" />
       </div>,
     );
 
@@ -21,7 +21,7 @@ describe('Label Accessibility', () => {
     const { container } = render(
       <Label>
         Email
-        <input type='email' />
+        <input type="email" />
       </Label>,
     );
 
@@ -31,10 +31,10 @@ describe('Label Accessibility', () => {
   it('supports aria-labelledby contract for polymorphic label', async () => {
     const { container } = render(
       <div>
-        <Label as='span' id='email-label'>
+        <Label as="span" id="email-label">
           Email Address
         </Label>
-        <input type='email' aria-labelledby='email-label' />
+        <input type="email" aria-labelledby="email-label" />
       </div>,
     );
 
@@ -47,8 +47,8 @@ describe('Label Accessibility', () => {
 
     render(
       <div>
-        <Label htmlFor='focus-target'>First Name</Label>
-        <input id='focus-target' type='text' />
+        <Label htmlFor="focus-target">First Name</Label>
+        <input id="focus-target" type="text" />
       </div>,
     );
 
@@ -63,8 +63,8 @@ describe('Label Accessibility', () => {
 
     render(
       <div>
-        <Label htmlFor='terms'>Accept Terms</Label>
-        <input id='terms' type='checkbox' />
+        <Label htmlFor="terms">Accept Terms</Label>
+        <input id="terms" type="checkbox" />
       </div>,
     );
 

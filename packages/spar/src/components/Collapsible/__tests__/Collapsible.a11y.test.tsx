@@ -25,7 +25,7 @@ describe('Collapsible accessibility', () => {
     const user = userEvent.setup();
 
     render(
-      <Collapsible id='settings' defaultOpen>
+      <Collapsible id="settings" defaultOpen>
         <CollapsibleTrigger>Advanced settings</CollapsibleTrigger>
         <CollapsibleContent>Settings content</CollapsibleContent>
       </Collapsible>,
@@ -69,7 +69,7 @@ describe('Collapsible accessibility', () => {
 
     render(
       <Collapsible>
-        <CollapsibleTrigger as='div'>Custom trigger</CollapsibleTrigger>
+        <CollapsibleTrigger as="div">Custom trigger</CollapsibleTrigger>
         <CollapsibleContent>Custom content</CollapsibleContent>
       </Collapsible>,
     );
@@ -90,7 +90,7 @@ describe('Collapsible accessibility', () => {
 
     render(
       <Collapsible disabled>
-        <CollapsibleTrigger as='div'>Disabled custom trigger</CollapsibleTrigger>
+        <CollapsibleTrigger as="div">Disabled custom trigger</CollapsibleTrigger>
         <CollapsibleContent>Disabled content</CollapsibleContent>
       </Collapsible>,
     );

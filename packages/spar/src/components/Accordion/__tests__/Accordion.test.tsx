@@ -1,13 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionHeader,
-  AccordionTrigger,
-  AccordionContent,
-} from '../index';
+import { Accordion, AccordionItem, AccordionHeader, AccordionTrigger, AccordionContent } from '../index';
 
 // Test setup helper
 const BasicAccordion = ({
@@ -31,19 +25,19 @@ const BasicAccordion = ({
   >
     {children || (
       <>
-        <AccordionItem value='item-1'>
+        <AccordionItem value="item-1">
           <AccordionHeader>
             <AccordionTrigger>Item 1</AccordionTrigger>
           </AccordionHeader>
           <AccordionContent>Content 1</AccordionContent>
         </AccordionItem>
-        <AccordionItem value='item-2'>
+        <AccordionItem value="item-2">
           <AccordionHeader>
             <AccordionTrigger>Item 2</AccordionTrigger>
           </AccordionHeader>
           <AccordionContent>Content 2</AccordionContent>
         </AccordionItem>
-        <AccordionItem value='item-3' disabled>
+        <AccordionItem value="item-3" disabled>
           <AccordionHeader>
             <AccordionTrigger>Item 3 (Disabled)</AccordionTrigger>
           </AccordionHeader>
@@ -69,7 +63,7 @@ describe('Accordion', () => {
     });
 
     it('should apply correct data attributes', () => {
-      const { container } = render(<BasicAccordion orientation='horizontal' multiple />);
+      const { container } = render(<BasicAccordion orientation="horizontal" multiple />);
       const accordion = container.firstChild as HTMLElement;
 
       expect(accordion).toHaveAttribute('data-orientation', 'horizontal');
@@ -78,8 +72,8 @@ describe('Accordion', () => {
 
     it('should render with custom as prop', () => {
       const { container } = render(
-        <Accordion as='section'>
-          <AccordionItem value='item-1'>
+        <Accordion as="section">
+          <AccordionItem value="item-1">
             <AccordionHeader>
               <AccordionTrigger>Item 1</AccordionTrigger>
             </AccordionHeader>
@@ -184,12 +178,9 @@ describe('Accordion', () => {
       const user = userEvent.setup();
       const onValueChange = jest.fn();
 
-      const { rerender } = render(<BasicAccordion value='item-1' onValueChange={onValueChange} />);
+      const { rerender } = render(<BasicAccordion value="item-1" onValueChange={onValueChange} />);
 
-      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
+      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute('aria-expanded', 'true');
       expect(screen.getByText('Content 1')).toBeInTheDocument();
 
       // Click should call onValueChange but not change internal state
@@ -198,36 +189,22 @@ describe('Accordion', () => {
 
       expect(onValueChange).toHaveBeenCalledWith('item-2');
       // State shouldn't change until parent updates value prop
-      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
+      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute('aria-expanded', 'true');
 
       // Simulate parent updating value
-      rerender(<BasicAccordion value='item-2' onValueChange={onValueChange} />);
+      rerender(<BasicAccordion value="item-2" onValueChange={onValueChange} />);
 
-      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute(
-        'aria-expanded',
-        'false',
-      );
-      expect(screen.getByRole('button', { name: 'Item 2' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
+      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getByRole('button', { name: 'Item 2' })).toHaveAttribute('aria-expanded', 'true');
     });
 
     it('should work as controlled component in multiple mode', async () => {
       const user = userEvent.setup();
       const onValueChange = jest.fn();
 
-      const { rerender } = render(
-        <BasicAccordion multiple value={['item-1']} onValueChange={onValueChange} />,
-      );
+      const { rerender } = render(<BasicAccordion multiple value={['item-1']} onValueChange={onValueChange} />);
 
-      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
+      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute('aria-expanded', 'true');
 
       const trigger2 = screen.getByRole('button', { name: 'Item 2' });
       await user.click(trigger2);
@@ -235,47 +212,27 @@ describe('Accordion', () => {
       expect(onValueChange).toHaveBeenCalledWith(['item-1', 'item-2']);
 
       // Simulate adding second item
-      rerender(
-        <BasicAccordion value={['item-1', 'item-2']} onValueChange={onValueChange} multiple />,
-      );
+      rerender(<BasicAccordion value={['item-1', 'item-2']} onValueChange={onValueChange} multiple />);
 
-      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
-      expect(screen.getByRole('button', { name: 'Item 2' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
+      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute('aria-expanded', 'true');
+      expect(screen.getByRole('button', { name: 'Item 2' })).toHaveAttribute('aria-expanded', 'true');
     });
   });
 
   describe('Default Value', () => {
     it('should initialize with defaultValue in single mode', () => {
-      render(<BasicAccordion defaultValue='item-2' />);
+      render(<BasicAccordion defaultValue="item-2" />);
 
-      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute(
-        'aria-expanded',
-        'false',
-      );
-      expect(screen.getByRole('button', { name: 'Item 2' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
+      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getByRole('button', { name: 'Item 2' })).toHaveAttribute('aria-expanded', 'true');
       expect(screen.getByText('Content 2')).toBeInTheDocument();
     });
 
     it('should initialize with defaultValue in multiple mode', () => {
       render(<BasicAccordion multiple defaultValue={['item-1', 'item-2']} />);
 
-      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
-      expect(screen.getByRole('button', { name: 'Item 2' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      );
+      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute('aria-expanded', 'true');
+      expect(screen.getByRole('button', { name: 'Item 2' })).toHaveAttribute('aria-expanded', 'true');
       expect(screen.getByText('Content 1')).toBeInTheDocument();
       expect(screen.getByText('Content 2')).toBeInTheDocument();
     });
@@ -324,7 +281,7 @@ describe('Accordion', () => {
 
       render(
         <Accordion onValueChange={onValueChange}>
-          <AccordionItem value='item-1'>
+          <AccordionItem value="item-1">
             <AccordionHeader>
               <AccordionTrigger onClick={onClick}>Item 1</AccordionTrigger>
             </AccordionHeader>
@@ -359,7 +316,7 @@ describe('Accordion', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
 
       expect(() => {
-        render(<AccordionItem value='test'>Content</AccordionItem>);
+        render(<AccordionItem value="test">Content</AccordionItem>);
       }).toThrow('Accordion components must be used within an Accordion');
 
       jest.restoreAllMocks();
@@ -391,7 +348,7 @@ describe('Accordion', () => {
       const user = userEvent.setup();
       render(
         <Accordion>
-          <AccordionItem value='only-item'>
+          <AccordionItem value="only-item">
             <AccordionHeader>
               <AccordionTrigger>Only Item</AccordionTrigger>
             </AccordionHeader>
@@ -410,7 +367,7 @@ describe('Accordion', () => {
     it('should handle no controlled value gracefully', () => {
       render(
         <Accordion>
-          <AccordionItem value='item-1'>
+          <AccordionItem value="item-1">
             <AccordionHeader>
               <AccordionTrigger>Item 1</AccordionTrigger>
             </AccordionHeader>
@@ -419,24 +376,21 @@ describe('Accordion', () => {
         </Accordion>,
       );
 
-      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute(
-        'aria-expanded',
-        'false',
-      );
+      expect(screen.getByRole('button', { name: 'Item 1' })).toHaveAttribute('aria-expanded', 'false');
     });
   });
 
   describe('Polymorphic Component', () => {
     it('should support different element types through as prop', () => {
       const { container } = render(
-        <Accordion as='section' data-testid='accordion' defaultValue='item-1'>
-          <AccordionItem value='item-1' as='article'>
-            <AccordionHeader as='h2'>
-              <AccordionTrigger as='div' role='button' tabIndex={0}>
+        <Accordion as="section" data-testid="accordion" defaultValue="item-1">
+          <AccordionItem value="item-1" as="article">
+            <AccordionHeader as="h2">
+              <AccordionTrigger as="div" role="button" tabIndex={0}>
                 Item 1
               </AccordionTrigger>
             </AccordionHeader>
-            <AccordionContent as='section'>Content 1</AccordionContent>
+            <AccordionContent as="section">Content 1</AccordionContent>
           </AccordionItem>
         </Accordion>,
       );
@@ -454,7 +408,7 @@ describe('Accordion', () => {
 
       render(
         <Accordion>
-          <AccordionItem value='item-1' id='faq-item'>
+          <AccordionItem value="item-1" id="faq-item">
             <AccordionHeader>
               <AccordionTrigger>Item 1</AccordionTrigger>
             </AccordionHeader>
@@ -479,11 +433,9 @@ describe('Accordion', () => {
 
       render(
         <Accordion>
-          <AccordionItem value='item-1'>
+          <AccordionItem value="item-1">
             <AccordionHeader>
-              <AccordionTrigger>
-                {(state) => (state.isOpen ? 'Close item' : 'Open item')}
-              </AccordionTrigger>
+              <AccordionTrigger>{state => (state.isOpen ? 'Close item' : 'Open item')}</AccordionTrigger>
             </AccordionHeader>
             <AccordionContent>Content 1</AccordionContent>
           </AccordionItem>
@@ -500,19 +452,19 @@ describe('Accordion', () => {
 
       render(
         <Accordion>
-          <AccordionItem value='item-1'>
+          <AccordionItem value="item-1">
             <AccordionHeader>
               <AccordionTrigger>First</AccordionTrigger>
             </AccordionHeader>
             <AccordionContent>First content</AccordionContent>
           </AccordionItem>
-          <AccordionItem value='item-2'>
+          <AccordionItem value="item-2">
             <AccordionHeader>
               <AccordionTrigger>Second</AccordionTrigger>
             </AccordionHeader>
             <AccordionContent>Second content</AccordionContent>
           </AccordionItem>
-          <AccordionItem value='item-3'>
+          <AccordionItem value="item-3">
             <AccordionHeader>
               <AccordionTrigger>Third</AccordionTrigger>
             </AccordionHeader>
@@ -538,14 +490,14 @@ describe('Accordion', () => {
       const user = userEvent.setup();
 
       render(
-        <Accordion orientation='horizontal'>
-          <AccordionItem value='item-1'>
+        <Accordion orientation="horizontal">
+          <AccordionItem value="item-1">
             <AccordionHeader>
               <AccordionTrigger>First</AccordionTrigger>
             </AccordionHeader>
             <AccordionContent>First content</AccordionContent>
           </AccordionItem>
-          <AccordionItem value='item-2'>
+          <AccordionItem value="item-2">
             <AccordionHeader>
               <AccordionTrigger>Second</AccordionTrigger>
             </AccordionHeader>
@@ -567,17 +519,7 @@ describe('Accordion', () => {
   });
 
   describe('Keyboard navigation with disabled and dynamic items', () => {
-    const Item = ({
-      value,
-      label,
-      disabled = false,
-      as,
-    }: {
-      value: string;
-      label: string;
-      disabled?: boolean;
-      as?: 'div';
-    }) => (
+    const Item = ({ value, label, disabled = false, as }: { value: string; label: string; disabled?: boolean; as?: 'div' }) => (
       <AccordionItem value={value} disabled={disabled}>
         <AccordionHeader>
           <AccordionTrigger {...(as && { as })}>{label}</AccordionTrigger>
@@ -590,9 +532,9 @@ describe('Accordion', () => {
       const user = userEvent.setup();
       render(
         <Accordion>
-          <Item value='item-1' label='First' />
-          <Item value='item-2' label='Second' disabled />
-          <Item value='item-3' label='Third' />
+          <Item value="item-1" label="First" />
+          <Item value="item-2" label="Second" disabled />
+          <Item value="item-3" label="Third" />
         </Accordion>,
       );
 
@@ -614,10 +556,10 @@ describe('Accordion', () => {
       const user = userEvent.setup();
       render(
         <Accordion>
-          <Item value='item-1' label='First' disabled />
-          <Item value='item-2' label='Second' />
-          <Item value='item-3' label='Third' />
-          <Item value='item-4' label='Fourth' disabled />
+          <Item value="item-1" label="First" disabled />
+          <Item value="item-2" label="Second" />
+          <Item value="item-3" label="Third" />
+          <Item value="item-4" label="Fourth" disabled />
         </Accordion>,
       );
 
@@ -643,8 +585,8 @@ describe('Accordion', () => {
       const user = userEvent.setup();
       render(
         <Accordion disabled>
-          <Item value='item-1' label='First' as='div' />
-          <Item value='item-2' label='Second' as='div' />
+          <Item value="item-1" label="First" as="div" />
+          <Item value="item-2" label="Second" as="div" />
         </Accordion>,
       );
 
@@ -663,13 +605,13 @@ describe('Accordion', () => {
         const [inserted, setInserted] = React.useState(false);
         return (
           <>
-            <button type='button' onClick={() => setInserted(true)}>
+            <button type="button" onClick={() => setInserted(true)}>
               Insert
             </button>
             <Accordion>
-              <Item value='item-1' label='First' />
-              {inserted && <Item value='item-inserted' label='Inserted' />}
-              <Item value='item-2' label='Second' />
+              <Item value="item-1" label="First" />
+              {inserted && <Item value="item-inserted" label="Inserted" />}
+              <Item value="item-2" label="Second" />
             </Accordion>
           </>
         );
@@ -702,17 +644,13 @@ describe('Accordion', () => {
         const [middle, setMiddle] = React.useState('item-2');
         return (
           <>
-            <button type='button' onClick={() => setMiddle('item-replaced')}>
+            <button type="button" onClick={() => setMiddle('item-replaced')}>
               Replace
             </button>
             <Accordion>
-              <Item value='item-1' label='First' />
-              <Item
-                key={middle}
-                value={middle}
-                label={middle === 'item-2' ? 'Second' : 'Replaced'}
-              />
-              <Item value='item-3' label='Third' />
+              <Item value="item-1" label="First" />
+              <Item key={middle} value={middle} label={middle === 'item-2' ? 'Second' : 'Replaced'} />
+              <Item value="item-3" label="Third" />
             </Accordion>
           </>
         );
@@ -746,7 +684,7 @@ describe('Accordion', () => {
 
       render(
         <Accordion>
-          <AccordionItem value='item-1' ref={itemRef}>
+          <AccordionItem value="item-1" ref={itemRef}>
             <AccordionHeader ref={headerRef} level={2}>
               <AccordionTrigger ref={triggerRef}>Title</AccordionTrigger>
             </AccordionHeader>
@@ -767,13 +705,13 @@ describe('Accordion', () => {
 
       render(
         <Accordion>
-          <AccordionItem value='item-1'>
+          <AccordionItem value="item-1">
             <AccordionHeader>
               <AccordionTrigger ref={triggerARef}>First</AccordionTrigger>
             </AccordionHeader>
             <AccordionContent>First content</AccordionContent>
           </AccordionItem>
-          <AccordionItem value='item-2'>
+          <AccordionItem value="item-2">
             <AccordionHeader>
               <AccordionTrigger>Second</AccordionTrigger>
             </AccordionHeader>

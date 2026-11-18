@@ -6,15 +6,15 @@ import { Select, SelectTrigger, SelectContent, SelectViewport, SelectItem } from
 const renderSelect = (props?: React.ComponentProps<typeof Select>) => {
   return render(
     <Select {...props}>
-      <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+      <SelectTrigger aria-label="Choose option" placeholder="Select..." />
       <SelectContent>
-        <SelectItem value='option1' label='Option 1'>
+        <SelectItem value="option1" label="Option 1">
           Option 1
         </SelectItem>
-        <SelectItem value='option2' label='Option 2'>
+        <SelectItem value="option2" label="Option 2">
           Option 2
         </SelectItem>
-        <SelectItem value='option3' label='Option 3' disabled>
+        <SelectItem value="option3" label="Option 3" disabled>
           Option 3
         </SelectItem>
       </SelectContent>
@@ -25,13 +25,13 @@ const renderSelect = (props?: React.ComponentProps<typeof Select>) => {
 describe('Select', () => {
   it('shows the selected item label on first render when defaultValue is set', () => {
     render(
-      <Select defaultValue='option2'>
-        <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+      <Select defaultValue="option2">
+        <SelectTrigger aria-label="Choose option" placeholder="Select..." />
         <SelectContent>
-          <SelectItem value='option1' label='Option 1'>
+          <SelectItem value="option1" label="Option 1">
             Option 1
           </SelectItem>
-          <SelectItem value='option2' label='Option 2'>
+          <SelectItem value="option2" label="Option 2">
             Option 2
           </SelectItem>
         </SelectContent>
@@ -43,13 +43,13 @@ describe('Select', () => {
 
   it('shows the selected item label on first render when value is controlled', () => {
     render(
-      <Select value='option1' onChange={() => {}}>
-        <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+      <Select value="option1" onChange={() => {}}>
+        <SelectTrigger aria-label="Choose option" placeholder="Select..." />
         <SelectContent>
-          <SelectItem value='option1' label='Option 1'>
+          <SelectItem value="option1" label="Option 1">
             Option 1
           </SelectItem>
-          <SelectItem value='option2' label='Option 2'>
+          <SelectItem value="option2" label="Option 2">
             Option 2
           </SelectItem>
         </SelectContent>
@@ -96,19 +96,19 @@ describe('Select', () => {
 
     const Controlled = ({ value }: { value: string }) => (
       <Select value={value} onChange={handleValueChange}>
-        <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+        <SelectTrigger aria-label="Choose option" placeholder="Select..." />
         <SelectContent>
-          <SelectItem value='option1' label='Option 1'>
+          <SelectItem value="option1" label="Option 1">
             Option 1
           </SelectItem>
-          <SelectItem value='option2' label='Option 2'>
+          <SelectItem value="option2" label="Option 2">
             Option 2
           </SelectItem>
         </SelectContent>
       </Select>
     );
 
-    const { rerender } = render(<Controlled value='option1' />);
+    const { rerender } = render(<Controlled value="option1" />);
 
     const trigger = screen.getByRole('combobox');
     await user.click(trigger);
@@ -117,7 +117,7 @@ describe('Select', () => {
     expect(handleValueChange).toHaveBeenCalledWith('option2');
     expect(trigger).toHaveTextContent('Option 1');
 
-    rerender(<Controlled value='option2' />);
+    rerender(<Controlled value="option2" />);
     expect(trigger).toHaveTextContent('Option 2');
   });
 
@@ -193,22 +193,19 @@ describe('Select', () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => {
-      render(<SelectTrigger placeholder='Select...' />);
+      render(<SelectTrigger placeholder="Select..." />);
     }).toThrow('Select components must be used within a Select');
 
     consoleErrorSpy.mockRestore();
   });
 
   describe('onEscapeKeyDown', () => {
-    const renderWithEscape = (
-      onEscapeKeyDown: (event: KeyboardEvent) => void,
-      onOpenChange: (open: boolean) => void,
-    ) =>
+    const renderWithEscape = (onEscapeKeyDown: (event: KeyboardEvent) => void, onOpenChange: (open: boolean) => void) =>
       render(
         <Select onOpenChange={onOpenChange}>
-          <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+          <SelectTrigger aria-label="Choose option" placeholder="Select..." />
           <SelectContent onEscapeKeyDown={onEscapeKeyDown}>
-            <SelectItem value='option1' label='Option 1'>
+            <SelectItem value="option1" label="Option 1">
               Option 1
             </SelectItem>
           </SelectContent>
@@ -257,14 +254,14 @@ describe('Select', () => {
     const renderWithCloseAutoFocus = (onCloseAutoFocus: (event: FocusEvent) => void) =>
       render(
         <>
-          <button type='button'>Outside</button>
+          <button type="button">Outside</button>
           <Select>
-            <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+            <SelectTrigger aria-label="Choose option" placeholder="Select..." />
             <SelectContent onCloseAutoFocus={onCloseAutoFocus}>
-              <SelectItem value='option1' label='Option 1'>
+              <SelectItem value="option1" label="Option 1">
                 Option 1
               </SelectItem>
-              <SelectItem value='option2' label='Option 2'>
+              <SelectItem value="option2" label="Option 2">
                 Option 2
               </SelectItem>
             </SelectContent>
@@ -371,13 +368,13 @@ describe('Select', () => {
 
       render(
         <Select>
-          <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+          <SelectTrigger aria-label="Choose option" placeholder="Select..." />
           <SelectContent>
-            <SelectViewport data-testid='viewport'>
-              <SelectItem value='option1' label='Option 1'>
+            <SelectViewport data-testid="viewport">
+              <SelectItem value="option1" label="Option 1">
                 Option 1
               </SelectItem>
-              <SelectItem value='option2' label='Option 2'>
+              <SelectItem value="option2" label="Option 2">
                 Option 2
               </SelectItem>
             </SelectViewport>
@@ -399,10 +396,10 @@ describe('Select', () => {
 
       render(
         <Select>
-          <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+          <SelectTrigger aria-label="Choose option" placeholder="Select..." />
           <SelectContent>
-            <SelectViewport as='ul' role='group' data-testid='viewport'>
-              <SelectItem as='li' value='option1' label='Option 1'>
+            <SelectViewport as="ul" role="group" data-testid="viewport">
+              <SelectItem as="li" value="option1" label="Option 1">
                 Option 1
               </SelectItem>
             </SelectViewport>
@@ -428,20 +425,18 @@ describe('Select', () => {
     });
 
     it('scrolls the highlighted option into view during keyboard navigation', async () => {
-      const scrollSpy = jest
-        .spyOn(HTMLElement.prototype, 'scrollIntoView')
-        .mockImplementation(() => {});
+      const scrollSpy = jest.spyOn(HTMLElement.prototype, 'scrollIntoView').mockImplementation(() => {});
       const user = userEvent.setup();
 
       render(
         <Select>
-          <SelectTrigger aria-label='Choose option' placeholder='Select...' />
+          <SelectTrigger aria-label="Choose option" placeholder="Select..." />
           <SelectContent>
             <SelectViewport>
-              <SelectItem value='option1' label='Option 1'>
+              <SelectItem value="option1" label="Option 1">
                 Option 1
               </SelectItem>
-              <SelectItem value='option2' label='Option 2'>
+              <SelectItem value="option2" label="Option 2">
                 Option 2
               </SelectItem>
             </SelectViewport>
@@ -462,9 +457,7 @@ describe('Select', () => {
     it('keeps the highlighted option in view even when options are not wrapped in a Viewport', async () => {
       // Regression guard: scroll-into-view lives in SelectItem, not the optional
       // Viewport, so an unwrapped long list stays keyboard-accessible.
-      const scrollSpy = jest
-        .spyOn(HTMLElement.prototype, 'scrollIntoView')
-        .mockImplementation(() => {});
+      const scrollSpy = jest.spyOn(HTMLElement.prototype, 'scrollIntoView').mockImplementation(() => {});
       const user = userEvent.setup();
 
       renderSelect();

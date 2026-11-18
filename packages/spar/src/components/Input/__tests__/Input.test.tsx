@@ -10,7 +10,7 @@ describe('Input - Unit Tests', () => {
   });
 
   it('renders InputField standalone with default input behavior', () => {
-    render(<InputField placeholder='Enter text' />);
+    render(<InputField placeholder="Enter text" />);
 
     const field = screen.getByRole('textbox');
     expect(field).toHaveAttribute('type', 'text');
@@ -21,7 +21,7 @@ describe('Input - Unit Tests', () => {
   });
 
   it('supports standalone textarea via as prop', () => {
-    render(<InputField as='textarea' aria-label='Message' />);
+    render(<InputField as="textarea" aria-label="Message" />);
 
     const field = screen.getByRole('textbox', { name: 'Message' });
     expect(field.tagName).toBe('TEXTAREA');
@@ -30,7 +30,7 @@ describe('Input - Unit Tests', () => {
 
   it('derives deterministic ids from provided Field id', () => {
     render(
-      <Field id='profile-email'>
+      <Field id="profile-email">
         <FieldLabel>Email</FieldLabel>
         <Input>
           <InputField />
@@ -78,7 +78,7 @@ describe('Input - Unit Tests', () => {
     render(
       <Field>
         <FieldLabel>Username</FieldLabel>
-        <Input as='section' data-testid='root'>
+        <Input as="section" data-testid="root">
           <InputField />
         </Input>
       </Field>,
@@ -95,9 +95,9 @@ describe('Input - Unit Tests', () => {
 
   it('applies root and field state attributes from Field context', () => {
     render(
-      <Field invalid disabled required readOnly data-testid='field-root'>
+      <Field invalid disabled required readOnly data-testid="field-root">
         <FieldLabel>Username</FieldLabel>
-        <Input data-testid='input-root'>
+        <Input data-testid="input-root">
           <InputField />
         </Input>
       </Field>,
@@ -175,7 +175,7 @@ describe('Input - Unit Tests', () => {
             <InputField onFocus={onFocus} onBlur={onBlur} />
           </Input>
         </Field>
-        <button type='button'>Next</button>
+        <button type="button">Next</button>
       </>,
     );
 
@@ -193,7 +193,7 @@ describe('Input - Unit Tests', () => {
   it('supports uncontrolled and controlled value flows', async () => {
     const user = userEvent.setup();
 
-    render(<InputField aria-label='Uncontrolled' defaultValue='start' />);
+    render(<InputField aria-label="Uncontrolled" defaultValue="start" />);
     const uncontrolled = screen.getByRole('textbox', { name: 'Uncontrolled' });
 
     await user.type(uncontrolled, ' value');
@@ -201,13 +201,7 @@ describe('Input - Unit Tests', () => {
 
     const ControlledExample = () => {
       const [value, setValue] = useState('');
-      return (
-        <InputField
-          aria-label='Controlled'
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-        />
-      );
+      return <InputField aria-label="Controlled" value={value} onChange={e => setValue(e.target.value)} />;
     };
 
     render(<ControlledExample />);
@@ -223,7 +217,7 @@ describe('Input - Unit Tests', () => {
     // them: a field asked to be disabled rendered enabled.
     render(
       <Input>
-        <InputField aria-label='plain' disabled required readOnly />
+        <InputField aria-label="plain" disabled required readOnly />
       </Input>,
     );
 
@@ -237,7 +231,7 @@ describe('Input - Unit Tests', () => {
     render(
       <Field disabled>
         <Input>
-          <InputField aria-label='in-field' />
+          <InputField aria-label="in-field" />
         </Input>
       </Field>,
     );
@@ -248,15 +242,9 @@ describe('Input - Unit Tests', () => {
   it('throws when Field compound-only parts are used outside Field', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    expect(() => render(<FieldLabel>Username</FieldLabel>)).toThrow(
-      'Field compound components must be used within Field',
-    );
-    expect(() => render(<FieldDescription>Help text</FieldDescription>)).toThrow(
-      'Field compound components must be used within Field',
-    );
-    expect(() => render(<FieldErrorMessage>Error</FieldErrorMessage>)).toThrow(
-      'Field compound components must be used within Field',
-    );
+    expect(() => render(<FieldLabel>Username</FieldLabel>)).toThrow('Field compound components must be used within Field');
+    expect(() => render(<FieldDescription>Help text</FieldDescription>)).toThrow('Field compound components must be used within Field');
+    expect(() => render(<FieldErrorMessage>Error</FieldErrorMessage>)).toThrow('Field compound components must be used within Field');
 
     jest.restoreAllMocks();
   });

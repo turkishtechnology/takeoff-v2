@@ -79,11 +79,7 @@ export interface CollapsibleOwnProps {
  * Props for Collapsible root component
  * @remarks Fully accessible, headless component
  */
-export type CollapsibleProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  CollapsibleOwnProps
->;
+export type CollapsibleProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, CollapsibleOwnProps>;
 
 /**
  * Own props for CollapsibleTrigger component
@@ -99,11 +95,7 @@ export interface CollapsibleTriggerOwnProps extends ButtonOwnProps {
  * Props for CollapsibleTrigger component
  * @remarks Button element that toggles visibility
  */
-export type CollapsibleTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  CollapsibleTriggerOwnProps
->;
+export type CollapsibleTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, CollapsibleTriggerOwnProps>;
 
 /**
  * Own props for CollapsibleContent component
@@ -126,11 +118,7 @@ export interface CollapsibleContentOwnProps {
  * Props for CollapsibleContent component
  * @remarks Panel containing the collapsible content
  */
-export type CollapsibleContentProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  CollapsibleContentOwnProps
->;
+export type CollapsibleContentProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, CollapsibleContentOwnProps>;
 
 /**
  * Context value shared between Collapsible components

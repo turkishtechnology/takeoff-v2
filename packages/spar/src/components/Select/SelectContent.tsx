@@ -1,21 +1,6 @@
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-  useMemo,
-  useState,
-  type ElementType,
-} from 'react';
+import React, { useEffect, useLayoutEffect, useCallback, useMemo, useState, type ElementType } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  composeInsideHandlers,
-  useInteractOutside,
-  useMergedRef,
-  useFloating,
-  useTypeahead,
-  type UseFloatingOptions,
-  type UseFloatingReturn,
-} from '@/hooks';
+import { composeInsideHandlers, useInteractOutside, useMergedRef, useFloating, useTypeahead, type UseFloatingOptions, type UseFloatingReturn } from '@/hooks';
 import { useSelectContext, SelectContentContext, SelectCollectionContext } from './hooks';
 import type { SelectContentProps, SelectCollectionContextValue } from './types';
 import { Align, Side } from '@/types';
@@ -53,12 +38,7 @@ export const SelectContent = <T extends ElementType = 'div'>({
     arrowRef: context.arrowRef?.current ?? null,
   };
 
-  const {
-    floatingStyles,
-    arrowStyles,
-    placement: finalPlacement,
-    refs,
-  }: UseFloatingReturn = useFloating(floatingOptions);
+  const { floatingStyles, arrowStyles, placement: finalPlacement, refs }: UseFloatingReturn = useFloating(floatingOptions);
 
   // Merge internal refs with external ref
   const mergedRef = useMergedRef(context.contentRef, ref);
@@ -103,7 +83,7 @@ export const SelectContent = <T extends ElementType = 'div'>({
   // Handle outside interactions
   const insideHandlers = useInteractOutside([context.contentRef, context.triggerRef], {
     enabled: context.open,
-    onPointerDownOutside: (event) => {
+    onPointerDownOutside: event => {
       onPointerDownOutside?.(event);
       if (!event.defaultPrevented) {
         context.onOpenChange(false);
@@ -115,18 +95,15 @@ export const SelectContent = <T extends ElementType = 'div'>({
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   // Enabled items for keyboard navigation
-  const enabledItems = useMemo(
-    () => Array.from(context.items.values()).filter((item) => item.mounted && !item.disabled),
-    [context.items],
-  );
+  const enabledItems = useMemo(() => Array.from(context.items.values()).filter(item => item.mounted && !item.disabled), [context.items]);
 
   // Items mapped for typeahead (id = value string). useTypeahead expects
   // `textValue` as the search key field, so we adapt `label` here.
   const typeaheadItems = useMemo(
     () =>
       Array.from(context.items.values())
-        .filter((item) => item.mounted)
-        .map((item) => ({
+        .filter(item => item.mounted)
+        .map(item => ({
           id: item.value,
           textValue: item.label,
           disabled: item.disabled,
@@ -153,9 +130,7 @@ export const SelectContent = <T extends ElementType = 'div'>({
 
   const highlightNext = useCallback(() => {
     if (!enabledItems.length) return;
-    const currentIndex = highlightedId
-      ? enabledItems.findIndex((item) => item.value === highlightedId)
-      : -1;
+    const currentIndex = highlightedId ? enabledItems.findIndex(item => item.value === highlightedId) : -1;
     const nextIndex = (currentIndex + 1) % enabledItems.length;
     const candidate = enabledItems[nextIndex];
     if (candidate) setHighlightedId(candidate.value);
@@ -163,9 +138,7 @@ export const SelectContent = <T extends ElementType = 'div'>({
 
   const highlightPrevious = useCallback(() => {
     if (!enabledItems.length) return;
-    const currentIndex = highlightedId
-      ? enabledItems.findIndex((item) => item.value === highlightedId)
-      : enabledItems.length;
+    const currentIndex = highlightedId ? enabledItems.findIndex(item => item.value === highlightedId) : enabledItems.length;
     const prevIndex = currentIndex <= 0 ? enabledItems.length - 1 : currentIndex - 1;
     const candidate = enabledItems[prevIndex];
     if (candidate) setHighlightedId(candidate.value);
@@ -188,7 +161,7 @@ export const SelectContent = <T extends ElementType = 'div'>({
       return;
     }
     if (context.focusStrategy === 'selected') {
-      const selectedItem = enabledItems.find((item) => item.value === context.value);
+      const selectedItem = enabledItems.find(item => item.value === context.value);
       setHighlightedId(selectedItem?.value ?? enabledItems[0]?.value ?? null);
       context.setFocusStrategy('none');
     } else if (context.focusStrategy === 'first') {
@@ -198,16 +171,7 @@ export const SelectContent = <T extends ElementType = 'div'>({
       highlightLast();
       context.setFocusStrategy('none');
     }
-  }, [
-    context.open,
-    context.focusStrategy,
-    context.value,
-    enabledItems,
-    highlightFirst,
-    highlightLast,
-    resetTypeahead,
-    context.setFocusStrategy,
-  ]);
+  }, [context.open, context.focusStrategy, context.value, enabledItems, highlightFirst, highlightLast, resetTypeahead, context.setFocusStrategy]);
 
   // Keyboard navigation
   const handleKeyDown = useCallback(
@@ -238,7 +202,7 @@ export const SelectContent = <T extends ElementType = 'div'>({
         case ' ':
           event.preventDefault();
           if (highlightedId) {
-            const selectedItem = enabledItems.find((item) => item.value === highlightedId);
+            const selectedItem = enabledItems.find(item => item.value === highlightedId);
             if (selectedItem) {
               context.onChange(selectedItem.value);
               context.onOpenChange(false);
@@ -278,19 +242,7 @@ export const SelectContent = <T extends ElementType = 'div'>({
           break;
       }
     },
-    [
-      context,
-      enabledItems,
-      highlightedId,
-      performTypeahead,
-      highlightNext,
-      highlightPrevious,
-      highlightFirst,
-      highlightLast,
-      onKeyDown,
-      onEscapeKeyDown,
-      returnFocusToTrigger,
-    ],
+    [context, enabledItems, highlightedId, performTypeahead, highlightNext, highlightPrevious, highlightFirst, highlightLast, onKeyDown, onEscapeKeyDown, returnFocusToTrigger],
   );
 
   // Extract placement information for data attributes
@@ -301,10 +253,7 @@ export const SelectContent = <T extends ElementType = 'div'>({
     return [placementSide, placementAlign];
   }, [finalPlacement]);
 
-  const contentContextValue = useMemo(
-    () => ({ arrowStyles, side: currentSide, align: currentAlign }),
-    [arrowStyles, currentSide, currentAlign],
-  );
+  const contentContextValue = useMemo(() => ({ arrowStyles, side: currentSide, align: currentAlign }), [arrowStyles, currentSide, currentAlign]);
 
   // Collection context value — provided to SelectItem descendants
   // Must be computed before the early return to keep hook call order stable.
@@ -319,16 +268,7 @@ export const SelectContent = <T extends ElementType = 'div'>({
       highlightedId,
       returnFocusToTrigger,
     }),
-    [
-      highlightItem,
-      highlightFirst,
-      highlightLast,
-      highlightNext,
-      highlightPrevious,
-      isItemHighlighted,
-      highlightedId,
-      returnFocusToTrigger,
-    ],
+    [highlightItem, highlightFirst, highlightLast, highlightNext, highlightPrevious, isItemHighlighted, highlightedId, returnFocusToTrigger],
   );
 
   if (!context.open || !mounted) {
@@ -350,11 +290,9 @@ export const SelectContent = <T extends ElementType = 'div'>({
   };
 
   const ariaAttributes = {
-    role: 'listbox',
+    'role': 'listbox',
     'aria-labelledby': context.triggerId,
-    'aria-activedescendant': highlightedId
-      ? `${context.contentId}-option-${encodeURIComponent(highlightedId)}`
-      : undefined,
+    'aria-activedescendant': highlightedId ? `${context.contentId}-option-${encodeURIComponent(highlightedId)}` : undefined,
   };
 
   const dataAttributes = {

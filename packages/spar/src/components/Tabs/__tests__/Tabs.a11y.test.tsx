@@ -8,33 +8,28 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../index';
 expect.extend(toHaveNoViolations);
 
 // Test setup helpers
-const BasicTabs = ({
-  orientation = 'horizontal',
-  activationMode = 'automatic',
-  children,
-  ...rest
-}: Partial<React.ComponentProps<typeof Tabs>> = {}) => (
+const BasicTabs = ({ orientation = 'horizontal', activationMode = 'automatic', children, ...rest }: Partial<React.ComponentProps<typeof Tabs>> = {}) => (
   <Tabs orientation={orientation} activationMode={activationMode} {...rest}>
     {children || (
       <>
         <TabsList>
-          <TabsTrigger value='section1'>Section 1: Introduction</TabsTrigger>
-          <TabsTrigger value='section2'>Section 2: Details</TabsTrigger>
-          <TabsTrigger value='section3' disabled>
+          <TabsTrigger value="section1">Section 1: Introduction</TabsTrigger>
+          <TabsTrigger value="section2">Section 2: Details</TabsTrigger>
+          <TabsTrigger value="section3" disabled>
             Section 3: Advanced (Coming Soon)
           </TabsTrigger>
         </TabsList>
-        <TabsContent value='section1'>
+        <TabsContent value="section1">
           <h3>Introduction</h3>
           <p>This section provides an introduction to the topic.</p>
-          <a href='#section1'>Learn more about section 1</a>
+          <a href="#section1">Learn more about section 1</a>
         </TabsContent>
-        <TabsContent value='section2'>
+        <TabsContent value="section2">
           <h3>Details</h3>
           <p>This section contains detailed information.</p>
-          <button type='button'>Take Action</button>
+          <button type="button">Take Action</button>
         </TabsContent>
-        <TabsContent value='section3'>
+        <TabsContent value="section3">
           <h3>Advanced</h3>
           <p>This content is not yet available.</p>
         </TabsContent>
@@ -56,13 +51,13 @@ describe('Tabs Accessibility', () => {
     });
 
     it('passes axe tests with vertical orientation', async () => {
-      const { container } = render(<BasicTabs orientation='vertical' />);
+      const { container } = render(<BasicTabs orientation="vertical" />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
     it('passes axe tests with manual activation', async () => {
-      const { container } = render(<BasicTabs activationMode='manual' />);
+      const { container } = render(<BasicTabs activationMode="manual" />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -71,15 +66,15 @@ describe('Tabs Accessibility', () => {
       const { container } = render(
         <BasicTabs>
           <TabsList>
-            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
-            <TabsTrigger value='tab2' disabled>
+            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value="tab2" disabled>
               Tab 2 (Disabled)
             </TabsTrigger>
-            <TabsTrigger value='tab3'>Tab 3</TabsTrigger>
+            <TabsTrigger value="tab3">Tab 3</TabsTrigger>
           </TabsList>
-          <TabsContent value='tab1'>Content 1</TabsContent>
-          <TabsContent value='tab2'>Content 2</TabsContent>
-          <TabsContent value='tab3'>Content 3</TabsContent>
+          <TabsContent value="tab1">Content 1</TabsContent>
+          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value="tab3">Content 3</TabsContent>
         </BasicTabs>,
       );
       const results = await axe(container);
@@ -202,7 +197,7 @@ describe('Tabs Accessibility', () => {
 
     it('supports arrow key navigation in vertical orientation', async () => {
       const user = userEvent.setup();
-      render(<BasicTabs orientation='vertical' />);
+      render(<BasicTabs orientation="vertical" />);
 
       const tab1 = screen.getByRole('tab', { name: 'Section 1: Introduction' });
       const tab2 = screen.getByRole('tab', { name: 'Section 2: Details' });
@@ -256,7 +251,7 @@ describe('Tabs Accessibility', () => {
 
     it('supports manual activation mode', async () => {
       const user = userEvent.setup();
-      render(<BasicTabs activationMode='manual' />);
+      render(<BasicTabs activationMode="manual" />);
 
       const tab1 = screen.getByRole('tab', { name: 'Section 1: Introduction' });
       const tab2 = screen.getByRole('tab', { name: 'Section 2: Details' });
@@ -276,7 +271,7 @@ describe('Tabs Accessibility', () => {
 
     it('supports Space key activation in manual mode', async () => {
       const user = userEvent.setup();
-      render(<BasicTabs activationMode='manual' />);
+      render(<BasicTabs activationMode="manual" />);
 
       const tab1 = screen.getByRole('tab', { name: 'Section 1: Introduction' });
       const tab2 = screen.getByRole('tab', { name: 'Section 2: Details' });
@@ -302,8 +297,8 @@ describe('Tabs Accessibility', () => {
       expect(focusedTab).toHaveAttribute('tabindex', '0');
 
       // Other tabs should not be focusable
-      const otherTabs = screen.getAllByRole('tab').filter((tab) => tab !== focusedTab);
-      otherTabs.forEach((tab) => {
+      const otherTabs = screen.getAllByRole('tab').filter(tab => tab !== focusedTab);
+      otherTabs.forEach(tab => {
         if (!tab.hasAttribute('disabled')) {
           expect(tab).toHaveAttribute('tabindex', '-1');
         }
@@ -343,9 +338,7 @@ describe('Tabs Accessibility', () => {
 
       expect(screen.getByRole('tab', { name: 'Section 1: Introduction' })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: 'Section 2: Details' })).toBeInTheDocument();
-      expect(
-        screen.getByRole('tab', { name: 'Section 3: Advanced (Coming Soon)' }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: 'Section 3: Advanced (Coming Soon)' })).toBeInTheDocument();
     });
 
     it('announces tab states correctly', () => {
@@ -376,27 +369,21 @@ describe('Tabs Accessibility', () => {
       render(<BasicTabs />);
 
       // Initially, only first content should be visible
-      expect(
-        screen.getByText('This section provides an introduction to the topic.'),
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByText('This section contains detailed information.'),
-      ).not.toBeInTheDocument();
+      expect(screen.getByText('This section provides an introduction to the topic.')).toBeInTheDocument();
+      expect(screen.queryByText('This section contains detailed information.')).not.toBeInTheDocument();
 
       // Switch tabs
       await user.click(screen.getByRole('tab', { name: 'Section 2: Details' }));
 
       expect(screen.getByText('This section contains detailed information.')).toBeInTheDocument();
-      expect(
-        screen.queryByText('This section provides an introduction to the topic.'),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText('This section provides an introduction to the topic.')).not.toBeInTheDocument();
     });
   });
 
   describe('Complex Content Accessibility', () => {
     it('maintains accessibility of interactive content within panels', async () => {
       const user = userEvent.setup();
-      render(<BasicTabs defaultValue='section2' />);
+      render(<BasicTabs defaultValue="section2" />);
 
       // Focus on the action button within the panel
       const actionButton = screen.getByRole('button', { name: 'Take Action' });
@@ -416,18 +403,18 @@ describe('Tabs Accessibility', () => {
     it('passes axe tests with complex content', async () => {
       const { container } = render(
         <BasicTabs>
-          <TabsList aria-label='Content sections'>
-            <TabsTrigger value='form'>Form Section</TabsTrigger>
-            <TabsTrigger value='table'>Data Table</TabsTrigger>
+          <TabsList aria-label="Content sections">
+            <TabsTrigger value="form">Form Section</TabsTrigger>
+            <TabsTrigger value="table">Data Table</TabsTrigger>
           </TabsList>
-          <TabsContent value='form'>
+          <TabsContent value="form">
             <form>
-              <label htmlFor='email'>Email</label>
-              <input id='email' type='email' required />
-              <button type='submit'>Submit</button>
+              <label htmlFor="email">Email</label>
+              <input id="email" type="email" required />
+              <button type="submit">Submit</button>
             </form>
           </TabsContent>
-          <TabsContent value='table'>
+          <TabsContent value="table">
             <table>
               <caption>Data Summary</caption>
               <thead>
@@ -457,14 +444,14 @@ describe('Tabs Accessibility', () => {
       const { container } = render(
         <BasicTabs>
           <TabsList>
-            <TabsTrigger value='valid'>Valid Tab</TabsTrigger>
-            <TabsTrigger value='error' aria-invalid='true' aria-describedby='error-msg'>
+            <TabsTrigger value="valid">Valid Tab</TabsTrigger>
+            <TabsTrigger value="error" aria-invalid="true" aria-describedby="error-msg">
               Tab with Error
             </TabsTrigger>
           </TabsList>
-          <TabsContent value='valid'>Valid content</TabsContent>
-          <TabsContent value='error'>
-            <div id='error-msg' role='alert'>
+          <TabsContent value="valid">Valid content</TabsContent>
+          <TabsContent value="error">
+            <div id="error-msg" role="alert">
               This tab has validation errors
             </div>
             Error content
@@ -480,12 +467,12 @@ describe('Tabs Accessibility', () => {
       render(
         <BasicTabs>
           <TabsList>
-            <TabsTrigger value='error' aria-describedby='error-desc' aria-invalid='true'>
+            <TabsTrigger value="error" aria-describedby="error-desc" aria-invalid="true">
               Error Tab
             </TabsTrigger>
           </TabsList>
-          <TabsContent value='error'>
-            <div id='error-desc' role='alert'>
+          <TabsContent value="error">
+            <div id="error-desc" role="alert">
               This tab contains errors that need attention
             </div>
           </TabsContent>
@@ -495,9 +482,7 @@ describe('Tabs Accessibility', () => {
       const errorTab = screen.getByRole('tab', { name: 'Error Tab' });
       expect(errorTab).toHaveAttribute('aria-describedby', 'error-desc');
       expect(errorTab).toHaveAttribute('aria-invalid', 'true');
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'This tab contains errors that need attention',
-      );
+      expect(screen.getByRole('alert')).toHaveTextContent('This tab contains errors that need attention');
     });
   });
 
@@ -505,12 +490,12 @@ describe('Tabs Accessibility', () => {
     it('supports custom ARIA labels for tablist', () => {
       render(
         <BasicTabs>
-          <TabsList aria-label='Navigation sections'>
-            <TabsTrigger value='home'>Home</TabsTrigger>
-            <TabsTrigger value='about'>About</TabsTrigger>
+          <TabsList aria-label="Navigation sections">
+            <TabsTrigger value="home">Home</TabsTrigger>
+            <TabsTrigger value="about">About</TabsTrigger>
           </TabsList>
-          <TabsContent value='home'>Home content</TabsContent>
-          <TabsContent value='about'>About content</TabsContent>
+          <TabsContent value="home">Home content</TabsContent>
+          <TabsContent value="about">About content</TabsContent>
         </BasicTabs>,
       );
 
@@ -522,14 +507,14 @@ describe('Tabs Accessibility', () => {
     it('supports custom ARIA labelledby for tablist', () => {
       render(
         <div>
-          <h2 id='section-heading'>Content Sections</h2>
+          <h2 id="section-heading">Content Sections</h2>
           <BasicTabs>
-            <TabsList aria-labelledby='section-heading'>
-              <TabsTrigger value='intro'>Introduction</TabsTrigger>
-              <TabsTrigger value='details'>Details</TabsTrigger>
+            <TabsList aria-labelledby="section-heading">
+              <TabsTrigger value="intro">Introduction</TabsTrigger>
+              <TabsTrigger value="details">Details</TabsTrigger>
             </TabsList>
-            <TabsContent value='intro'>Intro content</TabsContent>
-            <TabsContent value='details'>Details content</TabsContent>
+            <TabsContent value="intro">Intro content</TabsContent>
+            <TabsContent value="details">Details content</TabsContent>
           </BasicTabs>
         </div>,
       );
@@ -547,13 +532,13 @@ describe('Tabs Accessibility', () => {
             <button onClick={() => setTabs([...tabs, `tab${tabs.length + 1}`])}>Add Tab</button>
             <Tabs>
               <TabsList>
-                {tabs.map((tab) => (
+                {tabs.map(tab => (
                   <TabsTrigger key={tab} value={tab}>
                     {tab}
                   </TabsTrigger>
                 ))}
               </TabsList>
-              {tabs.map((tab) => (
+              {tabs.map(tab => (
                 <TabsContent key={tab} value={tab}>
                   Content for {tab}
                 </TabsContent>
@@ -586,11 +571,11 @@ describe('Tabs Accessibility', () => {
             <button onClick={() => setIsLoading(!isLoading)}>Toggle Loading</button>
             <Tabs>
               <TabsList>
-                <TabsTrigger value='content' aria-busy={isLoading}>
+                <TabsTrigger value="content" aria-busy={isLoading}>
                   {isLoading ? 'Loading...' : 'Content'}
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value='content' aria-busy={isLoading}>
+              <TabsContent value="content" aria-busy={isLoading}>
                 {isLoading ? 'Loading content...' : 'Loaded content'}
               </TabsContent>
             </Tabs>
@@ -619,27 +604,27 @@ describe('Tabs Accessibility', () => {
       const { container } = render(
         <BasicTabs>
           <TabsList>
-            <TabsTrigger value='interactive'>Interactive Content</TabsTrigger>
+            <TabsTrigger value="interactive">Interactive Content</TabsTrigger>
           </TabsList>
-          <TabsContent value='interactive'>
+          <TabsContent value="interactive">
             <form>
               <fieldset>
                 <legend>User Information</legend>
-                <label htmlFor='name'>Name</label>
-                <input id='name' type='text' required aria-describedby='name-help' />
-                <div id='name-help'>Enter your full name</div>
+                <label htmlFor="name">Name</label>
+                <input id="name" type="text" required aria-describedby="name-help" />
+                <div id="name-help">Enter your full name</div>
 
-                <label htmlFor='preferences'>Preferences</label>
-                <select id='preferences' aria-label='User preferences'>
-                  <option value='option1'>Option 1</option>
-                  <option value='option2'>Option 2</option>
+                <label htmlFor="preferences">Preferences</label>
+                <select id="preferences" aria-label="User preferences">
+                  <option value="option1">Option 1</option>
+                  <option value="option2">Option 2</option>
                 </select>
               </fieldset>
 
-              <button type='submit' aria-describedby='submit-help'>
+              <button type="submit" aria-describedby="submit-help">
                 Save Information
               </button>
-              <div id='submit-help'>Click to save your information</div>
+              <div id="submit-help">Click to save your information</div>
             </form>
           </TabsContent>
         </BasicTabs>,
@@ -659,20 +644,20 @@ describe('Tabs Accessibility', () => {
       const user = userEvent.setup();
       render(
         <div>
-          <button id='before'>Before Tabs</button>
+          <button id="before">Before Tabs</button>
           <BasicTabs>
             <TabsList>
-              <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
-              <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+              <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+              <TabsTrigger value="tab2">Tab 2</TabsTrigger>
             </TabsList>
-            <TabsContent value='tab1'>
+            <TabsContent value="tab1">
               <button>Action in Tab 1</button>
             </TabsContent>
-            <TabsContent value='tab2'>
+            <TabsContent value="tab2">
               <button>Action in Tab 2</button>
             </TabsContent>
           </BasicTabs>
-          <button id='after'>After Tabs</button>
+          <button id="after">After Tabs</button>
         </div>,
       );
 

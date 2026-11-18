@@ -12,10 +12,4 @@ Input.Field = InputField;
 
 export { Input, InputRoot, InputField };
 
-export type {
-  InputContextValue,
-  InputOwnProps,
-  InputProps,
-  InputFieldOwnProps,
-  InputFieldProps,
-} from './types';
+export type { InputContextValue, InputOwnProps, InputProps, InputFieldOwnProps, InputFieldProps } from './types';

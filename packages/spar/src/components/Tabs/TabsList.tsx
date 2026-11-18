@@ -5,21 +5,13 @@ import type { TabsListProps } from './types';
 /**
  * TabsList component that contains TabsTrigger elements and handles keyboard navigation
  */
-export const TabsList = <T extends ElementType = 'div'>({
-  as,
-  children,
-  onKeyDown,
-  ...props
-}: TabsListProps<T>) => {
+export const TabsList = <T extends ElementType = 'div'>({ as, children, onKeyDown, ...props }: TabsListProps<T>) => {
   const Component = as || 'div';
   const context = useTabsContext();
   const { orientation, activationMode, tabItems, onValueChange, focusTab } = context;
 
   const getEnabledTabs = useCallback(() => {
-    const isDisabled = (el: HTMLElement) =>
-      el.hasAttribute('disabled') ||
-      el.getAttribute('aria-disabled') === 'true' ||
-      el.hasAttribute('data-disabled');
+    const isDisabled = (el: HTMLElement) => el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true' || el.hasAttribute('data-disabled');
     return Array.from(tabItems.entries())
       .filter(([, el]) => !isDisabled(el))
       .map(([value]) => value);
@@ -114,13 +106,7 @@ export const TabsList = <T extends ElementType = 'div'>({
   );
 
   return (
-    <Component
-      role='tablist'
-      aria-orientation={orientation}
-      data-orientation={orientation}
-      onKeyDown={handleKeyDown}
-      {...props}
-    >
+    <Component role="tablist" aria-orientation={orientation} data-orientation={orientation} onKeyDown={handleKeyDown} {...props}>
       {children}
     </Component>
   );

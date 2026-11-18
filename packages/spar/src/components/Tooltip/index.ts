@@ -21,12 +21,4 @@ Tooltip.Arrow = TooltipArrow;
 
 export { Tooltip, TooltipRoot, TooltipProvider, TooltipTrigger, TooltipContent, TooltipArrow };
 
-export type {
-  TooltipProviderProps,
-  TooltipProps,
-  TooltipTriggerProps,
-  TooltipTriggerRenderProps,
-  TooltipContentProps,
-  TooltipArrowProps,
-  TooltipContextValue,
-} from './types';
+export type { TooltipProviderProps, TooltipProps, TooltipTriggerProps, TooltipTriggerRenderProps, TooltipContentProps, TooltipArrowProps, TooltipContextValue } from './types';

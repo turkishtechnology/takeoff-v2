@@ -9,14 +9,7 @@ const getRegistryItemId = (value: string | number): string => `${typeof value}:$
 /**
  * Accordion trigger button that toggles panel visibility. Provides keyboard navigation and screen reader support.
  */
-export const AccordionTrigger = <T extends ElementType = 'button'>({
-  as,
-  children,
-  onClick,
-  onKeyDown,
-  ref: forwardedRef,
-  ...props
-}: AccordionTriggerProps<T>) => {
+export const AccordionTrigger = <T extends ElementType = 'button'>({ as, children, onClick, onKeyDown, ref: forwardedRef, ...props }: AccordionTriggerProps<T>) => {
   const Component = as || 'button';
   const { registerItem, unregisterItem, focusItem, orientation } = useAccordionContext();
   const itemContext = useAccordionItemContext();
@@ -86,15 +79,7 @@ export const AccordionTrigger = <T extends ElementType = 'button'>({
   };
 
   return (
-    <CollapsibleTrigger
-      as={Component}
-      ref={composedRef}
-      onClick={onClick}
-      onKeyDown={handleKeyDown}
-      data-accordion-trigger=''
-      data-value={dataValue}
-      {...props}
-    >
+    <CollapsibleTrigger as={Component} ref={composedRef} onClick={onClick} onKeyDown={handleKeyDown} data-accordion-trigger="" data-value={dataValue} {...props}>
       {typeof children === 'function' ? children(renderProps) : children}
     </CollapsibleTrigger>
   );

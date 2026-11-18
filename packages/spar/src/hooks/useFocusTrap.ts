@@ -35,10 +35,7 @@ const FOCUSABLE_SELECTOR = [
  * useFocusTrap(contentRef, isOpen && trapFocus);
  * ```
  */
-export function useFocusTrap(
-  containerRef: React.RefObject<HTMLElement | null>,
-  enabled: boolean,
-): void {
+export function useFocusTrap(containerRef: React.RefObject<HTMLElement | null>, enabled: boolean): void {
   const handleTab = useCallback(
     (event: KeyboardEvent) => {
       if (event.key !== 'Tab') return;

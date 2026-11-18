@@ -18,34 +18,28 @@ describe('Switch Accessibility', () => {
   });
 
   it('supports accessible name via aria-label and aria-labelledby', () => {
-    const { rerender } = render(<Switch aria-label='Enable dark mode' />);
+    const { rerender } = render(<Switch aria-label="Enable dark mode" />);
     expect(screen.getByRole('switch', { name: 'Enable dark mode' })).toBeInTheDocument();
 
     rerender(
       <>
-        <span id='switch-label'>Enable notifications</span>
-        <Switch aria-labelledby='switch-label' />
+        <span id="switch-label">Enable notifications</span>
+        <Switch aria-labelledby="switch-label" />
       </>,
     );
 
-    expect(screen.getByRole('switch', { name: 'Enable notifications' })).toHaveAttribute(
-      'aria-labelledby',
-      'switch-label',
-    );
+    expect(screen.getByRole('switch', { name: 'Enable notifications' })).toHaveAttribute('aria-labelledby', 'switch-label');
   });
 
   it('preserves aria-describedby relationship', () => {
     render(
       <>
-        <Switch aria-describedby='switch-description'>Notifications</Switch>
-        <p id='switch-description'>Controls push notification preference</p>
+        <Switch aria-describedby="switch-description">Notifications</Switch>
+        <p id="switch-description">Controls push notification preference</p>
       </>,
     );
 
-    expect(screen.getByRole('switch', { name: 'Notifications' })).toHaveAttribute(
-      'aria-describedby',
-      'switch-description',
-    );
+    expect(screen.getByRole('switch', { name: 'Notifications' })).toHaveAttribute('aria-describedby', 'switch-description');
   });
 
   it('is reachable with Tab and updates focus state attribute', async () => {
@@ -92,10 +86,7 @@ describe('Switch Accessibility', () => {
 
     await user.tab();
     expect(screen.getByRole('button', { name: 'After' })).toHaveFocus();
-    expect(screen.getByRole('switch', { name: 'Disabled switch' })).toHaveAttribute(
-      'tabindex',
-      '-1',
-    );
+    expect(screen.getByRole('switch', { name: 'Disabled switch' })).toHaveAttribute('tabindex', '-1');
   });
 
   it('toggles with Space and Enter only', async () => {
@@ -119,7 +110,7 @@ describe('Switch Accessibility', () => {
     const { container } = render(
       <Field required>
         <FieldLabel>Travel alerts</FieldLabel>
-        <Switch name='alerts' />
+        <Switch name="alerts" />
         <FieldDescription>Only operational changes are sent here.</FieldDescription>
       </Field>,
     );

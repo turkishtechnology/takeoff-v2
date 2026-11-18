@@ -10,9 +10,7 @@ export interface DropdownMenuContentContextValue {
   align: Align;
 }
 
-export const DropdownMenuContentContext = createContext<DropdownMenuContentContextValue | null>(
-  null,
-);
+export const DropdownMenuContentContext = createContext<DropdownMenuContentContextValue | null>(null);
 
 /**
  * Hook to access dropdown menu content context.

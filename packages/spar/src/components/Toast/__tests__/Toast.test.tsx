@@ -1,14 +1,6 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  createToaster,
-  Toast,
-  ToastClose,
-  ToastDescription,
-  ToastRoot,
-  ToastTitle,
-  Toaster,
-} from '../index';
+import { createToaster, Toast, ToastClose, ToastDescription, ToastRoot, ToastTitle, Toaster } from '../index';
 
 describe('Toast', () => {
   beforeEach(() => {
@@ -81,14 +73,11 @@ describe('Toast', () => {
     toaster.create({ title: 'First' });
     toaster.create({ title: 'Second' });
 
-    expect(toaster.getSnapshot()).toEqual([
-      expect.objectContaining({ title: 'Second', status: 'visible' }),
-      expect.objectContaining({ title: 'First', status: 'queued' }),
-    ]);
+    expect(toaster.getSnapshot()).toEqual([expect.objectContaining({ title: 'Second', status: 'visible' }), expect.objectContaining({ title: 'First', status: 'queued' })]);
 
     render(
       <Toaster toaster={toaster}>
-        {(toast) => (
+        {toast => (
           <ToastRoot key={toast.id} toast={toast} toaster={toaster}>
             <ToastTitle />
           </ToastRoot>
@@ -106,7 +95,7 @@ describe('Toast', () => {
 
     render(
       <Toaster toaster={toaster} hotkey={[]}>
-        {(toast) => <ToastRoot key={toast.id} toast={toast} toaster={toaster} />}
+        {toast => <ToastRoot key={toast.id} toast={toast} toaster={toaster} />}
       </Toaster>,
     );
 
@@ -119,7 +108,7 @@ describe('Toast', () => {
 
     render(
       <Toaster toaster={toaster} overlap>
-        {(toast) => <ToastRoot key={toast.id} toast={toast} toaster={toaster} />}
+        {toast => <ToastRoot key={toast.id} toast={toast} toaster={toaster} />}
       </Toaster>,
     );
 
@@ -158,18 +147,15 @@ describe('Toast', () => {
 
     render(
       <Toaster toaster={toaster} overlap>
-        {(toast) => (
-          <ToastRoot key={toast.id} toast={toast} toaster={toaster} data-testid='toast'>
+        {toast => (
+          <ToastRoot key={toast.id} toast={toast} toaster={toaster} data-testid="toast">
             <ToastTitle />
           </ToastRoot>
         )}
       </Toaster>,
     );
 
-    expect(screen.getAllByTestId('toast').map((toast) => toast.textContent)).toEqual([
-      'First',
-      'Second',
-    ]);
+    expect(screen.getAllByTestId('toast').map(toast => toast.textContent)).toEqual(['First', 'Second']);
   });
 
   it('should focus the toaster only when the hotkey matches exactly', () => {
@@ -177,7 +163,7 @@ describe('Toast', () => {
 
     render(
       <Toaster toaster={toaster} hotkey={['altKey', 'KeyT']}>
-        {(toast) => <ToastRoot key={toast.id} toast={toast} toaster={toaster} />}
+        {toast => <ToastRoot key={toast.id} toast={toast} toaster={toaster} />}
       </Toaster>,
     );
 
@@ -217,7 +203,7 @@ describe('Toast', () => {
       jest.advanceTimersByTime(1000);
     });
 
-    expect(toaster.getSnapshot().map((toast) => toast.id)).toEqual([firstId]);
+    expect(toaster.getSnapshot().map(toast => toast.id)).toEqual([firstId]);
     expect(toaster.getSnapshot()[0]).toMatchObject({
       title: 'First',
       remaining: 1000,
@@ -228,7 +214,7 @@ describe('Toast', () => {
       jest.advanceTimersByTime(999);
     });
 
-    expect(toaster.getSnapshot().map((toast) => toast.id)).toEqual([firstId]);
+    expect(toaster.getSnapshot().map(toast => toast.id)).toEqual([firstId]);
 
     act(() => {
       jest.advanceTimersByTime(1);
@@ -254,13 +240,13 @@ describe('Toast', () => {
       jest.advanceTimersByTime(300);
     });
 
-    expect(toaster.getSnapshot().map((toast) => toast.id)).toEqual([firstId]);
+    expect(toaster.getSnapshot().map(toast => toast.id)).toEqual([firstId]);
 
     act(() => {
       jest.advanceTimersByTime(999);
     });
 
-    expect(toaster.getSnapshot().map((toast) => toast.id)).toEqual([firstId]);
+    expect(toaster.getSnapshot().map(toast => toast.id)).toEqual([firstId]);
 
     act(() => {
       jest.advanceTimersByTime(1);
@@ -280,12 +266,12 @@ describe('Toast', () => {
     const toaster = createToaster({
       duration: 1000,
       removeDelay: 0,
-      onCreate: (toast) => events.push(`create:${toast.id}:${String(toast.title)}`),
-      onUpdate: (toast) => events.push(`update:${toast.id}:${String(toast.title)}`),
-      onDismiss: (toast) => events.push(`dismiss:${toast.id}:${toast.status}`),
-      onRemove: (toast) => events.push(`remove:${toast.id}:${String(toast.title)}`),
-      onPause: (toast) => events.push(`pause:${toast.id}:${toast.remaining}`),
-      onResume: (toast) => events.push(`resume:${toast.id}:${toast.remaining}`),
+      onCreate: toast => events.push(`create:${toast.id}:${String(toast.title)}`),
+      onUpdate: toast => events.push(`update:${toast.id}:${String(toast.title)}`),
+      onDismiss: toast => events.push(`dismiss:${toast.id}:${toast.status}`),
+      onRemove: toast => events.push(`remove:${toast.id}:${String(toast.title)}`),
+      onPause: toast => events.push(`pause:${toast.id}:${toast.remaining}`),
+      onResume: toast => events.push(`resume:${toast.id}:${toast.remaining}`),
     });
 
     const id = toaster.create({ id: 'booking', title: 'Saving' });
@@ -299,14 +285,7 @@ describe('Toast', () => {
     toaster.resume(id);
     toaster.dismiss(id);
 
-    expect(events).toEqual([
-      'create:booking:Saving',
-      'update:booking:Saved',
-      'pause:booking:600',
-      'resume:booking:600',
-      'dismiss:booking:dismissing',
-      'remove:booking:Saved',
-    ]);
+    expect(events).toEqual(['create:booking:Saving', 'update:booking:Saved', 'pause:booking:600', 'resume:booking:600', 'dismiss:booking:dismissing', 'remove:booking:Saved']);
   });
 
   it('should treat duplicate ids as an update', () => {
@@ -384,7 +363,7 @@ describe('Toast', () => {
 
     render(
       <Toaster toaster={toaster}>
-        {(toast) => (
+        {toast => (
           <Toast.Root key={toast.id} toast={toast} toaster={toaster}>
             <Toast.Title />
             <Toast.Close>Close</Toast.Close>
@@ -404,7 +383,7 @@ describe('Toast', () => {
 
     render(
       <Toaster toaster={toaster}>
-        {(toast) => (
+        {toast => (
           <Toast.Root key={toast.id} toast={toast} toaster={toaster}>
             <Toast.Title />
             <Toast.Close>Close</Toast.Close>
@@ -432,7 +411,7 @@ describe('Toast', () => {
 
     render(
       <Toaster toaster={toaster}>
-        {(toast) => (
+        {toast => (
           <Toast.Root key={toast.id} toast={toast} toaster={toaster}>
             <Toast.Title />
             <Toast.Action />
@@ -454,7 +433,7 @@ describe('Toast', () => {
     await expect(
       toaster.promise(promise, {
         loading: { title: 'Loading' },
-        success: (value) => ({ title: value }),
+        success: value => ({ title: value }),
         error: { title: 'Failed' },
       }),
     ).resolves.toBe('done');
@@ -469,13 +448,13 @@ describe('Toast', () => {
   it('should keep promise loading toasts visible until the promise settles', async () => {
     const toaster = createToaster({ duration: 1000, removeDelay: 0 });
     let resolvePromise: (value: string) => void = () => {};
-    const promise = new Promise<string>((resolve) => {
+    const promise = new Promise<string>(resolve => {
       resolvePromise = resolve;
     });
 
     const trackedPromise = toaster.promise(promise, {
       loading: { title: 'Loading' },
-      success: (value) => ({ title: value }),
+      success: value => ({ title: value }),
       error: { title: 'Failed' },
     });
 

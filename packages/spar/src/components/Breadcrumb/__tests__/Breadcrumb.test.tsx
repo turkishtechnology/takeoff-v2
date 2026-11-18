@@ -1,15 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import type { MouseEvent as ReactMouseEvent, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import userEvent from '@testing-library/user-event';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  type BreadcrumbItemProps,
-} from '../index';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator, type BreadcrumbItemProps } from '../index';
 
 describe('Breadcrumb Components', () => {
   afterEach(() => {
@@ -21,7 +13,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>,
@@ -34,10 +26,10 @@ describe('Breadcrumb Components', () => {
 
   it('forwards base props including id and custom aria-label', () => {
     render(
-      <Breadcrumb id='crumb-root' aria-label='Page trail' data-custom='ok'>
+      <Breadcrumb id="crumb-root" aria-label="Page trail" data-custom="ok">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>,
@@ -53,7 +45,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb disabled>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>,
@@ -72,11 +64,11 @@ describe('Breadcrumb Components', () => {
         <BreadcrumbList>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
           <span>ignored node</span>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/products'>Products</BreadcrumbLink>
+            <BreadcrumbLink href="/products">Products</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
           <BreadcrumbItem>
@@ -100,11 +92,7 @@ describe('Breadcrumb Components', () => {
     render(
       <Breadcrumb disabled>
         <BreadcrumbList>
-          <BreadcrumbItem>
-            {({ position, isCurrent, isDisabled }) => (
-              <span>{`${position}-${String(isCurrent)}-${String(isDisabled)}`}</span>
-            )}
-          </BreadcrumbItem>
+          <BreadcrumbItem>{({ position, isCurrent, isDisabled }) => <span>{`${position}-${String(isCurrent)}-${String(isDisabled)}`}</span>}</BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>,
     );
@@ -118,17 +106,11 @@ describe('Breadcrumb Components', () => {
     render(
       <Breadcrumb>
         <BreadcrumbList>
-          <ItemWrapper>
-            {({ position, isCurrent }) => <span>{`a:${position}:${String(isCurrent)}`}</span>}
-          </ItemWrapper>
+          <ItemWrapper>{({ position, isCurrent }) => <span>{`a:${position}:${String(isCurrent)}`}</span>}</ItemWrapper>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
-          <ItemWrapper>
-            {({ position, isCurrent }) => <span>{`b:${position}:${String(isCurrent)}`}</span>}
-          </ItemWrapper>
+          <ItemWrapper>{({ position, isCurrent }) => <span>{`b:${position}:${String(isCurrent)}`}</span>}</ItemWrapper>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
-          <ItemWrapper>
-            {({ position, isCurrent }) => <span>{`c:${position}:${String(isCurrent)}`}</span>}
-          </ItemWrapper>
+          <ItemWrapper>{({ position, isCurrent }) => <span>{`c:${position}:${String(isCurrent)}`}</span>}</ItemWrapper>
         </BreadcrumbList>
       </Breadcrumb>,
     );
@@ -137,10 +119,7 @@ describe('Breadcrumb Components', () => {
     expect(screen.getByText('b:middle:false')).toBeInTheDocument();
     expect(screen.getByText('c:last:true')).toBeInTheDocument();
 
-    expect(screen.getByText('a:first:false').closest('li')).toHaveAttribute(
-      'data-position',
-      'first',
-    );
+    expect(screen.getByText('a:first:false').closest('li')).toHaveAttribute('data-position', 'first');
     expect(screen.getByText('c:last:true').closest('li')).toHaveAttribute('data-current', '');
   });
 
@@ -148,12 +127,8 @@ describe('Breadcrumb Components', () => {
     const trail = (labels: string[]) => (
       <Breadcrumb>
         <BreadcrumbList>
-          {labels.map((label) => (
-            <BreadcrumbItem key={label}>
-              {({ position, isCurrent }) => (
-                <span>{`${label}:${position}:${String(isCurrent)}`}</span>
-              )}
-            </BreadcrumbItem>
+          {labels.map(label => (
+            <BreadcrumbItem key={label}>{({ position, isCurrent }) => <span>{`${label}:${position}:${String(isCurrent)}`}</span>}</BreadcrumbItem>
           ))}
         </BreadcrumbList>
       </Breadcrumb>
@@ -187,7 +162,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb onNavigate={onNavigate}>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>,
@@ -214,7 +189,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb onNavigate={onNavigate}>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home' onPress={onPress}>
+            <BreadcrumbLink href="/home" onPress={onPress}>
               Home
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -240,7 +215,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb onNavigate={onNavigate}>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home' disabled onClick={onClick}>
+            <BreadcrumbLink href="/home" disabled onClick={onClick}>
               Home
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -271,7 +246,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home' onClick={onClick} onPress={onPress}>
+            <BreadcrumbLink href="/home" onClick={onClick} onPress={onPress}>
               Home
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -295,7 +270,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb onNavigate={onNavigate}>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home' onClick={onClick}>
+            <BreadcrumbLink href="/home" onClick={onClick}>
               Home
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -320,7 +295,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb onNavigate={onNavigate}>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home' onClick={onClick} onPress={onPress}>
+            <BreadcrumbLink href="/home" onClick={onClick} onPress={onPress}>
               Home
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -352,7 +327,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home' onKeyDown={onKeyDown} onClick={onClick} onPress={onPress}>
+            <BreadcrumbLink href="/home" onKeyDown={onKeyDown} onClick={onClick} onPress={onPress}>
               Home
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -381,7 +356,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home' onKeyDown={onKeyDown} onPress={onPress}>
+            <BreadcrumbLink href="/home" onKeyDown={onKeyDown} onPress={onPress}>
               Home
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -406,7 +381,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb onNavigate={onNavigate}>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home' disabled onKeyDown={onKeyDown} onPress={onPress}>
+            <BreadcrumbLink href="/home" disabled onKeyDown={onKeyDown} onPress={onPress}>
               Home
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -421,10 +396,7 @@ describe('Breadcrumb Components', () => {
     await user.keyboard('{Escape}');
 
     expect(onKeyDown).toHaveBeenCalledTimes(2);
-    expect(onKeyDown.mock.calls.map(([event]) => (event as ReactKeyboardEvent).key)).toEqual([
-      'ArrowRight',
-      'Escape',
-    ]);
+    expect(onKeyDown.mock.calls.map(([event]) => (event as ReactKeyboardEvent).key)).toEqual(['ArrowRight', 'Escape']);
 
     await user.keyboard('{Enter}');
     await user.keyboard(' ');
@@ -439,7 +411,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home' disabled>
+            <BreadcrumbLink href="/home" disabled>
               Home
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -461,7 +433,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='https://example.com' isExternal>
+            <BreadcrumbLink href="https://example.com" isExternal>
               External
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -470,16 +442,13 @@ describe('Breadcrumb Components', () => {
     );
 
     expect(screen.getByRole('link', { name: 'External' })).toHaveAttribute('target', '_blank');
-    expect(screen.getByRole('link', { name: 'External' })).toHaveAttribute(
-      'rel',
-      'noopener noreferrer',
-    );
+    expect(screen.getByRole('link', { name: 'External' })).toHaveAttribute('rel', 'noopener noreferrer');
 
     rerender(
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='https://example.com' isExternal target='_self' rel='author'>
+            <BreadcrumbLink href="https://example.com" isExternal target="_self" rel="author">
               External
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -496,7 +465,7 @@ describe('Breadcrumb Components', () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/home'>Home</BreadcrumbLink>
+            <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator>/</BreadcrumbSeparator>
           <BreadcrumbItem>

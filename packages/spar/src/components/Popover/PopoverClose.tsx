@@ -8,13 +8,7 @@ import type { ButtonProps } from '../Button/types';
 /**
  * Close button component that automatically closes the popover
  */
-export const PopoverClose = <T extends ElementType = 'button'>({
-  as,
-  children,
-  onClick,
-  ref,
-  ...props
-}: PopoverCloseProps<T>) => {
+export const PopoverClose = <T extends ElementType = 'button'>({ as, children, onClick, ref, ...props }: PopoverCloseProps<T>) => {
   const { closePopover, isOpen } = usePopoverContext();
   const { handleClick, renderProps } = useCloseButton({
     isOpen,
@@ -25,16 +19,12 @@ export const PopoverClose = <T extends ElementType = 'button'>({
   const buttonProps = {
     ...(as && { as }),
     ...(ref && { ref }),
-    onClick: handleClick,
+    'onClick': handleClick,
     'data-popover-close': '',
     ...props,
   } as ButtonProps<T>;
 
-  return (
-    <Button {...buttonProps}>
-      {typeof children === 'function' ? children(renderProps) : children}
-    </Button>
-  );
+  return <Button {...buttonProps}>{typeof children === 'function' ? children(renderProps) : children}</Button>;
 };
 
 PopoverClose.displayName = 'PopoverClose';

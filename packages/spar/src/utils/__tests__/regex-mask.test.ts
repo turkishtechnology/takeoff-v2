@@ -1,11 +1,4 @@
-import {
-  createIncrementalMatcher,
-  stripAnchors,
-  DONE,
-  MORE,
-  FAILED,
-  type MatchState,
-} from '../regex-mask';
+import { createIncrementalMatcher, stripAnchors, DONE, MORE, FAILED, type MatchState } from '../regex-mask';
 
 /**
  * The corpus is Takeoff Core's own — `regex-mask-utils.spec.ts` and

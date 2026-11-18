@@ -1,34 +1,9 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ElementType,
-  type KeyboardEvent as ReactKeyboardEvent,
-} from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ElementType, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  composeInsideHandlers,
-  useInteractOutside,
-  useMergedRef,
-  useFloating,
-  useTypeahead,
-  type UseFloatingOptions,
-  type UseFloatingReturn,
-} from '@/hooks';
+import { composeInsideHandlers, useInteractOutside, useMergedRef, useFloating, useTypeahead, type UseFloatingOptions, type UseFloatingReturn } from '@/hooks';
 
-import type {
-  DropdownMenuContentProps,
-  DropdownMenuCollectionContextValue,
-  DropdownMenuCollectionItem,
-} from './types';
-import {
-  useDropdownMenuContext,
-  DropdownMenuCollectionContext,
-  DropdownMenuContentContext,
-} from './hooks';
+import type { DropdownMenuContentProps, DropdownMenuCollectionContextValue, DropdownMenuCollectionItem } from './types';
+import { useDropdownMenuContext, DropdownMenuCollectionContext, DropdownMenuContentContext } from './hooks';
 import { Align, Side } from '@/types';
 import { createCancelableFocusOutsideEvent } from '@/utils';
 
@@ -64,8 +39,7 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
     arrowRef: menu.arrowRef?.current,
   };
 
-  const { floatingStyles, arrowStyles, placement, refs }: UseFloatingReturn =
-    useFloating(floatingOptions);
+  const { floatingStyles, arrowStyles, placement, refs }: UseFloatingReturn = useFloating(floatingOptions);
 
   // Set reference element
   useEffect(() => {
@@ -88,8 +62,8 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
   const hadHighlightRef = useRef(false);
 
   const registerItem = useCallback((item: DropdownMenuCollectionItem) => {
-    setItems((previous) => {
-      const next = [...previous.filter((entry) => entry.id !== item.id), item];
+    setItems(previous => {
+      const next = [...previous.filter(entry => entry.id !== item.id), item];
       next.sort((a, b) => {
         const aNode = a.ref.current;
         const bNode = b.ref.current;
@@ -105,7 +79,7 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
   }, []);
 
   const unregisterItem = useCallback((id: string) => {
-    setItems((previous) => previous.filter((item) => item.id !== id));
+    setItems(previous => previous.filter(item => item.id !== id));
   }, []);
 
   // --- Highlight ---
@@ -117,7 +91,7 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
   }, []);
 
   const highlightFirst = useCallback(() => {
-    const candidate = items.find((item) => !item.disabled);
+    const candidate = items.find(item => !item.disabled);
     setHighlightedId(candidate?.id ?? null);
   }, [items]);
 
@@ -134,7 +108,7 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
 
   const highlightNext = useCallback(() => {
     if (!items.length) return;
-    const currentIndex = highlightedId ? items.findIndex((item) => item.id === highlightedId) : -1;
+    const currentIndex = highlightedId ? items.findIndex(item => item.id === highlightedId) : -1;
     let index = currentIndex;
 
     for (let step = 0; step < items.length; step += 1) {
@@ -152,9 +126,7 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
 
   const highlightPrevious = useCallback(() => {
     if (!items.length) return;
-    const currentIndex = highlightedId
-      ? items.findIndex((item) => item.id === highlightedId)
-      : items.length;
+    const currentIndex = highlightedId ? items.findIndex(item => item.id === highlightedId) : items.length;
     let index = currentIndex;
 
     for (let step = 0; step < items.length; step += 1) {
@@ -183,7 +155,7 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
   const handleItemActivation = useCallback(() => {
     if (!highlightedId) return false;
 
-    const currentItem = items.find((item) => item.id === highlightedId);
+    const currentItem = items.find(item => item.id === highlightedId);
     const element = currentItem?.ref.current;
     if (!currentItem || currentItem.disabled || !element) return false;
 
@@ -210,7 +182,7 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
   }, [menu.open, menu.focusStrategy, items.length, highlightFirst, highlightLast, resetTypeahead]);
 
   useEffect(() => {
-    setItems((previous) => previous.filter((item) => item.ref.current));
+    setItems(previous => previous.filter(item => item.ref.current));
   }, [menu.open]);
 
   // --- Focus sync ---
@@ -222,7 +194,7 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
 
     if (highlightedId) {
       hadHighlightRef.current = true;
-      const currentItem = items.find((item) => item.id === highlightedId);
+      const currentItem = items.find(item => item.id === highlightedId);
       const element = currentItem?.ref.current;
       if (element) {
         if (element !== element.ownerDocument.activeElement) {
@@ -250,13 +222,13 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
   const insideHandlers = useInteractOutside([contentRef, menu.triggerRef], {
     enabled: menu.open,
     includeFocus: true,
-    onPointerDownOutside: (event) => {
+    onPointerDownOutside: event => {
       onPointerDownOutside?.(event);
       if (event.defaultPrevented) return;
 
       menu.closeMenu({ focusTrigger: false });
     },
-    onFocusOutside: (nativeEvent) => {
+    onFocusOutside: nativeEvent => {
       // `focusin` is not cancelable, so hand consumers a cancelable event instead
       const event = createCancelableFocusOutsideEvent(nativeEvent);
       onFocusOutside?.(event);
@@ -327,18 +299,7 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
           break;
       }
     },
-    [
-      onKeyDown,
-      performTypeahead,
-      handleItemActivation,
-      highlightNext,
-      highlightPrevious,
-      highlightFirst,
-      highlightLast,
-      onEscapeKeyDown,
-      menu.closeMenu,
-      menu.modal,
-    ],
+    [onKeyDown, performTypeahead, handleItemActivation, highlightNext, highlightPrevious, highlightFirst, highlightLast, onEscapeKeyDown, menu.closeMenu, menu.modal],
   );
 
   // IMPORTANT: Hooks must be called unconditionally in the same order.
@@ -382,10 +343,7 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
     return [placementSide, placementAlign];
   }, [placement]);
 
-  const contentContextValue = useMemo(
-    () => ({ arrowStyles, side: currentSide, align: currentAlign }),
-    [arrowStyles, currentSide, currentAlign],
-  );
+  const contentContextValue = useMemo(() => ({ arrowStyles, side: currentSide, align: currentAlign }), [arrowStyles, currentSide, currentAlign]);
 
   if (!menu.open || !mounted) {
     return null;
@@ -394,7 +352,7 @@ export const DropdownMenuContent = <T extends ElementType = 'div'>({
   const portalContainer = container || document.body;
 
   const ariaAttributes = {
-    role: 'menu',
+    'role': 'menu',
     'aria-labelledby': menu.triggerId,
   };
 

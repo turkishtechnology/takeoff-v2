@@ -119,11 +119,7 @@ export interface TooltipTriggerOwnProps extends ButtonOwnProps {
  * Props for TooltipTrigger
  * @remarks The trigger element that shows/hides the tooltip
  */
-export type TooltipTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  TooltipTriggerOwnProps
->;
+export type TooltipTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, TooltipTriggerOwnProps>;
 
 /**
  * Own props for TooltipContent
@@ -160,11 +156,7 @@ export interface TooltipContentOwnProps {
  * Props for TooltipContent
  * @remarks The content that displays in the tooltip
  */
-export type TooltipContentProps<T extends ElementType = 'div'> = PolymorphicProps<
-  'div',
-  T,
-  TooltipContentOwnProps
->;
+export type TooltipContentProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, TooltipContentOwnProps>;
 
 /**
  * Props for TooltipArrow

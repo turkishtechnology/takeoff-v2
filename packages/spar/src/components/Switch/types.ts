@@ -1,12 +1,4 @@
-import type {
-  CSSProperties,
-  ElementType,
-  FocusEvent,
-  KeyboardEvent,
-  MouseEvent,
-  PointerEvent,
-  ReactNode,
-} from 'react';
+import type { CSSProperties, ElementType, FocusEvent, KeyboardEvent, MouseEvent, PointerEvent, ReactNode } from 'react';
 import type { PolymorphicProps } from '../../types';
 
 /**
@@ -87,11 +79,7 @@ export interface SwitchOwnProps {
 /**
  * Props for Switch component
  */
-export type SwitchProps<T extends ElementType = 'button'> = PolymorphicProps<
-  'button',
-  T,
-  SwitchOwnProps
->;
+export type SwitchProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, SwitchOwnProps>;
 
 /**
  * Props for useSwitch hook
@@ -116,7 +104,7 @@ export interface UseSwitchReturn {
   isActive: boolean;
   setChecked: (checked: boolean) => void;
   switchProps: {
-    role: 'switch';
+    'role': 'switch';
     'aria-checked': boolean;
     'aria-disabled'?: boolean;
     'aria-readonly'?: boolean;
@@ -128,23 +116,23 @@ export interface UseSwitchReturn {
     'data-focus'?: '';
     'data-hover'?: '';
     'data-active'?: '';
-    tabIndex: number;
-    onKeyDown: (event: KeyboardEvent) => void;
-    onClick: (event: MouseEvent) => void;
-    onFocus: (event: FocusEvent) => void;
-    onBlur: (event: FocusEvent) => void;
-    onPointerEnter: (event: PointerEvent) => void;
-    onPointerLeave: (event: PointerEvent) => void;
-    onPointerDown: (event: PointerEvent) => void;
-    onPointerUp: (event: PointerEvent) => void;
-    onPointerCancel: (event: PointerEvent) => void;
+    'tabIndex': number;
+    'onKeyDown': (event: KeyboardEvent) => void;
+    'onClick': (event: MouseEvent) => void;
+    'onFocus': (event: FocusEvent) => void;
+    'onBlur': (event: FocusEvent) => void;
+    'onPointerEnter': (event: PointerEvent) => void;
+    'onPointerLeave': (event: PointerEvent) => void;
+    'onPointerDown': (event: PointerEvent) => void;
+    'onPointerUp': (event: PointerEvent) => void;
+    'onPointerCancel': (event: PointerEvent) => void;
   };
   hiddenInputProps: {
-    type: 'checkbox';
-    checked: boolean;
-    onChange: () => void;
-    tabIndex: -1;
+    'type': 'checkbox';
+    'checked': boolean;
+    'onChange': () => void;
+    'tabIndex': -1;
     'aria-hidden': true;
-    style: CSSProperties;
+    'style': CSSProperties;
   };
 }

@@ -24,15 +24,15 @@ const BasicTabs = ({
     {children || (
       <>
         <TabsList>
-          <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
-          <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
-          <TabsTrigger value='tab3' disabled>
+          <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+          <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+          <TabsTrigger value="tab3" disabled>
             Tab 3 (Disabled)
           </TabsTrigger>
         </TabsList>
-        <TabsContent value='tab1'>Content for Tab 1</TabsContent>
-        <TabsContent value='tab2'>Content for Tab 2</TabsContent>
-        <TabsContent value='tab3'>Content for Tab 3</TabsContent>
+        <TabsContent value="tab1">Content for Tab 1</TabsContent>
+        <TabsContent value="tab2">Content for Tab 2</TabsContent>
+        <TabsContent value="tab3">Content for Tab 3</TabsContent>
       </>
     )}
   </Tabs>
@@ -55,18 +55,18 @@ describe('Tabs', () => {
     it('renders with custom component types', () => {
       render(
         <BasicTabs>
-          <TabsList as='nav'>
-            <TabsTrigger value='tab1' as='a'>
+          <TabsList as="nav">
+            <TabsTrigger value="tab1" as="a">
               Tab 1
             </TabsTrigger>
-            <TabsTrigger value='tab2' as='a'>
+            <TabsTrigger value="tab2" as="a">
               Tab 2
             </TabsTrigger>
           </TabsList>
-          <TabsContent value='tab1' as='section'>
+          <TabsContent value="tab1" as="section">
             Content 1
           </TabsContent>
-          <TabsContent value='tab2' as='section'>
+          <TabsContent value="tab2" as="section">
             Content 2
           </TabsContent>
         </BasicTabs>,
@@ -83,11 +83,9 @@ describe('Tabs', () => {
       render(
         <BasicTabs>
           <TabsList>
-            <TabsTrigger value='tab1'>
-              {({ isSelected }) => <span>{isSelected ? 'Selected Tab' : 'Tab'}</span>}
-            </TabsTrigger>
+            <TabsTrigger value="tab1">{({ isSelected }) => <span>{isSelected ? 'Selected Tab' : 'Tab'}</span>}</TabsTrigger>
           </TabsList>
-          <TabsContent value='tab1'>Custom Content</TabsContent>
+          <TabsContent value="tab1">Custom Content</TabsContent>
         </BasicTabs>,
       );
 
@@ -97,7 +95,7 @@ describe('Tabs', () => {
 
   describe('State Management', () => {
     it('works as uncontrolled component', () => {
-      render(<BasicTabs defaultValue='tab2' />);
+      render(<BasicTabs defaultValue="tab2" />);
 
       expect(screen.getByRole('tab', { name: 'Tab 1' })).toHaveAttribute('aria-selected', 'false');
       expect(screen.getByRole('tab', { name: 'Tab 2' })).toHaveAttribute('aria-selected', 'true');
@@ -106,11 +104,11 @@ describe('Tabs', () => {
 
     it('works as controlled component', () => {
       const handleValueChange = jest.fn();
-      const { rerender } = render(<BasicTabs value='tab1' onValueChange={handleValueChange} />);
+      const { rerender } = render(<BasicTabs value="tab1" onValueChange={handleValueChange} />);
 
       expect(screen.getByRole('tab', { name: 'Tab 1' })).toHaveAttribute('aria-selected', 'true');
 
-      rerender(<BasicTabs value='tab2' onValueChange={handleValueChange} />);
+      rerender(<BasicTabs value="tab2" onValueChange={handleValueChange} />);
 
       expect(screen.getByRole('tab', { name: 'Tab 2' })).toHaveAttribute('aria-selected', 'true');
     });
@@ -119,7 +117,7 @@ describe('Tabs', () => {
       const user = userEvent.setup();
       const handleValueChange = jest.fn();
 
-      render(<BasicTabs value='tab1' onValueChange={handleValueChange} />);
+      render(<BasicTabs value="tab1" onValueChange={handleValueChange} />);
 
       await user.click(screen.getByRole('tab', { name: 'Tab 2' }));
 
@@ -164,10 +162,7 @@ describe('Tabs', () => {
 
       await user.click(screen.getByRole('tab', { name: 'Tab 3 (Disabled)' }));
 
-      expect(screen.getByRole('tab', { name: 'Tab 3 (Disabled)' })).toHaveAttribute(
-        'aria-selected',
-        'false',
-      );
+      expect(screen.getByRole('tab', { name: 'Tab 3 (Disabled)' })).toHaveAttribute('aria-selected', 'false');
       expect(screen.getByRole('tab', { name: 'Tab 1' })).toHaveAttribute('aria-selected', 'true');
     });
 
@@ -191,14 +186,14 @@ describe('Tabs', () => {
     });
 
     it('sets vertical orientation', () => {
-      render(<BasicTabs orientation='vertical' />);
+      render(<BasicTabs orientation="vertical" />);
 
       expect(screen.getByRole('tablist')).toHaveAttribute('aria-orientation', 'vertical');
       expect(screen.getByRole('tablist')).toHaveAttribute('data-orientation', 'vertical');
     });
 
     it('passes orientation to content panels', () => {
-      render(<BasicTabs orientation='vertical' />);
+      render(<BasicTabs orientation="vertical" />);
 
       expect(screen.getByRole('tabpanel')).toHaveAttribute('data-orientation', 'vertical');
     });
@@ -206,7 +201,7 @@ describe('Tabs', () => {
     it('ignores unsupported arrow keys for current orientation', async () => {
       const user = userEvent.setup();
 
-      render(<BasicTabs orientation='horizontal' />);
+      render(<BasicTabs orientation="horizontal" />);
       const tab1 = screen.getByRole('tab', { name: 'Tab 1' });
       const tab2 = screen.getByRole('tab', { name: 'Tab 2' });
 
@@ -234,7 +229,7 @@ describe('Tabs', () => {
 
     it('requires explicit activation in manual mode', async () => {
       const user = userEvent.setup();
-      render(<BasicTabs activationMode='manual' />);
+      render(<BasicTabs activationMode="manual" />);
 
       const tab2 = screen.getByRole('tab', { name: 'Tab 2' });
       await user.tab(); // Focus first tab
@@ -262,11 +257,11 @@ describe('Tabs', () => {
       render(
         <BasicTabs>
           <TabsList>
-            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
-            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value='tab1'>Content for Tab 1</TabsContent>
-          <TabsContent value='tab2' forceMount>
+          <TabsContent value="tab1">Content for Tab 1</TabsContent>
+          <TabsContent value="tab2" forceMount>
             Content for Tab 2
           </TabsContent>
         </BasicTabs>,
@@ -295,13 +290,13 @@ describe('Tabs', () => {
   describe('ID Contract', () => {
     it('uses provided root id to derive trigger/panel ids and ARIA relationships', () => {
       render(
-        <BasicTabs id='docs-tabs'>
+        <BasicTabs id="docs-tabs">
           <TabsList>
-            <TabsTrigger value='intro'>Intro</TabsTrigger>
-            <TabsTrigger value='api'>API</TabsTrigger>
+            <TabsTrigger value="intro">Intro</TabsTrigger>
+            <TabsTrigger value="api">API</TabsTrigger>
           </TabsList>
-          <TabsContent value='intro'>Intro content</TabsContent>
-          <TabsContent value='api'>API content</TabsContent>
+          <TabsContent value="intro">Intro content</TabsContent>
+          <TabsContent value="api">API content</TabsContent>
         </BasicTabs>,
       );
 
@@ -351,7 +346,7 @@ describe('Tabs', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
 
       expect(() => {
-        render(<TabsTrigger value='test'>Test</TabsTrigger>);
+        render(<TabsTrigger value="test">Test</TabsTrigger>);
       }).toThrow('Tabs components must be used within a Tabs');
 
       jest.restoreAllMocks();
@@ -361,7 +356,7 @@ describe('Tabs', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
 
       expect(() => {
-        render(<TabsContent value='test'>Test</TabsContent>);
+        render(<TabsContent value="test">Test</TabsContent>);
       }).toThrow('Tabs components must be used within a Tabs');
 
       jest.restoreAllMocks();
@@ -371,13 +366,13 @@ describe('Tabs', () => {
   describe('Custom Props', () => {
     it('forwards props to components', () => {
       render(
-        <BasicTabs aria-label='docs tabs root'>
-          <TabsList aria-label='docs tabs list'>
-            <TabsTrigger value='tab1' aria-label='docs tab trigger'>
+        <BasicTabs aria-label="docs tabs root">
+          <TabsList aria-label="docs tabs list">
+            <TabsTrigger value="tab1" aria-label="docs tab trigger">
               Tab 1
             </TabsTrigger>
           </TabsList>
-          <TabsContent value='tab1' aria-label='docs tab panel'>
+          <TabsContent value="tab1" aria-label="docs tab panel">
             Content 1
           </TabsContent>
         </BasicTabs>,
@@ -397,11 +392,11 @@ describe('Tabs', () => {
       render(
         <BasicTabs>
           <TabsList onKeyDown={handleKeyDown}>
-            <TabsTrigger value='tab1' onClick={handleClick}>
+            <TabsTrigger value="tab1" onClick={handleClick}>
               Tab 1
             </TabsTrigger>
           </TabsList>
-          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value="tab1">Content 1</TabsContent>
         </BasicTabs>,
       );
 
@@ -419,11 +414,11 @@ describe('Tabs', () => {
       render(
         <BasicTabs>
           <TabsList>
-            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
-            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value='tab1'>Content 1</TabsContent>
-          <TabsContent value='tab2'>Content 2</TabsContent>
+          <TabsContent value="tab1">Content 1</TabsContent>
+          <TabsContent value="tab2">Content 2</TabsContent>
         </BasicTabs>,
       );
 
@@ -442,11 +437,11 @@ describe('Tabs', () => {
       render(
         <BasicTabs>
           <TabsList>
-            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
-            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value='tab1'>Content 1</TabsContent>
-          <TabsContent value='tab2'>Content 2</TabsContent>
+          <TabsContent value="tab1">Content 1</TabsContent>
+          <TabsContent value="tab2">Content 2</TabsContent>
         </BasicTabs>,
       );
 
@@ -487,13 +482,13 @@ describe('Tabs', () => {
       const DynamicTabs = ({ tabs }: { tabs: string[] }) => (
         <Tabs onValueChange={handleValueChange}>
           <TabsList>
-            {tabs.map((tab) => (
+            {tabs.map(tab => (
               <TabsTrigger key={tab} value={tab}>
                 {tab}
               </TabsTrigger>
             ))}
           </TabsList>
-          {tabs.map((tab) => (
+          {tabs.map(tab => (
             <TabsContent key={tab} value={tab}>
               Content {tab}
             </TabsContent>
@@ -514,7 +509,7 @@ describe('Tabs', () => {
     it('does not call onValueChange when the selected tab is clicked again', async () => {
       const user = userEvent.setup();
       const handleValueChange = jest.fn();
-      render(<BasicTabs defaultValue='tab1' onValueChange={handleValueChange} />);
+      render(<BasicTabs defaultValue="tab1" onValueChange={handleValueChange} />);
 
       await user.click(screen.getByRole('tab', { name: 'Tab 1' }));
       expect(handleValueChange).not.toHaveBeenCalled();
@@ -527,7 +522,7 @@ describe('Tabs', () => {
     it('does not call onValueChange when Home/End land on the selected tab in automatic mode', async () => {
       const user = userEvent.setup();
       const handleValueChange = jest.fn();
-      render(<BasicTabs defaultValue='tab1' onValueChange={handleValueChange} />);
+      render(<BasicTabs defaultValue="tab1" onValueChange={handleValueChange} />);
 
       await user.tab(); // Focus the selected first tab
       await user.keyboard('{Home}');
@@ -545,9 +540,7 @@ describe('Tabs', () => {
     it('does not call onValueChange when Enter/Space re-activate the selected tab in manual mode', async () => {
       const user = userEvent.setup();
       const handleValueChange = jest.fn();
-      render(
-        <BasicTabs activationMode='manual' defaultValue='tab1' onValueChange={handleValueChange} />,
-      );
+      render(<BasicTabs activationMode="manual" defaultValue="tab1" onValueChange={handleValueChange} />);
 
       await user.tab(); // Focus the selected first tab
       await user.keyboard('{Enter}');
@@ -563,56 +556,47 @@ describe('Tabs', () => {
   });
 
   describe('Non-button Triggers', () => {
-    const DivTabs = ({
-      activationMode = 'automatic',
-      onValueChange,
-    }: {
-      activationMode?: TabsActivationMode;
-      onValueChange?: (value: string) => void;
-    }) => (
+    const DivTabs = ({ activationMode = 'automatic', onValueChange }: { activationMode?: TabsActivationMode; onValueChange?: (value: string) => void }) => (
       <Tabs activationMode={activationMode} {...(onValueChange && { onValueChange })}>
         <TabsList>
-          <TabsTrigger as='div' value='tab1'>
+          <TabsTrigger as="div" value="tab1">
             Tab 1
           </TabsTrigger>
-          <TabsTrigger as='div' value='tab2'>
+          <TabsTrigger as="div" value="tab2">
             Tab 2
           </TabsTrigger>
-          <TabsTrigger as='div' value='tab3' disabled>
+          <TabsTrigger as="div" value="tab3" disabled>
             Tab 3
           </TabsTrigger>
         </TabsList>
-        <TabsContent value='tab1'>Content 1</TabsContent>
-        <TabsContent value='tab2'>Content 2</TabsContent>
-        <TabsContent value='tab3'>Content 3</TabsContent>
+        <TabsContent value="tab1">Content 1</TabsContent>
+        <TabsContent value="tab2">Content 2</TabsContent>
+        <TabsContent value="tab3">Content 3</TabsContent>
       </Tabs>
     );
 
-    it.each(['automatic', 'manual'] as const)(
-      'ignores Enter and Space on a focused disabled trigger in %s mode',
-      async (activationMode) => {
-        const user = userEvent.setup();
-        const handleValueChange = jest.fn();
-        render(<DivTabs activationMode={activationMode} onValueChange={handleValueChange} />);
+    it.each(['automatic', 'manual'] as const)('ignores Enter and Space on a focused disabled trigger in %s mode', async activationMode => {
+      const user = userEvent.setup();
+      const handleValueChange = jest.fn();
+      render(<DivTabs activationMode={activationMode} onValueChange={handleValueChange} />);
 
-        const disabledTab = screen.getByRole('tab', { name: 'Tab 3' });
-        disabledTab.focus();
-        expect(disabledTab).toHaveFocus();
+      const disabledTab = screen.getByRole('tab', { name: 'Tab 3' });
+      disabledTab.focus();
+      expect(disabledTab).toHaveFocus();
 
-        await user.keyboard('{Enter}');
-        await user.keyboard(' ');
+      await user.keyboard('{Enter}');
+      await user.keyboard(' ');
 
-        expect(disabledTab).toHaveAttribute('aria-selected', 'false');
-        expect(screen.getByRole('tab', { name: 'Tab 1' })).toHaveAttribute('aria-selected', 'true');
-        expect(screen.queryByText('Content 3')).not.toBeInTheDocument();
-        expect(handleValueChange).not.toHaveBeenCalled();
-      },
-    );
+      expect(disabledTab).toHaveAttribute('aria-selected', 'false');
+      expect(screen.getByRole('tab', { name: 'Tab 1' })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.queryByText('Content 3')).not.toBeInTheDocument();
+      expect(handleValueChange).not.toHaveBeenCalled();
+    });
 
     it('activates an enabled trigger exactly once with Enter in manual mode', async () => {
       const user = userEvent.setup();
       const handleValueChange = jest.fn();
-      render(<DivTabs activationMode='manual' onValueChange={handleValueChange} />);
+      render(<DivTabs activationMode="manual" onValueChange={handleValueChange} />);
 
       const tab2 = screen.getByRole('tab', { name: 'Tab 2' });
       await user.tab(); // Focus the selected first tab
@@ -633,7 +617,7 @@ describe('Tabs', () => {
     it('activates an enabled trigger exactly once with Space in manual mode', async () => {
       const user = userEvent.setup();
       const handleValueChange = jest.fn();
-      render(<DivTabs activationMode='manual' onValueChange={handleValueChange} />);
+      render(<DivTabs activationMode="manual" onValueChange={handleValueChange} />);
 
       const tab2 = screen.getByRole('tab', { name: 'Tab 2' });
       await user.tab();

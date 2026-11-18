@@ -1,11 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-  useCollapsibleContext,
-} from '../index';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger, useCollapsibleContext } from '../index';
 
 describe('Collapsible', () => {
   it('starts closed by default and toggles in uncontrolled mode', async () => {
@@ -98,7 +93,7 @@ describe('Collapsible', () => {
 
   it('derives trigger/content ids from provided base id', () => {
     render(
-      <Collapsible id='faq-item' defaultOpen>
+      <Collapsible id="faq-item" defaultOpen>
         <CollapsibleTrigger>FAQ trigger</CollapsibleTrigger>
         <CollapsibleContent>FAQ content</CollapsibleContent>
       </Collapsible>,
@@ -114,12 +109,7 @@ describe('Collapsible', () => {
 
   it('prioritizes explicit triggerId and contentId overrides', () => {
     render(
-      <Collapsible
-        id='ignored-base'
-        triggerId='explicit-trigger'
-        contentId='explicit-content'
-        defaultOpen
-      >
+      <Collapsible id="ignored-base" triggerId="explicit-trigger" contentId="explicit-content" defaultOpen>
         <CollapsibleTrigger>Explicit ids trigger</CollapsibleTrigger>
         <CollapsibleContent>Explicit ids content</CollapsibleContent>
       </Collapsible>,
@@ -141,9 +131,7 @@ describe('Collapsible', () => {
 
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    expect(() => render(<OutsideContextConsumer />)).toThrow(
-      'Collapsible components must be used within a Collapsible',
-    );
+    expect(() => render(<OutsideContextConsumer />)).toThrow('Collapsible components must be used within a Collapsible');
 
     consoleSpy.mockRestore();
   });

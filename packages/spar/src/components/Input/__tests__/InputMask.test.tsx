@@ -28,7 +28,7 @@ const caretTo = (element: HTMLInputElement, position: number): void => {
  * 20–22 are about what a *userland* resolver can do, and the built-in must not
  * be the only way to reach this behaviour. §26 covers the built-in.
  */
-const numeral: MaskResolver = (value) => {
+const numeral: MaskResolver = value => {
   const digits = value.replace(/\D/g, '');
   const parts: string[] = [];
   let cursor = digits.length;
@@ -43,7 +43,7 @@ const numeral: MaskResolver = (value) => {
 describe('Input mask - 1. type sequentially', () => {
   it('inserts delimiters and leaves the caret after the last typed character', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     await user.type(field(), '31122024');
 
@@ -53,7 +53,7 @@ describe('Input mask - 1. type sequentially', () => {
 
   it('keeps the caret after the character that completed a block', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     await user.type(field(), '31');
 
@@ -64,7 +64,7 @@ describe('Input mask - 1. type sequentially', () => {
 
   it('steps the caret past a delimiter the mask just inserted', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     await user.type(field(), '311');
 
@@ -74,7 +74,7 @@ describe('Input mask - 1. type sequentially', () => {
 
   it('marks the field with data-mask and data-mask-completed', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     expect(field()).toHaveAttribute('data-mask', '');
     expect(field()).not.toHaveAttribute('data-mask-completed');
@@ -88,7 +88,7 @@ describe('Input mask - 1. type sequentially', () => {
 describe('Input mask - 2. insert mid-string', () => {
   it('lands the caret after the inserted character, not at the end', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} defaultValue='1234' />);
+    render(<InputField aria-label="date" mask={DMY} defaultValue="1234" />);
 
     await user.click(field());
     caretTo(field(), 1);
@@ -102,7 +102,7 @@ describe('Input mask - 2. insert mid-string', () => {
 describe('Input mask - 3. backspace over a delimiter', () => {
   it('removes the preceding character too when backspace is true', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} defaultValue='1234' />);
+    render(<InputField aria-label="date" mask={DMY} defaultValue="1234" />);
 
     await user.click(field());
     caretTo(field(), 3); // just past the '/'
@@ -116,9 +116,7 @@ describe('Input mask - 3. backspace over a delimiter', () => {
 
   it('steps over the delimiter without deleting when backspace is false', async () => {
     const user = userEvent.setup();
-    render(
-      <InputField aria-label='date' mask={{ ...DMY, backspace: false }} defaultValue='1234' />,
-    );
+    render(<InputField aria-label="date" mask={{ ...DMY, backspace: false }} defaultValue="1234" />);
 
     await user.click(field());
     caretTo(field(), 3);
@@ -130,7 +128,7 @@ describe('Input mask - 3. backspace over a delimiter', () => {
 
   it('deletes normally when the caret is not behind a delimiter', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} defaultValue='1234' />);
+    render(<InputField aria-label="date" mask={DMY} defaultValue="1234" />);
 
     await user.click(field());
     await user.keyboard('{Backspace}');
@@ -143,7 +141,7 @@ describe('Input mask - 3. backspace over a delimiter', () => {
 describe('Input mask - 4. forward delete', () => {
   it('deletes forward, stepping over a delimiter', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} defaultValue='1234' />);
+    render(<InputField aria-label="date" mask={DMY} defaultValue="1234" />);
 
     await user.click(field());
     caretTo(field(), 2); // immediately before the '/'
@@ -157,7 +155,7 @@ describe('Input mask - 4. forward delete', () => {
 
   it('deletes the character under the caret when no delimiter is in the way', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} defaultValue='1234' />);
+    render(<InputField aria-label="date" mask={DMY} defaultValue="1234" />);
 
     await user.click(field());
     caretTo(field(), 0);
@@ -171,7 +169,7 @@ describe('Input mask - 4. forward delete', () => {
 describe('Input mask - 5. type over a selected range', () => {
   it('replaces the selection and puts the caret after the replacement', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} defaultValue='1234' />);
+    render(<InputField aria-label="date" mask={DMY} defaultValue="1234" />);
 
     await user.click(field());
     field().setSelectionRange(0, 2);
@@ -185,7 +183,7 @@ describe('Input mask - 5. type over a selected range', () => {
 describe('Input mask - 6. paste longer than the mask', () => {
   it('truncates at the block total and leaves the caret at the end', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     await user.click(field());
     await user.paste('1234567890123');
@@ -198,7 +196,7 @@ describe('Input mask - 6. paste longer than the mask', () => {
 describe('Input mask - 7. paste an already-masked value', () => {
   it('is idempotent — no doubled delimiters', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     await user.click(field());
     await user.paste('12/34/5678');
@@ -209,15 +207,12 @@ describe('Input mask - 7. paste an already-masked value', () => {
 
 describe('Input mask - 8. IME composition', () => {
   const compose = (element: HTMLInputElement, inputType: string, value: string): void => {
-    fireEvent(
-      element,
-      new InputEvent('beforeinput', { inputType, bubbles: true, cancelable: true }),
-    );
+    fireEvent(element, new InputEvent('beforeinput', { inputType, bubbles: true, cancelable: true }));
     fireEvent.change(element, { target: { value } });
   };
 
   it('does not mask while a composition is in flight', () => {
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     compose(field(), 'insertCompositionText', '1234');
 
@@ -226,7 +221,7 @@ describe('Input mask - 8. IME composition', () => {
   });
 
   it('masks once the composition commits', () => {
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     compose(field(), 'insertCompositionText', '1234');
     fireEvent(
@@ -243,7 +238,7 @@ describe('Input mask - 8. IME composition', () => {
   });
 
   it('resumes masking after compositionend, even without insertFromComposition', () => {
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     compose(field(), 'insertCompositionText', '1234');
     fireEvent.compositionEnd(field());
@@ -257,14 +252,7 @@ describe('Input mask - 9. controlled echo', () => {
   /** A consumer that stores the raw digits and writes them back unmasked. */
   const Controlled = () => {
     const [raw, setRaw] = useState('');
-    return (
-      <InputField
-        aria-label='date'
-        mask={DMY}
-        value={raw}
-        onValueChange={(_value, meta) => setRaw(meta.raw)}
-      />
-    );
+    return <InputField aria-label="date" mask={DMY} value={raw} onValueChange={(_value, meta) => setRaw(meta.raw)} />;
   };
 
   it('displays the masked projection and does not shift the caret', async () => {
@@ -293,7 +281,7 @@ describe('Input mask - 9. controlled echo', () => {
 describe('Input mask - 10. mask omitted', () => {
   it('leaves the field identical to its previous behavior', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='plain' />);
+    render(<InputField aria-label="plain" />);
 
     await user.type(field(), '31122024');
 
@@ -305,7 +293,7 @@ describe('Input mask - 10. mask omitted', () => {
 
   it('does not touch the caret when typing mid-string', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='plain' defaultValue='1234' />);
+    render(<InputField aria-label="plain" defaultValue="1234" />);
 
     await user.click(field());
     caretTo(field(), 1);
@@ -316,23 +304,23 @@ describe('Input mask - 10. mask omitted', () => {
   });
 
   it('still forwards value and defaultValue natively', () => {
-    const { unmount } = render(<InputField aria-label='plain' defaultValue='abc' />);
+    const { unmount } = render(<InputField aria-label="plain" defaultValue="abc" />);
     expect(field()).toHaveValue('abc');
     unmount();
 
-    render(<InputField aria-label='plain' value='xyz' onChange={() => {}} />);
+    render(<InputField aria-label="plain" value="xyz" onChange={() => {}} />);
     expect(field()).toHaveValue('xyz');
   });
 
   it('accepts a numeric value, as the native element does', () => {
-    render(<InputField aria-label='plain' defaultValue={42} />);
+    render(<InputField aria-label="plain" defaultValue={42} />);
     expect(field()).toHaveValue('42');
   });
 
   it('never calls onValueChange', async () => {
     const user = userEvent.setup();
     const onValueChange = jest.fn();
-    render(<InputField aria-label='plain' onValueChange={onValueChange} />);
+    render(<InputField aria-label="plain" onValueChange={onValueChange} />);
 
     await user.type(field(), '12');
 
@@ -342,15 +330,12 @@ describe('Input mask - 10. mask omitted', () => {
 
 describe('Input mask - 11. undo / redo', () => {
   const history = (element: HTMLInputElement, inputType: 'historyUndo' | 'historyRedo'): void => {
-    fireEvent(
-      element,
-      new InputEvent('beforeinput', { inputType, bubbles: true, cancelable: true }),
-    );
+    fireEvent(element, new InputEvent('beforeinput', { inputType, bubbles: true, cancelable: true }));
   };
 
   it('restores the previous value and caret, then reapplies it', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     await user.type(field(), '1234');
     expect(field()).toHaveValue('12/34');
@@ -371,7 +356,7 @@ describe('Input mask - 11. undo / redo', () => {
 
   it('stops at the start of the stack instead of clearing the field', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     await user.type(field(), '1');
     history(field(), 'historyUndo');
@@ -383,7 +368,7 @@ describe('Input mask - 11. undo / redo', () => {
 
   it('stops at the end of the stack', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     await user.type(field(), '12');
     history(field(), 'historyRedo');
@@ -393,7 +378,7 @@ describe('Input mask - 11. undo / redo', () => {
 
 describe('Input mask - 12. input without beforeinput', () => {
   it('masks from the resulting value when no beforeinput arrives', () => {
-    render(<InputField aria-label='date' mask={DMY} />);
+    render(<InputField aria-label="date" mask={DMY} />);
 
     // fireEvent.change dispatches no beforeinput — exactly the fallback path.
     fireEvent.change(field(), { target: { value: '1234' } });
@@ -403,7 +388,7 @@ describe('Input mask - 12. input without beforeinput', () => {
   });
 
   it('still clamps through the fallback', () => {
-    render(<InputField aria-label='date' mask={{ date: true, delimiter: '/' }} />);
+    render(<InputField aria-label="date" mask={{ date: true, delimiter: '/' }} />);
 
     fireEvent.change(field(), { target: { value: '35' } });
 
@@ -416,7 +401,7 @@ describe('Input mask - 13. L2 clamp while typing', () => {
 
   it('zero-pads a day first digit above 3', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={dateMask} />);
+    render(<InputField aria-label="date" mask={dateMask} />);
 
     await user.type(field(), '4');
 
@@ -426,7 +411,7 @@ describe('Input mask - 13. L2 clamp while typing', () => {
 
   it('clamps a day above 31', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={dateMask} />);
+    render(<InputField aria-label="date" mask={dateMask} />);
 
     await user.type(field(), '35');
 
@@ -435,7 +420,7 @@ describe('Input mask - 13. L2 clamp while typing', () => {
 
   it('zero-pads rather than clamps when the first digit settles the block', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='date' mask={dateMask} />);
+    render(<InputField aria-label="date" mask={dateMask} />);
 
     // '4' can only be the 4th, so the day is complete after one keystroke and
     // the '5' starts the month. It never becomes '45', so it never clamps to 31.
@@ -446,7 +431,7 @@ describe('Input mask - 13. L2 clamp while typing', () => {
 
   it('zero-pads an hour first digit above 2', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='time' mask={{ time: true, delimiter: ':' }} />);
+    render(<InputField aria-label="time" mask={{ time: true, delimiter: ':' }} />);
 
     await user.type(field(), '9');
 
@@ -456,7 +441,7 @@ describe('Input mask - 13. L2 clamp while typing', () => {
   it('reports iso through onValueChange once the value is complete', async () => {
     const user = userEvent.setup();
     const onValueChange = jest.fn();
-    render(<InputField aria-label='date' mask={dateMask} onValueChange={onValueChange} />);
+    render(<InputField aria-label="date" mask={dateMask} onValueChange={onValueChange} />);
 
     await user.type(field(), '31122024');
 
@@ -471,9 +456,7 @@ describe('Input mask - 13. L2 clamp while typing', () => {
 describe('Input mask - 14. L2 range clamp', () => {
   it('snaps a date past dateMax down to it', async () => {
     const user = userEvent.setup();
-    render(
-      <InputField aria-label='date' mask={{ date: true, delimiter: '/', dateMax: '2020-12-31' }} />,
-    );
+    render(<InputField aria-label="date" mask={{ date: true, delimiter: '/', dateMax: '2020-12-31' }} />);
 
     await user.type(field(), '31122024');
 
@@ -482,9 +465,7 @@ describe('Input mask - 14. L2 range clamp', () => {
 
   it('ignores the range while the year is still incomplete', async () => {
     const user = userEvent.setup();
-    render(
-      <InputField aria-label='date' mask={{ date: true, delimiter: '/', dateMin: '2030-01-01' }} />,
-    );
+    render(<InputField aria-label="date" mask={{ date: true, delimiter: '/', dateMin: '2030-01-01' }} />);
 
     await user.type(field(), '3112');
 
@@ -498,7 +479,7 @@ describe('Input mask - 15. L3 prefix acceptance', () => {
 
   it('accepts each valid prefix as it is typed', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='plate' mask={plate} />);
+    render(<InputField aria-label="plate" mask={plate} />);
 
     await user.type(field(), 'A');
     expect(field()).toHaveValue('A');
@@ -510,7 +491,7 @@ describe('Input mask - 15. L3 prefix acceptance', () => {
 
   it('rejects a character that could never lead to a match', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='plate' mask={plate} />);
+    render(<InputField aria-label="plate" mask={plate} />);
 
     await user.type(field(), 'A1');
 
@@ -519,7 +500,7 @@ describe('Input mask - 15. L3 prefix acceptance', () => {
 
   it('completes only on a full match', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='plate' mask={plate} />);
+    render(<InputField aria-label="plate" mask={plate} />);
 
     await user.type(field(), 'AB123');
     expect(field()).not.toHaveAttribute('data-mask-completed');
@@ -542,7 +523,7 @@ describe('Input mask - 16. L3 unanalysable pattern', () => {
 
   it('degrades to pass-through rather than locking the user out', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='x' mask={{ regex: /^(?<=\d)[a-z]+$/ }} />);
+    render(<InputField aria-label="x" mask={{ regex: /^(?<=\d)[a-z]+$/ }} />);
 
     await user.type(field(), 'anything');
 
@@ -550,7 +531,7 @@ describe('Input mask - 16. L3 unanalysable pattern', () => {
   });
 
   it('does not report the field as permanently incomplete', () => {
-    render(<InputField aria-label='x' mask={{ regex: /^(?<=1)[a-z]+$/ }} />);
+    render(<InputField aria-label="x" mask={{ regex: /^(?<=1)[a-z]+$/ }} />);
 
     expect(field()).toHaveAttribute('data-mask-completed', '');
   });
@@ -568,7 +549,7 @@ describe('Input mask - 16b. L3 unanalysable pattern warns', () => {
   });
 
   it('warns once, naming the pattern and the reason', () => {
-    render(<InputField aria-label='x' mask={{ regex: /^(?<=2)[a-z]+$/ }} />);
+    render(<InputField aria-label="x" mask={{ regex: /^(?<=2)[a-z]+$/ }} />);
 
     expect(warn).toHaveBeenCalledTimes(1);
     const message = String(warn.mock.calls[0]?.[0]);
@@ -580,7 +561,7 @@ describe('Input mask - 16b. L3 unanalysable pattern warns', () => {
 
   it('does not repeat per keystroke', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='x' mask={{ regex: /^(?<=3)[a-z]+$/ }} />);
+    render(<InputField aria-label="x" mask={{ regex: /^(?<=3)[a-z]+$/ }} />);
     warn.mockClear();
 
     await user.type(field(), 'abcdef');
@@ -592,7 +573,7 @@ describe('Input mask - 16b. L3 unanalysable pattern warns', () => {
     const previous = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
     try {
-      render(<InputField aria-label='x' mask={{ regex: /^(?<=4)[a-z]+$/ }} />);
+      render(<InputField aria-label="x" mask={{ regex: /^(?<=4)[a-z]+$/ }} />);
       expect(warn).not.toHaveBeenCalled();
     } finally {
       process.env.NODE_ENV = previous;
@@ -603,8 +584,8 @@ describe('Input mask - 16b. L3 unanalysable pattern warns', () => {
 describe('Input mask - 17. resolver context', () => {
   it('receives caret, previousValue and inputType', async () => {
     const user = userEvent.setup();
-    const resolver = jest.fn<{ value: string }, Parameters<MaskResolver>>((value) => ({ value }));
-    render(<InputField aria-label='x' mask={resolver} />);
+    const resolver = jest.fn<{ value: string }, Parameters<MaskResolver>>(value => ({ value }));
+    render(<InputField aria-label="x" mask={resolver} />);
 
     await user.type(field(), 'ab');
 
@@ -618,7 +599,7 @@ describe('Input mask - 17. resolver context', () => {
 describe('Input mask - 18. resolver caret, unaided', () => {
   it('keeps the caret on the typed character when the resolver inserts a separator', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='amount' mask={numeral} />);
+    render(<InputField aria-label="amount" mask={numeral} />);
 
     await user.type(field(), '1234');
 
@@ -631,8 +612,8 @@ describe('Input mask - 18. resolver caret, unaided', () => {
 describe('Input mask - 19. resolver caret override', () => {
   it('wins over anchor counting', async () => {
     const user = userEvent.setup();
-    const pinned: MaskResolver = (value) => ({ value: value.replace(/\D/g, ''), caret: 0 });
-    render(<InputField aria-label='x' mask={pinned} />);
+    const pinned: MaskResolver = value => ({ value: value.replace(/\D/g, ''), caret: 0 });
+    render(<InputField aria-label="x" mask={pinned} />);
 
     await user.type(field(), '1');
     // Anchor counting would put the caret at 1; the resolver said 0.
@@ -651,7 +632,7 @@ describe('Input mask - 20. anchor counting is shared', () => {
     const l1: Mask = { blocks: [1, 3, 3], delimiter: '.' };
 
     /** The same grouping and the same capacity, expressed as a resolver. */
-    const asResolver: MaskResolver = (value) => {
+    const asResolver: MaskResolver = value => {
       const digits = value.replace(/\D/g, '').slice(0, 7);
       const parts = [digits.slice(0, 1), digits.slice(1, 4), digits.slice(4, 7)];
       return { value: parts.filter(Boolean).join('.') };
@@ -659,7 +640,7 @@ describe('Input mask - 20. anchor counting is shared', () => {
 
     const run = async (mask: Mask): Promise<[string, number | null]> => {
       const user = userEvent.setup();
-      const view = render(<InputField aria-label='x' mask={mask} />);
+      const view = render(<InputField aria-label="x" mask={mask} />);
       await user.type(field(), '1234567');
       caretTo(field(), 5);
       await user.keyboard('9');
@@ -681,7 +662,7 @@ describe('Input mask - 20. anchor counting is shared', () => {
 describe('Input mask - 21. numeral resolver', () => {
   it('keeps the caret on the typed digit after the separators shift', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='amount' mask={numeral} />);
+    render(<InputField aria-label="amount" mask={numeral} />);
 
     await user.type(field(), '1234567');
     expect(field()).toHaveValue('1.234.567');
@@ -695,7 +676,7 @@ describe('Input mask - 21. numeral resolver', () => {
 
   it('does not drop the caret across a removed separator when deleting a digit', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='amount' mask={numeral} />);
+    render(<InputField aria-label="amount" mask={numeral} />);
 
     await user.type(field(), '1234567');
     caretTo(field(), 3); // just after the '2'
@@ -710,7 +691,7 @@ describe('Input mask - 22. insignificant override', () => {
   /** Separators that are themselves alphanumeric, so the default predicate misreads them. */
   const grouped =
     (insignificant?: RegExp): MaskResolver =>
-    (value) => {
+    value => {
       const digits = value.replace(/\D/g, '');
       const parts = digits.match(/.{1,2}/g) ?? [];
       return {
@@ -721,7 +702,7 @@ describe('Input mask - 22. insignificant override', () => {
 
   const typeMidString = async (mask: Mask): Promise<number | null> => {
     const user = userEvent.setup();
-    const view = render(<InputField aria-label='x' mask={mask} />);
+    const view = render(<InputField aria-label="x" mask={mask} />);
     await user.type(field(), '1234');
     caretTo(field(), 2);
     await user.keyboard('9');
@@ -755,21 +736,19 @@ describe('Input mask - 23. the built-in masks are resolvers', () => {
     const options = { date: true, delimiter: '/' } as const;
 
     for (const mask of [options as Mask, createDateMask(options)]) {
-      const view = render(
-        <InputField aria-label='d' mask={mask} onValueChange={(_v, meta) => seen.push(meta.iso)} />,
-      );
+      const view = render(<InputField aria-label="d" mask={mask} onValueChange={(_v, meta) => seen.push(meta.iso)} />);
       await user.type(field(), '31122024');
       expect(field().value).toBe('31/12/2024');
       view.unmount();
     }
 
     expect(seen.at(-1)).toBe('2024-12-31');
-    expect(seen.filter((iso) => iso === '2024-12-31')).toHaveLength(2);
+    expect(seen.filter(iso => iso === '2024-12-31')).toHaveLength(2);
   });
 
   it('the time sugar and createTimeMask are the same mask', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='t' mask={createTimeMask({ time: true, delimiter: ':' })} />);
+    render(<InputField aria-label="t" mask={createTimeMask({ time: true, delimiter: ':' })} />);
     await user.type(field(), '2360');
     expect(field().value).toBe('23:06');
   });
@@ -781,26 +760,21 @@ describe('Input mask - 23. the built-in masks are resolvers', () => {
     // first — composition needs no API of its own.
     const nineties: MaskResolver = (raw, ctx) => {
       const result = base(raw, ctx);
-      return result.completed && !result.iso?.startsWith('199')
-        ? { ...result, completed: false }
-        : result;
+      return result.completed && !result.iso?.startsWith('199') ? { ...result, completed: false } : result;
     };
 
     const onValueChange = jest.fn();
-    render(<InputField aria-label='d' mask={nineties} onValueChange={onValueChange} />);
+    render(<InputField aria-label="d" mask={nineties} onValueChange={onValueChange} />);
     await user.type(field(), '31121995');
 
     expect(field().value).toBe('31/12/1995');
-    expect(onValueChange).toHaveBeenLastCalledWith(
-      '31/12/1995',
-      expect.objectContaining({ completed: true, iso: '1995-12-31' }),
-    );
+    expect(onValueChange).toHaveBeenLastCalledWith('31/12/1995', expect.objectContaining({ completed: true, iso: '1995-12-31' }));
   });
 });
 
 describe('Input mask - 24. a resolver reports iso and raw', () => {
   /** Formats a Turkish IBAN in four-character groups and emits the flat form. */
-  const iban: MaskResolver = (value) => {
+  const iban: MaskResolver = value => {
     const flat = value
       .replace(/[^A-Z0-9]/gi, '')
       .toUpperCase()
@@ -815,28 +789,22 @@ describe('Input mask - 24. a resolver reports iso and raw', () => {
   it('surfaces the resolver iso through onValueChange, like date does', async () => {
     const user = userEvent.setup();
     const onValueChange = jest.fn();
-    render(<InputField aria-label='iban' mask={iban} onValueChange={onValueChange} />);
+    render(<InputField aria-label="iban" mask={iban} onValueChange={onValueChange} />);
 
     await user.type(field(), 'TR330006100519786457841326');
 
     expect(field().value).toBe('TR33 0006 1005 1978 6457 8413 26');
-    expect(onValueChange).toHaveBeenLastCalledWith(
-      'TR33 0006 1005 1978 6457 8413 26',
-      expect.objectContaining({ iso: 'TR330006100519786457841326', completed: true }),
-    );
+    expect(onValueChange).toHaveBeenLastCalledWith('TR33 0006 1005 1978 6457 8413 26', expect.objectContaining({ iso: 'TR330006100519786457841326', completed: true }));
   });
 
   it('defaults raw to the value with separators stripped', async () => {
     const user = userEvent.setup();
     const onValueChange = jest.fn();
-    render(<InputField aria-label='n' mask={numeral} onValueChange={onValueChange} />);
+    render(<InputField aria-label="n" mask={numeral} onValueChange={onValueChange} />);
 
     await user.type(field(), '1234');
 
-    expect(onValueChange).toHaveBeenLastCalledWith(
-      '1.234',
-      expect.objectContaining({ raw: '1234' }),
-    );
+    expect(onValueChange).toHaveBeenLastCalledWith('1.234', expect.objectContaining({ raw: '1234' }));
   });
 
   it('honours an explicit raw, for a mask that adds characters of its own', async () => {
@@ -844,11 +812,11 @@ describe('Input mask - 24. a resolver reports iso and raw', () => {
     const onValueChange = jest.fn();
     // A currency symbol is a letter-or-number in some scripts and not in others,
     // so `insignificant` cannot describe it — the resolver states raw instead.
-    const price: MaskResolver = (value) => {
+    const price: MaskResolver = value => {
       const digits = value.replace(/\D/g, '');
       return { value: digits ? `${digits} TL` : '', raw: digits };
     };
-    render(<InputField aria-label='p' mask={price} onValueChange={onValueChange} />);
+    render(<InputField aria-label="p" mask={price} onValueChange={onValueChange} />);
 
     await user.type(field(), '25');
 
@@ -858,7 +826,7 @@ describe('Input mask - 24. a resolver reports iso and raw', () => {
 
 describe('Input mask - 25. a resolver opts out of backspace-through', () => {
   const grouped = (backspace?: boolean): MaskResolver => {
-    const resolver: MaskResolver = (value) => {
+    const resolver: MaskResolver = value => {
       const digits = value.replace(/\D/g, '').slice(0, 4);
       return { value: digits.match(/.{1,2}/g)?.join('/') ?? '' };
     };
@@ -868,7 +836,7 @@ describe('Input mask - 25. a resolver opts out of backspace-through', () => {
 
   const backspaceAt = async (mask: Mask, position: number): Promise<[string, number | null]> => {
     const user = userEvent.setup();
-    const view = render(<InputField aria-label='g' mask={mask} />);
+    const view = render(<InputField aria-label="g" mask={mask} />);
     await user.type(field(), '1234');
     caretTo(field(), position);
     await user.keyboard('{Backspace}');
@@ -902,7 +870,7 @@ describe('Input mask - 26. number', () => {
 
   it('regroups while typing and keeps the caret at the end', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='amount' mask={TRY} />);
+    render(<InputField aria-label="amount" mask={TRY} />);
 
     await user.type(field(), '1234567');
 
@@ -912,7 +880,7 @@ describe('Input mask - 26. number', () => {
 
   it('holds the caret against a separator inserted to its left', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='amount' mask={TRY} />);
+    render(<InputField aria-label="amount" mask={TRY} />);
 
     // '1.234' with the caret between '2' and '3'; typing there pushes the
     // grouping one place left, so a fixed offset would drift.
@@ -928,7 +896,7 @@ describe('Input mask - 26. number', () => {
 
   it('opens the fraction on the locale decimal mark', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='amount' mask={TRY} />);
+    render(<InputField aria-label="amount" mask={TRY} />);
 
     await user.type(field(), '1234,5');
 
@@ -938,7 +906,7 @@ describe('Input mask - 26. number', () => {
 
   it('supplies the integer zero when the fraction is opened first', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='amount' mask={TRY} />);
+    render(<InputField aria-label="amount" mask={TRY} />);
 
     await user.type(field(), ',5');
 
@@ -951,7 +919,7 @@ describe('Input mask - 26. number', () => {
   it('reports raw and a Number()-parseable iso', async () => {
     const user = userEvent.setup();
     const onValueChange = jest.fn();
-    render(<InputField aria-label='amount' mask={TRY} onValueChange={onValueChange} />);
+    render(<InputField aria-label="amount" mask={TRY} onValueChange={onValueChange} />);
 
     await user.type(field(), '1234567,89');
 
@@ -964,7 +932,7 @@ describe('Input mask - 26. number', () => {
 
   it('deletes through a group separator, like every other layer', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='amount' mask={TRY} />);
+    render(<InputField aria-label="amount" mask={TRY} />);
 
     await user.type(field(), '1234');
     // '1.234' — Backspace with the caret just after the separator removes the
@@ -977,7 +945,7 @@ describe('Input mask - 26. number', () => {
 
   it('clamps the integer part with numberIntegerScale', async () => {
     const user = userEvent.setup();
-    render(<InputField aria-label='amount' mask={{ ...TRY, numberIntegerScale: 4 }} />);
+    render(<InputField aria-label="amount" mask={{ ...TRY, numberIntegerScale: 4 }} />);
 
     await user.type(field(), '123456789');
 
@@ -990,15 +958,13 @@ describe('Input mask - 26. number', () => {
     const seen: Array<string | undefined> = [];
 
     for (const mask of [options as Mask, createNumberMask(options)]) {
-      const view = render(
-        <InputField aria-label='n' mask={mask} onValueChange={(_v, meta) => seen.push(meta.iso)} />,
-      );
+      const view = render(<InputField aria-label="n" mask={mask} onValueChange={(_v, meta) => seen.push(meta.iso)} />);
       await user.type(field(), '1234,5');
       expect(field().value).toBe('1.234,5');
       view.unmount();
     }
 
-    expect(seen.filter((iso) => iso === '1234.5')).toHaveLength(2);
+    expect(seen.filter(iso => iso === '1234.5')).toHaveLength(2);
   });
 
   it('can be wrapped, because it is an ordinary function', async () => {
@@ -1011,7 +977,7 @@ describe('Input mask - 26. number', () => {
     };
 
     const onValueChange = jest.fn();
-    render(<InputField aria-label='n' mask={capped} onValueChange={onValueChange} />);
+    render(<InputField aria-label="n" mask={capped} onValueChange={onValueChange} />);
     await user.type(field(), '9999');
 
     expect(field()).toHaveValue('9.999');

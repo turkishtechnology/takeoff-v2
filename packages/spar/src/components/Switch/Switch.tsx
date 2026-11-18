@@ -89,7 +89,7 @@ export const Switch = <T extends ElementType = 'button'>({
 
   const ariaAttributes = useMemo(() => {
     const attrs: Record<string, boolean | string> = {
-      role: 'switch',
+      'role': 'switch',
       'aria-checked': checkedState,
     };
 
@@ -110,22 +110,14 @@ export const Switch = <T extends ElementType = 'button'>({
       attrs['aria-describedby'] = resolvedInvalid ? fieldCtx.errorId : fieldCtx.descriptionId;
     }
     return attrs;
-  }, [
-    checkedState,
-    resolvedDisabled,
-    resolvedReadOnly,
-    resolvedRequired,
-    resolvedInvalid,
-    isNativeButton,
-    fieldCtx,
-  ]);
+  }, [checkedState, resolvedDisabled, resolvedReadOnly, resolvedRequired, resolvedInvalid, isNativeButton, fieldCtx]);
 
   const elementProps: Record<string, unknown> = {
-    ref: mergedRef,
+    'ref': mergedRef,
     className,
     style,
     ...restProps,
-    id: fieldCtx?.fieldId ?? id,
+    'id': fieldCtx?.fieldId ?? id,
     'data-switch': '',
     'data-state': checkedState ? 'checked' : 'unchecked',
     'data-checked': checkedState ? '' : undefined,
@@ -136,16 +128,16 @@ export const Switch = <T extends ElementType = 'button'>({
     'data-focus': isFocused ? '' : undefined,
     'data-hover': isHovered ? '' : undefined,
     'data-active': isActive ? '' : undefined,
-    tabIndex: resolvedDisabled ? -1 : 0,
-    onClick: switchProps.onClick,
-    onKeyDown: switchProps.onKeyDown,
-    onFocus: switchProps.onFocus,
-    onBlur: switchProps.onBlur,
-    onPointerEnter: switchProps.onPointerEnter,
-    onPointerLeave: switchProps.onPointerLeave,
-    onPointerDown: switchProps.onPointerDown,
-    onPointerUp: switchProps.onPointerUp,
-    onPointerCancel: switchProps.onPointerCancel,
+    'tabIndex': resolvedDisabled ? -1 : 0,
+    'onClick': switchProps.onClick,
+    'onKeyDown': switchProps.onKeyDown,
+    'onFocus': switchProps.onFocus,
+    'onBlur': switchProps.onBlur,
+    'onPointerEnter': switchProps.onPointerEnter,
+    'onPointerLeave': switchProps.onPointerLeave,
+    'onPointerDown': switchProps.onPointerDown,
+    'onPointerUp': switchProps.onPointerUp,
+    'onPointerCancel': switchProps.onPointerCancel,
     ...ariaAttributes,
   };
 
@@ -156,20 +148,9 @@ export const Switch = <T extends ElementType = 'button'>({
 
   return (
     <>
-      <Component {...elementProps}>
-        {typeof children === 'function' ? children(renderProps) : children}
-      </Component>
+      <Component {...elementProps}>{typeof children === 'function' ? children(renderProps) : children}</Component>
       {name && (
-        <input
-          {...hiddenInputProps}
-          ref={hiddenInputRef}
-          name={name}
-          value={value}
-          form={form}
-          required={resolvedRequired}
-          disabled={resolvedDisabled}
-          style={visuallyHidden}
-        />
+        <input {...hiddenInputProps} ref={hiddenInputRef} name={name} value={value} form={form} required={resolvedRequired} disabled={resolvedDisabled} style={visuallyHidden} />
       )}
     </>
   );

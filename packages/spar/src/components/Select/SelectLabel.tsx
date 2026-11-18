@@ -6,11 +6,7 @@ import { Label } from '../Label/Label';
 /**
  * Label for a group of select items. Provides accessible context for grouped options.
  */
-export const SelectLabel = <T extends ElementType = 'label'>({
-  as,
-  children,
-  ...props
-}: SelectLabelProps<T>) => {
+export const SelectLabel = <T extends ElementType = 'label'>({ as, children, ...props }: SelectLabelProps<T>) => {
   const groupContext = useSelectGroupContext();
 
   return (

@@ -5,7 +5,7 @@ import { Radio, RadioItem } from '../index';
 
 const getRadioByText = (text: string) => {
   const radios = screen.getAllByRole('radio', { name: text });
-  const interactiveRadio = radios.find((radio) => radio.tagName !== 'INPUT');
+  const interactiveRadio = radios.find(radio => radio.tagName !== 'INPUT');
   if (!interactiveRadio) {
     throw new Error(`Interactive radio with text "${text}" not found`);
   }
@@ -18,8 +18,8 @@ describe('Radio', () => {
       it('renders with default props', () => {
         render(
           <Radio>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -30,9 +30,9 @@ describe('Radio', () => {
 
       it('renders with custom orientation', () => {
         render(
-          <Radio orientation='horizontal'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio orientation="horizontal">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -42,9 +42,9 @@ describe('Radio', () => {
 
       it('renders with aria-label', () => {
         render(
-          <Radio aria-label='Choose an option'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio aria-label="Choose an option">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -55,10 +55,10 @@ describe('Radio', () => {
       it('renders with aria-labelledby', () => {
         render(
           <div>
-            <h2 id='label-id'>Select Option</h2>
-            <Radio aria-labelledby='label-id'>
-              <RadioItem value='option1'>Option 1</RadioItem>
-              <RadioItem value='option2'>Option 2</RadioItem>
+            <h2 id="label-id">Select Option</h2>
+            <Radio aria-labelledby="label-id">
+              <RadioItem value="option1">Option 1</RadioItem>
+              <RadioItem value="option2">Option 2</RadioItem>
             </Radio>
           </div>,
         );
@@ -70,10 +70,10 @@ describe('Radio', () => {
       it('renders with aria-describedby', () => {
         render(
           <div>
-            <p id='description'>Choose your preferred option</p>
-            <Radio aria-describedby='description'>
-              <RadioItem value='option1'>Option 1</RadioItem>
-              <RadioItem value='option2'>Option 2</RadioItem>
+            <p id="description">Choose your preferred option</p>
+            <Radio aria-describedby="description">
+              <RadioItem value="option1">Option 1</RadioItem>
+              <RadioItem value="option2">Option 2</RadioItem>
             </Radio>
           </div>,
         );
@@ -84,9 +84,9 @@ describe('Radio', () => {
 
       it('renders as custom element when as prop is provided', () => {
         render(
-          <Radio as='fieldset'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio as="fieldset">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -98,25 +98,23 @@ describe('Radio', () => {
     describe('State Management', () => {
       it('handles uncontrolled state with defaultValue', () => {
         const { container } = render(
-          <Radio defaultValue='option2'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+          <Radio defaultValue="option2">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>,
         );
 
-        const hiddenRadio = container.querySelector(
-          'input[type="radio"][value="option2"]',
-        ) as HTMLInputElement;
+        const hiddenRadio = container.querySelector('input[type="radio"][value="option2"]') as HTMLInputElement;
         expect(hiddenRadio).toBeChecked();
       });
 
       it('handles controlled state with value prop', () => {
         const { rerender } = render(
-          <Radio value='option1'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+          <Radio value="option1">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>,
         );
 
@@ -124,10 +122,10 @@ describe('Radio', () => {
         expect(option1).toHaveAttribute('aria-checked', 'true');
 
         rerender(
-          <Radio value='option3'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+          <Radio value="option3">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>,
         );
 
@@ -142,9 +140,9 @@ describe('Radio', () => {
         const handleValueChange = jest.fn();
 
         render(
-          <Radio value='option1' onChange={handleValueChange}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio value="option1" onChange={handleValueChange}>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -163,8 +161,8 @@ describe('Radio', () => {
 
         const { container } = render(
           <Radio onChange={handleValueChange}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -180,8 +178,8 @@ describe('Radio', () => {
 
         const { container } = render(
           <Radio>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -203,8 +201,8 @@ describe('Radio', () => {
       it('disables entire group when disabled prop is true', () => {
         const { container } = render(
           <Radio disabled>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -212,7 +210,7 @@ describe('Radio', () => {
         expect(radioGroup).toHaveAttribute('data-disabled');
 
         const inputs = container.querySelectorAll('input[type="radio"]');
-        inputs.forEach((input) => {
+        inputs.forEach(input => {
           expect(input).toBeDisabled();
         });
       });
@@ -223,8 +221,8 @@ describe('Radio', () => {
 
         const { container } = render(
           <Radio disabled onChange={handleValueChange}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -241,8 +239,8 @@ describe('Radio', () => {
       it('sets aria-required when required prop is true', () => {
         render(
           <Radio required>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -253,14 +251,13 @@ describe('Radio', () => {
     });
 
     describe('Form Integration', () => {
-      const getCheckedNativeInput = (container: HTMLElement) =>
-        container.querySelector('input[type="radio"]:checked') as HTMLInputElement | null;
+      const getCheckedNativeInput = (container: HTMLElement) => container.querySelector('input[type="radio"]:checked') as HTMLInputElement | null;
 
       it('checks the native radio input of the selected item for form submission', () => {
         const { container } = render(
-          <Radio name='test-radio' value='option1'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio name="test-radio" value="option1">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -272,9 +269,9 @@ describe('Radio', () => {
 
       it('checks no native input when no value is selected', () => {
         const { container } = render(
-          <Radio name='test-radio'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio name="test-radio">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -284,9 +281,9 @@ describe('Radio', () => {
       it('submits the selected value exactly once in form data', () => {
         const { container } = render(
           <form>
-            <Radio name='plan' value='pro'>
-              <RadioItem value='basic'>Basic</RadioItem>
-              <RadioItem value='pro'>Pro</RadioItem>
+            <Radio name="plan" value="pro">
+              <RadioItem value="basic">Basic</RadioItem>
+              <RadioItem value="pro">Pro</RadioItem>
             </Radio>
           </form>,
         );
@@ -301,9 +298,9 @@ describe('Radio', () => {
 
         const { container } = render(
           <form>
-            <Radio name='plan' required>
-              <RadioItem value='basic'>Basic</RadioItem>
-              <RadioItem value='pro'>Pro</RadioItem>
+            <Radio name="plan" required>
+              <RadioItem value="basic">Basic</RadioItem>
+              <RadioItem value="pro">Pro</RadioItem>
             </Radio>
           </form>,
         );
@@ -319,8 +316,8 @@ describe('Radio', () => {
 
       it('generates unique name when not provided', () => {
         const { container } = render(
-          <Radio value='option1'>
-            <RadioItem value='option1'>Option 1</RadioItem>
+          <Radio value="option1">
+            <RadioItem value="option1">Option 1</RadioItem>
           </Radio>,
         );
 
@@ -331,8 +328,8 @@ describe('Radio', () => {
 
       it('uses id as base for generated name when name is not provided', () => {
         const { container } = render(
-          <Radio id='shipping' value='express'>
-            <RadioItem value='express'>Express</RadioItem>
+          <Radio id="shipping" value="express">
+            <RadioItem value="express">Express</RadioItem>
           </Radio>,
         );
 
@@ -341,8 +338,8 @@ describe('Radio', () => {
 
       it('does not fallback to generated id when id is an empty string', () => {
         const { container } = render(
-          <Radio id='' value='express'>
-            <RadioItem value='express'>Express</RadioItem>
+          <Radio id="" value="express">
+            <RadioItem value="express">Express</RadioItem>
           </Radio>,
         );
 
@@ -351,8 +348,8 @@ describe('Radio', () => {
 
       it('prioritizes explicit name over id-derived name', () => {
         const { container } = render(
-          <Radio id='shipping' name='delivery-method' value='express'>
-            <RadioItem value='express'>Express</RadioItem>
+          <Radio id="shipping" name="delivery-method" value="express">
+            <RadioItem value="express">Express</RadioItem>
           </Radio>,
         );
 
@@ -364,9 +361,9 @@ describe('Radio', () => {
       it('keeps only first enabled item tabbable when no radio is checked', () => {
         const { container } = render(
           <Radio>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>,
         );
 
@@ -384,10 +381,10 @@ describe('Radio', () => {
         const user = userEvent.setup();
 
         render(
-          <Radio defaultValue='option1'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+          <Radio defaultValue="option1">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>,
         );
 
@@ -406,10 +403,10 @@ describe('Radio', () => {
         const user = userEvent.setup();
 
         render(
-          <Radio defaultValue='option1' selectOnFocus={false}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+          <Radio defaultValue="option1" selectOnFocus={false}>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>,
         );
 
@@ -431,10 +428,10 @@ describe('Radio', () => {
         const user = userEvent.setup();
 
         render(
-          <Radio defaultValue='option2'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+          <Radio defaultValue="option2">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>,
         );
 
@@ -456,10 +453,10 @@ describe('Radio', () => {
         const user = userEvent.setup();
 
         render(
-          <Radio defaultValue='option2'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+          <Radio defaultValue="option2">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>,
         );
 
@@ -489,8 +486,8 @@ describe('Radio', () => {
       it('exposes aria-readonly on the radiogroup, not on the items', () => {
         render(
           <Radio readOnly>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -504,10 +501,10 @@ describe('Radio', () => {
         const handleValueChange = jest.fn();
 
         render(
-          <Radio readOnly defaultValue='option1' onChange={handleValueChange}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+          <Radio readOnly defaultValue="option1" onChange={handleValueChange}>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>,
         );
 
@@ -534,9 +531,9 @@ describe('Radio', () => {
         const handleValueChange = jest.fn();
 
         render(
-          <Radio readOnly defaultValue='option1' onChange={handleValueChange}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio readOnly defaultValue="option1" onChange={handleValueChange}>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -557,9 +554,9 @@ describe('Radio', () => {
         const handleValueChange = jest.fn();
 
         render(
-          <Radio defaultValue='option1' onChange={handleValueChange}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio defaultValue="option1" onChange={handleValueChange}>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -579,14 +576,14 @@ describe('Radio', () => {
         let selectOption1: (() => void) | undefined;
 
         render(
-          <Radio value='option1' onChange={handleValueChange}>
-            <RadioItem value='option1'>
+          <Radio value="option1" onChange={handleValueChange}>
+            <RadioItem value="option1">
               {({ select }) => {
                 selectOption1 = select;
                 return 'Option 1';
               }}
             </RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -599,9 +596,9 @@ describe('Radio', () => {
         const handleValueChange = jest.fn();
 
         render(
-          <Radio value='option1' onChange={handleValueChange}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio value="option1" onChange={handleValueChange}>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -617,9 +614,9 @@ describe('Radio', () => {
         const handleKeyDown = jest.fn();
 
         render(
-          <Radio defaultValue='option1' onKeyDown={handleKeyDown}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio defaultValue="option1" onKeyDown={handleKeyDown}>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -636,9 +633,9 @@ describe('Radio', () => {
         const user = userEvent.setup();
 
         render(
-          <Radio defaultValue='option1' onKeyDown={(event) => event.preventDefault()}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio defaultValue="option1" onKeyDown={event => event.preventDefault()}>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -658,10 +655,10 @@ describe('Radio', () => {
         render(
           <>
             <Radio onFocus={handleFocus} onBlur={handleBlur}>
-              <RadioItem value='option1'>Option 1</RadioItem>
-              <RadioItem value='option2'>Option 2</RadioItem>
+              <RadioItem value="option1">Option 1</RadioItem>
+              <RadioItem value="option2">Option 2</RadioItem>
             </Radio>
-            <button type='button'>Next</button>
+            <button type="button">Next</button>
           </>,
         );
 
@@ -686,15 +683,15 @@ describe('Radio', () => {
           const [middleDisabled, setMiddleDisabled] = React.useState(false);
           return (
             <>
-              <button type='button' onClick={() => setMiddleDisabled((prev) => !prev)}>
+              <button type="button" onClick={() => setMiddleDisabled(prev => !prev)}>
                 Toggle
               </button>
-              <Radio defaultValue='option1'>
-                <RadioItem value='option1'>Option 1</RadioItem>
-                <RadioItem value='option2' disabled={middleDisabled}>
+              <Radio defaultValue="option1">
+                <RadioItem value="option1">Option 1</RadioItem>
+                <RadioItem value="option2" disabled={middleDisabled}>
                   Option 2
                 </RadioItem>
-                <RadioItem value='option3'>Option 3</RadioItem>
+                <RadioItem value="option3">Option 3</RadioItem>
               </Radio>
             </>
           );
@@ -727,7 +724,7 @@ describe('Radio', () => {
       it('renders with correct attributes', () => {
         const { container } = render(
           <Radio>
-            <RadioItem value='option1'>Option 1</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
           </Radio>,
         );
 
@@ -739,9 +736,9 @@ describe('Radio', () => {
 
       it('renders as checked when selected', () => {
         const { container } = render(
-          <Radio value='option1'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio value="option1">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -758,7 +755,7 @@ describe('Radio', () => {
       it('renders with aria-label', () => {
         const { container } = render(
           <Radio>
-            <RadioItem value='option1' aria-label='First option'>
+            <RadioItem value="option1" aria-label="First option">
               Option 1
             </RadioItem>
           </Radio>,
@@ -771,9 +768,9 @@ describe('Radio', () => {
       it('renders with aria-describedby', () => {
         const { container } = render(
           <div>
-            <p id='description'>This is the first option</p>
+            <p id="description">This is the first option</p>
             <Radio>
-              <RadioItem value='option1' aria-describedby='description'>
+              <RadioItem value="option1" aria-describedby="description">
                 Option 1
               </RadioItem>
             </Radio>
@@ -787,7 +784,7 @@ describe('Radio', () => {
       it('renders as custom element when as prop is provided', () => {
         const { container } = render(
           <Radio>
-            <RadioItem value='option1' as='div'>
+            <RadioItem value="option1" as="div">
               Option 1
             </RadioItem>
           </Radio>,
@@ -802,10 +799,10 @@ describe('Radio', () => {
       it('can be individually disabled', () => {
         const { container } = render(
           <Radio>
-            <RadioItem value='option1' disabled>
+            <RadioItem value="option1" disabled>
               Option 1
             </RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -824,10 +821,10 @@ describe('Radio', () => {
 
         const { container } = render(
           <Radio onChange={handleValueChange}>
-            <RadioItem value='option1' disabled>
+            <RadioItem value="option1" disabled>
               Option 1
             </RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -843,10 +840,10 @@ describe('Radio', () => {
     describe('Focus Management', () => {
       it('implements roving tabindex', () => {
         const { container } = render(
-          <Radio value='option2'>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+          <Radio value="option2">
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>,
         );
 
@@ -866,15 +863,15 @@ describe('Radio', () => {
 
         render(
           <>
-            <button type='button'>Before</button>
-            <Radio value='option2'>
-              <RadioItem value='option1' disabled>
+            <button type="button">Before</button>
+            <Radio value="option2">
+              <RadioItem value="option1" disabled>
                 Option 1
               </RadioItem>
-              <RadioItem value='option2' disabled>
+              <RadioItem value="option2" disabled>
                 Option 2
               </RadioItem>
-              <RadioItem value='option3'>Option 3</RadioItem>
+              <RadioItem value="option3">Option 3</RadioItem>
             </Radio>
           </>,
         );
@@ -892,9 +889,9 @@ describe('Radio', () => {
         const user = userEvent.setup();
 
         render(
-          <Radio defaultValue='option1' selectOnFocus={false}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio defaultValue="option1" selectOnFocus={false}>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -914,9 +911,9 @@ describe('Radio', () => {
 
         render(
           <Radio>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
-            <RadioItem value='option3'>Option 3</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
+            <RadioItem value="option3">Option 3</RadioItem>
           </Radio>,
         );
 
@@ -937,10 +934,10 @@ describe('Radio', () => {
         render(
           <>
             <Radio onBlur={handleBlur}>
-              <RadioItem value='option1'>Option 1</RadioItem>
-              <RadioItem value='option2'>Option 2</RadioItem>
+              <RadioItem value="option1">Option 1</RadioItem>
+              <RadioItem value="option2">Option 2</RadioItem>
             </Radio>
-            <button type='button'>Next</button>
+            <button type="button">Next</button>
           </>,
         );
 
@@ -966,8 +963,8 @@ describe('Radio', () => {
 
         const { container } = render(
           <Radio>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -983,9 +980,9 @@ describe('Radio', () => {
         const handleValueChange = jest.fn();
 
         render(
-          <Radio defaultValue='option1' selectOnFocus={false} onChange={handleValueChange}>
-            <RadioItem value='option1'>Option 1</RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+          <Radio defaultValue="option1" selectOnFocus={false} onChange={handleValueChange}>
+            <RadioItem value="option1">Option 1</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -1007,10 +1004,10 @@ describe('Radio', () => {
 
         render(
           <Radio>
-            <RadioItem value='option1' onClick={handleClick}>
+            <RadioItem value="option1" onClick={handleClick}>
               Option 1
             </RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -1027,10 +1024,10 @@ describe('Radio', () => {
 
         render(
           <Radio onChange={handleValueChange}>
-            <RadioItem value='option1' onClick={(event) => event.preventDefault()}>
+            <RadioItem value="option1" onClick={event => event.preventDefault()}>
               Option 1
             </RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -1048,10 +1045,10 @@ describe('Radio', () => {
 
         render(
           <Radio selectOnFocus={false}>
-            <RadioItem value='option1' onKeyDown={handleKeyDown} onFocus={handleFocus}>
+            <RadioItem value="option1" onKeyDown={handleKeyDown} onFocus={handleFocus}>
               Option 1
             </RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -1073,10 +1070,10 @@ describe('Radio', () => {
 
         render(
           <Radio selectOnFocus={false} onChange={handleValueChange}>
-            <RadioItem value='option1' onKeyDown={(event) => event.preventDefault()}>
+            <RadioItem value="option1" onKeyDown={event => event.preventDefault()}>
               Option 1
             </RadioItem>
-            <RadioItem value='option2'>Option 2</RadioItem>
+            <RadioItem value="option2">Option 2</RadioItem>
           </Radio>,
         );
 
@@ -1094,7 +1091,7 @@ describe('Radio', () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
       expect(() => {
-        render(<RadioItem value='option1'>Option 1</RadioItem>);
+        render(<RadioItem value="option1">Option 1</RadioItem>);
       }).toThrow('RadioItem must be used within a Radio');
 
       consoleErrorSpy.mockRestore();

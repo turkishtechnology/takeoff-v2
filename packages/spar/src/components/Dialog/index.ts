@@ -25,16 +25,7 @@ Dialog.Title = DialogTitle;
 Dialog.Description = DialogDescription;
 Dialog.Close = DialogClose;
 
-export {
-  Dialog,
-  DialogRoot,
-  DialogTrigger,
-  DialogOverlay,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-};
+export { Dialog, DialogRoot, DialogTrigger, DialogOverlay, DialogContent, DialogTitle, DialogDescription, DialogClose };
 
 export type {
   DialogProps,

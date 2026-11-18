@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
-const isNode = (value: unknown): value is Node =>
-  typeof Node !== 'undefined' && value instanceof Node;
+const isNode = (value: unknown): value is Node => typeof Node !== 'undefined' && value instanceof Node;
 
 /**
  * Sort keys by the document position of the registered nodes so keyboard
@@ -30,7 +29,7 @@ export function useItemRegistry<T = void>() {
   const [items, setItems] = useState<Map<string, T>>(() => new Map());
 
   const registerItem = useCallback((id: string, data?: T) => {
-    setItems((prev) => {
+    setItems(prev => {
       const next = new Map(prev);
       next.set(id, data as T);
       return next;
@@ -38,7 +37,7 @@ export function useItemRegistry<T = void>() {
   }, []);
 
   const unregisterItem = useCallback((id: string) => {
-    setItems((prev) => {
+    setItems(prev => {
       if (!prev.has(id)) return prev;
       const next = new Map(prev);
       next.delete(id);
