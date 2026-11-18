@@ -54,6 +54,7 @@ and accessibility guidance where the component owns interaction behavior.
 | ------------------------------------- | ---------------------------------------------------------------- |
 | [Calendar](/docs/components/calendar) | Picking a day, a date range, or several dates from a month grid. |
 | [Card](/docs/components/card)         | Grouping related content, summaries, and actions.                |
+| [Chat](/docs/components/chat)         | Messaging with read receipts, editing, and conversation lists.   |
 | [Dialog](/docs/components/dialog)     | Handling focused forms, confirmations, and blocking decisions.   |
 | [Divider](/docs/components/divider)   | Separating content sections with an optional aligned label.      |
 | [Drawer](/docs/components/drawer)     | Showing navigation, filters, or details over the current page.   |

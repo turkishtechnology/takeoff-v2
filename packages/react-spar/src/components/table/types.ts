@@ -3,6 +3,7 @@ import type {
   CellContext,
   Column,
   ColumnFiltersState,
+  ColumnSizingState,
   ExpandedState,
   FilterFn,
   HeaderContext,
@@ -45,8 +46,10 @@ export type TableSlot =
   | 'headerRow'
   | 'headerCell'
   | 'headerContent'
+  | 'headerLabel'
   | 'sortTrigger'
   | 'sortIcon'
+  | 'resizeHandle'
   | 'body'
   | 'row'
   | 'cell'
@@ -56,6 +59,7 @@ export type TableSlot =
   | 'expandedRow'
   | 'filterButton'
   | 'filterPanel'
+  | 'filterOptions'
   | 'pagination'
   | 'paginationInfo'
   | 'paginationNav'
@@ -96,6 +100,14 @@ export interface TableColumnFilterContext<TData = unknown> {
   column: Column<TData, unknown>;
   /** Close the filter popover (e.g. an apply-and-close button). */
   close: () => void;
+  /**
+   * Accessible name for the filter field: `labels.filterValue` with `{column}`
+   * filled in (e.g. `'Filter Name value'`). Put it on your control's
+   * `aria-label` so custom filters are named like the presets. Table always
+   * sets it; it is optional only so a hand-built context (e.g. in a unit test
+   * of your `render`) still type-checks.
+   */
+  fieldLabel?: string;
 }
 
 /**
@@ -143,6 +155,13 @@ export interface TableColumnFilter<TData = unknown> {
   options?: TableColumnFilterOption[];
   /** Placeholder for the `text` preset's input / `select` triggers. */
   placeholder?: string;
+  /**
+   * Plain-text column name for the `{column}` placeholder in
+   * `labels.filterButton` / `labels.filterValue`. Wins over a string `header`;
+   * set it when `header` is a node or function, which otherwise falls back to
+   * the column `id`. Used only for accessible names; it is never rendered.
+   */
+  label?: string;
   /**
    * Escape hatch: render the filter control yourself. Receives the column's
    * value + setter (see {@link TableColumnFilterContext}). When present, the
@@ -215,8 +234,25 @@ export interface TableColumnDef<TData> {
    * the sticky-offset math (the later pin overlaps the gap); dev builds warn.
    */
   sticky?: TableStickySide;
-  /** Fixed column width (px). Feeds sticky-offset math and `col` sizing. */
+  /**
+   * Fixed column width (px). Feeds sticky-offset math and `col` sizing. With
+   * {@link TableProps.columnResizing} on, it is also the width a double-click on
+   * the resize handle returns the column to.
+   */
   width?: number;
+  /**
+   * Let the user drag this column's edge to resize it. Only takes effect when
+   * the table opts in with {@link TableProps.columnResizing}.
+   * @defaultValue true
+   */
+  resizable?: boolean;
+  /**
+   * Narrowest width (px) a user resize can reach. Defaults to `50`, or to the
+   * declared `width` / `maxWidth` when either is narrower.
+   */
+  minWidth?: number;
+  /** Widest width (px) a user resize can reach. Unbounded when omitted. */
+  maxWidth?: number;
   /** Cell content alignment. */
   align?: TableAlign;
   /** Cell-container escape hatch → TanStack `columnDef.meta`. */
@@ -239,6 +275,32 @@ export interface TableSortingConfig extends ControlledState<SortingState> {
 }
 
 export type TableFilteringConfig = ControlledState<ColumnFiltersState>;
+
+/**
+ * Column widths in px, keyed by column id (TanStack's `ColumnSizingState`).
+ * Empty until the first resize; that resize freezes every visible column (in
+ * `fit` mode, all but the absorber, which takes up the leftover width) at its
+ * current width, so from then on the map holds all of them. Persist it and pass it back
+ * as `defaultValue` (or `value`) to restore a layout.
+ */
+export type TableColumnSizing = ColumnSizingState;
+
+/** Column resizing. `onChange` fires once per resize, not on every pointer move. */
+export interface TableColumnResizingConfig extends ControlledState<TableColumnSizing> {
+  /**
+   * Where a growing column gets its room. `fit`: the table keeps its
+   * container's width and the last unpinned column without a `width` takes up
+   * the slack. `expand`: every column keeps its width and the table scrolls.
+   * Fit-mode widths have no entry for that column, so when switching it at
+   * runtime, reset the stored widths too (a fresh `value`, or a new `key` for
+   * `defaultValue`).
+   * @defaultValue 'fit'
+   */
+  mode?: TableColumnResizingMode;
+}
+
+/** See {@link TableColumnResizingConfig.mode}. */
+export type TableColumnResizingMode = 'fit' | 'expand';
 
 export interface TableSelectionConfig extends ControlledState<RowSelectionState> {
   /** `single` renders radios + caps selection at one row; `multiple` renders checkboxes + a select-all header. */
@@ -281,6 +343,77 @@ export interface TableDataRequest {
   pagination: PaginationState;
   sorting: SortingState;
   filters: ColumnFiltersState;
+}
+
+/**
+ * User-facing strings of a Table. Dynamic entries are templates whose
+ * `{placeholders}` Table fills in (like Upload's `{name}` labels), so word
+ * order stays with the translation and the whole object can live in a JSON
+ * translation file.
+ */
+export interface TableLabels {
+  /** Empty-table text when `emptyState` is not given. @defaultValue 'No data' */
+  noData: string;
+  /** Accessible name of the loading spinner; when unset, Spinner's own (provider) default applies (`'Loading'` out of the box). */
+  loading?: string;
+  /** Accessible name of each column's filter trigger; `{column}` is `filter.label`, else the header text, else the id. @defaultValue 'Filter {column}' */
+  filterButton: string;
+  /**
+   * Accessible name of a preset filter's field: the `text` input (a `filter.placeholder` stays a visible hint),
+   * the `radio` / `checkbox` group, and the `select` trigger, which also announces its visible value.
+   * `{column}` as in `filterButton`. @defaultValue 'Filter {column} value'
+   */
+  filterValue: string;
+  /** Clear button in the filter panel (presets and custom `render` panels). @defaultValue 'Clear' */
+  filterClear: string;
+  /** `select` filter trigger text when nothing is picked; `filter.placeholder` overrides it. @defaultValue 'Select' */
+  filterSelectPlaceholder: string;
+  /** Accessible name of the pagination `nav` landmark. @defaultValue 'Pagination' */
+  paginationLandmark: string;
+  /** Page indicator. @defaultValue 'Page {page} of {pageCount}' */
+  pageStatus: string;
+  /** Page indicator while the page count is unknown (0). @defaultValue 'Page {page}' */
+  pageStatusUnknown: string;
+  /** Visible item range (1-based). @defaultValue 'Items {start}-{end} of {total}' */
+  itemsRange: string;
+  /** Item range text when there are no rows (`{total}` is 0). @defaultValue '0 items' */
+  noItems: string;
+  /** @defaultValue 'First page' */
+  firstPage: string;
+  /** @defaultValue 'Previous page' */
+  previousPage: string;
+  /** @defaultValue 'Next page' */
+  nextPage: string;
+  /** @defaultValue 'Last page' */
+  lastPage: string;
+  /** Accessible name of a page-number button. @defaultValue 'Go to page {page}' */
+  pageButton: string;
+  /** Accessible name of the current page's button. @defaultValue 'Page {page}, current page' */
+  currentPageButton: string;
+  /** Accessible name of the page-size select. @defaultValue 'Rows per page' */
+  rowsPerPage: string;
+  /** Accessible name of the page-jump input. @defaultValue 'Go to page' */
+  pageJumpInput: string;
+  /** Accessible name of the page-jump submit button. @defaultValue 'Go' */
+  pageJumpSubmit: string;
+  /** @defaultValue 'Select all rows' */
+  selectAllRows: string;
+  /** @defaultValue 'Select row' */
+  selectRow: string;
+  /** Hidden header of the single-selection column. @defaultValue 'Row selection' */
+  rowSelection: string;
+  /** @defaultValue 'Expand row' */
+  expandRow: string;
+  /** @defaultValue 'Collapse row' */
+  collapseRow: string;
+  /** Hidden header of the expansion column. @defaultValue 'Row details' */
+  rowDetails: string;
+  /**
+   * Accessible name of a column resize handle. `{column}` resolves as in
+   * `filterButton`; `slotProps.resizeHandle['aria-label']` overrides it.
+   * @defaultValue 'Resize {column} column'
+   */
+  resizeHandle: string;
 }
 
 /**
@@ -336,6 +469,12 @@ export interface TableProps<TData = any> {
   expansion?: TableExpansionConfig<TData>;
   /** Pagination. `true` enables it with defaults; an object configures it. */
   pagination?: TablePaginationConfig | boolean;
+  /**
+   * User-resizable columns: a handle on each resizable header edge (drag or
+   * Left/Right arrows). `true` keeps the widths uncontrolled; an object adds
+   * `value` / `defaultValue` / `onChange` and `mode`.
+   */
+  columnResizing?: TableColumnResizingConfig | boolean;
   /** Bundled server data-request callback (`manual` mode). See {@link TableDataRequest}. */
   onDataRequest?: (request: TableDataRequest) => void;
   /**
@@ -343,8 +482,25 @@ export interface TableProps<TData = any> {
    * @defaultValue false
    */
   loading?: boolean;
-  /** Content rendered when there are no rows. */
+  /**
+   * Content rendered when there are no rows. Defaults to `labels.noData`; pass
+   * `null` (or `false`) to leave the empty cell blank.
+   */
   emptyState?: ReactNode;
+  /**
+   * Every user-facing string Table renders — visible text and accessible
+   * names — to translate or reword. Pass only the keys you need; the rest keep their
+   * English defaults, and an empty or whitespace-only string also falls back to the default. Set
+   * it app-wide through `TakeoffSparProvider`
+   * `components.Table.defaultProps.labels`; an instance `labels` is merged
+   * over it key by key. `emptyState` still wins over `labels.noData`, even when
+   * it comes from the provider's `defaultProps`, while an
+   * `aria-label` in `slotProps.filterButton` / `slotProps.pagination` /
+   * `slotProps.expandButton` is ignored in favour of `labels` (on `filterButton`
+   * and `filterOptions` an `aria-labelledby` is dropped too).
+   * See {@link TableLabels}.
+   */
+  labels?: Partial<TableLabels>;
   /**
    * Sub-row reader for **tree data** (feeds TanStack `getSubRows`). Pair it with
    * `expansion` (sans `render`) so expanding a row reveals its flattened
@@ -363,7 +519,12 @@ export interface TableProps<TData = any> {
   className?: string;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<TableSlot>;
-  /** Per-slot HTML attribute overrides. */
+  /**
+   * Per-slot HTML attribute overrides. An `aria-label` here is ignored for
+   * `filterButton`, `pagination`, `expandButton` and `filterOptions`, whose names
+   * come from `labels`; on `filterButton` and `filterOptions` an
+   * `aria-labelledby` (and the group's `role`) is dropped too.
+   */
   slotProps?: SlotPropsMap<TableSlot>;
   /** Ref to the root scroll container. */
   ref?: Ref<HTMLDivElement>;
@@ -384,6 +545,8 @@ declare module '@tanstack/react-table' {
     align?: TableAlign;
     sticky?: TableStickySide;
     width?: number;
+    minWidth?: number;
+    maxWidth?: number;
     className?: string;
     headerClassName?: string;
     headerAlign?: TableAlign;

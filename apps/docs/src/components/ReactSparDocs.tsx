@@ -15,6 +15,7 @@ export {
   Button,
   Calendar,
   Card,
+  Chat,
   Checkbox,
   Chip,
   Dialog,

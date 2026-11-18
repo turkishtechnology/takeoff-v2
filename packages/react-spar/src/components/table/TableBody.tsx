@@ -3,7 +3,7 @@ import { TableRow } from './TableRow';
 
 /** `<tbody>` — rows, or a full-width empty-state cell when there are no rows. */
 export const TableBody = () => {
-  const { table, slotAttrs, totalColumnCount, emptyState, loading } = useTableContext('Table.Body');
+  const { table, slotAttrs, totalColumnCount, emptyState, loading, labels } = useTableContext('Table.Body');
   const rows = table.getRowModel().rows;
 
   return (
@@ -13,7 +13,7 @@ export const TableBody = () => {
           <td {...slotAttrs('empty')} colSpan={totalColumnCount}>
             {/* While loading, the overlay communicates state; suppress the
                 empty copy so it does not flash "no data" mid-fetch. */}
-            {loading ? null : (emptyState ?? 'No data')}
+            {loading ? null : emptyState === undefined ? labels.noData : emptyState}
           </td>
         </tr>
       ) : (

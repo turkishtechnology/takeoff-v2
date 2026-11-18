@@ -1,9 +1,10 @@
 import { isValidElement, type CSSProperties, type ReactNode } from 'react';
-import type { CellContext, Column, ColumnDef, FilterFn, Table as TanStackTable } from '@tanstack/react-table';
+import type { CellContext, Column, ColumnDef, ColumnSizingState, FilterFn, Table as TanStackTable } from '@tanstack/react-table';
 
 import { isDevelopment } from '../../utils';
 
-import { DEFAULT_COLUMN_WIDTH, UTILITY_COLUMN_WIDTH } from './defaults';
+import type { TableGrowPlan, TableResizeDraft } from './context';
+import { DEFAULT_COLUMN_WIDTH, DEFAULT_MIN_COLUMN_WIDTH, UTILITY_COLUMN_WIDTH } from './defaults';
 import type { TableColumnDef, TableColumnFilter, TableColumnFilterType, TableStickySide } from './types';
 
 /** Synthetic keys for the manually-rendered leading utility cells. */
@@ -124,7 +125,7 @@ const resolveFilterFn = <TData>(filter: TableColumnFilter<TData>): FilterFn<unkn
  */
 export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): ColumnDef<TData>[] =>
   columns.map(col => {
-    const { id, header, accessor, cell, sortable, filter, sticky, width, align, meta } = col;
+    const { id, header, accessor, cell, sortable, filter, sticky, width, resizable, minWidth, maxWidth, align, meta } = col;
 
     // Collapse the two-tier filter (string preset | object) to one object shape
     // so the renderer + filterFn resolution never branch on the input form.
@@ -138,10 +139,14 @@ export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): Colu
       header,
       enableSorting: sortable ?? false,
       enableColumnFilter: normalizedFilter != null,
+      // Per-column gate; TanStack ANDs it with the table-level `enableColumnResizing`.
+      enableResizing: resizable ?? true,
       meta: {
         align,
         sticky,
         width,
+        minWidth,
+        maxWidth,
         className: meta?.className,
         headerClassName: meta?.headerClassName,
         headerAlign: meta?.headerAlign,
@@ -154,6 +159,13 @@ export const toTanStackColumns = <TData>(columns: TableColumnDef<TData>[]): Colu
     // which renders object values as `[object Object]`.
     def.cell = cell ?? defaultCell;
     if (width != null) def.size = width;
+    // Only forward explicit bounds: TanStack clamps `getSize()` by them, and
+    // defaulting `minSize` here would widen a narrow declared `width` on tables
+    // that never resize.
+    if (minWidth != null) def.minSize = minWidth;
+    // TanStack applies `maxSize` last; keep it from undercutting `minWidth` so
+    // the rendered width matches the min-wins range a resize is clamped to.
+    if (maxWidth != null) def.maxSize = minWidth != null ? Math.max(minWidth, maxWidth) : maxWidth;
 
     if (typeof accessor === 'function') {
       def.accessorFn = accessor;
@@ -351,12 +363,256 @@ export const resolveStickyCell = (layout: StickyLayout, key: string, options: { 
 
 /**
  * Resolve a cell's explicit width style. A column gets a fixed `width` only when
- * it declares one (`meta.width`) or is sticky (pinned columns must be measured
- * for the offset math). Shared by the body and header cell renderers so the two
- * stay in lockstep. Returns `undefined` when the column is auto-width.
+ * it declares one (`meta.width`), is sticky (pinned columns must be measured
+ * for the offset math), or the table is in its user-sized `fixedLayout` (every
+ * column then carries its width so `table-layout: fixed` honors it — except the
+ * `absorberColumnId` column, which stays auto and takes up the leftover space).
+ * Shared by the body and header cell renderers so the two stay in lockstep.
+ * Returns `undefined` when the column is auto-width.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: StickyLayout): CSSProperties | undefined => {
-  const hasWidth = column.columnDef.meta?.width != null || stickyLayout.has(column.id);
+export const resolveCellWidth = (column: Column<any, unknown>, stickyLayout: StickyLayout, fixedLayout = false, absorberColumnId?: string): CSSProperties | undefined => {
+  if (fixedLayout && column.id === absorberColumnId) return undefined;
+  const hasWidth = fixedLayout || column.columnDef.meta?.width != null || stickyLayout.has(column.id);
   return hasWidth ? { width: column.getSize() } : undefined;
+};
+
+/**
+ * The column that absorbs the leftover width of a user-sized table. Pinned
+ * columns are never picked (they need their width for the offset math). Among
+ * the rest, the last one without a declared `width` wins, so a fixed-width
+ * column such as a trailing actions column keeps its width; when every one
+ * declares a width, the last one takes the slack. It is never user-resized, so
+ * the table's overall width never changes when another column is: the absorber
+ * widens or narrows instead. `undefined` when every column is pinned.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getAbsorberColumnId = (columns: Column<any, unknown>[]): string | undefined => {
+  const unpinned = columns.filter(column => column.columnDef.meta?.sticky == null).reverse();
+  return (unpinned.find(column => column.columnDef.meta?.width == null) ?? unpinned[0])?.id;
+};
+
+/** The `[min, max]` px range a user resize of this column is clamped to. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getColumnResizeBounds = (column: Column<any, unknown>): [number, number] => {
+  const meta = column.columnDef.meta;
+  // Without an explicit `minWidth`, a column declared narrower than the default
+  // min keeps its own width as the floor, so shrinking it never widens it.
+  const min = meta?.minWidth ?? Math.min(DEFAULT_MIN_COLUMN_WIDTH, meta?.width ?? DEFAULT_MIN_COLUMN_WIDTH, meta?.maxWidth ?? DEFAULT_MIN_COLUMN_WIDTH);
+  // A `maxWidth` below the effective min would invert the range; the min wins.
+  const max = Math.max(min, meta?.maxWidth ?? Number.POSITIVE_INFINITY);
+  return [min, max];
+};
+
+/** Elements a measuring clone must not load; replaced by same-width stand-ins. */
+const PROBE_REPLACED = 'iframe, video, audio, object, embed';
+
+/** Inline sizing a measuring clone must drop (sticky offsets, resolved widths). */
+const PROBE_CLEARED_STYLES = ['width', 'min-width', 'max-width', 'position', 'left', 'right', 'inset-inline-start', 'inset-inline-end'];
+
+/**
+ * The width a column's content wants on one line: the `max-content` width of
+ * its header cell and its rendered body cells. They are cloned into a hidden,
+ * auto-layout copy of the table (same element and classes, inside the same
+ * container), one cell per row, so the size / density / font rules that target
+ * the table still apply and the copy's only column is as wide as its widest
+ * cell. `0` when nothing can be measured (no header cell, or a non-layout
+ * environment).
+ */
+export const measureColumnContentWidth = (headerCell: HTMLElement | undefined): number => {
+  const headerRow = headerCell?.parentElement as HTMLTableRowElement | null | undefined;
+  const tableElement = headerCell?.closest('table');
+  const host = tableElement?.parentElement;
+  if (!headerCell || !headerRow || !tableElement || !host) return 0;
+  const index = (headerCell as HTMLTableCellElement).cellIndex;
+  const bodyCells: HTMLElement[] = [];
+  for (const body of Array.from(tableElement.tBodies)) {
+    for (const row of Array.from(body.rows)) {
+      // Skip rows that don't line up with the header (detail panels, empty / loading rows).
+      const cell = row.cells.length === headerRow.cells.length ? row.cells[index] : undefined;
+      if (cell) bodyCells.push(cell);
+    }
+  }
+  const probe = tableElement.cloneNode(false) as HTMLTableElement;
+  probe.removeAttribute('id');
+  probe.setAttribute('aria-hidden', 'true');
+  probe.style.cssText = 'position:absolute;top:0;left:0;visibility:hidden;pointer-events:none;width:max-content;min-width:0;max-width:none;';
+  probe.style.setProperty('table-layout', 'auto', 'important');
+  const clones: HTMLElement[] = [];
+  const addSection = (tag: 'thead' | 'tbody', cells: HTMLElement[]) => {
+    const section = document.createElement(tag);
+    for (const cell of cells) {
+      const clone = cell.cloneNode(true) as HTMLElement;
+      clone.setAttribute('data-measure', '');
+      for (const property of PROBE_CLEARED_STYLES) clone.style.removeProperty(property);
+      // Connecting a copy must not touch the real content: a named radio would
+      // join (and uncheck) the live group, and embedded documents / media would
+      // load. Stand-ins of the same width keep the measurement.
+      for (const input of Array.from(clone.querySelectorAll('input, select, textarea'))) input.removeAttribute('name');
+      const originals = cell.querySelectorAll(PROBE_REPLACED);
+      clone.querySelectorAll(PROBE_REPLACED).forEach((element, position) => {
+        const standIn = document.createElement('span');
+        standIn.style.cssText = `display:inline-block;width:${originals[position]?.getBoundingClientRect().width ?? 0}px;`;
+        element.replaceWith(standIn);
+      });
+      const row = document.createElement('tr');
+      row.appendChild(clone);
+      section.appendChild(row);
+      clones.push(clone);
+    }
+    probe.appendChild(section);
+  };
+  addSection('thead', [headerCell]);
+  addSection('tbody', bodyCells);
+  host.appendChild(probe);
+  let width = 0;
+  for (const clone of clones) width = Math.max(width, clone.getBoundingClientRect().width);
+  probe.remove();
+  return Math.ceil(width);
+};
+
+/**
+ * Clamp a resized width into the column's bounds and round it to whole px.
+ * `from` is the width the resize starts at: a column already narrower than its
+ * min (the browser drew it so before the first resize) may stay that narrow,
+ * so shrinking it never widens it.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const clampColumnWidth = (column: Column<any, unknown>, width: number, from = Number.POSITIVE_INFINITY): number => {
+  const [min, max] = getColumnResizeBounds(column);
+  return Math.round(Math.min(max, Math.max(Math.min(min, from), width)));
+};
+
+export interface ResolvedGrowth {
+  width: number;
+  donors?: ColumnSizingState;
+}
+
+/**
+ * Grow `startWidth` toward `desired` within `plan`, in two passes over the
+ * same order (the absorber, then each donor, nearest first): first down to
+ * each column's content width (`spare`), then down to its min width
+ * (`extra`). Shrinking is never limited.
+ */
+export const resolveGrowth = (startWidth: number, desired: number, plan: TableGrowPlan): ResolvedGrowth => {
+  if (desired <= startWidth) return { width: desired };
+  const budget = plan.donors.reduce((sum, donor) => sum + donor.spare + donor.extra, plan.absorberSpare + plan.absorberExtra);
+  const width = Math.min(desired, startWidth + budget);
+  let remaining = width - startWidth;
+  const take = (amount: number) => {
+    const taken = Math.min(amount, remaining);
+    remaining -= taken;
+    return taken;
+  };
+  // Two passes in the same order: first down to each column's content width,
+  // then (only if that is not enough) on down to its min width.
+  const taken = new Map<string, number>();
+  for (const pass of ['spare', 'extra'] as const) {
+    take(pass === 'spare' ? plan.absorberSpare : plan.absorberExtra);
+    for (const donor of plan.donors) {
+      const amount = take(donor[pass]);
+      if (amount > 0) taken.set(donor.id, (taken.get(donor.id) ?? 0) + amount);
+    }
+  }
+  if (taken.size === 0) return { width };
+  const donors: ColumnSizingState = {};
+  for (const donor of plan.donors) {
+    const amount = taken.get(donor.id);
+    if (amount != null) donors[donor.id] = donor.width - amount;
+  }
+  return { width, donors };
+};
+
+/** A column's width in a resize draft: the dragged one, a donor, or its base (`undefined` for the absorber). */
+export const getDraftWidth = (draft: TableResizeDraft, columnId: string): number | undefined =>
+  columnId === draft.columnId ? draft.width : (draft.donors?.[columnId] ?? draft.base[columnId]);
+
+/** A minimal external store for `useSyncExternalStore`. */
+export interface TableStore<S> {
+  get: () => S;
+  set: (next: S) => void;
+  subscribe: (listener: () => void) => () => void;
+}
+
+export const createTableStore = <S>(initial: S): TableStore<S> => {
+  let state = initial;
+  const listeners = new Set<() => void>();
+  return {
+    get: () => state,
+    set: next => {
+      if (Object.is(next, state)) return;
+      state = next;
+      listeners.forEach(listener => listener());
+    },
+    subscribe: listener => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+  };
+};
+
+/**
+ * One `ResizeObserver` shared by every resize handle of a table: each handle
+ * listens to its own header cell and to the table, so a table resize is one
+ * callback rather than one per handle.
+ */
+export const createWidthObserver = () => {
+  const listeners = new Map<Element, Set<() => void>>();
+  let observer: ResizeObserver | undefined;
+  const notify = (entries?: ResizeObserverEntry[]) => {
+    const called = new Set<() => void>();
+    const targets = entries?.length ? entries.map(entry => listeners.get(entry.target)) : [...listeners.values()];
+    for (const set of targets) {
+      set?.forEach(listener => {
+        if (called.has(listener)) return;
+        called.add(listener);
+        listener();
+      });
+    }
+  };
+  return {
+    /** Call `listener` whenever `cell` or its table changes size; returns the unsubscribe. */
+    observe: (cell: HTMLElement, listener: () => void): (() => void) => {
+      if (typeof ResizeObserver === 'undefined') return () => {};
+      const resizeObserver = (observer ??= new ResizeObserver(notify));
+      const elements = [cell, cell.closest('table')].filter((element): element is HTMLElement => element != null);
+      for (const element of elements) {
+        let set = listeners.get(element);
+        if (!set) {
+          set = new Set();
+          listeners.set(element, set);
+          resizeObserver.observe(element);
+        }
+        set.add(listener);
+      }
+      return () => {
+        for (const element of elements) {
+          const set = listeners.get(element);
+          set?.delete(listener);
+          if (set?.size === 0) {
+            listeners.delete(element);
+            observer?.unobserve(element);
+          }
+        }
+      };
+    },
+    disconnect: () => {
+      observer?.disconnect();
+      observer = undefined;
+      listeners.clear();
+    },
+  };
+};
+
+export type TableWidthObserver = ReturnType<typeof createWidthObserver>;
+
+/**
+ * The room the data columns share: the table viewport's inner width less the
+ * utility (selection / expand) columns. `0` when it cannot be measured.
+ */
+export const getColumnRoom = (headerCell: HTMLElement | undefined, utilityColumns: number): number => {
+  const containerWidth = headerCell?.closest('table')?.parentElement?.clientWidth ?? 0;
+  return containerWidth > 0 ? containerWidth - utilityColumns * UTILITY_COLUMN_WIDTH : 0;
 };

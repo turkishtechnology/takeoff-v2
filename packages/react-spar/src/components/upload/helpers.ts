@@ -70,14 +70,6 @@ export const fileType = (item: UploadFile): string | undefined => item.type ?? i
 export const fileStatus = (item: UploadFile): UploadFileStatus => item.status ?? DEFAULT_STATUS;
 
 /**
- * Fills a label template with the file it names: every `{name}` is replaced,
- * and a template with none is used as written. The placeholder is what lets a
- * translation move the name inside the sentence — concatenating a verb and a
- * name only ever produces one word order, and it is English's.
- */
-export const formatFileLabel = (template: string, name: string): string => template.split('{name}').join(name);
-
-/**
  * Whether the consumer's handlers vetoed the built-in behavior, given whether
  * the event was already prevented when the handler was entered.
  *
@@ -358,4 +350,20 @@ export const validateFiles = (incoming: File[], options: ValidateOptions): Valid
   }
 
   return { accepted, rejected };
+};
+
+export type DragState = 'accept' | 'reject';
+
+/**
+ * Whether a drag's payload would be taken: `reject` as soon as one file's type
+ * misses `accept`. Browsers that hide the items during the drag read as accept;
+ * the drop is validated again anyway.
+ */
+export const dragStateFor = (event: { dataTransfer: Pick<DataTransfer, 'items'> | null }, accept: string | undefined): DragState => {
+  const items = event.dataTransfer?.items;
+  if (!items || items.length === 0) return 'accept';
+  for (const item of Array.from(items)) {
+    if (item.kind === 'file' && !acceptMatchesType(item.type, accept)) return 'reject';
+  }
+  return 'accept';
 };

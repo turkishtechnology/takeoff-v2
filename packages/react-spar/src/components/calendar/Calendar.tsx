@@ -59,6 +59,7 @@ import {
 
 import { buildSlotAttrs, composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
+import { visuallyHidden } from '../../utils';
 
 import { CalendarBase, calendarRangeClassNames } from './base';
 import { DEFAULT_HEADER_TYPE, DEFAULT_MODE, DEFAULT_SIZE, DEFAULT_VIEW } from './defaults';
@@ -202,20 +203,6 @@ const PANEL_COLUMNS = 4;
  * target page is; the engine clamps the landing month either way (`goToMonth`).
  */
 type NavStep = 'month' | 'year' | 'page';
-
-// The design system ships no sr-only utility and the recipe must stay a purely
-// visual dependency, so the status node hides itself inline.
-const visuallyHidden: CSSProperties = {
-  position: 'absolute',
-  width: 1,
-  height: 1,
-  margin: -1,
-  padding: 0,
-  overflow: 'hidden',
-  clip: 'rect(0 0 0 0)',
-  whiteSpace: 'nowrap',
-  border: 0,
-};
 
 // Rows exist for assistive technology only; the cells stay direct children of
 // the grid so one CSS grid lays the whole board out.

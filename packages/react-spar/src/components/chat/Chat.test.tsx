@@ -1,0 +1,1668 @@
+import { useState, type ReactNode } from 'react';
+import { act, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { axe } from 'vitest-axe';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { TakeoffSparProvider } from '../../provider';
+import { renderWithProvider as render, screen, within } from '../../test-utils';
+import { Dropdown } from '../dropdown';
+
+import { formatDay, initials, isComposing, listNames, nextWindowClose } from './helpers';
+import { Chat, type ChatConversation, type ChatMessage, type ChatParticipant, type ChatProps } from './index';
+
+// A fixed "now" — noon on a Tuesday — so times and day dividers are stable.
+const NOW = new Date(2026, 2, 10, 12, 0, 0).getTime();
+const MINUTE = 60_000;
+const at = (minutesAgo: number) => new Date(NOW - minutesAgo * MINUTE);
+
+const ME = 'me';
+const ayse: ChatParticipant = { id: 'ayse', name: 'Ayşe Yılmaz' };
+const mehmet: ChatParticipant = { id: 'mehmet', name: 'Mehmet Kaya', avatar: 'https://example.com/m.png' };
+
+const msg = (id: string, over: Partial<ChatMessage> = {}): ChatMessage => ({ id, senderId: ME, text: `text ${id}`, createdAt: at(1), status: 'sent', ...over });
+
+type TestChatProps = Partial<ChatProps> & { composer?: ReactNode; header?: ReactNode };
+
+const TestChat = ({ composer, header, children, ...props }: TestChatProps) => (
+  // Reply and Copy are on by default; tests about the other actions leave them out.
+  <Chat messages={[]} currentUserId={ME} participants={[ayse]} allowReplies={false} allowCopy={false} {...props}>
+    {header ?? (
+      <Chat.Header>
+        <Chat.Title>Ayşe</Chat.Title>
+      </Chat.Header>
+    )}
+    <Chat.Messages />
+    <Chat.Empty>No messages yet</Chat.Empty>
+    {composer ?? <Chat.Composer />}
+    {children}
+  </Chat>
+);
+
+const field = () => screen.getByRole('textbox') as HTMLTextAreaElement;
+const log = () => screen.getByRole('log');
+const row = (text: string) =>
+  screen
+    .getAllByText(text)
+    .map(node => node.closest('.tk-chat-message'))
+    .find(Boolean) as HTMLElement;
+
+const openActions = async (user: ReturnType<typeof userEvent.setup>, text: string) => {
+  await user.click(within(row(text)).getByRole('button', { name: 'Message actions' }));
+};
+
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(NOW);
+  Element.prototype.scrollTo = vi.fn();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+describe('Chat (compound)', () => {
+  describe('rendering', () => {
+    it('renders a section labelled by its title, in the single layout', () => {
+      render(<TestChat />);
+      const region = screen.getByRole('region', { name: 'Ayşe' });
+      expect(region).toHaveClass('tk-chat');
+      expect(region).toHaveAttribute('data-slot', 'root');
+      expect(region).toHaveAttribute('data-layout', 'single');
+      expect(screen.getByRole('heading', { name: 'Ayşe' })).toHaveClass('tk-chat-title');
+    });
+
+    it('drops aria-labelledby without a title and keeps an explicit one', () => {
+      const { container, rerender } = render(<TestChat header={<Chat.Header />} />);
+      expect(container.querySelector('.tk-chat')).not.toHaveAttribute('aria-labelledby');
+      rerender(<TestChat header={<Chat.Header />} aria-labelledby="outside" />);
+      expect(container.querySelector('.tk-chat')).toHaveAttribute('aria-labelledby', 'outside');
+    });
+
+    it('keeps a title id the consumer sets', () => {
+      render(<TestChat header={<Chat.Title id="custom">Room</Chat.Title>} />);
+      expect(screen.getByRole('region', { name: 'Room' })).toHaveAttribute('aria-labelledby', 'custom');
+    });
+
+    it('renders the empty state only without messages', () => {
+      const { rerender } = render(<TestChat />);
+      expect(screen.getByText('No messages yet')).toHaveClass('tk-chat-empty');
+      expect(screen.queryByRole('log')).not.toBeInTheDocument();
+      rerender(<TestChat messages={[msg('1')]} />);
+      expect(screen.queryByText('No messages yet')).not.toBeInTheDocument();
+      rerender(<TestChat hasOlder />);
+      expect(screen.queryByText('No messages yet')).not.toBeInTheDocument();
+    });
+
+    it('marks disabled and read-only roots', () => {
+      const { container, rerender } = render(<TestChat disabled />);
+      expect(container.querySelector('.tk-chat')).toHaveAttribute('data-disabled', '');
+      rerender(<TestChat readOnly />);
+      expect(container.querySelector('.tk-chat')).toHaveAttribute('data-readonly', '');
+    });
+
+    it('renders as another element', () => {
+      const { container } = render(
+        <Chat as="div" messages={[]} currentUserId={ME}>
+          <Chat.Messages />
+        </Chat>,
+      );
+      expect(container.querySelector('div.tk-chat')).toBeInTheDocument();
+    });
+
+    it('throws when a part is used outside Chat', () => {
+      const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      expect(() => render(<Chat.Messages />)).toThrow(/Chat.Messages/);
+      expect(() => render(<Chat.Thread />)).toThrow(/Chat.Thread/);
+      expect(() =>
+        render(
+          <Chat messages={[]} currentUserId={ME}>
+            <Chat.MessageActions />
+          </Chat>,
+        ),
+      ).toThrow(/Chat.Message/);
+      spy.mockRestore();
+    });
+  });
+
+  describe('messages', () => {
+    it('renders own and incoming messages with time and delivery status', () => {
+      render(
+        <TestChat
+          messages={[
+            msg('1', { senderId: 'ayse', text: 'Hi', status: undefined, createdAt: at(10) }),
+            msg('2', { text: 'Sending one', status: 'sending' }),
+            msg('3', { text: 'Sent one', status: 'sent', createdAt: NOW - 30_000 }),
+            msg('4', { text: 'Delivered one', status: 'delivered', createdAt: (at(0.4) as Date).toISOString() }),
+            msg('5', { text: 'Read one', status: 'read' }),
+            msg('6', { text: 'Failed one', status: 'failed' }),
+          ]}
+        />,
+      );
+      expect(row('Hi')).not.toHaveAttribute('data-own');
+      expect(row('Sending one')).toHaveAttribute('data-own', '');
+      expect(within(row('Hi')).queryByText('Sent')).not.toBeInTheDocument();
+      for (const [text, status, label] of [
+        ['Sending one', 'sending', 'Sending'],
+        ['Sent one', 'sent', 'Sent'],
+        ['Delivered one', 'delivered', 'Delivered'],
+        ['Read one', 'read', 'Read'],
+        ['Failed one', 'failed', 'Not delivered'],
+      ]) {
+        expect(row(text)).toHaveAttribute('data-status', status);
+        const statusNode = row(text).querySelector('.tk-chat-message-status');
+        expect(statusNode).toHaveTextContent(label);
+        expect(statusNode).toHaveAttribute('title', label);
+      }
+      const time = row('Hi').querySelector('time');
+      expect(time).toHaveAttribute('dateTime', at(10).toISOString());
+      expect(time).toHaveClass('tk-chat-message-time');
+    });
+
+    it('shows the edited note and replaces deleted messages', () => {
+      render(<TestChat messages={[msg('1', { text: 'Changed', editedAt: at(0) }), msg('2', { text: 'Gone', deleted: true, editedAt: at(0), status: 'read' })]} />);
+      expect(within(row('Changed')).getByText('Edited')).toHaveClass('tk-chat-message-edited');
+      const deleted = row('This message was deleted');
+      expect(deleted).toHaveAttribute('data-deleted', '');
+      expect(deleted).not.toHaveAttribute('data-status');
+      expect(within(deleted).queryByText('Edited')).not.toBeInTheDocument();
+      expect(screen.queryByText('Gone')).not.toBeInTheDocument();
+    });
+
+    it('adds day dividers for today, yesterday and older dates', () => {
+      render(
+        <TestChat
+          messages={[
+            msg('1', { text: 'Last year', createdAt: new Date(2025, 11, 31, 9) }),
+            msg('2', { text: 'This year', createdAt: new Date(2026, 0, 15, 9) }),
+            msg('3', { text: 'Yesterday msg', createdAt: new Date(2026, 2, 9, 9) }),
+            msg('4', { text: 'Today msg', createdAt: at(5) }),
+            msg('5', { text: 'Today again', createdAt: at(4) }),
+          ]}
+          locale="en-US"
+        />,
+      );
+      const dividers = [...document.querySelectorAll('.tk-chat-divider')].map(node => node.textContent);
+      expect(dividers).toEqual(['December 31, 2025', 'January 15', 'Yesterday', 'Today']);
+    });
+
+    it('groups consecutive messages from one sender', () => {
+      render(
+        <TestChat
+          messages={[
+            msg('1', { text: 'First', createdAt: at(20) }),
+            msg('2', { text: 'Second', createdAt: at(19) }),
+            msg('3', { text: 'Much later', createdAt: at(2) }),
+            msg('4', { text: 'Other sender', senderId: 'ayse', createdAt: at(1) }),
+          ]}
+        />,
+      );
+      expect(row('First')).not.toHaveAttribute('data-grouped');
+      expect(row('Second')).toHaveAttribute('data-grouped', '');
+      expect(row('Much later')).not.toHaveAttribute('data-grouped');
+      expect(row('Other sender')).not.toHaveAttribute('data-grouped');
+    });
+
+    it('shows author and avatar for incoming messages in a group chat', () => {
+      render(
+        <TestChat
+          participants={[{ id: ME, name: 'Me' }, ayse, mehmet, { id: 'zeynep', name: 'Zeynep', avatar: <svg data-testid="z-avatar" /> }]}
+          messages={[
+            msg('1', { senderId: 'ayse', text: 'From Ayşe', createdAt: at(3) }),
+            msg('2', { senderId: 'ayse', text: 'Again Ayşe', createdAt: at(2) }),
+            msg('3', { senderId: 'mehmet', text: 'From Mehmet' }),
+            msg('4', { senderId: 'zeynep', text: 'From Zeynep' }),
+            msg('5', { senderId: 'ghost', text: 'From ghost' }),
+            msg('6', { text: 'Mine' }),
+          ]}
+        />,
+      );
+      expect(within(row('From Ayşe')).getByText('Ayşe Yılmaz')).toHaveClass('tk-chat-message-author');
+      expect(row('From Ayşe').querySelector('.tk-chat-message-avatar')).toHaveTextContent('AY');
+      expect(within(row('Again Ayşe')).queryByText('Ayşe Yılmaz')).not.toBeInTheDocument();
+      expect(row('Again Ayşe').querySelector('.tk-chat-message-avatar')).toHaveAttribute('aria-hidden', 'true');
+      expect(row('From Mehmet').querySelector('.tk-chat-message-avatar img')).toHaveAttribute('src', 'https://example.com/m.png');
+      expect(within(row('From Zeynep')).getByTestId('z-avatar')).toBeInTheDocument();
+      expect(within(row('From ghost')).getByText('ghost')).toBeInTheDocument();
+      expect(row('Mine').querySelector('.tk-chat-message-avatar')).not.toBeInTheDocument();
+    });
+
+    it('hides author and avatar in a one-to-one chat', () => {
+      render(<TestChat participants={[{ id: ME, name: 'Me' }, ayse]} messages={[msg('1', { senderId: 'ayse', text: 'Hello' })]} />);
+      expect(row('Hello').querySelector('.tk-chat-message-avatar')).not.toBeInTheDocument();
+      expect(screen.queryByText('Ayşe Yılmaz')).not.toBeInTheDocument();
+    });
+
+    it('renders custom rows and bubble content', () => {
+      render(
+        <Chat messages={[msg('1', { text: 'plain' }), msg('2', { text: 'rich' })]} currentUserId={ME}>
+          <Chat.Messages>
+            {message =>
+              message.id === '1' ? (
+                <Chat.Message message={message} data-testid="custom-row" />
+              ) : (
+                <Chat.Message message={message}>
+                  <>
+                    <strong>Rich content</strong>
+                  </>
+                </Chat.Message>
+              )
+            }
+          </Chat.Messages>
+        </Chat>,
+      );
+      expect(screen.getByTestId('custom-row')).toHaveTextContent('plain');
+      expect(screen.getByText('Rich content').closest('.tk-chat-message-bubble')).toBeInTheDocument();
+      expect(screen.queryByText('rich')).not.toBeInTheDocument();
+    });
+
+    it('falls back to the text when children render nothing', () => {
+      render(
+        <Chat messages={[msg('1', { text: 'fallback' })]} currentUserId={ME}>
+          <Chat.Messages>{message => <Chat.Message message={message}>{false}</Chat.Message>}</Chat.Messages>
+        </Chat>,
+      );
+      expect(screen.getByText('fallback')).toHaveClass('tk-chat-message-text');
+    });
+
+    it('forwards object and function refs on a message row', () => {
+      const objectRef = { current: null as HTMLDivElement | null };
+      const fnRef = vi.fn();
+      render(
+        <Chat messages={[msg('1'), msg('2')]} currentUserId={ME}>
+          <Chat.Messages>{message => <Chat.Message message={message} ref={message.id === '1' ? objectRef : fnRef} />}</Chat.Messages>
+        </Chat>,
+      );
+      expect(objectRef.current).toHaveClass('tk-chat-message');
+      expect(fnRef).toHaveBeenCalledWith(expect.any(HTMLElement));
+    });
+
+    it('offers retry under failed own messages when onRetry is set', async () => {
+      const user = userEvent.setup();
+      const onRetry = vi.fn();
+      const failed = msg('1', { text: 'Oops', status: 'failed' });
+      const { rerender } = render(<TestChat messages={[failed]} onRetry={onRetry} />);
+      await user.click(within(row('Oops')).getByRole('button', { name: 'Retry' }));
+      expect(onRetry).toHaveBeenCalledWith(failed);
+      rerender(<TestChat messages={[failed]} onRetry={onRetry} disabled />);
+      expect(within(row('Oops')).queryByRole('button', { name: 'Retry' })).not.toBeInTheDocument();
+      rerender(<TestChat messages={[failed]} />);
+      expect(within(row('Oops')).queryByRole('button', { name: 'Retry' })).not.toBeInTheDocument();
+    });
+
+    it('renders the typing line for one or several participants', () => {
+      const { rerender } = render(<TestChat messages={[msg('1')]} typing={['ayse', ME]} />);
+      expect(screen.getByText('Ayşe Yılmaz is typing…')).toHaveClass('tk-chat-typing');
+      rerender(<TestChat messages={[msg('1')]} participants={[ayse, mehmet]} typing={['ayse', 'mehmet']} locale="en" />);
+      expect(screen.getByText('Ayşe Yılmaz and Mehmet Kaya are typing…')).toBeInTheDocument();
+      rerender(<TestChat typing={['unknown']} />);
+      expect(screen.getByText('unknown is typing…')).toBeInTheDocument();
+      expect(screen.queryByText('No messages yet')).toBeInTheDocument();
+    });
+  });
+
+  describe('sending', () => {
+    it('sends the trimmed draft with Enter and clears the field', async () => {
+      const user = userEvent.setup();
+      const onSend = vi.fn();
+      render(<TestChat onSend={onSend} />);
+      const send = screen.getByRole('button', { name: 'Send message' });
+      expect(send).toBeDisabled();
+      await user.type(field(), '  Hello  ');
+      expect(send).toBeEnabled();
+      await user.keyboard('{Enter}');
+      expect(onSend).toHaveBeenCalledExactlyOnceWith('Hello', [], {});
+      expect(field()).toHaveValue('');
+      expect(field()).toHaveFocus();
+    });
+
+    it('adds a line with Shift+Enter and sends with the button', async () => {
+      const user = userEvent.setup();
+      const onSend = vi.fn();
+      const onSubmit = vi.fn();
+      render(<TestChat onSend={onSend} composer={<Chat.Composer onSubmit={onSubmit} />} />);
+      await user.type(field(), 'one{Shift>}{Enter}{/Shift}two');
+      expect(onSend).not.toHaveBeenCalled();
+      await user.click(screen.getByRole('button', { name: 'Send message' }));
+      expect(onSend).toHaveBeenCalledWith('one\ntwo', [], {});
+      expect(onSubmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not send while an IME composition is open', () => {
+      const onSend = vi.fn();
+      render(<TestChat onSend={onSend} composer={<Chat.Composer defaultValue="にほん" />} />);
+      fireEvent.keyDown(field(), { key: 'Enter', isComposing: true });
+      fireEvent.keyDown(field(), { key: 'Enter', keyCode: 229 });
+      expect(onSend).not.toHaveBeenCalled();
+    });
+
+    it('keeps the draft when there is no onSend', async () => {
+      const user = userEvent.setup();
+      render(<TestChat />);
+      await user.type(field(), 'kept{Enter}');
+      expect(field()).toHaveValue('kept');
+    });
+
+    it('supports a controlled draft', async () => {
+      const user = userEvent.setup();
+      const onSend = vi.fn();
+      const onValueChange = vi.fn();
+      const Controlled = () => {
+        const [draft, setDraft] = useState('start');
+        return (
+          <TestChat
+            onSend={onSend}
+            composer={
+              <Chat.Composer
+                value={draft}
+                onValueChange={value => {
+                  onValueChange(value);
+                  setDraft(value);
+                }}
+              />
+            }
+          />
+        );
+      };
+      render(<Controlled />);
+      expect(field()).toHaveValue('start');
+      await user.type(field(), '!{Enter}');
+      expect(onSend).toHaveBeenCalledWith('start!', [], {});
+      expect(onValueChange).toHaveBeenLastCalledWith('');
+    });
+
+    it('passes placeholder, maxLength and extra controls', () => {
+      render(
+        <TestChat
+          composer={<Chat.Composer placeholder="Mesaj yaz" maxLength={10} startContent={<button type="button">Attach</button>} endContent={<button type="button">Emoji</button>} />}
+        />,
+      );
+      expect(screen.getByRole('textbox', { name: 'Mesaj yaz' })).toHaveAttribute('maxLength', '10');
+      const controls = document.querySelector('.tk-chat-composer-controls') as HTMLElement;
+      expect(
+        within(controls)
+          .getAllByRole('button')
+          .map(button => button.textContent || button.getAttribute('aria-label')),
+      ).toEqual(['Attach', 'Emoji', 'Send message']);
+    });
+
+    it('disables the composer and hides it when read-only', async () => {
+      const user = userEvent.setup();
+      const onSend = vi.fn();
+      const { rerender } = render(<TestChat onSend={onSend} disabled composer={<Chat.Composer defaultValue="hi" />} />);
+      expect(field()).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Send message' })).toBeDisabled();
+      fireEvent.submit(document.querySelector('form') as HTMLFormElement);
+      expect(onSend).not.toHaveBeenCalled();
+      rerender(<TestChat onSend={onSend} readOnly />);
+      expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+      await user.keyboard('{Enter}');
+      expect(onSend).not.toHaveBeenCalled();
+    });
+
+    it('pins the log to the bottom when the user sends', async () => {
+      const user = userEvent.setup();
+      const Sending = () => {
+        const [messages, setMessages] = useState([msg('1', { text: 'first' })]);
+        return <TestChat messages={messages} onSend={text => setMessages(list => [...list, msg(String(list.length + 1), { text })])} />;
+      };
+      render(<Sending />);
+      const viewport = log();
+      Object.defineProperty(viewport, 'scrollHeight', { configurable: true, value: 900 });
+      Object.defineProperty(viewport, 'clientHeight', { configurable: true, value: 300 });
+      viewport.scrollTop = 100;
+      fireEvent.scroll(viewport);
+      await user.type(field(), 'second{Enter}');
+      expect(viewport.scrollTop).toBe(900);
+      expect(screen.queryByRole('button', { name: /new/ })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('editing', () => {
+    it('edits an own message from its menu and saves the new text', async () => {
+      const user = userEvent.setup();
+      const onEdit = vi.fn();
+      const original = msg('1', { text: 'Helo' });
+      render(<TestChat messages={[original]} onEdit={onEdit} composer={<Chat.Composer defaultValue="my draft" />} />);
+      await openActions(user, 'Helo');
+      await user.click(screen.getByRole('menuitem', { name: 'Edit' }));
+      expect(field()).toHaveValue('Helo');
+      expect(document.querySelector('.tk-chat-composer-editing')).toHaveTextContent('Editing message');
+      expect(field()).toHaveAccessibleName('Editing message');
+      expect(document.querySelector('.tk-chat-composer')).toHaveAttribute('data-editing', '');
+      expect(row('Helo')).toHaveAttribute('data-editing', '');
+      expect(screen.getByRole('button', { name: 'Save changes' })).toBeEnabled();
+      await vi.waitFor(() => expect(field()).toHaveFocus());
+
+      await user.clear(field());
+      await user.type(field(), 'Hello{Enter}');
+      expect(onEdit).toHaveBeenCalledExactlyOnceWith(original, 'Hello');
+      expect(field()).toHaveValue('my draft');
+      expect(document.querySelector('.tk-chat-composer-editing')).not.toBeInTheDocument();
+    });
+
+    it('does not report an edit that changed nothing', async () => {
+      const user = userEvent.setup();
+      const onEdit = vi.fn();
+      render(<TestChat messages={[msg('1', { text: 'Same' })]} onEdit={onEdit} />);
+      await user.click(field());
+      await user.keyboard('{ArrowUp}');
+      expect(field()).toHaveValue('Same');
+      await user.keyboard('{Enter}');
+      expect(onEdit).not.toHaveBeenCalled();
+      expect(field()).toHaveValue('');
+    });
+
+    it('edits the last editable message with ArrowUp in an empty field', async () => {
+      const user = userEvent.setup();
+      render(
+        <TestChat
+          onEdit={vi.fn()}
+          messages={[msg('1', { text: 'older' }), msg('2', { text: 'newest' }), msg('3', { text: 'pending', status: 'sending' }), msg('4', { senderId: 'ayse', text: 'theirs' })]}
+        />,
+      );
+      await user.click(field());
+      await user.keyboard('{ArrowUp}');
+      expect(field()).toHaveValue('newest');
+      // Already editing: ArrowUp moves the caret as usual.
+      await user.keyboard('{ArrowUp}');
+      expect(field()).toHaveValue('newest');
+    });
+
+    it('ignores ArrowUp with a draft or nothing to edit', async () => {
+      const user = userEvent.setup();
+      const { rerender } = render(<TestChat onEdit={vi.fn()} messages={[msg('1', { text: 'mine' })]} composer={<Chat.Composer defaultValue="x" />} />);
+      await user.click(field());
+      await user.keyboard('{ArrowUp}');
+      expect(field()).toHaveValue('x');
+      rerender(<TestChat messages={[msg('1', { text: 'mine' })]} composer={<Chat.Composer key="b" />} />);
+      await user.click(field());
+      await user.keyboard('{ArrowUp}');
+      expect(field()).toHaveValue('');
+    });
+
+    it('cancels editing with Escape or the cancel button and restores the draft', async () => {
+      const user = userEvent.setup();
+      const onKeyDown = vi.fn();
+      render(
+        <div onKeyDown={onKeyDown}>
+          <TestChat onEdit={vi.fn()} messages={[msg('1', { text: 'mine' })]} />
+        </div>,
+      );
+      await user.type(field(), 'draft');
+      await user.clear(field());
+      await user.keyboard('{ArrowUp}');
+      expect(field()).toHaveValue('mine');
+      await user.keyboard('{Escape}');
+      expect(field()).toHaveValue('');
+      // Escape stayed inside the chat, so a surrounding Drawer stays open.
+      expect(onKeyDown).not.toHaveBeenCalledWith(expect.objectContaining({ key: 'Escape' }));
+      await user.keyboard('{ArrowUp}');
+      await user.click(screen.getByRole('button', { name: 'Cancel editing' }));
+      expect(field()).toHaveValue('');
+      expect(field()).toHaveFocus();
+      // Escape outside editing is left alone.
+      await user.keyboard('{Escape}');
+      expect(onKeyDown).toHaveBeenCalledWith(expect.objectContaining({ key: 'Escape' }));
+    });
+
+    it('offers edit only on own, delivered, live messages', () => {
+      render(
+        <TestChat
+          onEdit={vi.fn()}
+          messages={[
+            msg('1', { text: 'theirs', senderId: 'ayse' }),
+            msg('2', { text: 'sending', status: 'sending' }),
+            msg('3', { text: 'failed', status: 'failed' }),
+            msg('4', { text: 'deleted', deleted: true }),
+          ]}
+        />,
+      );
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+    });
+
+    it('closes the edit window on time and ends an edit in progress', () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(NOW);
+      render(<TestChat onEdit={vi.fn()} editWindow={5 * MINUTE} messages={[msg('1', { text: 'recent', createdAt: at(4) }), msg('2', { text: 'old', createdAt: at(6) })]} />);
+      expect(within(row('recent')).getByRole('button', { name: 'Message actions' })).toBeInTheDocument();
+      expect(within(row('old')).queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      fireEvent.keyDown(field(), { key: 'ArrowUp' });
+      expect(field()).toHaveValue('recent');
+      act(() => vi.advanceTimersByTime(MINUTE + 10));
+      expect(within(row('recent')).queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      expect(field()).toHaveValue('');
+      expect(document.querySelector('.tk-chat-composer-editing')).not.toBeInTheDocument();
+    });
+
+    it('starts no edit from outside when the message cannot be edited', async () => {
+      const user = userEvent.setup();
+      render(
+        <TestChat onEdit={vi.fn()} disabled messages={[msg('1', { text: 'mine' })]}>
+          <Chat.Messages>{message => <Chat.Message message={message} />}</Chat.Messages>
+        </TestChat>,
+      );
+      await user.keyboard('{ArrowUp}');
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('deleting', () => {
+    it('deletes an own message from its menu at once without an undo window', async () => {
+      const user = userEvent.setup();
+      const onDelete = vi.fn();
+      const mine = msg('1', { text: 'remove me' });
+      render(<TestChat messages={[mine]} onDelete={onDelete} undoWindow={0} />);
+      await openActions(user, 'remove me');
+      expect(screen.queryByRole('menuitem', { name: 'Edit' })).not.toBeInTheDocument();
+      await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
+      expect(onDelete).toHaveBeenCalledExactlyOnceWith(mine);
+      await vi.waitFor(() => expect(field()).toHaveFocus());
+    });
+
+    it('ends the edit of a message that is deleted', async () => {
+      const user = userEvent.setup();
+      const mine = msg('1', { text: 'both' });
+      const onDelete = vi.fn();
+      render(<TestChat messages={[mine]} onDelete={onDelete} onEdit={vi.fn()} undoWindow={0} />);
+      await openActions(user, 'both');
+      await user.click(screen.getByRole('menuitem', { name: 'Edit' }));
+      expect(field()).toHaveValue('both');
+      await openActions(user, 'both');
+      await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
+      expect(onDelete).toHaveBeenCalledWith(mine);
+      expect(field()).toHaveValue('');
+    });
+
+    it('holds a delete for the undo window, then calls onDelete', async () => {
+      const user = userEvent.setup();
+      const onDelete = vi.fn();
+      const mine = msg('1', { text: 'second thoughts' });
+      render(<TestChat messages={[mine]} onDelete={onDelete} undoWindow={80} />);
+      await openActions(user, 'second thoughts');
+      await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
+
+      const pendingRow = row('This message was deleted');
+      expect(pendingRow).toHaveAttribute('data-deleted');
+      expect(pendingRow).toHaveAttribute('data-deleting');
+      expect(within(pendingRow).queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      expect(onDelete).not.toHaveBeenCalled();
+      const undo = within(pendingRow).getByRole('button', { name: 'Undo' });
+      expect(undo).toHaveClass('tk-chat-message-undo');
+      await vi.waitFor(() => expect(undo).toHaveFocus());
+
+      await vi.waitFor(() => expect(onDelete).toHaveBeenCalledExactlyOnceWith(mine));
+      expect(screen.queryByRole('button', { name: 'Undo' })).not.toBeInTheDocument();
+      expect(field()).toHaveFocus();
+    });
+
+    it('restores a message with Undo and never calls onDelete', async () => {
+      const user = userEvent.setup();
+      const onDelete = vi.fn();
+      render(<TestChat messages={[msg('1', { text: 'keep me' })]} onDelete={onDelete} undoWindow={80} />);
+      await openActions(user, 'keep me');
+      await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
+      await user.click(screen.getByRole('button', { name: 'Undo' }));
+
+      expect(row('keep me')).not.toHaveAttribute('data-deleting');
+      expect(within(row('keep me')).getByRole('button', { name: 'Message actions' })).toBeInTheDocument();
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+      expect(field()).toHaveFocus();
+      await new Promise(resolve => setTimeout(resolve, 120));
+      expect(onDelete).not.toHaveBeenCalled();
+    });
+
+    it('waits out an undo window longer than setTimeout can hold', async () => {
+      const user = userEvent.setup();
+      const onDelete = vi.fn();
+      const DAY = 24 * 60 * MINUTE;
+      render(<TestChat messages={[msg('1', { text: 'long undo' })]} onDelete={onDelete} undoWindow={30 * DAY} />);
+      await openActions(user, 'long undo');
+      // Fake timers from the delete on; user-event itself waits on real ones.
+      vi.useFakeTimers();
+      vi.setSystemTime(NOW);
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Delete' }));
+      act(() => vi.advanceTimersByTime(25 * DAY));
+      expect(onDelete).not.toHaveBeenCalled();
+      expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument();
+      act(() => vi.advanceTimersByTime(5 * DAY));
+      expect(onDelete).toHaveBeenCalledOnce();
+    });
+
+    it('calls onDelete for a pending delete when the chat unmounts', async () => {
+      const user = userEvent.setup();
+      const onDelete = vi.fn();
+      const mine = msg('1', { text: 'closing' });
+      const { unmount } = render(<TestChat messages={[mine]} onDelete={onDelete} undoWindow={60_000} />);
+      await openActions(user, 'closing');
+      await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
+      expect(onDelete).not.toHaveBeenCalled();
+      unmount();
+      expect(onDelete).toHaveBeenCalledExactlyOnceWith(mine);
+    });
+
+    it('uses the latest onDelete when the window ends', async () => {
+      const user = userEvent.setup();
+      const first = vi.fn();
+      const second = vi.fn();
+      const mine = msg('1', { text: 'swap' });
+      const { rerender } = render(<TestChat messages={[mine]} onDelete={first} undoWindow={80} />);
+      await openActions(user, 'swap');
+      await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
+      rerender(<TestChat messages={[mine]} onDelete={second} undoWindow={80} />);
+      // Focus left the Undo button: the commit leaves it where it is.
+      act(() => log().focus());
+      await vi.waitFor(() => expect(second).toHaveBeenCalledWith(mine));
+      expect(first).not.toHaveBeenCalled();
+    });
+
+    it('closes the delete window on time', () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(NOW);
+      render(<TestChat onDelete={vi.fn()} deleteWindow={2 * MINUTE} messages={[msg('1', { text: 'fresh', createdAt: at(1) })]} />);
+      expect(screen.getByRole('button', { name: 'Message actions' })).toBeInTheDocument();
+      act(() => vi.advanceTimersByTime(MINUTE + 10));
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+    });
+
+    it('allows deleting failed messages but not ones still sending', () => {
+      render(<TestChat onDelete={vi.fn()} messages={[msg('1', { text: 'failed', status: 'failed' }), msg('2', { text: 'sending', status: 'sending' })]} />);
+      expect(within(row('failed')).getByRole('button', { name: 'Message actions' })).toBeInTheDocument();
+      expect(within(row('sending')).queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+    });
+
+    it('lists extra actions on any message', async () => {
+      const user = userEvent.setup();
+      const onReply = vi.fn();
+      render(
+        <Chat messages={[msg('1', { senderId: 'ayse', text: 'theirs' })]} currentUserId={ME} onDelete={vi.fn()}>
+          <Chat.Messages>
+            {message => (
+              <Chat.Message message={message}>
+                <Chat.MessageActions data-testid="actions">
+                  <Dropdown.Item onSelect={() => onReply(message)}>Reply</Dropdown.Item>
+                </Chat.MessageActions>
+              </Chat.Message>
+            )}
+          </Chat.Messages>
+        </Chat>,
+      );
+      expect(screen.getByTestId('actions')).toHaveClass('tk-chat-message-actions');
+      await openActions(user, 'theirs');
+      expect(screen.queryByRole('menuitem', { name: 'Delete' })).not.toBeInTheDocument();
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+      expect(onReply).toHaveBeenCalled();
+    });
+  });
+
+  describe('attachments', () => {
+    const pdf = () => new File(['%PDF'], 'report.pdf', { type: 'application/pdf' });
+    const png = () => new File(['png'], 'photo.png', { type: 'image/png' });
+    const fileInput = () => document.querySelector('.tk-chat-composer input[type="file"]') as HTMLInputElement;
+    const attachRow = (name: string) => screen.getByText(name).closest('.tk-upload-item') as HTMLElement;
+    const transfer = (files: File[]) => ({ dataTransfer: { types: ['Files'], files } });
+
+    beforeEach(() => {
+      vi.stubGlobal('URL', Object.assign(URL, { createObjectURL: vi.fn(() => 'blob:local'), revokeObjectURL: vi.fn() }));
+    });
+
+    it('has no attach button unless allowAttachments is set', () => {
+      render(<TestChat onSend={vi.fn()} />);
+      expect(screen.queryByRole('button', { name: 'Attach files' })).not.toBeInTheDocument();
+      expect(fileInput()).toBeNull();
+    });
+
+    it('sends picked files with the text, or on their own', async () => {
+      const user = userEvent.setup();
+      const onSend = vi.fn();
+      render(<TestChat onSend={onSend} composer={<Chat.Composer allowAttachments />} />);
+      const attach = screen.getByRole('button', { name: 'Attach files' });
+      expect(attach).toHaveClass('tk-chat-composer-attach');
+      expect(screen.getByRole('button', { name: 'Send message' })).toBeDisabled();
+
+      await user.upload(fileInput(), pdf());
+      const list = screen.getByRole('group', { name: 'Files to send' });
+      expect(list).toHaveClass('tk-chat-composer-attachments');
+      expect(within(list).getByText('report.pdf')).toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Send message' }));
+      expect(onSend).toHaveBeenCalledExactlyOnceWith('', [expect.objectContaining({ name: 'report.pdf', file: expect.any(File) })], {});
+      expect(screen.queryByRole('group', { name: 'Files to send' })).not.toBeInTheDocument();
+
+      await user.upload(fileInput(), pdf());
+      await user.type(field(), 'see attached{Enter}');
+      expect(onSend).toHaveBeenLastCalledWith('see attached', [expect.objectContaining({ name: 'report.pdf' })], {});
+    });
+
+    it('takes a file back out of the composer', async () => {
+      const user = userEvent.setup();
+      render(<TestChat onSend={vi.fn()} composer={<Chat.Composer allowAttachments />} />);
+      await user.upload(fileInput(), pdf());
+      await user.click(within(attachRow('report.pdf')).getByRole('button', { name: 'Remove report.pdf' }));
+      expect(screen.queryByText('report.pdf')).not.toBeInTheDocument();
+    });
+
+    it('takes pasted files but leaves pasted text alone', () => {
+      render(<TestChat onSend={vi.fn()} composer={<Chat.Composer allowAttachments />} />);
+      expect(fireEvent.paste(field(), { clipboardData: { files: [] } })).toBe(true);
+      expect(fireEvent.paste(field(), { clipboardData: { files: [png()] } })).toBe(false);
+      expect(screen.getByText('photo.png')).toBeInTheDocument();
+    });
+
+    it('takes dropped files and marks the composer while they are dragged over it', () => {
+      render(<TestChat onSend={vi.fn()} composer={<Chat.Composer allowAttachments />} />);
+      const composer = document.querySelector('.tk-chat-composer') as HTMLElement;
+
+      fireEvent.dragOver(composer, { dataTransfer: { types: ['text/plain'], files: [] } });
+      expect(composer).not.toHaveAttribute('data-drag-state');
+      fireEvent.dragOver(composer, transfer([pdf()]));
+      expect(composer).toHaveAttribute('data-drag-state', 'accept');
+      // jsdom has no DragEvent to carry `relatedTarget`; a MouseEvent does.
+      const leave = (to: Element) => fireEvent(composer, new MouseEvent('dragleave', { bubbles: true, relatedTarget: to }));
+      leave(field());
+      expect(composer).toHaveAttribute('data-drag-state', 'accept');
+      leave(document.body);
+      expect(composer).not.toHaveAttribute('data-drag-state');
+
+      fireEvent.dragOver(composer, transfer([pdf()]));
+      fireEvent.drop(composer, transfer([pdf()]));
+      expect(composer).not.toHaveAttribute('data-drag-state');
+      expect(screen.getByText('report.pdf')).toBeInTheDocument();
+      expect(fireEvent.drop(composer, { dataTransfer: { types: ['text/plain'], files: [] } })).toBe(true);
+    });
+
+    it('marks a drag of the wrong type as rejected', () => {
+      render(<TestChat onSend={vi.fn()} composer={<Chat.Composer allowAttachments accept="image/*" />} />);
+      const composer = document.querySelector('.tk-chat-composer') as HTMLElement;
+      fireEvent.dragOver(composer, { dataTransfer: { types: ['Files'], files: [], items: [{ kind: 'file', type: 'application/pdf' }] } });
+      expect(composer).toHaveAttribute('data-drag-state', 'reject');
+    });
+
+    it('reports files it turns down', async () => {
+      const user = userEvent.setup({ applyAccept: false });
+      const onFilesReject = vi.fn();
+      render(<TestChat onSend={vi.fn()} composer={<Chat.Composer allowAttachments accept="image/*" maxFileSize={10} maxFileCount={2} onFilesReject={onFilesReject} />} />);
+      await user.upload(fileInput(), pdf());
+      expect(onFilesReject).toHaveBeenCalledWith([expect.objectContaining({ code: 'file-invalid-type' })]);
+      expect(screen.queryByText('report.pdf')).not.toBeInTheDocument();
+    });
+
+    it('keeps files aside while a message is edited', async () => {
+      const user = userEvent.setup();
+      const onEdit = vi.fn();
+      const onSend = vi.fn();
+      render(<TestChat messages={[msg('1', { text: 'typo' })]} onSend={onSend} onEdit={onEdit} composer={<Chat.Composer allowAttachments />} />);
+      await user.upload(fileInput(), pdf());
+      await openActions(user, 'typo');
+      await user.click(screen.getByRole('menuitem', { name: 'Edit' }));
+
+      expect(screen.queryByText('report.pdf')).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Attach files' })).toBeDisabled();
+      const composer = document.querySelector('.tk-chat-composer') as HTMLElement;
+      // Still claims the drop, so the browser does not open the file.
+      fireEvent.dragOver(composer, transfer([png()]));
+      expect(composer).toHaveAttribute('data-drag-state', 'reject');
+      expect(fireEvent.drop(composer, transfer([png()]))).toBe(false);
+      expect(screen.queryByText('photo.png')).not.toBeInTheDocument();
+      expect(fireEvent.paste(field(), { clipboardData: { files: [png()] } })).toBe(true);
+
+      await user.clear(field());
+      await user.type(field(), 'fixed{Enter}');
+      expect(onEdit).toHaveBeenCalledWith(expect.objectContaining({ id: '1' }), 'fixed');
+      expect(onSend).not.toHaveBeenCalled();
+      expect(screen.getByText('report.pdf')).toBeInTheDocument();
+    });
+
+    it('shows uploaded images as previews and other files as rows', () => {
+      render(
+        <TestChat
+          messages={[
+            msg('1', {
+              text: 'Trip photos',
+              attachments: [
+                { id: 'a', name: 'beach.jpg', type: 'image/jpeg', url: 'https://example.com/beach.jpg', thumbUrl: 'https://example.com/beach-s.jpg' },
+                { id: 'b', name: 'plan.pdf', type: 'application/pdf', size: 2048, url: 'https://example.com/plan.pdf', status: 'completed' },
+                { id: 'c', name: 'big.png', type: 'image/png', status: 'uploading', progress: 40, file: png() },
+                { id: 'd', name: 'lost.pdf', type: 'application/pdf', status: 'error' },
+              ],
+            }),
+          ]}
+        />,
+      );
+      const files = row('Trip photos').querySelector('.tk-chat-message-attachments') as HTMLElement;
+      const image = within(files).getByRole('link', { name: 'Open beach.jpg' });
+      expect(image).toHaveClass('tk-chat-message-image');
+      expect(image).toHaveAttribute('href', 'https://example.com/beach.jpg');
+      expect(image.querySelector('img')).toHaveAttribute('src', 'https://example.com/beach-s.jpg');
+
+      expect(within(files).getByRole('button', { name: 'Download plan.pdf' })).toBeInTheDocument();
+      expect(within(files).queryByText('Completed')).not.toBeInTheDocument();
+      expect(within(files).queryByRole('link', { name: 'Open big.png' })).not.toBeInTheDocument();
+      expect(within(files).getByText('Uploading…')).toBeInTheDocument();
+      expect(within(files).getByText('Upload failed')).toBeInTheDocument();
+      expect(within(files).queryByRole('button', { name: /Remove/ })).not.toBeInTheDocument();
+    });
+
+    it('previews a local image until it has a URL, and draws no bubble without text', () => {
+      const local = png();
+      const { unmount } = render(<TestChat messages={[msg('1', { text: '', attachments: [{ id: 'a', file: local }] })]} />);
+      const link = screen.getByRole('link', { name: 'Open photo.png' });
+      expect(link).toHaveAttribute('href', 'blob:local');
+      expect(URL.createObjectURL).toHaveBeenCalledWith(local);
+      expect(link.closest('.tk-chat-message')?.querySelector('.tk-chat-message-bubble')).toBeNull();
+      unmount();
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:local');
+    });
+
+    it('hides the files of a deleted message, and opens the menu from them', () => {
+      render(
+        <TestChat
+          onDelete={vi.fn()}
+          messages={[
+            msg('1', { text: '', attachments: [{ id: 'a', name: 'kept.pdf', url: 'https://example.com/k.pdf' }] }),
+            msg('2', { text: 'gone', deleted: true, attachments: [{ id: 'b', name: 'gone.pdf', url: 'https://example.com/g.pdf' }] }),
+          ]}
+        />,
+      );
+      expect(screen.queryByText('gone.pdf')).not.toBeInTheDocument();
+      fireEvent.contextMenu(screen.getByText('kept.pdf'));
+      expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
+    });
+
+    it('does not offer Edit on a files-only message', async () => {
+      const user = userEvent.setup();
+      render(<TestChat onEdit={vi.fn()} onDelete={vi.fn()} messages={[msg('1', { text: '', attachments: [{ id: 'a', name: 'only.pdf', url: 'https://example.com/o.pdf' }] })]} />);
+      await user.click(screen.getByRole('button', { name: 'Message actions' }));
+      expect(screen.queryByRole('menuitem', { name: 'Edit' })).not.toBeInTheDocument();
+      expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
+    });
+  });
+
+  describe('copying', () => {
+    it('copies a message from its menu, confirms it, and also works read-only', async () => {
+      const user = userEvent.setup();
+      render(<TestChat allowCopy readOnly messages={[msg('1', { senderId: 'ayse', text: 'Gate F4' })]} />);
+      await openActions(user, 'Gate F4');
+      await user.click(screen.getByRole('menuitem', { name: 'Copy' }));
+      await vi.waitFor(() => expect(row('Gate F4').querySelector('.tk-chat-message-copied')).toHaveTextContent('Copied'));
+      expect(screen.getByRole('status')).toHaveTextContent('Copied');
+      expect(await navigator.clipboard.readText()).toBe('Gate F4');
+      await vi.waitFor(() => expect(row('Gate F4').querySelector('.tk-chat-message-copied')).toBeNull(), { timeout: 2500 });
+      expect(screen.getByRole('status')).toHaveTextContent('');
+    });
+
+    it('is on by default and lists Copy before Edit and Delete', async () => {
+      const user = userEvent.setup();
+      render(
+        <Chat messages={[msg('1', { text: 'Mine' })]} currentUserId={ME} allowReplies onSend={vi.fn()} onEdit={vi.fn()} onDelete={vi.fn()}>
+          <Chat.Messages />
+        </Chat>,
+      );
+      await openActions(user, 'Mine');
+      expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual(['Reply', 'Copy', 'Edit', 'Delete']);
+    });
+
+    it('offers no Copy without text, on deleted messages, when turned off, or without a clipboard', () => {
+      const { rerender } = render(
+        <TestChat
+          allowCopy
+          messages={[msg('1', { text: '', attachments: [{ id: 'f', name: 'a.pdf', url: 'https://example.com/a.pdf' }] }), msg('2', { text: 'gone', deleted: true })]}
+        />,
+      );
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      rerender(<TestChat messages={[msg('3', { text: 'off' })]} />);
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      vi.stubGlobal('navigator', { ...navigator, clipboard: undefined });
+      rerender(<TestChat allowCopy messages={[msg('3', { text: 'off' })]} />);
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+    });
+
+    it('shows no note when the clipboard refuses the write', async () => {
+      const user = userEvent.setup();
+      vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('denied'));
+      render(<TestChat allowCopy messages={[msg('1', { text: 'secret' })]} />);
+      await openActions(user, 'secret');
+      await user.click(screen.getByRole('menuitem', { name: 'Copy' }));
+      await new Promise(resolve => setTimeout(resolve, 20));
+      expect(row('secret').querySelector('.tk-chat-message-copied')).toBeNull();
+    });
+  });
+
+  describe('pinning', () => {
+    beforeEach(() => {
+      Element.prototype.scrollIntoView = vi.fn();
+    });
+
+    const thread = [msg('1', { senderId: 'ayse', text: 'Boarding 14:20' }), msg('2', { senderId: 'ayse', text: 'Gate F4' }), msg('3', { text: 'Thanks' })];
+
+    const PinnedChat = (props: Partial<ChatProps>) => (
+      <TestChat
+        messages={thread}
+        header={
+          <Chat.Header>
+            <Chat.Title>Ops</Chat.Title>
+          </Chat.Header>
+        }
+        {...props}
+      >
+        <Chat.Pinned data-testid="pinned" />
+      </TestChat>
+    );
+
+    it('pins and unpins from the menu', async () => {
+      const user = userEvent.setup();
+      const onPinChange = vi.fn();
+      const { rerender } = render(<PinnedChat pinnedIds={[]} onPinChange={onPinChange} />);
+      await openActions(user, 'Gate F4');
+      await user.click(screen.getByRole('menuitem', { name: 'Pin' }));
+      expect(onPinChange).toHaveBeenCalledExactlyOnceWith(thread[1], true);
+
+      rerender(<PinnedChat pinnedIds={['2']} onPinChange={onPinChange} />);
+      expect(row('Gate F4')).toHaveAttribute('data-pinned');
+      expect(row('Gate F4').querySelector('.tk-chat-message-pinned')).toHaveAccessibleName('Pinned message');
+      await openActions(user, 'Gate F4');
+      await user.click(screen.getByRole('menuitem', { name: 'Unpin' }));
+      expect(onPinChange).toHaveBeenLastCalledWith(thread[1], false);
+    });
+
+    it('offers no Pin without onPinChange, or on messages that cannot be pinned', () => {
+      render(<PinnedChat pinnedIds={['1']} messages={[...thread, msg('4', { text: 'pending', status: 'sending' })]} />);
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      expect(within(screen.getByTestId('pinned')).queryByRole('button', { name: 'Unpin' })).not.toBeInTheDocument();
+    });
+
+    it('shows the newest pin, jumps to it and walks back through older ones', async () => {
+      const user = userEvent.setup();
+      render(<PinnedChat pinnedIds={['1', '2']} onPinChange={vi.fn()} />);
+      const bar = screen.getByTestId('pinned');
+      expect(bar).toHaveClass('tk-chat-pinned');
+      const jump = bar.querySelector('.tk-chat-pinned-jump') as HTMLElement;
+      expect(jump).toHaveAccessibleName('Pinned message · 2 of 2 Gate F4');
+
+      await user.click(jump);
+      expect(row('Gate F4').scrollIntoView).toHaveBeenCalled();
+      expect(row('Gate F4')).toHaveAttribute('data-highlighted');
+      expect(jump).toHaveTextContent('1 of 2');
+      expect(jump).toHaveTextContent('Boarding 14:20');
+
+      await user.click(jump);
+      expect(row('Boarding 14:20').scrollIntoView).toHaveBeenCalled();
+      expect(jump).toHaveTextContent('Gate F4');
+    });
+
+    it('unpins from the bar and hides itself without loaded pins', async () => {
+      const user = userEvent.setup();
+      const onPinChange = vi.fn();
+      const { rerender } = render(<PinnedChat pinnedIds={['2']} onPinChange={onPinChange} />);
+      expect(screen.getByTestId('pinned')).toHaveTextContent('Pinned message');
+      expect(screen.getByTestId('pinned')).not.toHaveTextContent('of');
+      await user.click(within(screen.getByTestId('pinned')).getByRole('button', { name: 'Unpin' }));
+      expect(onPinChange).toHaveBeenCalledWith(thread[1], false);
+
+      rerender(<PinnedChat pinnedIds={['missing']} onPinChange={onPinChange} />);
+      expect(screen.queryByTestId('pinned')).not.toBeInTheDocument();
+      rerender(<PinnedChat pinnedIds={['2']} messages={[thread[0], { ...thread[1], deleted: true }]} onPinChange={onPinChange} />);
+      expect(screen.queryByTestId('pinned')).not.toBeInTheDocument();
+      expect(row('This message was deleted')).not.toHaveAttribute('data-pinned');
+    });
+
+    it('has no axe violations with pins', async () => {
+      const { container } = render(<PinnedChat pinnedIds={['1', '2']} onPinChange={vi.fn()} />);
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('lists Pin between Copy and Edit', async () => {
+      const user = userEvent.setup();
+      render(
+        <Chat messages={[msg('1', { text: 'Mine' })]} currentUserId={ME} onSend={vi.fn()} onEdit={vi.fn()} onDelete={vi.fn()} onPinChange={vi.fn()}>
+          <Chat.Messages />
+        </Chat>,
+      );
+      await openActions(user, 'Mine');
+      expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual(['Reply', 'Copy', 'Pin', 'Edit', 'Delete']);
+    });
+  });
+
+  describe('replies', () => {
+    beforeEach(() => {
+      Element.prototype.scrollIntoView = vi.fn();
+    });
+
+    const question = msg('1', { senderId: 'ayse', text: 'Shall we move the meeting?' });
+
+    it('answers a message from its menu and sends the reply with it', async () => {
+      const user = userEvent.setup();
+      const onSend = vi.fn();
+      render(<TestChat allowReplies messages={[question]} onSend={onSend} />);
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+
+      const banner = document.querySelector('.tk-chat-composer-replying') as HTMLElement;
+      expect(banner).toHaveTextContent('Replying to Ayşe Yılmaz');
+      expect(banner).toHaveTextContent('Shall we move the meeting?');
+      expect(row('Shall we move the meeting?')).toHaveAttribute('data-editing');
+      await vi.waitFor(() => expect(field()).toHaveFocus());
+      expect(field()).toHaveAccessibleName('Replying to Ayşe Yılmaz');
+
+      await user.type(field(), 'Yes, to 15:00{Enter}');
+      expect(onSend).toHaveBeenCalledExactlyOnceWith('Yes, to 15:00', [], { replyTo: question });
+      expect(document.querySelector('.tk-chat-composer-replying')).toBeNull();
+    });
+
+    it('stops replying with the cancel button or Escape', async () => {
+      const user = userEvent.setup();
+      const onKeyDown = vi.fn();
+      render(
+        <div onKeyDown={onKeyDown}>
+          <TestChat allowReplies messages={[question]} onSend={vi.fn()} />
+        </div>,
+      );
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+      await user.click(screen.getByRole('button', { name: 'Cancel reply' }));
+      expect(document.querySelector('.tk-chat-composer-replying')).toBeNull();
+      expect(field()).toHaveFocus();
+
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+      await vi.waitFor(() => expect(field()).toHaveFocus());
+      onKeyDown.mockClear();
+      await user.keyboard('{Escape}');
+      expect(document.querySelector('.tk-chat-composer-replying')).toBeNull();
+      expect(onKeyDown).not.toHaveBeenCalled();
+    });
+
+    it('lets editing and replying take turns in the composer', async () => {
+      const user = userEvent.setup();
+      const mine = msg('2', { text: 'Mine' });
+      render(<TestChat allowReplies onEdit={vi.fn()} messages={[question, mine]} onSend={vi.fn()} />);
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+      await openActions(user, 'Mine');
+      await user.click(screen.getByRole('menuitem', { name: 'Edit' }));
+      expect(document.querySelector('.tk-chat-composer-replying')).toBeNull();
+      expect(field()).toHaveValue('Mine');
+
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+      expect(document.querySelector('.tk-chat-composer-editing')).toBeNull();
+      expect(document.querySelector('.tk-chat-composer-replying')).not.toBeNull();
+    });
+
+    it('offers Reply by default, and only while the message can be answered', async () => {
+      const user = userEvent.setup();
+      const { rerender, unmount } = render(
+        <Chat messages={[question]} currentUserId={ME} allowCopy={false} onSend={vi.fn()}>
+          <Chat.Messages />
+        </Chat>,
+      );
+      await openActions(user, 'Shall we move the meeting?');
+      expect(screen.getByRole('menuitem', { name: 'Reply' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+      rerender(
+        <Chat messages={[question]} currentUserId={ME} allowCopy={false}>
+          <Chat.Messages />
+        </Chat>,
+      );
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      unmount();
+      const second = render(<TestChat messages={[question]} onSend={vi.fn()} />);
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      second.rerender(<TestChat allowReplies messages={[question, msg('2', { text: 'pending', status: 'sending' })]} />);
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+      second.rerender(<TestChat allowReplies readOnly messages={[question]} onSend={vi.fn()} />);
+      expect(screen.queryByRole('button', { name: 'Message actions' })).not.toBeInTheDocument();
+    });
+
+    it('ends a reply whose message is deleted', async () => {
+      const user = userEvent.setup();
+      const { rerender } = render(<TestChat allowReplies messages={[question]} onSend={vi.fn()} />);
+      await openActions(user, 'Shall we move the meeting?');
+      await user.click(screen.getByRole('menuitem', { name: 'Reply' }));
+      rerender(<TestChat allowReplies messages={[{ ...question, deleted: true }]} onSend={vi.fn()} />);
+      expect(document.querySelector('.tk-chat-composer-replying')).toBeNull();
+    });
+
+    it('quotes the original and jumps to it', async () => {
+      const user = userEvent.setup();
+      render(<TestChat messages={[question, msg('2', { text: 'Yes, to 15:00', replyTo: { id: '1' } }), msg('3', { text: 'Own quote', replyTo: { id: '2' } })]} />);
+      const quote = row('Yes, to 15:00').querySelector('.tk-chat-message-quote') as HTMLElement;
+      expect(quote.tagName).toBe('BUTTON');
+      expect(quote).toHaveAccessibleName('In reply to Ayşe Yılmaz Shall we move the meeting?');
+      expect(quote.querySelector('.tk-chat-message-quote-author')).toHaveTextContent('Ayşe Yılmaz');
+      expect(row('Own quote').querySelector('.tk-chat-message-quote-author')).toHaveTextContent('You');
+
+      await user.click(quote);
+      const target = row('Shall we move the meeting?');
+      expect(target.scrollIntoView).toHaveBeenCalledWith({ block: 'center', behavior: 'smooth' });
+      expect(target).toHaveAttribute('data-highlighted');
+      await vi.waitFor(() => expect(target).not.toHaveAttribute('data-highlighted'), { timeout: 2500 });
+    });
+
+    it('jumps without animation when the reader prefers reduced motion', async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('reduce') }));
+      render(<TestChat messages={[question, msg('2', { text: 'Answer', replyTo: { id: '1' } })]} />);
+      await user.click(row('Answer').querySelector('.tk-chat-message-quote') as HTMLElement);
+      expect(row('Shall we move the meeting?').scrollIntoView).toHaveBeenCalledWith({ block: 'center', behavior: 'auto' });
+    });
+
+    it('falls back to the reply copy when the original is not loaded, and follows edits and deletes', () => {
+      const { rerender } = render(
+        <TestChat
+          messages={[msg('5', { text: 'Old answer', replyTo: { id: 'gone', senderId: 'ayse', text: 'Earlier question' } }), msg('6', { text: 'Bare', replyTo: { id: 'gone2' } })]}
+        />,
+      );
+      const quote = row('Old answer').querySelector('.tk-chat-message-quote') as HTMLElement;
+      expect(quote.tagName).toBe('DIV');
+      expect(quote).toHaveTextContent('Ayşe Yılmaz Earlier question');
+      expect(row('Bare').querySelector('.tk-chat-message-quote-text')).toHaveTextContent('Original message');
+
+      const files = msg('7', { senderId: 'ayse', text: '', attachments: [{ id: 'f', name: 'plan.pdf', url: 'https://example.com/p.pdf' }] });
+      rerender(
+        <TestChat
+          messages={[
+            files,
+            { ...question, deleted: true },
+            msg('8', { text: 'On files', replyTo: { id: '7' } }),
+            msg('9', { text: 'On deleted', replyTo: { id: '1' } }),
+            msg('10', { text: 'On empty', replyTo: { id: '11' } }),
+            msg('11', { senderId: 'ayse', text: '' }),
+          ]}
+        />,
+      );
+      expect(row('On files').querySelector('.tk-chat-message-quote-text')).toHaveTextContent('plan.pdf');
+      expect(row('On deleted').querySelector('.tk-chat-message-quote-text')).toHaveTextContent('This message was deleted');
+      expect(row('On empty').querySelector('.tk-chat-message-quote-text')).toHaveTextContent('Original message');
+    });
+
+    it('draws a bubble for a files-only reply so the quote shows', () => {
+      render(<TestChat messages={[question, msg('2', { text: '', replyTo: { id: '1' }, attachments: [{ id: 'f', name: 'a.pdf', url: 'https://example.com/a.pdf' }] })]} />);
+      expect(document.querySelectorAll('.tk-chat-message-quote')).toHaveLength(1);
+      expect(screen.getByText('a.pdf').closest('.tk-chat-message')?.querySelector('.tk-chat-message-bubble')).not.toBeNull();
+    });
+  });
+
+  describe('menu gestures', () => {
+    const bubble = (text: string) => row(text).querySelector('.tk-chat-message-bubble') as HTMLElement;
+    const touch = (type: string, element: HTMLElement, x = 10, y = 10) => {
+      const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y });
+      Object.defineProperty(event, 'pointerType', { value: 'touch' });
+      act(() => {
+        element.dispatchEvent(event);
+      });
+    };
+
+    it('opens the actions menu on a right click', () => {
+      render(<TestChat messages={[msg('1', { text: 'right click me' })]} onDelete={vi.fn()} />);
+      const event = fireEvent.contextMenu(bubble('right click me'));
+      expect(event).toBe(false);
+      expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
+    });
+
+    it('keeps the browser menu over selected text and on messages without actions', () => {
+      render(<TestChat messages={[msg('1', { text: 'copy me' }), msg('2', { senderId: 'ayse', text: 'theirs' })]} onDelete={vi.fn()} />);
+      expect(fireEvent.contextMenu(bubble('theirs'))).toBe(true);
+
+      const text = within(bubble('copy me')).getByText('copy me');
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      window.getSelection()?.removeAllRanges();
+      window.getSelection()?.addRange(range);
+      expect(fireEvent.contextMenu(bubble('copy me'))).toBe(true);
+      window.getSelection()?.removeAllRanges();
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    });
+
+    it('leaves a right click the consumer handled alone', () => {
+      const onContextMenu = vi.fn((event: { preventDefault: () => void }) => event.preventDefault());
+      render(
+        <Chat messages={[msg('1', { text: 'custom' })]} currentUserId={ME} onDelete={vi.fn()}>
+          <Chat.Messages>{message => <Chat.Message message={message} slotProps={{ bubble: { onContextMenu } }} />}</Chat.Messages>
+        </Chat>,
+      );
+      fireEvent.contextMenu(bubble('custom'));
+      expect(onContextMenu).toHaveBeenCalled();
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    });
+
+    it('opens the actions menu on a long press, not on a scroll or a mouse press', () => {
+      vi.useFakeTimers();
+      render(<TestChat messages={[msg('1', { text: 'hold me' })]} onDelete={vi.fn()} />);
+      const target = bubble('hold me');
+
+      fireEvent.pointerDown(target, { pointerType: 'mouse' });
+      act(() => vi.advanceTimersByTime(600));
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+
+      touch('pointerdown', target);
+      touch('pointermove', target, 10, 40);
+      act(() => vi.advanceTimersByTime(600));
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+
+      touch('pointerdown', target);
+      touch('pointerup', target);
+      act(() => vi.advanceTimersByTime(600));
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+
+      touch('pointerdown', target);
+      touch('pointercancel', target);
+      act(() => vi.advanceTimersByTime(600));
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+
+      touch('pointerdown', target);
+      touch('pointermove', target, 12, 12);
+      act(() => vi.advanceTimersByTime(500));
+      expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument();
+    });
+  });
+
+  describe('read tracking', () => {
+    it('reports nothing without IntersectionObserver, rather than a read nobody saw', async () => {
+      vi.stubGlobal('IntersectionObserver', undefined);
+      const onRead = vi.fn();
+      render(<TestChat messages={[msg('1', { senderId: 'ayse', text: 'unread', status: 'delivered' })]} onRead={onRead} />);
+      await new Promise(resolve => setTimeout(resolve, 10));
+      expect(onRead).not.toHaveBeenCalled();
+    });
+
+    it('watches only incoming unread messages, and each once', () => {
+      const observed: Element[] = [];
+      vi.stubGlobal(
+        'IntersectionObserver',
+        class {
+          observe(element: Element) {
+            observed.push(element);
+          }
+          unobserve() {}
+          disconnect() {}
+        },
+      );
+      const messages = [
+        msg('1', { senderId: 'ayse', text: 'unread a', status: 'delivered' }),
+        msg('2', { senderId: 'ayse', text: 'unread b', status: undefined }),
+        msg('3', { senderId: 'ayse', text: 'already read', status: 'read' }),
+        msg('4', { senderId: 'ayse', text: 'deleted', deleted: true }),
+        msg('5', { text: 'mine' }),
+      ];
+      render(<TestChat messages={messages} onRead={vi.fn()} />);
+      expect(observed).toEqual([row('unread a'), row('unread b')]);
+    });
+
+    it('does nothing without onRead', async () => {
+      vi.stubGlobal('IntersectionObserver', undefined);
+      render(<TestChat messages={[msg('1', { senderId: 'ayse', status: 'delivered' })]} />);
+      await Promise.resolve();
+      expect(row('text 1')).toBeInTheDocument();
+    });
+
+    it('reports messages as they scroll into view, and waits for a visible page', async () => {
+      const instances: { callback: IntersectionObserverCallback; observed: Element[]; disconnect: () => void }[] = [];
+      class FakeObserver {
+        observed: Element[] = [];
+        constructor(public callback: IntersectionObserverCallback) {
+          instances.push(this);
+        }
+        observe(element: Element) {
+          this.observed.push(element);
+        }
+        unobserve(element: Element) {
+          this.observed = this.observed.filter(item => item !== element);
+        }
+        disconnect = vi.fn();
+      }
+      vi.stubGlobal('IntersectionObserver', FakeObserver);
+      const onRead = vi.fn();
+      const messages = [msg('1', { senderId: 'ayse', text: 'one', status: 'delivered' }), msg('2', { senderId: 'ayse', text: 'two', status: 'delivered' })];
+      const { unmount } = render(<TestChat messages={messages} onRead={onRead} />);
+      const observer = instances[0];
+      expect(observer.observed).toHaveLength(2);
+      const entry = (target: Element, isIntersecting: boolean) => ({ target, isIntersecting }) as IntersectionObserverEntry;
+
+      act(() => observer.callback([entry(row('one'), true), entry(document.body, true)], observer as unknown as IntersectionObserver));
+      await vi.waitFor(() => expect(onRead).toHaveBeenCalledWith([messages[0]]));
+
+      const visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+      act(() => observer.callback([entry(row('two'), true)], observer as unknown as IntersectionObserver));
+      await Promise.resolve();
+      expect(onRead).toHaveBeenCalledTimes(1);
+      visibility.mockReturnValue('visible');
+      act(() => {
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+      expect(onRead).toHaveBeenLastCalledWith([messages[1]]);
+
+      // A message that leaves the view before the page is visible is not reported.
+      visibility.mockReturnValue('hidden');
+      act(() => observer.callback([entry(row('one'), true), entry(row('one'), false)], observer as unknown as IntersectionObserver));
+      visibility.mockReturnValue('visible');
+      act(() => {
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+      expect(onRead).toHaveBeenCalledTimes(2);
+      visibility.mockRestore();
+      unmount();
+      expect(observer.disconnect).toHaveBeenCalled();
+    });
+  });
+
+  describe('scrolling', () => {
+    const sizeLog = (viewport: HTMLElement, scrollHeight: number) => {
+      Object.defineProperty(viewport, 'scrollHeight', { configurable: true, value: scrollHeight });
+      Object.defineProperty(viewport, 'clientHeight', { configurable: true, value: 300 });
+    };
+
+    it('follows new messages at the bottom and offers a jump button otherwise', async () => {
+      const user = userEvent.setup();
+      const first = [msg('1', { senderId: 'ayse', text: 'a' })];
+      const { rerender } = render(<TestChat messages={first} />);
+      const viewport = log();
+      expect(viewport).toHaveAttribute('tabindex', '0');
+      sizeLog(viewport, 1000);
+      rerender(<TestChat messages={[...first, msg('2', { senderId: 'ayse', text: 'b' })]} />);
+      expect(viewport.scrollTop).toBe(1000);
+
+      viewport.scrollTop = 200;
+      fireEvent.scroll(viewport);
+      rerender(<TestChat messages={[...first, msg('2', { senderId: 'ayse', text: 'b' }), msg('3', { senderId: 'ayse', text: 'c' }), msg('4', { text: 'mine' })]} />);
+      expect(viewport.scrollTop).toBe(200);
+      const jump = screen.getByRole('button', { name: /^1 new ?Jump to latest message$/ });
+      expect(jump).toHaveClass('tk-chat-jump');
+      await user.click(jump);
+      expect(viewport.scrollTo).toHaveBeenCalledWith({ top: 1000, behavior: 'smooth' });
+      expect(screen.queryByRole('button', { name: /Jump/ })).not.toBeInTheDocument();
+    });
+
+    it('starts a replaced conversation at the bottom', () => {
+      const { rerender } = render(<TestChat messages={[msg('1', { senderId: 'ayse' })]} />);
+      const viewport = log();
+      sizeLog(viewport, 1000);
+      viewport.scrollTop = 100;
+      fireEvent.scroll(viewport);
+      rerender(<TestChat messages={[msg('a', { senderId: 'ayse' }), msg('b', { senderId: 'ayse' })]} />);
+      expect(viewport.scrollTop).toBe(1000);
+      expect(screen.queryByRole('button', { name: /Jump/ })).not.toBeInTheDocument();
+    });
+
+    it('jumps without animation when reduced motion is preferred, and hides the button at the bottom', async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: true }));
+      const { rerender } = render(<TestChat messages={[msg('1')]} />);
+      const viewport = log();
+      sizeLog(viewport, 1000);
+      viewport.scrollTop = 100;
+      fireEvent.scroll(viewport);
+      rerender(<TestChat messages={[msg('1'), msg('2', { senderId: 'ayse' })]} />);
+      viewport.scrollTop = 700;
+      fireEvent.scroll(viewport);
+      expect(screen.queryByRole('button', { name: /Jump/ })).not.toBeInTheDocument();
+      viewport.scrollTop = 100;
+      fireEvent.scroll(viewport);
+      rerender(<TestChat messages={[msg('1'), msg('2', { senderId: 'ayse' }), msg('3', { senderId: 'ayse' })]} />);
+      await user.click(screen.getByRole('button', { name: /Jump/ }));
+      expect(viewport.scrollTo).toHaveBeenCalledWith({ top: 1000, behavior: 'auto' });
+    });
+
+    it('loads older messages from the button or the top, keeping the reader in place', async () => {
+      const user = userEvent.setup();
+      const onLoadOlder = vi.fn();
+      const recent = [msg('5', { text: 'recent' })];
+      const { rerender } = render(<TestChat messages={recent} hasOlder onLoadOlder={onLoadOlder} />);
+      await user.click(screen.getByRole('button', { name: 'Load older messages' }));
+      expect(onLoadOlder).toHaveBeenCalledTimes(1);
+
+      const viewport = log();
+      sizeLog(viewport, 1000);
+      viewport.scrollTop = 500;
+      fireEvent.scroll(viewport);
+      viewport.scrollTop = 10;
+      fireEvent.scroll(viewport);
+      expect(onLoadOlder).toHaveBeenCalledTimes(2);
+      // Staying near the top does not ask again.
+      fireEvent.scroll(viewport);
+      expect(onLoadOlder).toHaveBeenCalledTimes(2);
+
+      rerender(<TestChat messages={recent} hasOlder isLoadingOlder onLoadOlder={onLoadOlder} />);
+      expect(viewport).toHaveAttribute('aria-busy', 'true');
+      viewport.scrollTop = 500;
+      fireEvent.scroll(viewport);
+      viewport.scrollTop = 10;
+      fireEvent.scroll(viewport);
+      expect(onLoadOlder).toHaveBeenCalledTimes(2);
+
+      sizeLog(viewport, 1600);
+      rerender(<TestChat messages={[msg('4', { text: 'older' }), ...recent]} hasOlder={false} onLoadOlder={onLoadOlder} />);
+      expect(viewport.scrollTop).toBe(610);
+      expect(viewport).not.toHaveAttribute('aria-busy');
+    });
+
+    it('stays pinned when the content resizes', () => {
+      const callbacks: ResizeObserverCallback[] = [];
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(callback: ResizeObserverCallback) {
+            callbacks.push(callback);
+          }
+          observe() {}
+          disconnect() {}
+        },
+      );
+      render(<TestChat messages={[msg('1')]} />);
+      const viewport = log();
+      sizeLog(viewport, 1200);
+      act(() => callbacks[0]([], {} as ResizeObserver));
+      expect(viewport.scrollTop).toBe(1200);
+      viewport.scrollTop = 0;
+      fireEvent.scroll(viewport);
+      sizeLog(viewport, 1500);
+      act(() => callbacks[0]([], {} as ResizeObserver));
+      expect(viewport.scrollTop).toBe(0);
+    });
+  });
+
+  describe('conversations', () => {
+    const conversations: ChatConversation[] = [
+      { id: 'ayse', title: 'Ayşe Yılmaz', preview: 'See you', updatedAt: at(5), unreadCount: 3 },
+      { id: 'ops', title: 'Ops team', avatar: 'https://example.com/ops.png', updatedAt: new Date(2026, 1, 1, 9), unreadCount: 120 },
+      { id: 'mehmet', title: 'Mehmet' },
+    ];
+
+    const Split = (props: Partial<ChatProps>) => (
+      <Chat messages={[]} currentUserId={ME} locale="en-US" {...props}>
+        <Chat.ConversationList>
+          {conversations.map(conversation => (
+            <Chat.Conversation key={conversation.id} conversation={conversation} />
+          ))}
+        </Chat.ConversationList>
+        <Chat.Thread>
+          <Chat.Header>
+            <Chat.Title>Thread</Chat.Title>
+          </Chat.Header>
+          <Chat.Messages />
+          <Chat.Composer />
+        </Chat.Thread>
+      </Chat>
+    );
+
+    it('lists conversations and opens one (uncontrolled)', async () => {
+      const user = userEvent.setup();
+      const onConversationChange = vi.fn();
+      const { container } = render(<Split onConversationChange={onConversationChange} />);
+      const root = container.querySelector('.tk-chat');
+      expect(root).toHaveAttribute('data-layout', 'split');
+      expect(root).toHaveAttribute('data-view', 'list');
+      const nav = screen.getByRole('navigation', { name: 'Conversations' });
+      expect(nav).toHaveClass('tk-chat-conversation-list');
+      expect(container.querySelector('.tk-chat-thread')).toBeInTheDocument();
+
+      const ayseButton = within(nav).getByRole('button', { name: /Ayşe Yılmaz/ });
+      expect(ayseButton).toHaveAttribute('type', 'button');
+      expect(ayseButton).toHaveAttribute('data-unread', '');
+      expect(ayseButton).toHaveTextContent('3 unread messages');
+      expect(ayseButton.querySelector('.tk-chat-conversation-preview')).toHaveTextContent('See you');
+      expect(ayseButton.querySelector('.tk-chat-conversation-time')).toHaveTextContent('11:55');
+      const ops = within(nav).getByRole('button', { name: /Ops team/ });
+      expect(ops.querySelector('.tk-chat-conversation-time')).toHaveTextContent('February 1');
+      expect(ops.querySelector('.tk-chat-conversation-unread [aria-hidden]')).toHaveTextContent('99+');
+      expect(ops.querySelector('.tk-chat-conversation-avatar img')).toHaveAttribute('src', 'https://example.com/ops.png');
+      const plain = within(nav).getByRole('button', { name: /Mehmet/ });
+      expect(plain.querySelector('.tk-chat-conversation-time')).not.toBeInTheDocument();
+      expect(plain).not.toHaveAttribute('data-unread');
+
+      await user.click(ayseButton);
+      expect(onConversationChange).toHaveBeenCalledWith('ayse');
+      expect(ayseButton).toHaveAttribute('aria-current', 'true');
+      expect(ayseButton).toHaveAttribute('data-selected', '');
+      expect(root).toHaveAttribute('data-view', 'thread');
+
+      await user.click(screen.getByRole('button', { name: 'Back to conversations' }));
+      expect(onConversationChange).toHaveBeenLastCalledWith(null);
+      expect(root).toHaveAttribute('data-view', 'list');
+    });
+
+    it('follows a controlled conversation id', async () => {
+      const user = userEvent.setup();
+      const onConversationChange = vi.fn();
+      const { rerender } = render(<Split conversationId="ops" onConversationChange={onConversationChange} />);
+      expect(screen.getByRole('button', { name: /Ops team/ })).toHaveAttribute('aria-current', 'true');
+      await user.click(screen.getByRole('button', { name: /Mehmet/ }));
+      expect(onConversationChange).toHaveBeenCalledWith('mehmet');
+      expect(screen.getByRole('button', { name: /Mehmet/ })).not.toHaveAttribute('aria-current');
+      rerender(<Split conversationId="mehmet" onConversationChange={onConversationChange} />);
+      expect(screen.getByRole('button', { name: /Mehmet/ })).toHaveAttribute('aria-current', 'true');
+    });
+
+    it('starts from a default conversation and respects a prevented click', async () => {
+      const user = userEvent.setup();
+      render(
+        <Chat messages={[]} currentUserId={ME} defaultConversationId="mehmet">
+          <Chat.ConversationList aria-label="Chats" as="div">
+            <Chat.Conversation conversation={conversations[0]} onClick={event => event.preventDefault()} />
+            <Chat.Conversation conversation={conversations[2]} as="div" role="button" tabIndex={0} />
+          </Chat.ConversationList>
+        </Chat>,
+      );
+      const ayseButton = screen.getByRole('button', { name: /Ayşe/ });
+      await user.click(ayseButton);
+      expect(ayseButton).not.toHaveAttribute('aria-current');
+      const mehmetItem = screen.getByRole('button', { name: /Mehmet/ });
+      expect(mehmetItem).toHaveAttribute('aria-current', 'true');
+      expect(mehmetItem).not.toHaveAttribute('type');
+      expect(document.querySelector('.tk-chat-conversation-list')).toHaveAttribute('aria-label', 'Chats');
+    });
+
+    it('leaves the split layout when the list unmounts', () => {
+      const { container, rerender } = render(<Split />);
+      expect(container.querySelector('.tk-chat')).toHaveAttribute('data-layout', 'split');
+      rerender(
+        <Chat messages={[]} currentUserId={ME}>
+          <Chat.Header />
+        </Chat>,
+      );
+      expect(container.querySelector('.tk-chat')).toHaveAttribute('data-layout', 'single');
+      expect(screen.queryByRole('button', { name: 'Back to conversations' })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('customization', () => {
+    it('merges labels from the provider and the instance', () => {
+      render(
+        <TakeoffSparProvider components={{ Chat: { defaultProps: { labels: { placeholder: 'Mesaj yazın…', send: 'Gönder' } } } }}>
+          <Chat messages={[msg('1', { text: 'x', editedAt: at(0) })]} currentUserId={ME} labels={{ send: 'Yolla', edited: 'Düzenlendi', placeholder: '' }}>
+            <Chat.Messages />
+            <Chat.Composer />
+          </Chat>
+        </TakeoffSparProvider>,
+      );
+      expect(screen.getByRole('textbox', { name: 'Mesaj yazın…' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Yolla' })).toBeInTheDocument();
+      expect(screen.getByText('Düzenlendi')).toBeInTheDocument();
+    });
+
+    it('lands classNames and slotProps on the slot owners', () => {
+      render(
+        <Chat messages={[msg('1', { text: 'styled', editedAt: at(0) })]} currentUserId={ME} typing={['ayse']} hasOlder classNames={{ root: 'my-chat' }} participants={[ayse]}>
+          <Chat.Header classNames={{ root: 'my-header' }} />
+          <Chat.Messages
+            classNames={{ viewport: 'my-viewport', divider: 'my-divider', typing: 'my-typing', loadOlder: 'my-older' }}
+            slotProps={{ viewport: { 'data-testid': 'viewport' } as object }}
+          >
+            {message => <Chat.Message message={message} classNames={{ bubble: 'my-bubble', time: 'my-time' }} slotProps={{ text: { 'data-testid': 'text' } as object }} />}
+          </Chat.Messages>
+          <Chat.Composer classNames={{ controls: 'my-controls', send: 'my-send' }} />
+        </Chat>,
+      );
+      expect(document.querySelector('.tk-chat')).toHaveClass('my-chat');
+      expect(document.querySelector('.tk-chat-header')).toHaveClass('my-header');
+      expect(screen.getByTestId('viewport')).toHaveClass('tk-chat-messages-viewport', 'my-viewport');
+      expect(document.querySelector('.tk-chat-divider')).toHaveClass('my-divider');
+      expect(document.querySelector('.tk-chat-typing')).toHaveClass('my-typing');
+      expect(document.querySelector('.tk-chat-load-older')).toHaveClass('my-older');
+      expect(document.querySelector('.tk-chat-message-bubble')).toHaveClass('my-bubble');
+      expect(document.querySelector('.tk-chat-message-time')).toHaveClass('my-time');
+      expect(screen.getByTestId('text')).toHaveTextContent('styled');
+      expect(document.querySelector('.tk-chat-composer-controls')).toHaveClass('my-controls');
+      expect(document.querySelector('.tk-chat-composer-send')).toHaveClass('my-send');
+    });
+  });
+
+  describe('helpers', () => {
+    it('formats days, initials and name lists', () => {
+      const labels = { today: 'Today', yesterday: 'Yesterday' };
+      expect(formatDay(NOW, NOW, 'en-US', labels)).toBe('Today');
+      expect(initials('  ayşe   nur yılmaz ')).toBe('AN');
+      expect(listNames(['A', 'B', 'C'], 'en')).toBe('A, B, and C');
+      vi.stubGlobal('Intl', { ...Intl, ListFormat: undefined });
+      expect(listNames(['A', 'B'], 'en')).toBe('A, B');
+    });
+
+    it('finds the next closing window', () => {
+      const messages = [msg('1', { createdAt: at(1) }), msg('2', { createdAt: at(3) })];
+      expect(nextWindowClose(messages, [undefined, 2 * MINUTE], NOW)).toBe(NOW + MINUTE);
+      expect(nextWindowClose(messages, [undefined], NOW)).toBeUndefined();
+      expect(nextWindowClose(messages, [MINUTE / 2], NOW)).toBeUndefined();
+    });
+
+    it('recognises IME keydowns', () => {
+      expect(isComposing({ nativeEvent: { isComposing: false }, keyCode: 13 } as never)).toBe(false);
+    });
+  });
+
+  describe('accessibility', () => {
+    it('has no axe violations', async () => {
+      const { container } = render(
+        <TestChat
+          participants={[ayse, mehmet]}
+          onEdit={vi.fn()}
+          onDelete={vi.fn()}
+          typing={['ayse']}
+          messages={[msg('1', { senderId: 'ayse', text: 'Hi' }), msg('2', { text: 'Hello', status: 'read', editedAt: at(0) })]}
+        />,
+      );
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('has no axe violations with attachments', async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <TestChat
+          onSend={vi.fn()}
+          composer={<Chat.Composer allowAttachments />}
+          messages={[
+            msg('1', {
+              text: '',
+              attachments: [
+                { id: 'a', name: 'beach.jpg', type: 'image/jpeg', url: 'https://example.com/beach.jpg' },
+                { id: 'b', name: 'plan.pdf', type: 'application/pdf', url: 'https://example.com/plan.pdf' },
+                { id: 'c', name: 'big.pdf', type: 'application/pdf', status: 'uploading', progress: 40 },
+              ],
+            }),
+          ]}
+        />,
+      );
+      await user.upload(document.querySelector('.tk-chat-composer input[type="file"]') as HTMLInputElement, new File(['x'], 'notes.txt', { type: 'text/plain' }));
+      expect(await axe(container)).toHaveNoViolations();
+    });
+  });
+});
