@@ -1,5 +1,5 @@
 import type { Table as TanStackTable } from '@tanstack/react-table';
-import { fireEvent } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef, useState } from 'react';
 import { axe } from 'vitest-axe';
@@ -11,8 +11,10 @@ import { render as renderPlain, renderWithProvider as render, screen, within } f
 
 import { Table } from './Table';
 import { TableBody } from './TableBody';
+import { resetTableDevWarnings } from './devWarnings';
 import { getExportRows } from './helpers';
-import type { TableColumnDef, TableSlot } from './types';
+import { formatLabel } from '../../utils';
+import type { TableColumnDef, TableLabels, TableSlot } from './types';
 
 // Spar Select/Popover content observe their anchor; jsdom lacks ResizeObserver.
 const originalResizeObserver = globalThis.ResizeObserver;
@@ -30,6 +32,7 @@ afterAll(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 interface User {
@@ -64,8 +67,7 @@ const manyUsers: User[] = Array.from({ length: 12 }, (_, index) => ({
 }));
 const nameColumns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name' }];
 const bodyRowTexts = (container: HTMLElement) => Array.from(container.querySelectorAll('tbody tr')).map(row => row.querySelector('td')?.textContent);
-const goToPageButton = (container: HTMLElement) =>
-  within(container.querySelector('[data-slot="pagination-go-to-page"]') as HTMLElement).getByRole('button', { name: 'Go to page' });
+const goToPageButton = (container: HTMLElement) => within(container.querySelector('[data-slot="pagination-go-to-page"]') as HTMLElement).getByRole('button', { name: 'Go' });
 
 describe('Table (props-first)', () => {
   describe('rendering', () => {
@@ -258,7 +260,7 @@ describe('Table (props-first)', () => {
         expect(node.style.position).toBe('');
       }
       expect(container.querySelectorAll('tbody tr[data-selected]')).toHaveLength(0);
-      expect(screen.getByRole('button', { name: 'Filter column' })).not.toHaveAttribute('data-active');
+      expect(screen.getByRole('button', { name: 'Filter Name' })).not.toHaveAttribute('data-active');
     });
   });
 
@@ -562,10 +564,10 @@ describe('Table (props-first)', () => {
         { id: 'name', header: 'Name', accessor: 'name' },
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
-      expect(screen.getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Filter Role' })).toBeInTheDocument();
       // Only the filterable column gets a trigger, and the panel is not mounted until opened.
-      expect(screen.getAllByRole('button', { name: 'Filter column' })).toHaveLength(1);
-      expect(within(screen.getByRole('columnheader', { name: /Role/ })).getByRole('button', { name: 'Filter column' })).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getAllByRole('button', { name: 'Filter Role' })).toHaveLength(1);
+      expect(within(screen.getByRole('columnheader', { name: /Role/ })).getByRole('button', { name: 'Filter Role' })).toHaveAttribute('aria-expanded', 'false');
       expect(within(screen.getByRole('columnheader', { name: 'Name' })).queryByRole('button')).toBeNull();
       expect(document.querySelector('[data-slot="filter-panel"]')).toBeNull();
     });
@@ -576,7 +578,7 @@ describe('Table (props-first)', () => {
       const headerContent = container.querySelector('[data-slot="header-content"]') as HTMLElement;
 
       expect(within(headerContent).getByRole('button', { name: 'Name' })).toBeInTheDocument();
-      expect(within(headerContent).getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
+      expect(within(headerContent).getByRole('button', { name: 'Filter Name' })).toBeInTheDocument();
     });
 
     it('narrows rows through the `text` preset (string shorthand)', async () => {
@@ -584,7 +586,7 @@ describe('Table (props-first)', () => {
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       await user.type(await screen.findByRole('searchbox'), 'Ada');
       expect(bodyRowTexts(container)).toEqual(['Ada']);
     });
@@ -607,7 +609,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       await user.click(await screen.findByRole('radio', { name: 'User' }));
       expect(bodyRowTexts(container)).toEqual(['user']);
 
@@ -633,7 +635,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       await user.click(await screen.findByRole('checkbox', { name: 'Admin' }));
       expect(bodyRowTexts(container)).toEqual(['admin', 'admin']);
     });
@@ -654,7 +656,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       await user.type(await screen.findByLabelText('custom filter'), 'Grace');
       expect(bodyRowTexts(container)).toEqual(['Grace']);
     });
@@ -674,7 +676,7 @@ describe('Table (props-first)', () => {
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
       expect(trigger).not.toHaveAttribute('data-active');
 
       await user.click(trigger);
@@ -693,7 +695,7 @@ describe('Table (props-first)', () => {
 
       // Case-insensitive substring: "a" matches Ada + Grace, not Linus.
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Grace']);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
       expect(trigger).toHaveClass('tk-table-filter-button');
       expect(trigger).toHaveAttribute('data-active', '');
 
@@ -715,6 +717,453 @@ describe('Table (props-first)', () => {
       expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
     });
 
+    it('localizes the filter trigger and Clear once on the root, for presets and render panels', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+        {
+          id: 'role',
+          header: 'Role',
+          accessor: 'role',
+          filter: {
+            isActive: v => v != null,
+            render: ({ setValue }) => (
+              <button type="button" onClick={() => setValue('user')}>
+                Only users
+              </button>
+            ),
+          },
+        },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterClear: 'Temizle', filterButton: 'Sütunu filtrele' }} />);
+
+      const [nameTrigger, roleTrigger] = screen.getAllByRole('button', { name: 'Sütunu filtrele' });
+      expect(screen.queryByRole('button', { name: 'Filter Name' })).not.toBeInTheDocument();
+
+      await user.click(nameTrigger);
+      await user.type(await screen.findByRole('searchbox'), 'a');
+      expect(screen.getByRole('button', { name: 'Temizle' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      // A custom `render` panel gets the same localized button.
+      await user.click(roleTrigger);
+      await user.click(await screen.findByRole('button', { name: 'Only users' }));
+      expect(screen.getByRole('button', { name: 'Temizle' })).toBeInTheDocument();
+    });
+
+    it('takes the select placeholder from `labels.filterSelectPlaceholder`', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', options: [{ label: 'Admin', value: 'admin' }] } }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterSelectPlaceholder: 'Seçiniz' }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Seçiniz');
+    });
+
+    it('falls back from a whitespace-only select `filter.placeholder` and hides the column-label span', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', placeholder: '  ', options: [{ label: 'Admin', value: 'admin' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
+      expect(within(panel).getByRole('combobox', { name: 'Filter Role value Select' })).toHaveTextContent('Select');
+      // The span only feeds aria-labelledby; browse mode must not read it twice.
+      const labelSpan = within(panel).getByText('Filter Role value');
+      expect(labelSpan).toHaveAttribute('aria-hidden', 'true');
+    });
+
+    it('warns once per column when a filter name falls back to the column id', () => {
+      resetTableDevWarnings();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const columns: TableColumnDef<User>[] = [
+        { id: 'createdAt', header: () => 'Created', accessor: 'name', filter: 'text' },
+        { id: 'role', header: () => 'Role', accessor: 'role', filter: { type: 'text', label: 'Role' } },
+        { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+      ];
+      const { rerender } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
+      rerender(<Table data={users} columns={columns} getRowId={getRowId} striped />);
+      // A second table with the same column id does not warn again.
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      expect(screen.getAllByRole('button', { name: 'Filter createdAt' })).toHaveLength(2);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('"createdAt"');
+      expect(warn.mock.calls[0][0]).toContain('filter.label');
+      warn.mockRestore();
+    });
+
+    it('takes filter-trigger, pagination and expand names from `labels`, ignoring slotProps aria-labels', async () => {
+      const user = userEvent.setup();
+      resetTableDevWarnings();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      render(
+        <Table
+          data={manyUsers}
+          getRowId={getRowId}
+          pagination
+          expansion={{ render: () => 'detail' }}
+          columns={[{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }]}
+          labels={{ paginationLandmark: 'Sayfalama', expandRow: 'Satırı aç', collapseRow: 'Satırı kapat', filterButton: 'Sütunu filtrele' }}
+          slotProps={{ pagination: { 'aria-label': 'Sonuçlar' }, expandButton: { 'aria-label': 'Detay' }, filterButton: { 'aria-label': 'Ada göre filtrele' } }}
+        />,
+      );
+      expect(screen.getByRole('button', { name: 'Sütunu filtrele' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Ada göre filtrele' })).not.toBeInTheDocument();
+      // The dropped filter-trigger aria-label is flagged once, in development only.
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('labels.filterButton');
+      warn.mockRestore();
+      expect(screen.getByRole('navigation', { name: 'Sayfalama' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Detay' })).not.toBeInTheDocument();
+      const [first] = screen.getAllByRole('button', { name: 'Satırı aç' });
+      await user.click(first);
+      expect(screen.getByRole('button', { name: 'Satırı kapat' })).toBeInTheDocument();
+    });
+
+    it('drops a slotProps `aria-labelledby` on the filter trigger too, and warns once', () => {
+      resetTableDevWarnings();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      render(
+        <>
+          <span id="outside-name">Outside name</span>
+          <Table
+            data={users}
+            getRowId={getRowId}
+            columns={[{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }]}
+            slotProps={{ filterButton: { 'aria-labelledby': 'outside-name' } }}
+          />
+        </>,
+      );
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
+      expect(trigger).not.toHaveAttribute('aria-labelledby');
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain("['aria-labelledby']");
+      warn.mockRestore();
+    });
+
+    it('merges instance `labels` over provider defaultProps labels key by key', () => {
+      renderPlain(
+        <TakeoffSparProvider components={{ Table: { defaultProps: { labels: { noData: 'Veri yok', filterButton: 'Sütunu filtrele' } } } }}>
+          <Table data={[]} columns={[{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }]} getRowId={getRowId} labels={{ noData: 'Kayıt bulunamadı' }} />
+        </TakeoffSparProvider>,
+      );
+      expect(screen.getByText('Kayıt bulunamadı')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Sütunu filtrele' })).toBeInTheDocument();
+    });
+
+    it("keeps Spinner's provider aria-label unless `labels.loading` is set", () => {
+      const { rerender } = renderPlain(
+        <TakeoffSparProvider components={{ Spinner: { defaultProps: { 'aria-label': 'Yükleniyor' } } }}>
+          <Table data={users} columns={baseColumns} getRowId={getRowId} loading />
+        </TakeoffSparProvider>,
+      );
+      expect(screen.getByRole('status', { name: 'Yükleniyor' })).toBeInTheDocument();
+      rerender(
+        <TakeoffSparProvider components={{ Spinner: { defaultProps: { 'aria-label': 'Yükleniyor' } } }}>
+          <Table data={users} columns={baseColumns} getRowId={getRowId} loading labels={{ loading: 'Tablo yükleniyor' }} />
+        </TakeoffSparProvider>,
+      );
+      expect(screen.getByRole('status', { name: 'Tablo yükleniyor' })).toBeInTheDocument();
+    });
+
+    it('leaves the empty cell blank when emptyState is null', () => {
+      const { container } = render(<Table data={[]} columns={baseColumns} getRowId={getRowId} emptyState={null} />);
+      expect(screen.queryByText('No data')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-slot="empty"]')).toBeEmptyDOMElement();
+    });
+
+    it('leaves the empty cell blank when emptyState is false', () => {
+      const { container } = render(<Table data={[]} columns={baseColumns} getRowId={getRowId} emptyState={false} />);
+      expect(screen.queryByText('No data')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-slot="empty"]')).toBeEmptyDOMElement();
+    });
+
+    it('fills {total} in the noItems label', () => {
+      render(<Table data={[]} columns={baseColumns} getRowId={getRowId} labels={{ noItems: '{total} kayıt' }} pagination />);
+      expect(screen.getByText('0 kayıt')).toBeInTheDocument();
+    });
+
+    it('ignores non-string label values instead of crashing', () => {
+      const loose = JSON.parse('{"pageStatus": 1, "noData": null}') as Partial<TableLabels>;
+      render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination labels={loose} />);
+      expect(screen.getByText(/^Page 1 of \d+$/)).toBeInTheDocument();
+    });
+
+    it('keeps the pagination role fixed even when slotProps set one', () => {
+      render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination slotProps={{ pagination: { role: 'region' } }} />);
+      expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
+    });
+
+    it('leaves unknown and inherited template keys literal', () => {
+      expect(formatLabel('{page} {constructor} {nope}', { page: 2 })).toBe('2 {constructor} {nope}');
+    });
+
+    it('falls back to the default select placeholder when given an empty string', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', placeholder: '', options: [{ label: 'Admin', value: 'admin' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Select');
+    });
+
+    it('keeps the page-jump submit named `Go` when only `pageJumpInput` is translated', () => {
+      render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination={{ pageSize: 10 }} labels={{ pageJumpInput: 'Sayfaya git' }} />);
+      expect(screen.getByRole('spinbutton', { name: 'Sayfaya git' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Go' })).toBeInTheDocument();
+    });
+
+    it('names filter triggers and fields after their column by default', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
+      expect(await screen.findByRole('searchbox', { name: 'Filter Name value' })).toBeInTheDocument();
+    });
+
+    it('names the text filter after its column even when a placeholder is set', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', filter: { type: 'text', placeholder: 'Search…' } },
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'text', placeholder: 'Search…' } },
+        { id: 'city', header: '  ', accessor: 'profile.city', filter: 'text' },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
+      expect(await screen.findByRole('searchbox', { name: 'Filter Name value' })).toHaveAttribute('placeholder', 'Search…');
+      await user.keyboard('{Escape}');
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      expect(await screen.findByRole('searchbox', { name: 'Filter Role value' })).toHaveAttribute('placeholder', 'Search…');
+      await user.keyboard('{Escape}');
+
+      // A blank header falls back to the column id.
+      await user.click(screen.getByRole('button', { name: 'Filter city' }));
+      expect(await screen.findByRole('searchbox', { name: 'Filter city value' })).toBeInTheDocument();
+    });
+
+    it('names the select filter trigger with the column label plus its visible value', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', options: [{ label: 'Admin', value: 'admin' }] } }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
+      const trigger = within(panel).getByRole('combobox', { name: 'Filter Role value Select' });
+      expect(trigger).not.toHaveAttribute('aria-label');
+      await user.click(trigger);
+      // The listbox is named by the column label itself, not by the trigger
+      // (which a name computation would reduce to the chosen option).
+      expect(await screen.findByRole('listbox')).toHaveAccessibleName('Filter Role value');
+      await user.click(await screen.findByRole('option', { name: 'Admin' }));
+      expect(within(panel).getByRole('combobox', { name: 'Filter Role value Admin' })).toHaveTextContent('Admin');
+    });
+
+    it('names the radio and checkbox filter groups after their column', async () => {
+      const user = userEvent.setup();
+      const options = [{ label: 'Admin', value: 'admin' }];
+      const columns: TableColumnDef<User>[] = [
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'radio', options } },
+        { id: 'city', header: 'City', accessor: 'profile.city', filter: { type: 'checkbox', options: [{ label: 'Istanbul', value: 'Istanbul' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      expect(await screen.findByRole('radiogroup', { name: 'Filter Role value' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      await user.click(screen.getByRole('button', { name: 'Filter City' }));
+      expect(await screen.findByRole('group', { name: 'Filter City value' })).toContainElement(screen.getByRole('checkbox', { name: 'Istanbul' }));
+      expect(screen.getByRole('group', { name: 'Filter City value' })).toHaveClass('tk-table-filter-panel-body');
+    });
+
+    it('exposes the checkbox options group as the filterOptions slot', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'city', header: 'City', accessor: 'profile.city', filter: { type: 'checkbox', options: [{ label: 'Istanbul', value: 'Istanbul' }] } },
+      ];
+      renderPlain(
+        <TakeoffSparProvider components={{ Table: { classNames: { filterOptions: 'theme-options' } } }}>
+          <Table data={users} columns={columns} getRowId={getRowId} classNames={{ filterOptions: 'my-options' }} slotProps={{ filterOptions: { 'aria-label': 'ignored' } }} />
+        </TakeoffSparProvider>,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Filter City' }));
+      const group = await screen.findByRole('group', { name: 'Filter City value' });
+      expect(group).toHaveClass('tk-table-filter-panel-body', 'theme-options', 'my-options');
+      expect(group).toHaveAttribute('data-slot', 'filter-options');
+    });
+
+    it('passes the formatted field label to a custom filter.render', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        {
+          id: 'age',
+          header: 'Age',
+          accessor: 'age',
+          filter: { render: ({ fieldLabel }) => <input aria-label={fieldLabel} /> },
+        },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterValue: '{column} filtre değeri' }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Age' }));
+      expect(await screen.findByRole('textbox', { name: 'Age filtre değeri' })).toBeInTheDocument();
+    });
+
+    it('takes `{column}` from `filter.label` over the header and id', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'createdAt', header: () => <span>Oluşturma</span>, accessor: 'name', filter: { type: 'text', label: 'Oluşturma' } },
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'text', label: '  ' } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterButton: '{column} sütununu filtrele', filterValue: '{column} filtre değeri' }} />);
+
+      // A node header uses `filter.label` instead of the id.
+      expect(screen.queryByRole('button', { name: 'createdAt sütununu filtrele' })).not.toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Oluşturma sütununu filtrele' }));
+      expect(await screen.findByRole('searchbox', { name: 'Oluşturma filtre değeri' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      // A blank `filter.label` falls back to the header text.
+      expect(screen.getByRole('button', { name: 'Role sütununu filtrele' })).toBeInTheDocument();
+    });
+
+    it('ignores a non-string `filter.label` and falls back to the header text', () => {
+      // Loose data (e.g. JSON) can put a non-string where `label` is typed as one.
+      const filter = { type: 'text', label: 42 } as unknown as TableColumnDef<User>['filter'];
+      render(<Table data={users} columns={[{ id: 'name', header: 'Name', accessor: 'name', filter }]} getRowId={getRowId} />);
+      expect(screen.getByRole('button', { name: 'Filter Name' })).toBeInTheDocument();
+    });
+
+    it('keeps the checkbox filter group named by `labels`, ignoring slotProps naming attributes', async () => {
+      const user = userEvent.setup();
+      render(
+        <>
+          <span id="outside-group-name">Outside</span>
+          <Table
+            data={users}
+            columns={[{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'checkbox', options: [{ label: 'Admin', value: 'admin' }] } }]}
+            getRowId={getRowId}
+            slotProps={{ filterOptions: { 'role': 'list', 'aria-label': 'Custom', 'aria-labelledby': 'outside-group-name', 'title': 'kept' } }}
+          />
+        </>,
+      );
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const group = await screen.findByRole('group', { name: 'Filter Role value' });
+      expect(group).not.toHaveAttribute('aria-labelledby');
+      // Non-naming attributes still pass through.
+      expect(group).toHaveAttribute('title', 'kept');
+    });
+
+    it('names each filter trigger and filter field after its column through `{column}`', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+        { id: 'role', header: () => 'Role', accessor: 'role', filter: { type: 'select', options: [{ label: 'Admin', value: 'admin' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterButton: '{column} filtrele', filterValue: '{column} değeri' }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Name filtrele' }));
+      expect(await screen.findByRole('searchbox', { name: 'Name değeri' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      // A non-string header falls back to the column id.
+      await user.click(screen.getByRole('button', { name: 'role filtrele' }));
+      expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox', { name: 'role değeri Select' })).toBeInTheDocument();
+    });
+
+    it('localizes pagination, selection, expansion, empty and loading strings through `labels`', async () => {
+      const user = userEvent.setup();
+      const labels = {
+        noData: 'Veri yok',
+        loading: 'Yükleniyor',
+        paginationLandmark: 'Sayfalama',
+        pageStatus: 'Sayfa {page} / {pageCount}',
+        itemsRange: '{total} kayıttan {start}-{end}',
+        firstPage: 'İlk sayfa',
+        previousPage: 'Önceki sayfa',
+        nextPage: 'Sonraki sayfa',
+        lastPage: 'Son sayfa',
+        pageButton: '{page}. sayfaya git',
+        currentPageButton: '{page}. sayfa, geçerli sayfa',
+        rowsPerPage: 'Sayfa başına satır',
+        pageJumpInput: 'Sayfaya git',
+        pageJumpSubmit: 'Git',
+        selectAllRows: 'Tüm satırları seç',
+        selectRow: 'Satırı seç',
+        expandRow: 'Satırı aç',
+        collapseRow: 'Satırı kapat',
+        rowDetails: 'Satır detayı',
+      };
+      const { rerender } = render(
+        <Table
+          data={manyUsers}
+          columns={baseColumns}
+          getRowId={getRowId}
+          labels={labels}
+          pagination={{ pageSize: 10 }}
+          selection={{ mode: 'multiple' }}
+          expansion={{ render: () => 'detail' }}
+        />,
+      );
+
+      expect(screen.getByRole('navigation', { name: 'Sayfalama' })).toBeInTheDocument();
+      expect(screen.getByText(/^Sayfa 1 \/ \d+$/)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(`^${manyUsers.length} kayıttan 1-10$`))).toBeInTheDocument();
+      for (const name of ['İlk sayfa', 'Önceki sayfa', 'Sonraki sayfa', 'Son sayfa', '1. sayfa, geçerli sayfa', '2. sayfaya git']) {
+        expect(screen.getByRole('button', { name })).toBeInTheDocument();
+      }
+      expect(screen.getByRole('combobox', { name: 'Sayfa başına satır' })).toBeInTheDocument();
+      expect(screen.getByRole('spinbutton', { name: 'Sayfaya git' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Git' })).toBeInTheDocument();
+      expect(screen.getByRole('checkbox', { name: 'Tüm satırları seç' })).toBeInTheDocument();
+      expect(screen.getAllByRole('checkbox', { name: 'Satırı seç' }).length).toBe(10);
+      expect(screen.getByText('Satır detayı')).toBeInTheDocument();
+      const [firstExpand] = screen.getAllByRole('button', { name: 'Satırı aç' });
+      await user.click(firstExpand);
+      expect(screen.getByRole('button', { name: 'Satırı kapat' })).toBeInTheDocument();
+
+      rerender(<Table data={[]} columns={baseColumns} getRowId={getRowId} labels={{ ...labels, noItems: 'Kayıt yok', pageStatusUnknown: 'Sayfa {page}' }} pagination />);
+      expect(screen.getByText('Veri yok')).toBeInTheDocument();
+      expect(screen.getByText('Kayıt yok')).toBeInTheDocument();
+      expect(screen.getByText('Sayfa 1')).toBeInTheDocument();
+      rerender(<Table data={users} columns={baseColumns} getRowId={getRowId} labels={{ rowSelection: 'Satır seçimi' }} selection={{ mode: 'single' }} />);
+      expect(screen.getByText('Satır seçimi')).toBeInTheDocument();
+      rerender(<Table data={users} columns={baseColumns} getRowId={getRowId} labels={labels} loading />);
+      expect(screen.getByRole('status', { name: 'Yükleniyor' })).toBeInTheDocument();
+    });
+
+    it('takes the filter labels app-wide from provider defaultProps', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
+      renderPlain(
+        <TakeoffSparProvider components={{ Table: { defaultProps: { labels: { filterClear: 'Temizle', filterButton: 'Sütunu filtrele' } } } }}>
+          <Table data={users} columns={columns} getRowId={getRowId} />
+        </TakeoffSparProvider>,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Sütunu filtrele' }));
+      await user.type(await screen.findByRole('searchbox'), 'a');
+      expect(screen.getByRole('button', { name: 'Temizle' })).toBeInTheDocument();
+    });
+
+    it('falls back to the default labels when given empty or whitespace-only strings', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterClear: '   ', filterButton: '' }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
+      await user.type(await screen.findByRole('searchbox'), 'a');
+      expect(screen.getByRole('button', { name: 'Clear' })).toBeInTheDocument();
+    });
+
     it('removes the checkbox filter once the last option is unchecked', async () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
@@ -734,7 +1183,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} filtering={{ onChange }} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       await user.click(await screen.findByRole('checkbox', { name: 'Admin' }));
       await user.click(screen.getByRole('checkbox', { name: 'User' }));
       expect(onChange).toHaveBeenLastCalledWith([{ id: 'role', value: ['admin', 'user'] }]);
@@ -747,7 +1196,7 @@ describe('Table (props-first)', () => {
       await user.click(screen.getByRole('checkbox', { name: 'User' }));
       expect(onChange).toHaveBeenLastCalledWith([]);
       expect(bodyRowTexts(container)).toEqual(['admin', 'user', 'admin']);
-      expect(screen.getByRole('button', { name: 'Filter column' })).not.toHaveAttribute('data-active');
+      expect(screen.getByRole('button', { name: 'Filter Role' })).not.toHaveAttribute('data-active');
     });
 
     it('renders the `multi-select` preset as a checkbox list with membership matching', async () => {
@@ -769,7 +1218,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       expect(await screen.findAllByRole('checkbox')).toHaveLength(3);
       await user.click(screen.getByRole('checkbox', { name: 'Linus' }));
       await user.click(screen.getByRole('checkbox', { name: 'Ada' }));
@@ -794,7 +1243,7 @@ describe('Table (props-first)', () => {
 
       rerender(ui('admin'));
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Grace']);
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
       expect(within(panel).getByRole('combobox')).toHaveTextContent('Admin');
     });
@@ -805,13 +1254,13 @@ describe('Table (props-first)', () => {
       const withPlaceholder: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', placeholder: 'Pick a role', options } }];
       const { unmount } = render(<Table data={users} columns={withPlaceholder} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Pick a role');
       unmount();
 
       const withoutPlaceholder: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', options } }];
       render(<Table data={users} columns={withoutPlaceholder} getRowId={getRowId} />);
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Select');
     });
 
@@ -832,7 +1281,7 @@ describe('Table (props-first)', () => {
         },
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
 
       await user.click(trigger);
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
@@ -859,7 +1308,7 @@ describe('Table (props-first)', () => {
         },
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} filtering={{ onChange }} />);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Role' });
 
       await user.click(trigger);
       const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
@@ -934,8 +1383,8 @@ describe('Table (props-first)', () => {
       );
 
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus', 'Grace']);
-      const triggers = screen.getAllByRole('button', { name: 'Filter column' });
-      expect(triggers).toHaveLength(4);
+      // Each trigger is named after its column through the default `Filter {column}`.
+      const triggers = ['Name', 'Role', 'City', 'Age'].map(column => screen.getByRole('button', { name: `Filter ${column}` }));
       for (const trigger of triggers) expect(trigger).not.toHaveAttribute('data-active');
     });
 
@@ -943,7 +1392,7 @@ describe('Table (props-first)', () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
 
       trigger.focus();
       await user.keyboard('{Enter}');
@@ -1397,7 +1846,7 @@ describe('Table (props-first)', () => {
 
       expect(onDataRequest).toHaveBeenLastCalledWith({ pagination: { pageIndex: 0, pageSize: 10 }, sorting: [], filters: [{ id: 'role', value: 'admin' }] });
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus', 'Grace']);
-      expect(screen.getByRole('button', { name: 'Filter column' })).toHaveAttribute('data-active', '');
+      expect(screen.getByRole('button', { name: 'Filter Role' })).toHaveAttribute('data-active', '');
 
       await user.click(screen.getByRole('button', { name: 'Name' }));
       expect(screen.getByRole('columnheader', { name: /Name/ })).toHaveAttribute('aria-sort', 'ascending');
@@ -1426,7 +1875,7 @@ describe('Table (props-first)', () => {
         />,
       );
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       await user.type(await screen.findByRole('searchbox'), 'A');
 
       expect(onPaginationChange).toHaveBeenCalledTimes(1);
@@ -1569,6 +2018,1339 @@ describe('Table (props-first)', () => {
       expect(nameTd.style.position).toBe('');
       expect(roleTh.style.width).toBe('');
       expect(roleTd.style.width).toBe('');
+    });
+  });
+
+  describe('column resizing', () => {
+    const resizeColumns: TableColumnDef<User>[] = [
+      { id: 'name', header: 'Name', accessor: 'name' },
+      { id: 'role', header: 'Role', accessor: 'role', width: 140 },
+      { id: 'age', header: 'Age', accessor: 'age', resizable: false },
+    ];
+
+    // jsdom lays nothing out; give every header cell a measurable width so the
+    // first resize has an auto layout to freeze.
+    // Measuring clones (`data-measure`) read 0 unless a test says otherwise.
+    const mockHeaderWidth = (width: number, byHeader: Record<string, number> = {}) =>
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const isLiveHeader = this.tagName === 'TH' && !this.hasAttribute('data-measure');
+        const measured = isLiveHeader ? (byHeader[this.textContent ?? ''] ?? width) : 0;
+        return { width: measured, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+
+    // The fixed layout fills the viewport: Name 200 + Role 140 + Age (the absorber).
+    const mockViewportWidth = (width: number) =>
+      vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+        return this.getAttribute('data-slot') === 'table-viewport' ? width : 0;
+      });
+
+    const handleFor = (name: string) => screen.getByRole('separator', { name: `Resize ${name} column` });
+    const headerFor = (container: HTMLElement, name: string) =>
+      within(container.querySelector('thead') as HTMLElement)
+        .getByText(name)
+        .closest('th') as HTMLElement;
+
+    const drag = (handle: HTMLElement, from: number, to: number, pointerId = 1) => {
+      fireEvent.pointerDown(handle, { clientX: from, pointerId, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: to, pointerId });
+      fireEvent.pointerUp(handle, { clientX: to, pointerId });
+    };
+
+    it('renders no handles and keeps the auto layout without columnResizing', () => {
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} />);
+
+      expect(screen.queryByRole('separator')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-resize-mode');
+    });
+
+    it('puts a labelled separator on every resizable header and skips resizable: false and the last column', () => {
+      const header = () => <span>Custom</span>;
+      const [name, role, age] = resizeColumns as [TableColumnDef<User>, TableColumnDef<User>, TableColumnDef<User>];
+      const { container } = render(
+        <Table
+          data={users}
+          columns={[
+            name,
+            { ...role, resizable: false },
+            { id: 'city', header, accessor: 'profile.city', minWidth: 80, maxWidth: 300 },
+            { ...age, resizable: true },
+            { id: 'key', header: 'Key', accessor: 'id' },
+          ]}
+          getRowId={getRowId}
+          columnResizing
+        />,
+      );
+
+      const separators = screen.getAllByRole('separator');
+      expect(separators).toHaveLength(3);
+      expect(handleFor('Name')).toHaveAttribute('aria-orientation', 'vertical');
+      expect(handleFor('Name')).toHaveAttribute('tabindex', '0');
+      expect(handleFor('Name')).toHaveAttribute('aria-valuemin', '50');
+      expect(handleFor('Name')).not.toHaveAttribute('aria-valuemax');
+      expect(handleFor('Age')).toHaveAttribute('aria-valuenow', '150');
+      // A rendered header falls back to its column id, so the handles stay apart.
+      const custom = screen.getByRole('separator', { name: 'Resize city column' });
+      expect(custom).toHaveAttribute('aria-valuemin', '80');
+      expect(custom).toHaveAttribute('aria-valuemax', '300');
+      expect(headerFor(container, 'Role').querySelector('.tk-table-resize-handle')).toBeNull();
+      // The last column absorbs the slack and its edge is the table's own edge.
+      expect(headerFor(container, 'Key').querySelector('.tk-table-resize-handle')).toBeNull();
+      expect(handleFor('Name')).toHaveClass('tk-table-resize-handle');
+      expect(handleFor('Name')).toHaveAttribute('data-slot', 'resize-handle');
+    });
+
+    it('names the handles from `labels.resizeHandle`, preferring `filter.label` for `{column}`', () => {
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: () => <span>Ad</span>, accessor: 'name', filter: { type: 'text', label: 'Ad soyad' } },
+        { id: 'role', header: 'Rol', accessor: 'role' },
+        { id: 'age', header: 'Yaş', accessor: 'age' },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing labels={{ resizeHandle: '{column} sütununu yeniden boyutlandır' }} />);
+      expect(screen.getAllByRole('separator').map(handle => handle.getAttribute('aria-label'))).toEqual([
+        'Ad soyad sütununu yeniden boyutlandır',
+        'Rol sütununu yeniden boyutlandır',
+      ]);
+    });
+
+    it('freezes the measured layout on the first drag and commits once on release', () => {
+      mockHeaderWidth(120);
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const root = container.querySelector('[data-slot="root"]') as HTMLElement;
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 100, pointerId: 1, button: 0 });
+      expect(handle).toHaveAttribute('data-resizing', '');
+      fireEvent.pointerMove(handle, { clientX: 130, pointerId: 1 });
+      fireEvent.pointerMove(handle, { clientX: 160, pointerId: 1 });
+
+      // Live: the column follows the pointer, nothing is committed yet.
+      expect(onChange).not.toHaveBeenCalled();
+      expect(headerFor(container, 'Name').style.width).toBe('180px');
+      expect(root).toHaveAttribute('data-fixed-layout', '');
+      expect(root).toHaveAttribute('data-resize-mode', 'fit');
+      // Every other column is frozen at its measured width; the last one stays
+      // auto and absorbs the slack, floored at its min width.
+      expect(headerFor(container, 'Role').style.width).toBe('120px');
+      expect(headerFor(container, 'Age').style.width).toBe('');
+      expect(container.querySelector('table')).toHaveStyle({ minWidth: '350px' });
+
+      fireEvent.pointerUp(handle, { clientX: 160, pointerId: 1 });
+      expect(handle).not.toHaveAttribute('data-resizing');
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith({ name: 180, role: 120 });
+      expect(headerFor(container, 'Name').style.width).toBe('180px');
+      expect(
+        within(container.querySelector('tbody') as HTMLElement)
+          .getByText('Ada')
+          .closest('td'),
+      ).toHaveStyle({ width: '180px' });
+    });
+
+    it('falls back to the column size when nothing can be measured', () => {
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Role'), 0, 10);
+      // jsdom measures 0 → declared width (140) / TanStack's default size (150).
+      expect(onChange).toHaveBeenCalledWith({ name: 150, role: 150 });
+    });
+
+    it('clamps a drag to the default min width and to minWidth / maxWidth', () => {
+      // A wide absorber, so its spare width is not what stops the drag here.
+      mockHeaderWidth(120, { Age: 1000 });
+      const onChange = vi.fn();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'role', header: 'Role', accessor: 'role', minWidth: 100, maxWidth: 200 },
+        { id: 'age', header: 'Age', accessor: 'age' },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 200, 0);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 120 });
+      drag(handleFor('Role'), 0, 500);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 200 });
+      drag(handleFor('Role'), 500, 0);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 100 });
+    });
+
+    it('grows a column from the absorber first, then from the columns between it and the absorber, and stops there', () => {
+      const onChange = vi.fn();
+      // The absorber (Age) renders 200px wide; every column may narrow to 50px.
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'Age' ? 200 : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      // Within the absorber's 120px spare width nothing else moves…
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 100, pointerId: 1 });
+      expect(headerFor(container, 'Role').style.width).toBe('120px');
+      // …past its 150px spare Role gives up room (live, without a re-render)…
+      fireEvent.pointerMove(handle, { clientX: 170, pointerId: 1 });
+      expect(headerFor(container, 'Name').style.width).toBe('290px');
+      expect(headerFor(container, 'Role').style.width).toBe('100px');
+      // …down to its 50px min, and then the drag stops: 120 + 150 + 70.
+      fireEvent.pointerMove(handle, { clientX: 400, pointerId: 1 });
+      expect(headerFor(container, 'Role').style.width).toBe('50px');
+      // Back below the absorber's share, Role gets its width back.
+      fireEvent.pointerMove(handle, { clientX: 50, pointerId: 1 });
+      expect(headerFor(container, 'Role').style.width).toBe('120px');
+      fireEvent.pointerUp(handle, { clientX: 400, pointerId: 1 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 340, role: 50 });
+
+      // Shrinking is never limited.
+      drag(handleFor('Name'), 0, -100);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 50 });
+    });
+
+    it('lets the columns that give way keep their content first, then their min width', () => {
+      const onChange = vi.fn();
+      // Role's content needs 100px and Age's 180px, both above the 50px min.
+      const content: Record<string, number> = { Role: 100, Age: 180 };
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const probedColumn = this.closest('table')?.querySelector('thead')?.textContent ?? '';
+        const width = this.hasAttribute('data-measure') ? (content[probedColumn] ?? 0) : this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const first = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // 20px from Age (200 → 180), then 20px from Role (120 → 100): both still read whole.
+      drag(handleFor('Name'), 0, 40);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 160, role: 100 });
+      first.unmount();
+
+      // Asked for more, they give way on down to their 50px min, in the same order.
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      drag(handleFor('Name'), 0, 500);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 340, role: 50 });
+    });
+
+    it('still grows when the absorber is already cut short', () => {
+      const onChange = vi.fn();
+      // Age's content needs 400px but is drawn 200px wide: it has nothing to
+      // give before its content is cut, only down to its min after that.
+      const content: Record<string, number> = { Role: 100, Age: 400 };
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const probedColumn = this.closest('table')?.querySelector('thead')?.textContent ?? '';
+        const width = this.hasAttribute('data-measure') ? (content[probedColumn] ?? 0) : this.tagName === 'TH' ? (this.textContent === 'Age' ? 200 : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // 20px from Role down to its content, then 40px out of Age.
+      drag(handleFor('Name'), 0, 60);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 180, role: 100 });
+    });
+
+    it('measures content once per run of key presses, again after the handle loses focus', () => {
+      let probes = 0;
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        if (this.tagName === 'TH' && this.hasAttribute('data-measure')) probes += 1;
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'Age' ? 300 : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      const handle = handleFor('Name');
+
+      fireEvent.keyDown(handle, { key: 'ArrowRight' });
+      const once = probes;
+      expect(once).toBeGreaterThan(0);
+      fireEvent.keyDown(handle, { key: 'ArrowRight' });
+      fireEvent.keyDown(handle, { key: 'ArrowRight' });
+      expect(probes).toBe(once);
+
+      fireEvent.blur(handle);
+      fireEvent.keyDown(handle, { key: 'ArrowRight' });
+      expect(probes).toBe(once * 2);
+    });
+
+    it('does not count room freed by an earlier shrink in the same drag as spare', () => {
+      const onChange = vi.fn();
+      // The absorber (Age) takes whatever Name's drawn width leaves of 320px:
+      // 200px at Name's start width, 270px once the draft draws Name at 50px.
+      // Its floor is 50px. Name reads 120px until a draft draws it.
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const nameCell = this.parentElement?.querySelector('th') as HTMLElement | null;
+        const nameWidth = parseFloat(nameCell?.style.width ?? '') || 120;
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'Age' ? 320 - nameWidth : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      render(<Table data={users} columns={[...resizeColumns.slice(0, 1), ...resizeColumns.slice(2)]} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: -70, pointerId: 1 });
+      expect(headerFor(document.body, 'Name').style.width).toBe('50px');
+      // Released far past the start in one event, while the 50px draft is still
+      // drawn (so Age reads 270): 150px of real spare, not 220.
+      fireEvent.pointerUp(handle, { clientX: 400, pointerId: 1 });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 270 });
+    });
+
+    it('never takes room from a pinned or non-resizable column', () => {
+      const onChange = vi.fn();
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'City' ? 100 : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'role', header: 'Role', accessor: 'role', resizable: false },
+        { id: 'city', header: 'City', accessor: 'profile.city' },
+        { id: 'age', header: 'Age', accessor: 'age', sticky: 'right', width: 120 },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // Only the absorber (City) gives: 100 - 50 = 50px.
+      drag(handleFor('Name'), 0, 300);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 170, role: 120, age: 120 });
+    });
+
+    it('applies the same plan to a keyboard step', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      // The absorber (Age) renders 60px wide: 10px to give, then Role gives the rest.
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'Age' ? 60 : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      handleFor('Name').focus();
+      await user.keyboard('{Shift>}{ArrowRight}{/Shift}');
+      expect(onChange).toHaveBeenLastCalledWith({ name: 170, role: 80 });
+    });
+
+    it('lets the min win over an inverted maxWidth', () => {
+      const onChange = vi.fn();
+      const { container } = render(
+        <Table
+          data={users}
+          columns={[
+            { id: 'name', header: 'Name', accessor: 'name', width: 90, minWidth: 80, maxWidth: 60 },
+            { id: 'role', header: 'Role', accessor: 'role' },
+          ]}
+          getRowId={getRowId}
+          columnResizing={{ onChange }}
+        />,
+      );
+
+      expect(handleFor('Name')).toHaveAttribute('aria-valuemax', '80');
+      // It renders at the min too, so the width on screen and the handle agree
+      // and a drag that cannot move it commits nothing.
+      expect(headerFor(container, 'Name').style.width).toBe('80px');
+      drag(handleFor('Name'), 0, 100);
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('keeps stored widths it is not using when another column is resized', () => {
+      const onChange = vi.fn();
+      const ref: { current: TanStackTable<User> | null } = { current: null };
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} tableRef={ref} columnResizing={{ defaultValue: { name: 200, role: 140, age: 300 }, onChange }} />);
+
+      act(() => ref.current?.getColumn('role')?.toggleVisibility(false));
+      drag(handleFor('Name'), 0, 20);
+      // The absorber's (age) and the hidden column's (role) widths survive.
+      expect(onChange).toHaveBeenCalledWith({ name: 220, role: 140, age: 300 });
+    });
+
+    it('stays in the natural layout when only the absorber has a stored width', () => {
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { age: 300 } }} />);
+
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      expect(headerFor(container, 'Name').style.width).toBe('');
+      expect(headerFor(container, 'Age').style.width).toBe('');
+    });
+
+    it('treats a press without movement as a click and leaves the layout alone', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 100, pointerId: 1, button: 0 });
+      fireEvent.pointerUp(handle, { clientX: 100, pointerId: 1 });
+
+      expect(onChange).not.toHaveBeenCalled();
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+    });
+
+    it('ignores secondary buttons, foreign pointers and moves without a press', () => {
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerMove(handle, { clientX: 50, pointerId: 1 });
+      fireEvent.pointerUp(handle, { clientX: 50, pointerId: 1 });
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 2 });
+      expect(handle).not.toHaveAttribute('data-resizing');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 2 });
+      fireEvent.pointerUp(handle, { clientX: 40, pointerId: 2 });
+      expect(handle).toHaveAttribute('data-resizing', '');
+      fireEvent.pointerUp(handle, { clientX: 0, pointerId: 1 });
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('discards the draft on pointercancel', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 1 });
+      expect(headerFor(container, 'Name').style.width).toBe('190px');
+      fireEvent.pointerCancel(handle, { clientX: 40, pointerId: 1 });
+
+      expect(onChange).not.toHaveBeenCalled();
+      expect(handle).not.toHaveAttribute('data-resizing');
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+    });
+
+    it('drops the draft when the pointer capture is lost mid-drag', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 1 });
+      // Another pointer's capture loss is not ours.
+      fireEvent.lostPointerCapture(handle, { pointerId: 2 });
+      expect(headerFor(container, 'Name').style.width).toBe('190px');
+      fireEvent.lostPointerCapture(handle, { pointerId: 1 });
+
+      expect(handle).not.toHaveAttribute('data-resizing');
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      // The late pointerup of the abandoned drag commits nothing.
+      fireEvent.pointerUp(handle, { clientX: 40, pointerId: 1 });
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('moves an unpinned column without re-rendering the body, and drops the live draft on cancel', () => {
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200, role: 140 } }} />);
+      const handle = handleFor('Name');
+      const bodyCell = within(container.querySelector('tbody') as HTMLElement)
+        .getByText('Ada')
+        .closest('td') as HTMLElement;
+      const tableElement = container.querySelector('table') as HTMLElement;
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      // The first move renders the draft…
+      fireEvent.pointerMove(handle, { clientX: 10, pointerId: 1 });
+      expect(bodyCell.style.width).toBe('210px');
+      expect(tableElement.style.minWidth).toBe('400px');
+      // …later moves only touch the header cell and the min-width floor.
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 1 });
+      expect(headerFor(container, 'Name').style.width).toBe('240px');
+      expect(tableElement.style.minWidth).toBe('430px');
+      expect(bodyCell.style.width).toBe('210px');
+
+      fireEvent.pointerCancel(handle, { clientX: 40, pointerId: 1 });
+      expect(headerFor(container, 'Name').style.width).toBe('200px');
+      expect(tableElement.style.minWidth).toBe('390px');
+    });
+
+    it('re-renders every move of a pinned column so later sticky offsets follow it', () => {
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', sticky: 'left', width: 120 },
+        { id: 'role', header: 'Role', accessor: 'role', sticky: 'left', width: 100 },
+        { id: 'city', header: 'City', accessor: 'profile.city' },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 10, pointerId: 1 });
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 1 });
+      expect(headerFor(container, 'Role').style.left).toBe('160px');
+      fireEvent.pointerUp(handle, { clientX: 40, pointerId: 1 });
+    });
+
+    it('drops the draft when the window loses focus mid-drag', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 40, pointerId: 1 });
+      fireEvent.blur(window);
+
+      expect(handle).not.toHaveAttribute('data-resizing');
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('drops the draft when the dragged handle unmounts mid-drag', () => {
+      const onChange = vi.fn();
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      fireEvent.pointerDown(handleFor('Name'), { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handleFor('Name'), { clientX: 40, pointerId: 1 });
+      expect(container.querySelector('[data-slot="root"]')).toHaveAttribute('data-fixed-layout', '');
+
+      rerender(
+        <Table
+          data={users}
+          columns={resizeColumns.map(column => (column.id === 'name' ? { ...column, resizable: false } : column))}
+          getRowId={getRowId}
+          columnResizing={{ onChange }}
+        />,
+      );
+
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+      expect(headerFor(container, 'Name').style.width).toBe('');
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('lets the last unpinned column absorb the slack so right pins stay flush right', () => {
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'role', header: 'Role', accessor: 'role' },
+        { id: 'age', header: 'Age', accessor: 'age', sticky: 'right', width: 80 },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 120, role: 300 } }} />);
+
+      expect(Array.from((container.querySelector('thead tr') as Element).children).map(cell => cell.textContent)).toEqual(['Name', 'Role', 'Age']);
+      // The absorber ignores a stored width and renders no handle; the pinned
+      // last column keeps its width and gets its handle on the edge facing it.
+      expect(headerFor(container, 'Role').style.width).toBe('');
+      expect(headerFor(container, 'Age').style.width).toBe('80px');
+      expect(screen.getAllByRole('separator')).toEqual([handleFor('Name'), handleFor('Age')]);
+      expect(handleFor('Name')).toHaveAttribute('data-edge', 'end');
+      expect(handleFor('Age')).toHaveAttribute('data-edge', 'start');
+      expect(container.querySelector('table')).toHaveStyle({ minWidth: '250px' });
+    });
+
+    it('captures and releases the pointer when the platform supports it', () => {
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      const handle = handleFor('Name');
+      const captured = new Set<number>();
+      handle.setPointerCapture = vi.fn((id: number) => void captured.add(id));
+      handle.hasPointerCapture = vi.fn((id: number) => captured.has(id));
+      handle.releasePointerCapture = vi.fn((id: number) => void captured.delete(id));
+
+      drag(handle, 0, 20, 7);
+
+      expect(handle.setPointerCapture).toHaveBeenCalledWith(7);
+      expect(handle.releasePointerCapture).toHaveBeenCalledWith(7);
+    });
+
+    it('resizes from the keyboard with Left/Right arrows and Shift for a larger step', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 }, onChange }} />);
+
+      await user.click(document.body);
+      handleFor('Name').focus();
+      await user.keyboard('{ArrowRight}');
+      expect(onChange).toHaveBeenLastCalledWith({ name: 210, role: 140 });
+      await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
+      expect(onChange).toHaveBeenLastCalledWith({ name: 160, role: 140 });
+      await user.keyboard('{ArrowUp}');
+      expect(onChange).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not commit a keyboard step that the bounds swallow', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(
+        <Table
+          data={users}
+          columns={[
+            { id: 'name', header: 'Name', accessor: 'name' },
+            { id: 'role', header: 'Role', accessor: 'role' },
+          ]}
+          getRowId={getRowId}
+          columnResizing={{ defaultValue: { name: 50 }, onChange }}
+        />,
+      );
+
+      handleFor('Name').focus();
+      await user.keyboard('{ArrowLeft}');
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('flips the drag and arrow direction in RTL', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const realGetComputedStyle = window.getComputedStyle;
+      vi.spyOn(window, 'getComputedStyle').mockImplementation((element, pseudo) => {
+        const style = realGetComputedStyle(element, pseudo);
+        if ((element as HTMLElement).classList.contains('tk-table-resize-handle')) style.direction = 'rtl';
+        return style;
+      });
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 }, onChange }} />);
+
+      drag(handleFor('Name'), 100, 70);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 230, role: 140 });
+      handleFor('Name').focus();
+      // ArrowLeft points at the inline end in RTL, so it widens.
+      await user.keyboard('{ArrowLeft}');
+      expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 140 });
+    });
+
+    it('double-click returns a column to its declared width', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200, role: 300 }, onChange }} />);
+
+      await user.dblClick(handleFor('Role'));
+      expect(onChange).toHaveBeenLastCalledWith({ name: 200 });
+      expect(headerFor(container, 'Role').style.width).toBe('140px');
+
+      await user.dblClick(handleFor('Name'));
+      expect(onChange).toHaveBeenLastCalledWith({});
+      // Nothing user-sized anymore → back to the natural auto layout.
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+    });
+
+    it('fits an undeclared column to its content on double-click while others stay sized', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      // Measuring clones: a header and a body cell, the body one wider.
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.hasAttribute('data-measure') ? (this.tagName === 'TH' ? 90 : 233.4) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const { container } = render(
+        <Table
+          data={users}
+          columns={resizeColumns}
+          getRowId={getRowId}
+          columnResizing={{ defaultValue: { name: 400, role: 300 }, onChange }}
+          expansion={{ render: row => <span>Detail {row.name}</span> }}
+        />,
+      );
+      // An expanded detail row does not line up with the header and is skipped.
+      await user.click(within(container.querySelector('tbody') as HTMLElement).getAllByRole('button', { name: 'Expand row' })[0] as HTMLElement);
+
+      await user.dblClick(handleFor('Name'));
+      expect(onChange).toHaveBeenLastCalledWith({ role: 300, name: 234 });
+      // The probe is gone again.
+      expect(container.querySelector('[aria-hidden="true"][style*="visibility"]')).toBeNull();
+    });
+
+    it('fits an unsized column too, and leaves the live content of the cells alone', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.hasAttribute('data-measure') ? 180 : this.tagName === 'IFRAME' ? 64 : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        {
+          id: 'pick',
+          header: 'Pick',
+          cell: ({ row }) => (
+            <span>
+              <input type="radio" name="pick" aria-label={`Pick ${row.original.name}`} defaultChecked={row.index === 0} />
+              <iframe title="preview" />
+            </span>
+          ),
+        },
+        { id: 'age', header: 'Age', accessor: 'age' },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 }, onChange }} />);
+
+      // `pick` has no stored width (it renders at the 150px default) yet still fits.
+      await user.dblClick(screen.getByRole('separator', { name: 'Resize Pick column' }));
+      expect(onChange).toHaveBeenLastCalledWith({ name: 200, pick: 180 });
+      expect(screen.getByRole('radio', { name: 'Pick Ada' })).toBeChecked();
+      expect(container.querySelectorAll('iframe')).toHaveLength(users.length);
+
+      // Fitting again to the same width commits nothing.
+      onChange.mockClear();
+      await user.dblClick(screen.getByRole('separator', { name: 'Resize Pick column' }));
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('drops the width instead when the content cannot be measured', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 400, role: 300 }, onChange }} />);
+
+      await user.dblClick(handleFor('Name'));
+      expect(onChange).toHaveBeenLastCalledWith({ role: 300 });
+      expect(headerFor(container, 'Name').style.width).toBe('150px');
+    });
+
+    it('gives the slack to the last column without a declared width, so a fixed trailing column keeps it', () => {
+      mockHeaderWidth(120);
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'city', header: 'City', accessor: 'profile.city' },
+        { id: 'actions', header: 'Actions', cell: () => null, width: 80, resizable: false },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+
+      // City takes the slack: no handle, no width. Actions stays at 80px.
+      expect(screen.queryByRole('separator', { name: 'Resize City column' })).not.toBeInTheDocument();
+      expect(headerFor(container, 'City').style.width).toBe('');
+      expect(headerFor(container, 'Actions').style.width).toBe('80px');
+    });
+
+    it('treats pointer jitter below the drag threshold as a click', () => {
+      mockHeaderWidth(120);
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 0, 2);
+      expect(onChange).not.toHaveBeenCalled();
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+    });
+
+    it('lets nothing grow past the start width once the absorber is at its floor, even after a shrink', () => {
+      // An overflowing table: the absorber (Age) already sits at its 50px min.
+      mockHeaderWidth(120, { Age: 50 });
+      const onChange = vi.fn();
+      render(<Table data={users} columns={[resizeColumns[0], resizeColumns[2]] as TableColumnDef<User>[]} getRowId={getRowId} columnResizing={{ onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: -30, pointerId: 1 });
+      fireEvent.pointerMove(handle, { clientX: 100, pointerId: 1 });
+      fireEvent.pointerUp(handle, { clientX: 100, pointerId: 1 });
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('fits to content within the same room a drag may take', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      // Content wants 300px; the absorber (Age) is 100px wide, so 50px to spare.
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const probedColumn = this.closest('table')?.querySelector('thead')?.textContent;
+        const width = this.hasAttribute('data-measure') ? (probedColumn === 'Name' ? 300 : 0) : this.tagName === 'TH' && this.textContent === 'Age' ? 100 : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 100, role: 140 }, onChange }} />);
+
+      await user.dblClick(handleFor('Name'));
+      // 50 from the absorber, then Role down to its 50px min.
+      expect(onChange).toHaveBeenLastCalledWith({ name: 240, role: 50 });
+    });
+
+    it('holds a column that stops being the absorber, handing the new one its size out of its slack', () => {
+      mockHeaderWidth(120, { Age: 333 });
+      mockViewportWidth(673);
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      expect(headerFor(container, 'Age').style.width).toBe('');
+
+      const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
+      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      expect(headerFor(container, 'Age').style.width).toBe('183px');
+      expect(headerFor(container, 'City').style.width).toBe('');
+    });
+
+    it('hands every column added at once its size out of the old absorber', () => {
+      mockHeaderWidth(120, { Age: 500 });
+      mockViewportWidth(840);
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+
+      const withTwo = [
+        ...resizeColumns,
+        { id: 'city', header: 'City', accessor: 'profile.city' },
+        { id: 'country', header: 'Country', accessor: 'profile.city' },
+      ] as TableColumnDef<User>[];
+      rerender(<Table data={users} columns={withTwo} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      expect(headerFor(container, 'Age').style.width).toBe('200px');
+      expect(headerFor(container, 'City').style.width).toBe('150px');
+      expect(headerFor(container, 'Country').style.width).toBe('');
+    });
+
+    it("counts the utility columns when working out the old absorber's width", () => {
+      mockHeaderWidth(120);
+      // 673px of columns plus the 48px selection and expand columns.
+      mockViewportWidth(769);
+      const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
+      const props = { data: users, getRowId, selection: { mode: 'multiple' as const }, expansion: { render: () => null }, columnResizing: { defaultValue: { name: 200 } } };
+      const { container, rerender } = render(<Table {...props} columns={resizeColumns} />);
+
+      rerender(<Table {...props} columns={withCity} />);
+      expect(headerFor(container, 'Age').style.width).toBe('183px');
+    });
+
+    it('holds nothing when the old absorber has a stored width or is gone', () => {
+      mockHeaderWidth(120);
+      mockViewportWidth(673);
+      const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
+      const stored = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200, age: 300 } }} />);
+      stored.rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200, age: 300 } }} />);
+      expect(headerFor(stored.container, 'Age').style.width).toBe('300px');
+      stored.unmount();
+
+      const replaced = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      replaced.rerender(<Table data={users} columns={[resizeColumns[0], resizeColumns[1], withCity[3]]} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      expect(headerFor(replaced.container, 'City').style.width).toBe('');
+    });
+
+    it('puts each handle on the edge that faces the absorber', () => {
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'notes', header: 'Notes', accessor: 'role' },
+        { id: 'status', header: 'Status', accessor: 'age', width: 100 },
+        { id: 'actions', header: 'Actions', cell: () => null, width: 80 },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing />);
+
+      expect(screen.getAllByRole('separator').map(handle => `${handle.getAttribute('aria-label')} ${handle.getAttribute('data-edge')}`)).toEqual([
+        'Resize Name column end',
+        'Resize Status column start',
+        'Resize Actions column start',
+      ]);
+    });
+
+    it('grows a column after the absorber toward the inline start, from the absorber then the columns between', () => {
+      mockHeaderWidth(120, { Notes: 100 });
+      const onChange = vi.fn();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'notes', header: 'Notes', accessor: 'role' },
+        { id: 'status', header: 'Status', accessor: 'age', width: 100 },
+        { id: 'actions', header: 'Actions', cell: () => null, width: 80 },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // Moving left widens Actions: 50 from Notes, then Status down to its 50px min.
+      drag(handleFor('Actions'), 0, -500);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 120, status: 50, actions: 240 });
+      // The arrows move the edge too: Right narrows it.
+      fireEvent.keyDown(handleFor('Actions'), { key: 'ArrowRight' });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 120, status: 50, actions: 230 });
+    });
+
+    it('leaves Alt, Ctrl and Meta arrows to the browser', () => {
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      for (const modifier of ['altKey', 'ctrlKey', 'metaKey']) {
+        expect(fireEvent.keyDown(handleFor('Name'), { key: 'ArrowLeft', [modifier]: true })).toBe(true);
+      }
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('freezes measured widths inside the bounds the column renders with, and drops widths of removed columns', () => {
+      mockHeaderWidth(120, { Role: 260 });
+      const onChange = vi.fn();
+      const columns = resizeColumns.map(column => (column.id === 'role' ? { ...column, maxWidth: 200 } : column));
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ defaultValue: { gone: 99 }, onChange }} />);
+
+      drag(handleFor('Name'), 0, -20);
+      expect(onChange).toHaveBeenCalledWith({ name: 100, role: 200 });
+    });
+
+    it('rounds frozen widths down when rounding up would take more than the absorber can give', () => {
+      const widths: Record<string, number> = { Name: 120.6, Role: 140.6, Age: 50.5 };
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.tagName === 'TH' ? (widths[this.textContent ?? ''] ?? 0) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const onChange = vi.fn();
+      const { unmount } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      drag(handleFor('Role'), 0, -10);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 120, role: 130 });
+      unmount();
+
+      // With room to spare it rounds up, so no text gets an ellipsis on the first touch.
+      widths.Age = 300;
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+      drag(handleFor('Role'), 0, -10);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 121, role: 131 });
+    });
+
+    it('lets a column grow the table when every column is pinned (no absorber)', () => {
+      mockHeaderWidth(120);
+      const onChange = vi.fn();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', sticky: 'left', width: 120 },
+        { id: 'role', header: 'Role', accessor: 'role', sticky: 'left', width: 120 },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 0, 400);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 520, role: 120 });
+    });
+
+    it('expand mode: every column keeps its width and a growing one widens the table', () => {
+      mockHeaderWidth(120, { City: 100 });
+      const onChange = vi.fn();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'role', header: 'Role', accessor: 'role' },
+        { id: 'city', header: 'City', accessor: 'profile.city' },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ mode: 'expand', onChange }} />);
+      const tableElement = container.querySelector('table') as HTMLElement;
+      // The recipe hugs the bordered viewport to the table in this mode.
+      expect(container.querySelector('[data-slot="root"]')).toHaveAttribute('data-resize-mode', 'expand');
+
+      // The last column gets a handle too: its edge moves the table's.
+      expect(screen.getAllByRole('separator').map(handle => handle.getAttribute('aria-label'))).toEqual(['Resize Name column', 'Resize Role column', 'Resize City column']);
+
+      const handle = handleFor('Name');
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 100, pointerId: 1 });
+      expect(tableElement.style.width).toBe('440px');
+      // Later moves go straight to the DOM, the table's width with them.
+      fireEvent.pointerMove(handle, { clientX: 300, pointerId: 1 });
+      expect(tableElement.style.width).toBe('640px');
+      expect(tableElement.style.minWidth).toBe('640px');
+      fireEvent.pointerUp(handle, { clientX: 300, pointerId: 1 });
+      // Nothing gave way: every column is stored, the absorber included.
+      expect(onChange).toHaveBeenLastCalledWith({ name: 420, role: 120, city: 100 });
+      expect(headerFor(container, 'City').style.width).toBe('100px');
+
+      // Shrinking narrows the table and leaves room at the inline end.
+      fireEvent.pointerDown(handleFor('City'), { clientX: 0, pointerId: 2, button: 0 });
+      fireEvent.pointerMove(handleFor('City'), { clientX: -40, pointerId: 2 });
+      expect(tableElement.style.width).toBe('600px');
+      fireEvent.pointerCancel(handleFor('City'), { clientX: -40, pointerId: 2 });
+      expect(tableElement.style.width).toBe('640px');
+    });
+
+    it('never widens a column the auto layout drew below its min when it is shrunk', () => {
+      mockHeaderWidth(120, { Role: 34 });
+      const onChange = vi.fn();
+      const columns = resizeColumns.map(column => (column.id === 'role' ? { ...column, width: undefined } : column));
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // Already at or below its min: shrinking leaves it where it is.
+      fireEvent.keyDown(handleFor('Role'), { key: 'ArrowLeft' });
+      drag(handleFor('Role'), 0, -20);
+      expect(onChange).not.toHaveBeenCalled();
+      // Growing goes up by the step, not straight to the 50px min.
+      fireEvent.keyDown(handleFor('Role'), { key: 'ArrowRight' });
+      expect(onChange).toHaveBeenLastCalledWith({ name: 120, role: 44 });
+    });
+
+    it("sizes the first resize of an auto table against its container, not the absorber's auto width", () => {
+      // The auto layout overflows: Age is drawn 600px wide, but once frozen it
+      // only gets what Name and Role leave of the 400px container.
+      mockHeaderWidth(120, { Age: 600 });
+      vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+        return this.getAttribute('data-slot') === 'table-viewport' ? 400 : 0;
+      });
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // 400 - 120 - 120 = 160 for Age, 110 above its floor; then Role down to 50.
+      drag(handleFor('Name'), 0, 500);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 300, role: 50 });
+    });
+
+    it('takes the room from the columns between when the auto layout already overflows its container', () => {
+      // Name and Role alone take more than the 200px container: Age has nothing to give.
+      mockHeaderWidth(120, { Age: 600 });
+      vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+        return this.getAttribute('data-slot') === 'table-viewport' ? 200 : 0;
+      });
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 0, 500);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 190, role: 50 });
+    });
+
+    it('rounds the first frozen widths against the container budget', () => {
+      // The 270px container cannot fit Age's 50px min either way (28px rounded
+      // up, 30px down), so round down to overflow as little as possible, even
+      // though Age's auto width (100px) alone would allow rounding up.
+      mockHeaderWidth(120.5, { Age: 100 });
+      vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+        return this.getAttribute('data-slot') === 'table-viewport' ? 270 : 0;
+      });
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 0, 10);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 130, role: 110 });
+    });
+
+    it('does not let rounding up overflow the container in expand mode', () => {
+      // Three columns drawn 120.5px wide fill a 362px viewport; rounded up they
+      // would need 363px and show a scrollbar.
+      mockHeaderWidth(120.5);
+      mockViewportWidth(362);
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ mode: 'expand', onChange }} />);
+
+      drag(handleFor('Role'), 0, 10);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 120, role: 131, age: 121 });
+    });
+
+    it('takes the rounding back from the columns rounded up the most, not the widest', () => {
+      // 200 + 100.5 + 100.5 fill 401px; rounded up 402. Name was drawn whole,
+      // so a rounded-up column gives the pixel back instead.
+      mockHeaderWidth(100.5, { Name: 200 });
+      mockViewportWidth(401);
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ mode: 'expand', onChange }} />);
+
+      drag(handleFor('Name'), 0, 10);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 210, role: 100, age: 101 });
+    });
+
+    it('reads the grow plan again on each new drag', () => {
+      let absorberWidth = 100;
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.tagName === 'TH' && !this.hasAttribute('data-measure') ? (this.textContent === 'Age' ? absorberWidth : 120) : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const onChange = vi.fn();
+      render(<Table data={users} columns={[resizeColumns[0], resizeColumns[2]] as TableColumnDef<User>[]} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      drag(handleFor('Name'), 0, 300);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 170 });
+      absorberWidth = 250;
+      drag(handleFor('Name'), 0, 300);
+      expect(onChange).toHaveBeenLastCalledWith({ name: 370 });
+    });
+
+    it('keeps held widths through a double-click reset and a controlled value passed as a new object', async () => {
+      const user = userEvent.setup();
+      mockHeaderWidth(120, { Age: 333 });
+      mockViewportWidth(673);
+      const onChange = vi.fn();
+      const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ value: { name: 200 }, onChange }} />);
+      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200 }, onChange }} />);
+      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200 }, onChange }} />);
+      expect(headerFor(container, 'Age').style.width).toBe('183px');
+
+      // Name's width is dropped (nothing to fit in jsdom); Age's held width goes along.
+      await user.dblClick(handleFor('Name'));
+      expect(onChange).toHaveBeenLastCalledWith({ age: 183 });
+    });
+
+    it('never takes room from columns after the absorber', () => {
+      mockHeaderWidth(120, { Notes: 100 });
+      const onChange = vi.fn();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'notes', header: 'Notes', accessor: 'role' },
+        { id: 'status', header: 'Status', accessor: 'age', width: 100 },
+        { id: 'actions', header: 'Actions', cell: () => null, width: 80 },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      // Notes has 50px to spare; Status and Actions give nothing.
+      drag(handleFor('Name'), 0, 200);
+      expect(onChange).toHaveBeenCalledWith({ name: 170, status: 120, actions: 120 });
+    });
+
+    it('lets a held width go once it is stored, so a later preset cannot bring it back', () => {
+      mockHeaderWidth(120, { Age: 333 });
+      mockViewportWidth(673);
+      const withCity = [...resizeColumns, { id: 'city', header: 'City', accessor: 'profile.city' }] as TableColumnDef<User>[];
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ value: { name: 200 } }} />);
+      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200 } }} />);
+      expect(headerFor(container, 'Age').style.width).toBe('183px');
+
+      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 200, age: 183 } }} />);
+      rerender(<Table data={users} columns={withCity} getRowId={getRowId} columnResizing={{ value: { name: 180 } }} />);
+      expect(headerFor(container, 'Age').style.width).toBe('150px');
+    });
+
+    it('announces the table width as the upper bound of a column without maxWidth', () => {
+      vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+        const width = this.tagName === 'TABLE' ? 640.6 : this.tagName === 'TH' ? 120 : 0;
+        return { width, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+      });
+      const observers: Array<() => void> = [];
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(private readonly callback: () => void) {}
+          observe() {
+            observers.push(this.callback);
+          }
+          disconnect() {}
+        },
+      );
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name' },
+        { id: 'role', header: 'Role', accessor: 'role', maxWidth: 300 },
+        { id: 'age', header: 'Age', accessor: 'age' },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing />);
+      expect(handleFor('Name')).not.toHaveAttribute('aria-valuemax');
+      act(() => observers.forEach(callback => callback()));
+
+      expect(handleFor('Name')).toHaveAttribute('aria-valuemax', '640');
+      expect(handleFor('Role')).toHaveAttribute('aria-valuemax', '300');
+    });
+
+    it('shares one ResizeObserver between the handles and keeps it through an inline onChange', () => {
+      const observers: Array<{ observed: Element[] }> = [];
+      let unobserved = 0;
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          observed: Element[] = [];
+          constructor() {
+            observers.push(this);
+          }
+          observe(element: Element) {
+            this.observed.push(element);
+          }
+          unobserve() {
+            unobserved += 1;
+          }
+          disconnect() {}
+        },
+      );
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange: () => {} }} />);
+
+      // Name's and Role's header cells, and the table once.
+      expect(observers).toHaveLength(1);
+      expect(observers[0].observed).toEqual([headerFor(container, 'Name'), container.querySelector('table'), headerFor(container, 'Role')]);
+      rerender(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange: () => {} }} />);
+      expect(observers[0].observed).toHaveLength(3);
+
+      rerender(<Table data={users} columns={resizeColumns} getRowId={getRowId} />);
+      expect(unobserved).toBe(3);
+    });
+
+    it('does not measure the layout on a plain re-render', () => {
+      const measure = mockHeaderWidth(120);
+      const { rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      measure.mockClear();
+
+      rerender(<Table data={[...users]} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 200 } }} />);
+      expect(measure).not.toHaveBeenCalled();
+    });
+
+    it('re-reads only the handles whose cell changed size, and does without a ResizeObserver', () => {
+      mockHeaderWidth(120, { Role: 140 });
+      let notify: (entries: Array<{ target: Element }>) => void = () => {};
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(callback: typeof notify) {
+            notify = callback;
+          }
+          observe() {}
+          unobserve() {}
+          disconnect() {}
+        },
+      );
+      const { container, unmount } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      act(() => notify([{ target: headerFor(container, 'Role') }]));
+      expect(handleFor('Role')).toHaveAttribute('aria-valuenow', '140');
+      expect(handleFor('Name')).toHaveAttribute('aria-valuenow', '150');
+      unmount();
+
+      vi.stubGlobal('ResizeObserver', undefined);
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      expect(handleFor('Name')).toHaveAttribute('aria-valuenow', '150');
+    });
+
+    it('reports the rendered header width to assistive tech', () => {
+      mockHeaderWidth(120);
+      const observers: Array<() => void> = [];
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(private readonly callback: () => void) {}
+          observe() {
+            observers.push(this.callback);
+          }
+          disconnect() {}
+        },
+      );
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      act(() => observers.forEach(callback => callback()));
+
+      expect(handleFor('Name')).toHaveAttribute('aria-valuenow', '120');
+      expect(handleFor('Name')).toHaveAttribute('aria-valuetext', '120 px');
+    });
+
+    it('keeps the reported width inside the announced range, as the auto layout can undercut the min', () => {
+      mockHeaderWidth(30);
+      const observers: Array<() => void> = [];
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(private readonly callback: () => void) {}
+          observe() {
+            observers.push(this.callback);
+          }
+          disconnect() {}
+        },
+      );
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      act(() => observers.forEach(callback => callback()));
+
+      expect(handleFor('Name')).toHaveAttribute('aria-valuenow', '50');
+    });
+
+    it('wraps the header text so a narrow column can end it in an ellipsis', () => {
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing />);
+      const label = headerFor(container, 'Name').querySelector('.tk-table-header-label');
+      expect(label).toHaveTextContent('Name');
+      expect(label).toHaveAttribute('data-slot', 'header-label');
+    });
+
+    it('does not fire onChange when a double-click has nothing to reset', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ onChange }} />);
+
+      await user.dblClick(handleFor('Name'));
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('never widens a column declared narrower than the default min when it is shrunk', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(
+        <Table data={users} columns={[{ id: 'name', header: 'Name', accessor: 'name', width: 40 }, ...resizeColumns.slice(1)]} getRowId={getRowId} columnResizing={{ onChange }} />,
+      );
+
+      expect(handleFor('Name')).toHaveAttribute('aria-valuemin', '40');
+      handleFor('Name').focus();
+      await user.keyboard('{ArrowLeft}');
+      expect(onChange).not.toHaveBeenCalled();
+      drag(handleFor('Name'), 0, -30);
+      expect(onChange).not.toHaveBeenCalled();
+      await user.keyboard('{ArrowRight}');
+      expect(onChange).toHaveBeenLastCalledWith({ name: 50, role: 140 });
+    });
+
+    it('starts in the fixed layout from defaultValue with the utility columns in the min width', () => {
+      const { container } = render(
+        <Table data={[]} columns={resizeColumns} getRowId={getRowId} columnResizing={{ defaultValue: { name: 220 } }} selection={{ mode: 'multiple' }} />,
+      );
+
+      expect(container.querySelector('[data-slot="root"]')).toHaveAttribute('data-fixed-layout', '');
+      expect(headerFor(container, 'Name').style.width).toBe('220px');
+      // Unsized columns render at their declared / default size.
+      expect(headerFor(container, 'Role').style.width).toBe('140px');
+      expect(headerFor(container, 'Age').style.width).toBe('');
+      expect(container.querySelector('table')).toHaveStyle({ minWidth: '458px' });
+      expect(container.querySelector('[data-slot="empty"]')).toHaveAttribute('colspan', '4');
+    });
+
+    it('keeps the detail-panel colSpan in the fixed layout', async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <Table
+          data={users}
+          columns={resizeColumns}
+          getRowId={getRowId}
+          columnResizing={{ defaultValue: { name: 220 } }}
+          expansion={{ render: row => <span>Detail {row.name}</span> }}
+        />,
+      );
+
+      await user.click(within(container.querySelector('tbody') as HTMLElement).getAllByRole('button', { name: 'Expand row' })[0] as HTMLElement);
+      expect(screen.getByText('Detail Ada').closest('td')).toHaveAttribute('colspan', '4');
+    });
+
+    it('follows the pointer while controlled and keeps the parent value when it declines the change', () => {
+      const onChange = vi.fn();
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ value: { name: 200 }, onChange }} />);
+      const handle = handleFor('Name');
+
+      fireEvent.pointerDown(handle, { clientX: 0, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(handle, { clientX: 50, pointerId: 1 });
+      expect(headerFor(container, 'Name').style.width).toBe('250px');
+      fireEvent.pointerUp(handle, { clientX: 50, pointerId: 1 });
+
+      expect(onChange).toHaveBeenCalledWith({ name: 250, role: 140 });
+      expect(headerFor(container, 'Name').style.width).toBe('200px');
+    });
+
+    it('applies a controlled value the parent commits', () => {
+      const Controlled = () => {
+        const [sizing, setSizing] = useState<Record<string, number>>({ name: 200 });
+        return <Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing={{ value: sizing, onChange: setSizing }} />;
+      };
+      const { container } = render(<Controlled />);
+
+      drag(handleFor('Name'), 0, -40);
+      expect(headerFor(container, 'Name').style.width).toBe('160px');
+    });
+
+    it('moves later sticky offsets when a pinned column is resized', () => {
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', sticky: 'left', width: 120 },
+        { id: 'role', header: 'Role', accessor: 'role', sticky: 'left', width: 100 },
+        { id: 'city', header: 'City', accessor: 'profile.city' },
+      ];
+      const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing />);
+
+      expect(headerFor(container, 'Role').style.left).toBe('120px');
+      drag(handleFor('Name'), 0, 60);
+      expect(headerFor(container, 'Role').style.left).toBe('180px');
+    });
+
+    it('routes tableRef sizing calls through onChange, and ignores them when resizing is off', () => {
+      const ref: { current: TanStackTable<User> | null } = { current: null };
+      const onChange = vi.fn();
+      const { container, rerender } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} tableRef={ref} columnResizing={{ onChange }} />);
+
+      act(() => ref.current?.setColumnSizing({ name: 99 }));
+      expect(onChange).toHaveBeenCalledWith({ name: 99 });
+
+      const offRef: { current: TanStackTable<User> | null } = { current: null };
+      onChange.mockClear();
+      rerender(<Table data={users} columns={resizeColumns} getRowId={getRowId} tableRef={offRef} />);
+      act(() => offRef.current?.setColumnSizing({ name: 99 }));
+      expect(onChange).not.toHaveBeenCalled();
+      expect(container.querySelector('[data-slot="root"]')).not.toHaveAttribute('data-fixed-layout');
+    });
+
+    it('composes slotProps.resizeHandle handlers and honours preventDefault and aria-label', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const onKeyDown = vi.fn((event: React.KeyboardEvent) => event.preventDefault());
+      const onDoubleClick = vi.fn((event: React.MouseEvent) => event.preventDefault());
+      const onPointerDown = vi.fn((event: React.PointerEvent) => event.preventDefault());
+      const onPointerMove = vi.fn();
+      const onPointerUp = vi.fn();
+      const onPointerCancel = vi.fn();
+      render(
+        <Table
+          data={users}
+          columns={[
+            { id: 'name', header: 'Name', accessor: 'name' },
+            { id: 'role', header: 'Role', accessor: 'role' },
+          ]}
+          getRowId={getRowId}
+          columnResizing={{ defaultValue: { name: 200 }, onChange }}
+          slotProps={{ resizeHandle: { 'aria-label': 'Drag to resize', onKeyDown, onDoubleClick, onPointerDown, onPointerMove, onPointerUp, onPointerCancel } }}
+        />,
+      );
+      const handle = screen.getByRole('separator', { name: 'Drag to resize' });
+
+      handle.focus();
+      await user.keyboard('{ArrowRight}');
+      await user.dblClick(handle);
+      drag(handle, 0, 40);
+      fireEvent.pointerCancel(handle, { pointerId: 1 });
+
+      expect(onKeyDown).toHaveBeenCalled();
+      expect(onDoubleClick).toHaveBeenCalled();
+      expect(onPointerDown).toHaveBeenCalled();
+      expect(onPointerMove).toHaveBeenCalled();
+      expect(onPointerUp).toHaveBeenCalled();
+      expect(onPointerCancel).toHaveBeenCalled();
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('has no axe violations with resize handles in the auto and fixed layouts', async () => {
+      const { container } = render(<Table data={users} columns={resizeColumns} getRowId={getRowId} columnResizing sorting={{}} />);
+      expect(await axe(container)).toHaveNoViolations();
+
+      drag(handleFor('Name'), 0, 30);
+      expect(container.querySelector('[data-slot="root"]')).toHaveAttribute('data-fixed-layout', '');
+      expect(await axe(container)).toHaveNoViolations();
     });
   });
 
@@ -1724,6 +3506,8 @@ describe('Table (props-first)', () => {
     });
 
     it('routes classNames.filterButton and slotProps.filterButton (theme + instance) onto the filter trigger', () => {
+      // The ignored aria-label triggers the once-only dev warning; keep it out of the output.
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       renderPlain(
         <TakeoffSparProvider
@@ -1744,8 +3528,8 @@ describe('Table (props-first)', () => {
         </TakeoffSparProvider>,
       );
 
-      // The instance `aria-label` replaces the built-in "Filter column" label.
-      const trigger = screen.getByRole('button', { name: 'Filter names' });
+      // The name comes only from `labels`: a slotProps `aria-label` is ignored.
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
       expect(trigger).toHaveClass('tk-table-filter-button', 'theme-filter-button', 'instance-filter-button');
       expect(trigger).toHaveAttribute('title', 'Instance title');
       expect(trigger).toHaveAttribute('lang', 'en');
@@ -1834,7 +3618,7 @@ describe('Table (props-first)', () => {
           loading
         />,
       );
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       expect(await screen.findByRole('searchbox')).toBeInTheDocument();
       for (const entry of slots.filter(([slot]) => slot !== 'empty')) expectSlotLayers(entry);
       await user.keyboard('{Escape}');
@@ -1868,8 +3652,24 @@ describe('Table (props-first)', () => {
       const { container } = render(<Table data={manyUsers} columns={columns} getRowId={getRowId} pagination={{ pageSize: 5 }} loading />);
 
       expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Filter Name' })).toBeInTheDocument();
       expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it.each([
+      ['text', { type: 'text' as const }],
+      ['select', { type: 'select' as const, options: [{ label: 'Admin', value: 'admin' }] }],
+      ['radio', { type: 'radio' as const, options: [{ label: 'Admin', value: 'admin' }] }],
+      ['checkbox', { type: 'checkbox' as const, options: [{ label: 'Admin', value: 'admin' }] }],
+    ])('has no axe violations in an open %s filter panel', async (_type, filter) => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
+      expect(panel).toBeInTheDocument();
+      expect(await axe(panel)).toHaveNoViolations();
     });
 
     it('names every single-selection radio and passes axe', async () => {
@@ -1888,7 +3688,7 @@ describe('Table (props-first)', () => {
     it('exposes the go-to-page submit button by name and passes axe on a paginated table', async () => {
       const { container } = render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination={{ pageSize: 5 }} />);
 
-      expect(screen.getByRole('button', { name: 'Go to page' })).not.toHaveAttribute('aria-hidden');
+      expect(screen.getByRole('button', { name: 'Go' })).not.toHaveAttribute('aria-hidden');
       expect(await axe(container)).toHaveNoViolations();
     });
   });

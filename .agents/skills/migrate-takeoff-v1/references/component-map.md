@@ -81,6 +81,7 @@ deciding whether the component is a migration target or a v2-only opportunity.
 
 | v2 component   | v1 mapping status                                    |
 | -------------- | ---------------------------------------------------- |
+| `Chat`         | No v1 mapping recorded; inspect the component skill. |
 | `FlightLoader` | No v1 mapping recorded; inspect the component skill. |
 | `GlobeSpinner` | No v1 mapping recorded; inspect the component skill. |
 

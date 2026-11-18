@@ -5,6 +5,20 @@ import { BreadcrumbBase, BreadcrumbItemBase, BreadcrumbLinkBase, BreadcrumbListB
 import { ButtonBase } from './components/button/base';
 import { CalendarBase } from './components/calendar/base';
 import { CardBase, CardBodyBase, CardDescriptionBase, CardFooterBase, CardHeaderBase, CardTitleBase } from './components/card/base';
+import {
+  ChatBase,
+  ChatComposerBase,
+  ChatConversationBase,
+  ChatConversationListBase,
+  ChatEmptyBase,
+  ChatPinnedBase,
+  ChatHeaderBase,
+  ChatMessageActionsBase,
+  ChatMessageBase,
+  ChatMessagesBase,
+  ChatThreadBase,
+  ChatTitleBase,
+} from './components/chat/base';
 import { CheckboxBase } from './components/checkbox/base';
 import { ChipBase } from './components/chip/base';
 import {
@@ -139,6 +153,18 @@ export const slotClassRegistry = {
   cardDescription: { slots: CardDescriptionBase.classes },
   cardBody: { slots: CardBodyBase.classes },
   cardFooter: { slots: CardFooterBase.classes },
+  chat: { slots: ChatBase.classes },
+  chatConversationList: { slots: ChatConversationListBase.classes },
+  chatConversation: { slots: ChatConversationBase.classes },
+  chatThread: { slots: ChatThreadBase.classes },
+  chatHeader: { slots: ChatHeaderBase.classes },
+  chatTitle: { slots: ChatTitleBase.classes },
+  chatMessages: { slots: ChatMessagesBase.classes },
+  chatMessage: { slots: ChatMessageBase.classes },
+  chatMessageActions: { slots: ChatMessageActionsBase.classes },
+  chatEmpty: { slots: ChatEmptyBase.classes },
+  chatPinned: { slots: ChatPinnedBase.classes },
+  chatComposer: { slots: ChatComposerBase.classes },
   checkbox: { slots: CheckboxBase.classes },
   chip: { slots: ChipBase.classes },
   dialogTrigger: { slots: DialogTriggerBase.classes },

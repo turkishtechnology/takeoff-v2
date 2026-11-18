@@ -419,11 +419,50 @@ follow the standard conventions (presence = `''`, finite = string).
 - **`data-selection-mode` (Variant) on the selection cell.** `single` |
   `multiple` — lets the recipe distinguish the radio vs. checkbox affordance
   column.
+- **`data-fixed-layout` (State, presence) on the root.** Emitted once
+  `columnResizing` is on and any column has a user width. The recipe switches
+  `.tk-table-table` to `table-layout: fixed` and clips the cells; it sits on the
+  root so the cell rules cascade like the other root variants.
+- **`data-resize-mode` (Variant) on the root.** `fit` | `expand`, emitted while
+  `columnResizing` is on. With `expand` and `data-fixed-layout`, the recipe
+  sizes the bordered viewport to the table (`width: fit-content`, capped at
+  `100%`), so a narrowed table's border narrows with it.
+- **`data-resizing` (State, presence) on the dragged resize handle.** Node-local
+  so the recipe can keep the active handle's line drawn while the pointer has
+  left it; the root reads it through `:has()` for the `col-resize` cursor rather
+  than duplicating it.
 - **`data-active` (State, presence) on the filter trigger.** Marks a column
   whose filter currently narrows the data. The trigger is the Spar
   `Popover.Trigger` owner node (which emits its own `data-slot="root"`), so the
   filter button/panel are styled by class (`.tk-table-filter-button` /
   `.tk-table-filter-panel`) rather than a Table `data-slot` anchor.
+
+### Chat
+
+Chat is **v2-owned** with no upstream Spar primitive, so its vocabulary is
+wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the layout:** `data-layout` (`single` | `split` — a
+  `Chat.ConversationList` is mounted) and `data-view` (`list` | `thread` — which
+  pane a narrow split chat shows; the recipe reads it only together with
+  `data-layout="split"` inside a container query), plus `data-disabled` /
+  `data-readonly`.
+- **State that belongs to one message lives on its row:** `data-own` (presence),
+  `data-status` (`sending` | `sent` | `delivered` | `read` | `failed` —
+  consumer-driven, like Upload's per-item `data-status`), `data-deleted`,
+  `data-deleting` (deleted, but still restorable during `undoWindow`; set
+  together with `data-deleted`), `data-grouped` (continues the previous
+  message's group), `data-editing` (the composer is editing or answering it),
+  `data-highlighted` (a quote or the pinned bar just jumped to it; cleared after
+  a moment) and `data-pinned` (its id is in `pinnedIds`). The status glyph
+  re-emits `data-status` so the recipe colours it without an ancestor lookup.
+- **`data-drag-state` (`accept` | `reject`) on `Chat.Composer` while files are
+  dragged over it (`allowAttachments`) — Upload dropzone's attribute and
+  resolver, plus `reject` while a message is being edited.
+- **`data-selected` / `data-unread` (State, presence) on `Chat.Conversation`.**
+  `aria-current="true"` carries the selection for assistive technology.
+- **`data-editing` (State, presence) on `Chat.Composer`** while it edits a
+  message.
 
 ### Upload
 

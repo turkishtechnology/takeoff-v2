@@ -172,13 +172,14 @@
   }
 
   // ---- Glyph scale ----
-  // The mark comes from the official Takeoff set, whose check and remove are
-  // drawn well inside the 24×24 grid (the check spans ~9.3 units, the remove
-  // ~13) — much smaller than the stroked placeholders they replaced (17 and 16
-  // units). Sizing the svg to the icon box would therefore shrink the visible
-  // mark, so the box is scaled per size and per state to keep the painted mark
-  // the same width it has always been. `flex: none` stops the icon box from
-  // squashing the (deliberately larger) svg back down.
+  // The mark comes from the official Takeoff set. Since @takeoff-icons 0.5.0
+  // the check spans 16 of the 24×24 grid units, so the svg is sized to the
+  // Figma icon box: 12px in base (the full icon box) and 8px in small (centred
+  // in the 10px icon box). That paints about the same mark (8px in base) as the
+  // old, smaller check did in its oversized box. The remove (indeterminate)
+  // glyph is still drawn at 12 units, so its svg stays larger than the icon box
+  // to keep the dash width it has always had. `flex: none` stops the icon box
+  // from squashing that svg.
   .tk-checkbox-icon svg {
     flex: none;
   }
@@ -198,8 +199,8 @@
       height: 12px;
 
       svg {
-        width: 22px;
-        height: 22px;
+        width: 12px;
+        height: 12px;
       }
     }
 
@@ -222,8 +223,8 @@
       height: 10px;
 
       svg {
-        width: 18px;
-        height: 18px;
+        width: 8px;
+        height: 8px;
       }
     }
 

@@ -1,0 +1,817 @@
+// ---------------------------------------------------------------------------
+// Chat recipe — messaging between people.
+//
+// Slots produced by the wrapper (every part renders inside the root, so the
+// whole recipe nests under `.tk-chat`):
+//
+//   .tk-chat                        — root; fills its container (Drawer body,
+//                                     Card, any sized region) and is the
+//                                     container-query context for the split
+//                                     layout
+//   .tk-chat-conversation-list      — conversation list (split layout)
+//   .tk-chat-conversation           — one conversation button
+//     -avatar / -body / -title / -preview / -time / -unread
+//   .tk-chat-thread                 — thread column next to the list
+//   .tk-chat-header                 — bar above the messages
+//     .tk-chat-back                 — back to the list (narrow split only)
+//   .tk-chat-title                  — conversation name
+//   .tk-chat-messages               — log wrapper (positions the jump button)
+//     .tk-chat-messages-viewport    — the scrolling `role="log"` element
+//     .tk-chat-messages-content     — stacks messages from the bottom
+//     .tk-chat-load-older           — Button
+//     .tk-chat-divider              — day divider
+//     .tk-chat-typing / -typing-dots
+//     .tk-chat-jump                 — Button
+//   .tk-chat-message                — one message row
+//     -avatar / -body / -author / -bubble / -text / -meta / -time /
+//     -edited / -status / -retry / -undo / -copied / -pinned
+//     -attachments                  — the message's files (Upload rows)
+//     -image                        — an image attachment's preview link
+//     -quote / -quote-author / -quote-text — the message it answers
+//   .tk-chat-message-actions        — the row's menu (Dropdown)
+//   .tk-chat-pinned                 — pinned-messages bar
+//     -jump / -label / -text / -unpin
+//   .tk-chat-empty                  — empty state
+//   .tk-chat-composer               — the composer form
+//     -editing / -cancel / -replying / -cancel-reply / -controls / -send
+//     -upload                       — the Upload root (layout-neutral)
+//     -attach / -attachments        — attach button / files waiting to send
+//
+// State attributes (each has a consumer below — rule 9):
+//   .tk-chat[data-layout='single' | 'split'][data-view='list' | 'thread']
+//   .tk-chat-message[data-own][data-grouped][data-deleted][data-deleting][data-editing][data-highlighted][data-pinned]
+//   .tk-chat-message[data-status] / .tk-chat-message-status[data-status]
+//   .tk-chat-conversation[data-selected][data-unread]
+//   .tk-chat-composer[data-editing][data-drag-state='accept' | 'reject']
+// ---------------------------------------------------------------------------
+
+@mixin chat-keyframes {
+  @keyframes tk-chat-highlight {
+    0%,
+    40% {
+      box-shadow: 0 0 0 4px var(--primary-light);
+    }
+
+    100% {
+      box-shadow: 0 0 0 4px transparent;
+    }
+  }
+
+  @keyframes tk-chat-typing {
+    0%,
+    60%,
+    100% {
+      opacity: 0.3;
+      transform: translateY(0);
+    }
+
+    30% {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+  }
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin avatar($size) {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: $size;
+  height: $size;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--primary-lightest);
+  color: var(--primary-base);
+  font-family: var(--desktop-label-s-font);
+  font-size: var(--desktop-label-s-size);
+  line-height: 1;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+@mixin chat {
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  container-type: inline-size;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--text-darkest);
+  background: var(--frames-lightest);
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  // Split layout: list beside thread. Below 640px of chat width only one
+  // pane shows — the list until a conversation is open, then the thread.
+  &[data-layout='split'] {
+    flex-direction: row;
+  }
+
+  @container (max-width: 639px) {
+    &[data-layout='split'] > .tk-chat-conversation-list {
+      flex: 1 1 auto;
+      max-width: none;
+      border-inline-end: 0;
+    }
+
+    &[data-layout='split'][data-view='thread'] > .tk-chat-conversation-list,
+    &[data-layout='split'][data-view='list'] > .tk-chat-thread {
+      display: none;
+    }
+
+    &[data-layout='split'] .tk-chat-back {
+      display: inline-flex;
+    }
+  }
+
+  // ----- Conversation list -------------------------------------------------
+
+  .tk-chat-conversation-list {
+    display: flex;
+    flex: 0 0 clamp(240px, 34%, 320px);
+    flex-direction: column;
+    gap: 2px;
+    min-height: 0;
+    padding: 8px;
+    overflow-y: auto;
+    border-inline-end: 1px solid var(--border-light);
+  }
+
+  .tk-chat-conversation {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    row-gap: 2px;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: var(--radius-l);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--background-lightest);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary-focus);
+      outline-offset: -2px;
+    }
+
+    &[data-selected] {
+      background: var(--primary-lightest);
+    }
+
+    &[data-unread] .tk-chat-conversation-title {
+      font-weight: 600;
+    }
+  }
+
+  .tk-chat-conversation-avatar {
+    @include avatar(40px);
+
+    grid-row: 1 / 3;
+  }
+
+  .tk-chat-conversation-body {
+    display: flex;
+    flex-direction: column;
+    grid-row: 1 / 3;
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .tk-chat-conversation-title {
+    @include truncate;
+
+    font-family: var(--desktop-label-m-base-font);
+    font-size: var(--desktop-label-m-base-size);
+    line-height: var(--desktop-label-m-base-line-height);
+  }
+
+  .tk-chat-conversation-preview {
+    @include truncate;
+
+    color: var(--text-base);
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+  }
+
+  .tk-chat-conversation-time {
+    grid-row: 1;
+    grid-column: 3;
+    justify-self: end;
+    color: var(--text-base);
+    font-size: var(--desktop-body-2xs-size);
+    line-height: var(--desktop-body-2xs-line-height);
+  }
+
+  .tk-chat-conversation-unread {
+    display: inline-flex;
+    grid-row: 2;
+    grid-column: 3;
+    justify-self: end;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: var(--radius-full);
+    background: var(--primary-base);
+    color: var(--static-white);
+    font-family: var(--desktop-label-s-font);
+    font-size: var(--desktop-label-s-size);
+    line-height: 1;
+  }
+
+  // ----- Thread ------------------------------------------------------------
+
+  .tk-chat-thread {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .tk-chat-header {
+    display: flex;
+    flex: none;
+    gap: 8px;
+    align-items: center;
+    min-height: 56px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .tk-chat-back {
+    display: none;
+  }
+
+  .tk-chat-title {
+    @include truncate;
+
+    margin: 0;
+    font-family: var(--desktop-label-l-font);
+    font-size: var(--desktop-label-l-size);
+    line-height: var(--desktop-label-l-line-height);
+  }
+
+  // ----- Messages ----------------------------------------------------------
+
+  .tk-chat-messages {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .tk-chat-messages-viewport {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 16px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--border-base) transparent;
+    scrollbar-width: thin;
+
+    &:focus-visible {
+      outline: 2px solid var(--primary-focus);
+      outline-offset: -2px;
+    }
+  }
+
+  // Messages stack from the bottom, the way a conversation reads.
+  .tk-chat-messages-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 100%;
+  }
+
+  .tk-chat-load-older {
+    align-self: center;
+    margin-bottom: 8px;
+  }
+
+  .tk-chat-divider {
+    align-self: center;
+    margin: 16px 0 4px;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    background: var(--background-light);
+    color: var(--text-base);
+    font-size: var(--desktop-body-2xs-size);
+    line-height: var(--desktop-body-2xs-line-height);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .tk-chat-typing {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 12px;
+    color: var(--text-base);
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+  }
+
+  .tk-chat-typing-dots {
+    display: inline-flex;
+    gap: 3px;
+    padding: 8px 10px;
+    border-radius: var(--radius-xl);
+    background: var(--background-light);
+
+    span {
+      width: 6px;
+      height: 6px;
+      border-radius: var(--radius-full);
+      background: var(--icon-base);
+      animation: tk-chat-typing 1.2s infinite ease-in-out;
+
+      &:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      span {
+        animation: none;
+      }
+    }
+  }
+
+  .tk-chat-jump {
+    position: absolute;
+    inset-block-end: 12px;
+    inset-inline-start: 50%;
+    translate: -50% 0;
+    box-shadow: 0 4px 12px var(--shadow-black-alpha-light, rgba(82, 88, 102, 0.12));
+  }
+
+  // ----- Message -----------------------------------------------------------
+
+  .tk-chat-message {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    align-self: flex-start;
+    max-width: min(80%, 560px);
+    margin-top: 12px;
+
+    &[data-grouped] {
+      margin-top: 2px;
+    }
+
+    &[data-own] {
+      flex-direction: row-reverse;
+      align-self: flex-end;
+
+      .tk-chat-message-body {
+        align-items: flex-end;
+      }
+
+      .tk-chat-message-bubble {
+        // Mirror the tail: the small corner faces the sender's side.
+        border-end-start-radius: var(--radius-xl);
+        border-end-end-radius: var(--radius-xs);
+        background: var(--primary-base);
+        color: var(--static-white);
+      }
+    }
+
+    &[data-grouped] .tk-chat-message-avatar {
+      visibility: hidden;
+    }
+
+    &[data-deleted] .tk-chat-message-bubble {
+      border: 1px dashed var(--border-base);
+      background: transparent;
+      color: var(--text-base);
+      font-style: italic;
+    }
+
+    // Deleted, but still restorable with Undo: dimmed until it settles.
+    &[data-deleting] .tk-chat-message-bubble {
+      opacity: 0.72;
+    }
+
+    // Being edited or answered in the composer.
+    &[data-editing] .tk-chat-message-bubble {
+      outline: 2px solid var(--primary-light);
+      outline-offset: 2px;
+    }
+
+    // A quote just jumped here: flash the bubble so the eye finds it.
+    &[data-highlighted] .tk-chat-message-bubble {
+      animation: tk-chat-highlight 1.6s ease-out;
+    }
+
+    // The menu button shows on hover or keyboard focus, and stays while its
+    // menu is open. Touch screens have no hover, so it always shows there.
+    &:hover .tk-chat-message-actions,
+    &:focus-within .tk-chat-message-actions,
+    .tk-chat-message-actions:has([aria-expanded='true']) {
+      opacity: 1;
+    }
+  }
+
+  .tk-chat-message-avatar {
+    @include avatar(28px);
+
+    margin-bottom: 18px;
+  }
+
+  .tk-chat-message-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  .tk-chat-message-author {
+    margin: 0 0 2px 12px;
+    color: var(--text-base);
+    font-size: var(--desktop-body-2xs-size);
+    line-height: var(--desktop-body-2xs-line-height);
+  }
+
+  .tk-chat-message-bubble {
+    max-width: 100%;
+    padding: 8px 12px;
+    border-radius: var(--radius-xl);
+    border-end-start-radius: var(--radius-xs);
+    background: var(--background-light);
+    color: var(--text-darkest);
+    font-size: var(--desktop-body-s-size);
+    line-height: var(--desktop-body-s-line-height);
+    overflow-wrap: anywhere;
+  }
+
+  .tk-chat-message-text {
+    margin: 0;
+    white-space: pre-wrap;
+  }
+
+  .tk-chat-message-meta {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    min-height: 18px;
+    margin-top: 2px;
+    padding: 0 4px;
+    color: var(--text-base);
+    font-size: var(--desktop-body-2xs-size);
+    line-height: var(--desktop-body-2xs-line-height);
+  }
+
+  .tk-chat-message-status {
+    display: inline-flex;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &[data-status='read'] {
+      color: var(--primary-base);
+    }
+
+    &[data-status='failed'] {
+      color: var(--states-danger-base);
+    }
+  }
+
+  // Files under (or instead of) the bubble, on the sender's side.
+  .tk-chat-message-attachments {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: inherit;
+    width: min(320px, 100%);
+
+    .tk-upload {
+      width: 100%;
+    }
+  }
+
+  .tk-chat-message-image {
+    display: block;
+    overflow: hidden;
+    max-width: 100%;
+    border-radius: var(--radius-xl);
+    background: var(--background-light);
+
+    img {
+      display: block;
+      max-width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary-base);
+      outline-offset: 2px;
+    }
+  }
+
+  // The message this one answers, at the top of the bubble. Tinted from the
+  // bubble's own text colour so it reads on both sides.
+  .tk-chat-message-quote {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    margin: 0 0 6px;
+    padding: 6px 10px;
+    border: 0;
+    border-inline-start: 3px solid currentColor;
+    border-radius: var(--radius-s);
+    background: color-mix(in srgb, currentColor 10%, transparent);
+    color: inherit;
+    font: inherit;
+    text-align: start;
+
+    &:is(button) {
+      cursor: pointer;
+
+      &:hover {
+        background: color-mix(in srgb, currentColor 16%, transparent);
+      }
+
+      &:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .tk-chat-message-quote-author {
+    @include truncate;
+
+    font-weight: 600;
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+  }
+
+  .tk-chat-message-quote-text {
+    display: -webkit-box;
+    overflow: hidden;
+    opacity: 0.85;
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  // Pin mark in the meta line of a pinned message.
+  .tk-chat-message[data-pinned] .tk-chat-message-pinned {
+    display: inline-flex;
+    color: var(--primary-base);
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  // ----- Pinned bar ---------------------------------------------------------
+
+  .tk-chat-pinned {
+    display: flex;
+    flex: none;
+    gap: 4px;
+    align-items: center;
+    padding: 4px 8px 4px 16px;
+    border-bottom: 1px solid var(--border-light);
+    // A quiet surface one step off the chat's own, in both themes
+    // (`--background-base` is a mid grey, not a surface).
+    background: var(--background-lightest);
+  }
+
+  .tk-chat-pinned-jump {
+    display: flex;
+    flex: 1 1 auto;
+    gap: 8px;
+    align-items: center;
+    min-width: 0;
+    padding: 4px 0;
+    border: 0;
+    background: none;
+    color: var(--text-darkest);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+
+    > svg {
+      flex: none;
+      width: 18px;
+      height: 18px;
+      color: var(--primary-base);
+    }
+
+    &:focus-visible {
+      border-radius: var(--radius-s);
+      outline: 2px solid var(--primary-base);
+      outline-offset: 2px;
+    }
+  }
+
+  .tk-chat-pinned-label {
+    flex: none;
+    color: var(--primary-base);
+    font-weight: 600;
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+  }
+
+  .tk-chat-pinned-text {
+    @include truncate;
+
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: var(--desktop-body-s-size);
+    line-height: var(--desktop-body-s-line-height);
+  }
+
+  .tk-chat-pinned-unpin {
+    flex: none;
+  }
+
+  // Brief "Copied" confirmation in the meta line.
+  .tk-chat-message-copied {
+    color: var(--states-success-base);
+    font-weight: 600;
+  }
+
+  .tk-chat-message-retry,
+  .tk-chat-message-undo {
+    min-height: 0;
+    padding-block: 0;
+  }
+
+  // Next to the top of the bubble, so long messages keep it in reach.
+  .tk-chat-message-actions {
+    align-self: flex-start;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  // Touch has no hover: a long press opens the menu instead. The button
+  // moves out beside the row, where it takes no width from the bubble, and
+  // shows only while the menu it anchors is open (or it has focus).
+  @media (hover: none) {
+    .tk-chat-message {
+      position: relative;
+    }
+
+    .tk-chat-message-bubble {
+      -webkit-touch-callout: none;
+    }
+
+    .tk-chat-message-actions {
+      position: absolute;
+      top: 0;
+      inset-inline-start: 100%;
+      margin-inline-start: 4px;
+    }
+
+    .tk-chat-message[data-own] .tk-chat-message-actions {
+      inset-inline: auto 100%;
+      margin-inline: 0 4px;
+    }
+  }
+
+  .tk-chat-empty {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: var(--text-base);
+    text-align: center;
+  }
+
+  // ----- Composer ----------------------------------------------------------
+
+  .tk-chat-composer {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-light);
+
+    // Files dragged over the composer: it is the drop target, or says it
+    // will not take them (wrong type, or a message is being edited).
+    &[data-drag-state] {
+      outline: 2px dashed var(--primary-base);
+      outline-offset: -4px;
+      background: var(--primary-lightest);
+    }
+
+    &[data-drag-state='reject'] {
+      outline-color: var(--states-danger-base);
+      background: var(--states-danger-lightest);
+    }
+  }
+
+  // The Upload root only provides state; its children lay out in the composer.
+  .tk-chat-composer-upload {
+    display: contents;
+  }
+
+  // Files waiting to be sent: Upload rows, capped so a long list scrolls
+  // instead of pushing the log away.
+  .tk-chat-composer-attachments {
+    max-height: 168px;
+    overflow-y: auto;
+  }
+
+  // Editing and replying borrow the composer the same way: one banner.
+  .tk-chat-composer-editing,
+  .tk-chat-composer-replying {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 4px 4px 4px 12px;
+    border-radius: var(--radius-l);
+    background: var(--primary-lightest);
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+
+    > svg {
+      flex: none;
+      width: 16px;
+      height: 16px;
+      color: var(--primary-base);
+    }
+
+    > span {
+      @include truncate;
+
+      flex: 1 1 auto;
+      min-width: 0;
+      color: var(--text-base);
+
+      strong {
+        color: var(--text-darkest);
+        font-weight: 600;
+      }
+    }
+  }
+
+  .tk-chat-composer-controls {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+
+    > .tk-input {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    textarea {
+      max-height: 160px;
+      resize: none;
+      field-sizing: content;
+    }
+  }
+}
