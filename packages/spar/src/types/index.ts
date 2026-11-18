@@ -7,6 +7,8 @@ import type { ComponentPropsWithRef, ElementType } from 'react';
 export type PolymorphicProps<
   TDefaultElement extends ElementType,
   TElement extends ElementType,
+  // `{}` is the published default; switching to `object` would change the public type.
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   Props = {},
 > = Props & {
   /**

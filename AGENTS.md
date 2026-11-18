@@ -7,7 +7,8 @@ Takeoff components built on top of Spar primitives.
 
 This package should not hide upstream Spar behavior problems.
 
-If a behavior belongs in Spar, fix Spar first.
+If a behavior belongs in Spar, fix Spar first. Spar lives in this workspace
+(`packages/spar`), so the fix and the react-spar change can land in one PR.
 
 ## Required workflow
 
