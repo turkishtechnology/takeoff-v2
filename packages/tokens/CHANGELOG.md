@@ -1,5 +1,112 @@
 # @takeoff-design/tokens
 
+## 0.6.0
+
+### Minor Changes
+
+- [#270](https://github.com/turkishtechnology/takeoff-v2/pull/270)
+  [`fcdb7fc`](https://github.com/turkishtechnology/takeoff-v2/commit/fcdb7fc9e1425ffe48e6d9b1a7924706ff9663b3)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `Chat`, a
+  compound messaging component for conversations between people. The root is
+  controlled (`messages`, `currentUserId`, `onSend`) and the parts lay it out:
+  `Chat.Header`, `Chat.Title`, `Chat.Messages` (a `role="log"` that stays at the
+  bottom, offers a "new messages" jump button, adds day dividers and a typing
+  line), `Chat.Message`, `Chat.MessageActions`, `Chat.Empty`, `Chat.Composer`,
+  and an optional `Chat.ConversationList` / `Chat.Conversation` / `Chat.Thread`
+  split layout that collapses to one pane below 640px.
+
+  - Delivery and read receipts: each message's `status` (`sending` / `sent` /
+    `delivered` / `read` / `failed`) draws a clock, one tick, or two ticks;
+    `onRead` reports incoming messages once they are on screen while the page is
+    visible.
+  - Editing and deleting within a time window: `onEdit` / `onDelete` with
+    `editWindow` / `deleteWindow` (ms), and an Undo period (`undoWindow`) before
+    `onDelete` runs. The actions disappear when the window closes, and a right
+    click or a touch long press opens a message's menu; ArrowUp in an empty
+    composer edits the last message and Escape leaves editing.
+  - Pins: `pinnedIds` / `onPinChange` add Pin / Unpin to the menu and a pin mark
+    to the message; `Chat.Pinned` is a bar that jumps through the pins.
+  - Replies are on by default (`allowReplies={false}` turns them off).
+  - Copy: on by default for messages with text (`allowCopy`), with a "Copied"
+    note that is also announced; it stays available read-only.
+  - Replies: `allowReplies` adds Reply to the message menu, a reply banner to
+    the composer and `details.replyTo` to `onSend`; a message's `replyTo` draws
+    a quote that follows the original and jumps to it.
+  - File attachments: `allowAttachments` on `Chat.Composer` adds an attach
+    button, drop and paste; `onSend(text, attachments)` hands over the files.
+    Messages show `attachments` (the same entries `Upload` uses) as image
+    previews or file rows with upload progress and download.
+  - Every string is in `labels` (with `locale` for times), so the whole chat
+    translates through the provider.
+
+  `@takeoff-design/tokens` ships the `tk-chat-*` recipe.
+
+- [#259](https://github.com/turkishtechnology/takeoff-v2/pull/259)
+  [`4b5e5fc`](https://github.com/turkishtechnology/takeoff-v2/commit/4b5e5fc421c16dc204d98c6b4618f520ed1373fe)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Table:
+  user-controlled column resizing.
+
+  - New `columnResizing` prop (`true`, or `{ value, defaultValue, onChange }`
+    over `{ [columnId]: px }`) puts a drag handle on each header edge. It works
+    with a mouse, pen or touch, and with Left/Right arrows (Shift for 50px
+    steps). A double-click returns the column to its declared `width`, or fits
+    it to its content when it declares none. `onChange` fires once per resize,
+    not on every pointer move, so it can be persisted directly.
+  - `columnResizing.mode`: `'fit'` (default) keeps the table at its container's
+    width as described below; `'expand'` keeps every column's width, so a
+    growing column widens the table and its container scrolls, and a shrinking
+    one narrows the table and its border (new `TableColumnResizingMode` type;
+    the root carries `data-resize-mode`).
+  - New column options: `resizable` (default `true`), `minWidth` (default `50`)
+    and `maxWidth`.
+  - The table keeps its auto layout until the first resize, then switches to
+    `table-layout: fixed` (`data-fixed-layout` on the root), so a column can
+    shrink below its content. The last unpinned column without a declared
+    `width` has no handle and absorbs the leftover width (a fixed-width trailing
+    column keeps its width), so the table's own width never changes; a growing
+    column takes room from that column first, then from the columns between it
+    and that column, each down to the width its content needs first and only
+    then on down to its min width (fit-to-content too); each handle sits on the
+    edge facing that column (the start edge for a column after it, e.g. a right
+    pin), Alt/Ctrl/Meta + arrows are left to the browser, and a press that moves
+    less than 3px is a click. Once a table is resized (or opens with stored
+    widths), every body cell stays on one line: plain text ends in an ellipsis,
+    richer cell content is clipped.
+  - Header text is now wrapped in a new `headerLabel` slot
+    (`.tk-table-header-label`) on every table, so a narrowed header of a resized
+    table ends in an ellipsis.
+  - New `resizeHandle` slot, `TableColumnSizing` and `TableColumnResizingConfig`
+    types, and the matching `.tk-table-resize-handle` recipe styles in
+    `@takeoff-design/tokens`.
+
+### Patch Changes
+
+- [#262](https://github.com/turkishtechnology/takeoff-v2/pull/262)
+  [`5617769`](https://github.com/turkishtechnology/takeoff-v2/commit/5617769c320554bec9a9896334f83d9c6313f8ff)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Size the
+  Checkbox check mark to its icon box. The `@takeoff-icons` 0.5.0 check glyph is
+  drawn twice as large, so the old oversized svg (22px / 18px) made the tick
+  almost fill the box; it now paints at the same size as before.
+
+- [#262](https://github.com/turkishtechnology/takeoff-v2/pull/262)
+  [`d711a18`](https://github.com/turkishtechnology/takeoff-v2/commit/d711a18bc3698f474dca57a25a706e41677a9bb0)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Retune icon
+  boxes for the larger `@takeoff-icons` 0.5.0 chevrons so the visible glyphs
+  stay close to the Figma component designs: Accordion and Select indicators and
+  the Breadcrumb separator use a 14px box (16px for large Breadcrumb), and the
+  Table pagination arrows a 16px box. The Table sort and filter icons move to
+  Figma's 20px box. The small Checkbox check and the xsmall (16px) Stepper icon
+  follow the Figma boxes (8px and 12px).
+
+- [#262](https://github.com/turkishtechnology/takeoff-v2/pull/262)
+  [`09358e6`](https://github.com/turkishtechnology/takeoff-v2/commit/09358e6bf4175baeb2e544fe7e103bc7ff059cae)
+  Thanks [@pinaryalcinduran](https://github.com/pinaryalcinduran)! - Size
+  Stepper indicator icons to the Figma icon box (20px in the 32px base
+  indicator, scaled per size) instead of filling the whole indicator, so the
+  larger `@takeoff-icons` 0.5.0 check no longer touches the indicator ring. This
+  applies to every svg in the indicator, so the error icon and custom svg
+  indicators shrink accordingly; `<img>` indicators still fill it.
+
 ## 0.5.1
 
 ### Patch Changes
