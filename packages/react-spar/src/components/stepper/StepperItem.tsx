@@ -1,27 +1,14 @@
-import { useCallback, useEffect, useMemo, useState, type CSSProperties, type ElementType, type MouseEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ElementType, type MouseEvent, type ReactNode } from 'react';
 import { CheckIconOutlinedRounded } from '@takeoff-icons/react/check';
 import { CloseIconOutlinedRounded } from '@takeoff-icons/react/close';
 
 import { buildSlotAttrs, composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
+import { visuallyHidden } from '../../utils';
 
 import { StepperItemBase } from './base';
 import { StepperItemProvider, useStepperContext, useStepperItemIndex, type StepperItemContextValue } from './context';
 import type { StepperItemProps, StepperItemSlot } from './types';
-
-// The design system ships no sr-only utility and the recipe must stay a
-// purely visual dependency, so the status suffix hides itself inline.
-const visuallyHidden: CSSProperties = {
-  position: 'absolute',
-  width: 1,
-  height: 1,
-  margin: -1,
-  padding: 0,
-  overflow: 'hidden',
-  clip: 'rect(0 0 0 0)',
-  whiteSpace: 'nowrap',
-  border: 0,
-};
 
 export const StepperItem = <T extends ElementType = 'li'>(props: StepperItemProps<T>) => {
   const theme = useComponentTheme('StepperItem');

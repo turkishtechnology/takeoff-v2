@@ -76,6 +76,9 @@ final verify
   invariant visual chrome. Pick `'children'` from Spar where applicable; do not
   pick on wrappers like AccordionTrigger whose anatomy wraps the content.
 - Do not expose decorative parts as public compound components by default.
+- Every user-facing string (visible text and accessible names) is customizable,
+  with English defaults in the component's `defaults.ts`. See "User-facing
+  strings" in the contract.
 - Do not create extra markdown architecture files unless explicitly requested.
 - Keep outputs source-backed and concise.
 

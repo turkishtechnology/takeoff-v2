@@ -20,11 +20,12 @@ import {
 import { buildSlotAttrs, composeRootAttrs } from '../../core';
 import { useControllableState } from '../../hooks';
 import { useComponentTheme } from '../../provider';
+import { resolveLabels } from '../../utils';
 import { Spinner } from '../spinner';
 
 import { TableBase } from './base';
 import { TableProvider, type SlotAttrs, type TableColumnResizingContext, type TableContextValue, type TableLiveDraft, type TableResizeDraft } from './context';
-import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE, UTILITY_COLUMN_WIDTH } from './defaults';
+import { DEFAULT_LABELS, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS, DEFAULT_SIZE, UTILITY_COLUMN_WIDTH } from './defaults';
 import {
   buildOrderedColumns,
   clampColumnWidth,
@@ -143,6 +144,11 @@ export const Table = <TData,>(props: TableProps<TData>) => {
   const paginationConfig = typeof pagination === 'object' ? pagination : undefined;
   const paginationEnabled = pagination === true || !!paginationConfig;
   const pageSizeOptions = paginationConfig?.pageSizeOptions ?? DEFAULT_PAGE_SIZE_OPTIONS;
+  // `labels` is merged per key rather than taken from the shallow props merge,
+  // so read both layers off the originals.
+  // Layers defaults <- provider `defaultProps.labels` <- instance `labels`.
+  const themeLabels = theme?.defaultProps?.labels;
+  const labels = useMemo(() => resolveLabels(DEFAULT_LABELS, themeLabels, props.labels), [themeLabels, props.labels]);
   const [tableViewportScrolled, setTableViewportScrolled] = useState(false);
   const resizingConfig = typeof columnResizing === 'object' ? columnResizing : undefined;
   const resizingEnabled = columnResizing === true || !!resizingConfig;
@@ -678,6 +684,7 @@ export const Table = <TData,>(props: TableProps<TData>) => {
     emptyState,
     paginationEnabled,
     pageSizeOptions,
+    labels,
     slotAttrs,
   };
 
@@ -708,11 +715,11 @@ export const Table = <TData,>(props: TableProps<TData>) => {
         </div>
         {paginationEnabled && <TablePagination />}
         {loading && (
-          // No `aria-hidden`: the Spar Spinner ships `role="status"` +
-          // `aria-label="Loading"`, so the overlay politely announces the
-          // loading transition (the table also carries `aria-busy`).
+          // No `aria-hidden`: the Spar Spinner ships `role="status"`, named by
+          // `labels.loading` (or Spinner's own default), so the overlay politely
+          // announces the loading transition (the table also carries `aria-busy`).
           <div {...slotAttrs('loading')}>
-            <Spinner />
+            <Spinner aria-label={labels.loading} />
           </div>
         )}
       </div>

@@ -22,6 +22,7 @@ export type {
   TableDataRequest,
   TableExpansionConfig,
   TableFilteringConfig,
+  TableLabels,
   TablePaginationConfig,
   TableProps,
   TableSelectionConfig,

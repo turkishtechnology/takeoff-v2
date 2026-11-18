@@ -11,8 +11,10 @@ import { render as renderPlain, renderWithProvider as render, screen, within } f
 
 import { Table } from './Table';
 import { TableBody } from './TableBody';
+import { resetTableDevWarnings } from './devWarnings';
 import { getExportRows } from './helpers';
-import type { TableColumnDef, TableSlot } from './types';
+import { formatLabel } from '../../utils';
+import type { TableColumnDef, TableLabels, TableSlot } from './types';
 
 // Spar Select/Popover content observe their anchor; jsdom lacks ResizeObserver.
 const originalResizeObserver = globalThis.ResizeObserver;
@@ -65,8 +67,7 @@ const manyUsers: User[] = Array.from({ length: 12 }, (_, index) => ({
 }));
 const nameColumns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name' }];
 const bodyRowTexts = (container: HTMLElement) => Array.from(container.querySelectorAll('tbody tr')).map(row => row.querySelector('td')?.textContent);
-const goToPageButton = (container: HTMLElement) =>
-  within(container.querySelector('[data-slot="pagination-go-to-page"]') as HTMLElement).getByRole('button', { name: 'Go to page' });
+const goToPageButton = (container: HTMLElement) => within(container.querySelector('[data-slot="pagination-go-to-page"]') as HTMLElement).getByRole('button', { name: 'Go' });
 
 describe('Table (props-first)', () => {
   describe('rendering', () => {
@@ -259,7 +260,7 @@ describe('Table (props-first)', () => {
         expect(node.style.position).toBe('');
       }
       expect(container.querySelectorAll('tbody tr[data-selected]')).toHaveLength(0);
-      expect(screen.getByRole('button', { name: 'Filter column' })).not.toHaveAttribute('data-active');
+      expect(screen.getByRole('button', { name: 'Filter Name' })).not.toHaveAttribute('data-active');
     });
   });
 
@@ -563,10 +564,10 @@ describe('Table (props-first)', () => {
         { id: 'name', header: 'Name', accessor: 'name' },
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
-      expect(screen.getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Filter Role' })).toBeInTheDocument();
       // Only the filterable column gets a trigger, and the panel is not mounted until opened.
-      expect(screen.getAllByRole('button', { name: 'Filter column' })).toHaveLength(1);
-      expect(within(screen.getByRole('columnheader', { name: /Role/ })).getByRole('button', { name: 'Filter column' })).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getAllByRole('button', { name: 'Filter Role' })).toHaveLength(1);
+      expect(within(screen.getByRole('columnheader', { name: /Role/ })).getByRole('button', { name: 'Filter Role' })).toHaveAttribute('aria-expanded', 'false');
       expect(within(screen.getByRole('columnheader', { name: 'Name' })).queryByRole('button')).toBeNull();
       expect(document.querySelector('[data-slot="filter-panel"]')).toBeNull();
     });
@@ -577,7 +578,7 @@ describe('Table (props-first)', () => {
       const headerContent = container.querySelector('[data-slot="header-content"]') as HTMLElement;
 
       expect(within(headerContent).getByRole('button', { name: 'Name' })).toBeInTheDocument();
-      expect(within(headerContent).getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
+      expect(within(headerContent).getByRole('button', { name: 'Filter Name' })).toBeInTheDocument();
     });
 
     it('narrows rows through the `text` preset (string shorthand)', async () => {
@@ -585,7 +586,7 @@ describe('Table (props-first)', () => {
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       await user.type(await screen.findByRole('searchbox'), 'Ada');
       expect(bodyRowTexts(container)).toEqual(['Ada']);
     });
@@ -608,7 +609,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       await user.click(await screen.findByRole('radio', { name: 'User' }));
       expect(bodyRowTexts(container)).toEqual(['user']);
 
@@ -634,7 +635,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       await user.click(await screen.findByRole('checkbox', { name: 'Admin' }));
       expect(bodyRowTexts(container)).toEqual(['admin', 'admin']);
     });
@@ -655,7 +656,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       await user.type(await screen.findByLabelText('custom filter'), 'Grace');
       expect(bodyRowTexts(container)).toEqual(['Grace']);
     });
@@ -675,7 +676,7 @@ describe('Table (props-first)', () => {
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
       expect(trigger).not.toHaveAttribute('data-active');
 
       await user.click(trigger);
@@ -694,7 +695,7 @@ describe('Table (props-first)', () => {
 
       // Case-insensitive substring: "a" matches Ada + Grace, not Linus.
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Grace']);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
       expect(trigger).toHaveClass('tk-table-filter-button');
       expect(trigger).toHaveAttribute('data-active', '');
 
@@ -716,6 +717,453 @@ describe('Table (props-first)', () => {
       expect(screen.queryByRole('button', { name: 'Clear' })).not.toBeInTheDocument();
     });
 
+    it('localizes the filter trigger and Clear once on the root, for presets and render panels', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+        {
+          id: 'role',
+          header: 'Role',
+          accessor: 'role',
+          filter: {
+            isActive: v => v != null,
+            render: ({ setValue }) => (
+              <button type="button" onClick={() => setValue('user')}>
+                Only users
+              </button>
+            ),
+          },
+        },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterClear: 'Temizle', filterButton: 'Sütunu filtrele' }} />);
+
+      const [nameTrigger, roleTrigger] = screen.getAllByRole('button', { name: 'Sütunu filtrele' });
+      expect(screen.queryByRole('button', { name: 'Filter Name' })).not.toBeInTheDocument();
+
+      await user.click(nameTrigger);
+      await user.type(await screen.findByRole('searchbox'), 'a');
+      expect(screen.getByRole('button', { name: 'Temizle' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      // A custom `render` panel gets the same localized button.
+      await user.click(roleTrigger);
+      await user.click(await screen.findByRole('button', { name: 'Only users' }));
+      expect(screen.getByRole('button', { name: 'Temizle' })).toBeInTheDocument();
+    });
+
+    it('takes the select placeholder from `labels.filterSelectPlaceholder`', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', options: [{ label: 'Admin', value: 'admin' }] } }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterSelectPlaceholder: 'Seçiniz' }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Seçiniz');
+    });
+
+    it('falls back from a whitespace-only select `filter.placeholder` and hides the column-label span', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', placeholder: '  ', options: [{ label: 'Admin', value: 'admin' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
+      expect(within(panel).getByRole('combobox', { name: 'Filter Role value Select' })).toHaveTextContent('Select');
+      // The span only feeds aria-labelledby; browse mode must not read it twice.
+      const labelSpan = within(panel).getByText('Filter Role value');
+      expect(labelSpan).toHaveAttribute('aria-hidden', 'true');
+    });
+
+    it('warns once per column when a filter name falls back to the column id', () => {
+      resetTableDevWarnings();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const columns: TableColumnDef<User>[] = [
+        { id: 'createdAt', header: () => 'Created', accessor: 'name', filter: 'text' },
+        { id: 'role', header: () => 'Role', accessor: 'role', filter: { type: 'text', label: 'Role' } },
+        { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+      ];
+      const { rerender } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
+      rerender(<Table data={users} columns={columns} getRowId={getRowId} striped />);
+      // A second table with the same column id does not warn again.
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      expect(screen.getAllByRole('button', { name: 'Filter createdAt' })).toHaveLength(2);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('"createdAt"');
+      expect(warn.mock.calls[0][0]).toContain('filter.label');
+      warn.mockRestore();
+    });
+
+    it('takes filter-trigger, pagination and expand names from `labels`, ignoring slotProps aria-labels', async () => {
+      const user = userEvent.setup();
+      resetTableDevWarnings();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      render(
+        <Table
+          data={manyUsers}
+          getRowId={getRowId}
+          pagination
+          expansion={{ render: () => 'detail' }}
+          columns={[{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }]}
+          labels={{ paginationLandmark: 'Sayfalama', expandRow: 'Satırı aç', collapseRow: 'Satırı kapat', filterButton: 'Sütunu filtrele' }}
+          slotProps={{ pagination: { 'aria-label': 'Sonuçlar' }, expandButton: { 'aria-label': 'Detay' }, filterButton: { 'aria-label': 'Ada göre filtrele' } }}
+        />,
+      );
+      expect(screen.getByRole('button', { name: 'Sütunu filtrele' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Ada göre filtrele' })).not.toBeInTheDocument();
+      // The dropped filter-trigger aria-label is flagged once, in development only.
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('labels.filterButton');
+      warn.mockRestore();
+      expect(screen.getByRole('navigation', { name: 'Sayfalama' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Detay' })).not.toBeInTheDocument();
+      const [first] = screen.getAllByRole('button', { name: 'Satırı aç' });
+      await user.click(first);
+      expect(screen.getByRole('button', { name: 'Satırı kapat' })).toBeInTheDocument();
+    });
+
+    it('drops a slotProps `aria-labelledby` on the filter trigger too, and warns once', () => {
+      resetTableDevWarnings();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      render(
+        <>
+          <span id="outside-name">Outside name</span>
+          <Table
+            data={users}
+            getRowId={getRowId}
+            columns={[{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }]}
+            slotProps={{ filterButton: { 'aria-labelledby': 'outside-name' } }}
+          />
+        </>,
+      );
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
+      expect(trigger).not.toHaveAttribute('aria-labelledby');
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain("['aria-labelledby']");
+      warn.mockRestore();
+    });
+
+    it('merges instance `labels` over provider defaultProps labels key by key', () => {
+      renderPlain(
+        <TakeoffSparProvider components={{ Table: { defaultProps: { labels: { noData: 'Veri yok', filterButton: 'Sütunu filtrele' } } } }}>
+          <Table data={[]} columns={[{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }]} getRowId={getRowId} labels={{ noData: 'Kayıt bulunamadı' }} />
+        </TakeoffSparProvider>,
+      );
+      expect(screen.getByText('Kayıt bulunamadı')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Sütunu filtrele' })).toBeInTheDocument();
+    });
+
+    it("keeps Spinner's provider aria-label unless `labels.loading` is set", () => {
+      const { rerender } = renderPlain(
+        <TakeoffSparProvider components={{ Spinner: { defaultProps: { 'aria-label': 'Yükleniyor' } } }}>
+          <Table data={users} columns={baseColumns} getRowId={getRowId} loading />
+        </TakeoffSparProvider>,
+      );
+      expect(screen.getByRole('status', { name: 'Yükleniyor' })).toBeInTheDocument();
+      rerender(
+        <TakeoffSparProvider components={{ Spinner: { defaultProps: { 'aria-label': 'Yükleniyor' } } }}>
+          <Table data={users} columns={baseColumns} getRowId={getRowId} loading labels={{ loading: 'Tablo yükleniyor' }} />
+        </TakeoffSparProvider>,
+      );
+      expect(screen.getByRole('status', { name: 'Tablo yükleniyor' })).toBeInTheDocument();
+    });
+
+    it('leaves the empty cell blank when emptyState is null', () => {
+      const { container } = render(<Table data={[]} columns={baseColumns} getRowId={getRowId} emptyState={null} />);
+      expect(screen.queryByText('No data')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-slot="empty"]')).toBeEmptyDOMElement();
+    });
+
+    it('leaves the empty cell blank when emptyState is false', () => {
+      const { container } = render(<Table data={[]} columns={baseColumns} getRowId={getRowId} emptyState={false} />);
+      expect(screen.queryByText('No data')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-slot="empty"]')).toBeEmptyDOMElement();
+    });
+
+    it('fills {total} in the noItems label', () => {
+      render(<Table data={[]} columns={baseColumns} getRowId={getRowId} labels={{ noItems: '{total} kayıt' }} pagination />);
+      expect(screen.getByText('0 kayıt')).toBeInTheDocument();
+    });
+
+    it('ignores non-string label values instead of crashing', () => {
+      const loose = JSON.parse('{"pageStatus": 1, "noData": null}') as Partial<TableLabels>;
+      render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination labels={loose} />);
+      expect(screen.getByText(/^Page 1 of \d+$/)).toBeInTheDocument();
+    });
+
+    it('keeps the pagination role fixed even when slotProps set one', () => {
+      render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination slotProps={{ pagination: { role: 'region' } }} />);
+      expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
+    });
+
+    it('leaves unknown and inherited template keys literal', () => {
+      expect(formatLabel('{page} {constructor} {nope}', { page: 2 })).toBe('2 {constructor} {nope}');
+    });
+
+    it('falls back to the default select placeholder when given an empty string', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', placeholder: '', options: [{ label: 'Admin', value: 'admin' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Select');
+    });
+
+    it('keeps the page-jump submit named `Go` when only `pageJumpInput` is translated', () => {
+      render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination={{ pageSize: 10 }} labels={{ pageJumpInput: 'Sayfaya git' }} />);
+      expect(screen.getByRole('spinbutton', { name: 'Sayfaya git' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Go' })).toBeInTheDocument();
+    });
+
+    it('names filter triggers and fields after their column by default', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
+      expect(await screen.findByRole('searchbox', { name: 'Filter Name value' })).toBeInTheDocument();
+    });
+
+    it('names the text filter after its column even when a placeholder is set', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', filter: { type: 'text', placeholder: 'Search…' } },
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'text', placeholder: 'Search…' } },
+        { id: 'city', header: '  ', accessor: 'profile.city', filter: 'text' },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
+      expect(await screen.findByRole('searchbox', { name: 'Filter Name value' })).toHaveAttribute('placeholder', 'Search…');
+      await user.keyboard('{Escape}');
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      expect(await screen.findByRole('searchbox', { name: 'Filter Role value' })).toHaveAttribute('placeholder', 'Search…');
+      await user.keyboard('{Escape}');
+
+      // A blank header falls back to the column id.
+      await user.click(screen.getByRole('button', { name: 'Filter city' }));
+      expect(await screen.findByRole('searchbox', { name: 'Filter city value' })).toBeInTheDocument();
+    });
+
+    it('names the select filter trigger with the column label plus its visible value', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', options: [{ label: 'Admin', value: 'admin' }] } }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
+      const trigger = within(panel).getByRole('combobox', { name: 'Filter Role value Select' });
+      expect(trigger).not.toHaveAttribute('aria-label');
+      await user.click(trigger);
+      // The listbox is named by the column label itself, not by the trigger
+      // (which a name computation would reduce to the chosen option).
+      expect(await screen.findByRole('listbox')).toHaveAccessibleName('Filter Role value');
+      await user.click(await screen.findByRole('option', { name: 'Admin' }));
+      expect(within(panel).getByRole('combobox', { name: 'Filter Role value Admin' })).toHaveTextContent('Admin');
+    });
+
+    it('names the radio and checkbox filter groups after their column', async () => {
+      const user = userEvent.setup();
+      const options = [{ label: 'Admin', value: 'admin' }];
+      const columns: TableColumnDef<User>[] = [
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'radio', options } },
+        { id: 'city', header: 'City', accessor: 'profile.city', filter: { type: 'checkbox', options: [{ label: 'Istanbul', value: 'Istanbul' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      expect(await screen.findByRole('radiogroup', { name: 'Filter Role value' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      await user.click(screen.getByRole('button', { name: 'Filter City' }));
+      expect(await screen.findByRole('group', { name: 'Filter City value' })).toContainElement(screen.getByRole('checkbox', { name: 'Istanbul' }));
+      expect(screen.getByRole('group', { name: 'Filter City value' })).toHaveClass('tk-table-filter-panel-body');
+    });
+
+    it('exposes the checkbox options group as the filterOptions slot', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'city', header: 'City', accessor: 'profile.city', filter: { type: 'checkbox', options: [{ label: 'Istanbul', value: 'Istanbul' }] } },
+      ];
+      renderPlain(
+        <TakeoffSparProvider components={{ Table: { classNames: { filterOptions: 'theme-options' } } }}>
+          <Table data={users} columns={columns} getRowId={getRowId} classNames={{ filterOptions: 'my-options' }} slotProps={{ filterOptions: { 'aria-label': 'ignored' } }} />
+        </TakeoffSparProvider>,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Filter City' }));
+      const group = await screen.findByRole('group', { name: 'Filter City value' });
+      expect(group).toHaveClass('tk-table-filter-panel-body', 'theme-options', 'my-options');
+      expect(group).toHaveAttribute('data-slot', 'filter-options');
+    });
+
+    it('passes the formatted field label to a custom filter.render', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        {
+          id: 'age',
+          header: 'Age',
+          accessor: 'age',
+          filter: { render: ({ fieldLabel }) => <input aria-label={fieldLabel} /> },
+        },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterValue: '{column} filtre değeri' }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Age' }));
+      expect(await screen.findByRole('textbox', { name: 'Age filtre değeri' })).toBeInTheDocument();
+    });
+
+    it('takes `{column}` from `filter.label` over the header and id', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'createdAt', header: () => <span>Oluşturma</span>, accessor: 'name', filter: { type: 'text', label: 'Oluşturma' } },
+        { id: 'role', header: 'Role', accessor: 'role', filter: { type: 'text', label: '  ' } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterButton: '{column} sütununu filtrele', filterValue: '{column} filtre değeri' }} />);
+
+      // A node header uses `filter.label` instead of the id.
+      expect(screen.queryByRole('button', { name: 'createdAt sütununu filtrele' })).not.toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Oluşturma sütununu filtrele' }));
+      expect(await screen.findByRole('searchbox', { name: 'Oluşturma filtre değeri' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      // A blank `filter.label` falls back to the header text.
+      expect(screen.getByRole('button', { name: 'Role sütununu filtrele' })).toBeInTheDocument();
+    });
+
+    it('ignores a non-string `filter.label` and falls back to the header text', () => {
+      // Loose data (e.g. JSON) can put a non-string where `label` is typed as one.
+      const filter = { type: 'text', label: 42 } as unknown as TableColumnDef<User>['filter'];
+      render(<Table data={users} columns={[{ id: 'name', header: 'Name', accessor: 'name', filter }]} getRowId={getRowId} />);
+      expect(screen.getByRole('button', { name: 'Filter Name' })).toBeInTheDocument();
+    });
+
+    it('keeps the checkbox filter group named by `labels`, ignoring slotProps naming attributes', async () => {
+      const user = userEvent.setup();
+      render(
+        <>
+          <span id="outside-group-name">Outside</span>
+          <Table
+            data={users}
+            columns={[{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'checkbox', options: [{ label: 'Admin', value: 'admin' }] } }]}
+            getRowId={getRowId}
+            slotProps={{ filterOptions: { 'role': 'list', 'aria-label': 'Custom', 'aria-labelledby': 'outside-group-name', 'title': 'kept' } }}
+          />
+        </>,
+      );
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const group = await screen.findByRole('group', { name: 'Filter Role value' });
+      expect(group).not.toHaveAttribute('aria-labelledby');
+      // Non-naming attributes still pass through.
+      expect(group).toHaveAttribute('title', 'kept');
+    });
+
+    it('names each filter trigger and filter field after its column through `{column}`', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: 'Name', accessor: 'name', filter: 'text' },
+        { id: 'role', header: () => 'Role', accessor: 'role', filter: { type: 'select', options: [{ label: 'Admin', value: 'admin' }] } },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterButton: '{column} filtrele', filterValue: '{column} değeri' }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Name filtrele' }));
+      expect(await screen.findByRole('searchbox', { name: 'Name değeri' })).toBeInTheDocument();
+      await user.keyboard('{Escape}');
+
+      // A non-string header falls back to the column id.
+      await user.click(screen.getByRole('button', { name: 'role filtrele' }));
+      expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox', { name: 'role değeri Select' })).toBeInTheDocument();
+    });
+
+    it('localizes pagination, selection, expansion, empty and loading strings through `labels`', async () => {
+      const user = userEvent.setup();
+      const labels = {
+        noData: 'Veri yok',
+        loading: 'Yükleniyor',
+        paginationLandmark: 'Sayfalama',
+        pageStatus: 'Sayfa {page} / {pageCount}',
+        itemsRange: '{total} kayıttan {start}-{end}',
+        firstPage: 'İlk sayfa',
+        previousPage: 'Önceki sayfa',
+        nextPage: 'Sonraki sayfa',
+        lastPage: 'Son sayfa',
+        pageButton: '{page}. sayfaya git',
+        currentPageButton: '{page}. sayfa, geçerli sayfa',
+        rowsPerPage: 'Sayfa başına satır',
+        pageJumpInput: 'Sayfaya git',
+        pageJumpSubmit: 'Git',
+        selectAllRows: 'Tüm satırları seç',
+        selectRow: 'Satırı seç',
+        expandRow: 'Satırı aç',
+        collapseRow: 'Satırı kapat',
+        rowDetails: 'Satır detayı',
+      };
+      const { rerender } = render(
+        <Table
+          data={manyUsers}
+          columns={baseColumns}
+          getRowId={getRowId}
+          labels={labels}
+          pagination={{ pageSize: 10 }}
+          selection={{ mode: 'multiple' }}
+          expansion={{ render: () => 'detail' }}
+        />,
+      );
+
+      expect(screen.getByRole('navigation', { name: 'Sayfalama' })).toBeInTheDocument();
+      expect(screen.getByText(/^Sayfa 1 \/ \d+$/)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(`^${manyUsers.length} kayıttan 1-10$`))).toBeInTheDocument();
+      for (const name of ['İlk sayfa', 'Önceki sayfa', 'Sonraki sayfa', 'Son sayfa', '1. sayfa, geçerli sayfa', '2. sayfaya git']) {
+        expect(screen.getByRole('button', { name })).toBeInTheDocument();
+      }
+      expect(screen.getByRole('combobox', { name: 'Sayfa başına satır' })).toBeInTheDocument();
+      expect(screen.getByRole('spinbutton', { name: 'Sayfaya git' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Git' })).toBeInTheDocument();
+      expect(screen.getByRole('checkbox', { name: 'Tüm satırları seç' })).toBeInTheDocument();
+      expect(screen.getAllByRole('checkbox', { name: 'Satırı seç' }).length).toBe(10);
+      expect(screen.getByText('Satır detayı')).toBeInTheDocument();
+      const [firstExpand] = screen.getAllByRole('button', { name: 'Satırı aç' });
+      await user.click(firstExpand);
+      expect(screen.getByRole('button', { name: 'Satırı kapat' })).toBeInTheDocument();
+
+      rerender(<Table data={[]} columns={baseColumns} getRowId={getRowId} labels={{ ...labels, noItems: 'Kayıt yok', pageStatusUnknown: 'Sayfa {page}' }} pagination />);
+      expect(screen.getByText('Veri yok')).toBeInTheDocument();
+      expect(screen.getByText('Kayıt yok')).toBeInTheDocument();
+      expect(screen.getByText('Sayfa 1')).toBeInTheDocument();
+      rerender(<Table data={users} columns={baseColumns} getRowId={getRowId} labels={{ rowSelection: 'Satır seçimi' }} selection={{ mode: 'single' }} />);
+      expect(screen.getByText('Satır seçimi')).toBeInTheDocument();
+      rerender(<Table data={users} columns={baseColumns} getRowId={getRowId} labels={labels} loading />);
+      expect(screen.getByRole('status', { name: 'Yükleniyor' })).toBeInTheDocument();
+    });
+
+    it('takes the filter labels app-wide from provider defaultProps', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
+      renderPlain(
+        <TakeoffSparProvider components={{ Table: { defaultProps: { labels: { filterClear: 'Temizle', filterButton: 'Sütunu filtrele' } } } }}>
+          <Table data={users} columns={columns} getRowId={getRowId} />
+        </TakeoffSparProvider>,
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Sütunu filtrele' }));
+      await user.type(await screen.findByRole('searchbox'), 'a');
+      expect(screen.getByRole('button', { name: 'Temizle' })).toBeInTheDocument();
+    });
+
+    it('falls back to the default labels when given empty or whitespace-only strings', async () => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} labels={{ filterClear: '   ', filterButton: '' }} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
+      await user.type(await screen.findByRole('searchbox'), 'a');
+      expect(screen.getByRole('button', { name: 'Clear' })).toBeInTheDocument();
+    });
+
     it('removes the checkbox filter once the last option is unchecked', async () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
@@ -735,7 +1183,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} filtering={{ onChange }} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       await user.click(await screen.findByRole('checkbox', { name: 'Admin' }));
       await user.click(screen.getByRole('checkbox', { name: 'User' }));
       expect(onChange).toHaveBeenLastCalledWith([{ id: 'role', value: ['admin', 'user'] }]);
@@ -748,7 +1196,7 @@ describe('Table (props-first)', () => {
       await user.click(screen.getByRole('checkbox', { name: 'User' }));
       expect(onChange).toHaveBeenLastCalledWith([]);
       expect(bodyRowTexts(container)).toEqual(['admin', 'user', 'admin']);
-      expect(screen.getByRole('button', { name: 'Filter column' })).not.toHaveAttribute('data-active');
+      expect(screen.getByRole('button', { name: 'Filter Role' })).not.toHaveAttribute('data-active');
     });
 
     it('renders the `multi-select` preset as a checkbox list with membership matching', async () => {
@@ -770,7 +1218,7 @@ describe('Table (props-first)', () => {
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       expect(await screen.findAllByRole('checkbox')).toHaveLength(3);
       await user.click(screen.getByRole('checkbox', { name: 'Linus' }));
       await user.click(screen.getByRole('checkbox', { name: 'Ada' }));
@@ -795,7 +1243,7 @@ describe('Table (props-first)', () => {
 
       rerender(ui('admin'));
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Grace']);
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
       expect(within(panel).getByRole('combobox')).toHaveTextContent('Admin');
     });
@@ -806,13 +1254,13 @@ describe('Table (props-first)', () => {
       const withPlaceholder: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', placeholder: 'Pick a role', options } }];
       const { unmount } = render(<Table data={users} columns={withPlaceholder} getRowId={getRowId} />);
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Pick a role');
       unmount();
 
       const withoutPlaceholder: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter: { type: 'select', options } }];
       render(<Table data={users} columns={withoutPlaceholder} getRowId={getRowId} />);
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
       expect(within(document.querySelector('[data-slot="filter-panel"]') as HTMLElement).getByRole('combobox')).toHaveTextContent('Select');
     });
 
@@ -833,7 +1281,7 @@ describe('Table (props-first)', () => {
         },
       ];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
 
       await user.click(trigger);
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
@@ -860,7 +1308,7 @@ describe('Table (props-first)', () => {
         },
       ];
       const { container } = render(<Table data={users} columns={columns} getRowId={getRowId} filtering={{ onChange }} />);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Role' });
 
       await user.click(trigger);
       const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
@@ -935,8 +1383,8 @@ describe('Table (props-first)', () => {
       );
 
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus', 'Grace']);
-      const triggers = screen.getAllByRole('button', { name: 'Filter column' });
-      expect(triggers).toHaveLength(4);
+      // Each trigger is named after its column through the default `Filter {column}`.
+      const triggers = ['Name', 'Role', 'City', 'Age'].map(column => screen.getByRole('button', { name: `Filter ${column}` }));
       for (const trigger of triggers) expect(trigger).not.toHaveAttribute('data-active');
     });
 
@@ -944,7 +1392,7 @@ describe('Table (props-first)', () => {
       const user = userEvent.setup();
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       render(<Table data={users} columns={columns} getRowId={getRowId} />);
-      const trigger = screen.getByRole('button', { name: 'Filter column' });
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
 
       trigger.focus();
       await user.keyboard('{Enter}');
@@ -1398,7 +1846,7 @@ describe('Table (props-first)', () => {
 
       expect(onDataRequest).toHaveBeenLastCalledWith({ pagination: { pageIndex: 0, pageSize: 10 }, sorting: [], filters: [{ id: 'role', value: 'admin' }] });
       expect(bodyRowTexts(container)).toEqual(['Ada', 'Linus', 'Grace']);
-      expect(screen.getByRole('button', { name: 'Filter column' })).toHaveAttribute('data-active', '');
+      expect(screen.getByRole('button', { name: 'Filter Role' })).toHaveAttribute('data-active', '');
 
       await user.click(screen.getByRole('button', { name: 'Name' }));
       expect(screen.getByRole('columnheader', { name: /Name/ })).toHaveAttribute('aria-sort', 'ascending');
@@ -1427,7 +1875,7 @@ describe('Table (props-first)', () => {
         />,
       );
 
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       await user.type(await screen.findByRole('searchbox'), 'A');
 
       expect(onPaginationChange).toHaveBeenCalledTimes(1);
@@ -1650,6 +2098,19 @@ describe('Table (props-first)', () => {
       expect(headerFor(container, 'Key').querySelector('.tk-table-resize-handle')).toBeNull();
       expect(handleFor('Name')).toHaveClass('tk-table-resize-handle');
       expect(handleFor('Name')).toHaveAttribute('data-slot', 'resize-handle');
+    });
+
+    it('names the handles from `labels.resizeHandle`, preferring `filter.label` for `{column}`', () => {
+      const columns: TableColumnDef<User>[] = [
+        { id: 'name', header: () => <span>Ad</span>, accessor: 'name', filter: { type: 'text', label: 'Ad soyad' } },
+        { id: 'role', header: 'Rol', accessor: 'role' },
+        { id: 'age', header: 'Yaş', accessor: 'age' },
+      ];
+      render(<Table data={users} columns={columns} getRowId={getRowId} columnResizing labels={{ resizeHandle: '{column} sütununu yeniden boyutlandır' }} />);
+      expect(screen.getAllByRole('separator').map(handle => handle.getAttribute('aria-label'))).toEqual([
+        'Ad soyad sütununu yeniden boyutlandır',
+        'Rol sütununu yeniden boyutlandır',
+      ]);
     });
 
     it('freezes the measured layout on the first drag and commits once on release', () => {
@@ -3045,6 +3506,8 @@ describe('Table (props-first)', () => {
     });
 
     it('routes classNames.filterButton and slotProps.filterButton (theme + instance) onto the filter trigger', () => {
+      // The ignored aria-label triggers the once-only dev warning; keep it out of the output.
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
       const columns: TableColumnDef<User>[] = [{ id: 'name', header: 'Name', accessor: 'name', filter: 'text' }];
       renderPlain(
         <TakeoffSparProvider
@@ -3065,8 +3528,8 @@ describe('Table (props-first)', () => {
         </TakeoffSparProvider>,
       );
 
-      // The instance `aria-label` replaces the built-in "Filter column" label.
-      const trigger = screen.getByRole('button', { name: 'Filter names' });
+      // The name comes only from `labels`: a slotProps `aria-label` is ignored.
+      const trigger = screen.getByRole('button', { name: 'Filter Name' });
       expect(trigger).toHaveClass('tk-table-filter-button', 'theme-filter-button', 'instance-filter-button');
       expect(trigger).toHaveAttribute('title', 'Instance title');
       expect(trigger).toHaveAttribute('lang', 'en');
@@ -3155,7 +3618,7 @@ describe('Table (props-first)', () => {
           loading
         />,
       );
-      await user.click(screen.getByRole('button', { name: 'Filter column' }));
+      await user.click(screen.getByRole('button', { name: 'Filter Name' }));
       expect(await screen.findByRole('searchbox')).toBeInTheDocument();
       for (const entry of slots.filter(([slot]) => slot !== 'empty')) expectSlotLayers(entry);
       await user.keyboard('{Escape}');
@@ -3189,8 +3652,24 @@ describe('Table (props-first)', () => {
       const { container } = render(<Table data={manyUsers} columns={columns} getRowId={getRowId} pagination={{ pageSize: 5 }} loading />);
 
       expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Filter column' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Filter Name' })).toBeInTheDocument();
       expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it.each([
+      ['text', { type: 'text' as const }],
+      ['select', { type: 'select' as const, options: [{ label: 'Admin', value: 'admin' }] }],
+      ['radio', { type: 'radio' as const, options: [{ label: 'Admin', value: 'admin' }] }],
+      ['checkbox', { type: 'checkbox' as const, options: [{ label: 'Admin', value: 'admin' }] }],
+    ])('has no axe violations in an open %s filter panel', async (_type, filter) => {
+      const user = userEvent.setup();
+      const columns: TableColumnDef<User>[] = [{ id: 'role', header: 'Role', accessor: 'role', filter }];
+      render(<Table data={users} columns={columns} getRowId={getRowId} />);
+
+      await user.click(screen.getByRole('button', { name: 'Filter Role' }));
+      const panel = document.querySelector('[data-slot="filter-panel"]') as HTMLElement;
+      expect(panel).toBeInTheDocument();
+      expect(await axe(panel)).toHaveNoViolations();
     });
 
     it('names every single-selection radio and passes axe', async () => {
@@ -3209,7 +3688,7 @@ describe('Table (props-first)', () => {
     it('exposes the go-to-page submit button by name and passes axe on a paginated table', async () => {
       const { container } = render(<Table data={manyUsers} columns={baseColumns} getRowId={getRowId} pagination={{ pageSize: 5 }} />);
 
-      expect(screen.getByRole('button', { name: 'Go to page' })).not.toHaveAttribute('aria-hidden');
+      expect(screen.getByRole('button', { name: 'Go' })).not.toHaveAttribute('aria-hidden');
       expect(await axe(container)).toHaveNoViolations();
     });
   });
