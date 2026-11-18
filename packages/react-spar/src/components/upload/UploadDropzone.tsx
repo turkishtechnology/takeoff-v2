@@ -5,7 +5,7 @@ import { useComponentTheme } from '../../provider';
 
 import { UploadDropzoneBase } from './base';
 import { useUploadContext } from './context';
-import { acceptMatchesType } from './helpers';
+import { dragStateFor, type DragState } from './helpers';
 import type { UploadDropzoneOwnProps, UploadDropzoneProps } from './types';
 
 type UploadDropzoneResolvedProps = Omit<UploadDropzoneOwnProps, 'classNames' | 'slotProps'> & {
@@ -16,17 +16,6 @@ type UploadDropzoneResolvedProps = Omit<UploadDropzoneOwnProps, 'classNames' | '
   onDragOver?: (event: DragEvent<HTMLElement>) => void;
   onDragLeave?: (event: DragEvent<HTMLElement>) => void;
   onDrop?: (event: DragEvent<HTMLElement>) => void;
-};
-
-type DragState = 'accept' | 'reject';
-
-const dragStateFor = (event: DragEvent<HTMLElement>, accept: string | undefined): DragState => {
-  const items = event.dataTransfer?.items;
-  if (!items || items.length === 0) return 'accept';
-  for (const item of Array.from(items)) {
-    if (item.kind === 'file' && !acceptMatchesType(item.type, accept)) return 'reject';
-  }
-  return 'accept';
 };
 
 export const UploadDropzone = <T extends ElementType = 'div'>(props: UploadDropzoneProps<T>) => {

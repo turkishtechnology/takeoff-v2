@@ -351,3 +351,19 @@ export const validateFiles = (incoming: File[], options: ValidateOptions): Valid
 
   return { accepted, rejected };
 };
+
+export type DragState = 'accept' | 'reject';
+
+/**
+ * Whether a drag's payload would be taken: `reject` as soon as one file's type
+ * misses `accept`. Browsers that hide the items during the drag read as accept;
+ * the drop is validated again anyway.
+ */
+export const dragStateFor = (event: { dataTransfer: Pick<DataTransfer, 'items'> | null }, accept: string | undefined): DragState => {
+  const items = event.dataTransfer?.items;
+  if (!items || items.length === 0) return 'accept';
+  for (const item of Array.from(items)) {
+    if (item.kind === 'file' && !acceptMatchesType(item.type, accept)) return 'reject';
+  }
+  return 'accept';
+};
