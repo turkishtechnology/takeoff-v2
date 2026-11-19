@@ -10,6 +10,8 @@
     "gen:api": "node scripts/generate-api-mdx.mjs",
     "gen:api:check": "node scripts/check-api-mdx.mjs",
     "gen:icons": "node scripts/generate-icons.mjs",
+    "gen:icons-changelog": "node scripts/generate-icons-changelog.mjs",
+    "gen:icons-changelog:check": "node scripts/generate-icons-changelog.mjs --check",
     "gen:llms": "node scripts/generate-llms.mjs",
     "predev": "pnpm run build:tokens && pnpm run build:spar && pnpm run build:react-spar && pnpm run build:tailwind && pnpm run gen:api && pnpm run gen:icons && pnpm run gen:llms",
     "dev": "docusaurus start",

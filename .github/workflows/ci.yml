@@ -76,6 +76,12 @@ jobs:
       - name: Validate docs API tables are in sync
         run: pnpm --filter docs gen:api:check
 
+      # The Takeoff Icons changelog is generated from the published packages
+      # (it needs the network, so it is committed). Fail when the docs install a
+      # newer @takeoff-icons version than the changelog covers.
+      - name: Validate the icons changelog covers the installed version
+        run: pnpm --filter docs gen:icons-changelog:check
+
       - name: Validate markdown link integrity
         uses: lycheeverse/lychee-action@v2
         with:

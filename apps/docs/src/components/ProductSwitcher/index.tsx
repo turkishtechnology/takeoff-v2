@@ -64,9 +64,8 @@ const PRODUCTS: readonly Product[] = [
     prefix: '/icons',
     home: '/icons/',
     links: [
-      { label: 'Docs', to: '/icons/', activeBaseRegex: '^/icons/' },
-      // Takeoff Icons is released from its own repository; its release notes live there.
-      { label: 'Changelog', href: 'https://github.com/turkishtechnology/takeoff-icons/releases' },
+      { label: 'Docs', to: '/icons/', activeBaseRegex: '^/icons/(?!changelog)' },
+      { label: 'Changelog', to: '/icons/changelog', activeBaseRegex: '^/icons/changelog' },
     ],
     repo: 'https://github.com/turkishtechnology/takeoff-icons',
     getStarted: '/icons/installation',

@@ -16,6 +16,7 @@ const sidebars: SidebarsConfig = {
       items: ['usage/react', 'usage/font', 'usage/svg'],
     },
     'metadata',
+    'changelog',
   ],
 };
 

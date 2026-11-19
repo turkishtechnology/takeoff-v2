@@ -738,8 +738,9 @@ p {
   font-family: var(--docs-mono-family);
 }
 
-/* Links (structural — color flexes per mode via --ifm-link-color) */
-.theme-doc-markdown a:not(.card):not([class*='button']) {
+/* Links (structural — color flexes per mode via --ifm-link-color). Tiles and other
+   link-shaped components opt out with `data-plain-link`. */
+.theme-doc-markdown a:not(.card):not([class*='button']):not([data-plain-link]) {
   text-decoration: none;
   border-bottom: 1px dashed color-mix(in srgb, var(--ifm-link-color, var(--primary-base)) 45%, transparent);
   transition:
@@ -747,7 +748,7 @@ p {
     border-color 150ms ease;
 }
 
-.theme-doc-markdown a:not(.card):not([class*='button']):hover {
+.theme-doc-markdown a:not(.card):not([class*='button']):not([data-plain-link]):hover {
   border-bottom-color: currentColor;
 }
 

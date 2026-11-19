@@ -87,6 +87,12 @@ function DialogHost({
 export default function IconGallery() {
   const svgBaseUrl = useBaseUrl('/icon-svg/');
   const [query, setQuery] = useState('');
+  // `?q=` pre-fills the search, so other pages (e.g. the changelog) can link to one icon.
+  // Read after mount: the static HTML has no query string.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get('q');
+    if (q) setQuery(q);
+  }, []);
   const [category, setCategory] = useState('all');
   const [style, setStyle] = useState<IconStyle>(DEFAULT_STYLE);
   const [type, setType] = useState(DEFAULT_TYPE);
