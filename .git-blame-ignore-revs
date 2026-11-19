@@ -3,3 +3,6 @@
 
 # style(spar): apply the workspace prettier config
 e41eeb1745356c9c863a45f0945383c1ebe71d31
+
+# style(docs): apply the workspace prettier config to the headless docs
+e12294b0655bb07dca6c2ad33aa0b1d945964d1f
