@@ -10,6 +10,9 @@
   align-self: flex-end;
   font-weight: 600;
   font-size: 2.25rem;
+  // Infima's default; this site inherits a fixed 24px, which made the
+  // -25px title margin below overlap the two lines.
+  line-height: 1.65;
   margin: 0 0 0 60px;
 }
 

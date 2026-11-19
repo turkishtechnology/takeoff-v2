@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import type { AnatomyViewerProps, AnatomyPart } from '../../../types/anatomy';
+import type { AnatomyViewerProps, AnatomyPart } from '@site/src/types/headless/anatomy';
 
 const AnatomyViewer: React.FC<AnatomyViewerProps> = ({ parts, children }) => {
   const containerRef = useRef<HTMLDivElement>(null);

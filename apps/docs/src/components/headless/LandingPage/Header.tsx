@@ -37,7 +37,7 @@ export default function LandingHeader() {
           </defs>
         </svg>
         <div className='landing-header-content'>
-          <Link to='/docs/introduction' className='landing-header-top'>
+          <Link to='/headless/docs/introduction' className='landing-header-top'>
             <Translate description="WHAT'S NEW">landing.whats.new</Translate>
             <div className='landing-header-divider' />
             <Translate description='Faster insights with five new features'>
@@ -83,7 +83,7 @@ export default function LandingHeader() {
                 landing.description
               </Translate>
             </div>
-            <Button as={Link} to='/docs/introduction' className='landing-header-getstarted'>
+            <Button as={Link} to='/headless/docs/introduction' className='landing-header-getstarted'>
               <Translate description='Get Started'>landing.get.started</Translate>
               <svg
                 xmlns='http://www.w3.org/2000/svg'

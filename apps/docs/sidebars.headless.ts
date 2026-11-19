@@ -13,7 +13,7 @@ import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
  Create as many sidebars as you want.
  */
 const sidebars: SidebarsConfig = {
-  tutorialSidebar: [
+  headlessSidebar: [
     'introduction',
     'installation',
     'overview',
@@ -31,7 +31,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'link',
       label: 'Accessibility Tests',
-      href: '/accessibility',
+      href: '/headless/accessibility',
     },
   ],
 };

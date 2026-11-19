@@ -1,10 +1,9 @@
-/* eslint-disable @docusaurus/no-untranslated-text, @docusaurus/prefer-docusaurus-heading */
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import { Tabs } from '@turkish-technology/spar';
 
-import '../../../styles/accessibility-demos.scss';
+import '@site/src/css/headless/accessibility-demos.scss';
 
 export default function TabsDemo() {
   const [controlledTab, setControlledTab] = useState('tab-1');
@@ -12,7 +11,7 @@ export default function TabsDemo() {
   return (
     <Layout title='Tabs'>
       <div className='demo-page'>
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
         <h1>Tabs</h1>
@@ -388,7 +387,7 @@ export default function TabsDemo() {
           </div>
         </section>
 
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
       </div>

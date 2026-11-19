@@ -1,15 +1,14 @@
-/* eslint-disable @docusaurus/no-untranslated-text, @docusaurus/prefer-docusaurus-heading */
 import React from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import { Label } from '@turkish-technology/spar';
-import '../../../styles/accessibility-demos.scss';
+import '@site/src/css/headless/accessibility-demos.scss';
 
 export default function LabelDemo() {
   return (
     <Layout title='Label'>
       <div className='demo-page'>
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
         <h1>Label</h1>
@@ -275,7 +274,7 @@ export default function LabelDemo() {
           </div>
         </section>
 
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
       </div>

@@ -1,4 +1,3 @@
-/* eslint-disable @docusaurus/no-untranslated-text, @docusaurus/prefer-docusaurus-heading */
 import React from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
@@ -20,14 +19,14 @@ import {
 import type {
   FlightOption,
   SearchResultRow,
-} from '../../../components/accessibility/aviation/ticketing.types';
+} from '@site/src/components/headless/accessibility/aviation/ticketing.types';
 import {
   airportOptions,
   airportCodeByValue,
   flights,
-} from '../../../components/accessibility/aviation/ticketing.data';
+} from '@site/src/components/headless/accessibility/aviation/ticketing.data';
 
-import './aviation.scss';
+import '@site/src/css/headless/accessibility/aviation.scss';
 
 export default function TicketingPage() {
   const [mode, setMode] = React.useState('flight-search');
@@ -198,7 +197,7 @@ export default function TicketingPage() {
   return (
     <Layout title='Ticketing'>
       <div className='ticketing-page'>
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
         <section className='ticketing-shell' aria-label='Ticketing screen'>

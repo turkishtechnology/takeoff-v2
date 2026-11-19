@@ -1,7 +1,7 @@
 import React from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
-import '../../styles/accessibility-demos.scss';
+import '@site/src/css/headless/accessibility-demos.scss';
 
 const components = [
   'Accordion',
@@ -35,7 +35,7 @@ export default function AccessibilityDemos() {
           {components.map((c) => (
             <Link
               key={c.toLowerCase()}
-              to={`/accessibility/components/${c.toLowerCase()}`}
+              to={`/headless/accessibility/components/${c.toLowerCase()}`}
               className='component-card'
             >
               <span>{c}</span>
@@ -46,10 +46,10 @@ export default function AccessibilityDemos() {
         <div style={{ marginTop: '1.5rem' }}>
           <p>These examples are designed for complex, real-world use cases.</p>
           <div className='component-grid'>
-            <Link to='/accessibility/form' className='component-card'>
+            <Link to='/headless/accessibility/form' className='component-card'>
               <span>Form Demo</span>
             </Link>
-            <Link to='/accessibility/aviation/ticketing' className='component-card'>
+            <Link to='/headless/accessibility/aviation/ticketing' className='component-card'>
               <span>Ticketing Demo</span>
             </Link>
           </div>

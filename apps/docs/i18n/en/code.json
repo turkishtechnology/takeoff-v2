@@ -1,0 +1,170 @@
+{
+  "landing.whats.new": {
+    "message": "NOW AVAILABLE",
+    "description": "WHAT'S NEW"
+  },
+  "landing.insights": {
+    "message": "Production-ready headless components",
+    "description": "Faster insights with five new features"
+  },
+  "landing.hero.accessible": {
+    "message": "Accessible",
+    "description": "Accessible (highlighted word in hero)"
+  },
+  "landing.hero.unstyled": {
+    "message": "headless",
+    "description": "headless (highlighted word in hero)"
+  },
+  "landing.hero.flexible": {
+    "message": "composable",
+    "description": "composable (highlighted word in hero)"
+  },
+  "landing.hero.tagline": {
+    "message": "React components that just work.",
+    "description": "Hero tagline after highlighted words"
+  },
+  "landing.hero.separator.comma": {
+    "message": ", ",
+    "description": "Comma separator"
+  },
+  "landing.hero.separator.and": {
+    "message": " & ",
+    "description": "And separator"
+  },
+  "landing.description": {
+    "message": "An open-source React UI library delivering unstyled, behavior-first primitives. Zero styling opinions, full accessibility built-in. Install via npm and build your design system.",
+    "description": "Open-source library with unstyled, primitive components description"
+  },
+  "landing.get.started": {
+    "message": "Start Building",
+    "description": "Get Started"
+  },
+  "landing.why.takeoff.headless": {
+    "message": "WHY SPAR",
+    "description": "WHY SPAR"
+  },
+  "landing.build.subheader": {
+    "message": "Build",
+    "description": "Build (subheader)"
+  },
+  "landing.smarter": {
+    "message": "Smarter",
+    "description": "Smarter"
+  },
+  "landing.not.harder": {
+    "message": ", Not Harder",
+    "description": ", not Harder"
+  },
+  "landing.speed.up.workflow": {
+    "message": "Ship faster with less code",
+    "description": "Speed up your workflow"
+  },
+  "landing.workflow.description": {
+    "message": "Stop reinventing the wheel. Spar handles state management, accessibility, and keyboard interactions out of the box—so you can focus on what makes your product unique.",
+    "description": "Managing logic-heavy UI components description"
+  },
+  "landing.your.ui.rules": {
+    "message": "Your design, zero compromises",
+    "description": "Your UI, your rules"
+  },
+  "landing.styling.description": {
+    "message": "No more fighting with opinionated styles. Our headless components give you complete design freedom while handling the complex behavior and accessibility under the hood.",
+    "description": "Skip the styling limitations description"
+  },
+  "landing.monthly.downloads": {
+    "message": "Monthly npm downloads",
+    "description": "Monthly npm downloads"
+  },
+  "landing.developers.building": {
+    "message": "Developers building with Spar",
+    "description": "Developers building with Spar"
+  },
+  "landing.github.stars": {
+    "message": "GitHub Stars",
+    "description": "Github Stars"
+  },
+  "landing.headless.components": {
+    "message": "Headless components ready to use",
+    "description": "Headless components included"
+  },
+  "features.wai.aria.ready": {
+    "message": "WAI-ARIA Compliant",
+    "description": "WAI-ARIA Ready"
+  },
+  "features.wai.aria.description": {
+    "message": "Built on WAI-ARIA standards from day one. Spar ensures semantic correctness and proper behavior for assistive technologies.",
+    "description": "Spar follows WAI-ARIA best practices description"
+  },
+  "features.keyboard.support": {
+    "message": "Full Keyboard Navigation",
+    "description": "Full Keyboard Support"
+  },
+  "features.keyboard.description": {
+    "message": "Complete keyboard support with tab, arrow keys, enter/escape—all interactions work exactly as users expect, out of the box.",
+    "description": "All Spar components support full keyboard interaction description"
+  },
+  "features.focus.handling": {
+    "message": "Intelligent Focus Management",
+    "description": "Smart Focus Handling"
+  },
+  "features.focus.description": {
+    "message": "Focus management that works predictably by default, with full customization options for complex UI flows and modal interactions.",
+    "description": "Focus management works as expected by default description"
+  },
+  "features.screen.reader": {
+    "message": "Screen Reader Optimized",
+    "description": "Screen Reader Friendly"
+  },
+  "features.screen.reader.description": {
+    "message": "Rigorously tested with NVDA, VoiceOver, and JAWS to prevent common accessibility pitfalls and ensure consistent behavior.",
+    "description": "Tested across major screen readers description"
+  },
+  "aidriven.features": {
+    "message": "AI-POWERED",
+    "description": "FEATURES"
+  },
+  "aidriven.ai.driven": {
+    "message": "Copilot-Ready",
+    "description": "Ai Driven"
+  },
+  "aidriven.development": {
+    "message": "Development",
+    "description": "Development"
+  },
+  "aidriven.description": {
+    "message": "Pre-configured GitHub Copilot instructions and prompts in .github folder ensure consistent, team-aligned AI assistance throughout your development workflow.",
+    "description": "Support for error-free and rapid development processes with artificial intelligence assistance"
+  },
+  "aidriven.explore": {
+    "message": "Learn More",
+    "description": "Explore"
+  },
+  "ending.ready.to.use": {
+    "message": "Ready to build with",
+    "description": "Are you ready to use the"
+  },
+  "ending.headless.library": {
+    "message": "headless Spar?",
+    "description": "headless Spar?"
+  },
+  "theming.themes": {
+    "message": "STYLING",
+    "description": "THEMES"
+  },
+  "theming.simple": {
+    "message": "Effortless",
+    "description": "Simple"
+  },
+  "theming.development": {
+    "message": "Customization",
+    "description": "Development"
+  },
+  "theming.description": {
+    "message": "Designed for modern design systems. Bring your own styles, tokens, or CSS framework—Spar stays out of your way.",
+    "description": "Built for the modern user interfaces to engage users"
+  },
+  "theming.try.it.now": {
+    "message": "Explore Components",
+    "description": "Try It Now"
+  }
+}

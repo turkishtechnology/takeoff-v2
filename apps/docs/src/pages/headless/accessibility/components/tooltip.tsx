@@ -1,9 +1,8 @@
-/* eslint-disable @docusaurus/no-untranslated-text, @docusaurus/prefer-docusaurus-heading */
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import { Tooltip } from '@turkish-technology/spar';
-import '../../../styles/accessibility-demos.scss';
+import '@site/src/css/headless/accessibility-demos.scss';
 
 export default function TooltipDemo() {
   const [controlledOpen, setControlledOpen] = useState(false);
@@ -11,7 +10,7 @@ export default function TooltipDemo() {
   return (
     <Layout title='Tooltip'>
       <div className='demo-page'>
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
         <h1>Tooltip</h1>
@@ -317,7 +316,7 @@ export default function TooltipDemo() {
           </div>
         </section>
 
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
       </div>

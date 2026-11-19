@@ -12,7 +12,7 @@ export default function Ending() {
         </div>
       </div>
       <div>
-        <img src='img/ending-bg.png' />
+        <img src='/img/headless/ending-bg.png' />
       </div>
     </div>
   );

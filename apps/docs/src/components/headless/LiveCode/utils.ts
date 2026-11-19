@@ -3,15 +3,14 @@ import { ErrorState } from './types';
 /** Best-effort extraction of error name, message, line and column from a react-live error string. */
 export function parseErrorString(raw: string): Omit<ErrorState, 'hasError' | 'timestamp'> {
   let errorName = 'Error';
-  let errorMessage = raw;
-  let stack = '';
+  let errorMessage: string;
   let line: number | null = null;
   let column: number | null = null;
 
   // Separate first line (message) from stack trace
   const nlIdx = raw.indexOf('\n');
   const firstLine = nlIdx > -1 ? raw.slice(0, nlIdx) : raw;
-  stack = nlIdx > -1 ? raw.slice(nlIdx + 1) : '';
+  const stack = nlIdx > -1 ? raw.slice(nlIdx + 1) : '';
 
   // Parse "ErrorType: message"
   const colonIdx = firstLine.indexOf(':');

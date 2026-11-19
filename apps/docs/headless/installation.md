@@ -157,7 +157,7 @@ export function AccordionSection() {
 
 After installing Spar:
 
-1. **Explore Components:** Check out the [Components](/docs/overview) page to see all available components
+1. **Explore Components:** Check out the [Components](/headless/docs/overview) page to see all available components
 2. **Learn Patterns:** Read component documentation for usage examples
 3. **Style Components:** Choose a preferred styling solution and customize
 4. **Build Accessible UIs:** All components come with built-in accessibility

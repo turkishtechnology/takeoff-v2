@@ -39,7 +39,7 @@ Install Spar with npm, yarn, pnpm, or bun:
   </TabItem>
 </Tabs>
 
-See the [Installation Guide](/docs/installation) for requirements, framework setup, and more detailed instructions.
+See the [Installation Guide](/headless/docs/installation) for requirements, framework setup, and more detailed instructions.
 
 After installation, import a component and start building:
 
@@ -142,7 +142,7 @@ Spar provides **15 production-ready headless components**:
 - **Overlays:** Dialog, DropdownMenu, Popover, Tooltip
 - **Utilities:** Collapsible
 
-Plus utility hooks and TypeScript types. See all components in the [Components](/docs/overview) section.
+Plus utility hooks and TypeScript types. See all components in the [Components](/headless/docs/overview) section.
 
 ## Why Headless?
 
@@ -160,8 +160,8 @@ _Spar handles the hard parts-state management, accessibility, keyboard navigatio
 
 Ready to get started?
 
-1. **[Install Spar](/docs/installation)** - Set up the library in a React app
-2. **[Browse Components](/docs/overview)** - Explore all 15 available components
+1. **[Install Spar](/headless/docs/installation)** - Set up the library in a React app
+2. **[Browse Components](/headless/docs/overview)** - Explore all 15 available components
 
 ## Community & Support
 

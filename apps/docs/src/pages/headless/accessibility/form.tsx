@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from '@turkish-technology/spar';
 
-import '../../styles/accessibility-demos.scss';
+import '@site/src/css/headless/accessibility-demos.scss';
 
 type FormInputs = {
   fullName: string;
@@ -65,7 +65,7 @@ export default function FormDemo() {
   return (
     <Layout title='Form'>
       <div className='demo-page'>
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
         <h1>Form</h1>

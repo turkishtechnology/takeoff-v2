@@ -1,12 +1,12 @@
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import LandingHeader from '../components/LandingPage/Header';
-import LandingSubHeader from '../components/LandingPage/SubHeader';
-import Features from '../components/LandingPage/Features';
-import AIDriven from '../components/LandingPage/AIDriven';
-import Theming from '../components/LandingPage/Theming';
-import Ending from '../components/LandingPage/Ending';
-import '../styles/LandingPage/index.scss';
+import LandingHeader from '@site/src/components/headless/LandingPage/Header';
+import LandingSubHeader from '@site/src/components/headless/LandingPage/SubHeader';
+import Features from '@site/src/components/headless/LandingPage/Features';
+import AIDriven from '@site/src/components/headless/LandingPage/AIDriven';
+import Theming from '@site/src/components/headless/LandingPage/Theming';
+import Ending from '@site/src/components/headless/LandingPage/Ending';
+import '@site/src/css/headless/LandingPage/index.scss';
 
 export default function Home() {
   const { siteConfig } = useDocusaurusContext();

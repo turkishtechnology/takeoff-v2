@@ -1030,3 +1030,8 @@ footer.footer .footer__copyright {
   background: currentColor;
   flex: 0 0 auto;
 }
+
+/* Product switcher: the version pill sits next to the product name. */
+.navbar__product-switcher .navbar__version-pill {
+  margin-left: 8px;
+}

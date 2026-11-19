@@ -1,10 +1,9 @@
-/* eslint-disable @docusaurus/no-untranslated-text, @docusaurus/prefer-docusaurus-heading */
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import { Select } from '@turkish-technology/spar';
 
-import '../../../styles/accessibility-demos.scss';
+import '@site/src/css/headless/accessibility-demos.scss';
 
 export default function SelectDemo() {
   const [controlled, setControlled] = useState('');
@@ -12,7 +11,7 @@ export default function SelectDemo() {
   return (
     <Layout title='Select'>
       <div className='demo-page'>
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
         <h1>Select</h1>
@@ -300,7 +299,7 @@ export default function SelectDemo() {
           </div>
         </section>
 
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
       </div>

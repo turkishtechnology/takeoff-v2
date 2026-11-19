@@ -44,7 +44,7 @@ export default function Theming() {
             </Translate>
           </div>
         </div>
-        <Link to='/docs/introduction' className='theming-cta'>
+        <Link to='/headless/docs/introduction' className='theming-cta'>
           <div>
             <Translate description='Try It Now'>theming.try.it.now</Translate>
           </div>
@@ -52,7 +52,7 @@ export default function Theming() {
       </div>
       <div className='theming-image'>
         <img
-          src={color === 'white' ? 'img/design-example-dark.png' : 'img/design-example.png'}
+          src={color === 'white' ? '/img/headless/design-example-dark.png' : '/img/headless/design-example.png'}
           alt='Design example'
         ></img>
       </div>

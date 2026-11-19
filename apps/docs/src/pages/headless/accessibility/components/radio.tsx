@@ -1,9 +1,8 @@
-/* eslint-disable @docusaurus/no-untranslated-text, @docusaurus/prefer-docusaurus-heading */
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import { Radio, Label } from '@turkish-technology/spar';
-import '../../../styles/accessibility-demos.scss';
+import '@site/src/css/headless/accessibility-demos.scss';
 
 export default function RadioDemo() {
   const [controlled, setControlled] = useState<string | undefined>(undefined);
@@ -11,7 +10,7 @@ export default function RadioDemo() {
   return (
     <Layout title='Radio'>
       <div className='demo-page'>
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
         <h1>Radio</h1>
@@ -371,7 +370,7 @@ export default function RadioDemo() {
           </div>
         </section>
 
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
       </div>

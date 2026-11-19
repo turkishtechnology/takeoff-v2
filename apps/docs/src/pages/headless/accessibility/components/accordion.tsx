@@ -1,9 +1,8 @@
-/* eslint-disable @docusaurus/no-untranslated-text, @docusaurus/prefer-docusaurus-heading */
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
-import { Accordion } from '@turkish-technology/spar';
-import '../../../styles/accessibility-demos.scss';
+import { Accordion, type AccordionCurrentValue } from '@turkish-technology/spar';
+import '@site/src/css/headless/accessibility-demos.scss';
 
 const ChevronIcon = () => (
   <svg className='demo-chevron' width='16' height='16' viewBox='0 0 20 20' fill='currentColor'>
@@ -12,12 +11,12 @@ const ChevronIcon = () => (
 );
 
 export default function AccordionDemo() {
-  const [controlledValue, setControlledValue] = useState<string | string[]>('item-1');
+  const [controlledValue, setControlledValue] = useState<AccordionCurrentValue>('item-1');
 
   return (
     <Layout title='Accordion'>
       <div className='demo-page'>
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
         <h1>Accordion</h1>
@@ -397,7 +396,7 @@ export default function AccordionDemo() {
           </div>
         </section>
 
-        <Link to='/accessibility' className='back-link'>
+        <Link to='/headless/accessibility' className='back-link'>
           ← All Demos
         </Link>
       </div>

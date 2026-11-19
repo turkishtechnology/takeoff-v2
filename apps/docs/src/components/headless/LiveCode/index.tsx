@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import '../../styles/LiveCode.scss';
+import '@site/src/css/headless/LiveCode.scss';
 import { LiveProvider, LiveEditor } from 'react-live';
 import { format } from 'prettier/standalone';
 import prettierPluginBabel from 'prettier/plugins/babel';
@@ -401,7 +401,6 @@ export const LiveCode = ({ code, cssCode }: LiveCodeProps) => {
               {activeTab === 'js' ? (
                 <LiveEditor theme={selectedTheme} className='live-editor' code={formattedCode} />
               ) : (
-                // @ts-ignore
                 <Highlight theme={selectedTheme} code={formattedCssCode} language='css'>
                   {({ className, style, tokens, getLineProps, getTokenProps }) => (
                     <pre
