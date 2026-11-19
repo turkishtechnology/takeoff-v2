@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 100%;
 }
 .subheader-title-group {
   display: flex;
@@ -19,21 +20,38 @@
 }
 .subheader-main-title {
   display: flex;
-  font-size: 3rem;
+  flex-wrap: wrap;
+  font-size: clamp(2rem, 1.25rem + 2.4vw, 3rem);
   font-weight: 600;
-  gap: 0.5rem;
-  line-height: 48px;
+  gap: 0 0.5rem;
+  line-height: 1.15;
 }
 .subheader-main-title-accent {
   color: #c90019;
 }
+// Narrow screens: flow the title as text, so ", Not Harder" breaks between
+// words and the comma stays on the line before instead of starting a new one.
+@media (max-width: 768px) {
+  .subheader-main-title {
+    display: block;
+  }
+  .subheader-main-title-accent {
+    display: inline;
+    margin: 0 0.25em;
+  }
+}
 .subheader-features {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 .subheader-feature {
   display: flex;
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 1rem + 0.8vw, 1.5rem);
   flex-direction: column;
   gap: 0.5rem;
 }

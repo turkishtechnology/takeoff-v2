@@ -1035,3 +1035,17 @@ footer.footer .footer__copyright {
 .navbar__product-switcher .navbar__version-pill {
   margin-left: 8px;
 }
+
+/* Keep navbar labels on one line ("AI assistants", "Takeoff Headless v0.3.2"). */
+.navbar__items .navbar__link {
+  white-space: nowrap;
+}
+
+/* Between the mobile menu breakpoint and a roomy desktop, the brand text and
+   the switcher do not both fit; the switcher already names the product, so the
+   brand keeps only its logo. */
+@media (min-width: 997px) and (max-width: 1240px) {
+  .navbar__brand .navbar__title {
+    display: none;
+  }
+}

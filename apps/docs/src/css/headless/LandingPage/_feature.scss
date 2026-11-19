@@ -1,7 +1,10 @@
 .features-page {
   position: relative;
+  width: 100%;
 
   .hero-image {
+    max-width: none;
+    pointer-events: none;
     position: absolute;
     z-index: 0;
     top: -25%;
@@ -14,8 +17,13 @@
   }
   .features-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1.5rem;
+    width: 100%;
+
+    @media (max-width: 768px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
   .features-col {
     display: grid;
@@ -41,8 +49,8 @@
     gap: 4px;
   }
   .features-title {
-    font-size: 24px;
-    line-height: 30px;
+    font-size: clamp(20px, 1rem + 0.6vw, 24px);
+    line-height: 1.25;
   }
   .features-desc {
     display: flex;
