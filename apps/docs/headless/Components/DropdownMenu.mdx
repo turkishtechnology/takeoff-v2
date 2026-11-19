@@ -1,0 +1,784 @@
+---
+title: DropdownMenu
+description: Accessible dropdown menu component with keyboard navigation, typeahead search, and complete ARIA support.
+---
+
+import React from 'react';
+import LiveCode from '../../src/components/LiveCode';
+import AnatomyViewer from '../../src/components/AnatomyViewer/AnatomyViewer';
+import { DropdownMenu } from '@turkish-technology/spar';
+
+# DropdownMenu
+
+Accessible dropdown menu component for creating interactive command menus with keyboard navigation, typeahead search, and full ARIA support.
+
+## Live Demo
+
+<div className='dropdown-demo-container'>
+<LiveCode
+  code={`<div className='dropdown-demo-container'>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger className='dropdown-trigger'>
+          Options
+          <svg
+            className='dropdown-svg'
+            xmlns='http://www.w3.org/2000/svg'
+            width='20'
+            height='20'
+            viewBox='0 0 20 20'
+            fill='none'
+          >
+            <path d='M13.2292 7.5001L9.99583 10.7334L6.7625 7.5001C6.4375 7.1751 5.9125 7.1751 5.5875 7.5001C5.2625 7.8251 5.2625 8.3501 5.5875 8.6751L9.4125 12.5001C9.7375 12.8251 10.2625 12.8251 10.5875 12.5001L14.4125 8.6751C14.7375 8.3501 14.7375 7.8251 14.4125 7.5001C14.0875 7.18343 13.5542 7.1751 13.2292 7.5001Z' />
+          </svg>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content className='dropdown-content'>
+          <DropdownMenu.Viewport className='dropdown-viewport'>
+            <DropdownMenu.Item className='dropdown-item'>
+              <span className='dropdown-item-avatar'></span>
+              Alice
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className='dropdown-item'>
+              <span className='dropdown-item-avatar'></span>
+              Bob
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className='dropdown-item'>
+              <span className='dropdown-item-avatar'></span>
+              Charlie
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className='dropdown-item'>
+              <span className='dropdown-item-avatar'></span>
+              Diana
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className='dropdown-item'>
+              <span className='dropdown-item-avatar'></span>
+              Ethan
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className='dropdown-item'>
+              <span className='dropdown-item-avatar'></span>
+              Fiona
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className='dropdown-item'>
+              <span className='dropdown-item-avatar'></span>
+              George
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className='dropdown-item'>
+              <span className='dropdown-item-avatar'></span>
+              Hannah
+            </DropdownMenu.Item>
+          </DropdownMenu.Viewport>
+          <DropdownMenu.Arrow className='dropdown-arrow' />
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </div>`}
+    cssCode={`.dropdown-demo-container .dropdown-trigger {
+  min-width: 180px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #e1e4ea;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='dark'] .dropdown-demo-container .dropdown-trigger {
+border-color: #2b303b;
+background: rgba(255, 255, 255, 0.12);
+}
+
+.dropdown-demo-container .dropdown-svg {
+width: 16px;
+height: 16px;
+fill: #222530;
+}
+
+[data-theme='dark'] .dropdown-demo-container .dropdown-svg {
+fill: #f2f5f8;
+}
+
+.dropdown-content {
+--dropdown-surface: #f7f8fa;
+padding: 8px;
+border-radius: 12px;
+border: 1px solid #e1e4ea;
+background: var(--dropdown-surface);
+box-shadow:
+0 12px 32px rgba(34, 37, 48, 0.08),
+0 4px 12px rgba(34, 37, 48, 0.06);
+display: flex;
+flex-direction: column;
+gap: 4px;
+}
+
+[data-theme='dark'] .dropdown-content {
+--dropdown-surface: #1f232b;
+border-color: #2b303b;
+background: #1f232b;
+}
+
+.dropdown-viewport {
+display: flex;
+flex-direction: column;
+gap: 4px;
+max-height: 200px;
+overflow-y: auto;
+}
+
+.dropdown-demo-container .dropdown-item {
+min-height: 36px;
+width: 100%;
+padding: 0 10px;
+display: flex;
+align-items: center;
+gap: 10px;
+border-radius: 8px;
+color: #222530;
+cursor: pointer;
+outline: none;
+}
+
+[data-theme='dark'] .dropdown-demo-container .dropdown-item {
+color: #f2f5f8;
+}
+
+.dropdown-demo-container .dropdown-item[data-highlighted] {
+background: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='dark'] .dropdown-demo-container .dropdown-item[data-highlighted] {
+background: rgba(255, 255, 255, 0.12);
+}
+
+.dropdown-demo-container .dropdown-item[data-disabled] {
+opacity: 0.5;
+cursor: not-allowed;
+}
+
+.dropdown-demo-container .dropdown-item-avatar {
+border-radius: 50%;
+display: block;
+width: 16px;
+height: 16px;
+background-color: rgba(0, 0, 0, 0.72);
+}
+
+[data-theme='dark'] .dropdown-demo-container .dropdown-item-avatar {
+background-color: rgba(255, 255, 255, 0.72);
+}
+
+.dropdown-arrow {
+color: var(--dropdown-surface);
+}`}
+/>
+
+</div>
+
+This example wraps the items in a `DropdownMenu.Viewport` with a bounded height, so the list scrolls within the menu. Keyboard navigation and typeahead keep the highlighted item in view. It also demonstrates item highlighting, selection affordances, and the optional arrow.
+
+## Features
+
+- ✅ Typeahead search for quick item selection
+- ✅ Controlled and uncontrolled state management
+- ✅ Automatic positioning with collision detection
+- ✅ Modal and non-modal modes
+- ✅ Customizable close behavior per item type
+- ✅ Automatic portal rendering to document.body
+- ✅ Polymorphic component API
+
+## Import
+
+```tsx
+import { DropdownMenu } from '@turkish-technology/spar';
+```
+
+## Anatomy
+
+The DropdownMenu component is built as a compound component with multiple parts:
+
+<AnatomyViewer
+  parts={[
+    { name: 'root', label: 'Root', description: 'Container managing state and context' },
+    { name: 'trigger', label: 'Trigger', description: 'Button that toggles menu visibility' },
+    { name: 'content', label: 'Content', description: 'Menu container with positioning' },
+    {
+      name: 'viewport',
+      label: 'Viewport',
+      description: 'Scrollable region wrapping the menu items',
+    },
+    { name: 'item', label: 'Item', description: 'Individual selectable menu option' },
+    { name: 'group', label: 'Group', description: 'Semantic grouping container for related items' },
+    { name: 'label', label: 'Label', description: 'Non-interactive label for a menu group' },
+    { name: 'separator', label: 'Separator', description: 'Visual divider between menu sections' },
+    { name: 'arrow', label: 'Arrow', description: 'Optional decorative arrow element' },
+  ]}
+>
+  <div className='dropdown-demo-container'>
+    <DropdownMenu.Root data-spar-part='root'>
+      <DropdownMenu.Trigger data-spar-part='trigger' className='dropdown-trigger'>
+        {'Options'}
+        <svg
+          className='dropdown-svg'
+          xmlns='http://www.w3.org/2000/svg'
+          width='20'
+          height='20'
+          viewBox='0 0 20 20'
+          fill='none'
+        >
+          <path d='M13.2292 7.5001L9.99583 10.7334L6.7625 7.5001C6.4375 7.1751 5.9125 7.1751 5.5875 7.5001C5.2625 7.8251 5.2625 8.3501 5.5875 8.6751L9.4125 12.5001C9.7375 12.8251 10.2625 12.8251 10.5875 12.5001L14.4125 8.6751C14.7375 8.3501 14.7375 7.8251 14.4125 7.5001C14.0875 7.18343 13.5542 7.1751 13.2292 7.5001Z' />
+        </svg>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content data-spar-part='content' className='dropdown-content' align='end'>
+        <DropdownMenu.Viewport data-spar-part='viewport' className='dropdown-viewport'>
+          <DropdownMenu.Item data-spar-part='item' className='dropdown-item'>
+            <span className='dropdown-item-avatar'></span>
+            {'Alice'}
+          </DropdownMenu.Item>
+          <DropdownMenu.Item data-spar-part='item' className='dropdown-item'>
+            <span className='dropdown-item-avatar'></span>
+            {'Bob'}
+          </DropdownMenu.Item>
+          <DropdownMenu.Item data-spar-part='item' className='dropdown-item'>
+            <span className='dropdown-item-avatar'></span>
+            {'Charlie'}
+          </DropdownMenu.Item>
+          <DropdownMenu.Item data-spar-part='item' className='dropdown-item'>
+            <span className='dropdown-item-avatar'></span>
+            {'Diana'}
+          </DropdownMenu.Item>
+        </DropdownMenu.Viewport>
+        <DropdownMenu.Arrow data-spar-part='arrow' className='dropdown-arrow' />
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  </div>
+</AnatomyViewer>
+
+### Structure
+
+```tsx
+<DropdownMenu.Root>
+  <DropdownMenu.Trigger />
+  <DropdownMenu.Content>
+    <DropdownMenu.Viewport>
+      <DropdownMenu.Label />
+      <DropdownMenu.Item />
+      <DropdownMenu.Group>
+        <DropdownMenu.Item />
+      </DropdownMenu.Group>
+      <DropdownMenu.Separator />
+    </DropdownMenu.Viewport>
+    <DropdownMenu.Arrow />
+  </DropdownMenu.Content>
+</DropdownMenu.Root>
+```
+
+> `DropdownMenu.Viewport` is optional — omit it for short menus. Wrap the items
+> in a viewport when the list can grow long enough to need a bounded, scrollable
+> area.
+
+**Alternative: Tree-shakeable named imports**
+
+```tsx
+import {
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@turkish-technology/spar';
+
+<DropdownMenuRoot>
+  <DropdownMenuTrigger />
+  <DropdownMenuContent>
+    <DropdownMenuItem />
+  </DropdownMenuContent>
+</DropdownMenuRoot>;
+```
+
+**Data Flow:**
+
+- `DropdownMenu.Root` manages open/close state and provides context
+- `DropdownMenu.Trigger` controls menu visibility and manages focus
+- `DropdownMenu.Content` handles positioning, keyboard navigation, and item collection
+- Menu items register themselves for keyboard navigation and typeahead
+
+## Code Examples
+
+### Basic Dropdown Menu
+
+A simple dropdown menu with standard items.
+
+```tsx
+function BasicMenu() {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>Actions</DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Item onSelect={() => console.log('Edit')}>Edit</DropdownMenu.Item>
+        <DropdownMenu.Item onSelect={() => console.log('Duplicate')}>Duplicate</DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item onSelect={() => console.log('Delete')}>Delete</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+}
+```
+
+### Controlled Menu State
+
+Control the menu's open state externally.
+
+```tsx {2,6-8}
+function ControlledMenu() {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  return (
+    <>
+      <p>Menu is {isOpen ? 'open' : 'closed'}</p>
+      <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
+        <DropdownMenu.Trigger>Options</DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+          <DropdownMenu.Item>Option 1</DropdownMenu.Item>
+          <DropdownMenu.Item>Option 2</DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </>
+  );
+}
+```
+
+### Custom Positioning
+
+Control menu positioning.
+
+```tsx {5}
+function CustomPositionMenu() {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>Options</DropdownMenu.Trigger>
+      <DropdownMenu.Content side='right' align='start'>
+        <DropdownMenu.Item>Option 1</DropdownMenu.Item>
+        <DropdownMenu.Item>Option 2</DropdownMenu.Item>
+        <DropdownMenu.Item>Option 3</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+}
+```
+
+### Grouped Menu Items
+
+Group related items together.
+
+```tsx {6-7,12-14}
+function GroupedMenu() {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>Edit</DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Group>
+          <DropdownMenu.Label>Clipboard</DropdownMenu.Label>
+          <DropdownMenu.Item>Cut</DropdownMenu.Item>
+          <DropdownMenu.Item>Copy</DropdownMenu.Item>
+          <DropdownMenu.Item>Paste</DropdownMenu.Item>
+        </DropdownMenu.Group>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Group>
+          <DropdownMenu.Label>Transform</DropdownMenu.Label>
+          <DropdownMenu.Item>Uppercase</DropdownMenu.Item>
+          <DropdownMenu.Item>Lowercase</DropdownMenu.Item>
+        </DropdownMenu.Group>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+}
+```
+
+### Scrollable Menu
+
+Wrap the items in `DropdownMenu.Viewport` to keep a long list within a bounded,
+scrollable area. The Viewport is headless — set a `max-height` and `overflow`
+via CSS to enable scrolling. Keyboard navigation and typeahead automatically
+keep the highlighted item in view.
+
+```tsx {5,10}
+function ScrollableMenu() {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>Timezone</DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Viewport style={{ maxHeight: 240, overflowY: 'auto' }}>
+          {timezones.map((tz) => (
+            <DropdownMenu.Item key={tz}>{tz}</DropdownMenu.Item>
+          ))}
+        </DropdownMenu.Viewport>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+}
+```
+
+### Disabled Items
+
+Disable specific menu items.
+
+```tsx {2,8-9}
+function MenuWithDisabledItems() {
+  const hasSelection = false;
+
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>Edit</DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Item disabled={!hasSelection}>Cut</DropdownMenu.Item>
+        <DropdownMenu.Item disabled={!hasSelection}>Copy</DropdownMenu.Item>
+        <DropdownMenu.Item>Paste</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+}
+```
+
+### Non-Modal Menu
+
+Allow focus to leave the menu without closing.
+
+```tsx {3}
+function NonModalMenu() {
+  return (
+    <DropdownMenu.Root modal={false}>
+      <DropdownMenu.Trigger>Settings</DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Item>Preferences</DropdownMenu.Item>
+        <DropdownMenu.Item>Extensions</DropdownMenu.Item>
+        <DropdownMenu.Item>Keyboard Shortcuts</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+}
+```
+
+### Menu with Arrow
+
+Add a decorative arrow pointing to the trigger.
+
+```tsx {10}
+function MenuWithArrow() {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>Options</DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Item>Edit</DropdownMenu.Item>
+        <DropdownMenu.Item>Duplicate</DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item>Delete</DropdownMenu.Item>
+        <DropdownMenu.Arrow />
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+}
+```
+
+### Custom Close Behavior
+
+Control when the menu closes on selection.
+
+```tsx {3,9}
+function CustomCloseBehavior() {
+  return (
+    <DropdownMenu.Root closeOnSelect={false}>
+      <DropdownMenu.Trigger>Multi-Select</DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Item>Option 1</DropdownMenu.Item>
+        <DropdownMenu.Item>Option 2</DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item onSelect={(e) => e.preventDefault()}>Keep Open</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+}
+```
+
+## API Reference
+
+### DropdownMenu / DropdownMenu.Root
+
+The root container that manages the dropdown menu state and provides context to all child components. `DropdownMenu` and `DropdownMenu.Root` are the same component - the difference is only import/notation style.
+
+**Props**
+
+| Name             | Type                      | Default     | Description                                                                                                                                |
+| ---------------- | ------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id?`            | `string`                  | `undefined` | Custom base ID for ARIA relationships. Auto-generated if not provided. Sub-element IDs are derived as `${id}-trigger` and `${id}-content`. |
+| `open?`          | `boolean`                 | `undefined` | Controlled open state                                                                                                                      |
+| `defaultOpen?`   | `boolean`                 | `false`     | Initial open state (uncontrolled)                                                                                                          |
+| `onOpenChange?`  | `(open: boolean) => void` | `undefined` | Callback when open state changes                                                                                                           |
+| `modal?`         | `boolean`                 | `true`      | Whether menu traps focus (modal) or allows focus to leave                                                                                  |
+| `disabled?`      | `boolean`                 | `false`     | Disables all dropdown menu triggers (prevents opening)                                                                                     |
+| `dir?`           | `'ltr' \| 'rtl'`          | `'ltr'`     | Reading direction for menu positioning                                                                                                     |
+| `closeOnSelect?` | `boolean`                 | `true`      | Whether to close menu on item selection                                                                                                    |
+| `children?`      | `React.ReactNode`         | `undefined` | Menu trigger and content                                                                                                                   |
+
+**Events**
+
+| Name           | Parameters        | Description               | When Triggered                                |
+| -------------- | ----------------- | ------------------------- | --------------------------------------------- |
+| `onOpenChange` | `(open: boolean)` | Open state change handler | User interaction or programmatic state change |
+
+### DropdownMenu.Trigger
+
+The button element that toggles the dropdown menu visibility. Extends all `Button` component props including polymorphic rendering via the `as` prop.
+
+**Props**
+
+| Name               | Type                                                                              | Default     | Description                                         |
+| ------------------ | --------------------------------------------------------------------------------- | ----------- | --------------------------------------------------- |
+| `as?`              | `React.ElementType`                                                               | `"button"`  | Element type to render as                           |
+| `children`         | `React.ReactNode \| ((state: DropdownMenuTriggerRenderProps) => React.ReactNode)` | `undefined` | Trigger content or render props function            |
+| `disabled?`        | `boolean`                                                                         | `false`     | Whether the trigger is disabled                     |
+| `autoFocus?`       | `boolean`                                                                         | `false`     | Whether the button should receive focus on mount    |
+| `isLoading?`       | `boolean`                                                                         | `false`     | Loading state with screen reader support            |
+| `isPressed?`       | `boolean`                                                                         | `undefined` | Toggle state - creates a toggle button when defined |
+| `onPressedChange?` | `(pressed: boolean) => void`                                                      | `undefined` | Callback fired when toggle state changes            |
+| `ref?`             | `React.Ref<HTMLButtonElement \| null>`                                            | `undefined` | Forwarded ref to trigger element                    |
+| `onClick?`         | `(event: React.MouseEvent) => void`                                               | `undefined` | Click event handler                                 |
+| `onKeyDown?`       | `(event: React.KeyboardEvent) => void`                                            | `undefined` | Keyboard event handler                              |
+| `...props`         | `ButtonProps`                                                                     | -           | All standard Button component attributes            |
+
+**Render Props (DropdownMenuTriggerRenderProps)**
+
+| Property   | Type         | Description                          |
+| ---------- | ------------ | ------------------------------------ |
+| `isOpen`   | `boolean`    | Whether the dropdown menu is open    |
+| `disabled` | `boolean`    | Whether the trigger is disabled      |
+| `open`     | `() => void` | Function to open the dropdown menu   |
+| `close`    | `() => void` | Function to close the dropdown menu  |
+| `toggle`   | `() => void` | Function to toggle the dropdown menu |
+
+**Events**
+
+| Name        | Parameters                     | Description            | When Triggered                 |
+| ----------- | ------------------------------ | ---------------------- | ------------------------------ |
+| `onClick`   | `(event: React.MouseEvent)`    | Mouse click handler    | User clicks trigger            |
+| `onKeyDown` | `(event: React.KeyboardEvent)` | Keyboard event handler | User presses key while focused |
+
+**HTML Attributes**
+
+| Attribute       | Value                | Purpose                   |
+| --------------- | -------------------- | ------------------------- |
+| `data-state`    | `'open' \| 'closed'` | Current state for styling |
+| `data-disabled` | `''`                 | Present when disabled     |
+
+### DropdownMenu.Content
+
+The container for menu items with positioning, keyboard navigation, and typeahead support.
+
+**Props**
+
+| Name                    | Type                                     | Default         | Description                                                                                                              |
+| ----------------------- | ---------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `as?`                   | `React.ElementType`                      | `'div'`         | Polymorphic element type to render                                                                                       |
+| `side?`                 | `'top' \| 'right' \| 'bottom' \| 'left'` | `'bottom'`      | Preferred side for positioning                                                                                           |
+| `align?`                | `'start' \| 'center' \| 'end'`           | `'center'`      | Alignment relative to trigger                                                                                            |
+| `container?`            | `HTMLElement \| null`                    | `document.body` | Custom portal container element                                                                                          |
+| `onEscapeKeyDown?`      | `(event: KeyboardEvent) => void`         | `undefined`     | Escape key handler; `event.preventDefault()` prevents close                                                              |
+| `onPointerDownOutside?` | `(event: PointerEvent) => void`          | `undefined`     | Outside click handler; `event.preventDefault()` prevents close                                                           |
+| `onFocusOutside?`       | `(event: FocusEvent) => void`            | `undefined`     | Outside focus handler (cancelable event); `event.preventDefault()` prevents close (non-modal) or focus recapture (modal) |
+| `onKeyDown?`            | `(event: React.KeyboardEvent) => void`   | `undefined`     | Keyboard event handler                                                                                                   |
+| `ref?`                  | `React.Ref<HTMLElement \| null>`         | `undefined`     | Forwarded ref to content element                                                                                         |
+| `children?`             | `React.ReactNode`                        | `undefined`     | Menu items and groups                                                                                                    |
+
+**Events**
+
+| Name                   | Parameters                     | Description         | When Triggered                                 |
+| ---------------------- | ------------------------------ | ------------------- | ---------------------------------------------- |
+| `onEscapeKeyDown`      | `(event: KeyboardEvent)`       | Escape key pressed  | User presses Escape while menu is open         |
+| `onPointerDownOutside` | `(event: PointerEvent)`        | Click outside menu  | User clicks outside menu bounds                |
+| `onFocusOutside`       | `(event: FocusEvent)`          | Focus leaves menu   | Focus moves outside menu (modal and non-modal) |
+| `onKeyDown`            | `(event: React.KeyboardEvent)` | Key pressed in menu | User presses any key while menu is focused     |
+
+**HTML Attributes**
+
+| Attribute    | Value    | Purpose                        |
+| ------------ | -------- | ------------------------------ |
+| `data-state` | `'open'` | Indicates open state           |
+| `data-side`  | Side     | Current placement side         |
+| `data-align` | Align    | Current alignment              |
+| `tabIndex`   | `-1`     | Manages focus programmatically |
+
+### DropdownMenu.Viewport
+
+An optional scrollable region that wraps the menu items. Use it when the list can grow long enough to need a bounded, scrollable area. Headless: renders a plain element with no visual opinions — apply a `max-height` and `overflow` (e.g. `overflow-y: auto`) via `className`/`style` to enable scrolling.
+
+Because menu items are focused programmatically (with `preventScroll`), the browser will not reveal off-screen items on its own. `DropdownMenu.Viewport` is purely presentational — it just provides the bounded, scrollable box. Keeping the highlighted item visible during keyboard navigation and typeahead is handled by `DropdownMenu.Content`, which scrolls the item into its nearest scrollable ancestor (this Viewport). It works the same whether or not a Viewport is present.
+
+Defaults to `role="presentation"` so it stays transparent in the accessibility tree, preserving the `menu` → `menuitem` structure. Override `role` if you need different semantics.
+
+**Props**
+
+| Name        | Type                             | Default          | Description                                                  |
+| ----------- | -------------------------------- | ---------------- | ------------------------------------------------------------ |
+| `as?`       | `React.ElementType`              | `'div'`          | Polymorphic element type to render                           |
+| `role?`     | `string`                         | `'presentation'` | ARIA role for the viewport element                           |
+| `ref?`      | `React.Ref<HTMLElement \| null>` | `undefined`      | Forwarded ref to the viewport element                        |
+| `children?` | `React.ReactNode`                | `undefined`      | Menu items, groups, labels, and separators                   |
+| `...props`  | `HTMLAttributes`                 | -                | All standard element attributes (`className`, `style`, etc.) |
+
+**Events**
+
+| Name | Parameters | Description           | When Triggered                        |
+| ---- | ---------- | --------------------- | ------------------------------------- |
+| N/A  | N/A        | No interactive events | Viewport is a non-interactive wrapper |
+
+**HTML Attributes**
+
+| Attribute | Value            | Purpose                                         |
+| --------- | ---------------- | ----------------------------------------------- |
+| `role`    | `'presentation'` | Keeps the viewport transparent in the a11y tree |
+
+### DropdownMenu.Item
+
+A selectable menu item.
+
+**Props**
+
+| Name         | Type                                    | Default      | Description                                                           |
+| ------------ | --------------------------------------- | ------------ | --------------------------------------------------------------------- |
+| `as?`        | `React.ElementType`                     | `'div'`      | Polymorphic element type to render                                    |
+| `role?`      | `string`                                | `'menuitem'` | ARIA role for the item element                                        |
+| `disabled?`  | `boolean`                               | `false`      | Whether item is disabled                                              |
+| `onSelect?`  | `(event: React.SyntheticEvent) => void` | `undefined`  | Selection handler                                                     |
+| `textValue?` | `string`                                | `undefined`  | Text value for typeahead (auto-detected from content if not provided) |
+| `ref?`       | `React.Ref<HTMLElement \| null>`        | `undefined`  | Forwarded ref to item element                                         |
+| `children?`  | `React.ReactNode`                       | `undefined`  | Item content                                                          |
+
+**Events**
+
+| Name             | Parameters                      | Description         | When Triggered                              |
+| ---------------- | ------------------------------- | ------------------- | ------------------------------------------- |
+| `onSelect`       | `(event: React.SyntheticEvent)` | Item selected       | User clicks or activates item with keyboard |
+| `onClick`        | `(event: React.MouseEvent)`     | Mouse click         | User clicks item                            |
+| `onKeyDown`      | `(event: React.KeyboardEvent)`  | Key pressed         | User presses key while item focused         |
+| `onPointerMove`  | `(event: React.PointerEvent)`   | Pointer movement    | Pointer moves over item                     |
+| `onPointerLeave` | `(event: React.PointerEvent)`   | Pointer leaves item | Pointer moves away from item                |
+| `onFocus`        | `(event: React.FocusEvent)`     | Item receives focus | Item gains focus                            |
+
+**HTML Attributes**
+
+| Attribute          | Value     | Purpose                                                               |
+| ------------------ | --------- | --------------------------------------------------------------------- |
+| `tabIndex`         | `0 \| -1` | Controls keyboard focus (0 when highlighted, -1 otherwise)            |
+| `aria-disabled`    | `true`    | Present when disabled; conveys disabled state to assistive technology |
+| `data-disabled`    | `''`      | Present when disabled                                                 |
+| `data-highlighted` | `''`      | Present when highlighted                                              |
+
+### DropdownMenu.Separator
+
+A visual separator between menu sections.
+
+**Props**
+
+| Name   | Type                             | Default     | Description                        |
+| ------ | -------------------------------- | ----------- | ---------------------------------- |
+| `as?`  | `React.ElementType`              | `'div'`     | Polymorphic element type to render |
+| `ref?` | `React.Ref<HTMLElement \| null>` | `undefined` | Forwarded ref to separator element |
+
+**Events**
+
+| Name | Parameters | Description           | When Triggered               |
+| ---- | ---------- | --------------------- | ---------------------------- |
+| N/A  | N/A        | No interactive events | Separator is non-interactive |
+
+**HTML Attributes**
+
+| Attribute          | Value          | Purpose               |
+| ------------------ | -------------- | --------------------- |
+| `data-orientation` | `'horizontal'` | Indicates orientation |
+
+### DropdownMenu.Label
+
+A non-interactive label for menu sections.
+
+**Props**
+
+| Name        | Type                             | Default     | Description                        |
+| ----------- | -------------------------------- | ----------- | ---------------------------------- |
+| `as?`       | `React.ElementType`              | `'div'`     | Polymorphic element type to render |
+| `ref?`      | `React.Ref<HTMLElement \| null>` | `undefined` | Forwarded ref to label element     |
+| `children?` | `React.ReactNode`                | `undefined` | Label content                      |
+
+**Events**
+
+| Name | Parameters | Description           | When Triggered           |
+| ---- | ---------- | --------------------- | ------------------------ |
+| N/A  | N/A        | No interactive events | Label is non-interactive |
+
+### DropdownMenu.Group
+
+A logical grouping container for related menu items.
+
+**Props**
+
+| Name        | Type                             | Default     | Description                        |
+| ----------- | -------------------------------- | ----------- | ---------------------------------- |
+| `as?`       | `React.ElementType`              | `'div'`     | Polymorphic element type to render |
+| `ref?`      | `React.Ref<HTMLElement \| null>` | `undefined` | Forwarded ref to group element     |
+| `children?` | `React.ReactNode`                | `undefined` | Menu items or labels               |
+
+**Events**
+
+| Name | Parameters | Description           | When Triggered                     |
+| ---- | ---------- | --------------------- | ---------------------------------- |
+| N/A  | N/A        | No interactive events | Group is non-interactive container |
+
+**HTML Attributes**
+
+| Attribute | Value     | Purpose                                         |
+| --------- | --------- | ----------------------------------------------- |
+| `role`    | `'group'` | Semantic grouping role for assistive technology |
+
+### DropdownMenu.Arrow
+
+Optional decorative arrow element that points to the trigger. Headless: renders a plain element with no visual opinions — user provides all styling. Arrow ref is automatically managed via context.
+
+Supports polymorphic rendering via the `as` prop. When rendered as the default `svg`, sensible SVG defaults (`width`, `height`, `viewBox`, and a triangle `polygon`) are applied automatically. When rendered as another element (e.g., `as="div"`), SVG-specific attributes and default children are omitted.
+
+**Props**
+
+| Name         | Type                  | Default     | Description                                                                       |
+| ------------ | --------------------- | ----------- | --------------------------------------------------------------------------------- |
+| `as?`        | `React.ElementType`   | `'svg'`     | Polymorphic element type to render                                                |
+| `ref?`       | `React.Ref<Element>`  | `undefined` | Forward ref support                                                               |
+| `children?`  | `React.ReactNode`     | `undefined` | Custom arrow content. When `as="svg"` (default), falls back to a triangle polygon |
+| `className?` | `string`              | `undefined` | CSS class names for styling                                                       |
+| `style?`     | `React.CSSProperties` | `undefined` | Custom styles for arrow                                                           |
+
+**Events**
+
+| Name | Parameters | Description                | When Triggered |
+| ---- | ---------- | -------------------------- | -------------- |
+| None | -          | Arrow is purely decorative | -              |
+
+**HTML Attributes**
+
+| Attribute        | Value                                                          | Purpose                          |
+| ---------------- | -------------------------------------------------------------- | -------------------------------- |
+| `aria-hidden`    | `"true"`                                                       | Hidden from assistive technology |
+| `data-placement` | `"top" \| "bottom" \| "left" \| "right"` (with optional align) | Indicates arrow placement        |
+
+## Keyboard Interactions
+
+Complete keyboard behavior for the DropdownMenu component:
+
+| Key              | Action                                   | Context             | Notes                                                                               |
+| ---------------- | ---------------------------------------- | ------------------- | ----------------------------------------------------------------------------------- |
+| `Space`          | Opens menu / Activates item              | Trigger / Menu item | Opens menu from trigger, activates focused item                                     |
+| `Enter`          | Opens menu / Activates item              | Trigger / Menu item | Opens menu from trigger, activates focused item                                     |
+| `ArrowDown`      | Opens menu focusing first / Next item    | Trigger / Menu      | From trigger opens and focuses first item, in menu moves to next item               |
+| `ArrowUp`        | Opens menu focusing last / Previous item | Trigger / Menu      | From trigger opens and focuses last item, in menu moves to previous item            |
+| `Escape`         | Closes menu                              | Menu                | Restores focus to trigger; `onEscapeKeyDown(event.preventDefault())` prevents close |
+| `Tab`            | Navigate / Close                         | Menu                | In modal mode, moves through items; in non-modal mode, closes menu                  |
+| `Shift + Tab`    | Navigate backward                        | Menu (modal)        | Moves to previous item in modal mode                                                |
+| `Home`           | First item                               | Menu                | Moves focus to first item                                                           |
+| `End`            | Last item                                | Menu                | Moves focus to last item                                                            |
+| `Character keys` | Typeahead search                         | Menu                | Focuses first item matching typed characters                                        |
