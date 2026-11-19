@@ -2,19 +2,7 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
-import {
-  Button,
-  Checkbox,
-  CheckedState,
-  Collapsible,
-  Field,
-  Input,
-  Label,
-  Radio,
-  Select,
-  Switch,
-  Tooltip,
-} from '@turkish-technology/spar';
+import { Button, Checkbox, CheckedState, Collapsible, Field, Input, Label, Radio, Select, Switch, Tooltip } from '@turkish-technology/spar';
 
 import '@site/src/css/headless/accessibility-demos.scss';
 
@@ -63,126 +51,94 @@ export default function FormDemo() {
   };
 
   return (
-    <Layout title='Form'>
-      <div className='demo-page'>
-        <Link to='/headless/accessibility' className='back-link'>
+    <Layout title="Form">
+      <div className="demo-page">
+        <Link to="/headless/accessibility" className="back-link">
           ← All Demos
         </Link>
         <h1>Form</h1>
-        <p className='page-description'>
-          Single-page form example built with Spar components and React Hook Form. Submit stays
-          available, but when validation fails focus moves to the first invalid field. Success and
-          error feedback are announced with an alert, and the code example is shown alongside the
-          live form.
+        <p className="page-description">
+          Single-page form example built with Spar components and React Hook Form. Submit stays available, but when validation fails focus moves to the first invalid field. Success
+          and error feedback are announced with an alert, and the code example is shown alongside the live form.
         </p>
 
         {submitStatus && (
-          <div role='alert' className={`demo-alert demo-alert--${submitStatus}`}>
+          <div role="alert" className={`demo-alert demo-alert--${submitStatus}`}>
             {submittedMessage}
           </div>
         )}
 
-        <div className='demo-section-split'>
-          <form onSubmit={handleSubmit(onSubmit)} className='demo-col'>
-            <div className='demo-col'>
+        <div className="demo-section-split">
+          <form onSubmit={handleSubmit(onSubmit)} className="demo-col">
+            <div className="demo-col">
               {/* Profile Fields */}
               <Field required invalid={!!errors.fullName}>
-                <Field.Label className='demo-label'>Full name *</Field.Label>
+                <Field.Label className="demo-label">Full name *</Field.Label>
                 <Input>
                   <Input.Field
-                    className='demo-input'
-                    placeholder='Ada Lovelace'
+                    className="demo-input"
+                    placeholder="Ada Lovelace"
                     {...register('fullName', {
                       required: true,
-                      validate: (v) => v.trim().length > 0,
+                      validate: v => v.trim().length > 0,
                     })}
                   />
                 </Input>
-                <Field.Description className='demo-input-description'>
-                  This will be shown on your public profile.
-                </Field.Description>
+                <Field.Description className="demo-input-description">This will be shown on your public profile.</Field.Description>
               </Field>
 
               <Field invalid={!!errors.email} required>
-                <Field.Label className='demo-label'>Email *</Field.Label>
+                <Field.Label className="demo-label">Email *</Field.Label>
                 <Input>
                   <Input.Field
-                    className='demo-input'
-                    type='email'
-                    placeholder='ada@example.com'
+                    className="demo-input"
+                    type="email"
+                    placeholder="ada@example.com"
                     {...register('email', {
-                      validate: (v) => v.length === 0 || v.includes('@'),
+                      validate: v => v.length === 0 || v.includes('@'),
                     })}
                   />
                 </Input>
                 <Tooltip.Provider>
                   <Tooltip.Root>
-                    <Tooltip.Trigger
-                      className='demo-btn'
-                      type='button'
-                      aria-label='Show email format help'
-                    >
-                      <span aria-hidden='true'>ⓘ</span>
+                    <Tooltip.Trigger className="demo-btn" type="button" aria-label="Show email format help">
+                      <span aria-hidden="true">ⓘ</span>
                     </Tooltip.Trigger>
-                    <Tooltip.Content className='demo-tooltip-content'>
-                      Use a valid format like name@example.com. We only use your email for account
-                      notifications.
-                    </Tooltip.Content>
+                    <Tooltip.Content className="demo-tooltip-content">Use a valid format like name@example.com. We only use your email for account notifications.</Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
-                {errors.email && (
-                  <Field.ErrorMessage className='demo-input-error'>
-                    Please include @ in the email address.
-                  </Field.ErrorMessage>
-                )}
+                {errors.email && <Field.ErrorMessage className="demo-input-error">Please include @ in the email address.</Field.ErrorMessage>}
               </Field>
 
-              <div className='demo-col'>
-                <Label className='demo-label' htmlFor='role-select-trigger' required>
+              <div className="demo-col">
+                <Label className="demo-label" htmlFor="role-select-trigger" required>
                   Role *
                 </Label>
                 <Controller
                   control={control}
-                  name='role'
+                  name="role"
                   rules={{ required: true }}
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   render={({ field }: any) => (
                     <Select.Root
                       required
                       value={field.value}
-                      onChange={(v) => {
+                      onChange={v => {
                         field.onChange(v);
                         field.onBlur();
                       }}
                     >
-                      <Select.Trigger
-                        ref={field.ref}
-                        id='role-select-trigger'
-                        className='demo-select-trigger'
-                        placeholder='Select a role…'
-                      >
+                      <Select.Trigger ref={field.ref} id="role-select-trigger" className="demo-select-trigger" placeholder="Select a role…">
                         <span>▾</span>
                       </Select.Trigger>
-                      <Select.Content className='demo-select-content'>
-                        <Select.Item
-                          className='demo-select-item'
-                          value='frontend-engineer'
-                          label='Frontend Engineer'
-                        >
+                      <Select.Content className="demo-select-content">
+                        <Select.Item className="demo-select-item" value="frontend-engineer" label="Frontend Engineer">
                           Frontend Engineer
                         </Select.Item>
-                        <Select.Item
-                          className='demo-select-item'
-                          value='product-designer'
-                          label='Product Designer'
-                        >
+                        <Select.Item className="demo-select-item" value="product-designer" label="Product Designer">
                           Product Designer
                         </Select.Item>
-                        <Select.Item
-                          className='demo-select-item'
-                          value='engineering-manager'
-                          label='Engineering Manager'
-                        >
+                        <Select.Item className="demo-select-item" value="engineering-manager" label="Engineering Manager">
                           Engineering Manager
                         </Select.Item>
                       </Select.Content>
@@ -190,7 +146,7 @@ export default function FormDemo() {
                   )}
                 />
                 {errors.role && (
-                  <div className='demo-input-error' role='alert'>
+                  <div className="demo-input-error" role="alert">
                     Role selection is required
                   </div>
                 )}
@@ -198,35 +154,24 @@ export default function FormDemo() {
 
               {/* Preferences Fields */}
               <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
-                <legend className='demo-label' style={{ marginBottom: '0.5rem' }}>
+                <legend className="demo-label" style={{ marginBottom: '0.5rem' }}>
                   Plan selection
                 </legend>
                 <Controller
                   control={control}
-                  name='plan'
+                  name="plan"
                   render={({ field: { value, onChange } }) => (
-                    <Radio.Root
-                      className='demo-radio-group'
-                      value={value}
-                      onChange={onChange}
-                      aria-label='Plan selection'
-                    >
+                    <Radio.Root className="demo-radio-group" value={value} onChange={onChange} aria-label="Plan selection">
                       {[
                         { label: 'Starter', value: 'starter' },
                         { label: 'Pro', value: 'pro' },
                         { label: 'Enterprise', value: 'enterprise' },
-                      ].map((option) => (
-                        <div className='demo-radio-item-wrapper' key={option.value}>
-                          <Radio.Item
-                            className='demo-radio-item'
-                            value={option.value}
-                            id={`plan-${option.value}`}
-                          >
-                            {({ isChecked }) =>
-                              isChecked ? <span className='demo-radio-indicator' /> : null
-                            }
+                      ].map(option => (
+                        <div className="demo-radio-item-wrapper" key={option.value}>
+                          <Radio.Item className="demo-radio-item" value={option.value} id={`plan-${option.value}`}>
+                            {({ isChecked }) => (isChecked ? <span className="demo-radio-indicator" /> : null)}
                           </Radio.Item>
-                          <Label htmlFor={`plan-${option.value}`} className='demo-label'>
+                          <Label htmlFor={`plan-${option.value}`} className="demo-label">
                             {option.label}
                           </Label>
                         </div>
@@ -236,88 +181,66 @@ export default function FormDemo() {
                 />
               </fieldset>
 
-              <div className='demo-col'>
+              <div className="demo-col">
                 <Controller
                   control={control}
-                  name='announcements'
+                  name="announcements"
                   render={({ field: { value, onChange } }) => (
-                    <div className='demo-field'>
-                      <label htmlFor='announcements-switch' className='demo-label'>
+                    <div className="demo-field">
+                      <label htmlFor="announcements-switch" className="demo-label">
                         Receive product announcements
                       </label>
-                      <Switch
-                        id='announcements-switch'
-                        className='demo-switch'
-                        checked={value}
-                        onChange={onChange}
-                        aria-label='Receive product announcements'
-                      />
+                      <Switch id="announcements-switch" className="demo-switch" checked={value} onChange={onChange} aria-label="Receive product announcements" />
                     </div>
                   )}
                 />
 
                 <Controller
                   control={control}
-                  name='featureUpdates'
+                  name="featureUpdates"
                   render={({ field: { value, onChange } }) => (
-                    <div className='demo-field'>
-                      <label htmlFor='feature-updates-switch' className='demo-label'>
+                    <div className="demo-field">
+                      <label htmlFor="feature-updates-switch" className="demo-label">
                         Enable experimental feature updates
                       </label>
-                      <Switch
-                        id='feature-updates-switch'
-                        className='demo-switch'
-                        checked={value}
-                        onChange={onChange}
-                        aria-label='Enable experimental feature updates'
-                      />
+                      <Switch id="feature-updates-switch" className="demo-switch" checked={value} onChange={onChange} aria-label="Enable experimental feature updates" />
                     </div>
                   )}
                 />
               </div>
 
-              <Collapsible.Root className='demo-collapsible'>
-                <Collapsible.Trigger className='demo-collapsible-trigger'>
-                  Email categories <span className='demo-chevron'>▾</span>
+              <Collapsible.Root className="demo-collapsible">
+                <Collapsible.Trigger className="demo-collapsible-trigger">
+                  Email categories <span className="demo-chevron">▾</span>
                 </Collapsible.Trigger>
-                <Collapsible.Content className='demo-collapsible-content'>
-                  <div className='demo-col' style={{ gap: '0.5rem' }}>
-                    <div className='demo-field'>
+                <Collapsible.Content className="demo-collapsible-content">
+                  <div className="demo-col" style={{ gap: '0.5rem' }}>
+                    <div className="demo-field">
                       <Controller
                         control={control}
-                        name='marketingEmail'
+                        name="marketingEmail"
                         render={({ field: { value, onChange } }) => (
-                          <Checkbox
-                            id='marketing-email-checkbox'
-                            className='demo-checkbox'
-                            checked={value}
-                            onChange={onChange}
-                          >
+                          <Checkbox id="marketing-email-checkbox" className="demo-checkbox" checked={value} onChange={onChange}>
                             {({ checked }) => (checked === true ? '✓' : '')}
                           </Checkbox>
                         )}
                       />
-                      <Label htmlFor='marketing-email-checkbox' className='demo-label'>
+                      <Label htmlFor="marketing-email-checkbox" className="demo-label">
                         Marketing emails
                       </Label>
                     </div>
 
-                    <div className='demo-field'>
+                    <div className="demo-field">
                       <Controller
                         control={control}
-                        name='productEmail'
+                        name="productEmail"
                         render={({ field: { value, onChange } }) => (
-                          <Checkbox
-                            id='product-email-checkbox'
-                            className='demo-checkbox'
-                            checked={value}
-                            onChange={onChange}
-                          >
+                          <Checkbox id="product-email-checkbox" className="demo-checkbox" checked={value} onChange={onChange}>
                             {({ checked }) => (checked === true ? '✓' : '')}
                           </Checkbox>
                         )}
                       />
-                      <Label htmlFor='product-email-checkbox' className='demo-label'>
+                      <Label htmlFor="product-email-checkbox" className="demo-label">
                         Product update emails
                       </Label>
                     </div>
@@ -326,42 +249,35 @@ export default function FormDemo() {
               </Collapsible.Root>
 
               {/* Review Fields */}
-              <div className='demo-field'>
+              <div className="demo-field">
                 <Controller
                   control={control}
-                  name='terms'
-                  rules={{ validate: (v) => v === true }}
+                  name="terms"
+                  rules={{ validate: v => v === true }}
                   render={({ field: { ref, value, onChange } }) => (
-                    <Checkbox
-                      ref={ref}
-                      id='terms-checkbox'
-                      className='demo-checkbox'
-                      checked={value}
-                      onChange={onChange}
-                      required
-                    >
+                    <Checkbox ref={ref} id="terms-checkbox" className="demo-checkbox" checked={value} onChange={onChange} required>
                       {({ checked }) => (checked === true ? '✓' : '')}
                     </Checkbox>
                   )}
                 />
-                <Label htmlFor='terms-checkbox' className='demo-label' required>
+                <Label htmlFor="terms-checkbox" className="demo-label" required>
                   I accept the Terms and Privacy Policy *
                 </Label>
                 {errors.terms && (
-                  <div className='demo-input-error' role='alert'>
+                  <div className="demo-input-error" role="alert">
                     You must accept the terms to submit
                   </div>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className='demo-row form-row'>
-                <Button type='submit' className='demo-btn'>
+              <div className="demo-row form-row">
+                <Button type="submit" className="demo-btn">
                   Submit form
                 </Button>
                 <Button
-                  type='button'
-                  className='demo-btn'
+                  type="button"
+                  className="demo-btn"
                   onClick={() => {
                     reset();
                     setSubmittedMessage('');
@@ -374,8 +290,8 @@ export default function FormDemo() {
             </div>
           </form>
 
-          <aside className='demo-side-example demo-code-aside'>
-            <pre className='demo-code-block'>
+          <aside className="demo-side-example demo-code-aside">
+            <pre className="demo-code-block">
               <code>{`// 1. shouldFocusError: true — RHF focuses the first
 //    invalid field automatically on submit.
 const { register, control, handleSubmit,

@@ -1,6 +1,8 @@
 ---
 title: DropdownMenu
-description: Accessible dropdown menu component with keyboard navigation, typeahead search, and complete ARIA support.
+description:
+  Accessible dropdown menu component with keyboard navigation, typeahead search,
+  and complete ARIA support.
 ---
 
 import React from 'react';
@@ -10,7 +12,8 @@ import { DropdownMenu } from '@turkish-technology/spar';
 
 # DropdownMenu
 
-Accessible dropdown menu component for creating interactive command menus with keyboard navigation, typeahead search, and full ARIA support.
+Accessible dropdown menu component for creating interactive command menus with
+keyboard navigation, typeahead search, and full ARIA support.
 
 ## Live Demo
 
@@ -83,99 +86,54 @@ Accessible dropdown menu component for creating interactive command menus with k
   background: rgba(0, 0, 0, 0.08);
 }
 
-[data-theme='dark'] .dropdown-demo-container .dropdown-trigger {
-border-color: #2b303b;
-background: rgba(255, 255, 255, 0.12);
-}
+[data-theme='dark'] .dropdown-demo-container .dropdown-trigger { border-color:
+#2b303b; background: rgba(255, 255, 255, 0.12); }
 
-.dropdown-demo-container .dropdown-svg {
-width: 16px;
-height: 16px;
-fill: #222530;
-}
+.dropdown-demo-container .dropdown-svg { width: 16px; height: 16px; fill:
+#222530; }
 
-[data-theme='dark'] .dropdown-demo-container .dropdown-svg {
-fill: #f2f5f8;
-}
+[data-theme='dark'] .dropdown-demo-container .dropdown-svg { fill: #f2f5f8; }
 
-.dropdown-content {
---dropdown-surface: #f7f8fa;
-padding: 8px;
-border-radius: 12px;
-border: 1px solid #e1e4ea;
-background: var(--dropdown-surface);
-box-shadow:
-0 12px 32px rgba(34, 37, 48, 0.08),
-0 4px 12px rgba(34, 37, 48, 0.06);
-display: flex;
-flex-direction: column;
-gap: 4px;
-}
+.dropdown-content { --dropdown-surface: #f7f8fa; padding: 8px; border-radius:
+12px; border: 1px solid #e1e4ea; background: var(--dropdown-surface);
+box-shadow: 0 12px 32px rgba(34, 37, 48, 0.08), 0 4px 12px rgba(34, 37, 48,
+0.06); display: flex; flex-direction: column; gap: 4px; }
 
-[data-theme='dark'] .dropdown-content {
---dropdown-surface: #1f232b;
-border-color: #2b303b;
-background: #1f232b;
-}
+[data-theme='dark'] .dropdown-content { --dropdown-surface: #1f232b;
+border-color: #2b303b; background: #1f232b; }
 
-.dropdown-viewport {
-display: flex;
-flex-direction: column;
-gap: 4px;
-max-height: 200px;
-overflow-y: auto;
-}
+.dropdown-viewport { display: flex; flex-direction: column; gap: 4px;
+max-height: 200px; overflow-y: auto; }
 
-.dropdown-demo-container .dropdown-item {
-min-height: 36px;
-width: 100%;
-padding: 0 10px;
-display: flex;
-align-items: center;
-gap: 10px;
-border-radius: 8px;
-color: #222530;
-cursor: pointer;
-outline: none;
-}
+.dropdown-demo-container .dropdown-item { min-height: 36px; width: 100%;
+padding: 0 10px; display: flex; align-items: center; gap: 10px; border-radius:
+8px; color: #222530; cursor: pointer; outline: none; }
 
-[data-theme='dark'] .dropdown-demo-container .dropdown-item {
-color: #f2f5f8;
-}
+[data-theme='dark'] .dropdown-demo-container .dropdown-item { color: #f2f5f8; }
 
-.dropdown-demo-container .dropdown-item[data-highlighted] {
-background: rgba(0, 0, 0, 0.08);
-}
+.dropdown-demo-container .dropdown-item[data-highlighted] { background: rgba(0,
+0, 0, 0.08); }
 
 [data-theme='dark'] .dropdown-demo-container .dropdown-item[data-highlighted] {
-background: rgba(255, 255, 255, 0.12);
-}
+background: rgba(255, 255, 255, 0.12); }
 
-.dropdown-demo-container .dropdown-item[data-disabled] {
-opacity: 0.5;
-cursor: not-allowed;
-}
+.dropdown-demo-container .dropdown-item[data-disabled] { opacity: 0.5; cursor:
+not-allowed; }
 
-.dropdown-demo-container .dropdown-item-avatar {
-border-radius: 50%;
-display: block;
-width: 16px;
-height: 16px;
-background-color: rgba(0, 0, 0, 0.72);
-}
+.dropdown-demo-container .dropdown-item-avatar { border-radius: 50%; display:
+block; width: 16px; height: 16px; background-color: rgba(0, 0, 0, 0.72); }
 
 [data-theme='dark'] .dropdown-demo-container .dropdown-item-avatar {
-background-color: rgba(255, 255, 255, 0.72);
-}
+background-color: rgba(255, 255, 255, 0.72); }
 
-.dropdown-arrow {
-color: var(--dropdown-surface);
-}`}
-/>
+.dropdown-arrow { color: var(--dropdown-surface); }`} />
 
 </div>
 
-This example wraps the items in a `DropdownMenu.Viewport` with a bounded height, so the list scrolls within the menu. Keyboard navigation and typeahead keep the highlighted item in view. It also demonstrates item highlighting, selection affordances, and the optional arrow.
+This example wraps the items in a `DropdownMenu.Viewport` with a bounded height,
+so the list scrolls within the menu. Keyboard navigation and typeahead keep the
+highlighted item in view. It also demonstrates item highlighting, selection
+affordances, and the optional arrow.
 
 ## Features
 
@@ -199,56 +157,98 @@ The DropdownMenu component is built as a compound component with multiple parts:
 
 <AnatomyViewer
   parts={[
-    { name: 'root', label: 'Root', description: 'Container managing state and context' },
-    { name: 'trigger', label: 'Trigger', description: 'Button that toggles menu visibility' },
-    { name: 'content', label: 'Content', description: 'Menu container with positioning' },
+    {
+      name: 'root',
+      label: 'Root',
+      description: 'Container managing state and context',
+    },
+    {
+      name: 'trigger',
+      label: 'Trigger',
+      description: 'Button that toggles menu visibility',
+    },
+    {
+      name: 'content',
+      label: 'Content',
+      description: 'Menu container with positioning',
+    },
     {
       name: 'viewport',
       label: 'Viewport',
       description: 'Scrollable region wrapping the menu items',
     },
-    { name: 'item', label: 'Item', description: 'Individual selectable menu option' },
-    { name: 'group', label: 'Group', description: 'Semantic grouping container for related items' },
-    { name: 'label', label: 'Label', description: 'Non-interactive label for a menu group' },
-    { name: 'separator', label: 'Separator', description: 'Visual divider between menu sections' },
-    { name: 'arrow', label: 'Arrow', description: 'Optional decorative arrow element' },
+    {
+      name: 'item',
+      label: 'Item',
+      description: 'Individual selectable menu option',
+    },
+    {
+      name: 'group',
+      label: 'Group',
+      description: 'Semantic grouping container for related items',
+    },
+    {
+      name: 'label',
+      label: 'Label',
+      description: 'Non-interactive label for a menu group',
+    },
+    {
+      name: 'separator',
+      label: 'Separator',
+      description: 'Visual divider between menu sections',
+    },
+    {
+      name: 'arrow',
+      label: 'Arrow',
+      description: 'Optional decorative arrow element',
+    },
   ]}
 >
-  <div className='dropdown-demo-container'>
-    <DropdownMenu.Root data-spar-part='root'>
-      <DropdownMenu.Trigger data-spar-part='trigger' className='dropdown-trigger'>
+  <div className="dropdown-demo-container">
+    <DropdownMenu.Root data-spar-part="root">
+      <DropdownMenu.Trigger
+        data-spar-part="trigger"
+        className="dropdown-trigger"
+      >
         {'Options'}
         <svg
-          className='dropdown-svg'
-          xmlns='http://www.w3.org/2000/svg'
-          width='20'
-          height='20'
-          viewBox='0 0 20 20'
-          fill='none'
+          className="dropdown-svg"
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
         >
-          <path d='M13.2292 7.5001L9.99583 10.7334L6.7625 7.5001C6.4375 7.1751 5.9125 7.1751 5.5875 7.5001C5.2625 7.8251 5.2625 8.3501 5.5875 8.6751L9.4125 12.5001C9.7375 12.8251 10.2625 12.8251 10.5875 12.5001L14.4125 8.6751C14.7375 8.3501 14.7375 7.8251 14.4125 7.5001C14.0875 7.18343 13.5542 7.1751 13.2292 7.5001Z' />
+          <path d="M13.2292 7.5001L9.99583 10.7334L6.7625 7.5001C6.4375 7.1751 5.9125 7.1751 5.5875 7.5001C5.2625 7.8251 5.2625 8.3501 5.5875 8.6751L9.4125 12.5001C9.7375 12.8251 10.2625 12.8251 10.5875 12.5001L14.4125 8.6751C14.7375 8.3501 14.7375 7.8251 14.4125 7.5001C14.0875 7.18343 13.5542 7.1751 13.2292 7.5001Z" />
         </svg>
       </DropdownMenu.Trigger>
-      <DropdownMenu.Content data-spar-part='content' className='dropdown-content' align='end'>
-        <DropdownMenu.Viewport data-spar-part='viewport' className='dropdown-viewport'>
-          <DropdownMenu.Item data-spar-part='item' className='dropdown-item'>
-            <span className='dropdown-item-avatar'></span>
+      <DropdownMenu.Content
+        data-spar-part="content"
+        className="dropdown-content"
+        align="end"
+      >
+        <DropdownMenu.Viewport
+          data-spar-part="viewport"
+          className="dropdown-viewport"
+        >
+          <DropdownMenu.Item data-spar-part="item" className="dropdown-item">
+            <span className="dropdown-item-avatar"></span>
             {'Alice'}
           </DropdownMenu.Item>
-          <DropdownMenu.Item data-spar-part='item' className='dropdown-item'>
-            <span className='dropdown-item-avatar'></span>
+          <DropdownMenu.Item data-spar-part="item" className="dropdown-item">
+            <span className="dropdown-item-avatar"></span>
             {'Bob'}
           </DropdownMenu.Item>
-          <DropdownMenu.Item data-spar-part='item' className='dropdown-item'>
-            <span className='dropdown-item-avatar'></span>
+          <DropdownMenu.Item data-spar-part="item" className="dropdown-item">
+            <span className="dropdown-item-avatar"></span>
             {'Charlie'}
           </DropdownMenu.Item>
-          <DropdownMenu.Item data-spar-part='item' className='dropdown-item'>
-            <span className='dropdown-item-avatar'></span>
+          <DropdownMenu.Item data-spar-part="item" className="dropdown-item">
+            <span className="dropdown-item-avatar"></span>
             {'Diana'}
           </DropdownMenu.Item>
         </DropdownMenu.Viewport>
-        <DropdownMenu.Arrow data-spar-part='arrow' className='dropdown-arrow' />
+        <DropdownMenu.Arrow data-spar-part="arrow" className="dropdown-arrow" />
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   </div>
@@ -299,7 +299,8 @@ import {
 
 - `DropdownMenu.Root` manages open/close state and provides context
 - `DropdownMenu.Trigger` controls menu visibility and manages focus
-- `DropdownMenu.Content` handles positioning, keyboard navigation, and item collection
+- `DropdownMenu.Content` handles positioning, keyboard navigation, and item
+  collection
 - Menu items register themselves for keyboard navigation and typeahead
 
 ## Code Examples
@@ -314,10 +315,16 @@ function BasicMenu() {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>Actions</DropdownMenu.Trigger>
       <DropdownMenu.Content>
-        <DropdownMenu.Item onSelect={() => console.log('Edit')}>Edit</DropdownMenu.Item>
-        <DropdownMenu.Item onSelect={() => console.log('Duplicate')}>Duplicate</DropdownMenu.Item>
+        <DropdownMenu.Item onSelect={() => console.log('Edit')}>
+          Edit
+        </DropdownMenu.Item>
+        <DropdownMenu.Item onSelect={() => console.log('Duplicate')}>
+          Duplicate
+        </DropdownMenu.Item>
         <DropdownMenu.Separator />
-        <DropdownMenu.Item onSelect={() => console.log('Delete')}>Delete</DropdownMenu.Item>
+        <DropdownMenu.Item onSelect={() => console.log('Delete')}>
+          Delete
+        </DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );
@@ -356,7 +363,7 @@ function CustomPositionMenu() {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>Options</DropdownMenu.Trigger>
-      <DropdownMenu.Content side='right' align='start'>
+      <DropdownMenu.Content side="right" align="start">
         <DropdownMenu.Item>Option 1</DropdownMenu.Item>
         <DropdownMenu.Item>Option 2</DropdownMenu.Item>
         <DropdownMenu.Item>Option 3</DropdownMenu.Item>
@@ -408,7 +415,7 @@ function ScrollableMenu() {
       <DropdownMenu.Trigger>Timezone</DropdownMenu.Trigger>
       <DropdownMenu.Content>
         <DropdownMenu.Viewport style={{ maxHeight: 240, overflowY: 'auto' }}>
-          {timezones.map((tz) => (
+          {timezones.map(tz => (
             <DropdownMenu.Item key={tz}>{tz}</DropdownMenu.Item>
           ))}
         </DropdownMenu.Viewport>
@@ -492,7 +499,9 @@ function CustomCloseBehavior() {
         <DropdownMenu.Item>Option 1</DropdownMenu.Item>
         <DropdownMenu.Item>Option 2</DropdownMenu.Item>
         <DropdownMenu.Separator />
-        <DropdownMenu.Item onSelect={(e) => e.preventDefault()}>Keep Open</DropdownMenu.Item>
+        <DropdownMenu.Item onSelect={e => e.preventDefault()}>
+          Keep Open
+        </DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );
@@ -503,7 +512,9 @@ function CustomCloseBehavior() {
 
 ### DropdownMenu / DropdownMenu.Root
 
-The root container that manages the dropdown menu state and provides context to all child components. `DropdownMenu` and `DropdownMenu.Root` are the same component - the difference is only import/notation style.
+The root container that manages the dropdown menu state and provides context to
+all child components. `DropdownMenu` and `DropdownMenu.Root` are the same
+component - the difference is only import/notation style.
 
 **Props**
 
@@ -527,7 +538,8 @@ The root container that manages the dropdown menu state and provides context to 
 
 ### DropdownMenu.Trigger
 
-The button element that toggles the dropdown menu visibility. Extends all `Button` component props including polymorphic rendering via the `as` prop.
+The button element that toggles the dropdown menu visibility. Extends all
+`Button` component props including polymorphic rendering via the `as` prop.
 
 **Props**
 
@@ -571,7 +583,8 @@ The button element that toggles the dropdown menu visibility. Extends all `Butto
 
 ### DropdownMenu.Content
 
-The container for menu items with positioning, keyboard navigation, and typeahead support.
+The container for menu items with positioning, keyboard navigation, and
+typeahead support.
 
 **Props**
 
@@ -608,11 +621,22 @@ The container for menu items with positioning, keyboard navigation, and typeahea
 
 ### DropdownMenu.Viewport
 
-An optional scrollable region that wraps the menu items. Use it when the list can grow long enough to need a bounded, scrollable area. Headless: renders a plain element with no visual opinions — apply a `max-height` and `overflow` (e.g. `overflow-y: auto`) via `className`/`style` to enable scrolling.
+An optional scrollable region that wraps the menu items. Use it when the list
+can grow long enough to need a bounded, scrollable area. Headless: renders a
+plain element with no visual opinions — apply a `max-height` and `overflow`
+(e.g. `overflow-y: auto`) via `className`/`style` to enable scrolling.
 
-Because menu items are focused programmatically (with `preventScroll`), the browser will not reveal off-screen items on its own. `DropdownMenu.Viewport` is purely presentational — it just provides the bounded, scrollable box. Keeping the highlighted item visible during keyboard navigation and typeahead is handled by `DropdownMenu.Content`, which scrolls the item into its nearest scrollable ancestor (this Viewport). It works the same whether or not a Viewport is present.
+Because menu items are focused programmatically (with `preventScroll`), the
+browser will not reveal off-screen items on its own. `DropdownMenu.Viewport` is
+purely presentational — it just provides the bounded, scrollable box. Keeping
+the highlighted item visible during keyboard navigation and typeahead is handled
+by `DropdownMenu.Content`, which scrolls the item into its nearest scrollable
+ancestor (this Viewport). It works the same whether or not a Viewport is
+present.
 
-Defaults to `role="presentation"` so it stays transparent in the accessibility tree, preserving the `menu` → `menuitem` structure. Override `role` if you need different semantics.
+Defaults to `role="presentation"` so it stays transparent in the accessibility
+tree, preserving the `menu` → `menuitem` structure. Override `role` if you need
+different semantics.
 
 **Props**
 
@@ -739,9 +763,14 @@ A logical grouping container for related menu items.
 
 ### DropdownMenu.Arrow
 
-Optional decorative arrow element that points to the trigger. Headless: renders a plain element with no visual opinions — user provides all styling. Arrow ref is automatically managed via context.
+Optional decorative arrow element that points to the trigger. Headless: renders
+a plain element with no visual opinions — user provides all styling. Arrow ref
+is automatically managed via context.
 
-Supports polymorphic rendering via the `as` prop. When rendered as the default `svg`, sensible SVG defaults (`width`, `height`, `viewBox`, and a triangle `polygon`) are applied automatically. When rendered as another element (e.g., `as="div"`), SVG-specific attributes and default children are omitted.
+Supports polymorphic rendering via the `as` prop. When rendered as the default
+`svg`, sensible SVG defaults (`width`, `height`, `viewBox`, and a triangle
+`polygon`) are applied automatically. When rendered as another element (e.g.,
+`as="div"`), SVG-specific attributes and default children are omitted.
 
 **Props**
 

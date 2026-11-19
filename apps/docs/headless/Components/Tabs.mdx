@@ -1,6 +1,8 @@
 ---
 title: Tabs
-description: Headless tabs primitives for organizing related content into labeled panels with accessible keyboard navigation and controlled or uncontrolled selection.
+description:
+  Headless tabs primitives for organizing related content into labeled panels
+  with accessible keyboard navigation and controlled or uncontrolled selection.
 ---
 
 import React from 'react';
@@ -10,11 +12,13 @@ import { Tabs } from '@turkish-technology/spar';
 
 # Tabs
 
-A headless, accessible tabs component that provides complete keyboard navigation, orientation support, and ARIA compliance for tabbed interfaces.
+A headless, accessible tabs component that provides complete keyboard
+navigation, orientation support, and ARIA compliance for tabbed interfaces.
 
 ## Live Demo
 
-This demo starts with the `Trend` tab selected and highlights the active trigger with an underline treatment.
+This demo starts with the `Trend` tab selected and highlights the active trigger
+with an underline treatment.
 
 <LiveCode
   code={`<div className='tabs-demo-container'>
@@ -42,63 +46,37 @@ cssCode={`.tabs-demo-container .tabs {
   background: rgba(0, 0, 0, 0.08);
 }
 
-[data-theme='dark'] .tabs-demo-container .tabs {
-border-color: #2b303b;
-background: rgba(255, 255, 255, 0.12);
-}
+[data-theme='dark'] .tabs-demo-container .tabs { border-color: #2b303b;
+background: rgba(255, 255, 255, 0.12); }
 
-.tabs-demo-container .tabs-list {
-display: flex;
-align-items: center;
-gap: 10px;
-height: 100%;
-}
+.tabs-demo-container .tabs-list { display: flex; align-items: center; gap: 10px;
+height: 100%; }
 
-.tabs-demo-container .tab {
-height: 100%;
-padding: 0 2px;
-border: none;
-background: transparent;
-color: #717784;
-font-size: 14px;
-line-height: 20px;
-}
+.tabs-demo-container .tab { height: 100%; padding: 0 2px; border: none;
+background: transparent; color: #717784; font-size: 14px; line-height: 20px; }
 
-[data-theme='dark'] .tabs-demo-container .tab {
-color: #99a0ae;
-}
+[data-theme='dark'] .tabs-demo-container .tab { color: #99a0ae; }
 
-.tabs-demo-container .tab[data-state='active'] {
-color: #222530;
-}
+.tabs-demo-container .tab[data-state='active'] { color: #222530; }
 
-[data-theme='dark'] .tabs-demo-container .tab[data-state='active'] {
-color: #f2f5f8;
-}
+[data-theme='dark'] .tabs-demo-container .tab[data-state='active'] { color:
+#f2f5f8; }
 
-.tabs-demo-container .tab-label {
-display: flex;
-align-items: center;
-justify-content: center;
-height: 100%;
-padding-top: 2px;
-border-bottom: 2px solid transparent;
-}
+.tabs-demo-container .tab-label { display: flex; align-items: center;
+justify-content: center; height: 100%; padding-top: 2px; border-bottom: 2px
+solid transparent; }
 
-.tabs-demo-container .tab[data-state='active'] .tab-label {
-border-bottom-color: rgba(0, 0, 0, 0.72);
-}
+.tabs-demo-container .tab[data-state='active'] .tab-label { border-bottom-color:
+rgba(0, 0, 0, 0.72); }
 
 [data-theme='dark'] .tabs-demo-container .tab[data-state='active'] .tab-label {
-border-color: rgba(255, 255, 255, 0.72);
-}
-`}
-/>
+border-color: rgba(255, 255, 255, 0.72); } `} />
 
 ## Features
 
 - ✅ Controlled and uncontrolled state management
-- ✅ Automatic first-tab selection in uncontrolled mode when no `value` / `defaultValue` is provided (without calling `onValueChange`)
+- ✅ Automatic first-tab selection in uncontrolled mode when no `value` /
+  `defaultValue` is provided (without calling `onValueChange`)
 - ✅ Horizontal and vertical orientation configuration
 - ✅ Automatic and manual activation behavior
 - ✅ Lazy content rendering for performance
@@ -141,20 +119,20 @@ The Tabs component consists of compound parts that work together:
     },
   ]}
 >
-  <div className='tabs-demo-container'>
-    <Tabs.Root defaultValue='trend' className='tabs' data-spar-part='root'>
-      <Tabs.List className='tabs-list' data-spar-part='list'>
-        <Tabs.Trigger value='recent' className='tab' data-spar-part='trigger'>
-          <span className='tab-label'>{'Recent'}</span>
+  <div className="tabs-demo-container">
+    <Tabs.Root defaultValue="trend" className="tabs" data-spar-part="root">
+      <Tabs.List className="tabs-list" data-spar-part="list">
+        <Tabs.Trigger value="recent" className="tab" data-spar-part="trigger">
+          <span className="tab-label">{'Recent'}</span>
         </Tabs.Trigger>
-        <Tabs.Trigger value='popular' className='tab' data-spar-part='trigger'>
-          <span className='tab-label'>{'Popular'}</span>
+        <Tabs.Trigger value="popular" className="tab" data-spar-part="trigger">
+          <span className="tab-label">{'Popular'}</span>
         </Tabs.Trigger>
-        <Tabs.Trigger value='trend' className='tab' data-spar-part='trigger'>
-          <span className='tab-label'>{'Trend'}</span>
+        <Tabs.Trigger value="trend" className="tab" data-spar-part="trigger">
+          <span className="tab-label">{'Trend'}</span>
         </Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value='trend' data-spar-part='content'></Tabs.Content>
+      <Tabs.Content value="trend" data-spar-part="content"></Tabs.Content>
     </Tabs.Root>
   </div>
 </AnatomyViewer>
@@ -172,16 +150,19 @@ The Tabs component consists of compound parts that work together:
 
 ### Data Flow
 
-1. **Tabs.Root** manages selected value state and provides context to descendants
+1. **Tabs.Root** manages selected value state and provides context to
+   descendants
 2. **Tabs.List** handles roving focus and keyboard-driven tab traversal
 3. **Tabs.Trigger** registers itself in the tab registry and updates selection
-4. **Tabs.Content** renders the matching panel and reflects active/inactive state
+4. **Tabs.Content** renders the matching panel and reflects active/inactive
+   state
 
 ## Code Examples
 
 ### Controlled Tabs
 
-Use controlled tabs when the active panel needs to stay synced with routing, saved preferences, or external UI state.
+Use controlled tabs when the active panel needs to stay synced with routing,
+saved preferences, or external UI state.
 
 ```tsx {2,5}
 function ControlledTabs() {
@@ -190,11 +171,11 @@ function ControlledTabs() {
   return (
     <Tabs.Root value={activeTab} onValueChange={setActiveTab}>
       <Tabs.List>
-        <Tabs.Trigger value='profile'>Profile</Tabs.Trigger>
-        <Tabs.Trigger value='settings'>Settings</Tabs.Trigger>
+        <Tabs.Trigger value="profile">Profile</Tabs.Trigger>
+        <Tabs.Trigger value="settings">Settings</Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value='profile'>Profile content here</Tabs.Content>
-      <Tabs.Content value='settings'>Settings content here</Tabs.Content>
+      <Tabs.Content value="profile">Profile content here</Tabs.Content>
+      <Tabs.Content value="settings">Settings content here</Tabs.Content>
     </Tabs.Root>
   );
 }
@@ -202,20 +183,21 @@ function ControlledTabs() {
 
 ### Vertical Orientation
 
-Vertical tabs work well for settings pages and other layouts where labels need more room.
+Vertical tabs work well for settings pages and other layouts where labels need
+more room.
 
 ```tsx {3}
 function VerticalTabs() {
   return (
-    <Tabs.Root orientation='vertical' defaultValue='tab1'>
+    <Tabs.Root orientation="vertical" defaultValue="tab1">
       <Tabs.List>
-        <Tabs.Trigger value='tab1'>First Tab</Tabs.Trigger>
-        <Tabs.Trigger value='tab2'>Second Tab</Tabs.Trigger>
-        <Tabs.Trigger value='tab3'>Third Tab</Tabs.Trigger>
+        <Tabs.Trigger value="tab1">First Tab</Tabs.Trigger>
+        <Tabs.Trigger value="tab2">Second Tab</Tabs.Trigger>
+        <Tabs.Trigger value="tab3">Third Tab</Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value='tab1'>First content</Tabs.Content>
-      <Tabs.Content value='tab2'>Second content</Tabs.Content>
-      <Tabs.Content value='tab3'>Third content</Tabs.Content>
+      <Tabs.Content value="tab1">First content</Tabs.Content>
+      <Tabs.Content value="tab2">Second content</Tabs.Content>
+      <Tabs.Content value="tab3">Third content</Tabs.Content>
     </Tabs.Root>
   );
 }
@@ -223,20 +205,21 @@ function VerticalTabs() {
 
 ### Manual Activation Mode
 
-Manual activation separates focus from selection so users can explore tab labels with the keyboard before committing.
+Manual activation separates focus from selection so users can explore tab labels
+with the keyboard before committing.
 
 ```tsx {3}
 function ManualActivationTabs() {
   return (
-    <Tabs.Root activationMode='manual' defaultValue='home'>
+    <Tabs.Root activationMode="manual" defaultValue="home">
       <Tabs.List>
-        <Tabs.Trigger value='home'>Home</Tabs.Trigger>
-        <Tabs.Trigger value='about'>About</Tabs.Trigger>
-        <Tabs.Trigger value='contact'>Contact</Tabs.Trigger>
+        <Tabs.Trigger value="home">Home</Tabs.Trigger>
+        <Tabs.Trigger value="about">About</Tabs.Trigger>
+        <Tabs.Trigger value="contact">Contact</Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value='home'>Home page content</Tabs.Content>
-      <Tabs.Content value='about'>About page content</Tabs.Content>
-      <Tabs.Content value='contact'>Contact page content</Tabs.Content>
+      <Tabs.Content value="home">Home page content</Tabs.Content>
+      <Tabs.Content value="about">About page content</Tabs.Content>
+      <Tabs.Content value="contact">Contact page content</Tabs.Content>
     </Tabs.Root>
   );
 }
@@ -244,28 +227,31 @@ function ManualActivationTabs() {
 
 ### Render Props Pattern
 
-Render props let you build richer trigger content while still reading tab selection and focus state from the component.
+Render props let you build richer trigger content while still reading tab
+selection and focus state from the component.
 
 ```tsx {6-12,15}
 function RenderPropsTabs() {
   return (
-    <Tabs.Root defaultValue='dashboard'>
+    <Tabs.Root defaultValue="dashboard">
       <Tabs.List>
-        <Tabs.Trigger value='dashboard'>
+        <Tabs.Trigger value="dashboard">
           {({ isSelected, isFocused }) => (
             <span className={isSelected ? 'selected' : ''}>
               <DashboardIcon />
               Dashboard
-              {isFocused && <span className='focus-indicator' />}
+              {isFocused && <span className="focus-indicator" />}
             </span>
           )}
         </Tabs.Trigger>
-        <Tabs.Trigger value='analytics'>
-          {({ isSelected }) => <span className={isSelected ? 'selected' : ''}>Analytics</span>}
+        <Tabs.Trigger value="analytics">
+          {({ isSelected }) => (
+            <span className={isSelected ? 'selected' : ''}>Analytics</span>
+          )}
         </Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value='dashboard'>Dashboard content</Tabs.Content>
-      <Tabs.Content value='analytics'>Analytics content</Tabs.Content>
+      <Tabs.Content value="dashboard">Dashboard content</Tabs.Content>
+      <Tabs.Content value="analytics">Analytics content</Tabs.Content>
     </Tabs.Root>
   );
 }
@@ -273,18 +259,21 @@ function RenderPropsTabs() {
 
 ### Force Mount Content
 
-Use `forceMount` for panels that should stay in the DOM, such as forms, media players, or stateful widgets.
+Use `forceMount` for panels that should stay in the DOM, such as forms, media
+players, or stateful widgets.
 
 ```tsx {9}
 function ForceMountTabs() {
   return (
-    <Tabs.Root defaultValue='lazy'>
+    <Tabs.Root defaultValue="lazy">
       <Tabs.List>
-        <Tabs.Trigger value='lazy'>Lazy Content</Tabs.Trigger>
-        <Tabs.Trigger value='eager'>Always Mounted</Tabs.Trigger>
+        <Tabs.Trigger value="lazy">Lazy Content</Tabs.Trigger>
+        <Tabs.Trigger value="eager">Always Mounted</Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value='lazy'>This content is only rendered when active</Tabs.Content>
-      <Tabs.Content value='eager' forceMount>
+      <Tabs.Content value="lazy">
+        This content is only rendered when active
+      </Tabs.Content>
+      <Tabs.Content value="eager" forceMount>
         This content is always in the DOM (useful for forms, videos, etc.)
       </Tabs.Content>
     </Tabs.Root>
@@ -296,7 +285,8 @@ function ForceMountTabs() {
 
 ### Tabs / Tabs.Root
 
-The root state container for the tabs system. `Tabs` and `Tabs.Root` are the same component - the difference is only import/notation style.
+The root state container for the tabs system. `Tabs` and `Tabs.Root` are the
+same component - the difference is only import/notation style.
 
 #### Props
 
@@ -350,7 +340,8 @@ The root state container for the tabs system. `Tabs` and `Tabs.Root` are the sam
 
 ### Tabs.Trigger
 
-Extends all `Button` component props including polymorphic rendering via the `as` prop.
+Extends all `Button` component props including polymorphic rendering via the
+`as` prop.
 
 #### Props
 
@@ -416,7 +407,8 @@ Extends all `Button` component props including polymorphic rendering via the `as
 
 #### Events
 
-No component-specific events are defined. Standard forwarded DOM events can be passed via `...props`.
+No component-specific events are defined. Standard forwarded DOM events can be
+passed via `...props`.
 
 #### HTML Attributes
 
@@ -443,4 +435,6 @@ No component-specific events are defined. Standard forwarded DOM events can be p
 | `End`              | Focuses last enabled tab          | List focused    | Selects it in `automatic` mode                                       |
 | `Enter` or `Space` | Activates focused trigger         | Trigger focused | Commits the focused tab in manual mode; ignored on disabled triggers |
 
-**Note:** In `automatic` mode, arrow/home/end navigation both focuses and selects. In `manual` mode, those keys only move focus; use `Enter` or `Space` to commit selection after moving focus.
+**Note:** In `automatic` mode, arrow/home/end navigation both focuses and
+selects. In `manual` mode, those keys only move focus; use `Enter` or `Space` to
+commit selection after moving focus.

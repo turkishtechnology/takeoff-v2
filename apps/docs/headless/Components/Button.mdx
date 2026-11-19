@@ -1,6 +1,8 @@
 ---
 title: Button
-description: A headless, accessible button component with complete keyboard support and toggle functionality
+description:
+  A headless, accessible button component with complete keyboard support and
+  toggle functionality
 ---
 
 import React from 'react';
@@ -10,7 +12,8 @@ import { Button } from '@turkish-technology/spar';
 
 # Button
 
-A headless, accessible button component that provides complete keyboard support and toggle functionality.
+A headless, accessible button component that provides complete keyboard support
+and toggle functionality.
 
 ## Live Demo
 
@@ -36,18 +39,15 @@ A headless, accessible button component that provides complete keyboard support 
   font-weight: 500;
 }
 
-[data-theme='dark'] .button-demo-container .button {
-border-color: #2b303b;
-background: rgba(255, 255, 255, 0.12);
-color: #f2f5f8;
-}`}
-/>
+[data-theme='dark'] .button-demo-container .button { border-color: #2b303b;
+background: rgba(255, 255, 255, 0.12); color: #f2f5f8; }`} />
 
 </div>
 
 ## Features
 
-- ✅ Polymorphic rendering via `as` prop — renders as any HTML element or component
+- ✅ Polymorphic rendering via `as` prop — renders as any HTML element or
+  component
 - ✅ Toggle button functionality with controlled and uncontrolled modes
 - ✅ Loading state management with `isLoading` prop
 - ✅ Auto-focus support on mount
@@ -64,10 +64,16 @@ import { Button } from '@turkish-technology/spar';
 The Button is a single component that can be configured for different use cases:
 
 <AnatomyViewer
-  parts={[{ name: 'button', label: 'Button', description: 'Interactive button element' }]}
+  parts={[
+    {
+      name: 'button',
+      label: 'Button',
+      description: 'Interactive button element',
+    },
+  ]}
 >
-  <div className='button-demo-container'>
-    <Button data-spar-part='button' className='button'>
+  <div className="button-demo-container">
+    <Button data-spar-part="button" className="button">
       {'button'}
     </Button>
   </div>
@@ -128,7 +134,7 @@ function LoadingButton() {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
     } finally {
       setIsLoading(false);
     }
@@ -151,21 +157,24 @@ function PolymorphicButtons() {
   return (
     <>
       {/* Render as anchor tag */}
-      <Button as='a' href='/dashboard'>
+      <Button as="a" href="/dashboard">
         Go to Dashboard
       </Button>
 
       {/* Render as div with button role */}
-      <Button as='div'>Custom Element Button</Button>
+      <Button as="div">Custom Element Button</Button>
 
       {/* Render with submit type */}
-      <Button type='submit'>Submit Form</Button>
+      <Button type="submit">Submit Form</Button>
     </>
   );
 }
 ```
 
-While `disabled` or `isLoading`, a non-native element cancels the click's default action, and a plain `as='a'` additionally drops its `href`, so an inert link cannot navigate (`aria-disabled`, `tabIndex` and `aria-busy` are unchanged).
+While `disabled` or `isLoading`, a non-native element cancels the click's
+default action, and a plain `as='a'` additionally drops its `href`, so an inert
+link cannot navigate (`aria-disabled`, `tabIndex` and `aria-busy` are
+unchanged).
 
 ### Auto-focus and Disabled States
 
@@ -193,7 +202,8 @@ function AccessibilityExample() {
 
 ### Button
 
-A headless, accessible button component with complete keyboard support and toggle functionality.
+A headless, accessible button component with complete keyboard support and
+toggle functionality.
 
 **Props**
 

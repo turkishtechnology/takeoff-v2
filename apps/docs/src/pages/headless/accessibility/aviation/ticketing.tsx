@@ -1,30 +1,10 @@
 import React from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
-import {
-  Breadcrumb,
-  Button,
-  Checkbox,
-  Dialog,
-  DropdownMenu,
-  Field,
-  Input,
-  Label,
-  Radio,
-  Select,
-  Tabs,
-  Tooltip,
-} from '@turkish-technology/spar';
+import { Breadcrumb, Button, Checkbox, Dialog, DropdownMenu, Field, Input, Label, Radio, Select, Tabs, Tooltip } from '@turkish-technology/spar';
 
-import type {
-  FlightOption,
-  SearchResultRow,
-} from '@site/src/components/headless/accessibility/aviation/ticketing.types';
-import {
-  airportOptions,
-  airportCodeByValue,
-  flights,
-} from '@site/src/components/headless/accessibility/aviation/ticketing.data';
+import type { FlightOption, SearchResultRow } from '@site/src/components/headless/accessibility/aviation/ticketing.types';
+import { airportOptions, airportCodeByValue, flights } from '@site/src/components/headless/accessibility/aviation/ticketing.data';
 
 import '@site/src/css/headless/accessibility/aviation.scss';
 
@@ -37,9 +17,7 @@ export default function TicketingPage() {
   const [returnDate, setReturnDate] = React.useState('17.4.2026');
   const [passengerCount, setPassengerCount] = React.useState('1');
   const [hasSearched, setHasSearched] = React.useState(false);
-  const [bookingStep, setBookingStep] = React.useState<
-    'idle' | 'passenger' | 'payment' | 'completed'
-  >('idle');
+  const [bookingStep, setBookingStep] = React.useState<'idle' | 'passenger' | 'payment' | 'completed'>('idle');
   const [passengerFirstName, setPassengerFirstName] = React.useState('');
   const [passengerLastName, setPassengerLastName] = React.useState('');
   const [passengerIdNumber, setPassengerIdNumber] = React.useState('');
@@ -72,10 +50,7 @@ export default function TicketingPage() {
   }, [bookingStep]);
 
   const availableFlights = React.useMemo(
-    () =>
-      flights.filter(
-        (flight) => flight.from === searchedFromAirport && flight.to === searchedToAirport,
-      ),
+    () => flights.filter(flight => flight.from === searchedFromAirport && flight.to === searchedToAirport),
     [searchedFromAirport, searchedToAirport],
   );
 
@@ -131,10 +106,7 @@ export default function TicketingPage() {
     setHasSearched(true);
   };
 
-  const pendingFlight = React.useMemo(
-    () => searchResultRows.find((flight: SearchResultRow) => flight.id === pendingFlightId) ?? null,
-    [searchResultRows, pendingFlightId],
-  );
+  const pendingFlight = React.useMemo(() => searchResultRows.find((flight: SearchResultRow) => flight.id === pendingFlightId) ?? null, [searchResultRows, pendingFlightId]);
 
   const handleConfirmSelection = () => {
     if (pendingFlightId) {
@@ -180,9 +152,7 @@ export default function TicketingPage() {
       return;
     }
 
-    const isValidBooking =
-      checkInPnr.trim().toUpperCase() === completedBooking.pnr &&
-      checkInSurname.trim().toUpperCase() === completedBooking.surname;
+    const isValidBooking = checkInPnr.trim().toUpperCase() === completedBooking.pnr && checkInSurname.trim().toUpperCase() === completedBooking.surname;
 
     if (!isValidBooking) {
       setIsCheckInCompleted(false);
@@ -195,67 +165,58 @@ export default function TicketingPage() {
   };
 
   return (
-    <Layout title='Ticketing'>
-      <div className='ticketing-page'>
-        <Link to='/headless/accessibility' className='back-link'>
+    <Layout title="Ticketing">
+      <div className="ticketing-page">
+        <Link to="/headless/accessibility" className="back-link">
           ← All Demos
         </Link>
-        <section className='ticketing-shell' aria-label='Ticketing screen'>
-          <header className='ticketing-header'>
-            <Breadcrumb.Root className='ticketing-breadcrumb'>
+        <section className="ticketing-shell" aria-label="Ticketing screen">
+          <header className="ticketing-header">
+            <Breadcrumb.Root className="ticketing-breadcrumb">
               <Breadcrumb.List>
                 <Breadcrumb.Item>
-                  <Breadcrumb.Link href='#services'>Services</Breadcrumb.Link>
+                  <Breadcrumb.Link href="#services">Services</Breadcrumb.Link>
                 </Breadcrumb.Item>
                 <Breadcrumb.Separator />
                 <Breadcrumb.Item>
-                  <Breadcrumb.Link href='#cities'>City Guide</Breadcrumb.Link>
+                  <Breadcrumb.Link href="#cities">City Guide</Breadcrumb.Link>
                 </Breadcrumb.Item>
                 <Breadcrumb.Separator />
                 <Breadcrumb.Item>
-                  <Breadcrumb.Link href='#faq'>FAQ</Breadcrumb.Link>
+                  <Breadcrumb.Link href="#faq">FAQ</Breadcrumb.Link>
                 </Breadcrumb.Item>
                 <Breadcrumb.Separator />
                 <Breadcrumb.Item>
-                  <Breadcrumb.Link href='#campaigns'>Campaigns</Breadcrumb.Link>
+                  <Breadcrumb.Link href="#campaigns">Campaigns</Breadcrumb.Link>
                 </Breadcrumb.Item>
               </Breadcrumb.List>
             </Breadcrumb.Root>
-            <div className='ticketing-actions'>
+            <div className="ticketing-actions">
               <DropdownMenu.Root>
-                <DropdownMenu.Trigger
-                  className='ticketing-lang-btn'
-                  aria-label='Language selection'
-                >
+                <DropdownMenu.Trigger className="ticketing-lang-btn" aria-label="Language selection">
                   EN
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Content className='ticketing-dropdown-content'>
-                  <DropdownMenu.Item className='ticketing-dropdown-item'>Turkish</DropdownMenu.Item>
-                  <DropdownMenu.Item className='ticketing-dropdown-item'>English</DropdownMenu.Item>
-                  <DropdownMenu.Item className='ticketing-dropdown-item'>German</DropdownMenu.Item>
+                <DropdownMenu.Content className="ticketing-dropdown-content">
+                  <DropdownMenu.Item className="ticketing-dropdown-item">Turkish</DropdownMenu.Item>
+                  <DropdownMenu.Item className="ticketing-dropdown-item">English</DropdownMenu.Item>
+                  <DropdownMenu.Item className="ticketing-dropdown-item">German</DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
               <DropdownMenu.Root>
-                <DropdownMenu.Trigger className='ticketing-profile-btn' aria-label='Profile menu'>
+                <DropdownMenu.Trigger className="ticketing-profile-btn" aria-label="Profile menu">
                   JOHN D.
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Content className='ticketing-dropdown-content'>
-                  <DropdownMenu.Item className='ticketing-dropdown-item'>
-                    Membership Details
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className='ticketing-dropdown-item'>
-                    My Flights
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className='ticketing-dropdown-item'>
-                    Sign Out
-                  </DropdownMenu.Item>
+                <DropdownMenu.Content className="ticketing-dropdown-content">
+                  <DropdownMenu.Item className="ticketing-dropdown-item">Membership Details</DropdownMenu.Item>
+                  <DropdownMenu.Item className="ticketing-dropdown-item">My Flights</DropdownMenu.Item>
+                  <DropdownMenu.Item className="ticketing-dropdown-item">Sign Out</DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
             </div>
           </header>
 
-          <section className='ticketing-hero' aria-label='Flight search area'>
-            <div className='ticketing-hero-copy'>
+          <section className="ticketing-hero" aria-label="Flight search area">
+            <div className="ticketing-hero-copy">
               <h1>
                 Hello,
                 <br />
@@ -263,77 +224,68 @@ export default function TicketingPage() {
               </h1>
             </div>
 
-            <div className='ticketing-search-panel'>
+            <div className="ticketing-search-panel">
               <Tabs.Root
                 value={mode}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   setMode(value);
                 }}
               >
-                <Tabs.List className='ticketing-mode-tabs' aria-label='Ticketing options'>
-                  <Tabs.Trigger value='flight-search'>Search Flights</Tabs.Trigger>
-                  <Tabs.Trigger value='check-in'>Check-in</Tabs.Trigger>
+                <Tabs.List className="ticketing-mode-tabs" aria-label="Ticketing options">
+                  <Tabs.Trigger value="flight-search">Search Flights</Tabs.Trigger>
+                  <Tabs.Trigger value="check-in">Check-in</Tabs.Trigger>
                 </Tabs.List>
 
-                <Tabs.Content value='flight-search'>
-                  <form
-                    className='ticketing-form'
-                    aria-label='Flight search form'
-                    onSubmit={handleSearch}
-                  >
-                    <div className='ticketing-trip-type'>
+                <Tabs.Content value="flight-search">
+                  <form className="ticketing-form" aria-label="Flight search form" onSubmit={handleSearch}>
+                    <div className="ticketing-trip-type">
                       <Radio.Root
-                        aria-label='Trip type'
+                        aria-label="Trip type"
                         value={tripType}
-                        onChange={(value) => {
+                        onChange={value => {
                           setTripType(value);
                         }}
-                        className='ticketing-trip-type-options'
+                        className="ticketing-trip-type-options"
                       >
-                        <label htmlFor='trip-round'>
-                          <Radio.Item id='trip-round' value='round-trip' />
+                        <label htmlFor="trip-round">
+                          <Radio.Item id="trip-round" value="round-trip" />
                           Round Trip
                         </label>
-                        <label htmlFor='trip-one-way'>
-                          <Radio.Item id='trip-one-way' value='one-way' />
+                        <label htmlFor="trip-one-way">
+                          <Radio.Item id="trip-one-way" value="one-way" />
                           One Way
                         </label>
                       </Radio.Root>
                     </div>
 
-                    <div className='ticketing-fields'>
+                    <div className="ticketing-fields">
                       <Select.Root
                         value={fromAirport}
-                        onChange={(value) => {
+                        onChange={value => {
                           setFromAirport(value);
                         }}
                       >
-                        <Select.Trigger className='ticketing-field ticketing-field-wide ticketing-select-trigger'>
+                        <Select.Trigger className="ticketing-field ticketing-field-wide ticketing-select-trigger">
                           {({ label }) => (
                             <>
-                              <span className='ticketing-field-label'>From</span>
-                              <span className='ticketing-field-value'>{label || 'Select'}</span>
+                              <span className="ticketing-field-label">From</span>
+                              <span className="ticketing-field-value">{label || 'Select'}</span>
                             </>
                           )}
                         </Select.Trigger>
-                        <Select.Content className='ticketing-select-content'>
-                          {airportOptions.map((airport) => (
-                            <Select.Item
-                              key={airport.value}
-                              value={airport.value}
-                              className='ticketing-select-item'
-                              label={airport.label}
-                            >
+                        <Select.Content className="ticketing-select-content">
+                          {airportOptions.map(airport => (
+                            <Select.Item key={airport.value} value={airport.value} className="ticketing-select-item" label={airport.label}>
                               {airport.label}
                             </Select.Item>
                           ))}
                         </Select.Content>
                       </Select.Root>
                       <Button
-                        type='button'
-                        className='ticketing-swap-btn'
-                        aria-label='Swap From and To airports'
-                        onClick={(e) => {
+                        type="button"
+                        className="ticketing-swap-btn"
+                        aria-label="Swap From and To airports"
+                        onClick={e => {
                           e.preventDefault();
                           e.stopPropagation();
                           const temp = fromAirport;
@@ -345,192 +297,150 @@ export default function TicketingPage() {
                       </Button>
                       <Select.Root
                         value={toAirport}
-                        onChange={(value) => {
+                        onChange={value => {
                           setToAirport(value);
                         }}
                       >
-                        <Select.Trigger className='ticketing-field ticketing-field-wide ticketing-select-trigger'>
+                        <Select.Trigger className="ticketing-field ticketing-field-wide ticketing-select-trigger">
                           {({ label }) => (
                             <>
-                              <span className='ticketing-field-label'>To</span>
-                              <span className='ticketing-field-value'>{label || 'Select'}</span>
+                              <span className="ticketing-field-label">To</span>
+                              <span className="ticketing-field-value">{label || 'Select'}</span>
                             </>
                           )}
                         </Select.Trigger>
-                        <Select.Content className='ticketing-select-content'>
+                        <Select.Content className="ticketing-select-content">
                           {airportOptions
-                            .filter((airport) => airport.value !== fromAirport)
-                            .map((airport) => (
-                              <Select.Item
-                                key={airport.value}
-                                value={airport.value}
-                                className='ticketing-select-item'
-                                label={airport.label}
-                              >
+                            .filter(airport => airport.value !== fromAirport)
+                            .map(airport => (
+                              <Select.Item key={airport.value} value={airport.value} className="ticketing-select-item" label={airport.label}>
                                 {airport.label}
                               </Select.Item>
                             ))}
                         </Select.Content>
                       </Select.Root>
 
-                      <Field className='ticketing-input-wrap'>
-                        <Field.Label className='ticketing-field-label'>Departure</Field.Label>
+                      <Field className="ticketing-input-wrap">
+                        <Field.Label className="ticketing-field-label">Departure</Field.Label>
                         <Input>
                           <Input.Field
-                            className='ticketing-date-input'
+                            className="ticketing-date-input"
                             value={departureDate}
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                               setDepartureDate(event.target.value);
                             }}
-                            placeholder='DD.MM.YYYY'
+                            placeholder="DD.MM.YYYY"
                           />
                         </Input>
                       </Field>
-                      <Field className='ticketing-input-wrap'>
-                        <Field.Label className='ticketing-field-label'>Return</Field.Label>
+                      <Field className="ticketing-input-wrap">
+                        <Field.Label className="ticketing-field-label">Return</Field.Label>
                         <Input>
                           <Input.Field
-                            className='ticketing-date-input'
+                            className="ticketing-date-input"
                             value={returnDate}
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                               setReturnDate(event.target.value);
                             }}
-                            placeholder='DD.MM.YYYY'
+                            placeholder="DD.MM.YYYY"
                             disabled={tripType === 'one-way'}
                           />
                         </Input>
                       </Field>
                       <Select.Root
                         value={passengerCount}
-                        onChange={(value) => {
+                        onChange={value => {
                           setPassengerCount(value);
                         }}
                       >
-                        <Select.Trigger className='ticketing-field ticketing-select-trigger'>
+                        <Select.Trigger className="ticketing-field ticketing-select-trigger">
                           {({ label }) => (
                             <>
-                              <span className='ticketing-field-label'>Passengers</span>
-                              <span className='ticketing-field-value'>
-                                {label || '1 Passenger'}
-                              </span>
+                              <span className="ticketing-field-label">Passengers</span>
+                              <span className="ticketing-field-value">{label || '1 Passenger'}</span>
                             </>
                           )}
                         </Select.Trigger>
-                        <Select.Content className='ticketing-select-content'>
-                          <Select.Item
-                            value='1'
-                            className='ticketing-select-item'
-                            label='1 Passenger'
-                          >
+                        <Select.Content className="ticketing-select-content">
+                          <Select.Item value="1" className="ticketing-select-item" label="1 Passenger">
                             1 Passenger
                           </Select.Item>
-                          <Select.Item
-                            value='2'
-                            className='ticketing-select-item'
-                            label='2 Passengers'
-                          >
+                          <Select.Item value="2" className="ticketing-select-item" label="2 Passengers">
                             2 Passengers
                           </Select.Item>
-                          <Select.Item
-                            value='3'
-                            className='ticketing-select-item'
-                            label='3 Passengers'
-                          >
+                          <Select.Item value="3" className="ticketing-select-item" label="3 Passengers">
                             3 Passengers
                           </Select.Item>
                         </Select.Content>
                       </Select.Root>
-                      <Button type='submit' className='ticketing-search-btn'>
+                      <Button type="submit" className="ticketing-search-btn">
                         Search Flights
                       </Button>
                     </div>
                   </form>
 
                   {hasSearched && mode === 'flight-search' && (
-                    <section className='ticketing-post-search' aria-label='Flight results screen'>
-                      <div className='ticketing-mode-tabs'>
-                        <div className='ticketing-tab-content'>
-                          <div className='ticketing-results-head'>
+                    <section className="ticketing-post-search" aria-label="Flight results screen">
+                      <div className="ticketing-mode-tabs">
+                        <div className="ticketing-tab-content">
+                          <div className="ticketing-results-head">
                             <h3>Outbound Flight</h3>
                           </div>
 
                           {searchResultRows.length === 0 ? (
-                            <p className='ticketing-no-results'>
-                              No flights were found for the selected route.
-                            </p>
+                            <p className="ticketing-no-results">No flights were found for the selected route.</p>
                           ) : (
                             <>
-                              <span className='ticketing-transfer-chip'>Connecting Flights</span>
-                              <div className='ticketing-list-rows'>
+                              <span className="ticketing-transfer-chip">Connecting Flights</span>
+                              <div className="ticketing-list-rows">
                                 {searchResultRows.map((flight: SearchResultRow) => {
                                   const isSelected = selectedFlightId === flight.id;
 
                                   return (
-                                    <article
-                                      key={flight.id}
-                                      className={`ticketing-list-row ${flight.isPast ? 'is-past' : ''} ${isSelected ? 'is-selected' : ''}`}
-                                    >
-                                      <div className='ticketing-time-block'>
+                                    <article key={flight.id} className={`ticketing-list-row ${flight.isPast ? 'is-past' : ''} ${isSelected ? 'is-selected' : ''}`}>
+                                      <div className="ticketing-time-block">
                                         <strong>{flight.departTime}</strong>
-                                        <span>
-                                          {
-                                            airportCodeByValue[
-                                              searchedFromAirport as keyof typeof airportCodeByValue
-                                            ]
-                                          }
-                                        </span>
+                                        <span>{airportCodeByValue[searchedFromAirport as keyof typeof airportCodeByValue]}</span>
                                       </div>
 
-                                      <div className='ticketing-line-block'>
+                                      <div className="ticketing-line-block">
                                         <p>{flight.transferCode}</p>
-                                        <span className='ticketing-line' aria-hidden='true'>
+                                        <span className="ticketing-line" aria-hidden="true">
                                           <i />
                                         </span>
                                         <small>{flight.totalDuration}</small>
                                         <small>{flight.waitingDuration}</small>
                                       </div>
 
-                                      <div className='ticketing-time-block'>
+                                      <div className="ticketing-time-block">
                                         <strong>
                                           {flight.isNextDay && <em>+1 Day</em>}
                                           {flight.arriveTime}
                                         </strong>
-                                        <span>
-                                          {
-                                            airportCodeByValue[
-                                              searchedToAirport as keyof typeof airportCodeByValue
-                                            ]
-                                          }
-                                        </span>
+                                        <span>{airportCodeByValue[searchedToAirport as keyof typeof airportCodeByValue]}</span>
                                       </div>
 
                                       <Tooltip.Provider>
                                         <Tooltip.Root>
-                                          <Tooltip.Trigger
-                                            className='ticketing-info-btn'
-                                            aria-label='Flight details'
-                                          >
+                                          <Tooltip.Trigger className="ticketing-info-btn" aria-label="Flight details">
                                             i
                                           </Tooltip.Trigger>
-                                          <Tooltip.Content className='demo-tooltip-content'>
-                                            Be ready before your flight!
-                                          </Tooltip.Content>
+                                          <Tooltip.Content className="demo-tooltip-content">Be ready before your flight!</Tooltip.Content>
                                         </Tooltip.Root>
                                       </Tooltip.Provider>
 
                                       {flight.isPast ? (
-                                        <p className='ticketing-past-text'>PAST FLIGHT</p>
+                                        <p className="ticketing-past-text">PAST FLIGHT</p>
                                       ) : (
-                                        <div className='ticketing-price-area'>
+                                        <div className="ticketing-price-area">
                                           <p>
-                                            Last <strong>{flight.seatsLeft} seats</strong> at this
-                                            price
+                                            Last <strong>{flight.seatsLeft} seats</strong> at this price
                                           </p>
                                           <div>
                                             <strong>{flight.price}</strong>
                                             <Button
-                                              type='button'
-                                              className='ticketing-outline-btn'
+                                              type="button"
+                                              className="ticketing-outline-btn"
                                               aria-pressed={isSelected}
                                               onClick={() => {
                                                 setPendingFlightId(flight.id);
@@ -549,66 +459,51 @@ export default function TicketingPage() {
 
                               <Dialog.Root
                                 open={isSelectDialogOpen}
-                                onOpenChange={(open) => {
+                                onOpenChange={open => {
                                   setIsSelectDialogOpen(open);
                                   if (!open) {
                                     setPendingFlightId(null);
                                   }
                                 }}
                               >
-                                <Dialog.Overlay className='ticketing-dialog-overlay' />
-                                <Dialog.Content className='ticketing-dialog-content'>
-                                  <div className='ticketing-dialog-head'>
-                                    <Dialog.Title className='ticketing-dialog-title'>
-                                      Confirm Flight Selection
-                                    </Dialog.Title>
-                                    <Dialog.Close
-                                      type='button'
-                                      className='ticketing-dialog-close'
-                                      aria-label='Close dialog'
-                                    >
+                                <Dialog.Overlay className="ticketing-dialog-overlay" />
+                                <Dialog.Content className="ticketing-dialog-content">
+                                  <div className="ticketing-dialog-head">
+                                    <Dialog.Title className="ticketing-dialog-title">Confirm Flight Selection</Dialog.Title>
+                                    <Dialog.Close type="button" className="ticketing-dialog-close" aria-label="Close dialog">
                                       ×
                                     </Dialog.Close>
                                   </div>
 
                                   {pendingFlight && (
-                                    <div className='ticketing-dialog-summary'>
-                                      <p className='ticketing-dialog-summary-route'>
-                                        {searchedFromAirport.toUpperCase()} -{' '}
-                                        {searchedToAirport.toUpperCase()}
+                                    <div className="ticketing-dialog-summary">
+                                      <p className="ticketing-dialog-summary-route">
+                                        {searchedFromAirport.toUpperCase()} - {searchedToAirport.toUpperCase()}
                                       </p>
-                                      <div className='ticketing-dialog-summary-meta'>
+                                      <div className="ticketing-dialog-summary-meta">
                                         <span>
                                           {pendingFlight.departTime} - {pendingFlight.arriveTime}
                                         </span>
                                         <span>{pendingFlight.totalDuration}</span>
-                                        {pendingFlight.price && (
-                                          <strong>{pendingFlight.price}</strong>
-                                        )}
+                                        {pendingFlight.price && <strong>{pendingFlight.price}</strong>}
                                       </div>
                                     </div>
                                   )}
 
-                                  <Dialog.Description className='ticketing-dialog-description'>
-                                    {pendingFlight
-                                      ? `Should the ${pendingFlight.departTime} - ${pendingFlight.arriveTime} flight be selected?`
-                                      : 'Should this flight be selected?'}
+                                  <Dialog.Description className="ticketing-dialog-description">
+                                    {pendingFlight ? `Should the ${pendingFlight.departTime} - ${pendingFlight.arriveTime} flight be selected?` : 'Should this flight be selected?'}
                                   </Dialog.Description>
-                                  <div className='ticketing-dialog-actions'>
+                                  <div className="ticketing-dialog-actions">
                                     <Dialog.Close
-                                      type='button'
-                                      className='ticketing-outline-btn'
+                                      type="button"
+                                      className="ticketing-outline-btn"
                                       onClick={() => {
                                         setPendingFlightId(null);
                                       }}
                                     >
                                       Cancel
                                     </Dialog.Close>
-                                    <Button
-                                      type='button'
-                                      className='ticketing-search-btn'
-                                      onClick={handleConfirmSelection}
-                                    >
+                                    <Button type="button" className="ticketing-search-btn" onClick={handleConfirmSelection}>
                                       Confirm
                                     </Button>
                                   </div>
@@ -616,157 +511,114 @@ export default function TicketingPage() {
                               </Dialog.Root>
 
                               {bookingStep === 'passenger' && (
-                                <form
-                                  ref={passengerFormRef}
-                                  className='ticketing-booking-panel'
-                                  aria-label='Passenger information form'
-                                  onSubmit={handlePassengerSubmit}
-                                >
+                                <form ref={passengerFormRef} className="ticketing-booking-panel" aria-label="Passenger information form" onSubmit={handlePassengerSubmit}>
                                   <h4>Passenger Information</h4>
                                   <p>Enter passenger details to continue with ticketing.</p>
-                                  <div className='ticketing-booking-fields'>
-                                    <Field className='ticketing-input-wrap'>
-                                      <Field.Label className='ticketing-field-label'>
-                                        Name
-                                      </Field.Label>
+                                  <div className="ticketing-booking-fields">
+                                    <Field className="ticketing-input-wrap">
+                                      <Field.Label className="ticketing-field-label">Name</Field.Label>
                                       <Input>
                                         <Input.Field
-                                          className='ticketing-date-input'
+                                          className="ticketing-date-input"
                                           value={passengerFirstName}
-                                          onChange={(
-                                            event: React.ChangeEvent<HTMLInputElement>,
-                                          ) => {
+                                          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                             setPassengerFirstName(event.target.value);
                                           }}
-                                          placeholder='Passenger name'
+                                          placeholder="Passenger name"
                                         />
                                       </Input>
                                     </Field>
-                                    <Field className='ticketing-input-wrap'>
-                                      <Field.Label className='ticketing-field-label'>
-                                        Surname
-                                      </Field.Label>
+                                    <Field className="ticketing-input-wrap">
+                                      <Field.Label className="ticketing-field-label">Surname</Field.Label>
                                       <Input>
                                         <Input.Field
-                                          className='ticketing-date-input'
+                                          className="ticketing-date-input"
                                           value={passengerLastName}
-                                          onChange={(
-                                            event: React.ChangeEvent<HTMLInputElement>,
-                                          ) => {
+                                          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                             setPassengerLastName(event.target.value);
                                           }}
-                                          placeholder='Passenger surname'
+                                          placeholder="Passenger surname"
                                         />
                                       </Input>
                                     </Field>
-                                    <Field className='ticketing-input-wrap'>
-                                      <Field.Label className='ticketing-field-label'>
-                                        Identity Number
-                                      </Field.Label>
+                                    <Field className="ticketing-input-wrap">
+                                      <Field.Label className="ticketing-field-label">Identity Number</Field.Label>
                                       <Input>
                                         <Input.Field
-                                          className='ticketing-date-input'
+                                          className="ticketing-date-input"
                                           value={passengerIdNumber}
-                                          onChange={(
-                                            event: React.ChangeEvent<HTMLInputElement>,
-                                          ) => {
+                                          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                             setPassengerIdNumber(event.target.value);
                                           }}
-                                          placeholder='11 digit number'
+                                          placeholder="11 digit number"
                                         />
                                       </Input>
                                     </Field>
                                   </div>
-                                  <Button
-                                    type='submit'
-                                    className='ticketing-search-btn ticketing-booking-btn'
-                                  >
+                                  <Button type="submit" className="ticketing-search-btn ticketing-booking-btn">
                                     Continue To Payment
                                   </Button>
                                 </form>
                               )}
 
                               {bookingStep === 'payment' && (
-                                <form
-                                  ref={paymentFormRef}
-                                  className='ticketing-booking-panel'
-                                  aria-label='Payment form'
-                                  onSubmit={handlePaymentSubmit}
-                                >
+                                <form ref={paymentFormRef} className="ticketing-booking-panel" aria-label="Payment form" onSubmit={handlePaymentSubmit}>
                                   <h4>Payment</h4>
                                   <p>Enter your card information to complete ticketing.</p>
-                                  <div className='ticketing-booking-fields'>
-                                    <Field className='ticketing-input-wrap'>
-                                      <div className='ticketing-label-with-tip'>
-                                        <Field.Label className='ticketing-field-label'>
-                                          Card Number
-                                        </Field.Label>
+                                  <div className="ticketing-booking-fields">
+                                    <Field className="ticketing-input-wrap">
+                                      <div className="ticketing-label-with-tip">
+                                        <Field.Label className="ticketing-field-label">Card Number</Field.Label>
                                         <Tooltip.Provider delayDuration={200}>
                                           <Tooltip.Root>
-                                            <Tooltip.Trigger
-                                              className='ticketing-help-tip'
-                                              aria-label='Card number help'
-                                            >
+                                            <Tooltip.Trigger className="ticketing-help-tip" aria-label="Card number help">
                                               ?
                                             </Tooltip.Trigger>
-                                            <Tooltip.Content className='demo-tooltip-content'>
-                                              Enter at least 12 digits.
-                                            </Tooltip.Content>
+                                            <Tooltip.Content className="demo-tooltip-content">Enter at least 12 digits.</Tooltip.Content>
                                           </Tooltip.Root>
                                         </Tooltip.Provider>
                                       </div>
                                       <Input>
                                         <Input.Field
-                                          className='ticketing-date-input'
+                                          className="ticketing-date-input"
                                           value={paymentCardNumber}
-                                          onChange={(
-                                            event: React.ChangeEvent<HTMLInputElement>,
-                                          ) => {
+                                          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                             setPaymentCardNumber(event.target.value);
                                           }}
-                                          placeholder='0000 0000 0000 0000'
+                                          placeholder="0000 0000 0000 0000"
                                         />
                                       </Input>
                                     </Field>
                                   </div>
-                                  <div className='ticketing-payment-check'>
+                                  <div className="ticketing-payment-check">
                                     <Checkbox
-                                      id='payment-agreement'
-                                      className='ticketing-payment-checkbox'
+                                      id="payment-agreement"
+                                      className="ticketing-payment-checkbox"
                                       checked={paymentAgreement}
-                                      onChange={(checked) => {
+                                      onChange={checked => {
                                         setPaymentAgreement(checked === true);
                                       }}
                                     >
                                       {({ checked }) => (checked === true ? '✓' : '')}
                                     </Checkbox>
-                                    <Label htmlFor='payment-agreement'>
-                                      I confirm the payment information.
-                                    </Label>
+                                    <Label htmlFor="payment-agreement">I confirm the payment information.</Label>
                                   </div>
-                                  <Button
-                                    type='submit'
-                                    className='ticketing-search-btn ticketing-booking-btn'
-                                  >
+                                  <Button type="submit" className="ticketing-search-btn ticketing-booking-btn">
                                     Complete Ticketing
                                   </Button>
                                 </form>
                               )}
 
                               {bookingStep === 'completed' && completedBooking && (
-                                <section className='ticketing-booking-complete' aria-live='polite'>
+                                <section className="ticketing-booking-complete" aria-live="polite">
                                   <h4>Ticketing Completed</h4>
                                   <p>
-                                    PNR: <strong>{completedBooking.pnr}</strong> | Surname:{' '}
-                                    <strong>{completedBooking.surname}</strong>
+                                    PNR: <strong>{completedBooking.pnr}</strong> | Surname: <strong>{completedBooking.surname}</strong>
                                   </p>
-                                  <p>
-                                    Check-in tab was prefilled with your booking details. You can
-                                    now complete check-in.
-                                  </p>
+                                  <p>Check-in tab was prefilled with your booking details. You can now complete check-in.</p>
                                   <Button
-                                    type='button'
-                                    className='ticketing-search-btn ticketing-booking-btn'
+                                    type="button"
+                                    className="ticketing-search-btn ticketing-booking-btn"
                                     onClick={() => {
                                       setMode('check-in');
                                     }}
@@ -783,63 +635,51 @@ export default function TicketingPage() {
                   )}
                 </Tabs.Content>
 
-                <Tabs.Content value='check-in'>
-                  <form
-                    className='ticketing-form ticketing-checkin-form'
-                    aria-label='Check-in form'
-                    onSubmit={handleCheckInSubmit}
-                  >
-                    <div className='ticketing-checkin-info'>
-                      <span className='ticketing-checkin-icon' aria-hidden='true'>
+                <Tabs.Content value="check-in">
+                  <form className="ticketing-form ticketing-checkin-form" aria-label="Check-in form" onSubmit={handleCheckInSubmit}>
+                    <div className="ticketing-checkin-info">
+                      <span className="ticketing-checkin-icon" aria-hidden="true">
                         ✓
                       </span>
                       <h2>Online Check-in</h2>
                       <p>
-                        You can start your journey without waiting in line at the airport by
-                        completing online check-in. You can view airport Online Check-in
-                        availability <Link to='#checkin-info'>from here</Link>.
+                        You can start your journey without waiting in line at the airport by completing online check-in. You can view airport Online Check-in availability{' '}
+                        <Link to="#checkin-info">from here</Link>.
                       </p>
                     </div>
-                    <div className='ticketing-fields'>
-                      <Field className='ticketing-input-wrap'>
-                        <Field.Label className='ticketing-field-label'>
-                          Ticket or Reservation Code (PNR)
-                        </Field.Label>
+                    <div className="ticketing-fields">
+                      <Field className="ticketing-input-wrap">
+                        <Field.Label className="ticketing-field-label">Ticket or Reservation Code (PNR)</Field.Label>
                         <Input>
                           <Input.Field
-                            className='ticketing-date-input'
+                            className="ticketing-date-input"
                             value={checkInPnr}
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                               setCheckInPnr(event.target.value);
                             }}
-                            placeholder='Enter as written on your ID'
+                            placeholder="Enter as written on your ID"
                           />
                         </Input>
                       </Field>
-                      <Field className='ticketing-input-wrap'>
-                        <Field.Label className='ticketing-field-label'>
-                          Passenger Surname
-                        </Field.Label>
+                      <Field className="ticketing-input-wrap">
+                        <Field.Label className="ticketing-field-label">Passenger Surname</Field.Label>
                         <Input>
                           <Input.Field
-                            className='ticketing-date-input'
+                            className="ticketing-date-input"
                             value={checkInSurname}
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                               setCheckInSurname(event.target.value);
                             }}
-                            placeholder='Enter as written on your ID'
+                            placeholder="Enter as written on your ID"
                           />
                         </Input>
                       </Field>
-                      <Button type='submit' className='ticketing-search-btn'>
+                      <Button type="submit" className="ticketing-search-btn">
                         Complete Check-in
                       </Button>
                     </div>
                     {checkInStatusMessage && (
-                      <p
-                        className={`ticketing-checkin-status ${isCheckInCompleted ? 'is-success' : 'is-error'}`}
-                        role='status'
-                      >
+                      <p className={`ticketing-checkin-status ${isCheckInCompleted ? 'is-success' : 'is-error'}`} role="status">
                         {checkInStatusMessage}
                       </p>
                     )}

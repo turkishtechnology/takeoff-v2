@@ -1,6 +1,8 @@
 ---
 title: Dialog
-description: Accessible modal and non-modal dialog component with focus management, escape key handling, click outside behavior, and complete ARIA support.
+description:
+  Accessible modal and non-modal dialog component with focus management, escape
+  key handling, click outside behavior, and complete ARIA support.
 ---
 
 import React from 'react';
@@ -10,7 +12,8 @@ import { Button, Dialog } from '@turkish-technology/spar';
 
 # Dialog
 
-A headless modal and non-modal dialog component that provides accessibility features and focus management.
+A headless modal and non-modal dialog component that provides accessibility
+features and focus management.
 
 ## Live Demo
 
@@ -52,100 +55,50 @@ cssCode={`.dialog-demo-container .dialog-overlay {
   background-color: rgba(17, 24, 39, 0.48);
 }
 
-.dialog-demo-container .dialog-trigger,
-.dialog-demo-container .dialog-continue {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-min-height: 40px;
-padding: 0 14px;
-border-radius: 10px;
-border: 1px solid #e1e4ea;
-background-color: rgba(0, 0, 0, 0.08);
-color: #222530;
-font-size: 14px;
-line-height: 20px;
-font-weight: 500;
+.dialog-demo-container .dialog-trigger, .dialog-demo-container .dialog-continue
+{ display: inline-flex; align-items: center; justify-content: center;
+min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid
+#e1e4ea; background-color: rgba(0, 0, 0, 0.08); color: #222530; font-size: 14px;
+line-height: 20px; font-weight: 500; }
+
+[data-theme='dark'] .dialog-demo-container .dialog-trigger, [data-theme='dark']
+.dialog-demo-container .dialog-continue { border-color: #2b303b;
+background-color: rgba(255, 255, 255, 0.12); color: #f2f5f8; }
+
+.dialog-demo-container .dialog-content { position: fixed; top: 50%; left: 50%;
+transform: translate(-50%, -50%); width: 420px; padding: 20px; border-radius:
+12px; border: 1px solid #e1e4ea; background-color: #f7f8fa; box-shadow: 0 12px
+32px rgba(34, 37, 48, 0.08), 0 4px 12px rgba(34, 37, 48, 0.06); }
+
+[data-theme='dark'] .dialog-demo-container .dialog-content { border-color:
+#2b303b; background-color: #1f232b; }
+
+.dialog-demo-container .dialog-title { color: #222530; font-size: 18px;
+line-height: 24px; font-weight: 600; margin-bottom: 8px; }
+
+[data-theme='dark'] .dialog-demo-container .dialog-title { color: #f2f5f8; }
+
+.dialog-demo-container .dialog-description { color: #717784; font-size: 14px;
+line-height: 20px; }
+
+[data-theme='dark'] .dialog-demo-container .dialog-description { color: #99a0ae;
 }
 
-[data-theme='dark'] .dialog-demo-container .dialog-trigger,
-[data-theme='dark'] .dialog-demo-container .dialog-continue {
-border-color: #2b303b;
-background-color: rgba(255, 255, 255, 0.12);
-color: #f2f5f8;
-}
+.dialog-demo-container .dialog-actions { display: flex; align-items: center;
+justify-content: flex-end; gap: 10px; margin-top: 16px; }
 
-.dialog-demo-container .dialog-content {
-position: fixed;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-width: 420px;
-padding: 20px;
-border-radius: 12px;
-border: 1px solid #e1e4ea;
-background-color: #f7f8fa;
-box-shadow:
-0 12px 32px rgba(34, 37, 48, 0.08),
-0 4px 12px rgba(34, 37, 48, 0.06);
-}
+.dialog-demo-container .dialog-close { display: inline-flex; align-items:
+center; justify-content: center; min-height: 40px; padding: 0 14px; border: 1px
+solid transparent; border-radius: 10px; background-color: transparent; color:
+#717784; cursor: pointer; }
 
-[data-theme='dark'] .dialog-demo-container .dialog-content {
-border-color: #2b303b;
-background-color: #1f232b;
-}
-
-.dialog-demo-container .dialog-title {
-color: #222530;
-font-size: 18px;
-line-height: 24px;
-font-weight: 600;
-margin-bottom: 8px;
-}
-
-[data-theme='dark'] .dialog-demo-container .dialog-title {
-color: #f2f5f8;
-}
-
-.dialog-demo-container .dialog-description {
-color: #717784;
-font-size: 14px;
-line-height: 20px;
-}
-
-[data-theme='dark'] .dialog-demo-container .dialog-description {
-color: #99a0ae;
-}
-
-.dialog-demo-container .dialog-actions {
-display: flex;
-align-items: center;
-justify-content: flex-end;
-gap: 10px;
-margin-top: 16px;
-}
-
-.dialog-demo-container .dialog-close {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-min-height: 40px;
-padding: 0 14px;
-border: 1px solid transparent;
-border-radius: 10px;
-background-color: transparent;
-color: #717784;
-cursor: pointer;
-}
-
-[data-theme='dark'] .dialog-demo-container .dialog-close {
-color: #99a0ae;
-}`}
+[data-theme='dark'] .dialog-demo-container .dialog-close { color: #99a0ae; }`}
 />
 
 </div>
 
-The live demo presents a common confirmation dialog pattern with title, description, dismiss action, and primary action.
+The live demo presents a common confirmation dialog pattern with title,
+description, dismiss action, and primary action.
 
 ## Features
 
@@ -170,43 +123,66 @@ The Dialog component is built as a compound component with multiple parts:
 
 <AnatomyViewer
   parts={[
-    { name: 'root', label: 'Root', description: 'Container managing dialog state and context' },
-    { name: 'trigger', label: 'Trigger', description: 'Button that opens the dialog' },
-    { name: 'overlay', label: 'Overlay', description: 'Background overlay behind dialog content' },
+    {
+      name: 'root',
+      label: 'Root',
+      description: 'Container managing dialog state and context',
+    },
+    {
+      name: 'trigger',
+      label: 'Trigger',
+      description: 'Button that opens the dialog',
+    },
+    {
+      name: 'overlay',
+      label: 'Overlay',
+      description: 'Background overlay behind dialog content',
+    },
     {
       name: 'content',
       label: 'Content',
       description: 'Main dialog container with focus management',
     },
-    { name: 'title', label: 'Title', description: 'Dialog title for accessibility' },
+    {
+      name: 'title',
+      label: 'Title',
+      description: 'Dialog title for accessibility',
+    },
     {
       name: 'description',
       label: 'Description',
       description: 'Dialog description for accessibility',
     },
-    { name: 'close', label: 'Close', description: 'Button that closes the dialog' },
+    {
+      name: 'close',
+      label: 'Close',
+      description: 'Button that closes the dialog',
+    },
   ]}
 >
-  <div className='dialog-demo-container'>
-    <Dialog.Root data-spar-part='root' className='dialog'>
-      <Dialog.Trigger data-spar-part='trigger' className='dialog-trigger'>
+  <div className="dialog-demo-container">
+    <Dialog.Root data-spar-part="root" className="dialog">
+      <Dialog.Trigger data-spar-part="trigger" className="dialog-trigger">
         {'Open Dialog'}
       </Dialog.Trigger>
-      <Dialog.Overlay data-spar-part='overlay' className='dialog-overlay' />
-      <Dialog.Content data-spar-part='content' className='dialog-content'>
-        <Dialog.Title data-spar-part='title' className='dialog-title'>
+      <Dialog.Overlay data-spar-part="overlay" className="dialog-overlay" />
+      <Dialog.Content data-spar-part="content" className="dialog-content">
+        <Dialog.Title data-spar-part="title" className="dialog-title">
           {'Dialog Title'}
         </Dialog.Title>
-        <Dialog.Description data-spar-part='description' className='dialog-description'>
+        <Dialog.Description
+          data-spar-part="description"
+          className="dialog-description"
+        >
           {
             'If you delete this item, it will be permanently removed. Are you sure you want to delete it?'
           }
         </Dialog.Description>
-        <div className='dialog-actions'>
-          <Dialog.Close data-spar-part='close' className='dialog-close'>
+        <div className="dialog-actions">
+          <Dialog.Close data-spar-part="close" className="dialog-close">
             {'Close'}
           </Dialog.Close>
-          <Button className='dialog-continue'>{'Continue'}</Button>
+          <Button className="dialog-continue">{'Continue'}</Button>
         </div>
       </Dialog.Content>
     </Dialog.Root>
@@ -229,10 +205,13 @@ The Dialog component is built as a compound component with multiple parts:
 
 **Data Flow:**
 
-- `Dialog.Root` manages open/close state and provides context to all child components
+- `Dialog.Root` manages open/close state and provides context to all child
+  components
 - `Dialog.Trigger` toggles the dialog state and maintains focus reference
-- `Dialog.Overlay` provides background overlay with click-outside-to-close behavior (portals to `document.body` by default)
-- `Dialog.Content` handles focus management and keyboard interactions (portals to `document.body` by default)
+- `Dialog.Overlay` provides background overlay with click-outside-to-close
+  behavior (portals to `document.body` by default)
+- `Dialog.Content` handles focus management and keyboard interactions (portals
+  to `document.body` by default)
 - `Dialog.Title` and `Dialog.Description` provide accessible labeling
 - `Dialog.Close` provides a way to close the dialog from within the content
 
@@ -240,7 +219,8 @@ The Dialog component is built as a compound component with multiple parts:
 
 ### Controlled State Management
 
-Control the dialog's open state externally for integration with other components or form validation.
+Control the dialog's open state externally for integration with other components
+or form validation.
 
 ```tsx {2,4-7,11,19-20}
 function ControlledDialog() {
@@ -258,7 +238,9 @@ function ControlledDialog() {
       <Dialog.Overlay />
       <Dialog.Content>
         <Dialog.Title>Edit Profile</Dialog.Title>
-        <Dialog.Description>Make changes to your profile here.</Dialog.Description>
+        <Dialog.Description>
+          Make changes to your profile here.
+        </Dialog.Description>
 
         <div>
           <button onClick={handleSave}>Save Changes</button>
@@ -282,7 +264,9 @@ function UncontrolledDialog() {
       <Dialog.Overlay />
       <Dialog.Content>
         <Dialog.Title>Settings</Dialog.Title>
-        <Dialog.Description>Configure your application settings.</Dialog.Description>
+        <Dialog.Description>
+          Configure your application settings.
+        </Dialog.Description>
         <Dialog.Close>Done</Dialog.Close>
       </Dialog.Content>
     </Dialog.Root>
@@ -300,15 +284,16 @@ function NonModalDialog() {
     <Dialog.Root modal={false}>
       <Dialog.Trigger>Open Info Panel</Dialog.Trigger>
       <Dialog.Content
-        role='dialog'
-        onEscapeKeyDown={(e) => {
+        role="dialog"
+        onEscapeKeyDown={e => {
           // Custom escape handling for non-modal
           console.log('Escape pressed in non-modal dialog');
         }}
       >
         <Dialog.Title>Information Panel</Dialog.Title>
         <Dialog.Description>
-          This is a non-modal dialog. You can still interact with the page behind it.
+          This is a non-modal dialog. You can still interact with the page
+          behind it.
         </Dialog.Description>
         <Dialog.Close>Close Panel</Dialog.Close>
       </Dialog.Content>
@@ -332,27 +317,29 @@ function CustomFocusDialog() {
       <Dialog.Overlay />
       <Dialog.Content
         initialFocus={() => inputRef.current!}
-        onOpenAutoFocus={(event) => {
+        onOpenAutoFocus={event => {
           // Custom logic before auto-focus
           console.log('Dialog is about to focus');
         }}
-        onCloseAutoFocus={(event) => {
+        onCloseAutoFocus={event => {
           // Custom logic before focus restoration
           console.log('Dialog is about to restore focus');
         }}
       >
         <Dialog.Title>Create New Account</Dialog.Title>
-        <Dialog.Description>Enter your details to create an account.</Dialog.Description>
+        <Dialog.Description>
+          Enter your details to create an account.
+        </Dialog.Description>
 
         <div>
           <label>
             Username:
-            <input ref={inputRef} type='text' />
+            <input ref={inputRef} type="text" />
           </label>
         </div>
 
         <div>
-          <button type='submit'>Create</button>
+          <button type="submit">Create</button>
           <Dialog.Close>Cancel</Dialog.Close>
         </div>
       </Dialog.Content>
@@ -363,22 +350,25 @@ function CustomFocusDialog() {
 
 ### Polymorphic Components
 
-Use the `as` prop to render dialog parts as different HTML elements or custom components.
+Use the `as` prop to render dialog parts as different HTML elements or custom
+components.
 
 ```tsx {4,7,9,12-13}
 function PolymorphicDialog() {
   return (
     <Dialog.Root>
-      <Dialog.Trigger as='div' role='button' tabIndex={0}>
+      <Dialog.Trigger as="div" role="button" tabIndex={0}>
         Custom Trigger Element
       </Dialog.Trigger>
-      <Dialog.Overlay as='section' />
+      <Dialog.Overlay as="section" />
       <Dialog.Content>
-        <Dialog.Title as='h1' level={1}>
+        <Dialog.Title as="h1" level={1}>
           Main Dialog Title
         </Dialog.Title>
-        <Dialog.Description as='div'>Custom description container</Dialog.Description>
-        <Dialog.Close as='span' role='button' tabIndex={0}>
+        <Dialog.Description as="div">
+          Custom description container
+        </Dialog.Description>
+        <Dialog.Close as="span" role="button" tabIndex={0}>
           Custom Close Element
         </Dialog.Close>
       </Dialog.Content>
@@ -389,7 +379,8 @@ function PolymorphicDialog() {
 
 ### Animation Support
 
-Use `forceMount` on the root for animation libraries that need to control mounting and unmounting.
+Use `forceMount` on the root for animation libraries that need to control
+mounting and unmounting.
 
 ```tsx {5,7-12,13-19}
 function AnimatedDialog() {
@@ -412,7 +403,9 @@ function AnimatedDialog() {
         }}
       >
         <Dialog.Title>Animated Dialog</Dialog.Title>
-        <Dialog.Description>This dialog has custom animations.</Dialog.Description>
+        <Dialog.Description>
+          This dialog has custom animations.
+        </Dialog.Description>
         <Dialog.Close>Close</Dialog.Close>
       </Dialog.Content>
     </Dialog.Root>
@@ -424,7 +417,9 @@ function AnimatedDialog() {
 
 ### Dialog / Dialog.Root
 
-The root container that manages dialog state and provides context to all child components. `Dialog` and `Dialog.Root` are the same component - the difference is only import/notation style.
+The root container that manages dialog state and provides context to all child
+components. `Dialog` and `Dialog.Root` are the same component - the difference
+is only import/notation style.
 
 **Props**
 
@@ -447,7 +442,8 @@ The root container that manages dialog state and provides context to all child c
 
 ### Dialog.Trigger
 
-Interactive element that opens the dialog when activated. Extends all `Button` component props including polymorphic rendering via the `as` prop.
+Interactive element that opens the dialog when activated. Extends all `Button`
+component props including polymorphic rendering via the `as` prop.
 
 **Props**
 
@@ -491,7 +487,8 @@ Interactive element that opens the dialog when activated. Extends all `Button` c
 
 ### Dialog.Overlay
 
-Background overlay that appears behind dialog content and handles click-outside behavior.
+Background overlay that appears behind dialog content and handles click-outside
+behavior.
 
 **Props**
 
@@ -577,7 +574,8 @@ Dialog title that provides an accessible name for the dialog.
 
 ### Dialog.Description
 
-Dialog description that provides additional accessible information about the dialog.
+Dialog description that provides additional accessible information about the
+dialog.
 
 **Props**
 
@@ -595,7 +593,8 @@ Dialog description that provides additional accessible information about the dia
 
 ### Dialog.Close
 
-Button that closes the dialog when activated. Extends all `Button` component props including polymorphic rendering via the `as` prop.
+Button that closes the dialog when activated. Extends all `Button` component
+props including polymorphic rendering via the `as` prop.
 
 **Props**
 
@@ -649,7 +648,8 @@ Complete keyboard behavior for the entire Dialog component:
 
 **Focus Management:**
 
-- When dialog opens, focus moves to the first focusable element or `initialFocus` element
+- When dialog opens, focus moves to the first focusable element or
+  `initialFocus` element
 - Focus is trapped within the dialog content while open
 - Tab cycling is constrained to dialog content
 - When dialog closes, focus returns to the trigger or `finalFocus` element

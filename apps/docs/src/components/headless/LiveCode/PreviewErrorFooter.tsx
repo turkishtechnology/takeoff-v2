@@ -19,12 +19,7 @@ interface PreviewErrorFooterProps {
  * Footer bar displayed below the preview when there's an error but a snapshot exists.
  * Shows a brief error message with actions; hidden when code panel is open to avoid duplication.
  */
-export const PreviewErrorFooter = ({
-  hasRenderedOnce,
-  isCodePanelOpen,
-  onShowInCode,
-  onReset,
-}: PreviewErrorFooterProps) => {
+export const PreviewErrorFooter = ({ hasRenderedOnce, isCodePanelOpen, onShowInCode, onReset }: PreviewErrorFooterProps) => {
   const { error } = useContext(LiveContext);
 
   // Only show when we have a stale preview (previously rendered, now erroring)
@@ -35,17 +30,17 @@ export const PreviewErrorFooter = ({
   if (isCodePanelOpen) return null;
 
   return (
-    <div className='preview-error-footer' role='status'>
-      <span className='preview-error-footer-icon'>
+    <div className="preview-error-footer" role="status">
+      <span className="preview-error-footer-icon">
         <ErrorIcon size={14} />
       </span>
-      <span className='preview-error-footer-text'>{getPreviewErrorMessage(error)}</span>
-      <div className='preview-error-footer-actions'>
-        <button className='preview-error-footer-btn' type='button' onClick={onShowInCode}>
-          <Translate id='liveCode.showInCode'>Show in code</Translate>
+      <span className="preview-error-footer-text">{getPreviewErrorMessage(error)}</span>
+      <div className="preview-error-footer-actions">
+        <button className="preview-error-footer-btn" type="button" onClick={onShowInCode}>
+          <Translate id="liveCode.showInCode">Show in code</Translate>
         </button>
-        <button className='preview-error-footer-btn' type='button' onClick={onReset}>
-          <Translate id='liveCode.reset'>Reset</Translate>
+        <button className="preview-error-footer-btn" type="button" onClick={onReset}>
+          <Translate id="liveCode.reset">Reset</Translate>
         </button>
       </div>
     </div>

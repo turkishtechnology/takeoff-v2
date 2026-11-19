@@ -1,6 +1,8 @@
 ---
 title: Tooltip
-description: A headless tooltip component that displays informative text when users hover over or focus on an element.
+description:
+  A headless tooltip component that displays informative text when users hover
+  over or focus on an element.
 ---
 
 import React from 'react';
@@ -10,7 +12,8 @@ import { Tooltip } from '@turkish-technology/spar';
 
 # Tooltip
 
-A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
+A popup that displays information related to an element when the element
+receives keyboard focus or the mouse hovers over it.
 
 ## Live Demo
 
@@ -44,45 +47,28 @@ cssCode={`.tooltip-demo-container .tooltip-trigger {
   font-weight: 500;
 }
 
-[data-theme='dark'] .tooltip-demo-container .tooltip-trigger {
-border-color: #2b303b;
-background-color: rgba(255, 255, 255, 0.12);
-color: #f2f5f8;
-}
+[data-theme='dark'] .tooltip-demo-container .tooltip-trigger { border-color:
+#2b303b; background-color: rgba(255, 255, 255, 0.12); color: #f2f5f8; }
 
-.tooltip-content {
---tooltip-surface: #f7f8fa;
-padding: 8px 12px;
-border-radius: 12px;
-border: 1px solid #e1e4ea;
-background-color: var(--tooltip-surface);
-color: #222530;
-font-size: 13px;
-line-height: 18px;
-box-shadow:
-0 12px 32px rgba(34, 37, 48, 0.08),
-0 4px 12px rgba(34, 37, 48, 0.06);
-}
+.tooltip-content { --tooltip-surface: #f7f8fa; padding: 8px 12px; border-radius:
+12px; border: 1px solid #e1e4ea; background-color: var(--tooltip-surface);
+color: #222530; font-size: 13px; line-height: 18px; box-shadow: 0 12px 32px
+rgba(34, 37, 48, 0.08), 0 4px 12px rgba(34, 37, 48, 0.06); }
 
-[data-theme='dark'] .tooltip-content {
---tooltip-surface: #1f232b;
-border-color: #2b303b;
-background-color: #1f232b;
-color: #f2f5f8;
-}
+[data-theme='dark'] .tooltip-content { --tooltip-surface: #1f232b; border-color:
+#2b303b; background-color: #1f232b; color: #f2f5f8; }
 
-.tooltip-arrow {
-color: var(--tooltip-surface);
-}`}
-/>
+.tooltip-arrow { color: var(--tooltip-surface); }`} />
 
 </div>
 
-The live demo shows a standard tooltip pattern: focus or hover the trigger to reveal a short supporting message above it.
+The live demo shows a standard tooltip pattern: focus or hover the trigger to
+reveal a short supporting message above it.
 
 ## Features
 
-- ✅ Controlled and uncontrolled open state (`open`, `defaultOpen`, `onOpenChange`)
+- ✅ Controlled and uncontrolled open state (`open`, `defaultOpen`,
+  `onOpenChange`)
 - ✅ Per-tooltip delay control (`delay`, `hideDelay`)
 - ✅ Shared timing configuration across multiple tooltips via `Tooltip.Provider`
 - ✅ Skip-delay behavior between sequential tooltips (`skipDelayDuration`)
@@ -110,20 +96,24 @@ The Tooltip component is built as a compound component with multiple parts:
       description: 'Optional shared configuration provider',
     },
     { name: 'root', label: 'Root', description: 'State management context' },
-    { name: 'trigger', label: 'Trigger', description: 'Element that triggers tooltip' },
+    {
+      name: 'trigger',
+      label: 'Trigger',
+      description: 'Element that triggers tooltip',
+    },
     { name: 'content', label: 'Content', description: 'Tooltip popup content' },
     { name: 'arrow', label: 'Arrow', description: 'Optional arrow element' },
   ]}
 >
-  <div className='tooltip-demo-container' data-spar-part='provider'>
+  <div className="tooltip-demo-container" data-spar-part="provider">
     <Tooltip.Provider>
-      <Tooltip.Root data-spar-part='root'>
-        <Tooltip.Trigger data-spar-part='trigger' className='tooltip-trigger'>
+      <Tooltip.Root data-spar-part="root">
+        <Tooltip.Trigger data-spar-part="trigger" className="tooltip-trigger">
           {'Hover or Focus Me'}
         </Tooltip.Trigger>
-        <Tooltip.Content data-spar-part='content' className='tooltip-content'>
+        <Tooltip.Content data-spar-part="content" className="tooltip-content">
           {'Explore'}
-          <Tooltip.Arrow data-spar-part='arrow' className='tooltip-arrow' />
+          <Tooltip.Arrow data-spar-part="arrow" className="tooltip-arrow" />
         </Tooltip.Content>
       </Tooltip.Root>
     </Tooltip.Provider>
@@ -146,10 +136,12 @@ The Tooltip component is built as a compound component with multiple parts:
 
 **Data Flow:**
 
-- `Tooltip.Provider`: Optional provider for sharing configuration across multiple tooltips
+- `Tooltip.Provider`: Optional provider for sharing configuration across
+  multiple tooltips
 - `Tooltip.Root`: Manages tooltip state and provides context to child components
 - `Tooltip.Trigger`: Element that shows/hides tooltip on hover or focus
-- `Tooltip.Content`: The actual tooltip popup with smart positioning via Floating UI, automatically portaled to `document.body`
+- `Tooltip.Content`: The actual tooltip popup with smart positioning via
+  Floating UI, automatically portaled to `document.body`
 - `Tooltip.Arrow`: Optional arrow element pointing to the trigger
 
 ---
@@ -180,7 +172,7 @@ Control tooltip placement and alignment:
 ```tsx {3}
 <Tooltip.Root>
   <Tooltip.Trigger>{'Right aligned tooltip'}</Tooltip.Trigger>
-  <Tooltip.Content side='right' align='start'>
+  <Tooltip.Content side="right" align="start">
     Appears on the right side
   </Tooltip.Content>
 </Tooltip.Root>
@@ -288,7 +280,8 @@ function CustomContainerTooltip() {
 
 ### Hoverable Tooltip Content
 
-Interactive tooltip that remains visible when hovering over the content (WCAG 1.4.13 compliant):
+Interactive tooltip that remains visible when hovering over the content (WCAG
+1.4.13 compliant):
 
 ```tsx {3-4}
 function HoverableTooltip() {
@@ -339,7 +332,9 @@ Optional provider for sharing configuration across multiple tooltip instances.
 
 ### Tooltip / Tooltip.Root
 
-Root component that manages tooltip state and provides context to child components. `Tooltip` and `Tooltip.Root` are the same component - the difference is only import/notation style.
+Root component that manages tooltip state and provides context to child
+components. `Tooltip` and `Tooltip.Root` are the same component - the difference
+is only import/notation style.
 
 **Props**
 
@@ -368,7 +363,8 @@ Root component that manages tooltip state and provides context to child componen
 
 ### Tooltip.Trigger
 
-The trigger element that shows/hides the tooltip on hover or focus. Extends all `Button` component props including polymorphic rendering via the `as` prop.
+The trigger element that shows/hides the tooltip on hover or focus. Extends all
+`Button` component props including polymorphic rendering via the `as` prop.
 
 **Props**
 
@@ -441,9 +437,13 @@ The content that displays in the tooltip popup with smart positioning.
 
 ### Tooltip.Arrow
 
-Optional decorative arrow pointing to the trigger element. Headless: renders a plain element with no visual opinions — user provides all styling.
+Optional decorative arrow pointing to the trigger element. Headless: renders a
+plain element with no visual opinions — user provides all styling.
 
-Supports polymorphic rendering via the `as` prop. When rendered as the default `svg`, sensible SVG defaults (`width`, `height`, `viewBox`, and a triangle `polygon`) are applied automatically. When rendered as another element (e.g., `as="div"`), SVG-specific attributes and default children are omitted.
+Supports polymorphic rendering via the `as` prop. When rendered as the default
+`svg`, sensible SVG defaults (`width`, `height`, `viewBox`, and a triangle
+`polygon`) are applied automatically. When rendered as another element (e.g.,
+`as="div"`), SVG-specific attributes and default children are omitted.
 
 **Props**
 

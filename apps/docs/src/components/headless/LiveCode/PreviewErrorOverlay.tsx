@@ -16,11 +16,7 @@ interface PreviewErrorOverlayProps {
  * Full-screen error overlay displayed when preview fails before any successful render.
  * Shows actionable buttons to view error in code or reset the editor.
  */
-export const PreviewErrorOverlay = ({
-  hasRenderedOnce,
-  onShowInCode,
-  onReset,
-}: PreviewErrorOverlayProps) => {
+export const PreviewErrorOverlay = ({ hasRenderedOnce, onShowInCode, onReset }: PreviewErrorOverlayProps) => {
   const { error } = useContext(LiveContext);
 
   // No error - nothing to show
@@ -31,22 +27,22 @@ export const PreviewErrorOverlay = ({
 
   // Never rendered successfully → full fallback overlay
   return (
-    <div className='preview-error-overlay' role='alert'>
-      <div className='preview-error-overlay-content'>
-        <div className='preview-error-overlay-icon'>
+    <div className="preview-error-overlay" role="alert">
+      <div className="preview-error-overlay-content">
+        <div className="preview-error-overlay-icon">
           <ErrorIcon size={20} />
         </div>
-        <span className='preview-error-overlay-title'>
-          <Translate id='liveCode.previewFailed'>Preview failed</Translate>
+        <span className="preview-error-overlay-title">
+          <Translate id="liveCode.previewFailed">Preview failed</Translate>
         </span>
-        <div className='preview-error-overlay-actions'>
-          <button className='preview-error-action' type='button' onClick={onShowInCode}>
+        <div className="preview-error-overlay-actions">
+          <button className="preview-error-action" type="button" onClick={onShowInCode}>
             <CodeIcon size={14} />
-            <Translate id='liveCode.showInCode'>Show in code</Translate>
+            <Translate id="liveCode.showInCode">Show in code</Translate>
           </button>
-          <button className='preview-error-action' type='button' onClick={onReset}>
+          <button className="preview-error-action" type="button" onClick={onReset}>
             <ResetIcon size={14} />
-            <Translate id='liveCode.reset'>Reset</Translate>
+            <Translate id="liveCode.reset">Reset</Translate>
           </button>
         </div>
       </div>

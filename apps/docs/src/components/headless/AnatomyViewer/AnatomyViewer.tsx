@@ -26,22 +26,17 @@ const AnatomyViewer: React.FC<AnatomyViewerProps> = ({ parts, children }) => {
   };
 
   return (
-    <div className='anatomy-viewer-wrapper'>
-      <div className='anatomy-demo' ref={containerRef}>
+    <div className="anatomy-viewer-wrapper">
+      <div className="anatomy-demo" ref={containerRef}>
         {children}
       </div>
 
-      <div className='anatomy-parts'>
-        <div className='part-header'>Parts</div>
+      <div className="anatomy-parts">
+        <div className="part-header">Parts</div>
         {parts.map((part: AnatomyPart) => (
-          <div
-            key={part.name}
-            className={`part-item ${hoveredPart === part.name ? 'active' : ''}`}
-            onMouseEnter={() => handlePartEnter(part.name)}
-            onMouseLeave={handlePartLeave}
-          >
-            <span className='part-label'>{part.label}</span>
-            {part.description && <span className='part-description'>{part.description}</span>}
+          <div key={part.name} className={`part-item ${hoveredPart === part.name ? 'active' : ''}`} onMouseEnter={() => handlePartEnter(part.name)} onMouseLeave={handlePartLeave}>
+            <span className="part-label">{part.label}</span>
+            {part.description && <span className="part-description">{part.description}</span>}
           </div>
         ))}
       </div>

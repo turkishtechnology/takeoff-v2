@@ -33,10 +33,10 @@ export const SnapshotPreview = ({ onHasRendered, scope }: SnapshotPreviewProps) 
 
   return (
     <>
-      {!error && <LivePreview className='live-preview' />}
+      {!error && <LivePreview className="live-preview" />}
       {showSnapshot && (
         <LiveProvider code={lastGoodCodeRef.current} scope={scope} noInline={false}>
-          <LivePreview className='live-preview live-preview-snapshot' />
+          <LivePreview className="live-preview live-preview-snapshot" />
         </LiveProvider>
       )}
     </>

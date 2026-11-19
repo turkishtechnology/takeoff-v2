@@ -1,6 +1,9 @@
 ---
 title: Input
-description: A headless input component with compound pattern support, full accessibility features, and validation states for building custom form inputs without styling opinions.
+description:
+  A headless input component with compound pattern support, full accessibility
+  features, and validation states for building custom form inputs without
+  styling opinions.
 ---
 
 import React from 'react';
@@ -10,7 +13,9 @@ import { Field, Input } from '@turkish-technology/spar';
 
 # Input
 
-A headless input component providing accessible form input primitives with zero styling opinions. Pair it with the [Field](./Field.mdx) primitive to get label, description, and error-message wiring with coordinated ARIA IDs.
+A headless input component providing accessible form input primitives with zero
+styling opinions. Pair it with the [Field](./Field.mdx) primitive to get label,
+description, and error-message wiring with coordinated ARIA IDs.
 
 ## Live Demo
 
@@ -35,71 +40,41 @@ cssCode={`.input-demo-container {
   margin-inline: auto;
 }
 
-.input-demo-container .input {
-width: 240px;
-min-height: 40px;
-padding: 0 14px;
-border-radius: 10px;
-border: 1px solid #e1e4ea;
-background: rgba(0, 0, 0, 0.08);
-color: #222530;
-font-size: 14px;
-line-height: 20px;
-}
+.input-demo-container .input { width: 240px; min-height: 40px; padding: 0 14px;
+border-radius: 10px; border: 1px solid #e1e4ea; background: rgba(0, 0, 0, 0.08);
+color: #222530; font-size: 14px; line-height: 20px; }
 
-[data-theme='dark'] .input-demo-container .input {
-border-color: #2b303b;
-background: rgba(255, 255, 255, 0.12);
-color: #f2f5f8;
-}
+[data-theme='dark'] .input-demo-container .input { border-color: #2b303b;
+background: rgba(255, 255, 255, 0.12); color: #f2f5f8; }
 
-.input-demo-container .label {
-color: #222530;
-display: block;
-font-size: 12px;
-line-height: 16px;
-font-weight: 500;
-margin: 0;
-}
+.input-demo-container .label { color: #222530; display: block; font-size: 12px;
+line-height: 16px; font-weight: 500; margin: 0; }
 
-[data-theme='dark'] .input-demo-container .label {
-color: #f2f5f8;
-}
+[data-theme='dark'] .input-demo-container .label { color: #f2f5f8; }
 
-.input-demo-container .description {
-color: #717784;
-display: block;
-font-size: 12px;
-line-height: 16px;
-margin: 0;
-}
+.input-demo-container .description { color: #717784; display: block; font-size:
+12px; line-height: 16px; margin: 0; }
 
-[data-theme='dark'] .input-demo-container .description {
-color: #99a0ae;
-}
+[data-theme='dark'] .input-demo-container .description { color: #99a0ae; }
 
-.input-demo-container .error {
-color: #d14343;
-display: block;
-font-size: 12px;
-line-height: 16px;
-margin: 0;
-}
+.input-demo-container .error { color: #d14343; display: block; font-size: 12px;
+line-height: 16px; margin: 0; }
 
-[data-theme='dark'] .input-demo-container .error {
-color: #ff8a8a;
-}`}
-/>
+[data-theme='dark'] .input-demo-container .error { color: #ff8a8a; }`} />
 
-The live demo shows the recommended pattern: a `Field` wrapper supplying label, helper text, and error message wiring around the `Input` primitive.
+The live demo shows the recommended pattern: a `Field` wrapper supplying label,
+helper text, and error message wiring around the `Input` primitive.
 
 ## Features
 
-- ✅ Text input and textarea support via polymorphic rendering (`input` or `textarea`)
-- ✅ Reads validation, disabled, required, and read-only state from a parent `Field` automatically (direct props still override)
+- ✅ Text input and textarea support via polymorphic rendering (`input` or
+  `textarea`)
+- ✅ Reads validation, disabled, required, and read-only state from a parent
+  `Field` automatically (direct props still override)
 - ✅ Focus state tracking on the input element
 - ✅ Form integration with name, value, and change event support
-- ✅ Works standalone or composed with `Field`, `Label`, and custom layout wrappers
+- ✅ Works standalone or composed with `Field`, `Label`, and custom layout
+  wrappers
 
 ## Import
 
@@ -107,7 +82,9 @@ The live demo shows the recommended pattern: a `Field` wrapper supplying label, 
 import { Field, Input } from '@turkish-technology/spar';
 ```
 
-`Input` and `Input.Root` refer to the same component — the difference is only notation style. Label, description, and error message are owned by the [`Field`](./Field.mdx) primitive:
+`Input` and `Input.Root` refer to the same component — the difference is only
+notation style. Label, description, and error message are owned by the
+[`Field`](./Field.mdx) primitive:
 
 ```tsx
 // Dot notation
@@ -142,7 +119,9 @@ import {
 
 ## Anatomy
 
-The Input component focuses on the field element itself. Label, description, and error message are provided by the `Field` primitive, which shares ARIA IDs and state with `Input` via context.
+The Input component focuses on the field element itself. Label, description, and
+error message are provided by the `Field` primitive, which shares ARIA IDs and
+state with `Input` via context.
 
 <AnatomyViewer
   parts={[
@@ -161,8 +140,16 @@ The Input component focuses on the field element itself. Label, description, and
       label: 'Input.Root',
       description: 'Input context provider for visual state',
     },
-    { name: 'field', label: 'Input.Field', description: 'Core input element (input/textarea)' },
-    { name: 'description', label: 'Field.Description', description: 'Helper text for guidance' },
+    {
+      name: 'field',
+      label: 'Input.Field',
+      description: 'Core input element (input/textarea)',
+    },
+    {
+      name: 'description',
+      label: 'Field.Description',
+      description: 'Helper text for guidance',
+    },
     {
       name: 'errorMessage',
       label: 'Field.ErrorMessage',
@@ -170,17 +157,17 @@ The Input component focuses on the field element itself. Label, description, and
     },
   ]}
 >
-  <Field className='input-demo-container' invalid data-spar-part='fieldRoot'>
-    <Field.Label className='label' data-spar-part='label'>
+  <Field className="input-demo-container" invalid data-spar-part="fieldRoot">
+    <Field.Label className="label" data-spar-part="label">
       {'Label'}
     </Field.Label>
-    <Input data-spar-part='inputRoot'>
-      <Input.Field className='input' data-spar-part='field' />
+    <Input data-spar-part="inputRoot">
+      <Input.Field className="input" data-spar-part="field" />
     </Input>
-    <Field.Description className='description' data-spar-part='description'>
+    <Field.Description className="description" data-spar-part="description">
       {'Helper text for guidance'}
     </Field.Description>
-    <Field.ErrorMessage className='error' data-spar-part='errorMessage'>
+    <Field.ErrorMessage className="error" data-spar-part="errorMessage">
       {'This field is required'}
     </Field.ErrorMessage>
   </Field>
@@ -201,12 +188,15 @@ The Input component focuses on the field element itself. Label, description, and
 
 **Data Flow:**
 
-- **Field.Root**: Owns coordinated IDs and the `invalid` / `disabled` / `required` / `readOnly` state, propagated via context
+- **Field.Root**: Owns coordinated IDs and the `invalid` / `disabled` /
+  `required` / `readOnly` state, propagated via context
 - **Field.Label**: Accessible `<label>` auto-linked to the input via `htmlFor`
-- **Input.Root**: Provides visual-input context; inherits state from the enclosing `Field` when present
+- **Input.Root**: Provides visual-input context; inherits state from the
+  enclosing `Field` when present
 - **Input.Field**: Core input element with polymorphic support (input/textarea)
 - **Field.Description**: Helper text linked via `aria-describedby`
-- **Field.ErrorMessage**: Error announcement with `role="alert"`, only rendered when `invalid` is `true`
+- **Field.ErrorMessage**: Error announcement with `role="alert"`, only rendered
+  when `invalid` is `true`
 
 ## Code Examples
 
@@ -223,13 +213,15 @@ function BasicTextInput() {
       <Field.Label>Email Address</Field.Label>
       <Input.Root>
         <Input.Field
-          type='email'
+          type="email"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder='Enter your email'
+          onChange={e => setValue(e.target.value)}
+          placeholder="Enter your email"
         />
       </Input.Root>
-      <Field.Description>We'll use this to send you important updates</Field.Description>
+      <Field.Description>
+        We'll use this to send you important updates
+      </Field.Description>
     </Field.Root>
   );
 }
@@ -255,16 +247,20 @@ function ValidatedInput() {
         <Field.Label>Email Address</Field.Label>
         <Input.Root>
           <Input.Field
-            type='email'
+            type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder='user@example.com'
+            onChange={e => setEmail(e.target.value)}
+            placeholder="user@example.com"
           />
         </Input.Root>
-        <Field.Description>Enter a valid email address for account verification</Field.Description>
-        <Field.ErrorMessage>Please enter a valid email address</Field.ErrorMessage>
+        <Field.Description>
+          Enter a valid email address for account verification
+        </Field.Description>
+        <Field.ErrorMessage>
+          Please enter a valid email address
+        </Field.ErrorMessage>
       </Field.Root>
-      <button type='button' onClick={handleSubmit}>
+      <button type="button" onClick={handleSubmit}>
         Validate Email
       </button>
     </div>
@@ -274,7 +270,8 @@ function ValidatedInput() {
 
 ### Textarea Input
 
-Shows polymorphic rendering capability for multi-line text input with proper accessibility.
+Shows polymorphic rendering capability for multi-line text input with proper
+accessibility.
 
 ```tsx {2,7-14,16}
 function TextareaInput() {
@@ -285,14 +282,16 @@ function TextareaInput() {
       <Field.Label>Message</Field.Label>
       <Input.Root>
         <Input.Field
-          as='textarea'
+          as="textarea"
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={e => setMessage(e.target.value)}
           rows={4}
-          placeholder='Enter your message here...'
+          placeholder="Enter your message here..."
         />
       </Input.Root>
-      <Field.Description>Maximum 500 characters ({message.length}/500)</Field.Description>
+      <Field.Description>
+        Maximum 500 characters ({message.length}/500)
+      </Field.Description>
     </Field.Root>
   );
 }
@@ -300,7 +299,8 @@ function TextareaInput() {
 
 ### Disabled Input
 
-Demonstrates disabled state propagation from `Field` down to `Input` automatically.
+Demonstrates disabled state propagation from `Field` down to `Input`
+automatically.
 
 ```tsx {3,5-7}
 function DisabledInput() {
@@ -308,9 +308,11 @@ function DisabledInput() {
     <Field.Root disabled>
       <Field.Label>Account Type</Field.Label>
       <Input.Root>
-        <Input.Field value='Premium Account' readOnly />
+        <Input.Field value="Premium Account" readOnly />
       </Input.Root>
-      <Field.Description>Contact support to change your account type</Field.Description>
+      <Field.Description>
+        Contact support to change your account type
+      </Field.Description>
     </Field.Root>
   );
 }
@@ -322,7 +324,11 @@ Complete form example with validation, submission, and error handling.
 
 ```tsx
 function ContactForm() {
-  const [formData, setFormData] = React.useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = React.useState({
+    name: '',
+    email: '',
+    message: '',
+  });
   const [errors, setErrors] = React.useState<Record<string, string>>({});
 
   const validateForm = () => {
@@ -350,9 +356,9 @@ function ContactForm() {
         <Field.Label>Full Name</Field.Label>
         <Input.Root>
           <Input.Field
-            name='name'
+            name="name"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={e => setFormData({ ...formData, name: e.target.value })}
           />
         </Input.Root>
         <Field.ErrorMessage>{errors.name}</Field.ErrorMessage>
@@ -362,10 +368,10 @@ function ContactForm() {
         <Field.Label>Email</Field.Label>
         <Input.Root>
           <Input.Field
-            type='email'
-            name='email'
+            type="email"
+            name="email"
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={e => setFormData({ ...formData, email: e.target.value })}
           />
         </Input.Root>
         <Field.ErrorMessage>{errors.email}</Field.ErrorMessage>
@@ -375,17 +381,19 @@ function ContactForm() {
         <Field.Label>Message</Field.Label>
         <Input.Root>
           <Input.Field
-            as='textarea'
-            name='message'
+            as="textarea"
+            name="message"
             rows={4}
             value={formData.message}
-            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            onChange={e =>
+              setFormData({ ...formData, message: e.target.value })
+            }
           />
         </Input.Root>
         <Field.ErrorMessage>{errors.message}</Field.ErrorMessage>
       </Field.Root>
 
-      <button type='submit'>Send Message</button>
+      <button type="submit">Send Message</button>
     </form>
   );
 }
@@ -395,7 +403,10 @@ function ContactForm() {
 
 ### Input / Input.Root
 
-The root context provider that wraps all compound input parts. `Input` and `Input.Root` are the same component - the difference is only import/notation style. Renders a `<div>` by default and exposes an `InputContext` that all child components consume.
+The root context provider that wraps all compound input parts. `Input` and
+`Input.Root` are the same component - the difference is only import/notation
+style. Renders a `<div>` by default and exposes an `InputContext` that all child
+components consume.
 
 **Props**
 
@@ -422,7 +433,8 @@ The root context provider that wraps all compound input parts. `Input` and `Inpu
 
 ### Input.Field
 
-The core input element with polymorphic rendering support. Handles focus states, validation attributes, and ARIA associations automatically.
+The core input element with polymorphic rendering support. Handles focus states,
+validation attributes, and ARIA associations automatically.
 
 **Props**
 
@@ -455,7 +467,10 @@ The core input element with polymorphic rendering support. Handles focus states,
 
 ### Label, Description, and Error Message
 
-Label, helper text, and validation messaging are not part of `Input`. Use the [`Field`](./Field.mdx) primitive — `Field.Label`, `Field.Description`, and `Field.ErrorMessage` — which share coordinated ARIA IDs and state (`invalid`, `disabled`, `required`, `readOnly`) with the enclosed `Input` via context.
+Label, helper text, and validation messaging are not part of `Input`. Use the
+[`Field`](./Field.mdx) primitive — `Field.Label`, `Field.Description`, and
+`Field.ErrorMessage` — which share coordinated ARIA IDs and state (`invalid`,
+`disabled`, `required`, `readOnly`) with the enclosed `Input` via context.
 
 ## Keyboard Interactions
 

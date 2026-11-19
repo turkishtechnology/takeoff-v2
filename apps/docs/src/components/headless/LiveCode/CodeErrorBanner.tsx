@@ -47,35 +47,25 @@ export const CodeErrorBanner = ({ onCopy, onDismiss }: CodeErrorBannerProps) => 
   };
 
   return (
-    <div className='code-error-banner' role='alert'>
-      <span className='code-error-banner-icon'>
+    <div className="code-error-banner" role="alert">
+      <span className="code-error-banner-icon">
         <ErrorIcon size={14} />
       </span>
-      <span className='code-error-banner-text'>
+      <span className="code-error-banner-text">
         <strong>{errorState.errorName}:</strong> {errorState.errorMessage}
       </span>
-      <div className='code-error-banner-actions'>
+      <div className="code-error-banner-actions">
         <button
           className={`code-error-banner-btn${isCopied ? ' copied' : ''}`}
-          type='button'
+          type="button"
           onClick={handleCopy}
           title={isCopied ? 'Copied' : 'Copy error'}
           aria-label={isCopied ? 'Copied' : 'Copy error'}
         >
           {isCopied ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
-          {isCopied ? (
-            <Translate id='liveCode.copied'>Copied</Translate>
-          ) : (
-            <Translate id='liveCode.copy'>Copy</Translate>
-          )}
+          {isCopied ? <Translate id="liveCode.copied">Copied</Translate> : <Translate id="liveCode.copy">Copy</Translate>}
         </button>
-        <button
-          className='code-error-banner-btn code-error-banner-dismiss'
-          type='button'
-          onClick={handleDismiss}
-          title='Dismiss'
-          aria-label='Dismiss error'
-        >
+        <button className="code-error-banner-btn code-error-banner-dismiss" type="button" onClick={handleDismiss} title="Dismiss" aria-label="Dismiss error">
           <CloseIcon size={12} />
         </button>
       </div>

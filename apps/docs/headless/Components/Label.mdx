@@ -1,6 +1,8 @@
 ---
 title: Label
-description: Headless label primitive for associating text with form controls while exposing simple styling hooks for form states.
+description:
+  Headless label primitive for associating text with form controls while
+  exposing simple styling hooks for form states.
 ---
 
 import React from 'react';
@@ -10,7 +12,8 @@ import { Label } from '@turkish-technology/spar';
 
 # Label
 
-A headless, accessible label component for form controls that establishes programmatic relationships and improves usability.
+A headless, accessible label component for form controls that establishes
+programmatic relationships and improves usability.
 
 ## Live Demo
 
@@ -28,22 +31,24 @@ A headless, accessible label component for form controls that establishes progra
   font-weight: 500;
 }
 
-[data-theme='dark'] .label-demo-container .label {
-color: #f2f5f8;
-}`}
-/>
+[data-theme='dark'] .label-demo-container .label { color: #f2f5f8; }`} />
 
 </div>
 
-This demo is intentionally simple because `Label` is most useful when paired with an input, checkbox, radio, or other form control.
+This demo is intentionally simple because `Label` is most useful when paired
+with an input, checkbox, radio, or other form control.
 
 ## Features
 
-- ✅ **Explicit Association**: Supports form-control association via `htmlFor` and matching `id`
+- ✅ **Explicit Association**: Supports form-control association via `htmlFor`
+  and matching `id`
 - ✅ **Implicit Association**: Supports wrapping a form control inside the label
-- ✅ **Polymorphic Rendering**: Can render as different elements via the `as` prop
-- ✅ **Native Props Pass-Through**: Forwards native HTML props and `ref` to the rendered element
-- ✅ **State Flag Props**: Supports `required`, `optional`, `disabled`, `readOnly`, and `invalid`
+- ✅ **Polymorphic Rendering**: Can render as different elements via the `as`
+  prop
+- ✅ **Native Props Pass-Through**: Forwards native HTML props and `ref` to the
+  rendered element
+- ✅ **State Flag Props**: Supports `required`, `optional`, `disabled`,
+  `readOnly`, and `invalid`
 
 ## Import
 
@@ -53,7 +58,8 @@ import { Label } from '@turkish-technology/spar';
 
 ## Anatomy
 
-The Label component is a simple, single-element component that provides accessible labeling for form controls:
+The Label component is a simple, single-element component that provides
+accessible labeling for form controls:
 
 <AnatomyViewer
   parts={[
@@ -64,8 +70,8 @@ The Label component is a simple, single-element component that provides accessib
     },
   ]}
 >
-  <div className='label-demo-container'>
-    <Label data-spar-part='label' className='label'>
+  <div className="label-demo-container">
+    <Label data-spar-part="label" className="label">
       {'Label'}
     </Label>
   </div>
@@ -74,12 +80,13 @@ The Label component is a simple, single-element component that provides accessib
 ### Structure
 
 ```tsx
-<Label htmlFor='input-id'>Label Text</Label>
+<Label htmlFor="input-id">Label Text</Label>
 ```
 
 **Data Flow:**
 
-- `Label` renders a native `<label>` by default, allowing explicit association via `htmlFor`
+- `Label` renders a native `<label>` by default, allowing explicit association
+  via `htmlFor`
 - Implicit association works by nesting a form control inside `Label`
 - When state props are true, matching `data-*` attributes are added
 - Native props and `ref` are forwarded directly to the rendered element
@@ -94,8 +101,8 @@ The most common usage pattern with explicit association using `htmlFor`:
 function BasicExample() {
   return (
     <div>
-      <Label htmlFor='email'>Email Address</Label>
-      <input id='email' type='email' />
+      <Label htmlFor="email">Email Address</Label>
+      <input id="email" type="email" />
     </div>
   );
 }
@@ -103,22 +110,24 @@ function BasicExample() {
 
 ### Required Field Indicator
 
-Use `required` to mark fields as required. The label exposes a `data-required` attribute for styling hooks:
+Use `required` to mark fields as required. The label exposes a `data-required`
+attribute for styling hooks:
 
 ```tsx {4,7}
 function RequiredFieldExample() {
   return (
     <div>
-      <Label htmlFor='password' required>
+      <Label htmlFor="password" required>
         Password
       </Label>
-      <input id='password' type='password' required aria-required='true' />
+      <input id="password" type="password" required aria-required="true" />
     </div>
   );
 }
 ```
 
-**Note**: The `required` prop only adds a data attribute for styling. You must set the `required` attribute on the input itself for actual validation.
+**Note**: The `required` prop only adds a data attribute for styling. You must
+set the `required` attribute on the input itself for actual validation.
 
 ### Optional Field Indicator
 
@@ -128,10 +137,10 @@ Mark fields as optional with `optional`:
 function OptionalFieldExample() {
   return (
     <div>
-      <Label htmlFor='middle-name' optional>
+      <Label htmlFor="middle-name" optional>
         Middle Name
       </Label>
-      <input id='middle-name' type='text' />
+      <input id="middle-name" type="text" />
     </div>
   );
 }
@@ -145,16 +154,17 @@ Use `disabled` to visually indicate disabled controls:
 function DisabledFieldExample() {
   return (
     <div>
-      <Label htmlFor='locked-field' disabled>
+      <Label htmlFor="locked-field" disabled>
         Locked Field
       </Label>
-      <input id='locked-field' type='text' disabled aria-disabled='true' />
+      <input id="locked-field" type="text" disabled aria-disabled="true" />
     </div>
   );
 }
 ```
 
-**Note**: The `disabled` prop only adds a data attribute. You must set the `disabled` attribute on the control itself.
+**Note**: The `disabled` prop only adds a data attribute. You must set the
+`disabled` attribute on the control itself.
 
 ### Read-Only State
 
@@ -164,16 +174,17 @@ Use `readOnly` to visually indicate read-only controls:
 function ReadOnlyFieldExample() {
   return (
     <div>
-      <Label htmlFor='account-id' readOnly>
+      <Label htmlFor="account-id" readOnly>
         Account ID
       </Label>
-      <input id='account-id' type='text' value='ACC-12345' readOnly />
+      <input id="account-id" type="text" value="ACC-12345" readOnly />
     </div>
   );
 }
 ```
 
-**Note**: The `readOnly` prop only adds a data attribute. You must set the `readOnly` attribute on the control itself.
+**Note**: The `readOnly` prop only adds a data attribute. You must set the
+`readOnly` attribute on the control itself.
 
 ### Invalid State
 
@@ -183,16 +194,17 @@ Use `invalid` to visually indicate validation errors:
 function InvalidFieldExample() {
   return (
     <div>
-      <Label htmlFor='email-field' invalid>
+      <Label htmlFor="email-field" invalid>
         Email Address
       </Label>
-      <input id='email-field' type='email' aria-invalid='true' />
+      <input id="email-field" type="email" aria-invalid="true" />
     </div>
   );
 }
 ```
 
-**Note**: The `invalid` prop only adds a data attribute. You must set `aria-invalid` on the control itself for proper accessibility.
+**Note**: The `invalid` prop only adds a data attribute. You must set
+`aria-invalid` on the control itself for proper accessibility.
 
 ### Implicit Association (Wrapping)
 
@@ -203,7 +215,7 @@ function ImplicitAssociationExample() {
   return (
     <Label>
       Accept Terms
-      <input type='checkbox' />
+      <input type="checkbox" />
     </Label>
   );
 }
@@ -217,16 +229,21 @@ Render as different elements using the `as` prop:
 function PolymorphicExample() {
   return (
     <div>
-      <Label as='span' id='custom-field-label'>
+      <Label as="span" id="custom-field-label">
         Custom Label Element
       </Label>
-      <input id='custom-field' type='text' aria-labelledby='custom-field-label' />
+      <input
+        id="custom-field"
+        type="text"
+        aria-labelledby="custom-field-label"
+      />
     </div>
   );
 }
 ```
 
-**Note**: When `as` is used with a non-`label` element, native label behavior is not automatic. Use `aria-labelledby` on the form control.
+**Note**: When `as` is used with a non-`label` element, native label behavior is
+not automatic. Use `aria-labelledby` on the form control.
 
 ### Complex Label Content
 
@@ -236,13 +253,13 @@ Labels can contain rich content like icons, badges, or help text:
 function ComplexLabelExample() {
   return (
     <div>
-      <Label htmlFor='username' required>
+      <Label htmlFor="username" required>
         <span>
           <span>Username</span>
           <span>(must be unique)</span>
         </span>
       </Label>
-      <input id='username' type='text' required />
+      <input id="username" type="text" required />
     </div>
   );
 }
@@ -258,10 +275,10 @@ function MultipleStatesExample() {
 
   return (
     <div>
-      <Label htmlFor='conditional-field' required disabled={disabled}>
+      <Label htmlFor="conditional-field" required disabled={disabled}>
         Conditional Field
       </Label>
-      <input id='conditional-field' type='text' required disabled={disabled} />
+      <input id="conditional-field" type="text" required disabled={disabled} />
       <button onClick={() => setDisabled(!disabled)}>Toggle Disabled</button>
     </div>
   );
@@ -276,10 +293,10 @@ Use data attributes for custom styling:
 function StyledLabelExample() {
   return (
     <div>
-      <Label htmlFor='styled-input' required className='custom-label'>
+      <Label htmlFor="styled-input" required className="custom-label">
         Styled Label
       </Label>
-      <input id='styled-input' type='text' required />
+      <input id="styled-input" type="text" required />
     </div>
   );
 }
@@ -328,21 +345,21 @@ function FormGroupExample() {
 
   return (
     <div>
-      <Label htmlFor='validated-input' required>
+      <Label htmlFor="validated-input" required>
         Username
       </Label>
       <input
-        id='validated-input'
-        type='text'
+        id="validated-input"
+        type="text"
         value={value}
         onChange={handleChange}
         required
-        aria-required='true'
+        aria-required="true"
         aria-invalid={!!error}
         aria-describedby={error ? 'error-message' : undefined}
       />
       {error && (
-        <span id='error-message' role='alert'>
+        <span id="error-message" role="alert">
           {error}
         </span>
       )}
@@ -355,7 +372,8 @@ function FormGroupExample() {
 
 ### Label
 
-The Label component creates accessible labels for form controls with support for explicit and implicit associations.
+The Label component creates accessible labels for form controls with support for
+explicit and implicit associations.
 
 **Props**
 
@@ -370,7 +388,9 @@ The Label component creates accessible labels for form controls with support for
 | `children?` | `React.ReactNode`   | `undefined` | Label content                                                                                                 |
 | `htmlFor?`  | `string`            | `undefined` | ID of the associated form control for explicit association                                                    |
 
-**Note**: `LabelProps<T>` is derived from `PolymorphicProps<'label', T, LabelOwnProps>`, so native props and `ref` support come from the rendered element type.
+**Note**: `LabelProps<T>` is derived from
+`PolymorphicProps<'label', T, LabelOwnProps>`, so native props and `ref` support
+come from the rendered element type.
 
 **Events**
 
@@ -397,12 +417,14 @@ The Label component creates accessible labels for form controls with support for
 
 **Accessibility Attributes**
 
-By default, the component renders a native `<label>`, so native label semantics apply:
+By default, the component renders a native `<label>`, so native label semantics
+apply:
 
 - Explicit association is available via `htmlFor` and control `id`
 - Implicit association is available by nesting the control inside the label
 - Clicking the label focuses the associated control (browser native behavior)
-- The component does not add ARIA attributes automatically; ARIA requirements should be handled on the form control
+- The component does not add ARIA attributes automatically; ARIA requirements
+  should be handled on the form control
 
 **When using `as` with non-label elements:**
 
@@ -420,4 +442,5 @@ The Label component does not implement component-specific keyboard handlers.
 | `Space`       | Activates the focused control             | Focused control | Behavior is controlled by the focused input/control |
 | `Enter`       | Triggers focused control behavior         | Focused control | Behavior depends on the focused control type        |
 
-**Important**: Label does not define keyboard behavior itself; keyboard interaction is handled by the associated form control.
+**Important**: Label does not define keyboard behavior itself; keyboard
+interaction is handled by the associated form control.

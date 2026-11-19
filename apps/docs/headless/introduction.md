@@ -1,16 +1,22 @@
 ---
 title: Introduction
-description: Spar is a headless React component library built with TypeScript. Unstyled, accessible, and composable primitives for building your own design system.
+description:
+  Spar is a headless React component library built with TypeScript. Unstyled,
+  accessible, and composable primitives for building your own design system.
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs'; import TabItem from '@theme/TabItem';
 
-**Spar is a headless UI component library. Zero styling opinions, maximum flexibility.**
+**Spar is a headless UI component library. Zero styling opinions, maximum
+flexibility.**
 
-Traditional component libraries come with predefined styles and visual designs. While this works for quick prototyping, it becomes limiting when you need components that match your unique design system.
+Traditional component libraries come with predefined styles and visual designs.
+While this works for quick prototyping, it becomes limiting when you need
+components that match your unique design system.
 
-Spar takes a different approach: **behavior is built in, styling stays fully customizable.** Each component is a fully accessible, keyboard-navigable primitive with zero predefined styling.
+Spar takes a different approach: **behavior is built in, styling stays fully
+customizable.** Each component is a fully accessible, keyboard-navigable
+primitive with zero predefined styling.
 
 ## Quick Start
 
@@ -39,7 +45,8 @@ Install Spar with npm, yarn, pnpm, or bun:
   </TabItem>
 </Tabs>
 
-See the [Installation Guide](/headless/docs/installation) for requirements, framework setup, and more detailed instructions.
+See the [Installation Guide](/headless/docs/installation) for requirements,
+framework setup, and more detailed instructions.
 
 After installation, import a component and start building:
 
@@ -55,9 +62,11 @@ function App() {
 
 Spar is built around the following principles:
 
-- **Headless Architecture:** Components handle logic and accessibility, not visuals.
+- **Headless Architecture:** Components handle logic and accessibility, not
+  visuals.
 - **Composition First:** Granular component parts that work together seamlessly.
-- **Accessibility by Default:** WCAG 2.2 AA compliant with full keyboard support.
+- **Accessibility by Default:** WCAG 2.2 AA compliant with full keyboard
+  support.
 - **TypeScript Strict:** Fully typed with explicit interfaces.
 - **Tree-Shakeable:** Import only what you need with named exports.
 
@@ -66,7 +75,8 @@ Spar is built around the following principles:
 Spar components are completely unstyled. They provide:
 
 - **Behavior Logic:** State management, event handling, and user interactions.
-- **Accessibility Features:** ARIA attributes, keyboard navigation, and screen reader support.
+- **Accessibility Features:** ARIA attributes, keyboard navigation, and screen
+  reader support.
 - **Component API:** A clean, predictable interface for each component.
 
 ## Composition
@@ -76,11 +86,13 @@ Every component in Spar uses a compound component pattern with granular parts:
 ```tsx
 // Simple accordion example
 <AccordionRoot>
-  <AccordionItem value='item-1'>
+  <AccordionItem value="item-1">
     <AccordionHeader>
       <AccordionTrigger>What is Spar?</AccordionTrigger>
     </AccordionHeader>
-    <AccordionContent>A headless UI library with zero styling opinions.</AccordionContent>
+    <AccordionContent>
+      A headless UI library with zero styling opinions.
+    </AccordionContent>
   </AccordionItem>
 </AccordionRoot>
 ```
@@ -99,7 +111,8 @@ All Spar components are built with accessibility as a core requirement:
 - **Keyboard Navigation:** Full keyboard support for all interactive elements.
 - **Screen Reader Support:** Proper ARIA labels, roles, and live regions.
 - **Focus Management:** Intelligent focus trapping and restoration.
-- **Automated Testing:** Every component tested with jest-axe for zero accessibility violations.
+- **Automated Testing:** Every component tested with jest-axe for zero
+  accessibility violations.
 
 Accessible components work out of the box with no extra setup.
 
@@ -109,13 +122,14 @@ Spar is written in TypeScript with strict mode enabled:
 
 - **Full Type Safety:** Every prop, state, and callback is explicitly typed.
 - **No `any` Types:** Strict typing throughout the codebase.
-- **Generic Components:** Type-safe components that work with application data models.
+- **Generic Components:** Type-safe components that work with application data
+  models.
 
 ```tsx
 import { Button, type ButtonProps } from '@turkish-technology/spar';
 
 // Full type safety and autocomplete
-const MyButton: React.FC<ButtonProps> = (props) => {
+const MyButton: React.FC<ButtonProps> = props => {
   return <Button {...props} />;
 };
 ```
@@ -142,28 +156,37 @@ Spar provides **15 production-ready headless components**:
 - **Overlays:** Dialog, DropdownMenu, Popover, Tooltip
 - **Utilities:** Collapsible
 
-Plus utility hooks and TypeScript types. See all components in the [Components](/headless/docs/overview) section.
+Plus utility hooks and TypeScript types. See all components in the
+[Components](/headless/docs/overview) section.
 
 ## Why Headless?
 
 Headless components separate behavior from presentation. This provides:
 
 1. **Design Freedom:** Style components to match any design system.
-2. **Consistency:** Use the same components across different projects with different designs.
+2. **Consistency:** Use the same components across different projects with
+   different designs.
 3. **Maintainability:** Update behavior without touching styles, and vice versa.
 4. **Flexibility:** Works with any CSS framework or styling solution.
-5. **Performance:** Include only the JavaScript needed; styling stays application-defined.
+5. **Performance:** Include only the JavaScript needed; styling stays
+   application-defined.
 
-_Spar handles the hard parts-state management, accessibility, keyboard navigation-so implementation effort stays focused on presentation and product-specific UI._
+_Spar handles the hard parts-state management, accessibility, keyboard
+navigation-so implementation effort stays focused on presentation and
+product-specific UI._
 
 ## Next Steps
 
 Ready to get started?
 
-1. **[Install Spar](/headless/docs/installation)** - Set up the library in a React app
-2. **[Browse Components](/headless/docs/overview)** - Explore all 15 available components
+1. **[Install Spar](/headless/docs/installation)** - Set up the library in a
+   React app
+2. **[Browse Components](/headless/docs/overview)** - Explore all 15 available
+   components
 
 ## Community & Support
 
-- **GitHub:** [turkishtechnology/spar](https://github.com/turkishtechnology/spar)
-- **Issues:** [Report bugs or request features](https://github.com/turkishtechnology/spar/issues)
+- **GitHub:**
+  [turkishtechnology/spar](https://github.com/turkishtechnology/spar)
+- **Issues:**
+  [Report bugs or request features](https://github.com/turkishtechnology/spar/issues)

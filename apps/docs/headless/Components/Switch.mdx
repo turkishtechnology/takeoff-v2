@@ -1,6 +1,9 @@
 ---
 title: Switch
-description: Headless switch primitive for on/off settings with accessible ARIA semantics, form integration, Field context awareness, and controlled or uncontrolled state.
+description:
+  Headless switch primitive for on/off settings with accessible ARIA semantics,
+  form integration, Field context awareness, and controlled or uncontrolled
+  state.
 ---
 
 import React from 'react';
@@ -10,7 +13,10 @@ import { Field, Switch } from '@turkish-technology/spar';
 
 # Switch
 
-Headless switch primitive for creating accessible on/off settings. Renders a single focusable element with `role="switch"`; you compose the visual track/thumb in your own DOM and combine it with `<Field>` for labels, descriptions, and validation wiring.
+Headless switch primitive for creating accessible on/off settings. Renders a
+single focusable element with `role="switch"`; you compose the visual
+track/thumb in your own DOM and combine it with `<Field>` for labels,
+descriptions, and validation wiring.
 
 ## Live Demo
 
@@ -41,82 +47,53 @@ align-items: center;
 gap: 12px;
 }
 
-.switch-demo-container .switch-control {
-width: 56px;
-height: 32px;
-padding: 0;
-border: 0;
-background: transparent;
-display: inline-flex;
-align-items: center;
-cursor: pointer;
-}
+.switch-demo-container .switch-control { width: 56px; height: 32px; padding: 0;
+border: 0; background: transparent; display: inline-flex; align-items: center;
+cursor: pointer; }
 
-.switch-demo-container .switch-control:focus-visible {
-outline: 2px solid #d43347;
-outline-offset: 3px;
-border-radius: 999px;
-}
+.switch-demo-container .switch-control:focus-visible { outline: 2px solid
+#d43347; outline-offset: 3px; border-radius: 999px; }
 
-.switch-demo-container .switch-track {
-box-sizing: border-box;
-width: 56px;
-height: 32px;
-padding: 4px;
-border: 1px solid #e1e4ea;
-border-radius: 999px;
-background-color: rgba(0, 0, 0, 0.08);
-display: flex;
-align-items: center;
-transition: background-color 0.2s ease;
-}
+.switch-demo-container .switch-track { box-sizing: border-box; width: 56px;
+height: 32px; padding: 4px; border: 1px solid #e1e4ea; border-radius: 999px;
+background-color: rgba(0, 0, 0, 0.08); display: flex; align-items: center;
+transition: background-color 0.2s ease; }
 
 .switch-demo-container .switch-control[data-state='checked'] .switch-track {
-background-color: #d43347;
-border-color: #d43347;
-}
+background-color: #d43347; border-color: #d43347; }
 
-.switch-demo-container .switch-thumb {
-width: 22px;
-height: 22px;
-border-radius: 50%;
-background: rgba(0, 0, 0, 0.72);
-transition: transform 0.2s ease, background-color 0.2s ease;
-}
+.switch-demo-container .switch-thumb { width: 22px; height: 22px; border-radius:
+50%; background: rgba(0, 0, 0, 0.72); transition: transform 0.2s ease,
+background-color 0.2s ease; }
 
 .switch-demo-container .switch-control[data-state='checked'] .switch-thumb {
-transform: translateX(24px);
-background: #fff;
-}
+transform: translateX(24px); background: #fff; }
 
-.switch-demo-container .switch-label {
-font-weight: 500;
-}
+.switch-demo-container .switch-label { font-weight: 500; }
 
-[data-theme='dark'] .switch-demo-container .switch-track {
-border-color: #2b303b;
-background-color: rgba(255, 255, 255, 0.12);
-}
+[data-theme='dark'] .switch-demo-container .switch-track { border-color:
+#2b303b; background-color: rgba(255, 255, 255, 0.12); }
 
-[data-theme='dark'] .switch-demo-container .switch-thumb {
-background: rgba(255, 255, 255, 0.72);
-}
+[data-theme='dark'] .switch-demo-container .switch-thumb { background: rgba(255,
+255, 255, 0.72); }
 
-[data-theme='dark'] .switch-demo-container .switch-control[data-state='checked'] .switch-track {
-background-color: #d43347;
-border-color: #d43347;
-}`}/>
+[data-theme='dark'] .switch-demo-container .switch-control[data-state='checked']
+.switch-track { background-color: #d43347; border-color: #d43347; }`}/>
 
 </div>
 
-`Switch` is a single polymorphic element (default `<button>`) that emits `data-state="checked|unchecked"`. The visual track/thumb live in your DOM as ordinary children, and `<Field>` provides the label/description wiring.
+`Switch` is a single polymorphic element (default `<button>`) that emits
+`data-state="checked|unchecked"`. The visual track/thumb live in your DOM as
+ordinary children, and `<Field>` provides the label/description wiring.
 
 ## Features
 
 - ✅ Single accessible control with `role="switch"` and full ARIA wiring
 - ✅ Controlled (`checked`) and uncontrolled (`defaultChecked`) modes
-- ✅ Native form submission via hidden `input[type="checkbox"]` (`name`, `value`, `form`, `required`)
-- ✅ Inherits `disabled`, `readOnly`, `required`, and `invalid` from an ancestor `<Field>`; direct props win
+- ✅ Native form submission via hidden `input[type="checkbox"]` (`name`,
+  `value`, `form`, `required`)
+- ✅ Inherits `disabled`, `readOnly`, `required`, and `invalid` from an ancestor
+  `<Field>`; direct props win
 - ✅ Render-prop children expose state for derived UI
 - ✅ Polymorphic via the `as` prop
 
@@ -130,14 +107,17 @@ import { useSwitch } from '@turkish-technology/spar';
 
 ## Anatomy
 
-The Switch is a single interactive element. Compose surrounding layout, label, and description with `<Field>`; place the visual track and thumb inside the switch as plain children so they can be styled freely.
+The Switch is a single interactive element. Compose surrounding layout, label,
+and description with `<Field>`; place the visual track and thumb inside the
+switch as plain children so they can be styled freely.
 
 <AnatomyViewer
   parts={[
     {
       name: 'field',
       label: 'Field',
-      description: 'Generic wrapper that owns ARIA relationships (label, description, error)',
+      description:
+        'Generic wrapper that owns ARIA relationships (label, description, error)',
     },
     {
       name: 'label',
@@ -161,14 +141,18 @@ The Switch is a single interactive element. Compose surrounding layout, label, a
     },
   ]}
 >
-  <div className='switch-demo-container'>
-    <Field data-spar-part='field' className='switch-field'>
-      <Field.Label data-spar-part='label' className='switch-label'>
+  <div className="switch-demo-container">
+    <Field data-spar-part="field" className="switch-field">
+      <Field.Label data-spar-part="label" className="switch-label">
         {'Flight alerts'}
       </Field.Label>
-      <Switch data-spar-part='switch' className='switch-control' defaultChecked>
-        <span data-spar-part='track' className='switch-track' aria-hidden='true'>
-          <span data-spar-part='thumb' className='switch-thumb' />
+      <Switch data-spar-part="switch" className="switch-control" defaultChecked>
+        <span
+          data-spar-part="track"
+          className="switch-track"
+          aria-hidden="true"
+        >
+          <span data-spar-part="thumb" className="switch-thumb" />
         </span>
       </Switch>
     </Field>
@@ -181,8 +165,8 @@ The Switch is a single interactive element. Compose surrounding layout, label, a
 <Field>
   <Field.Label>…</Field.Label>
   <Switch>
-    <span className='track' aria-hidden='true'>
-      <span className='thumb' />
+    <span className="track" aria-hidden="true">
+      <span className="thumb" />
     </span>
   </Switch>
   <Field.Description>…</Field.Description>
@@ -191,10 +175,15 @@ The Switch is a single interactive element. Compose surrounding layout, label, a
 
 **Data flow:**
 
-- `Switch` owns the controlled/uncontrolled checked state and toggles on click, `Space`, and `Enter`.
-- When nested inside `<Field>`, `disabled`, `readOnly`, `required`, and `invalid` are inherited automatically; props on `<Switch>` always take precedence.
-- `aria-labelledby` and `aria-describedby` are wired to `Field.Label` and `Field.Description` / `Field.ErrorMessage` when a Field ancestor is present.
-- When `name` is set, `Switch` renders a synchronized hidden `input[type="checkbox"]` for native form submission.
+- `Switch` owns the controlled/uncontrolled checked state and toggles on click,
+  `Space`, and `Enter`.
+- When nested inside `<Field>`, `disabled`, `readOnly`, `required`, and
+  `invalid` are inherited automatically; props on `<Switch>` always take
+  precedence.
+- `aria-labelledby` and `aria-describedby` are wired to `Field.Label` and
+  `Field.Description` / `Field.ErrorMessage` when a Field ancestor is present.
+- When `name` is set, `Switch` renders a synchronized hidden
+  `input[type="checkbox"]` for native form submission.
 
 ## Code Examples
 
@@ -206,8 +195,8 @@ function BasicSwitch() {
     <Field>
       <Field.Label>Enable notifications</Field.Label>
       <Switch defaultChecked>
-        <span className='track' aria-hidden='true'>
-          <span className='thumb' />
+        <span className="track" aria-hidden="true">
+          <span className="thumb" />
         </span>
       </Switch>
     </Field>
@@ -225,7 +214,9 @@ function ControlledSwitch() {
     <Field>
       <Field.Label>Dark mode</Field.Label>
       <Switch checked={enabled} onChange={setEnabled} />
-      <Field.Description>{enabled ? 'Theme is dark' : 'Theme is light'}</Field.Description>
+      <Field.Description>
+        {enabled ? 'Theme is dark' : 'Theme is light'}
+      </Field.Description>
     </Field>
   );
 }
@@ -236,20 +227,24 @@ function ControlledSwitch() {
 ```tsx {3}
 function UncontrolledSwitch() {
   return (
-    <Switch defaultChecked={false} onChange={(checked) => console.log('Changed to:', checked)} />
+    <Switch
+      defaultChecked={false}
+      onChange={checked => console.log('Changed to:', checked)}
+    />
   );
 }
 ```
 
 ### Form Integration
 
-Provide `name` and optional `value`. The hidden `input[type="checkbox"]` is rendered automatically and submits alongside the rest of the form.
+Provide `name` and optional `value`. The hidden `input[type="checkbox"]` is
+rendered automatically and submits alongside the rest of the form.
 
 ```tsx {12,18}
 function FormExample() {
   return (
     <form
-      onSubmit={(event) => {
+      onSubmit={event => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         console.log(formData.get('notifications'), formData.get('darkMode'));
@@ -257,15 +252,15 @@ function FormExample() {
     >
       <Field>
         <Field.Label>Notifications</Field.Label>
-        <Switch name='notifications' defaultChecked />
+        <Switch name="notifications" defaultChecked />
       </Field>
 
       <Field>
         <Field.Label>Dark mode</Field.Label>
-        <Switch name='darkMode' value='enabled' defaultChecked />
+        <Switch name="darkMode" value="enabled" defaultChecked />
       </Field>
 
-      <button type='submit'>Save</button>
+      <button type="submit">Save</button>
     </form>
   );
 }
@@ -273,7 +268,8 @@ function FormExample() {
 
 ### Inheriting Field State
 
-When wrapped in `<Field>`, the Switch picks up `disabled`, `readOnly`, `required`, and `invalid` automatically.
+When wrapped in `<Field>`, the Switch picks up `disabled`, `readOnly`,
+`required`, and `invalid` automatically.
 
 ```tsx
 <Field disabled>
@@ -295,13 +291,14 @@ When wrapped in `<Field>`, the Switch picks up `disabled`, `readOnly`, `required
 
 ### Render-prop Children
 
-Pass a function as children to derive UI from current state without subscribing externally.
+Pass a function as children to derive UI from current state without subscribing
+externally.
 
 ```tsx
 <Switch defaultChecked>
   {({ checked }) => (
-    <span className='track' aria-hidden='true' data-on={checked || undefined}>
-      <span className='thumb' />
+    <span className="track" aria-hidden="true" data-on={checked || undefined}>
+      <span className="thumb" />
     </span>
   )}
 </Switch>
@@ -310,30 +307,34 @@ Pass a function as children to derive UI from current state without subscribing 
 ### Custom Element
 
 ```tsx
-<Switch as='div' defaultChecked>
-  <span className='track' aria-hidden='true'>
-    <span className='thumb' />
+<Switch as="div" defaultChecked>
+  <span className="track" aria-hidden="true">
+    <span className="thumb" />
   </span>
 </Switch>
 ```
 
-When `as` is not a native button, `aria-disabled` is emitted instead of the `disabled` HTML attribute.
+When `as` is not a native button, `aria-disabled` is emitted instead of the
+`disabled` HTML attribute.
 
 ### Fully Custom Anatomy with `useSwitch`
 
-When you need a totally different DOM shape, use the low-level hook instead of `<Switch>`.
+When you need a totally different DOM shape, use the low-level hook instead of
+`<Switch>`.
 
 ```tsx
 import { useSwitch } from '@turkish-technology/spar';
 
 function CustomSwitch() {
-  const { checked, switchProps, hiddenInputProps } = useSwitch({ defaultChecked: true });
+  const { checked, switchProps, hiddenInputProps } = useSwitch({
+    defaultChecked: true,
+  });
 
   return (
     <label>
       <span>Wi-Fi</span>
       <button {...switchProps}>{checked ? 'on' : 'off'}</button>
-      <input {...hiddenInputProps} name='wifi' />
+      <input {...hiddenInputProps} name="wifi" />
     </label>
   );
 }

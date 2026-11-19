@@ -1,11 +1,14 @@
 ---
 title: Installation
-description: Get started with Spar in a React project. Learn how to install and configure the library with a package manager and styling solution.
+description:
+  Get started with Spar in a React project. Learn how to install and configure
+  the library with a package manager and styling solution.
 ---
 
 # Installation
 
-Get started with Spar in minutes. This guide covers installation, setup, and basic configuration for a React project.
+Get started with Spar in minutes. This guide covers installation, setup, and
+basic configuration for a React project.
 
 ## Requirements
 
@@ -18,10 +21,11 @@ Before installing Spar, ensure the project meets these requirements:
 
 ## Package Manager
 
-Spar is available on [npm](https://www.npmjs.com/package/@turkish-technology/spar) and can be installed with any package manager.
+Spar is available on
+[npm](https://www.npmjs.com/package/@turkish-technology/spar) and can be
+installed with any package manager.
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs'; import TabItem from '@theme/TabItem';
 
 <Tabs defaultValue="npm" groupId="package-manager">
   <TabItem value="npm" label="npm">
@@ -60,7 +64,7 @@ import './App.css';
 
 function App() {
   return (
-    <Button className='my-button' onClick={() => console.log('Clicked!')}>
+    <Button className="my-button" onClick={() => console.log('Clicked!')}>
       Click me
     </Button>
   );
@@ -71,7 +75,9 @@ function App() {
 
 Spar is compatible with Next.js 14+ and the App Router.
 
-All published Spar entrypoints are client-marked modules, so importing a Spar component from an App Router page or layout creates a client boundary automatically:
+All published Spar entrypoints are client-marked modules, so importing a Spar
+component from an App Router page or layout creates a client boundary
+automatically:
 
 ```ts
 import * as Accordion from '@turkish-technology/spar/accordion';
@@ -92,7 +98,7 @@ export default function Home() {
       <Breadcrumb.Root>
         <Breadcrumb.List>
           <Breadcrumb.Item>
-            <Breadcrumb.Link href='/'>Home</Breadcrumb.Link>
+            <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
           </Breadcrumb.Item>
           <Breadcrumb.Separator />
           <Breadcrumb.Item>
@@ -109,7 +115,8 @@ export default function Home() {
 
 #### Client Component Example
 
-For components that require state (controlled mode), wrap them in a Client Component:
+For components that require state (controlled mode), wrap them in a Client
+Component:
 
 ```tsx title="app/components/AccordionSection.tsx"
 'use client';
@@ -122,11 +129,13 @@ export function AccordionSection() {
 
   return (
     <Accordion.Root value={value} onValueChange={setValue}>
-      <Accordion.Item value='faq-1'>
+      <Accordion.Item value="faq-1">
         <Accordion.Header>
           <Accordion.Trigger>What is Spar?</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content>Spar is a headless React component library.</Accordion.Content>
+        <Accordion.Content>
+          Spar is a headless React component library.
+        </Accordion.Content>
       </Accordion.Item>
     </Accordion.Root>
   );
@@ -157,7 +166,8 @@ export function AccordionSection() {
 
 After installing Spar:
 
-1. **Explore Components:** Check out the [Components](/headless/docs/overview) page to see all available components
+1. **Explore Components:** Check out the [Components](/headless/docs/overview)
+   page to see all available components
 2. **Learn Patterns:** Read component documentation for usage examples
 3. **Style Components:** Choose a preferred styling solution and customize
 4. **Build Accessible UIs:** All components come with built-in accessibility
@@ -166,6 +176,8 @@ After installing Spar:
 
 Need help with installation or setup?
 
-- **GitHub Issues:** [Report a bug or issue](https://github.com/turkishtechnology/spar/issues)
+- **GitHub Issues:**
+  [Report a bug or issue](https://github.com/turkishtechnology/spar/issues)
 - **Documentation:** Browse component docs for detailed usage examples
-- **Contributing:** Check our [Contributing Guide](https://github.com/turkishtechnology/spar/blob/main/CONTRIBUTING.md)
+- **Contributing:** Check our
+  [Contributing Guide](https://github.com/turkishtechnology/spar/blob/main/CONTRIBUTING.md)

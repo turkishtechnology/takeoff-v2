@@ -18,12 +18,7 @@ interface CollapsibleCodeBlockProps {
  * A collapsible container for the code editor panel.
  * Auto-expands when an error is detected to show the error inline.
  */
-export const CollapsibleCodeBlock = ({
-  children,
-  codeBlockRef,
-  isCollapsed,
-  onToggle,
-}: CollapsibleCodeBlockProps) => {
+export const CollapsibleCodeBlock = ({ children, codeBlockRef, isCollapsed, onToggle }: CollapsibleCodeBlockProps) => {
   const { error } = useContext(LiveContext);
 
   // Generate unique ID for aria-controls
@@ -43,32 +38,21 @@ export const CollapsibleCodeBlock = ({
   }, [error, isCollapsed, onToggle]);
 
   return (
-    <div className='collapsible-code-block'>
-      <button
-        className='collapsible-toggle'
-        onClick={onToggle}
-        aria-expanded={!isCollapsed}
-        aria-controls={contentId}
-      >
-        <span className='toggle-icon'>
+    <div className="collapsible-code-block">
+      <button className="collapsible-toggle" onClick={onToggle} aria-expanded={!isCollapsed} aria-controls={contentId}>
+        <span className="toggle-icon">
           <CodeToggleIcon />
         </span>
-        <span className='toggle-text'>
-          <Translate id='liveCode.codeToggle'>Code</Translate>
+        <span className="toggle-text">
+          <Translate id="liveCode.codeToggle">Code</Translate>
         </span>
-        <span className='expand-icon'>
+        <span className="expand-icon">
           <ChevronDownIcon />
         </span>
       </button>
 
       {/* Always render content, hide with CSS to preserve editor state */}
-      <div
-        id={contentId}
-        className='collapsible-content'
-        ref={codeBlockRef}
-        aria-hidden={isCollapsed}
-        style={{ display: isCollapsed ? 'none' : 'block' }}
-      >
+      <div id={contentId} className="collapsible-content" ref={codeBlockRef} aria-hidden={isCollapsed} style={{ display: isCollapsed ? 'none' : 'block' }}>
         {children}
       </div>
     </div>

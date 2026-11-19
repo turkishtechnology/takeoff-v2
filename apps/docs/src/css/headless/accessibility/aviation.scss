@@ -94,12 +94,7 @@
         padding: 1rem;
         border-radius: 20px;
         background:
-          radial-gradient(
-            circle at 78% 4%,
-            rgba(13, 118, 239, 0.34) 0,
-            rgba(13, 118, 239, 0.15) 24%,
-            transparent 46%
-          ),
+          radial-gradient(circle at 78% 4%, rgba(13, 118, 239, 0.34) 0, rgba(13, 118, 239, 0.15) 24%, transparent 46%),
           linear-gradient(130deg, #e7f4ff 0%, #eaf5ff 50%, #d6e8ff 100%);
 
         h1 {

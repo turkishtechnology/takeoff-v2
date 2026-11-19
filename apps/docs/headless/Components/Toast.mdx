@@ -1,6 +1,8 @@
 ---
 title: Toast
-description: Headless toast primitives for rendering transient notifications with queueing, timers, promise updates, and accessible live-region behavior.
+description:
+  Headless toast primitives for rendering transient notifications with queueing,
+  timers, promise updates, and accessible live-region behavior.
 ---
 
 import React from 'react';
@@ -10,7 +12,10 @@ import { Toast, Toaster, createToaster } from '@turkish-technology/spar';
 
 # Toast
 
-Toast provides a headless notification controller and compound parts for rendering transient feedback. Spar owns the queue, timers, pause and resume behavior, promise updates, and live-region semantics; you bring the visual design.
+Toast provides a headless notification controller and compound parts for
+rendering transient feedback. Spar owns the queue, timers, pause and resume
+behavior, promise updates, and live-region semantics; you bring the visual
+design.
 
 ## Live Demo
 
@@ -22,16 +27,9 @@ Toast provides a headless notification controller and compound parts for renderi
     [],
   );
 
-const notify = () => {
-toaster.success({
-title: 'Booking saved',
-description: 'Passenger details were updated successfully.',
-action: {
-label: 'Undo',
-altText: 'Undo booking update',
-},
-});
-};
+const notify = () => { toaster.success({ title: 'Booking saved', description:
+'Passenger details were updated successfully.', action: { label: 'Undo',
+altText: 'Undo booking update', }, }); };
 
 return (
 
@@ -65,104 +63,48 @@ border-radius: 12px;
 background: #f7f8fa;
 }
 
-[data-theme='dark'] .toast-demo-stage {
-border-color: #2b303b;
-background: #15181e;
-}
+[data-theme='dark'] .toast-demo-stage { border-color: #2b303b; background:
+#15181e; }
 
-.toast-demo-button {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-min-height: 40px;
-padding: 0 14px;
-border-radius: 10px;
-border: 1px solid #c4c9d4;
-background: #222530;
-color: #ffffff;
-font-size: 14px;
-font-weight: 600;
-cursor: pointer;
-}
+.toast-demo-button { display: inline-flex; align-items: center; justify-content:
+center; min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px
+solid #c4c9d4; background: #222530; color: #ffffff; font-size: 14px;
+font-weight: 600; cursor: pointer; }
 
-.toast-toaster {
-position: absolute;
-top: 16px;
-right: 16px;
-width: min(360px, calc(100% - 32px));
-}
+.toast-toaster { position: absolute; top: 16px; right: 16px; width: min(360px,
+calc(100% - 32px)); }
 
-.toast-root {
-display: flex;
-align-items: flex-start;
-gap: 10px;
-padding: 12px;
-border: 1px solid #d8dde6;
-border-radius: 12px;
-background: #ffffff;
-color: #222530;
-box-shadow:
-0 12px 32px rgba(34, 37, 48, 0.08),
-0 4px 12px rgba(34, 37, 48, 0.06);
-}
+.toast-root { display: flex; align-items: flex-start; gap: 10px; padding: 12px;
+border: 1px solid #d8dde6; border-radius: 12px; background: #ffffff; color:
+#222530; box-shadow: 0 12px 32px rgba(34, 37, 48, 0.08), 0 4px 12px rgba(34, 37,
+48, 0.06); }
 
-[data-theme='dark'] .toast-root {
-border-color: #2b303b;
-background: #1f232b;
-color: #f2f5f8;
-}
+[data-theme='dark'] .toast-root { border-color: #2b303b; background: #1f232b;
+color: #f2f5f8; }
 
-.toast-content {
-min-width: 0;
-flex: 1;
-}
+.toast-content { min-width: 0; flex: 1; }
 
-.toast-title {
-font-size: 14px;
-line-height: 20px;
-font-weight: 700;
-}
+.toast-title { font-size: 14px; line-height: 20px; font-weight: 700; }
 
-.toast-description {
-margin-top: 2px;
-color: #717784;
-font-size: 13px;
-line-height: 18px;
-}
+.toast-description { margin-top: 2px; color: #717784; font-size: 13px;
+line-height: 18px; }
 
-[data-theme='dark'] .toast-description {
-color: #99a0ae;
-}
+[data-theme='dark'] .toast-description { color: #99a0ae; }
 
-.toast-action,
-.toast-close {
-border: 1px solid #d8dde6;
-border-radius: 8px;
-background: transparent;
-color: inherit;
-cursor: pointer;
-}
+.toast-action, .toast-close { border: 1px solid #d8dde6; border-radius: 8px;
+background: transparent; color: inherit; cursor: pointer; }
 
-.toast-action {
-padding: 4px 8px;
-font-size: 12px;
-font-weight: 600;
-}
+.toast-action { padding: 4px 8px; font-size: 12px; font-weight: 600; }
 
-.toast-close {
-width: 28px;
-height: 28px;
-line-height: 1;
-}
+.toast-close { width: 28px; height: 28px; line-height: 1; }
 
-[data-theme='dark'] .toast-action,
-[data-theme='dark'] .toast-close {
-border-color: #3a414f;
-}`}/>
+[data-theme='dark'] .toast-action, [data-theme='dark'] .toast-close {
+border-color: #3a414f; }`}/>
 
 </div>
 
-The live demo creates a toast through the controller and renders every visible item through the `Toaster` render prop.
+The live demo creates a toast through the controller and renders every visible
+item through the `Toaster` render prop.
 
 ## Features
 
@@ -171,7 +113,8 @@ The live demo creates a toast through the controller and renders every visible i
 - ✅ Auto-dismiss timers with pause and resume on hover or focus
 - ✅ Promise lifecycle updates through `toaster.promise`
 - ✅ Accessible live-region behavior with `announcement: 'polite' | 'assertive'`
-- ✅ Compound anatomy with `Toast.Root`, `Toast.Title`, `Toast.Description`, `Toast.Action`, and `Toast.Close`
+- ✅ Compound anatomy with `Toast.Root`, `Toast.Title`, `Toast.Description`,
+  `Toast.Action`, and `Toast.Close`
 - ✅ Polymorphic rendering support via `as`
 
 ## Import
@@ -184,40 +127,47 @@ import { Toast, Toaster, createToaster } from '@turkish-technology/spar';
 
 ## Anatomy
 
-The Toast component is split into a controller, a viewport host, and item-level compound parts:
+The Toast component is split into a controller, a viewport host, and item-level
+compound parts:
 
 <AnatomyViewer
   parts={[
     {
       name: 'toaster',
       label: 'Toaster',
-      description: 'Host that subscribes to the toast controller and renders visible items',
+      description:
+        'Host that subscribes to the toast controller and renders visible items',
     },
     {
       name: 'root',
       label: 'Root',
-      description: 'Single toast item root with pause, resume, escape, and live-region behavior',
+      description:
+        'Single toast item root with pause, resume, escape, and live-region behavior',
     },
     { name: 'title', label: 'Title', description: 'Toast title text' },
-    { name: 'description', label: 'Description', description: 'Supporting toast message' },
+    {
+      name: 'description',
+      label: 'Description',
+      description: 'Supporting toast message',
+    },
     { name: 'action', label: 'Action', description: 'Optional action button' },
     { name: 'close', label: 'Close', description: 'Optional dismiss button' },
   ]}
 >
-  <div className='toast-demo-stage' data-spar-part='toaster'>
-    <div className='toast-root' data-spar-part='root'>
-      <div className='toast-content'>
-        <div className='toast-title' data-spar-part='title'>
+  <div className="toast-demo-stage" data-spar-part="toaster">
+    <div className="toast-root" data-spar-part="root">
+      <div className="toast-content">
+        <div className="toast-title" data-spar-part="title">
           {'Booking saved'}
         </div>
-        <div className='toast-description' data-spar-part='description'>
+        <div className="toast-description" data-spar-part="description">
           {'Passenger details were updated.'}
         </div>
       </div>
-      <button className='toast-action' data-spar-part='action'>
+      <button className="toast-action" data-spar-part="action">
         {'Undo'}
       </button>
-      <button className='toast-close' data-spar-part='close'>
+      <button className="toast-close" data-spar-part="close">
         {'×'}
       </button>
     </div>
@@ -230,7 +180,7 @@ The Toast component is split into a controller, a viewport host, and item-level 
 const toaster = createToaster();
 
 <Toaster toaster={toaster}>
-  {(toast) => (
+  {toast => (
     <Toast.Root toast={toast} toaster={toaster}>
       <Toast.Title />
       <Toast.Description />
@@ -243,12 +193,14 @@ const toaster = createToaster();
 
 **Data Flow:**
 
-- `createToaster`: Creates the controller that owns queue state, timers, and updates
+- `createToaster`: Creates the controller that owns queue state, timers, and
+  updates
 - `Toaster`: Subscribes to the controller and renders the visible toast list
 - `Toast.Root`: Provides toast context and live-region attributes for one item
 - `Toast.Title`: Renders `toast.title` when children are omitted
 - `Toast.Description`: Renders `toast.description` when children are omitted
-- `Toast.Action`: Renders `toast.action.label`, calls `toast.action.onClick`, then dismisses
+- `Toast.Action`: Renders `toast.action.label`, calls `toast.action.onClick`,
+  then dismisses
 - `Toast.Close`: Dismisses the toast
 
 ---
@@ -264,7 +216,7 @@ function App() {
   return (
     <>
       <button
-        type='button'
+        type="button"
         onClick={() =>
           toaster.success({
             title: 'Booking saved',
@@ -276,7 +228,7 @@ function App() {
       </button>
 
       <Toaster toaster={toaster}>
-        {(toast) => (
+        {toast => (
           <Toast.Root key={toast.id} toast={toast} toaster={toaster}>
             <Toast.Title />
             <Toast.Description />
@@ -302,7 +254,8 @@ toaster.loading({ title: 'Uploading', duration: null });
 `ToastType` is intentionally limited to semantic notification states:
 
 ```ts
-type ToastType = 'default' | 'success' | 'error' | 'warning' | 'info' | 'loading';
+type ToastType =
+  'default' | 'success' | 'error' | 'warning' | 'info' | 'loading';
 ```
 
 When `toaster.create(...)` is called without a type, Spar uses `default`.
@@ -315,7 +268,7 @@ await toaster.promise(saveBooking(), {
     title: 'Saving booking',
     description: 'Passenger details are being updated.',
   },
-  success: (booking) => ({
+  success: booking => ({
     title: 'Booking saved',
     description: `PNR ${booking.pnr} is ready.`,
   }),
@@ -326,7 +279,9 @@ await toaster.promise(saveBooking(), {
 });
 ```
 
-Promise toasts automatically map lifecycle states to toast types: loading to `loading`, resolved to `success`, and rejected to `error`. Passing an explicit `type` overrides the default.
+Promise toasts automatically map lifecycle states to toast types: loading to
+`loading`, resolved to `success`, and rejected to `error`. Passing an explicit
+`type` overrides the default.
 
 ### Custom Action
 
@@ -337,7 +292,7 @@ toaster.warning({
   action: {
     label: 'Undo',
     altText: 'Undo seat release',
-    onClick: (toast) => {
+    onClick: toast => {
       console.log('Undo clicked for', toast.id);
     },
   },
@@ -358,15 +313,17 @@ toaster.info({
 });
 ```
 
-Errors and warnings default to `assertive`; success, info, and loading toasts default to `polite`.
+Errors and warnings default to `assertive`; success, info, and loading toasts
+default to `polite`.
 
 ### Hotkey
 
-The toaster region can be focused with a keyboard shortcut. By default, Spar uses `F8`.
+The toaster region can be focused with a keyboard shortcut. By default, Spar
+uses `F8`.
 
 ```tsx
 <Toaster toaster={toaster} hotkey={['F8']}>
-  {(toast) => <Toast.Root toast={toast} toaster={toaster} />}
+  {toast => <Toast.Root toast={toast} toaster={toaster} />}
 </Toaster>
 ```
 
@@ -374,7 +331,7 @@ Use an empty array to disable the shortcut.
 
 ```tsx
 <Toaster toaster={toaster} hotkey={[]}>
-  {(toast) => <Toast.Root toast={toast} toaster={toaster} />}
+  {toast => <Toast.Root toast={toast} toaster={toaster} />}
 </Toaster>
 ```
 
@@ -431,7 +388,8 @@ Toast separates controller behavior from rendering concerns:
 ```ts
 type ToastStatus = 'queued' | 'visible' | 'dismissing';
 type ToastAnnouncement = 'polite' | 'assertive';
-type ToastType = 'default' | 'success' | 'error' | 'warning' | 'info' | 'loading';
+type ToastType =
+  'default' | 'success' | 'error' | 'warning' | 'info' | 'loading';
 ```
 
 ### Data Attributes
@@ -491,7 +449,10 @@ interface ToasterController {
   resume: (id?: string) => void;
   clear: () => void;
   destroy: () => void;
-  promise: <TData>(promise: Promise<TData>, options: ToastPromiseOptions<TData>) => Promise<TData>;
+  promise: <TData>(
+    promise: Promise<TData>,
+    options: ToastPromiseOptions<TData>,
+  ) => Promise<TData>;
   subscribe: (listener: () => void) => () => void;
   getSnapshot: () => ToastData[];
 }

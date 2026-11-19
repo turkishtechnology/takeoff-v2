@@ -23,21 +23,15 @@ const components = [
 export default function AccessibilityDemos() {
   return (
     <Layout>
-      <div className='demos-index'>
-        <div className='section-heading'>Accessibility Demos</div>
+      <div className="demos-index">
+        <div className="section-heading">Accessibility Demos</div>
         <p>
-          Explore interactive demos showcasing the accessibility features of Spar components. Each
-          demo highlights how to use the component with proper ARIA attributes, keyboard navigation,
-          and screen reader support. Click a component card to view detailed examples and test
-          accessibility behavior in action.
+          Explore interactive demos showcasing the accessibility features of Spar components. Each demo highlights how to use the component with proper ARIA attributes, keyboard
+          navigation, and screen reader support. Click a component card to view detailed examples and test accessibility behavior in action.
         </p>
-        <div className='component-grid'>
-          {components.map((c) => (
-            <Link
-              key={c.toLowerCase()}
-              to={`/headless/accessibility/components/${c.toLowerCase()}`}
-              className='component-card'
-            >
+        <div className="component-grid">
+          {components.map(c => (
+            <Link key={c.toLowerCase()} to={`/headless/accessibility/components/${c.toLowerCase()}`} className="component-card">
               <span>{c}</span>
             </Link>
           ))}
@@ -45,11 +39,11 @@ export default function AccessibilityDemos() {
 
         <div style={{ marginTop: '1.5rem' }}>
           <p>These examples are designed for complex, real-world use cases.</p>
-          <div className='component-grid'>
-            <Link to='/headless/accessibility/form' className='component-card'>
+          <div className="component-grid">
+            <Link to="/headless/accessibility/form" className="component-card">
               <span>Form Demo</span>
             </Link>
-            <Link to='/headless/accessibility/aviation/ticketing' className='component-card'>
+            <Link to="/headless/accessibility/aviation/ticketing" className="component-card">
               <span>Ticketing Demo</span>
             </Link>
           </div>

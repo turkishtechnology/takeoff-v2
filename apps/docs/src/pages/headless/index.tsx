@@ -12,10 +12,10 @@ export default function Home() {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout title={`${siteConfig.title}`}>
-      <div className='home-container'>
-        <main className='home-main'>
-          <section className='home-section'>
-            <div className='home-content'>
+      <div className="home-container">
+        <main className="home-main">
+          <section className="home-section">
+            <div className="home-content">
               <LandingHeader />
               <LandingSubHeader />
               <Features />
