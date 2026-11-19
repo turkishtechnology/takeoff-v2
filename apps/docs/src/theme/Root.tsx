@@ -1,4 +1,7 @@
 import React, { useEffect } from 'react';
+import { useLocation } from '@docusaurus/router';
+import { HtmlClassNameProvider } from '@docusaurus/theme-common';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 // Sync Docusaurus dark mode (data-theme='dark') → our token system (data-scheme='dark')
 function SchemeSyncer() {
@@ -33,11 +36,21 @@ function SchemeSyncer() {
   return null;
 }
 
+// Every /headless route gets `headless-scope` on <html>; the Takeoff Headless styles
+// only match below it (see plugins/headless-scope.ts). Set during SSR too, so no flash.
+function HeadlessScope({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation();
+  const headlessBase = useBaseUrl('/headless');
+  const inHeadless = pathname === headlessBase || pathname.startsWith(`${headlessBase}/`);
+
+  return inHeadless ? <HtmlClassNameProvider className="headless-scope">{children}</HtmlClassNameProvider> : <>{children}</>;
+}
+
 export default function Root({ children }: { children: React.ReactNode }) {
   return (
     <>
       <SchemeSyncer />
-      {children}
+      <HeadlessScope>{children}</HeadlessScope>
     </>
   );
 }

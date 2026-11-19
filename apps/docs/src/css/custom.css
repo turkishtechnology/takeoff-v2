@@ -5,6 +5,12 @@
 @import './layout.css';
 @import './runway.css';
 
+/* Tailwind finds Infima's `container` class in the sources and generates its own
+   `container` utility. With @takeoff-design/tailwind's `--breakpoint-xs: 0px`
+   that utility sets `max-width: 0` below 600px, which collapsed every docs page
+   on phones. The site only uses Infima's container. */
+@source not inline("container");
+
 html {
   font-family: var(--ifm-font-family-base);
 }
