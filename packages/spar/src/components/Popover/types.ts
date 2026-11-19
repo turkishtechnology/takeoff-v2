@@ -1,0 +1,217 @@
+import type { ElementType, ReactNode, RefObject } from 'react';
+import type { Side, Align, PolymorphicProps } from '../../types';
+import type { ButtonOwnProps } from '../Button/types';
+import type { CloseButtonRenderProps } from '../../hooks/useCloseButton';
+
+/**
+ * Render props provided to PopoverTrigger children function
+ */
+export interface PopoverTriggerRenderProps {
+  /**
+   * Whether the popover is currently open
+   */
+  isOpen: boolean;
+  /**
+   * Whether the trigger is disabled
+   */
+  disabled: boolean;
+  /**
+   * Function to open the popover
+   */
+  open: () => void;
+  /**
+   * Function to close the popover
+   */
+  close: () => void;
+  /**
+   * Function to toggle the popover open/closed state
+   */
+  toggle: () => void;
+}
+
+/**
+ * Render props provided to PopoverClose children function
+ * @remarks Alias of {@link CloseButtonRenderProps} from useCloseButton
+ */
+export type PopoverCloseRenderProps = CloseButtonRenderProps;
+
+/**
+ * Props for Popover component
+ * @remarks Fully accessible, headless popover root container
+ */
+export interface PopoverProps {
+  /**
+   * Custom base ID for ARIA relationships.
+   * If not provided, one will be generated automatically.
+   * Sub-element IDs are derived as `${id}-trigger` and `${id}-content`.
+   */
+  id?: string;
+
+  /**
+   * Controlled state for popover visibility
+   */
+  open?: boolean;
+
+  /**
+   * Callback when popover open state changes
+   * @param open - The new open state
+   */
+  onOpenChange?: (open: boolean) => void;
+
+  /**
+   * Initial open state for uncontrolled mode
+   * @defaultValue false
+   */
+  defaultOpen?: boolean;
+
+  /**
+   * Whether popover should behave modally (focus trap + backdrop)
+   * @defaultValue false
+   */
+  modal?: boolean;
+
+  /**
+   * Disables all popover triggers (prevents opening)
+   * @defaultValue false
+   */
+  disabled?: boolean;
+
+  /**
+   * PopoverTrigger and PopoverContent components
+   */
+  children?: ReactNode;
+}
+
+/**
+ * Own props for PopoverTrigger component
+ */
+export interface PopoverTriggerOwnProps extends ButtonOwnProps {
+  /**
+   * Children content or render function for render props pattern
+   */
+  children?: ReactNode | ((state: PopoverTriggerRenderProps) => ReactNode);
+}
+
+/**
+ * Props for PopoverTrigger component
+ * @remarks Fully accessible, headless popover trigger
+ */
+export type PopoverTriggerProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, PopoverTriggerOwnProps>;
+
+/**
+ * Own props for PopoverContent component
+ */
+export interface PopoverContentOwnProps {
+  /**
+   * Side of trigger to position against
+   * @defaultValue 'bottom'
+   */
+  side?: Side;
+
+  /**
+   * Alignment relative to trigger
+   * @defaultValue 'center'
+   */
+  align?: Align;
+
+  /**
+   * Portal container element. Content is portaled to document.body by default.
+   * @defaultValue document.body
+   */
+  container?: HTMLElement | null;
+
+  /**
+   * Called when the popover opens, right before focus is moved into the content
+   * (first focusable element, otherwise the content element itself).
+   * @param event - A cancelable `openautofocus` event (call preventDefault to skip the auto-focus)
+   */
+  onOpenAutoFocus?: (event: Event) => void;
+
+  /**
+   * Called when popover closes and focus returns to trigger
+   * @param event - The focus event (call preventDefault to prevent focus restore)
+   */
+  onCloseAutoFocus?: (event: Event) => void;
+
+  /**
+   * Called when escape is pressed
+   * @param event - The keyboard event (call preventDefault to prevent close)
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+
+  /**
+   * Called when pointer down occurs outside the content
+   * @param event - The pointer event (call preventDefault to prevent close)
+   */
+  onPointerDownOutside?: (event: PointerEvent) => void;
+
+  /**
+   * Called when focus moves outside the content and trigger. Only fires while focus is not
+   * trapped (neither `modal` nor `trapFocus`).
+   * @param event - A cancelable `focusoutside` FocusEvent dispatched on the newly focused
+   * element (native `focusin` is not cancelable). `event.target` is the element that received
+   * focus. Call preventDefault to prevent close.
+   */
+  onFocusOutside?: (event: FocusEvent) => void;
+
+  /**
+   * Called when interaction occurs outside the content and trigger, after
+   * `onPointerDownOutside` / `onFocusOutside`.
+   * @param event - The `pointerdown` event, or the cancelable `focusoutside` FocusEvent
+   * described on `onFocusOutside` (call preventDefault to prevent close)
+   */
+  onInteractOutside?: (event: PointerEvent | FocusEvent) => void;
+
+  /**
+   * Whether to trap focus within content
+   * @defaultValue false
+   */
+  trapFocus?: boolean;
+}
+
+/**
+ * Props for PopoverContent component
+ * @remarks Fully accessible, headless popover content container
+ */
+export type PopoverContentProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, PopoverContentOwnProps>;
+
+/**
+ * Props for PopoverArrow component
+ * @remarks Purely decorative arrow element. Headless: user provides all visuals.
+ */
+export type PopoverArrowProps<T extends ElementType = 'svg'> = PolymorphicProps<'svg', T>;
+
+/**
+ * Own props for PopoverClose component
+ */
+export interface PopoverCloseOwnProps extends ButtonOwnProps {
+  /**
+   * Children content or render function for render props pattern
+   */
+  children?: ReactNode | ((state: PopoverCloseRenderProps) => ReactNode);
+}
+
+/**
+ * Props for PopoverClose component
+ * @remarks Close trigger that automatically closes the popover
+ */
+export type PopoverCloseProps<T extends ElementType = 'button'> = PolymorphicProps<'button', T, PopoverCloseOwnProps>;
+
+/**
+ * Context value for sharing popover state between components
+ * @internal
+ */
+export interface PopoverContextValue {
+  isOpen: boolean;
+  triggerId: string;
+  contentId: string;
+  triggerRef: RefObject<HTMLElement | null>;
+  contentRef: RefObject<HTMLDivElement | null>;
+  arrowRef: RefObject<Element | null>;
+  modal: boolean;
+  disabled: boolean;
+  openPopover: () => void;
+  closePopover: () => void;
+  togglePopover: () => void;
+  onOpenChange?: (open: boolean) => void;
+}

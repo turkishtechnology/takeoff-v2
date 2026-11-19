@@ -1,0 +1,104 @@
+import type { MouseEvent, KeyboardEvent, ElementType } from 'react';
+import { useBreadcrumbContext } from './hooks';
+import type { BreadcrumbLinkProps } from './types';
+
+const isActivationKey = (key: string): boolean => key === 'Enter' || key === ' ';
+
+/**
+ * Interactive link for breadcrumb navigation. Handles routing integration and accessibility states.
+ *
+ * Consumer `onClick` / `onKeyDown` handlers run first and are composed with the
+ * internal activation flow: calling `preventDefault()` in them skips `onPress`
+ * and `onNavigate`. A disabled link blocks only the activation keys (Enter and
+ * Space); every other key still reaches the consumer `onKeyDown`.
+ */
+export const BreadcrumbLink = <T extends ElementType = 'a'>({
+  as,
+  children,
+  href,
+  disabled = false,
+  isExternal = false,
+  target,
+  rel,
+  onPress,
+  onClick,
+  onKeyDown,
+  ...props
+}: BreadcrumbLinkProps<T>) => {
+  const Component = as || 'a';
+  const { disabled: rootDisabled, onNavigate } = useBreadcrumbContext();
+  const linkIsDisabled = disabled || rootDisabled;
+
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (linkIsDisabled) {
+      event.preventDefault();
+      return;
+    }
+
+    // Consumer handler first; a preventDefault there vetoes the press flow.
+    onClick?.(event);
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    if (onPress) {
+      onPress(event);
+      return;
+    }
+
+    if (onNavigate && href) {
+      event.preventDefault();
+      onNavigate(href, event);
+    }
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLAnchorElement>) => {
+    const isActivation = isActivationKey(event.key);
+
+    if (linkIsDisabled) {
+      // Block activation only; arrows, Escape, etc. still reach the consumer.
+      if (isActivation) {
+        event.preventDefault();
+        return;
+      }
+      onKeyDown?.(event);
+      return;
+    }
+
+    // Consumer handler first; a preventDefault there vetoes the press flow.
+    onKeyDown?.(event);
+    if (event.defaultPrevented || !isActivation) {
+      return;
+    }
+
+    // preventDefault stops the browser's synthesized click on Enter, which would
+    // otherwise run the press flow a second time through handleClick.
+    if (onPress) {
+      event.preventDefault();
+      onPress(event);
+      return;
+    }
+
+    if (onNavigate && href) {
+      event.preventDefault();
+      onNavigate(href, event);
+    }
+  };
+
+  const linkProps = {
+    ...props,
+    'href': linkIsDisabled ? undefined : href,
+    'target': isExternal ? target || '_blank' : target,
+    'rel': isExternal ? rel || 'noopener noreferrer' : rel,
+    'aria-disabled': linkIsDisabled || undefined,
+    'tabIndex': linkIsDisabled ? -1 : undefined,
+    'onClick': handleClick,
+    'onKeyDown': handleKeyDown,
+    'data-disabled': linkIsDisabled ? '' : undefined,
+    'data-external': isExternal ? '' : undefined,
+  };
+
+  return <Component {...linkProps}>{children}</Component>;
+};
+
+BreadcrumbLink.displayName = 'BreadcrumbLink';

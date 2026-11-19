@@ -1,0 +1,5 @@
+# Formatting-only commits. `git config blame.ignoreRevsFile .git-blame-ignore-revs`
+# makes local blame skip them; GitHub reads this file automatically.
+
+# style(spar): apply the workspace prettier config
+e41eeb1745356c9c863a45f0945383c1ebe71d31
