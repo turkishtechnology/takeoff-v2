@@ -17,7 +17,7 @@ interface Product {
 }
 
 const PRODUCTS: readonly Product[] = [
-  { id: 'react', label: 'Takeoff Spar', prefix: null, home: '/docs/', docs: '/docs/' },
+  { id: 'react', label: 'Takeoff React', prefix: null, home: '/docs/', docs: '/docs/' },
   { id: 'headless', label: 'Takeoff Headless', prefix: '/headless', home: '/headless', docs: '/headless/docs/introduction' },
   { id: 'icons', label: 'Takeoff Icons', prefix: '/icons', home: '/icons/', docs: '/icons/' },
 ];

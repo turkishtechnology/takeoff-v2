@@ -146,7 +146,7 @@ const config: Config = {
       },
       hideOnScroll: false,
       items: [
-        // Takeoff Spar · Takeoff Headless · Takeoff Icons, with the current product's version.
+        // Takeoff React · Takeoff Headless · Takeoff Icons, with the current product's version.
         {
           type: 'custom-productSwitcher',
           position: 'left',
