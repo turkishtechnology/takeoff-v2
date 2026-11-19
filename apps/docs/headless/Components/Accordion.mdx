@@ -1,0 +1,546 @@
+---
+title: Accordion
+description:
+  A headless accordion component that supports single and multiple panel
+  expansion with full keyboard navigation and accessibility.
+---
+
+import React from 'react';
+import LiveCode from '@site/src/components/headless/LiveCode';
+import AnatomyViewer from '@site/src/components/headless/AnatomyViewer/AnatomyViewer';
+import { Accordion } from '@turkish-technology/spar';
+
+# Accordion
+
+A collapsible content component that supports single or multiple panel expansion
+with keyboard navigation and full accessibility support.
+
+## Live Demo
+
+<div className='accordion-demo-container'>
+<LiveCode
+  code={`<div className='accordion-demo-container'>
+      <Accordion.Root className='accordion' defaultValue="2">
+        <Accordion.Item className='accordion-item' value="1">
+          <Accordion.Header className='accordion-header'>
+            <Accordion.Trigger className='accordion-trigger'>
+              <span className='accordion-icon'></span>
+              <span className='accordion-title'>Accordion</span>
+              <div className='accordion-expand'>
+                <svg className='accordion-expand-icon' xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M13.2292 7.49998L9.99583 10.7333L6.7625 7.49998C6.4375 7.17498 5.9125 7.17498 5.5875 7.49998C5.2625 7.82498 5.2625 8.34998 5.5875 8.67498L9.4125 12.5C9.7375 12.825 10.2625 12.825 10.5875 12.5L14.4125 8.67498C14.7375 8.34998 14.7375 7.82498 14.4125 7.49998C14.0875 7.18331 13.5542 7.17498 13.2292 7.49998Z"/>
+                </svg> 
+              </div>
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className='accordion-content'>
+            Accordion content can be customized to fit the surrounding interface.
+          </Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item className='accordion-item' value="2">
+          <Accordion.Header className='accordion-header'>
+            <Accordion.Trigger className='accordion-trigger'>
+              <span className='accordion-icon'></span>
+              <span className='accordion-title'>Accordion</span>
+              <div className='accordion-expand'>
+                <svg className='accordion-expand-icon' xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M13.2292 7.49998L9.99583 10.7333L6.7625 7.49998C6.4375 7.17498 5.9125 7.17498 5.5875 7.49998C5.2625 7.82498 5.2625 8.34998 5.5875 8.67498L9.4125 12.5C9.7375 12.825 10.2625 12.825 10.5875 12.5L14.4125 8.67498C14.7375 8.34998 14.7375 7.82498 14.4125 7.49998C14.0875 7.18331 13.5542 7.17498 13.2292 7.49998Z"/>
+                </svg> 
+              </div>
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className='accordion-content'>
+            Accordion content can be customized to fit the surrounding interface.
+          </Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item className='accordion-item' value="3">
+          <Accordion.Header className='accordion-header'>
+            <Accordion.Trigger className='accordion-trigger'>
+              <span className='accordion-icon'></span>
+              <span className='accordion-title'>Accordion</span>
+              <div className='accordion-expand'>
+               <svg className='accordion-expand-icon' xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M13.2292 7.49998L9.99583 10.7333L6.7625 7.49998C6.4375 7.17498 5.9125 7.17498 5.5875 7.49998C5.2625 7.82498 5.2625 8.34998 5.5875 8.67498L9.4125 12.5C9.7375 12.825 10.2625 12.825 10.5875 12.5L14.4125 8.67498C14.7375 8.34998 14.7375 7.82498 14.4125 7.49998C14.0875 7.18331 13.5542 7.17498 13.2292 7.49998Z"/>
+                </svg> 
+              </div>
+            </Accordion.Trigger> 
+          </Accordion.Header>
+          <Accordion.Content className='accordion-content'>
+            Accordion content can be customized to fit the surrounding interface.
+          </Accordion.Content>
+        </Accordion.Item>
+      </Accordion.Root>
+    </div>`}
+cssCode={`.accordion-demo-container .accordion {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.accordion-demo-container .accordion-header { margin-bottom: 0; border-radius:
+10px; }
+
+[data-theme='dark'] .accordion-demo-container .accordion-header { }
+
+.accordion-demo-container .accordion-trigger { width: 100%; height: 40px;
+display: flex; align-items: center; gap: 10px; padding: 0 12px; border: 1px
+solid #e1e4ea; border-radius: 10px; background: rgba(0, 0, 0, 0.08); color:
+#222530; font-size: 14px; line-height: 20px; box-sizing: border-box; }
+
+[data-theme='dark'] .accordion-demo-container .accordion-trigger { border-color:
+#2b303b; background: rgba(255, 255, 255, 0.12); color: #f2f5f8; }
+
+.accordion-demo-container .accordion-icon { width: 16px; height: 16px;
+border-radius: 4px; border: 1px solid #cacfd8; background: rgba(0, 0, 0, 0.72);
+}
+
+[data-theme='dark'] .accordion-demo-container .accordion-icon { border-color:
+#525866; background-color: rgba(255, 255, 255, 0.72); }
+
+.accordion-demo-container .accordion-title { color: #222530; font-size: 14px;
+line-height: 20px; font-weight: 500; }
+
+[data-theme='dark'] .accordion-demo-container .accordion-title { color: #f2f5f8;
+}
+
+.accordion-demo-container .accordion-expand { margin-left: auto; display: flex;
+align-items: center; transition: transform 0.2s ease-in-out; }
+
+.accordion-demo-container .accordion-item[data-state='open'] .accordion-expand {
+transform: rotate(180deg); }
+
+.accordion-demo-container .accordion-expand-icon { width: 16px; height: 16px;
+fill: #222530; }
+
+[data-theme='dark'] .accordion-demo-container .accordion-expand-icon { fill:
+#f2f5f8; }
+
+.accordion-demo-container .accordion-content { margin-top: 6px; padding: 12px;
+border-radius: 10px; border: 1px solid #e1e4ea; background: rgba(0, 0, 0, 0.04);
+color: #717784; font-size: 13px; line-height: 18px; }
+
+[data-theme='dark'] .accordion-demo-container .accordion-content { border-color:
+#2b303b; background: rgba(255, 255, 255, 0.08); color: #99a0ae; }`} />
+
+</div>
+
+The live demo shows a single-expand accordion with custom trigger content, an
+inline icon, and rotating chevron feedback.
+
+## Features
+
+- ✅ Single or multiple panel expansion modes
+- ✅ Controlled and uncontrolled state management
+- ✅ Optional collapsible behavior for single mode
+- ✅ Disabled state support for individual items or entire accordion
+- ✅ Semantic heading structure with configurable heading levels
+- ✅ Horizontal and vertical orientation support
+- ✅ Polymorphic component support with `as` prop
+- ✅ Force mount option for content preservation
+
+## Import
+
+```ts
+import { Accordion } from '@turkish-technology/spar';
+```
+
+---
+
+## Anatomy
+
+The Accordion component is built as a compound component with multiple parts:
+
+<AnatomyViewer
+  parts={[
+    { name: 'root', label: 'Root', description: 'Root context provider' },
+    { name: 'item', label: 'Item', description: 'Single collapsible section' },
+    {
+      name: 'header',
+      label: 'Header',
+      description: 'Semantic heading wrapper',
+    },
+    { name: 'trigger', label: 'Trigger', description: 'Toggle button' },
+    {
+      name: 'content',
+      label: 'Content',
+      description: 'Collapsible content panel',
+    },
+  ]}
+>
+  <div className="accordion-demo-container">
+    <Accordion.Root
+      className="accordion"
+      defaultValue="2"
+      data-spar-part="root"
+    >
+      <Accordion.Item
+        className="accordion-item"
+        value="1"
+        data-spar-part="item"
+      >
+        <Accordion.Header className="accordion-header" data-spar-part="header">
+          <Accordion.Trigger
+            className="accordion-trigger"
+            data-spar-part="trigger"
+          >
+            <span className="accordion-icon"></span>
+            <span className="accordion-title">{'Accordion'}</span>
+            <div className="accordion-expand">
+              <svg
+                className="accordion-expand-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+              >
+                <path d="M13.2292 7.49998L9.99583 10.7333L6.7625 7.49998C6.4375 7.17498 5.9125 7.17498 5.5875 7.49998C5.2625 7.82498 5.2625 8.34998 5.5875 8.67498L9.4125 12.5C9.7375 12.825 10.2625 12.825 10.5875 12.5L14.4125 8.67498C14.7375 8.34998 14.7375 7.82498 14.4125 7.49998C14.0875 7.18331 13.5542 7.17498 13.2292 7.49998Z" />
+              </svg>
+            </div>
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content
+          className="accordion-content"
+          data-spar-part="content"
+        >
+          {
+            'Accordion content can be customized to fit the surrounding interface.'
+          }
+        </Accordion.Content>
+      </Accordion.Item>
+      <Accordion.Item
+        className="accordion-item"
+        value="2"
+        data-spar-part="item"
+      >
+        <Accordion.Header className="accordion-header" data-spar-part="header">
+          <Accordion.Trigger
+            className="accordion-trigger"
+            data-spar-part="trigger"
+          >
+            <span className="accordion-icon"></span>
+            <span className="accordion-title">{'Accordion'}</span>
+            <div className="accordion-expand">
+              <svg
+                className="accordion-expand-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+              >
+                <path d="M13.2292 7.49998L9.99583 10.7333L6.7625 7.49998C6.4375 7.17498 5.9125 7.17498 5.5875 7.49998C5.2625 7.82498 5.2625 8.34998 5.5875 8.67498L9.4125 12.5C9.7375 12.825 10.2625 12.825 10.5875 12.5L14.4125 8.67498C14.7375 8.34998 14.7375 7.82498 14.4125 7.49998C14.0875 7.18331 13.5542 7.17498 13.2292 7.49998Z" />
+              </svg>
+            </div>
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content
+          className="accordion-content"
+          data-spar-part="content"
+        >
+          {
+            'Accordion content can be customized to fit the surrounding interface.'
+          }
+        </Accordion.Content>
+      </Accordion.Item>
+      <Accordion.Item
+        className="accordion-item"
+        value="3"
+        data-spar-part="item"
+      >
+        <Accordion.Header className="accordion-header" data-spar-part="header">
+          <Accordion.Trigger
+            className="accordion-trigger"
+            data-spar-part="trigger"
+          >
+            <span className="accordion-icon"></span>
+            <span className="accordion-title">{'Accordion'}</span>
+            <div className="accordion-expand">
+              <svg
+                className="accordion-expand-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+              >
+                <path d="M13.2292 7.49998L9.99583 10.7333L6.7625 7.49998C6.4375 7.17498 5.9125 7.17498 5.5875 7.49998C5.2625 7.82498 5.2625 8.34998 5.5875 8.67498L9.4125 12.5C9.7375 12.825 10.2625 12.825 10.5875 12.5L14.4125 8.67498C14.7375 8.34998 14.7375 7.82498 14.4125 7.49998C14.0875 7.18331 13.5542 7.17498 13.2292 7.49998Z" />
+              </svg>
+            </div>
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content
+          className="accordion-content"
+          data-spar-part="content"
+        >
+          {
+            'Accordion content can be customized to fit the surrounding interface.'
+          }
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion.Root>
+  </div>
+</AnatomyViewer>
+
+### Structure
+
+```tsx
+<Accordion.Root>
+  <Accordion.Item value="item-1">
+    <Accordion.Header>
+      <Accordion.Trigger>...</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>...</Accordion.Content>
+  </Accordion.Item>
+</Accordion.Root>
+```
+
+**Data Flow:**
+
+- `Accordion`: Root context provider that manages state
+- `Accordion.Item`: Represents a single collapsible section
+- `Accordion.Header`: Semantic heading wrapper for proper document structure
+- `Accordion.Trigger`: Button to toggle the item
+- `Accordion.Content`: Panel revealed when open
+
+---
+
+## Code Examples
+
+### Basic Single Panel Accordion
+
+Basic accordion that allows only one panel to be expanded at a time:
+
+```tsx
+export function BasicAccordion() {
+  return (
+    <Accordion.Root>
+      <Accordion.Item value="a">
+        <Accordion.Header>
+          <Accordion.Trigger>Toggle A</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>Panel A</Accordion.Content>
+      </Accordion.Item>
+      <Accordion.Item value="b">
+        <Accordion.Header>
+          <Accordion.Trigger>Toggle B</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>Panel B</Accordion.Content>
+      </Accordion.Item>
+    </Accordion.Root>
+  );
+}
+```
+
+### Multiple Panel Expansion
+
+Accordion that allows multiple panels to be expanded simultaneously:
+
+```tsx {1}
+<Accordion.Root multiple defaultValue={['a']}>
+  <Accordion.Item value="a">
+    <Accordion.Header>
+      <Accordion.Trigger>Section A</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>...</Accordion.Content>
+  </Accordion.Item>
+  <Accordion.Item value="b">
+    <Accordion.Header>
+      <Accordion.Trigger>Section B</Accordion.Trigger>
+    </Accordion.Header>
+    <Accordion.Content>...</Accordion.Content>
+  </Accordion.Item>
+</Accordion.Root>
+```
+
+### Controlled State Management
+
+Accordion with external state control and change handling:
+
+```tsx {1,3}
+const [openItems, setOpenItems] = React.useState<string[]>(['a']);
+
+<Accordion.Root multiple value={openItems} onValueChange={setOpenItems}>
+  {/* ...items */}
+</Accordion.Root>;
+```
+
+---
+
+## API Reference
+
+### Accordion / Accordion.Root
+
+The root container that provides context and manages the state for all accordion
+items within it. `Accordion` and `Accordion.Root` are the same component - the
+difference is only import/notation style.
+
+**Props**
+
+| Name             | Type                                                        | Default      | Description                                              |
+| ---------------- | ----------------------------------------------------------- | ------------ | -------------------------------------------------------- |
+| `multiple?`      | `boolean`                                                   | `false`      | Whether multiple panels can be expanded simultaneously   |
+| `collapsible?`   | `boolean`                                                   | `true`       | Whether panels can be collapsed (only for `single` mode) |
+| `value?`         | `string \| number \| (string \| number)[]`                  | `undefined`  | Controlled state - single value or array for multiple    |
+| `defaultValue?`  | `string \| number \| (string \| number)[]`                  | `undefined`  | Uncontrolled initial state                               |
+| `onValueChange?` | `(value: string \| number \| (string \| number)[]) => void` | `undefined`  | Callback when state changes                              |
+| `disabled?`      | `boolean`                                                   | `false`      | Disables all accordion items                             |
+| `orientation?`   | `"vertical" \| "horizontal"`                                | `"vertical"` | Orientation for keyboard navigation                      |
+| `as?`            | `React.ElementType`                                         | `"div"`      | Polymorphic component type                               |
+| `children`       | `React.ReactNode`                                           | -            | Accordion.Item components                                |
+
+**Events**
+
+| Name            | Parameters                    | Description                               | When Triggered                          |
+| --------------- | ----------------------------- | ----------------------------------------- | --------------------------------------- |
+| `onValueChange` | `(value: string \| string[])` | State changes when panels expand/collapse | User interaction or programmatic change |
+
+**HTML Attributes**
+
+| Attribute             | Value                        | Purpose                          |
+| --------------------- | ---------------------------- | -------------------------------- |
+| `data-orientation`    | `"vertical" \| "horizontal"` | Indicates navigation orientation |
+| `data-selection-mode` | `"single" \| "multiple"`     | Indicates the expansion mode     |
+
+### Accordion.Item
+
+Individual accordion item that contains a header and content panel.
+
+**Props**
+
+| Name        | Type                | Default     | Description                                                            |
+| ----------- | ------------------- | ----------- | ---------------------------------------------------------------------- |
+| `value`     | `string`            | -           | Unique identifier for the item                                         |
+| `id?`       | `string`            | `undefined` | Custom base ID for ARIA relationships; derives trigger and content IDs |
+| `disabled?` | `boolean`           | `false`     | Disables this specific item                                            |
+| `as?`       | `React.ElementType` | `"div"`     | Polymorphic component type                                             |
+| `children`  | `React.ReactNode`   | -           | Accordion.Header and Accordion.Content components                      |
+
+**Events**
+
+| Name | Parameters | Description                                 | When Triggered |
+| ---- | ---------- | ------------------------------------------- | -------------- |
+| None | -          | Item manages internal state through context | -              |
+
+**HTML Attributes**
+
+| Attribute       | Value                | Purpose                                  |
+| --------------- | -------------------- | ---------------------------------------- |
+| `data-state`    | `"open" \| "closed"` | Reflects the expansion state of the item |
+| `data-disabled` | `""`                 | Present when the item is disabled        |
+
+### Accordion.Header
+
+Semantic heading wrapper for the accordion trigger button.
+
+**Props**
+
+| Name       | Type                | Default | Description                                  |
+| ---------- | ------------------- | ------- | -------------------------------------------- |
+| `level?`   | `number`            | `3`     | Heading level (1-6) for document hierarchy   |
+| `as?`      | `React.ElementType` | `"h3"`  | Polymorphic component type (heading element) |
+| `children` | `React.ReactNode`   | -       | Accordion.Trigger component                  |
+
+**Events**
+
+| Name | Parameters | Description               | When Triggered |
+| ---- | ---------- | ------------------------- | -------------- |
+| None | -          | Header is purely semantic | -              |
+
+**HTML Attributes**
+
+| Attribute       | Value                | Purpose                                  |
+| --------------- | -------------------- | ---------------------------------------- |
+| `data-state`    | `"open" \| "closed"` | Reflects the expansion state of the item |
+| `data-level`    | `number`             | Reflects the rendered heading level      |
+| `data-disabled` | `""`                 | Present when the item is disabled        |
+
+### Accordion.Trigger
+
+Button that toggles the visibility of the associated content panel.
+
+**Props**
+
+| Name         | Type                                                                           | Default     | Description                              |
+| ------------ | ------------------------------------------------------------------------------ | ----------- | ---------------------------------------- |
+| `as?`        | `React.ElementType`                                                            | `"button"`  | Polymorphic component type               |
+| `children`   | `React.ReactNode \| ((state: AccordionTriggerRenderProps) => React.ReactNode)` | -           | Trigger content or render props function |
+| `onClick?`   | `(event: React.MouseEvent) => void`                                            | `undefined` | Custom click handler                     |
+| `onKeyDown?` | `(event: React.KeyboardEvent) => void`                                         | `undefined` | Custom keydown handler                   |
+
+**Render Props (AccordionTriggerRenderProps)**
+
+| Property   | Type         | Description                                            |
+| ---------- | ------------ | ------------------------------------------------------ |
+| `isOpen`   | `boolean`    | Whether the accordion item is currently expanded       |
+| `disabled` | `boolean`    | Whether the trigger is disabled                        |
+| `open`     | `() => void` | Function to programmatically open the accordion item   |
+| `close`    | `() => void` | Function to programmatically close the accordion item  |
+| `toggle`   | `() => void` | Function to programmatically toggle the accordion item |
+
+**Events**
+
+| Name        | Parameters                     | Description            | When Triggered         |
+| ----------- | ------------------------------ | ---------------------- | ---------------------- |
+| `onClick`   | `(event: React.MouseEvent)`    | Trigger clicked        | Mouse click on trigger |
+| `onKeyDown` | `(event: React.KeyboardEvent)` | Key pressed on trigger | Keyboard interaction   |
+
+**HTML Attributes**
+
+| Attribute                | Value                | Purpose                                                        |
+| ------------------------ | -------------------- | -------------------------------------------------------------- |
+| `id`                     | `string`             | Unique identifier matching the trigger element ARIA ID         |
+| `aria-expanded`          | `boolean`            | Indicates whether the associated panel is expanded             |
+| `aria-controls`          | `string`             | References the content panel element ID                        |
+| `data-state`             | `"open" \| "closed"` | Reflects the expansion state of the item                       |
+| `data-disabled`          | `""`                 | Present when the trigger is disabled                           |
+| `data-accordion-trigger` | `""`                 | Always present; identifies the element as an accordion trigger |
+| `data-value`             | `string`             | The value of the accordion item this trigger belongs to        |
+
+### Accordion.Content
+
+Collapsible panel containing the accordion item content.
+
+**Props**
+
+| Name             | Type                     | Default     | Description                                                   |
+| ---------------- | ------------------------ | ----------- | ------------------------------------------------------------- |
+| `forceMount?`    | `boolean`                | `false`     | Force content to remain mounted when collapsed                |
+| `onBeforeMatch?` | `(event: Event) => void` | `undefined` | Callback fired when content is found via browser Find command |
+| `as?`            | `React.ElementType`      | `"div"`     | Polymorphic component type                                    |
+| `children`       | `React.ReactNode`        | -           | Panel content                                                 |
+
+**Events**
+
+| Name            | Parameters       | Description                                                   | When Triggered                                                                        |
+| --------------- | ---------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `onBeforeMatch` | `(event: Event)` | Fired when hidden content is matched via browser Find command | Browser Find (`Ctrl+F`/`Cmd+F`) matches content inside a closed, `forceMount`ed panel |
+
+**HTML Attributes**
+
+| Attribute         | Value                   | Purpose                                                                                                |
+| ----------------- | ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| `id`              | `string`                | Unique identifier matching the content element ARIA ID                                                 |
+| `role`            | `"region"`              | Always present; marks the panel as a landmark region                                                   |
+| `aria-labelledby` | `string`                | References the trigger element that labels this panel                                                  |
+| `data-state`      | `"open" \| "closed"`    | Reflects the visibility state of the panel                                                             |
+| `data-disabled`   | `""`                    | Present when the item is disabled                                                                      |
+| `hidden`          | `true \| "until-found"` | Present when closed and `forceMount` is `true`; `"until-found"` in modern browsers, `true` as fallback |
+
+## Keyboard Interactions
+
+Complete keyboard behavior for the accordion component:
+
+| Key           | Action            | Context                      | Notes                                                                                    |
+| ------------- | ----------------- | ---------------------------- | ---------------------------------------------------------------------------------------- |
+| `Tab`         | Navigate          | Always                       | Moves focus to next focusable element in DOM order                                       |
+| `Shift + Tab` | Navigate backward | Always                       | Moves focus to previous focusable element                                                |
+| `Enter`       | Toggle panel      | Focused trigger              | Expands/collapses the associated panel                                                   |
+| `Space`       | Toggle panel      | Focused trigger              | Alternative activation method for triggers                                               |
+| `ArrowDown`   | Next trigger      | Focused trigger (vertical)   | Moves focus to the next enabled trigger in DOM order; wraps and skips disabled items     |
+| `ArrowUp`     | Previous trigger  | Focused trigger (vertical)   | Moves focus to the previous enabled trigger in DOM order; wraps and skips disabled items |
+| `ArrowRight`  | Next trigger      | Focused trigger (horizontal) | Moves focus to the next enabled trigger in DOM order; wraps and skips disabled items     |
+| `ArrowLeft`   | Previous trigger  | Focused trigger (horizontal) | Moves focus to the previous enabled trigger in DOM order; wraps and skips disabled items |
+| `Home`        | First trigger     | Focused trigger              | Moves focus to the first enabled trigger                                                 |
+| `End`         | Last trigger      | Focused trigger              | Moves focus to the last enabled trigger                                                  |

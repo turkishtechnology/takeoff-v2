@@ -4,7 +4,9 @@ import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import { themes as prismThemes } from 'prism-react-renderer';
 import reactSparPackage from '../../packages/react-spar/package.json';
+import sparPackage from '../../packages/spar/package.json';
 import tailwindPlugin from './plugins/tailwind';
+import headlessScopePlugin from './plugins/headless-scope';
 import packageChangelogsPlugin from './plugins/package-changelogs';
 
 function loadEnvFile(fileName: string): void {
@@ -50,6 +52,9 @@ if (!algoliaSearchApiKey) {
   console.warn('[docs] ALGOLIA_SEARCH_API_KEY is not set; building without Algolia search.');
 }
 
+// Takeoff Icons is consumed from npm; its version is the one installed for the docs.
+const iconsVersion = (JSON.parse(readFileSync(resolve(process.cwd(), 'node_modules/@takeoff-icons/core/package.json'), 'utf8')) as { version: string }).version;
+
 const config: Config = {
   title: 'Takeoff Spar',
   tagline: 'Product docs for the React-first Spar wrapper layer.',
@@ -58,6 +63,14 @@ const config: Config = {
   baseUrl: '/',
   stylesheets: ['https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap'],
   onBrokenLinks: 'throw',
+  customFields: {
+    // Shown next to the product name in the navbar switcher.
+    productVersions: {
+      react: reactSparPackage.version,
+      headless: sparPackage.version,
+      icons: iconsVersion,
+    },
+  },
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -77,13 +90,17 @@ const config: Config = {
           sidebarCollapsed: false,
         },
         theme: {
-          customCss: ['./src/css/custom.css'],
+          // headless/index.scss is scoped to /headless routes by plugins/headless-scope.ts.
+          customCss: ['./src/css/custom.css', './src/css/headless/index.scss'],
         },
       } satisfies Preset.Options,
     ],
   ],
   plugins: [
     tailwindPlugin,
+    // After tailwind: it replaces the PostCSS plugin list, this one appends to it.
+    headlessScopePlugin,
+    'docusaurus-plugin-sass',
     packageChangelogsPlugin,
     [
       '@docusaurus/plugin-content-docs',
@@ -93,6 +110,18 @@ const config: Config = {
         routeBasePath: 'icons',
         sidebarPath: './sidebars.icons.ts',
         sidebarCollapsed: false,
+      },
+    ],
+    [
+      // Takeoff Headless: the @turkish-technology/spar primitives, moved from the
+      // standalone Spar site (spar.app.turkishtechlab.com). Its landing and
+      // accessibility pages live in src/pages/headless.
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'headless',
+        path: 'headless',
+        routeBasePath: 'headless/docs',
+        sidebarPath: './sidebars.headless.ts',
       },
     ],
   ],
@@ -117,54 +146,24 @@ const config: Config = {
       },
       hideOnScroll: false,
       items: [
+        // Takeoff React · Takeoff Headless · Takeoff Icons, with the current product's version.
         {
-          type: 'html',
+          type: 'custom-productSwitcher',
           position: 'left',
-          value: `<span class="navbar__version-pill">v${reactSparPackage.version}</span>`,
         },
+        // The product's own links (Docs, Changelog, …), defined in src/components/ProductSwitcher.
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          type: 'custom-productNav',
           position: 'left',
-          label: 'Docs',
-        },
-        {
-          type: 'docSidebar',
-          sidebarId: 'iconsSidebar',
-          docsPluginId: 'icons',
-          position: 'left',
-          label: 'Icons',
-        },
-        {
-          to: '/changelog',
-          label: 'Changelog',
-          position: 'left',
-          activeBaseRegex: '^/changelog',
-        },
-        {
-          to: '/docs/ai-assistants',
-          label: 'AI assistants',
-          position: 'left',
-          activeBaseRegex: '^/docs/ai-assistants',
         },
         {
           type: 'search',
           position: 'right',
         },
+        // GitHub link and "Get started" button of the product being read.
         {
-          'href': 'https://github.com/turkishtechnology/takeoff-v2',
-          'position': 'right',
-          'label': 'GitHub',
-          'className': 'navbar__github-link',
-          'aria-label': 'GitHub repository',
-        },
-        // TODO(react-spar): swap this html item for a <Button variant="primary">
-        // once Docusaurus navbar items support React nodes (requires swizzling
-        // @theme/Navbar/Layout). Keeping as styled anchor for minimal-risk parity.
-        {
-          type: 'html',
+          type: 'custom-productActions',
           position: 'right',
-          value: '<a class="navbar__cta-primary" href="/docs/">Get started</a>',
         },
       ],
     },

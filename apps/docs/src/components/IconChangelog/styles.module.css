@@ -1,0 +1,113 @@
+/* Tiles use the same tokens as the icon gallery, so both pages read as one set. */
+
+.changelog {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  margin-top: 24px;
+}
+
+.release {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border-light);
+}
+
+.release:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.releaseHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.version {
+  margin: 0;
+}
+
+.date,
+.stats {
+  color: var(--text-base);
+  font-size: var(--desktop-body-s-size);
+  line-height: var(--desktop-body-s-line-height);
+}
+
+.stats {
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  height: 88px;
+  padding: 10px 6px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--static-light);
+  color: var(--text-darkest);
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.tile:hover {
+  color: var(--primary-base);
+  text-decoration: none;
+  box-shadow: var(--docs-shadow-card);
+  transform: translateY(-1px);
+}
+
+.glyph {
+  display: block;
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+.tileName {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.disclosure summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.names,
+.variants {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.variants li + li {
+  margin-top: 4px;
+}
