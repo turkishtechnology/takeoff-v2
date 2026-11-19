@@ -93,12 +93,15 @@ jobs:
           #   the Docusaurus runtime, not in the filesystem
           # - `spar\.app\.turkishtechlab\.com` — external host that times out
           #   intermittently from the CI runner
+          # - `npmjs\.com` — answers CI runners with 403 (bot protection), so a
+          #   valid package link fails; spar's README badges point there
           args: |
             --no-progress
             --root-dir ${{ github.workspace }}
             --exclude-path node_modules
             --exclude '/docs/'
             --exclude 'spar\.app\.turkishtechlab\.com'
+            --exclude 'npmjs\.com'
             './**/*.md'
             './**/*.mdx'
           fail: true
