@@ -1,5 +1,13 @@
 # @takeoff-ui/react-spar
 
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  [[`0cfccc1`](https://github.com/turkishtechnology/takeoff-v2/commit/0cfccc104ac1d1b0bad39014151fe5732829f064)]:
+  - @turkish-technology/spar@0.3.2
+
 ## 0.7.0
 
 ### Minor Changes
