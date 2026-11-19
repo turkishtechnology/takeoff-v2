@@ -1,5 +1,17 @@
 # @turkish-technology/spar
 
+## 0.3.2
+
+### Patch Changes
+
+- [#273](https://github.com/turkishtechnology/takeoff-v2/pull/273)
+  [`0cfccc1`](https://github.com/turkishtechnology/takeoff-v2/commit/0cfccc104ac1d1b0bad39014151fe5732829f064)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Spar is now developed
+  and published from the
+  [takeoff-v2](https://github.com/turkishtechnology/takeoff-v2/tree/develop/packages/spar)
+  repository. The package's `repository` field and its README links point there,
+  and the README's LICENSE link works again. No code changes.
+
 ## [0.3.1] - 2026-11-05
 
 ### Dialog, Popover, DropdownMenu, Select
