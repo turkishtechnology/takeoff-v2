@@ -32,7 +32,7 @@ export default function AIDriven() {
           <Translate description="Support for error-free and rapid development processes with artificial intelligence assistance">aidriven.description</Translate>
         </div>
       </div>
-      <Button className="aidriven-explore" onClick={() => window.open('https://github.com/turkishtechnology/spar', '_blank')}>
+      <Button className="aidriven-explore" onClick={() => window.open('https://github.com/turkishtechnology/spar/tree/develop/.github', '_blank')}>
         <div>
           <Translate description="Explore">aidriven.explore</Translate>
         </div>
