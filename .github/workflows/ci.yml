@@ -29,6 +29,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # spar and react-spar must load the same React. Two copies in the lockfile
+      # (even two patch versions) make every spar hook throw "Invalid hook call"
+      # in react-spar's tests. Fail here instead, with the fix in the message.
+      - name: Validate the lockfile is deduped (run `pnpm dedupe` to fix)
+        run: pnpm dedupe --check
+
       # react-spar resolves @turkish-technology/spar through the workspace, and
       # its types, tests and the docs API tables read spar's built dist. Build
       # that one package first; everything after this stays pure validation.
