@@ -151,41 +151,19 @@ const config: Config = {
           type: 'custom-productSwitcher',
           position: 'left',
         },
-        // Docs of the product being read.
+        // The product's own links (Docs, Changelog, …), defined in src/components/ProductSwitcher.
         {
-          type: 'custom-productDocs',
+          type: 'custom-productNav',
           position: 'left',
-        },
-        {
-          to: '/changelog',
-          label: 'Changelog',
-          position: 'left',
-          activeBaseRegex: '^/changelog',
-        },
-        {
-          to: '/docs/ai-assistants',
-          label: 'AI assistants',
-          position: 'left',
-          activeBaseRegex: '^/docs/ai-assistants',
         },
         {
           type: 'search',
           position: 'right',
         },
+        // GitHub link and "Get started" button of the product being read.
         {
-          'href': 'https://github.com/turkishtechnology/takeoff-v2',
-          'position': 'right',
-          'label': 'GitHub',
-          'className': 'navbar__github-link',
-          'aria-label': 'GitHub repository',
-        },
-        // TODO(react-spar): swap this html item for a <Button variant="primary">
-        // once Docusaurus navbar items support React nodes (requires swizzling
-        // @theme/Navbar/Layout). Keeping as styled anchor for minimal-risk parity.
-        {
-          type: 'html',
+          type: 'custom-productActions',
           position: 'right',
-          value: '<a class="navbar__cta-primary" href="/docs/">Get started</a>',
         },
       ],
     },

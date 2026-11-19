@@ -4,8 +4,18 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import DefaultNavbarItem from '@theme/NavbarItem/DefaultNavbarItem';
 import DropdownNavbarItem from '@theme/NavbarItem/DropdownNavbarItem';
+import HtmlNavbarItem from '@theme/NavbarItem/HtmlNavbarItem';
 
 type ProductId = 'react' | 'headless' | 'icons';
+
+/** A navbar link of one product: an in-site route (`to`) or an external page (`href`). */
+interface ProductLink {
+  label: string;
+  to?: string;
+  href?: string;
+  /** Marks the link active on matching routes; defaults to an exact `to` match. */
+  activeBaseRegex?: string;
+}
 
 interface Product {
   id: ProductId;
@@ -13,13 +23,54 @@ interface Product {
   /** Route prefix that belongs to the product; `null` for the default product, which owns everything else. */
   prefix: string | null;
   home: string;
-  docs: string;
+  /** The navbar links shown while this product is being read. */
+  links: readonly ProductLink[];
+  /** Where the product's source lives (the navbar GitHub link). */
+  repo: string;
+  /** Target of the navbar "Get started" button. */
+  getStarted: string;
 }
 
 const PRODUCTS: readonly Product[] = [
-  { id: 'react', label: 'Takeoff React', prefix: null, home: '/docs/', docs: '/docs/' },
-  { id: 'headless', label: 'Takeoff Headless', prefix: '/headless', home: '/headless', docs: '/headless/docs/introduction' },
-  { id: 'icons', label: 'Takeoff Icons', prefix: '/icons', home: '/icons/', docs: '/icons/' },
+  {
+    id: 'react',
+    label: 'Takeoff React',
+    prefix: null,
+    home: '/docs/',
+    links: [
+      { label: 'Docs', to: '/docs/', activeBaseRegex: '^/docs/(?!ai-assistants)' },
+      { label: 'Changelog', to: '/changelog', activeBaseRegex: '^/changelog' },
+      { label: 'AI assistants', to: '/docs/ai-assistants', activeBaseRegex: '^/docs/ai-assistants' },
+    ],
+    repo: 'https://github.com/turkishtechnology/takeoff-v2',
+    getStarted: '/docs/',
+  },
+  {
+    id: 'headless',
+    label: 'Takeoff Headless',
+    prefix: '/headless',
+    home: '/headless',
+    links: [
+      { label: 'Docs', to: '/headless/docs/introduction', activeBaseRegex: '^/headless/docs/(?!changelog)' },
+      { label: 'Accessibility', to: '/headless/accessibility', activeBaseRegex: '^/headless/accessibility' },
+      { label: 'Changelog', to: '/headless/docs/changelog', activeBaseRegex: '^/headless/docs/changelog' },
+    ],
+    repo: 'https://github.com/turkishtechnology/takeoff-v2/tree/develop/packages/spar',
+    getStarted: '/headless/docs/installation',
+  },
+  {
+    id: 'icons',
+    label: 'Takeoff Icons',
+    prefix: '/icons',
+    home: '/icons/',
+    links: [
+      { label: 'Docs', to: '/icons/', activeBaseRegex: '^/icons/' },
+      // Takeoff Icons is released from its own repository; its release notes live there.
+      { label: 'Changelog', href: 'https://github.com/turkishtechnology/takeoff-icons/releases' },
+    ],
+    repo: 'https://github.com/turkishtechnology/takeoff-icons',
+    getStarted: '/icons/installation',
+  },
 ];
 
 function useCurrentProduct(): Product {
@@ -68,10 +119,29 @@ export function ProductSwitcherNavbarItem({ mobile, position }: NavbarItemProps)
   );
 }
 
-/** "Docs" link that opens the docs of the product being read. */
-export function ProductDocsNavbarItem({ mobile, position }: NavbarItemProps) {
+/** The navbar links of the product being read: its docs plus product-specific pages. */
+export function ProductNavNavbarItem({ mobile, position }: NavbarItemProps) {
   const current = useCurrentProduct();
-  const docsBase = current.docs.replace(/[^/]*$/, '');
 
-  return <DefaultNavbarItem mobile={mobile} position={position} label="Docs" to={current.docs} activeBaseRegex={`^${docsBase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`} />;
+  return (
+    <>
+      {current.links.map(link => (
+        <DefaultNavbarItem key={link.label} mobile={mobile} position={position} label={link.label} to={link.to} href={link.href} activeBaseRegex={link.activeBaseRegex} />
+      ))}
+    </>
+  );
+}
+
+/** The right-hand GitHub link and "Get started" button, pointing at the product being read. */
+export function ProductActionsNavbarItem({ mobile }: NavbarItemProps) {
+  const current = useCurrentProduct();
+  const getStarted = useBaseUrl(current.getStarted);
+
+  return (
+    <>
+      <DefaultNavbarItem mobile={mobile} position="right" label="GitHub" href={current.repo} className="navbar__github-link" aria-label="GitHub repository" />
+      {/* Same markup the static html item rendered, so the existing .navbar__cta-primary styles apply. */}
+      <HtmlNavbarItem mobile={mobile} value={`<a class="navbar__cta-primary" href="${getStarted}">Get started</a>`} />
+    </>
+  );
 }
