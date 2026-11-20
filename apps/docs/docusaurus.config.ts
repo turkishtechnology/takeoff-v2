@@ -59,7 +59,9 @@ const config: Config = {
   title: 'Takeoff Spar',
   tagline: 'Product docs for the React-first Spar wrapper layer.',
   favicon: 'img/favicon.ico',
-  url: 'https://takeoff-v2.app.turkishtechlab.com',
+  // The AWS deploy (deploy-docs.yml) sets DOCS_SITE_URL so canonical links and the
+  // sitemap name the host the build is served from.
+  url: process.env.DOCS_SITE_URL || 'https://takeoff-v2.app.turkishtechlab.com',
   baseUrl: '/',
   stylesheets: ['https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap'],
   onBrokenLinks: 'throw',
