@@ -127,6 +127,11 @@ jobs:
       - name: Unit tests (tokens)
         run: pnpm --filter @takeoff-design/tokens test
 
+      # Synthesizes the docs hosting stack (no AWS access) and checks the
+      # CloudFront rewrite rule and the deploy role's trust policy.
+      - name: Unit tests (infra)
+        run: pnpm --filter infra test
+
       # ── Build runs codegen + package + site as preparation steps ──────────
       - name: Build (packages + docs site)
         run: pnpm turbo build
