@@ -395,8 +395,8 @@ render(<ClosableDemo />);
 
 ### Tabs {#tabs}
 
-See [Spar Tabs docs](https://spar.app.turkishtechlab.com/docs/Components/Tabs)
-for primitive behavior.
+See [Spar Tabs docs](https://v2.takeoffui.com/headless/docs/Components/Tabs) for
+primitive behavior.
 
 #### Props {#tabs-props}
 
@@ -422,8 +422,8 @@ for primitive behavior.
 
 ### Tabs.List {#tabs-list}
 
-See [Spar Tabs docs](https://spar.app.turkishtechlab.com/docs/Components/Tabs)
-for primitive behavior.
+See [Spar Tabs docs](https://v2.takeoffui.com/headless/docs/Components/Tabs) for
+primitive behavior.
 
 #### Data attributes {#tabs-list-data-attributes}
 
@@ -437,8 +437,8 @@ for primitive behavior.
 
 ### Tabs.Trigger {#tabs-trigger}
 
-See [Spar Tabs docs](https://spar.app.turkishtechlab.com/docs/Components/Tabs)
-for primitive behavior.
+See [Spar Tabs docs](https://v2.takeoffui.com/headless/docs/Components/Tabs) for
+primitive behavior.
 
 #### Data attributes {#tabs-trigger-data-attributes}
 
@@ -455,8 +455,8 @@ for primitive behavior.
 
 ### Tabs.Content {#tabs-content}
 
-See [Spar Tabs docs](https://spar.app.turkishtechlab.com/docs/Components/Tabs)
-for primitive behavior.
+See [Spar Tabs docs](https://v2.takeoffui.com/headless/docs/Components/Tabs) for
+primitive behavior.
 
 #### Data attributes {#tabs-content-data-attributes}
 

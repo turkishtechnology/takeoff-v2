@@ -355,8 +355,7 @@ render(<SwitchFormDemo />);
 
 ### Switch {#switch}
 
-See
-[Spar Switch docs](https://spar.app.turkishtechlab.com/docs/Components/Switch)
+See [Spar Switch docs](https://v2.takeoffui.com/headless/docs/Components/Switch)
 for primitive behavior.
 
 #### Props {#switch-props}
@@ -387,8 +386,7 @@ for primitive behavior.
 
 ### Switch.Indicator {#switch-indicator}
 
-See
-[Spar Switch docs](https://spar.app.turkishtechlab.com/docs/Components/Switch)
+See [Spar Switch docs](https://v2.takeoffui.com/headless/docs/Components/Switch)
 for primitive behavior.
 
 #### Data attributes {#switch-indicator-data-attributes}

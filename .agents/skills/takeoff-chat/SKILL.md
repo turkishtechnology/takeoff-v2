@@ -398,5 +398,5 @@ Empty strings fall back to the English default, so no control loses its name.
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/components/chat
+- Live docs: https://v2.takeoffui.com/docs/components/chat
 - Source: `packages/react-spar/src/components/chat/`

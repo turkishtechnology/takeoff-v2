@@ -7,7 +7,7 @@
  */
 
 const accordionTypesFile = 'packages/react-spar/src/components/accordion/types.ts';
-const sparAccordionDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Accordion';
+const sparAccordionDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Accordion';
 
 const childrenOverride = description => ({
   type: 'React.ReactNode',

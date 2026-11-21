@@ -212,8 +212,8 @@ Full props, events, data attributes & type definitions: see
 
 - Full component docs: `references/full-docs.md`
 - Forms guides (where Field is documented):
-  https://takeoff-v2.app.turkishtechlab.com/docs/forms/react-hook-form and
-  https://takeoff-v2.app.turkishtechlab.com/docs/forms/tanstack-form
+  https://v2.takeoffui.com/docs/forms/react-hook-form and
+  https://v2.takeoffui.com/docs/forms/tanstack-form
 - Source: `packages/react-spar/src/components/field/`
 - Spar primitive: `Field` (`@turkish-technology/spar`)
 </content>

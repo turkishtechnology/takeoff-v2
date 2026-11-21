@@ -7,7 +7,7 @@
  */
 
 const breadcrumbTypesFile = 'packages/react-spar/src/components/breadcrumb/types.ts';
-const sparBreadcrumbDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Breadcrumb';
+const sparBreadcrumbDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Breadcrumb';
 
 const childrenOverride = description => ({
   type: 'React.ReactNode',

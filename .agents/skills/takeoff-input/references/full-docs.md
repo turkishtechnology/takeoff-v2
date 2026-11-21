@@ -484,7 +484,7 @@ render(<SearchTemplate />);
 
 ### Input {#input}
 
-See [Spar Input docs](https://spar.app.turkishtechlab.com/docs/Components/Input)
+See [Spar Input docs](https://v2.takeoffui.com/headless/docs/Components/Input)
 for primitive behavior.
 
 #### Props {#input-props}
@@ -516,7 +516,7 @@ for primitive behavior.
 
 ### Input.Field {#input-field}
 
-See [Spar Input docs](https://spar.app.turkishtechlab.com/docs/Components/Input)
+See [Spar Input docs](https://v2.takeoffui.com/headless/docs/Components/Input)
 for primitive behavior.
 
 #### Props {#input-field-props}

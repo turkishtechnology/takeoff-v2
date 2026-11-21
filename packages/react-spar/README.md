@@ -55,9 +55,9 @@ parts (`Dialog.Panel`, `Drawer.Overlay`, `Tooltip.Content`, etc.).
 
 ## Reference
 
-- Spar documentation: https://spar.app.turkishtechlab.com/
+- Spar documentation: https://v2.takeoffui.com/headless/
 - Spar Accordion reference:
-  https://spar.app.turkishtechlab.com/docs/Components/Accordion
+  https://v2.takeoffui.com/headless/docs/Components/Accordion
 
 ## Install
 
@@ -104,10 +104,10 @@ slot/customization model).
 
 For full API context, point the assistant at the Markdown docs — every page is
 available by appending `.md` to its URL, and the whole library is at
-[`/llms-full.txt`](https://takeoff-v2.app.turkishtechlab.com/llms-full.txt).
+[`/llms-full.txt`](https://v2.takeoffui.com/llms-full.txt).
 
 Full guide, including tool-specific paths:
-https://takeoff-v2.app.turkishtechlab.com/docs/ai-assistants
+https://v2.takeoffui.com/docs/ai-assistants
 
 ## Usage
 

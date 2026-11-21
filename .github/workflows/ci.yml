@@ -97,17 +97,19 @@ jobs:
           # Excludes:
           # - `/docs/` — Docusaurus root-relative links that only resolve in
           #   the Docusaurus runtime, not in the filesystem
-          # - `spar\.app\.turkishtechlab\.com` — external host that times out
-          #   intermittently from the CI runner
           # - `npmjs\.com` — answers CI runners with 403 (bot protection), so a
           #   valid package link fails; spar's README badges point there
+          # - this repo's `/commit/<sha>` and `/pull/<n>` links — Changesets
+          #   writes hundreds of them into the CHANGELOGs, and github.com
+          #   answers a burst of requests with 503, failing every release PR
+          #   on links that cannot break
           args: |
             --no-progress
             --root-dir ${{ github.workspace }}
             --exclude-path node_modules
             --exclude '/docs/'
-            --exclude 'spar\.app\.turkishtechlab\.com'
             --exclude 'npmjs\.com'
+            --exclude 'github\.com/turkishtechnology/takeoff-v2/(commit|pull)/'
             './**/*.md'
             './**/*.mdx'
           fail: true

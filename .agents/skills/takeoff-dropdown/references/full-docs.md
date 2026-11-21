@@ -470,7 +470,7 @@ render(<ScrollingDemo />);
 ### Dropdown {#dropdown}
 
 See
-[Spar DropdownMenu docs](https://spar.app.turkishtechlab.com/docs/Components/DropdownMenu)
+[Spar DropdownMenu docs](https://v2.takeoffui.com/headless/docs/Components/DropdownMenu)
 for primitive behavior.
 
 #### Props {#dropdown-props}
