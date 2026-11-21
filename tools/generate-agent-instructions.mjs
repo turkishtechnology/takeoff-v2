@@ -41,7 +41,7 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, '..');
 const skillsDir = join(repoRoot, '.agents/skills');
 
-const DOCS_URL = 'https://takeoff-v2.app.turkishtechlab.com';
+const DOCS_URL = 'https://v2.takeoffui.com';
 const NON_COMPONENT_SKILLS = new Set(['takeoff-ui', 'takeoff-component-workflow']);
 
 const MIGRATION_SKILL = 'migrate-takeoff-v1';

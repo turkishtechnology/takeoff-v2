@@ -7,7 +7,7 @@
  */
 
 const buttonTypesFile = 'packages/react-spar/src/components/button/types.ts';
-const sparButtonDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Button';
+const sparButtonDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Button';
 
 const childrenOverride = description => ({
   type: 'React.ReactNode',

@@ -7,7 +7,7 @@
  */
 
 const tabsTypesFile = 'packages/react-spar/src/components/tabs/types.ts';
-const sparTabsDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Tabs';
+const sparTabsDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Tabs';
 
 const classNameOverride = {
   type: 'string',

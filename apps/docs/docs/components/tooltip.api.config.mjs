@@ -7,7 +7,7 @@
  */
 
 const tooltipTypesFile = 'packages/react-spar/src/components/tooltip/types.ts';
-const sparTooltipDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Tooltip';
+const sparTooltipDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Tooltip';
 
 export default {
   components: [

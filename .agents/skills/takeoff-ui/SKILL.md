@@ -135,7 +135,6 @@ Patterns in `references/forms-react-hook-form.md` and
 - Components index: `references/components-index.md`
 - Composition & styling: `references/composition-styling.md`
 - Theming: `references/theming.md`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/
-- LLM corpus: https://takeoff-v2.app.turkishtechlab.com/llms.txt (and
-  `/llms-full.txt`)
+- Live docs: https://v2.takeoffui.com/docs/
+- LLM corpus: https://v2.takeoffui.com/llms.txt (and `/llms-full.txt`)
 - Source: `packages/react-spar/`

@@ -24,7 +24,7 @@ bun add @turkish-technology/spar
 ## Documentation
 
 For full documentation, visit
-[Documentation Guide](https://spar.app.turkishtechlab.com/).
+[Documentation Guide](https://v2.takeoffui.com/headless/).
 
 ## Contributing
 
