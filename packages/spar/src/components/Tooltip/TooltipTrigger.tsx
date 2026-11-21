@@ -1,0 +1,185 @@
+import React, { useRef, useEffect, useCallback, ElementType } from 'react';
+import { useMergedRef, useDocumentEvent } from '@/hooks';
+import type { TooltipTriggerProps, TooltipTriggerRenderProps } from './types';
+import { useTooltipContext, useTooltipProviderContext } from './hooks';
+import { Button } from '../Button';
+import type { ButtonProps } from '../Button/types';
+
+/**
+ * The trigger element that shows/hides the tooltip on hover or focus
+ */
+export const TooltipTrigger = <T extends ElementType = 'button'>({
+  children,
+  as,
+  onPointerEnter,
+  onPointerLeave,
+  onFocus,
+  onBlur,
+  onKeyDown,
+  ref,
+  ...props
+}: TooltipTriggerProps<T>) => {
+  const context = useTooltipContext();
+  const provider = useTooltipProviderContext();
+  const showTimeoutRef = useRef<number | null>(null);
+
+  const mergedRef = useMergedRef(context.triggerRef, ref);
+
+  // Clear timeouts
+  const clearTimeouts = useCallback(() => {
+    if (showTimeoutRef.current) {
+      clearTimeout(showTimeoutRef.current);
+      showTimeoutRef.current = null;
+    }
+    context.cancelHideTimer();
+  }, [context]);
+
+  // Show tooltip with delay
+  const showTooltip = useCallback(
+    (immediate = false) => {
+      clearTimeouts();
+
+      const delay = immediate || provider?.skipDelay ? 0 : context.delay;
+
+      showTimeoutRef.current = window.setTimeout(() => {
+        context.onOpenChange(true);
+        provider?.setSkipDelay?.(true);
+      }, delay);
+    },
+    [clearTimeouts, provider, context],
+  );
+
+  // Hide tooltip with delay
+  const hideTooltip = useCallback(
+    (immediate = false) => {
+      clearTimeouts();
+
+      const delay = immediate ? 0 : context.hideDelay;
+
+      context.startHideTimer(delay, () => {
+        context.onOpenChange(false);
+        provider?.setSkipDelay?.(false);
+      });
+    },
+    [clearTimeouts, context, provider],
+  );
+
+  // Event handlers
+  const handlePointerEnter = useCallback(
+    (event: React.PointerEvent<HTMLElement>) => {
+      showTooltip();
+      onPointerEnter?.(event as React.PointerEvent<HTMLButtonElement>);
+    },
+    [showTooltip, onPointerEnter],
+  );
+
+  const handlePointerLeave = useCallback(
+    (event: React.PointerEvent<HTMLElement>) => {
+      hideTooltip();
+      onPointerLeave?.(event as React.PointerEvent<HTMLButtonElement>);
+    },
+    [hideTooltip, onPointerLeave],
+  );
+
+  const handleFocus = useCallback(
+    (event: React.FocusEvent<HTMLElement>) => {
+      showTooltip();
+      onFocus?.(event as React.FocusEvent<HTMLButtonElement>);
+    },
+    [showTooltip, onFocus],
+  );
+
+  const handleBlur = useCallback(
+    (event: React.FocusEvent<HTMLElement>) => {
+      hideTooltip(true); // Immediate on blur
+      onBlur?.(event as React.FocusEvent<HTMLButtonElement>);
+    },
+    [hideTooltip, onBlur],
+  );
+
+  // Shared Escape dismissal: consult TooltipContent's onEscapeKeyDown first and honour
+  // its veto (read from the same native event the consumer received), then close.
+  const dismissOnEscape = useCallback(
+    (nativeEvent: KeyboardEvent) => {
+      context.onEscapeKeyDownRef.current?.(nativeEvent);
+      if (nativeEvent.defaultPrevented) return;
+
+      nativeEvent.preventDefault();
+      nativeEvent.stopPropagation();
+      clearTimeouts();
+      context.onOpenChange(false);
+      // Keep focus on trigger
+      context.triggerRef.current?.focus();
+    },
+    [context, clearTimeouts],
+  );
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLElement>) => {
+      onKeyDown?.(event as React.KeyboardEvent<HTMLButtonElement>);
+      if (event.defaultPrevented) return;
+
+      // While open the document-level capture handler below normally runs first; when it
+      // was vetoed the native event is already defaultPrevented, so skip a second call.
+      if (event.key === 'Escape' && context.isOpen && !event.nativeEvent.defaultPrevented) {
+        dismissOnEscape(event.nativeEvent);
+      }
+    },
+    [onKeyDown, context.isOpen, dismissOnEscape],
+  );
+
+  // Global escape key handler for better accessibility
+  const handleGlobalKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+
+      // Check if the event originated from tooltip content
+      const target = event.target as HTMLElement;
+      const tooltipContent = context.contentRef.current;
+
+      // If the event came from tooltip content, let the content handle it
+      if (tooltipContent && (target === tooltipContent || tooltipContent.contains(target))) {
+        return;
+      }
+
+      dismissOnEscape(event);
+    },
+    [context, dismissOnEscape],
+  );
+
+  useDocumentEvent('keydown', handleGlobalKeyDown, context.isOpen, true);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      clearTimeouts();
+    };
+  }, [clearTimeouts]);
+
+  // Render props for children function
+  const renderProps: TooltipTriggerRenderProps = {
+    isOpen: context.isOpen,
+    disabled: context.disabled,
+    show: () => showTooltip(true),
+    hide: () => hideTooltip(true),
+  };
+
+  const buttonProps = {
+    ...(as && { as }),
+    'ref': mergedRef,
+    'id': context.triggerId,
+    'disabled': context.disabled,
+    'aria-describedby': context.isOpen && !context.disabled ? context.contentId : undefined,
+    'data-state': context.isOpen ? 'open' : 'closed',
+    'onPointerEnter': context.disabled ? undefined : handlePointerEnter,
+    'onPointerLeave': context.disabled ? undefined : handlePointerLeave,
+    'onFocus': context.disabled ? undefined : handleFocus,
+    'onBlur': context.disabled ? undefined : handleBlur,
+    'onKeyDown': context.disabled ? undefined : handleKeyDown,
+    ...props,
+  } as ButtonProps<T>;
+
+  return <Button {...buttonProps}>{typeof children === 'function' ? children(renderProps) : children}</Button>;
+};
+
+TooltipTrigger.displayName = 'TooltipTrigger';

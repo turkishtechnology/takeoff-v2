@@ -41,6 +41,7 @@ const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const DOCS_APP_DIR = resolve(SCRIPT_DIR, '..');
 const DOCS_DIR = join(DOCS_APP_DIR, 'docs');
 const ICONS_DIR = join(DOCS_APP_DIR, 'icons');
+const HEADLESS_DIR = join(DOCS_APP_DIR, 'headless');
 const STATIC_DIR = join(DOCS_APP_DIR, 'static');
 const CONFIG_FILE = join(DOCS_APP_DIR, 'docusaurus.config.ts');
 const SKILLS_DIR = resolve(DOCS_APP_DIR, '../../.agents/skills');
@@ -58,6 +59,7 @@ const ROUTE_BASE = '/docs';
 const DOC_TREES = [
   { dir: DOCS_DIR, routeBase: ROUTE_BASE, staticSubdir: 'docs' },
   { dir: ICONS_DIR, routeBase: '/icons', staticSubdir: 'icons', section: 'Icons' },
+  { dir: HEADLESS_DIR, routeBase: '/headless/docs', staticSubdir: 'headless', section: 'Takeoff Headless' },
 ];
 
 /**

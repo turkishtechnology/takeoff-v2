@@ -1,0 +1,27 @@
+{
+  "name": "infra",
+  "private": true,
+  "version": "0.0.0",
+  "description": "AWS infrastructure for the docs site (CDK): S3 + CloudFront + GitHub deploy role",
+  "type": "module",
+  "scripts": {
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "diff": "cdk diff",
+    "deploy": "cdk deploy --require-approval broadening --outputs-file cdk-outputs.json",
+    "publish-site": "bash scripts/publish-site.sh",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.277.0",
+    "constructs": "^10.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "aws-cdk": "^2.1149.0",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3"
+  }
+}

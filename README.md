@@ -7,7 +7,9 @@ Monorepo for `@takeoff-ui/react-spar` — a React 19 component library that wrap
 
 - This codebase targets `takeoff-spar` only.
 - `takeoff-ui` (Stencil) is a parity reference, not a build dependency.
-- `@turkish-technology/spar` is the sole external runtime primitive.
+- `@turkish-technology/spar` is the sole runtime primitive. It lives in this
+  workspace as `packages/spar` and is linked into react-spar with `workspace:*`,
+  so react-spar still pins the exact spar version it ships with.
 - Tokens, icons, fonts, reset, recipes, and global styles are consumed from
   `@takeoff-design/tokens`, which `@takeoff-ui/react-spar` declares as an
   **exact-pinned peer dependency** — consumers install both packages directly
@@ -32,6 +34,8 @@ Monorepo for `@takeoff-ui/react-spar` — a React 19 component library that wrap
 ## Workspace
 
 - `packages/react-spar` — `@takeoff-ui/react-spar`, the published package
+- `packages/spar` — `@turkish-technology/spar`, the headless primitives
+  react-spar wraps (moved here from `turkishtechnology/spar` with its history)
 - `apps/docs` — Docusaurus site for public docs and component demos
 - `.agents/skills` — repo-local skills (per-component usage skills, component
   workflow, changelog)
@@ -90,11 +94,11 @@ steps**. CI calls each by name so the log makes the intent obvious.
 
 | Command                                              | Guarantee                                                                                                                                                                                                          |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `pnpm check-types`                                   | Pure. Each package runs `tsc --noEmit` only — no codegen, no package builds.                                                                                                                                       |
+| `pnpm check-types`                                   | Each package runs `tsc --noEmit`. Turbo builds upstream workspace packages first, because react-spar's types read spar's built `dist`.                                                                             |
 | `pnpm lint`                                          | Pure. Each package runs `eslint .` only.                                                                                                                                                                           |
-| `pnpm --filter @takeoff-ui/react-spar test`          | Pure. Vitest. Reads source files; no upstream build required.                                                                                                                                                      |
+| `pnpm --filter @takeoff-ui/react-spar test`          | Vitest. Reads react-spar source, and spar through its built `dist`: run `pnpm turbo build --filter=@turkish-technology/spar` once first (turbo's `test` task does it for you).                                     |
 | `pnpm --filter @takeoff-ui/react-spar test:coverage` | The same run with V8 coverage. Fails when coverage drops below the thresholds in `packages/react-spar/vitest.config.ts`. This is the variant CI runs.                                                              |
-| `pnpm test`                                          | Every package's `test` script via turbo (react-spar and tokens). The tokens build-tokens test runs its own build first, so no `pnpm build` is needed.                                                              |
+| `pnpm test`                                          | Every package's `test` script via turbo (spar with Jest, react-spar and tokens with Vitest), after building upstream workspace packages.                                                                           |
 | `pnpm --filter docs verify:generated-api`            | Doc-integrity gate. Re-runs the docs API codegen and fails CI if it changes any tracked file in `apps/docs/src/docs-files`.                                                                                        |
 | `pnpm build`                                         | Builds packages then the docs site (turbo respects `^build`). The docs `prebuild` hook runs `generate:api` and rebuilds `@takeoff-ui/react-spar` so a direct `pnpm --filter docs build` still works without turbo. |
 | `pnpm dev:docs`                                      | Dev server. The docs `predev` hook performs the same prep as `prebuild`.                                                                                                                                           |

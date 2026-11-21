@@ -14,6 +14,10 @@
   - changed-files:
       - any-glob-to-any-file: "packages/tailwind/**"
 
+"area:spar":
+  - changed-files:
+      - any-glob-to-any-file: "packages/spar/**"
+
 "area:docs":
   - changed-files:
       - any-glob-to-any-file: "apps/docs/**"

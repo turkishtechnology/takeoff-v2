@@ -29,7 +29,19 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # ── Pure validation boundaries: no codegen, no package builds ─────────
+      # spar and react-spar must load the same React. Two copies in the lockfile
+      # (even two patch versions) make every spar hook throw "Invalid hook call"
+      # in react-spar's tests. Fail here instead, with the fix in the message.
+      - name: Validate the lockfile is deduped (run `pnpm dedupe` to fix)
+        run: pnpm dedupe --check
+
+      # react-spar resolves @turkish-technology/spar through the workspace, and
+      # its types, tests and the docs API tables read spar's built dist. Build
+      # that one package first; everything after this stays pure validation.
+      - name: Build spar (react-spar reads its dist)
+        run: pnpm turbo build --filter=@turkish-technology/spar
+
+      # ── Pure validation boundaries: no codegen, no other package builds ───
       - name: Validate types (pure tsc --noEmit)
         run: pnpm turbo check-types
 
@@ -64,6 +76,12 @@ jobs:
       - name: Validate docs API tables are in sync
         run: pnpm --filter docs gen:api:check
 
+      # The Takeoff Icons changelog is generated from the published packages
+      # (it needs the network, so it is committed). Fail when the docs install a
+      # newer @takeoff-icons version than the changelog covers.
+      - name: Validate the icons changelog covers the installed version
+        run: pnpm --filter docs gen:icons-changelog:check
+
       - name: Validate markdown link integrity
         uses: lycheeverse/lychee-action@v2
         with:
@@ -81,12 +99,15 @@ jobs:
           #   the Docusaurus runtime, not in the filesystem
           # - `spar\.app\.turkishtechlab\.com` — external host that times out
           #   intermittently from the CI runner
+          # - `npmjs\.com` — answers CI runners with 403 (bot protection), so a
+          #   valid package link fails; spar's README badges point there
           args: |
             --no-progress
             --root-dir ${{ github.workspace }}
             --exclude-path node_modules
             --exclude '/docs/'
             --exclude 'spar\.app\.turkishtechlab\.com'
+            --exclude 'npmjs\.com'
             './**/*.md'
             './**/*.mdx'
           fail: true
@@ -100,8 +121,16 @@ jobs:
       - name: Unit tests (react-spar, with coverage thresholds)
         run: pnpm --filter @takeoff-ui/react-spar test:coverage
 
+      - name: Unit tests (spar)
+        run: pnpm --filter @turkish-technology/spar test
+
       - name: Unit tests (tokens)
         run: pnpm --filter @takeoff-design/tokens test
+
+      # Synthesizes the docs hosting stack (no AWS access) and checks the
+      # CloudFront rewrite rule and the deploy role's trust policy.
+      - name: Unit tests (infra)
+        run: pnpm --filter infra test
 
       # ── Build runs codegen + package + site as preparation steps ──────────
       - name: Build (packages + docs site)

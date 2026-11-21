@@ -375,6 +375,18 @@ function generateDarkScss(tokens, selector) {
 // Tailwind Module Generation
 // ---------------------------------------------------------------------------
 
+/**
+ * Breakpoint tokens Tailwind should know about. Tailwind breakpoints are
+ * min-width queries, so a `0px` one (`xs`, the start of the compact range)
+ * matches every screen: its `xs:` variant does nothing, and the `container`
+ * utility turns it into `max-width: 0px` below the next breakpoint, which
+ * collapses a container to nothing on phones. The token itself stays in the
+ * CSS/SCSS/JS outputs.
+ */
+function tailwindBreakpoints(tokens) {
+  return tokens.filter(t => t.path[0] === 'breakpoint' && Number.parseFloat(String(t.$value)) > 0);
+}
+
 function writeTWModule(fileName, entries, options = {}) {
   const lines = entries.map(([key, val]) => {
     const property = options.quoteKeys === false && /^[$A-Z_a-z][$\w]*$/.test(key) ? key : `'${key}'`;
@@ -419,7 +431,7 @@ function generateTailwindModules(tokens) {
   );
 
   // screens.js
-  const bpTokens = tokens.filter(t => t.path[0] === 'breakpoint');
+  const bpTokens = tailwindBreakpoints(tokens);
   writeTWModule(
     TAILWIND_OUTPUT.v3ThemeFiles.screens,
     bpTokens.map(t => [t.name.replace('breakpoint-', ''), String(t.$value)]),
@@ -623,7 +635,7 @@ function generateTailwindV4Theme(tokens) {
   }
 
   // Breakpoints → --breakpoint-{key} (static values, not var refs)
-  const bps = tokens.filter(t => t.path[0] === 'breakpoint');
+  const bps = tailwindBreakpoints(tokens);
   lines.push('');
   lines.push('  /* Breakpoints */');
   for (const t of bps) {

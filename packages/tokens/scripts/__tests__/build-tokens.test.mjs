@@ -73,6 +73,18 @@ describe('build-tokens.mjs integration', () => {
     expect(screens).toMatch(/md: '\d+px'/);
   });
 
+  // A 0px breakpoint is a no-op variant, and Tailwind's `container` turns it into
+  // `max-width: 0px` on phones. Tailwind gets every breakpoint above zero.
+  it('leaves zero-width breakpoints out of the Tailwind outputs', () => {
+    const screens = readDist('tailwind', TAILWIND_OUTPUT.v3ThemeFiles.screens);
+    const theme = readDist('tailwind', TAILWIND_OUTPUT.v4ThemeFile);
+
+    expect(screens).not.toMatch(/xs:/);
+    expect(screens).toMatch(/sm: '600px'/);
+    expect(theme).not.toContain('--breakpoint-xs');
+    expect(theme).toContain('--breakpoint-sm: 600px;');
+  });
+
   it('generates responsive typography classes from real build output', () => {
     const typography = readDist('tailwind', TAILWIND_OUTPUT.v3ComponentFiles.typography);
     const components = readDist('tailwind', TAILWIND_OUTPUT.v4ComponentFile);
