@@ -107,13 +107,13 @@ not load `AGENTS.md` automatically.
 **A chat window instead?** For ChatGPT, Gemini, or a self-hosted model, give it
 the whole library once at the start of the session:
 
-    https://takeoff-v2.app.turkishtechlab.com/llms-full.txt
+    https://v2.takeoffui.com/llms-full.txt
 
 That single file contains every component's API and usage guidance. For a
 smaller payload, paste just the component you're working on — append `.md` to
 any docs URL:
 
-    https://takeoff-v2.app.turkishtechlab.com/docs/components/button.md
+    https://v2.takeoffui.com/docs/components/button.md
 
 </TabItem>
 </Tabs>
@@ -183,11 +183,11 @@ too large to keep in context.
 When an assistant needs the complete API for a component, point it at the
 Markdown docs. Every page is available by appending `.md` to its URL:
 
-| URL                                                                         | Use it for                                    |
-| --------------------------------------------------------------------------- | --------------------------------------------- |
-| `/docs/components/<name>.md`                                                | One component. Start here — smallest payload. |
-| [`/llms-full.txt`](https://takeoff-v2.app.turkishtechlab.com/llms-full.txt) | The entire library, in one file.              |
-| [`/llms.txt`](https://takeoff-v2.app.turkishtechlab.com/llms.txt)           | An index of every page, for tools that crawl. |
+| URL                                                        | Use it for                                    |
+| ---------------------------------------------------------- | --------------------------------------------- |
+| `/docs/components/<name>.md`                               | One component. Start here — smallest payload. |
+| [`/llms-full.txt`](https://v2.takeoffui.com/llms-full.txt) | The entire library, in one file.              |
+| [`/llms.txt`](https://v2.takeoffui.com/llms.txt)           | An index of every page, for tools that crawl. |
 
 These include guidance the API tables alone don't carry: when to reach for a
 component, and which neighbouring component to use instead when it isn't the

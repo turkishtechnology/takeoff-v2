@@ -186,8 +186,7 @@ render(<IconsDemo />);
 
 ### Button {#button}
 
-See
-[Spar Button docs](https://spar.app.turkishtechlab.com/docs/Components/Button)
+See [Spar Button docs](https://v2.takeoffui.com/headless/docs/Components/Button)
 for primitive behavior.
 
 #### Props {#button-props}

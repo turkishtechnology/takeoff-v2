@@ -3,4 +3,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://takeoff-v2.app.turkishtechlab.com/sitemap.xml
+Sitemap: https://v2.takeoffui.com/sitemap.xml

@@ -7,7 +7,7 @@
  */
 
 const checkboxTypesFile = 'packages/react-spar/src/components/checkbox/types.ts';
-const sparCheckboxDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Checkbox';
+const sparCheckboxDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Checkbox';
 
 const childrenOverride = description => ({
   type: 'React.ReactNode',

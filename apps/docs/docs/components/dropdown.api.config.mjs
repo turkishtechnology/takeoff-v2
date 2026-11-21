@@ -7,7 +7,7 @@
  */
 
 const dropdownTypesFile = 'packages/react-spar/src/components/dropdown/types.ts';
-const sparDropdownDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/DropdownMenu';
+const sparDropdownDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/DropdownMenu';
 
 const rootDataAttribute = {
   attribute: 'data-slot="root"',

@@ -229,6 +229,6 @@ Full props, events, data attributes & type definitions: see
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/components/radio
+- Live docs: https://v2.takeoffui.com/docs/components/radio
 - Source: `packages/react-spar/src/components/radio/`
-- Spar primitive: https://spar.app.turkishtechlab.com/docs/Components/Radio
+- Spar primitive: https://v2.takeoffui.com/headless/docs/Components/Radio

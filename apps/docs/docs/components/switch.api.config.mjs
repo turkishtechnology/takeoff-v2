@@ -7,7 +7,7 @@
  */
 
 const switchTypesFile = 'packages/react-spar/src/components/switch/types.ts';
-const sparSwitchDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Switch';
+const sparSwitchDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Switch';
 
 const classNameOverride = {
   type: 'string',

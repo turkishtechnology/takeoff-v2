@@ -63,11 +63,11 @@ When writing or reviewing UI code here, follow the rules below.
 This file is an index. For a component's complete props, slots, data attributes,
 and runnable examples, fetch its Markdown page:
 
-    https://takeoff-v2.app.turkishtechlab.com/docs/components/<component>.md
+    https://v2.takeoffui.com/docs/components/<component>.md
 
 The entire library in one file (for pasting into a model's context) is at:
 
-    https://takeoff-v2.app.turkishtechlab.com/llms-full.txt
+    https://v2.takeoffui.com/llms-full.txt
 
 ## Working on the library itself
 

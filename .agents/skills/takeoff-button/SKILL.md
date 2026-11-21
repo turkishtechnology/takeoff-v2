@@ -160,6 +160,6 @@ Full props, events, data attributes & type definitions: see
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/components/button
+- Live docs: https://v2.takeoffui.com/docs/components/button
 - Source: `packages/react-spar/src/components/button/`
-- Spar primitive: https://spar.app.turkishtechlab.com/docs/Components/Button
+- Spar primitive: https://v2.takeoffui.com/headless/docs/Components/Button

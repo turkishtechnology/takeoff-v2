@@ -7,7 +7,7 @@
  */
 
 const inputTypesFile = 'packages/react-spar/src/components/input/types.ts';
-const sparInputDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Input';
+const sparInputDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Input';
 
 const childrenOverride = description => ({
   type: 'React.ReactNode',

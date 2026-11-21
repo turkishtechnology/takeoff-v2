@@ -7,7 +7,7 @@
  */
 
 const selectTypesFile = 'packages/react-spar/src/components/select/types.ts';
-const sparSelectDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Select';
+const sparSelectDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Select';
 
 const childrenOverride = description => ({
   type: 'React.ReactNode',

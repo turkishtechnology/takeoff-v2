@@ -7,7 +7,7 @@
  */
 
 const popoverTypesFile = 'packages/react-spar/src/components/popover/types.ts';
-const sparPopoverDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Popover';
+const sparPopoverDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Popover';
 
 export default {
   components: [
