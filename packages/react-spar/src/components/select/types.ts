@@ -4,6 +4,7 @@ import type {
   SelectTriggerProps as SparSelectTriggerProps,
   SelectContentProps as SparSelectContentProps,
   SelectViewportProps as SparSelectViewportProps,
+  SelectSearchProps as SparSelectSearchProps,
   SelectItemProps as SparSelectItemProps,
   SelectGroupProps as SparSelectGroupProps,
   SelectLabelProps as SparSelectLabelProps,
@@ -30,6 +31,8 @@ export type SelectTriggerSlot = 'root' | 'value' | 'indicator';
 export type SelectIndicatorSlot = 'root';
 export type SelectContentSlot = 'root';
 export type SelectViewportSlot = 'root';
+export type SelectSearchSlot = 'root' | 'input' | 'icon';
+export type SelectEmptySlot = 'root';
 export type SelectItemSlot = 'root';
 export type SelectGroupSlot = 'root';
 export type SelectLabelSlot = 'root';
@@ -178,6 +181,47 @@ export type SelectViewportProps<T extends ElementType = 'div'> = PolymorphicProp
     Pick<SparSelectViewportProps, 'children'>
 >;
 
+export interface SelectSearchOwnProps {
+  /**
+   * Accessible name of the field.
+   * @defaultValue 'Search'
+   */
+  'aria-label'?: string;
+  /**
+   * Placeholder shown while the field is empty.
+   * @defaultValue 'Search'
+   */
+  'placeholder'?: string;
+  /** Per-slot class name overrides (`root` wrapper, `input`, `icon`). */
+  'classNames'?: ClassNamesMap<SelectSearchSlot>;
+  /** Per-slot HTML attribute overrides. */
+  'slotProps'?: SlotPropsMap<SelectSearchSlot>;
+}
+
+/**
+ * The filter field. Polymorphism and native attributes apply to the input; the
+ * wrapper with the search icon is the `root` slot.
+ */
+export type SelectSearchProps<T extends ElementType = 'input'> = PolymorphicProps<
+  'input',
+  T,
+  SelectSearchOwnProps &
+    // The query and its callback. Spar owns focus, keyboard and the combobox
+    // ARIA, so nothing else is picked: `aria-*` wiring stays Spar's.
+    Pick<SparSelectSearchProps, 'value' | 'defaultValue' | 'onValueChange'>
+>;
+
+export interface SelectEmptyOwnProps {
+  /** Per-slot class name overrides. */
+  classNames?: ClassNamesMap<SelectEmptySlot>;
+  /** Per-slot HTML attribute overrides. */
+  slotProps?: SlotPropsMap<SelectEmptySlot>;
+  children?: ReactNode;
+}
+
+/** What to show once a search matches nothing. The consumer decides when to render it. */
+export type SelectEmptyProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T, SelectEmptyOwnProps>;
+
 export interface SelectItemOwnProps {
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<SelectItemSlot>;
@@ -265,6 +309,8 @@ declare module '../../core/theme' {
     SelectIndicator: import('../../core').ComponentThemeConfig<SelectIndicatorProps, SelectIndicatorSlot>;
     SelectContent: import('../../core').ComponentThemeConfig<SelectContentProps, SelectContentSlot>;
     SelectViewport: import('../../core').ComponentThemeConfig<SelectViewportProps, SelectViewportSlot>;
+    SelectSearch: import('../../core').ComponentThemeConfig<SelectSearchProps, SelectSearchSlot>;
+    SelectEmpty: import('../../core').ComponentThemeConfig<SelectEmptyProps, SelectEmptySlot>;
     SelectItem: import('../../core').ComponentThemeConfig<SelectItemProps, SelectItemSlot>;
     SelectGroup: import('../../core').ComponentThemeConfig<SelectGroupProps, SelectGroupSlot>;
     SelectLabel: import('../../core').ComponentThemeConfig<SelectLabelProps, SelectLabelSlot>;
