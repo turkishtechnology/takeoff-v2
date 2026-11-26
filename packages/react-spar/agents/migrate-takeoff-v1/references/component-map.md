@@ -82,5 +82,6 @@ deciding whether the component is a migration target or a v2-only opportunity.
 | v2 component | v1 mapping status                                    |
 | ------------ | ---------------------------------------------------- |
 | `Chat`       | No v1 mapping recorded; inspect the component skill. |
+| `TimePicker` | No v1 mapping recorded; inspect the component skill. |
 
 <!-- END GENERATED V2 COMPONENT COVERAGE -->

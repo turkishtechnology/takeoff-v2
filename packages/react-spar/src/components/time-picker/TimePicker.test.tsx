@@ -6,6 +6,7 @@ import { waitFor } from '@testing-library/dom';
 
 import { renderWithProvider as render, screen, within } from '../../test-utils';
 
+import { TakeoffSparProvider } from '../../provider';
 import { Field } from '../field';
 
 import { TimePicker } from './index';
@@ -250,6 +251,109 @@ describe('TimePicker (compound)', () => {
       expect(column('Minute')).toHaveFocus();
       await user.tab();
       expect(column('Second')).toHaveFocus();
+    });
+  });
+
+  describe('typing and guarded input', () => {
+    it('types a two-digit hour into a column, and lets an overshooting pair fall back to the new digit', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(<Panel defaultValue={at(10, 45)} onValueChange={onValueChange} />);
+
+      await user.tab();
+      await user.keyboard('14');
+      expect(onValueChange).toHaveBeenLastCalledWith(at(14, 45));
+
+      await user.tab();
+      await user.keyboard('99');
+      expect(onValueChange).toHaveBeenLastCalledWith(at(14, 9));
+    });
+
+    it('holds a digit that names no hour on the twelve-hour clock', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(<Panel timeFormat="12" defaultValue={at(10, 45)} onValueChange={onValueChange} />);
+
+      await user.tab();
+      await user.keyboard('0');
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('answers to A / P on the AM/PM column, and ignores other letters', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(<Panel timeFormat="12" defaultValue={at(10, 45)} onValueChange={onValueChange} />);
+
+      column('AM/PM').focus();
+      await user.keyboard('x');
+      expect(onValueChange).not.toHaveBeenCalled();
+
+      await user.keyboard('p');
+      expect(onValueChange).toHaveBeenLastCalledWith(at(22, 45));
+
+      await user.keyboard('{ArrowUp}');
+      expect(onValueChange).toHaveBeenLastCalledWith(at(10, 45));
+    });
+
+    it('swallows an initial whose half-day the bounds forbid', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(<Panel timeFormat="12" maxTime={at(11, 0)} defaultValue={at(10, 45)} onValueChange={onValueChange} />);
+
+      column('AM/PM').focus();
+      await user.keyboard('p');
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('ignores the keyboard while read-only', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(<Panel readOnly defaultValue={at(10, 45)} onValueChange={onValueChange} />);
+
+      await user.tab();
+      await user.keyboard('{ArrowUp}{Home}5');
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('keeps an off-grid hour reachable on the twelve-hour clock', () => {
+      render(<Panel timeFormat="12" hourStep={2} defaultValue={at(15, 0)} />);
+
+      expect(selectedCell('Hour')).toHaveTextContent('03');
+    });
+
+    it('leaves a read-only toggle where it is on an arrow key', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(<TogglePanel readOnly defaultValue={at(13, 45)} onValueChange={onValueChange} />);
+
+      await user.tab();
+      await user.keyboard('{ArrowLeft}');
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('refuses to arrow the toggle onto a half-day the bounds forbid', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(<TogglePanel maxTime={at(11, 0)} defaultValue={at(10, 45)} onValueChange={onValueChange} />);
+
+      await user.tab();
+      await user.keyboard('{ArrowRight}');
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('lands on today when no reference day is given', async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(
+        <TimePicker aria-label="Timer" onValueChange={onValueChange}>
+          <TimePicker.Body />
+        </TimePicker>,
+      );
+
+      await user.click(within(column('Hour')).getByText('01'));
+      const [emitted] = onValueChange.mock.calls[0] as [Date];
+      const today = new Date();
+      expect([emitted.getFullYear(), emitted.getMonth(), emitted.getDate(), emitted.getHours()]).toEqual([today.getFullYear(), today.getMonth(), today.getDate(), 1]);
     });
   });
 
@@ -753,6 +857,17 @@ describe('TimePicker (compound)', () => {
 
       expect(screen.getByRole('spinbutton', { name: 'Saat' })).toBeInTheDocument();
       expect(screen.getByRole('spinbutton', { name: 'Dakika' })).toBeInTheDocument();
+    });
+
+    it('merges instance `labels` over provider defaultProps labels key by key', () => {
+      render(
+        <TakeoffSparProvider components={{ TimePicker: { defaultProps: { labels: { hour: 'Saat', minute: 'Dakika' } } } }}>
+          <Panel defaultValue={at(10, 45)} labels={{ minute: 'Dk', hour: '  ' }} />
+        </TakeoffSparProvider>,
+      );
+
+      expect(screen.getByRole('spinbutton', { name: 'Saat' })).toBeInTheDocument();
+      expect(screen.getByRole('spinbutton', { name: 'Dk' })).toBeInTheDocument();
     });
 
     it('raises the safe-context error for a part used outside its root', () => {

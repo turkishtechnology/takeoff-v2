@@ -480,7 +480,7 @@ Recorded here per rule 10. Takeoff Core's `tk-datepicker` ships only the column
 body, and only bolted to a date field; the dial and the panel's own chrome come
 from the Figma "timer" component.
 
-- **Root carries the variants and the shared state:** `data-mode` (`basic` |
+- **Root carries the variants and the shared state:** `data-mode` (`columns` |
   `dial` — which body renders), `data-size` (`small` | `base` — the column
   scale), `data-type` (`basic` | `divided` | `light` | `dark` | `primary` — the
   panel treatment), `data-time-format` (`12` | `24`), plus `data-disabled` /

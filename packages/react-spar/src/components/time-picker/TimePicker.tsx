@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState, type ElementType, type ReactNode, type Ref } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ElementType, type ReactNode, type Ref } from 'react';
 import { InputField as SparInputField, useOptionalFieldContext } from '@turkish-technology/spar';
 
 import { composeRootAttrs } from '../../core';
 import { useComponentTheme } from '../../provider';
-import { isDevelopment } from '../../utils';
+import { isDevelopment, resolveLabels } from '../../utils';
 
 import { TimePickerBase } from './base';
 import { TimePickerProvider } from './context';
@@ -108,7 +108,8 @@ export const TimePicker = <T extends ElementType = 'div'>(props: TimePickerProps
     isTimeUnavailable,
     name,
     form,
-    labels: ownLabels,
+    // Read off `props` below: merged per key, not through the shallow merge.
+    labels: _labels,
     disabled: ownDisabled,
     readOnly: ownReadOnly,
     invalid: ownInvalid,
@@ -118,6 +119,11 @@ export const TimePicker = <T extends ElementType = 'div'>(props: TimePickerProps
     ref,
     ...nativeProps
   } = rest as TimePickerResolvedProps;
+
+  // Layers defaults <- provider `defaultProps.labels` <- instance `labels`, per
+  // key, so an app-wide translation survives a one-key instance override.
+  const themeLabels = theme?.defaultProps?.labels;
+  const labels = useMemo(() => resolveLabels(DEFAULT_LABELS, themeLabels, props.labels), [themeLabels, props.labels]);
 
   const disabled = ownDisabled ?? field?.disabled ?? false;
   const readOnly = ownReadOnly ?? field?.readOnly ?? false;
@@ -222,7 +228,7 @@ export const TimePicker = <T extends ElementType = 'div'>(props: TimePickerProps
         steps,
         bounds,
         isUnavailable,
-        labels: { ...DEFAULT_LABELS, ...ownLabels },
+        labels,
         units,
         disabled,
         readOnly,

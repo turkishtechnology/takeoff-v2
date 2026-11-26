@@ -26,8 +26,6 @@ export const withTimeParts = (day: Date, parts: TimeParts): Date => new Date(day
 /** Seconds since midnight — the scalar every comparison runs on. */
 export const toDaySeconds = ({ hour, minute, second }: TimeParts): number => (hour * MINUTES_PER_HOUR + minute) * SECONDS_PER_MINUTE + second;
 
-export const timePartsEqual = (left: TimeParts, right: TimeParts): boolean => left.hour === right.hour && left.minute === right.minute && left.second === right.second;
-
 /** Midnight on the day of `date` — the reference day an emitted time falls on while nothing is selected. */
 export const startOfDay = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
@@ -46,13 +44,6 @@ export const toTimeBounds = (minTime?: Date, maxTime?: Date): TimeBounds => ({
   min: minTime ? toDaySeconds(toTimeParts(minTime)) : undefined,
   max: maxTime ? toDaySeconds(toTimeParts(maxTime)) : undefined,
 });
-
-export const isWithinBounds = (parts: TimeParts, bounds: TimeBounds): boolean => {
-  const seconds = toDaySeconds(parts);
-  if (bounds.min !== undefined && seconds < bounds.min) return false;
-  if (bounds.max !== undefined && seconds > bounds.max) return false;
-  return true;
-};
 
 /** Seconds since midnight back into a time of day. */
 export const fromDaySeconds = (seconds: number): TimeParts => ({
