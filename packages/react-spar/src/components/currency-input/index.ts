@@ -3,10 +3,12 @@ import { Input } from '../input';
 import { CurrencyInput as CurrencyInputRoot } from './CurrencyInput';
 import { CurrencyInputCurrencySelect } from './CurrencyInputCurrencySelect';
 import { CurrencyInputField } from './CurrencyInputField';
+import { CurrencyInputSymbol } from './CurrencyInputSymbol';
 
 const CurrencyInput = Object.assign(CurrencyInputRoot, {
   // Parts that carry real currency anatomy.
   Field: CurrencyInputField,
+  Symbol: CurrencyInputSymbol,
   CurrencySelect: CurrencyInputCurrencySelect,
 
   // Layout parts inherited from Input. These are the SAME components re-exposed
@@ -18,7 +20,6 @@ const CurrencyInput = Object.assign(CurrencyInputRoot, {
   Prefix: Input.Prefix,
   Suffix: Input.Suffix,
   ClearButton: Input.ClearButton,
-  Spinner: Input.Spinner,
 });
 
 export { CurrencyInput };
@@ -30,9 +31,6 @@ export { CurrencyInput };
 export { useCurrencyInputOwnContext as useCurrencyInputContext } from './context';
 export type { CurrencyInputOwnContextValue } from './context';
 
-export { formatCurrency, formatEditable, getSeparators, parseCurrency } from './format';
-export type { CurrencyFormatOptions, CurrencySeparators } from './format';
-
 export type {
   CurrencyInputCurrencySelectProps,
   CurrencyInputCurrencySelectSlot,
@@ -40,5 +38,7 @@ export type {
   CurrencyInputFieldSlot,
   CurrencyInputProps,
   CurrencyInputSlot,
+  CurrencyInputSymbolProps,
+  CurrencyInputSymbolSlot,
   CurrencyOption,
 } from './types';

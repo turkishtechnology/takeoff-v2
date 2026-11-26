@@ -1,57 +1,71 @@
 import type { ReactNode } from 'react';
 
 import type { ClassNamesMap, SlotPropsMap } from '../../core';
-import type { InputProps } from '../input';
+import type { InputFieldProps, InputProps } from '../input';
 import type { SelectProps } from '../select';
 
 export type CurrencyInputSlot = 'root';
 export type CurrencyInputFieldSlot = 'root';
+export type CurrencyInputSymbolSlot = 'root';
 export type CurrencyInputCurrencySelectSlot = 'root';
 
-/** A selectable currency. `symbol`/`label` are display-only; `code` is the value. */
+/** A selectable currency. `code` is the value; the rest is display. */
 export interface CurrencyOption {
-  /** ISO 4217 code — the committed value, e.g. 'TRY'. */
+  /** ISO 4217 code — the committed value, e.g. `'TRY'`. */
   code: string;
-  /** Human-readable name, e.g. 'Türk Lirası'. Falls back to `code`. */
+  /** Name shown in the list, e.g. `'Türk Lirası'`. Falls back to `code`. */
   label?: string;
-  /** Display glyph, e.g. '₺'. Falls back to the code. */
+  /** Symbol shown in the list, e.g. `'₺'`. Falls back to the locale's own symbol for `code`. */
   symbol?: string;
+  /** Leading visual on the trigger and in the list — typically a flag. No flag set ships with the package. */
+  icon?: ReactNode;
 }
 
 /**
- * Domain + slot props owned by takeoff-v2 for the CurrencyInput root.
+ * Props owned by takeoff-v2 for the CurrencyInput root.
  *
- * The root renders no DOM of its own — it provides the amount/currency context
- * and delegates the bordered row to the styled `Input`. It is therefore a
- * state-only root and exempt from the polymorphism rule; `as` belongs to
- * `Input`, which still owns the rendered element.
+ * The root's own element is `Input`'s row: it holds the amount and the currency
+ * and hands the bordered row, sizing and form state to the styled `Input`. The
+ * amount is formatted by Spar's `number` mask on `CurrencyInput.Field`; these
+ * props only feed it.
  */
 export interface CurrencyInputOwnProps {
-  /** Controlled amount. `undefined` means "empty", which is distinct from `0`. */
+  /** Controlled amount. `undefined` is "empty", which is distinct from `0`. */
   value?: number;
   /** Initial amount for uncontrolled usage. */
   defaultValue?: number;
-  /** Called with the parsed amount after a commit (blur), or `undefined` when cleared. */
+  /** Called with the amount on every edit that changes it, or `undefined` once nothing names one (empty, or a lone `-`). */
   onValueChange?: (value: number | undefined) => void;
   /** Controlled ISO 4217 currency code. Pair with `onCurrencyChange`. */
   currency?: string;
-  /** Initial currency for uncontrolled usage. @defaultValue 'TRY' */
+  /**
+   * Initial currency for uncontrolled usage.
+   * @defaultValue 'TRY'
+   */
   defaultCurrency?: string;
-  /** Called with the next ISO 4217 code when the selector commits. */
+  /** Called with the next ISO 4217 code when the currency changes. */
   onCurrencyChange?: (currency: string) => void;
   /**
-   * BCP-47 locale driving grouping/decimal separators and symbol placement.
-   * Pinned rather than runtime-resolved so SSR and the client agree.
-   * @defaultValue 'tr-TR'
+   * BCP 47 locale for the grouping, the decimal mark and the symbol. Pass it
+   * explicitly when the page is server-rendered: the server's runtime locale
+   * can differ from the browser's.
+   * @defaultValue the runtime's locale
    */
   locale?: string;
-  /** How the currency is rendered in the resting display string. @defaultValue 'symbol' */
-  currencyDisplay?: 'symbol' | 'narrowSymbol' | 'code' | 'name';
-  /** Override the currency's natural fraction digits. */
-  minimumFractionDigits?: number;
-  /** Override the currency's natural fraction digits. */
-  maximumFractionDigits?: number;
-  /** Anatomy — compose `CurrencyInput.CurrencySelect`, `CurrencyInput.Field`, … */
+  /** Fraction digits the field accepts. `0` makes it whole numbers only. Defaults to the currency's own (TRY 2, JPY 0). */
+  decimalScale?: number;
+  /** Integer digits the field accepts. Unset leaves it unbounded. */
+  integerScale?: number;
+  /**
+   * Accept a minus sign.
+   * @defaultValue false
+   */
+  allowNegative?: boolean;
+  /** Submits the amount in canonical form (`1234.5`) under this name. The currency has its own `name` on `CurrencySelect`. */
+  name?: string;
+  /** Form the hidden amount input belongs to, when it is outside it. */
+  form?: string;
+  /** Anatomy — compose `CurrencyInput.Field`, `CurrencyInput.Suffix`, … */
   children?: ReactNode;
   className?: string;
   /** Per-slot class name overrides. */
@@ -61,16 +75,12 @@ export interface CurrencyInputOwnProps {
 }
 
 export type CurrencyInputProps = CurrencyInputOwnProps &
-  // Visual + form-state surface forwarded verbatim to the styled `Input` this
-  // root renders. Deliberately EXCLUDES `as` (polymorphism stays Input's, since
-  // Input owns the rendered element) and excludes `children` from Input — the
-  // anatomy is this component's own, composed by the caller.
+  // Visual and form-state surface forwarded to the styled `Input` this root
+  // renders. EXCLUDES `as` (the row is Input's element, so polymorphism stays
+  // Input's) and `children` (the anatomy is this component's own).
   Pick<InputProps<'div'>, 'id' | 'size' | 'invalid' | 'disabled' | 'required' | 'readOnly'>;
 
 export interface CurrencyInputFieldOwnProps {
-  /** Placeholder shown while the field is empty. */
-  placeholder?: string;
-  className?: string;
   /** Per-slot class name overrides. */
   classNames?: ClassNamesMap<CurrencyInputFieldSlot>;
   /** Per-slot HTML attribute overrides. */
@@ -78,29 +88,59 @@ export interface CurrencyInputFieldOwnProps {
 }
 
 /**
- * The amount field. Formats on **blur** and edits an unformatted string while
- * focused, which is what keeps this component free of caret-restoration logic.
- * (As-you-type grouping is a separate, much harder problem — deliberately not
- * v1. See the component contract's non-goals.)
+ * The amount field: an `Input.Field` with Spar's `number` mask. EXCLUDES
+ * `mask`, `value`, `defaultValue`, `onValueChange`, `type` and `inputMode` —
+ * the root owns the value and the mask, and a masked number is a text field.
  */
-export type CurrencyInputFieldProps = CurrencyInputFieldOwnProps;
+export type CurrencyInputFieldProps = CurrencyInputFieldOwnProps &
+  Omit<InputFieldProps<'input'>, 'mask' | 'value' | 'defaultValue' | 'onValueChange' | 'type' | 'inputMode' | 'as' | 'classNames' | 'slotProps'>;
+
+export interface CurrencyInputSymbolOwnProps {
+  /** Replaces the symbol. Receives the active currency's code and the locale's symbol for it. */
+  children?: (currency: { code: string; symbol: string }) => ReactNode;
+  className?: string;
+  /** Per-slot class name overrides. */
+  classNames?: ClassNamesMap<CurrencyInputSymbolSlot>;
+  /** Per-slot HTML attribute overrides. */
+  slotProps?: SlotPropsMap<CurrencyInputSymbolSlot>;
+}
+
+/** The active currency's symbol as text, for a field whose currency is fixed. Place it in `Prefix` or `Suffix`. */
+export type CurrencyInputSymbolProps = CurrencyInputSymbolOwnProps;
 
 export interface CurrencyInputCurrencySelectOwnProps {
   /** The selectable currencies, in display order. */
   'currencies': CurrencyOption[];
-  /**
-   * Custom panel item content. Receives each option so callers can reorder
-   * symbol/name/code or localise the name without a new part.
-   */
-  'children'?: (currency: CurrencyOption) => ReactNode;
-  /** Custom trigger content. Receives the currently selected option. */
+  /** Replaces a list row's content. Receives the option and the locale's symbol for it. Default: icon, symbol, name. */
+  'children'?: (currency: CurrencyOption, symbol: string) => ReactNode;
+  /** Replaces the trigger's content (the chevron stays). Receives the selected option. Default: icon and code. */
   'trigger'?: (currency: CurrencyOption | undefined) => ReactNode;
   /**
-   * Accessible name for the trigger — required because the default trigger
-   * renders only a symbol, which is not a usable label on its own.
-   * @defaultValue 'Para birimi'
+   * Accessible name of the trigger, which shows only an icon and a code.
+   * @defaultValue 'Currency'
    */
   'aria-label'?: string;
+  /**
+   * Show a search field above the list that filters by code, name and symbol,
+   * ignoring case and accents.
+   * @defaultValue true
+   */
+  'searchable'?: boolean;
+  /**
+   * Accessible name of the search field.
+   * @defaultValue 'Search currencies'
+   */
+  'searchLabel'?: string;
+  /**
+   * Placeholder of the search field.
+   * @defaultValue 'Search'
+   */
+  'searchPlaceholder'?: string;
+  /**
+   * What the list says once a search matches nothing.
+   * @defaultValue 'No currencies found'
+   */
+  'emptyLabel'?: string;
   'className'?: string;
   /** Per-slot class name overrides. */
   'classNames'?: ClassNamesMap<CurrencyInputCurrencySelectSlot>;
@@ -109,16 +149,17 @@ export interface CurrencyInputCurrencySelectOwnProps {
 }
 
 export type CurrencyInputCurrencySelectProps = CurrencyInputCurrencySelectOwnProps &
-  // Panel/disclosure surface forwarded to the styled `Select`. `value` /
-  // `onChange` are EXCLUDED on purpose: the selected currency is owned by the
-  // CurrencyInput context so the field's formatting stays in sync no matter
-  // where this part is placed.
-  Pick<SelectProps<'div'>, 'contentWidth' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled'>;
+  // Disclosure and form surface of the styled `Select`. EXCLUDES `value`,
+  // `defaultValue` and `onChange` (the currency lives on the CurrencyInput root
+  // so the field's mask follows it wherever this part sits) and `size` (the
+  // row's size cascades).
+  Pick<SelectProps<'div'>, 'contentWidth' | 'open' | 'defaultOpen' | 'onOpenChange' | 'disabled' | 'name'>;
 
 declare module '../../core/theme' {
   interface ComponentThemeRegistry {
     CurrencyInput: import('../../core').ComponentThemeConfig<CurrencyInputProps, CurrencyInputSlot>;
     CurrencyInputField: import('../../core').ComponentThemeConfig<CurrencyInputFieldProps, CurrencyInputFieldSlot>;
+    CurrencyInputSymbol: import('../../core').ComponentThemeConfig<CurrencyInputSymbolProps, CurrencyInputSymbolSlot>;
     CurrencyInputCurrencySelect: import('../../core').ComponentThemeConfig<CurrencyInputCurrencySelectProps, CurrencyInputCurrencySelectSlot>;
   }
 }

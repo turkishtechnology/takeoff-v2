@@ -1,13 +1,14 @@
 ---
 title: Currency Input
 description:
-  Amount field with a currency selector. Locale-aware formatting via
-  Intl.NumberFormat, with the raw number kept as the source of truth.
+  Amount field with a currency. Spar's number mask groups the amount as you
+  type; the committed value is a plain number.
 sidebar_label: Currency Input
 sidebar_position: 5
 slug: /components/currency-input
 ---
 
+import { ApiBadge } from '@site/src/components/ApiBadge';
 import LiveCode from '@site/src/components/LiveCode';
 import {
   CurrencyInput,
@@ -16,11 +17,11 @@ import {
 } from '@site/src/components/ReactSparDocs';
 
 export const CURRENCIES = [
-  { code: 'TRY', label: 'Türk Lirası', symbol: '₺' },
-  { code: 'USD', label: 'US Dollar', symbol: '$' },
-  { code: 'EUR', label: 'Euro', symbol: '€' },
-  { code: 'GBP', label: 'British Pound', symbol: '£' },
-  { code: 'JPY', label: 'Japanese Yen', symbol: '¥' },
+  { code: 'TRY', label: 'Türk Lirası', icon: '🇹🇷' },
+  { code: 'USD', label: 'US Dollar', icon: '🇺🇸' },
+  { code: 'EUR', label: 'Euro', icon: '🇪🇺' },
+  { code: 'GBP', label: 'British Pound', icon: '🇬🇧' },
+  { code: 'JPY', label: 'Japanese Yen', icon: '🇯🇵' },
 ];
 
 export const currencyInputScope = { CurrencyInput, Field, CURRENCIES };
@@ -30,255 +31,141 @@ export const currencyInputScope = { CurrencyInput, Field, CURRENCIES };
 export const playgroundDemo = String.raw`
 function PlaygroundDemo() {
   const [amount, setAmount] = useState(1234.56);
+  const [currency, setCurrency] = useState('TRY');
 
   return (
-    <Field className="w-full max-w-90">
-      <Field.Label>Ticket price</Field.Label>
-      <CurrencyInput
-        value={amount}
-        onValueChange={setAmount}
-        defaultCurrency="TRY"
-      >
-        <CurrencyInput.Field placeholder="0,00" />
-        <CurrencyInput.Suffix>
-          <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
-        </CurrencyInput.Suffix>
-      </CurrencyInput>
-      <Field.Description>
-        Committed value: {amount === undefined ? 'undefined' : JSON.stringify(amount)}
-      </Field.Description>
-    </Field>
+    <div className="flex w-full max-w-90 flex-col gap-2">
+      <Field>
+        <Field.Label>Ticket price</Field.Label>
+        <CurrencyInput
+          value={amount}
+          onValueChange={setAmount}
+          currency={currency}
+          onCurrencyChange={setCurrency}
+          locale="tr-TR"
+        >
+          <CurrencyInput.Field placeholder="0,00" />
+          <CurrencyInput.Suffix>
+            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+          </CurrencyInput.Suffix>
+        </CurrencyInput>
+      </Field>
+      <small>
+        value: <code>{String(amount)}</code> · currency: <code>{currency}</code>
+      </small>
+    </div>
   );
 }
 
 render(<PlaygroundDemo />);
 `;
 
-export const placementDemo = String.raw`
-function PlacementDemo() {
-  return (
-    <div className="grid w-full max-w-90 gap-4">
-      <Field>
-        <Field.Label>Suffix — tr-TR convention</Field.Label>
-        <CurrencyInput defaultValue={1234.56} defaultCurrency="TRY" locale="tr-TR">
-          <CurrencyInput.Field />
-          <CurrencyInput.Suffix>
-            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
-          </CurrencyInput.Suffix>
-        </CurrencyInput>
-      </Field>
-
-      <Field>
-        <Field.Label>Prefix — en-US convention</Field.Label>
-        <CurrencyInput defaultValue={1234.56} defaultCurrency="USD" locale="en-US">
-          <CurrencyInput.Prefix>
-            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
-          </CurrencyInput.Prefix>
-          <CurrencyInput.Field />
-        </CurrencyInput>
-      </Field>
-    </div>
-  );
-}
-
-render(<PlacementDemo />);
+export const fixedDemo = String.raw`
+<div className="flex w-full max-w-90 flex-col gap-4">
+  <Field>
+    <Field.Label>Refund (de-DE)</Field.Label>
+    <CurrencyInput defaultValue={49.9} currency="EUR" locale="de-DE">
+      <CurrencyInput.Field />
+      <CurrencyInput.Suffix>
+        <CurrencyInput.Symbol />
+      </CurrencyInput.Suffix>
+    </CurrencyInput>
+  </Field>
+  <Field>
+    <Field.Label>Fare (en-US)</Field.Label>
+    <CurrencyInput defaultValue={1299} currency="USD" locale="en-US">
+      <CurrencyInput.Prefix>
+        <CurrencyInput.Symbol />
+      </CurrencyInput.Prefix>
+      <CurrencyInput.Field />
+    </CurrencyInput>
+  </Field>
+</div>
 `;
 
-export const localesDemo = String.raw`
-function LocalesDemo() {
-  const samples = [
-    { locale: 'tr-TR', currency: 'TRY', note: "'.' groups, ',' decimal, trailing ₺" },
-    { locale: 'en-US', currency: 'USD', note: "',' groups, '.' decimal, leading $" },
-    { locale: 'de-DE', currency: 'EUR', note: "'.' groups, ',' decimal, trailing €" },
-    { locale: 'ja-JP', currency: 'JPY', note: 'no fraction digits' },
-  ];
-
-  return (
-    <div className="grid w-full max-w-110 gap-4">
-      {samples.map((sample) => (
-        <Field key={sample.locale}>
-          <Field.Label>{sample.locale} · {sample.currency}</Field.Label>
-          <CurrencyInput
-            defaultValue={1234.56}
-            defaultCurrency={sample.currency}
-            locale={sample.locale}
-          >
-            <CurrencyInput.Field />
-          </CurrencyInput>
-          <Field.Description>{sample.note}</Field.Description>
-        </Field>
-      ))}
-    </div>
-  );
-}
-
-render(<LocalesDemo />);
+export const limitsDemo = String.raw`
+<div className="flex w-full max-w-90 flex-col gap-4">
+  <Field>
+    <Field.Label>Balance adjustment (negative allowed)</Field.Label>
+    <CurrencyInput defaultValue={-250} locale="tr-TR" allowNegative>
+      <CurrencyInput.Field />
+      <CurrencyInput.ClearButton />
+      <CurrencyInput.Suffix>
+        <CurrencyInput.Symbol />
+      </CurrencyInput.Suffix>
+    </CurrencyInput>
+  </Field>
+  <Field>
+    <Field.Label>Exchange rate (4 decimals, 3 integer digits)</Field.Label>
+    <CurrencyInput defaultValue={34.1234} locale="tr-TR" decimalScale={4} integerScale={3}>
+      <CurrencyInput.Field />
+    </CurrencyInput>
+  </Field>
+</div>
 `;
 
 export const sizesDemo = String.raw`
-function SizesDemo() {
-  return (
-    <div className="grid w-full max-w-90 gap-3">
-      {['small', 'base', 'large'].map((size) => (
-        <CurrencyInput
-          key={size}
-          size={size}
-          defaultValue={1234.56}
-          defaultCurrency="TRY"
-        >
-          <CurrencyInput.Field />
-          <CurrencyInput.Suffix>
-            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
-          </CurrencyInput.Suffix>
-        </CurrencyInput>
-      ))}
-    </div>
-  );
-}
-
-render(<SizesDemo />);
+<div className="flex w-full max-w-90 flex-col gap-3">
+  {['small', 'base', 'large'].map(size => (
+    <CurrencyInput key={size} size={size} defaultValue={1000} locale="tr-TR">
+      <CurrencyInput.Field aria-label={size + ' amount'} />
+      <CurrencyInput.Suffix>
+        <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+      </CurrencyInput.Suffix>
+    </CurrencyInput>
+  ))}
+</div>
 `;
 
-export const fieldStatesDemo = String.raw`
-function FieldStatesDemo() {
+export const fieldDemo = String.raw`
+function FieldDemo() {
+  const [amount, setAmount] = useState();
+
   return (
-    <div className="grid w-full max-w-90 gap-3">
-      <Field required>
-        <Field.Label>Budget</Field.Label>
-        <CurrencyInput defaultCurrency="TRY">
+    <form className="w-full max-w-90" onSubmit={event => event.preventDefault()}>
+      <Field invalid={amount === undefined} required>
+        <Field.Label>Deposit</Field.Label>
+        <CurrencyInput value={amount} onValueChange={setAmount} locale="tr-TR" name="amount">
           <CurrencyInput.Field placeholder="0,00" />
           <CurrencyInput.Suffix>
-            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+            <CurrencyInput.CurrencySelect currencies={CURRENCIES} name="currency" />
           </CurrencyInput.Suffix>
         </CurrencyInput>
-        <Field.Description>Excluding taxes.</Field.Description>
+        <Field.Description>Submitted as amount=1234.5 and currency=TRY.</Field.Description>
+        <Field.ErrorMessage>Enter an amount.</Field.ErrorMessage>
       </Field>
-
-      <Field invalid>
-        <Field.Label>Refund</Field.Label>
-        <CurrencyInput defaultValue={-50} defaultCurrency="TRY">
-          <CurrencyInput.Field />
-          <CurrencyInput.Suffix>
-            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
-          </CurrencyInput.Suffix>
-        </CurrencyInput>
-        <Field.ErrorMessage>Refund cannot be negative.</Field.ErrorMessage>
-      </Field>
-
-      <Field disabled>
-        <Field.Label>Locked total</Field.Label>
-        <CurrencyInput defaultValue={9999} defaultCurrency="TRY">
-          <CurrencyInput.Field />
-          <CurrencyInput.Suffix>
-            <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
-          </CurrencyInput.Suffix>
-        </CurrencyInput>
-      </Field>
-    </div>
+    </form>
   );
 }
 
-render(<FieldStatesDemo />);
+render(<FieldDemo />);
 `;
 
-export const controlledDemo = String.raw`
-function ControlledDemo() {
-  const [amount, setAmount] = useState(2500);
-  const [currency, setCurrency] = useState('EUR');
-
-  return (
-    <div className="grid w-full max-w-90 gap-3">
-      <CurrencyInput
-        value={amount}
-        onValueChange={setAmount}
-        currency={currency}
-        onCurrencyChange={setCurrency}
-        locale="de-DE"
-      >
-        <CurrencyInput.Field />
-        <CurrencyInput.ClearButton />
-        <CurrencyInput.Suffix>
-          <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
-        </CurrencyInput.Suffix>
-      </CurrencyInput>
-
-      <pre className="rounded bg-black/5 p-3 text-xs dark:bg-white/10">
-        {JSON.stringify({ amount, currency }, null, 2)}
-      </pre>
-
-      <div className="flex gap-2">
-        <button
-          type="button"
-          className="rounded border px-2 py-1 text-sm"
-          onClick={() => setAmount(1000)}
-        >
-          Set 1000
-        </button>
-        <button
-          type="button"
-          className="rounded border px-2 py-1 text-sm"
-          onClick={() => setAmount(undefined)}
-        >
-          Clear
-        </button>
-      </div>
-    </div>
-  );
-}
-
-render(<ControlledDemo />);
-`;
-
-export const customPickerDemo = String.raw`
-function CustomPickerDemo() {
-  return (
-    <Field className="w-full max-w-90">
-      <Field.Label>Custom trigger &amp; panel</Field.Label>
-      <CurrencyInput defaultValue={1234.56} defaultCurrency="TRY">
-        <CurrencyInput.Field />
-        <CurrencyInput.Suffix>
-          <CurrencyInput.CurrencySelect
-            currencies={CURRENCIES}
-            aria-label="Select currency"
-            trigger={(currency) => (
-              <span className="font-semibold">
-                {currency ? currency.code : '—'}
-              </span>
-            )}
-          >
-            {(currency) => (
-              <span className="flex items-center gap-2">
-                <span aria-hidden="true" className="w-4 text-center">
-                  {currency.symbol}
-                </span>
-                <span className="font-medium">{currency.code}</span>
-                <span className="opacity-60">{currency.label}</span>
-              </span>
-            )}
-          </CurrencyInput.CurrencySelect>
-        </CurrencyInput.Suffix>
-      </CurrencyInput>
-      <Field.Description>
-        Both the trigger and the panel items are render props.
-      </Field.Description>
-    </Field>
-  );
-}
-
-render(<CustomPickerDemo />);
+export const customDemo = String.raw`
+<CurrencyInput defaultValue={75} locale="en-GB" defaultCurrency="GBP" className="w-full max-w-90">
+  <CurrencyInput.Field aria-label="Amount" />
+  <CurrencyInput.Suffix>
+    <CurrencyInput.CurrencySelect
+      currencies={CURRENCIES}
+      trigger={option => option && <span>{option.icon} {option.code}</span>}
+    >
+      {(option, symbol) => (
+        <span className="flex w-full justify-between gap-4">
+          <span>{option.icon} {option.label}</span>
+          <span>{symbol}</span>
+        </span>
+      )}
+    </CurrencyInput.CurrencySelect>
+  </CurrencyInput.Suffix>
+</CurrencyInput>
 `;
 
 {/* prettier-ignore-end */}
 
-`CurrencyInput` is an amount field paired with a currency selector. It renders
-the styled [`Input`](./input) for its chrome — border, sizing, focus ring,
-disabled/invalid state, clear button — and layers the amount and currency state
-on top, so everything you know about `Input` still applies.
-
-Formatting is done entirely with the platform's `Intl.NumberFormat`. There is no
-locale table and no formatting dependency: separators, fraction digits, and
-symbol placement all come from the runtime, which is why `tr-TR` renders
-`1.234,56 ₺` correctly out of the box.
+`CurrencyInput` is an amount field with a currency: the amount on the left, the
+currency picker in the suffix, as in Takeoff Core. The amount is grouped as the
+user types by Spar's `number` mask (`1.234.567,89` in `tr-TR`, `1,234,567.89` in
+`en-US`), and what your code receives is a plain `number`.
 
 ## Usage
 
@@ -295,6 +182,7 @@ import { CurrencyInput, Field } from '@takeoff-ui/react-spar';
     <CurrencyInput.ClearButton />
     <CurrencyInput.Suffix>
       <CurrencyInput.CurrencySelect />
+      {/* or, for a fixed currency: <CurrencyInput.Symbol /> */}
     </CurrencyInput.Suffix>
   </CurrencyInput>
   <Field.Description />
@@ -302,10 +190,9 @@ import { CurrencyInput, Field } from '@takeoff-ui/react-spar';
 </Field>
 ```
 
-The anatomy is explicit: the root renders no field of its own, exactly like
-`Input`. `CurrencyInput.Prefix`, `Suffix`, `ClearButton`, and `Spinner` are the
-same components `Input` exposes, re-published here so a currency input is
-composed from a single namespace.
+The root renders `Input`'s row, so sizes, the focus ring, `Field` inheritance
+and the `Prefix` / `Suffix` / `ClearButton` parts are `Input`'s own, re-exposed
+so the tree uses one namespace.
 
 ## Playground
 
@@ -319,43 +206,39 @@ composed from a single namespace.
 
 ## The value is a number
 
-The committed value is a plain `number` — never the formatted string. An empty
-field commits `undefined` rather than `0`, so "no amount entered" stays
-distinguishable from a real zero.
+`onValueChange` receives a `number` on every edit that changes the amount, and
+`undefined` once nothing names one — an empty field or a lone `-`. So "no amount
+yet" stays distinct from a real `0`. While the user types `1.234,` the field
+keeps the trailing comma and reports `1234`.
 
-## Formatting happens on blur
+Formatting is the mask's job, not this component's: grouping, the decimal mark
+and the caret come from Spar, driven by `locale`. Nothing is padded on blur — a
+typed `1.234,5` stays `1.234,5`.
 
-While the field has focus you edit a plain, ungrouped string (`1234,56`); on
-blur it settles into the full display form (`1.234,56 ₺`). Reformatting on every
-keystroke is what makes masked inputs jump the caret, so it is deliberately not
-done here. Pasting a fully formatted value still parses — stray symbols,
-grouping separators, and non-breaking spaces are all tolerated.
+## Locale and digits
 
-## Symbol placement
+`locale` decides the separators and the symbol. It defaults to the runtime's;
+pass it explicitly on server-rendered pages, where the server's locale can
+differ from the browser's.
 
-Where the selector goes is a composition decision, not a prop: put it in
-`Suffix` for the Turkish trailing-symbol convention, or in `Prefix` for the
-leading-symbol one.
+The field accepts as many fraction digits as the currency has (TRY 2, JPY 0, KWD
+3). Picking a currency with fewer digits cuts the amount to match.
+`decimalScale` overrides the count, `integerScale` caps the integer digits, and
+`allowNegative` lets a minus sign in.
 
 <LiveCode
-  code={placementDemo}
-  noInline
-  previewMinHeight={260}
+  code={limitsDemo}
   previewWrapper={ReactSparDemoRoot}
   scope={currencyInputScope}
 />
 
-## Locales and currencies
+## A fixed currency
 
-`locale` drives grouping, decimals, and symbol placement; `currency` (ISO 4217)
-drives the symbol and the natural fraction digits. Pass `locale` explicitly —
-leaving it to the runtime lets the server and the browser disagree and produces
-a hydration mismatch.
+Without a picker, `CurrencyInput.Symbol` shows the locale's symbol. Place it in
+`Prefix` or `Suffix` — where the symbol goes is expressed by placing it.
 
 <LiveCode
-  code={localesDemo}
-  noInline
-  previewMinHeight={460}
+  code={fixedDemo}
   previewWrapper={ReactSparDemoRoot}
   scope={currencyInputScope}
 />
@@ -364,78 +247,159 @@ a hydration mismatch.
 
 <LiveCode
   code={sizesDemo}
-  noInline
-  previewMinHeight={220}
   previewWrapper={ReactSparDemoRoot}
   scope={currencyInputScope}
 />
 
-## Using with `Field`
+## Forms and `Field`
 
-`invalid`, `disabled`, `required`, and `readOnly` cascade from `Field` into the
-nested input, and label/description/error messaging is wired through shared IDs.
-
-<LiveCode
-  code={fieldStatesDemo}
-  noInline
-  previewMinHeight={420}
-  previewWrapper={ReactSparDemoRoot}
-  scope={currencyInputScope}
-/>
-
-## Controlled
-
-The amount and the currency are controlled independently. Pair `value` with
-`onValueChange`, and `currency` with `onCurrencyChange` — a controlled
-`currency` without its handler leaves the selector unable to commit.
+`name` submits the amount in canonical form (`1234.5`) through a hidden input;
+`CurrencySelect` takes its own `name` for the code. `disabled`, `invalid`,
+`readOnly` and `required` are inherited from a surrounding `Field`.
 
 <LiveCode
-  code={controlledDemo}
+  code={fieldDemo}
   noInline
-  previewMinHeight={420}
   previewWrapper={ReactSparDemoRoot}
   scope={currencyInputScope}
 />
 
 ## Customizing the picker
 
-`CurrencyInput.CurrencySelect` takes render props for both the trigger and the
-panel items, so symbol/name/code ordering and localized names need no new part.
+Each `CurrencyOption` is `{ code, label?, symbol?, icon? }`. The default trigger
+shows the icon and the code; a search field tops the list; each row shows icon,
+symbol and name.
+
+The search matches the code, the name and the symbol, ignoring case and accents
+— `try`, `turk` and `₺` all find the lira, and the four Turkish i's (`I İ ı i`)
+count as one letter. Rename it with `searchLabel` / `searchPlaceholder`, change
+the no-match text with `emptyLabel`, or drop the field with `searchable={false}`
+for a short list. `icon` is any node — the package ships no flag set. `trigger`
+and `children` replace the content when the default does not fit.
 
 <LiveCode
-  code={customPickerDemo}
-  noInline
-  previewMinHeight={220}
+  code={customDemo}
   previewWrapper={ReactSparDemoRoot}
   scope={currencyInputScope}
 />
 
-If you outgrow it entirely, `useCurrencyInputContext()` exposes the amount and
-currency state so you can build a bespoke picker and bind it to the same input:
-
-```tsx
-import { useCurrencyInputContext } from '@takeoff-ui/react-spar';
-
-function MyCurrencyPicker() {
-  const { currency, setCurrency } = useCurrencyInputContext('MyCurrencyPicker');
-  // …render anything, then call setCurrency(code)
-}
-```
-
-Because the selector reads from context rather than from its position in the
-DOM, it behaves identically wherever you place it.
+For a picker that is not a `Select`, `useCurrencyInputContext()` gives the
+active `currency` and `setCurrency`.
 
 ## Accessibility
 
-- The selector trigger collapses to a bare symbol, so it carries an explicit
-  accessible name. Override it with `aria-label` when the default
-  (`"Para birimi"`) does not fit your product's language.
-- Each panel item sets `label`, which is both the trigger's text representation
-  and the typeahead search key — start typing a currency name to jump to it.
-- The amount field uses `inputMode="decimal"` so touch keyboards open on digits,
-  and disables autocomplete.
+- The trigger shows only an icon and a code, so it is named `"Currency"` by
+  default. Pass `aria-label` to translate it.
+- The list opens on its search field, which is the combobox: arrows move through
+  the matches and <kbd>Enter</kbd> picks one. Without the search
+  (`searchable={false}`), each row's `label` is the typeahead key.
+- A search that matches nothing is announced through a polite status.
+- `CurrencyInput.Symbol` is hidden from assistive tech; name the field with a
+  `Field.Label`.
+- The amount field opens a numeric keyboard (`inputMode="decimal"`, or
+  `"numeric"` when the currency has no fraction) and turns autocomplete off.
 
 ## Related
 
-- [`Input`](./input) — the underlying field and its shared parts
+- [`Input`](./input) — the row, the parts it shares and the mask
 - [`Select`](./select) — the picker used for the currency list
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### CurrencyInput {#currency-input}
+
+#### Props {#currency-input-props}
+
+| Name                                 | Type                                                                                      | Default              | Description                                                                                                                                                                      |
+| ------------------------------------ | ----------------------------------------------------------------------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />        | <code>React.ReactNode</code>                                                              | -                    | Anatomy: `CurrencyInput.Field`, `CurrencyInput.Prefix` / `Suffix`, `CurrencyInput.CurrencySelect`, `CurrencyInput.Symbol`, `CurrencyInput.ClearButton`.                          |
+| <ApiBadge label="value" />           | <code>number</code>                                                                       | -                    | Controlled amount. `undefined` is "empty", which is distinct from `0`.                                                                                                           |
+| <ApiBadge label="defaultValue" />    | <code>number</code>                                                                       | -                    | Initial amount for uncontrolled usage.                                                                                                                                           |
+| <ApiBadge label="currency" />        | <code>string</code>                                                                       | -                    | Controlled ISO 4217 currency code. Pair with `onCurrencyChange`.                                                                                                                 |
+| <ApiBadge label="defaultCurrency" /> | <code>string</code>                                                                       | 'TRY'                | Initial currency for uncontrolled usage.                                                                                                                                         |
+| <ApiBadge label="locale" />          | <code>string</code>                                                                       | the runtime's locale | BCP 47 locale for the grouping, the decimal mark and the symbol. Pass it explicitly when the page is server-rendered: the server's runtime locale can differ from the browser's. |
+| <ApiBadge label="decimalScale" />    | <code>number</code>                                                                       | -                    | Fraction digits the field accepts. `0` makes it whole numbers only. Defaults to the currency's own (TRY 2, JPY 0).                                                               |
+| <ApiBadge label="integerScale" />    | <code>number</code>                                                                       | -                    | Integer digits the field accepts. Unset leaves it unbounded.                                                                                                                     |
+| <ApiBadge label="allowNegative" />   | <code>boolean</code>                                                                      | false                | Accept a minus sign.                                                                                                                                                             |
+| <ApiBadge label="name" />            | <code>string</code>                                                                       | -                    | Submits the amount in canonical form (`1234.5`) under this name. The currency has its own `name` on `CurrencySelect`.                                                            |
+| <ApiBadge label="form" />            | <code>string</code>                                                                       | -                    | Form the hidden amount input belongs to, when it is outside it.                                                                                                                  |
+| <ApiBadge label="classNames" />      | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -                    | Per-slot class name overrides.                                                                                                                                                   |
+| <ApiBadge label="slotProps" />       | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -                    | Per-slot HTML attribute overrides.                                                                                                                                               |
+| <ApiBadge label="id" />              | <code>string</code>                                                                       | -                    | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-field`, `${id}-label`, etc.                   |
+| <ApiBadge label="disabled" />        | <code>boolean</code>                                                                      | -                    | Input disabled state. When inside a Field, inherited from Field.                                                                                                                 |
+| <ApiBadge label="size" />            | <code><a href="#currency-td-inputsize">InputSize</a></code>                               | 'base'               | Size scale, forwarded to `Input`.                                                                                                                                                |
+| <ApiBadge label="readOnly" />        | <code>boolean</code>                                                                      | -                    | Input read-only state. When inside a Field, inherited from Field.                                                                                                                |
+| <ApiBadge label="required" />        | <code>boolean</code>                                                                      | -                    | Input required state. When inside a Field, inherited from Field.                                                                                                                 |
+| <ApiBadge label="invalid" />         | <code>boolean</code>                                                                      | false                | Marks the row invalid. Inherited from `<Field>` automatically; pass this prop only to override.                                                                                  |
+| <ApiBadge label="className" />       | <code>string</code>                                                                       | -                    | Appends custom classes to the root slot of this part.                                                                                                                            |
+
+#### Events {#currency-input-events}
+
+| Name                                  | Type                                       | Default | Description                                                                                                         |
+| ------------------------------------- | ------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onValueChange" />    | <code>(value: number) =&gt; void</code>    | -       | Called with the amount on every edit that changes it, or `undefined` once nothing names one (empty, or a lone `-`). |
+| <ApiBadge label="onCurrencyChange" /> | <code>(currency: string) =&gt; void</code> | -       | Called with the next ISO 4217 code when the currency changes.                                                       |
+
+#### Data attributes {#currency-input-data-attributes}
+
+| Attribute                                                                         | Applied when                   | Purpose                                                                                              |
+| --------------------------------------------------------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-currency" />                                                | Always                         | The active ISO 4217 code, so a recipe can style one currency (e.g. a wider trigger for a long code). |
+| <ApiBadge label="data-invalid / data-disabled / data-readonly / data-required" /> | When the matching state is on. | Input's own state hooks — the row is Input's element.                                                |
+
+### CurrencyInput.Field {#currency-input-field}
+
+#### Data attributes {#currency-input-field-data-attributes}
+
+| Attribute                                            | Applied when                           | Purpose                       |
+| ---------------------------------------------------- | -------------------------------------- | ----------------------------- |
+| <ApiBadge label="data-mask / data-mask-completed" /> | Always / once an integer digit exists. | Spar's mask hooks, unchanged. |
+
+### CurrencyInput.Symbol {#currency-input-symbol}
+
+#### Data attributes {#currency-input-symbol-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                            |
+| ----------------------------------------------- | ------------ | ---------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the root slot. |
+
+### CurrencyInput.CurrencySelect {#currency-input-currency-select}
+
+#### Props {#currency-input-currency-select-props}
+
+| Name                                   | Type                                                                                                                     | Default               | Description                                                                                                                                   |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="currencies" />        | <code><a href="#currency-td-currencyoption">CurrencyOption</a>[]</code>                                                  | -                     | The selectable currencies, in display order. `CurrencyOption` is `{ code: string; label?: string; symbol?: string; icon?: React.ReactNode }`. |
+| <ApiBadge label="children" />          | <code>(currency: <a href="#currency-td-currencyoption">CurrencyOption</a>, symbol: string) =&gt; React.ReactNode</code>  | icon, symbol, name    | Replaces a list row's content. Receives the option and the locale's symbol for it.                                                            |
+| <ApiBadge label="trigger" />           | <code>(currency: <a href="#currency-td-currencyoption">CurrencyOption</a> &#124; undefined) =&gt; React.ReactNode</code> | icon and code         | Replaces the trigger's content; the chevron stays.                                                                                            |
+| <ApiBadge label="aria-label" />        | <code>string</code>                                                                                                      | 'Currency'            | Accessible name of the trigger, which shows only an icon and a code.                                                                          |
+| <ApiBadge label="searchable" />        | <code>boolean</code>                                                                                                     | true                  | Show a search field above the list that filters by code, name and symbol, ignoring case and accents.                                          |
+| <ApiBadge label="searchLabel" />       | <code>string</code>                                                                                                      | 'Search currencies'   | Accessible name of the search field.                                                                                                          |
+| <ApiBadge label="searchPlaceholder" /> | <code>string</code>                                                                                                      | 'Search'              | Placeholder of the search field.                                                                                                              |
+| <ApiBadge label="emptyLabel" />        | <code>string</code>                                                                                                      | 'No currencies found' | What the list says once a search matches nothing.                                                                                             |
+| <ApiBadge label="classNames" />        | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                                                 | -                     | Per-slot class name overrides.                                                                                                                |
+| <ApiBadge label="slotProps" />         | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>                                | -                     | Per-slot HTML attribute overrides.                                                                                                            |
+| <ApiBadge label="disabled" />          | <code>boolean</code>                                                                                                     | -                     | Disables the entire select. When inside a Field, inherited from Field.                                                                        |
+| <ApiBadge label="name" />              | <code>string</code>                                                                                                      | -                     | Form field name                                                                                                                               |
+| <ApiBadge label="open" />              | <code>boolean</code>                                                                                                     | -                     | Controlled open state                                                                                                                         |
+| <ApiBadge label="defaultOpen" />       | <code>boolean</code>                                                                                                     | false                 | Uncontrolled initial open state                                                                                                               |
+| <ApiBadge label="contentWidth" />      | <code><a href="#currency-td-selectcontentwidth">SelectContentWidth</a></code>                                            | 'content'             | How the portalled SelectContent panel computes its width. See `SelectContentWidth`.                                                           |
+| <ApiBadge label="className" />         | <code>string</code>                                                                                                      | -                     | Appends custom classes to the root slot of this part.                                                                                         |
+
+#### Events {#currency-input-currency-select-events}
+
+| Name                              | Type                                    | Default | Description                      |
+| --------------------------------- | --------------------------------------- | ------- | -------------------------------- |
+| <ApiBadge label="onOpenChange" /> | <code>(open: boolean) =&gt; void</code> | -       | Callback when open state changes |
+
+### Type Definitions {#currency-type-definitions}
+
+| Name                                                                                     | Definition                                                                                 |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| <span id="currency-td-inputsize"><ApiBadge label="InputSize" /></span>                   | <code>'small' &#124; 'base' &#124; 'large'</code>                                          |
+| <span id="currency-td-currencyoption"><ApiBadge label="CurrencyOption" /></span>         | <code>&#123; code: string; label?: string; symbol?: string; icon?: ReactNode &#125;</code> |
+| <span id="currency-td-selectcontentwidth"><ApiBadge label="SelectContentWidth" /></span> | <code>'trigger' &#124; 'content' &#124; number &#124; string</code>                        |
+
+{/* api-tables:end */}

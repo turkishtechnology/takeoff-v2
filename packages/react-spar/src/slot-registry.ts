@@ -21,7 +21,7 @@ import {
 } from './components/chat/base';
 import { CheckboxBase } from './components/checkbox/base';
 import { ChipBase } from './components/chip/base';
-import { CurrencyInputBase, CurrencyInputCurrencySelectBase, CurrencyInputFieldBase } from './components/currency-input/base';
+import { CurrencyInputBase, CurrencyInputCurrencySelectBase, CurrencyInputFieldBase, CurrencyInputSymbolBase } from './components/currency-input/base';
 import {
   DialogBodyBase,
   DialogCloseBase,
@@ -170,6 +170,7 @@ export const slotClassRegistry = {
   chip: { slots: ChipBase.classes },
   currencyInput: { slots: CurrencyInputBase.classes },
   currencyInputField: { slots: CurrencyInputFieldBase.classes },
+  currencyInputSymbol: { slots: CurrencyInputSymbolBase.classes },
   currencyInputCurrencySelect: { slots: CurrencyInputCurrencySelectBase.classes },
   dialogTrigger: { slots: DialogTriggerBase.classes },
   dialogOverlay: { slots: DialogOverlayBase.classes },

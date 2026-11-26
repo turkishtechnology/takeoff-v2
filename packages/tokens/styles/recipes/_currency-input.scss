@@ -22,6 +22,13 @@
     font-variant-numeric: tabular-nums;
   }
 
+  // ---- Fixed-currency symbol ----
+
+  .tk-currency-input-symbol {
+    color: inherit;
+    white-space: nowrap;
+  }
+
   // ---- Embedded currency selector ----
 
   .tk-currency-input-currency-select {
@@ -40,7 +47,7 @@
       height: auto;
       min-height: 0;
       min-width: 0;
-      gap: var(--spacing-1);
+      gap: var(--spacing-xs);
       padding: 0;
       border: 0;
       border-radius: 0;
@@ -56,14 +63,35 @@
       // no longer exists.
       &:focus-visible {
         outline: var(--spacing-px) solid var(--states-info-base);
-        outline-offset: var(--spacing-1);
+        outline-offset: var(--spacing-xxs);
         border-color: transparent;
       }
     }
 
-    // The trigger is a symbol, not a truncating label region.
+    // The trigger is an icon and a code, not a truncating label region.
     .tk-select-value {
       overflow: visible;
     }
   }
+}
+
+// Trigger content and list rows: Core's icon · code and icon · symbol · name.
+// Unscoped on purpose: Select.Content is portalled out of `.tk-currency-input`,
+// so a rule nested under the root would never reach the list rows.
+.tk-currency-input-currency-select-value,
+.tk-currency-input-currency-select-option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+
+.tk-currency-input-currency-select-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.tk-currency-input-currency-select-symbol {
+  min-width: var(--spacing-6xl);
+  font-variant-numeric: tabular-nums;
 }

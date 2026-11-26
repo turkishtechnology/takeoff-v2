@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { composeRootAttrs } from '../../core';
 import { useControllableState } from '../../hooks';
@@ -7,29 +7,27 @@ import { Input } from '../input';
 
 import { CurrencyInputBase } from './base';
 import { CurrencyInputProvider } from './context';
-import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from './defaults';
+import { DEFAULT_CURRENCY } from './defaults';
+import { getCurrencyMeta, truncateToScale } from './intl';
 import type { CurrencyInputProps } from './types';
 
 /**
- * Amount field with a currency selector.
+ * Amount field with a currency.
  *
- * Renders the styled `Input` for its chrome (border, sizing, focus ring,
- * disabled/invalid state, clear button) rather than duplicating it, and layers
- * the amount/currency state on top through a private context. Anatomy is
- * explicit — nothing is rendered unless the caller composes it:
+ * Renders the styled `Input` for its row (border, sizing, focus ring, form
+ * state, `Field` inheritance) and holds the amount and the currency in a
+ * private context. Spar's `number` mask on `CurrencyInput.Field` does the
+ * grouping, the decimal mark and the caret; this root only tells it which
+ * locale and how many digits. Nothing renders unless the consumer composes it:
  *
  * ```tsx
- * <CurrencyInput value={amount} onValueChange={setAmount} currency="TRY">
+ * <CurrencyInput value={amount} onValueChange={setAmount} locale="tr-TR">
  *   <CurrencyInput.Field />
  *   <CurrencyInput.Suffix>
  *     <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
  *   </CurrencyInput.Suffix>
  * </CurrencyInput>
  * ```
- *
- * Placing the selector in `Suffix` rather than `Prefix` is how the tr-TR
- * trailing-symbol convention ('1.234,56 ₺') is expressed — no `position` prop
- * is introduced, mirroring how the Input counter look keys on placement.
  */
 export const CurrencyInput = (props: CurrencyInputProps) => {
   const theme = useComponentTheme('CurrencyInput');
@@ -42,10 +40,12 @@ export const CurrencyInput = (props: CurrencyInputProps) => {
     currency,
     defaultCurrency,
     onCurrencyChange,
-    locale = DEFAULT_LOCALE,
-    currencyDisplay,
-    minimumFractionDigits,
-    maximumFractionDigits,
+    locale,
+    decimalScale: ownDecimalScale,
+    integerScale,
+    allowNegative = false,
+    name,
+    form,
     children,
     ...inputProps
   } = rest;
@@ -53,15 +53,20 @@ export const CurrencyInput = (props: CurrencyInputProps) => {
   const [amount, setAmount] = useControllableState<number | undefined>(value, defaultValue, onValueChange);
   const [activeCurrency = DEFAULT_CURRENCY, setActiveCurrency] = useControllableState<string>(currency, defaultCurrency ?? DEFAULT_CURRENCY, onCurrencyChange);
 
-  const formatOptions = useMemo(
-    () => ({
-      locale,
-      currency: activeCurrency,
-      currencyDisplay,
-      minimumFractionDigits,
-      maximumFractionDigits,
-    }),
-    [locale, activeCurrency, currencyDisplay, minimumFractionDigits, maximumFractionDigits],
+  const meta = useMemo(() => getCurrencyMeta(locale, activeCurrency), [locale, activeCurrency]);
+  const decimalScale = ownDecimalScale ?? meta.decimalScale;
+
+  // A currency with fewer fraction digits (TRY → JPY) makes the mask drop the
+  // extra digits from what it shows, but the mask reports only edits — so the
+  // amount is cut here, the same way, or it would keep digits nobody can see.
+  const setCurrency = useCallback(
+    (next: string) => {
+      setActiveCurrency(next);
+      if (amount === undefined || ownDecimalScale !== undefined) return;
+      const cut = truncateToScale(amount, getCurrencyMeta(locale, next).decimalScale);
+      if (cut !== amount) setAmount(cut);
+    },
+    [amount, locale, ownDecimalScale, setActiveCurrency, setAmount],
   );
 
   const contextValue = useMemo(
@@ -69,21 +74,26 @@ export const CurrencyInput = (props: CurrencyInputProps) => {
       value: amount,
       setValue: setAmount,
       currency: activeCurrency,
-      setCurrency: setActiveCurrency,
-      formatOptions,
+      setCurrency,
+      locale,
+      meta,
+      decimalScale,
+      integerScale,
+      allowNegative,
     }),
-    [amount, setAmount, activeCurrency, setActiveCurrency, formatOptions],
+    [amount, setAmount, activeCurrency, setCurrency, locale, meta, decimalScale, integerScale, allowNegative],
   );
 
-  // `data-slot` is dropped — the rendered root is Input's element and Input
-  // emits its own. The composed className rides along so the row carries both
-  // `tk-input` and `tk-currency-input`; Input's own composeRootAttrs merges it.
+  // `data-slot` is dropped — the rendered row is Input's element and Input
+  // emits its own. The className rides along so the row carries both
+  // `tk-input` and `tk-currency-input`.
   const { 'data-slot': _rootSlot, className, ...rootState } = rootAttrs;
 
   return (
     <CurrencyInputProvider value={contextValue}>
       <Input {...inputProps} className={className} data-currency={activeCurrency} {...rootState}>
         {children}
+        {name ? <input type="hidden" name={name} form={form} value={amount === undefined ? '' : String(amount)} /> : null}
       </Input>
     </CurrencyInputProvider>
   );
