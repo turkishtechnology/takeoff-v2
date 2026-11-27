@@ -25,6 +25,7 @@
 @use 'recipes/popover';
 @use 'recipes/progress';
 @use 'recipes/radio';
+@use 'recipes/rating';
 @use 'recipes/select';
 @use 'recipes/skeleton';
 @use 'recipes/slider';
@@ -483,6 +484,14 @@
 
 .tk-radio-item {
   @include radio.radio-item;
+}
+
+.tk-rating {
+  @include rating.rating;
+}
+
+.tk-rating-item {
+  @include rating.rating-item;
 }
 
 .tk-tabs {

@@ -1,6 +1,6 @@
 # Coverage gaps
 
-These 13 v1 exports have no shipped v2 target in the current release. This is a
+These 12 v1 exports have no shipped v2 target in the current release. This is a
 temporary coverage gap, not a permanent product boundary: the areas below are
 expected to close incrementally in future v2 releases as their React API,
 accessibility behavior, token recipes, and documentation are completed. Decide
@@ -18,7 +18,6 @@ package removal remains safe.
 | `TkGanttChart`, `TkOrgChart`   | Keep v1 or use the domain library already used by the application.                           |
 | `TkPagination`                 | Keep it for standalone pagination. `Table` includes built-in pagination for migrated tables. |
 | `TkPhoneInput`                 | Keep v1 or build an app-local phone field with parsing and locale tests.                     |
-| `TkRating`                     | Keep v1 or build a small app-local control with keyboard semantics.                          |
 | `TkTimeline`, `TkTimelineItem` | Keep v1 or compose app-local semantic list markup.                                           |
 | `TkTreeView`                   | Keep v1 or use an app-owned accessible tree implementation.                                  |
 

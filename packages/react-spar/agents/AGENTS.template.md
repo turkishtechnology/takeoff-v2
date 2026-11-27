@@ -51,6 +51,7 @@ on headless Spar primitives and styled with Takeoff design tokens.
 | `Popover`       | Anchored, dismissible panels tied to a trigger (settings, quick forms, contextual info).                                                                                                     |
 | `Progress`      | Work with a known percentage — file uploads, imports, quota and storage meters, multi-item batch jobs — or a bar-shaped indeterminate treatment for a long-running task.                     |
 | `Radio`         | Any single-choice form control: cabin/seat/plan/payment pickers, exclusive option lists.                                                                                                     |
+| `Rating`        | Review and satisfaction scores, feedback forms, showing an average score.                                                                                                                    |
 | `Select`        | Single-choice dropdown pickers where you want a styled, portalled listbox instead of a native `<select>`.                                                                                    |
 | `Skeleton`      | First-load placeholders for content whose layout you already know — cards, list rows, avatars, text lines, table cells.                                                                      |
 | `Slider`        | Any bounded numeric selection where dragging beats typing — volume, brightness, temperature, zoom, a price/date range filter, gradient stops.                                                |

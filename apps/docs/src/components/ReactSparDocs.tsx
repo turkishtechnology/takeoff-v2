@@ -30,6 +30,7 @@ export {
   Popover,
   Progress,
   Radio,
+  Rating,
   Select,
   Skeleton,
   Slider,

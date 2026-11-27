@@ -30,6 +30,7 @@ and accessibility guidance where the component owns interaction behavior.
 | [Label](/docs/components/label)                  | Labeling controls, sections, and compact metadata.                     |
 | [Radio](/docs/components/radio)                  | Choosing one option from a mutually exclusive set.                     |
 | [Radio](/docs/components/radio)                  | Choosing one option from a mutually exclusive set.                     |
+| [Rating](/docs/components/rating)                | Picking a score from a row of stars, hearts, dots or numbers.          |
 | [Select](/docs/components/select)                | Choosing from a keyboard-accessible list with typeahead.               |
 | [Select](/docs/components/select)                | Choosing from a keyboard-accessible list with typeahead.               |
 | [Switch](/docs/components/switch)                | Turning a single setting on or off.                                    |

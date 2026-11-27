@@ -49,6 +49,7 @@ const sidebars: SidebarsConfig = {
         'components/stepper',
         'components/switch',
         'components/radio',
+        'components/rating',
         'components/table',
         'components/tabs',
         'components/toast',

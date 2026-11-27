@@ -18,6 +18,7 @@ writing code.
 | `TkDivider`     | `Divider`     | Check orientation and label slots.                                                                                                    |
 | `TkInput`       | `Input`       | Use the v2 value callback directly.                                                                                                   |
 | `TkTextarea`    | `Input`       | Render `Input.Field as="textarea"`; pass `rows` and native textarea attributes.                                                       |
+| `TkRating`      | `Rating`      | `maxRating` → `max`; `tk-change` → `onValueChange`.                                                                                   |
 | `TkSlider`      | `Slider`      | Check single vs range value shape.                                                                                                    |
 | `TkSpinner`     | `Spinner`     | Check size and label API.                                                                                                             |
 | `TkToggle`      | `Switch`      | v1 toggle maps to the v2 switch control.                                                                                              |
@@ -63,8 +64,8 @@ migration.
 ## v1-only gaps
 
 `TkAvatar`, `TkAvatarGroup`, `TkCarousel`, `TkChart`, `TkEditor`,
-`TkGanttChart`, `TkOrgChart`, `TkPagination`, `TkPhoneInput`, `TkRating`,
-`TkTimeline`, `TkTimelineItem`, `TkTreeView` have no shipped v2 target. See
+`TkGanttChart`, `TkOrgChart`, `TkPagination`, `TkPhoneInput`, `TkTimeline`,
+`TkTimelineItem`, `TkTreeView` have no shipped v2 target. See
 [references/gaps.md](gaps.md) before changing them.
 
 ## v2 opportunities
