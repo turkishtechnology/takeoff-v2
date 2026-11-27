@@ -7,19 +7,20 @@ writing code.
 
 ## Direct mappings
 
-| v1 export    | v2 target  | Migration note                                                                  |
-| ------------ | ---------- | ------------------------------------------------------------------------------- |
-| `TkButton`   | `Button`   | Rename props; `label` becomes children.                                         |
-| `TkAlert`    | `Alert`    | Check v2 variant and children API.                                              |
-| `TkBadge`    | `Badge`    | Check v2 content and variant API.                                               |
-| `TkCheckbox` | `Checkbox` | Controlled value/event API changes.                                             |
-| `TkChips`    | `Chip`     | Singular target; map each chip to children.                                     |
-| `TkDivider`  | `Divider`  | Check orientation and label slots.                                              |
-| `TkInput`    | `Input`    | Use the v2 value callback directly.                                             |
-| `TkTextarea` | `Input`    | Render `Input.Field as="textarea"`; pass `rows` and native textarea attributes. |
-| `TkSlider`   | `Slider`   | Check single vs range value shape.                                              |
-| `TkSpinner`  | `Spinner`  | Check size and label API.                                                       |
-| `TkToggle`   | `Switch`   | v1 toggle maps to the v2 switch control.                                        |
+| v1 export       | v2 target     | Migration note                                                                                                                        |
+| --------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `TkButton`      | `Button`      | Rename props; `label` becomes children.                                                                                               |
+| `TkAlert`       | `Alert`       | Check v2 variant and children API.                                                                                                    |
+| `TkBadge`       | `Badge`       | Check v2 content and variant API.                                                                                                     |
+| `TkCheckbox`    | `Checkbox`    | Controlled value/event API changes.                                                                                                   |
+| `TkChips`       | `Chip`        | Singular target; map each chip to children.                                                                                           |
+| `TkColorPicker` | `ColorPicker` | `presets` → `swatches`, `showAlphaSlider` → `alpha`, `rgba` format → `rgb`; `tk-change` → `onValueChangeEnd`. No header/footer slots. |
+| `TkDivider`     | `Divider`     | Check orientation and label slots.                                                                                                    |
+| `TkInput`       | `Input`       | Use the v2 value callback directly.                                                                                                   |
+| `TkTextarea`    | `Input`       | Render `Input.Field as="textarea"`; pass `rows` and native textarea attributes.                                                       |
+| `TkSlider`      | `Slider`      | Check single vs range value shape.                                                                                                    |
+| `TkSpinner`     | `Spinner`     | Check size and label API.                                                                                                             |
+| `TkToggle`      | `Switch`      | v1 toggle maps to the v2 switch control.                                                                                              |
 
 ## Compound rewrites
 
@@ -60,10 +61,10 @@ migration.
 
 ## v1-only gaps
 
-`TkAvatar`, `TkAvatarGroup`, `TkCarousel`, `TkChart`, `TkColorPicker`,
-`TkCurrencyInput`, `TkEditor`, `TkGanttChart`, `TkOrgChart`, `TkPagination`,
-`TkPhoneInput`, `TkRating`, `TkTimeline`, `TkTimelineItem`, `TkTreeView` have no
-shipped v2 target. See [references/gaps.md](gaps.md) before changing them.
+`TkAvatar`, `TkAvatarGroup`, `TkCarousel`, `TkChart`, `TkCurrencyInput`,
+`TkEditor`, `TkGanttChart`, `TkOrgChart`, `TkPagination`, `TkPhoneInput`,
+`TkRating`, `TkTimeline`, `TkTimelineItem`, `TkTreeView` have no shipped v2
+target. See [references/gaps.md](gaps.md) before changing them.
 
 ## v2 opportunities
 
