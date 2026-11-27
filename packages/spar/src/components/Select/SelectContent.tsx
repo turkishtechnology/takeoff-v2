@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useCallback, useMemo, useState, type ElementType } from 'react';
+import React, { useEffect, useLayoutEffect, useCallback, useMemo, useRef, useState, type ElementType } from 'react';
 import { createPortal } from 'react-dom';
 import { composeInsideHandlers, useInteractOutside, useMergedRef, useFloating, useTypeahead, type UseFloatingOptions, type UseFloatingReturn } from '@/hooks';
 import { useSelectContext, SelectContentContext, SelectCollectionContext } from './hooks';
@@ -61,12 +61,23 @@ export const SelectContent = <T extends ElementType = 'div'>({
   // renders the hidden, ref-less container on its first pass; the listbox only
   // exists after the SSR-safety effect flips `mounted`, so the focus effect has
   // to re-run at that point or keyboard handling never receives focus.
+  //
+  // With a SelectSearch the field takes focus instead: it is the combobox then,
+  // and the keyboard has to land where the user types. The ref is attached
+  // before effects run, so this reads it even on the commit that mounts it.
+  const searchRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
-    if (context.open && mounted && context.contentRef.current) {
-      // Use preventScroll to avoid scrolling the page when focusing
-      context.contentRef.current.focus({ preventScroll: true });
-    }
+    if (!context.open || !mounted) return;
+    // Use preventScroll to avoid scrolling the page when focusing
+    (searchRef.current ?? context.contentRef.current)?.focus({ preventScroll: true });
   }, [context.open, mounted, context.contentRef]);
+
+  // A mounted SelectSearch moves the listbox role to the viewport (see the
+  // ARIA block below). Counted rather than flagged so a remount cannot race.
+  const [searchCount, setSearchCount] = useState(0);
+  const registerSearch = useCallback((present: boolean) => setSearchCount(count => count + (present ? 1 : -1)), []);
+  const hasSearch = searchCount > 0;
+  const listboxId = `${context.contentId}-listbox`;
 
   // Return focus to the trigger after a close initiated from inside the listbox
   // (Escape, Enter/Space, Tab, item click). Consumers can veto the focus return
@@ -173,14 +184,28 @@ export const SelectContent = <T extends ElementType = 'div'>({
     }
   }, [context.open, context.focusStrategy, context.value, enabledItems, highlightFirst, highlightLast, resetTypeahead, context.setFocusStrategy]);
 
+  // Filtering unmounts options. When the highlighted one goes, the highlight
+  // moves to the first one left, so Enter never commits an option the user can
+  // no longer see. Scoped to a search so plain lists keep their behaviour.
+  useLayoutEffect(() => {
+    if (!hasSearch || !context.open || context.focusStrategy !== 'none') return;
+    if (highlightedId !== null && enabledItems.some(item => item.value === highlightedId)) return;
+    setHighlightedId(enabledItems[0]?.value ?? null);
+  }, [hasSearch, context.open, context.focusStrategy, enabledItems, highlightedId]);
+
   // Keyboard navigation
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
       onKeyDown?.(event);
       if (event.defaultPrevented) return;
 
+      // Inside the search field, characters and the caret keys edit the text:
+      // no typeahead, and Space / Home / End stay with the input.
+      const fromSearch = searchRef.current !== null && event.target === searchRef.current;
+      if (fromSearch && (event.key === ' ' || event.key === 'Home' || event.key === 'End')) return;
+
       // Typeahead first (consistent with DropdownMenu)
-      if (performTypeahead(event)) {
+      if (!fromSearch && performTypeahead(event)) {
         event.preventDefault();
         return;
       }
@@ -267,8 +292,12 @@ export const SelectContent = <T extends ElementType = 'div'>({
       isItemHighlighted,
       highlightedId,
       returnFocusToTrigger,
+      hasSearch,
+      registerSearch,
+      searchRef,
+      listboxId,
     }),
-    [highlightItem, highlightFirst, highlightLast, highlightNext, highlightPrevious, isItemHighlighted, highlightedId, returnFocusToTrigger],
+    [highlightItem, highlightFirst, highlightLast, highlightNext, highlightPrevious, isItemHighlighted, highlightedId, returnFocusToTrigger, hasSearch, registerSearch, listboxId],
   );
 
   if (!context.open || !mounted) {
@@ -289,10 +318,13 @@ export const SelectContent = <T extends ElementType = 'div'>({
     ...style,
   };
 
+  // A listbox may own only options and groups, so with a search the content
+  // stops being one: SelectViewport takes the role and SelectSearch the
+  // combobox wiring (aria-activedescendant included).
   const ariaAttributes = {
-    'role': 'listbox',
-    'aria-labelledby': context.triggerId,
-    'aria-activedescendant': highlightedId ? `${context.contentId}-option-${encodeURIComponent(highlightedId)}` : undefined,
+    'role': hasSearch ? undefined : 'listbox',
+    'aria-labelledby': hasSearch ? undefined : context.triggerId,
+    'aria-activedescendant': !hasSearch && highlightedId ? `${context.contentId}-option-${encodeURIComponent(highlightedId)}` : undefined,
   };
 
   const dataAttributes = {

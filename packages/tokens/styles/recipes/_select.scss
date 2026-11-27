@@ -244,6 +244,58 @@
 }
 
 // ---------------------------------------------------------------------------
+// Search — filter field above the viewport (`Select.Search`). Sits outside
+// the scroll region so it stays put while the options scroll, and reads as a
+// compact field inside the panel rather than a second form control.
+// ---------------------------------------------------------------------------
+
+@mixin select-search {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  margin-bottom: var(--spacing-s);
+  padding: var(--dropdown-items-basic-base-v-padding) var(--dropdown-items-basic-base-h-padding);
+  border: 1px solid var(--border-light);
+  border-radius: var(--dropdown-items-basic-base-radius);
+  background-color: var(--static-light);
+  color: var(--text-dark);
+  transition: border-color 0.2s ease-in-out;
+
+  &:focus-within {
+    border-color: var(--states-info-base);
+  }
+}
+
+@mixin select-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text-darkest);
+  font: inherit;
+
+  &::placeholder {
+    color: var(--text-sub-base);
+  }
+}
+
+@mixin select-search-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+// Empty — what the consumer shows once a search matches nothing.
+@mixin select-empty {
+  padding: var(--dropdown-items-basic-base-v-padding) var(--dropdown-items-basic-base-h-padding);
+  color: var(--text-sub-base);
+  text-align: center;
+}
+
+// ---------------------------------------------------------------------------
 // Item — single selectable option.
 // ---------------------------------------------------------------------------
 
