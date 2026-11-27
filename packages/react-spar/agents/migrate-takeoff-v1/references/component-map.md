@@ -24,22 +24,23 @@ writing code.
 
 ## Compound rewrites
 
-| v1 export(s)                       | v2 target    | Structural change                                        |
-| ---------------------------------- | ------------ | -------------------------------------------------------- |
-| `TkAccordion`, `TkAccordionItem`   | `Accordion`  | `items` and labels become compound children.             |
-| `TkBreadcrumb`, `TkBreadcrumbItem` | `Breadcrumb` | Render breadcrumb items as children.                     |
-| `TkCard`                           | `Card`       | Move heading/body/footer props into parts or children.   |
-| `TkDialog`                         | `Dialog`     | Move header/footer and body content into compound parts. |
-| `TkDrawer`                         | `Drawer`     | Move title/content/actions into children.                |
-| `TkDropdown`                       | `Dropdown`   | Move menu data into trigger/content/item children.       |
-| `TkPopover`                        | `Popover`    | Move trigger and panel content into children.            |
-| `TkRadio`, `TkRadioGroup`          | `Radio`      | Use the v2 group/control composition and value callback. |
-| `TkSelect`                         | `Select`     | Replace `options` with option children.                  |
-| `TkStep`, `TkStepper`              | `Stepper`    | Render step children and map active state.               |
-| `TkTable`                          | `Table`      | Replace `columns`/`data` with v2 table anatomy.          |
-| `TkTabs`, `TkTabsItem`             | `Tabs`       | Render tab triggers and panels as children.              |
-| `TkTooltip`                        | `Tooltip`    | Use the v2 trigger/content composition.                  |
-| `TkUpload`                         | `Upload`     | Map file handling to the v2 browse/dropzone API.         |
+| v1 export(s)                       | v2 target       | Structural change                                                 |
+| ---------------------------------- | --------------- | ----------------------------------------------------------------- |
+| `TkAccordion`, `TkAccordionItem`   | `Accordion`     | `items` and labels become compound children.                      |
+| `TkBreadcrumb`, `TkBreadcrumbItem` | `Breadcrumb`    | Render breadcrumb items as children.                              |
+| `TkCard`                           | `Card`          | Move heading/body/footer props into parts or children.            |
+| `TkCurrencyInput`                  | `CurrencyInput` | Compose `Field` + `Suffix` + `CurrencySelect`; pass `currencies`. |
+| `TkDialog`                         | `Dialog`        | Move header/footer and body content into compound parts.          |
+| `TkDrawer`                         | `Drawer`        | Move title/content/actions into children.                         |
+| `TkDropdown`                       | `Dropdown`      | Move menu data into trigger/content/item children.                |
+| `TkPopover`                        | `Popover`       | Move trigger and panel content into children.                     |
+| `TkRadio`, `TkRadioGroup`          | `Radio`         | Use the v2 group/control composition and value callback.          |
+| `TkSelect`                         | `Select`        | Replace `options` with option children.                           |
+| `TkStep`, `TkStepper`              | `Stepper`       | Render step children and map active state.                        |
+| `TkTable`                          | `Table`         | Replace `columns`/`data` with v2 table anatomy.                   |
+| `TkTabs`, `TkTabsItem`             | `Tabs`          | Render tab triggers and panels as children.                       |
+| `TkTooltip`                        | `Tooltip`       | Use the v2 trigger/content composition.                           |
+| `TkUpload`                         | `Upload`        | Map file handling to the v2 browse/dropzone API.                  |
 
 ## Special mappings
 
@@ -62,9 +63,9 @@ migration.
 ## v1-only gaps
 
 `TkAvatar`, `TkAvatarGroup`, `TkCarousel`, `TkChart`, `TkColorPicker`,
-`TkCurrencyInput`, `TkEditor`, `TkGanttChart`, `TkOrgChart`, `TkPagination`,
-`TkPhoneInput`, `TkTimeline`, `TkTimelineItem`, `TkTreeView` have no shipped v2
-target. See [references/gaps.md](gaps.md) before changing them.
+`TkEditor`, `TkGanttChart`, `TkOrgChart`, `TkPagination`, `TkPhoneInput`,
+`TkTimeline`, `TkTimelineItem`, `TkTreeView` have no shipped v2 target. See
+[references/gaps.md](gaps.md) before changing them.
 
 ## v2 opportunities
 

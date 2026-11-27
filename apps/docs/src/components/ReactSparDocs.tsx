@@ -18,6 +18,7 @@ export {
   Chat,
   Checkbox,
   Chip,
+  CurrencyInput,
   Dialog,
   Divider,
   Drawer,
