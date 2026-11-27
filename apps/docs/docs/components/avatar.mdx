@@ -11,7 +11,15 @@ import LiveCode from '@site/src/components/LiveCode';
 import { Avatar, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
 import { ApiBadge } from '@site/src/components/ApiBadge';
 
-export const avatarScope = { Avatar };
+export const photos = {
+  user1: '/img/avatar/user-1.jpg',
+  user2: '/img/avatar/user-2.jpg',
+  user3: '/img/avatar/user-3.jpg',
+  user4: '/img/avatar/user-4.jpg',
+  missing: '/img/avatar/missing.jpg',
+};
+
+export const avatarScope = { Avatar, photos };
 
 {/* prettier-ignore-start */}
 
@@ -20,12 +28,12 @@ function PlaygroundDemo() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-4">
       <Avatar name="Ada Lovelace" size="large" rounded>
-        <Avatar.Image src="/img/avatar/user-1.jpg" />
+        <Avatar.Image src={photos.user1} />
         <Avatar.Fallback>AL</Avatar.Fallback>
         <Avatar.Badge variant="success" />
       </Avatar>
       <Avatar name="Grace Hopper" size="large" appearance="filledLight" variant="info">
-        <Avatar.Image src="/img/avatar/missing.jpg" />
+        <Avatar.Image src={photos.missing} />
         <Avatar.Fallback>GH</Avatar.Fallback>
       </Avatar>
       <Avatar size="large" variant="light" appearance="filledLight" rounded>
@@ -41,11 +49,11 @@ render(<PlaygroundDemo />);
 export const fallbackDemo = String.raw`
 <div className="flex flex-wrap items-center justify-center gap-4">
   <Avatar name="Ada Lovelace">
-    <Avatar.Image src="/img/avatar/user-2.jpg" />
+    <Avatar.Image src={photos.user2} />
     <Avatar.Fallback>AL</Avatar.Fallback>
   </Avatar>
   <Avatar name="Broken image">
-    <Avatar.Image src="/img/avatar/missing.jpg" />
+    <Avatar.Image src={photos.missing} />
     <Avatar.Fallback>BI</Avatar.Fallback>
   </Avatar>
   <Avatar>
@@ -89,12 +97,12 @@ export const variantsDemo = String.raw`
 export const badgeDemo = String.raw`
 <div className="flex flex-wrap items-center justify-center gap-4">
   <Avatar name="Online" rounded>
-    <Avatar.Image src="/img/avatar/user-3.jpg" />
+    <Avatar.Image src={photos.user3} />
     <Avatar.Fallback>ON</Avatar.Fallback>
     <Avatar.Badge variant="success" />
   </Avatar>
   <Avatar name="Away" size="large" rounded>
-    <Avatar.Image src="/img/avatar/user-4.jpg" />
+    <Avatar.Image src={photos.user4} />
     <Avatar.Fallback>AW</Avatar.Fallback>
     <Avatar.Badge variant="warning" />
   </Avatar>
@@ -112,17 +120,17 @@ export const badgeDemo = String.raw`
 export const groupDemo = String.raw`
 <div className="flex flex-col items-center gap-4">
   <Avatar.Group rounded max={4} aria-label="Reviewers">
-    <Avatar name="Ada"><Avatar.Image src="/img/avatar/user-1.jpg" /><Avatar.Fallback>AD</Avatar.Fallback></Avatar>
-    <Avatar name="Grace"><Avatar.Image src="/img/avatar/user-2.jpg" /><Avatar.Fallback>GR</Avatar.Fallback></Avatar>
-    <Avatar name="Linus"><Avatar.Image src="/img/avatar/user-3.jpg" /><Avatar.Fallback>LI</Avatar.Fallback></Avatar>
+    <Avatar name="Ada"><Avatar.Image src={photos.user1} /><Avatar.Fallback>AD</Avatar.Fallback></Avatar>
+    <Avatar name="Grace"><Avatar.Image src={photos.user2} /><Avatar.Fallback>GR</Avatar.Fallback></Avatar>
+    <Avatar name="Linus"><Avatar.Image src={photos.user3} /><Avatar.Fallback>LI</Avatar.Fallback></Avatar>
     <Avatar name="Margaret" appearance="filledLight" variant="info"><Avatar.Fallback>MH</Avatar.Fallback></Avatar>
     <Avatar name="Alan"><Avatar.Fallback>AT</Avatar.Fallback></Avatar>
     <Avatar name="Barbara"><Avatar.Fallback>BL</Avatar.Fallback></Avatar>
   </Avatar.Group>
   <Avatar.Group rounded compact max={3} size="small" aria-label="Watchers">
-    <Avatar name="Ada"><Avatar.Image src="/img/avatar/user-1.jpg" /><Avatar.Fallback>AD</Avatar.Fallback></Avatar>
-    <Avatar name="Grace"><Avatar.Image src="/img/avatar/user-2.jpg" /><Avatar.Fallback>GR</Avatar.Fallback></Avatar>
-    <Avatar name="Linus"><Avatar.Image src="/img/avatar/user-4.jpg" /><Avatar.Fallback>LI</Avatar.Fallback></Avatar>
+    <Avatar name="Ada"><Avatar.Image src={photos.user1} /><Avatar.Fallback>AD</Avatar.Fallback></Avatar>
+    <Avatar name="Grace"><Avatar.Image src={photos.user2} /><Avatar.Fallback>GR</Avatar.Fallback></Avatar>
+    <Avatar name="Linus"><Avatar.Image src={photos.user4} /><Avatar.Fallback>LI</Avatar.Fallback></Avatar>
     <Avatar name="Alan"><Avatar.Fallback>AT</Avatar.Fallback></Avatar>
     <Avatar name="Barbara"><Avatar.Fallback>BL</Avatar.Fallback></Avatar>
   </Avatar.Group>

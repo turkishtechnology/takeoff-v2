@@ -30,7 +30,7 @@ function PlaygroundDemo() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-4">
       <Avatar name="Ada Lovelace" size="large" rounded>
-        <Avatar.Image src="/img/avatar/user-1.jpg" />
+        <Avatar.Image src={photos.user1} />
         <Avatar.Fallback>AL</Avatar.Fallback>
         <Avatar.Badge variant="success" />
       </Avatar>
@@ -40,7 +40,7 @@ function PlaygroundDemo() {
         appearance="filledLight"
         variant="info"
       >
-        <Avatar.Image src="/img/avatar/missing.jpg" />
+        <Avatar.Image src={photos.missing} />
         <Avatar.Fallback>GH</Avatar.Fallback>
       </Avatar>
       <Avatar size="large" variant="light" appearance="filledLight" rounded>
@@ -64,11 +64,11 @@ fallback to keep a fast-loading picture from flashing it first, and
 ```tsx
 <div className="flex flex-wrap items-center justify-center gap-4">
   <Avatar name="Ada Lovelace">
-    <Avatar.Image src="/img/avatar/user-2.jpg" />
+    <Avatar.Image src={photos.user2} />
     <Avatar.Fallback>AL</Avatar.Fallback>
   </Avatar>
   <Avatar name="Broken image">
-    <Avatar.Image src="/img/avatar/missing.jpg" />
+    <Avatar.Image src={photos.missing} />
     <Avatar.Fallback>BI</Avatar.Fallback>
   </Avatar>
   <Avatar>
@@ -164,12 +164,12 @@ such as a count. It is decorative unless you give it an `aria-label`.
 ```tsx
 <div className="flex flex-wrap items-center justify-center gap-4">
   <Avatar name="Online" rounded>
-    <Avatar.Image src="/img/avatar/user-3.jpg" />
+    <Avatar.Image src={photos.user3} />
     <Avatar.Fallback>ON</Avatar.Fallback>
     <Avatar.Badge variant="success" />
   </Avatar>
   <Avatar name="Away" size="large" rounded>
-    <Avatar.Image src="/img/avatar/user-4.jpg" />
+    <Avatar.Image src={photos.user4} />
     <Avatar.Fallback>AW</Avatar.Fallback>
     <Avatar.Badge variant="warning" />
   </Avatar>
@@ -196,15 +196,15 @@ such as a count. It is decorative unless you give it an `aria-label`.
 <div className="flex flex-col items-center gap-4">
   <Avatar.Group rounded max={4} aria-label="Reviewers">
     <Avatar name="Ada">
-      <Avatar.Image src="/img/avatar/user-1.jpg" />
+      <Avatar.Image src={photos.user1} />
       <Avatar.Fallback>AD</Avatar.Fallback>
     </Avatar>
     <Avatar name="Grace">
-      <Avatar.Image src="/img/avatar/user-2.jpg" />
+      <Avatar.Image src={photos.user2} />
       <Avatar.Fallback>GR</Avatar.Fallback>
     </Avatar>
     <Avatar name="Linus">
-      <Avatar.Image src="/img/avatar/user-3.jpg" />
+      <Avatar.Image src={photos.user3} />
       <Avatar.Fallback>LI</Avatar.Fallback>
     </Avatar>
     <Avatar name="Margaret" appearance="filledLight" variant="info">
@@ -219,15 +219,15 @@ such as a count. It is decorative unless you give it an `aria-label`.
   </Avatar.Group>
   <Avatar.Group rounded compact max={3} size="small" aria-label="Watchers">
     <Avatar name="Ada">
-      <Avatar.Image src="/img/avatar/user-1.jpg" />
+      <Avatar.Image src={photos.user1} />
       <Avatar.Fallback>AD</Avatar.Fallback>
     </Avatar>
     <Avatar name="Grace">
-      <Avatar.Image src="/img/avatar/user-2.jpg" />
+      <Avatar.Image src={photos.user2} />
       <Avatar.Fallback>GR</Avatar.Fallback>
     </Avatar>
     <Avatar name="Linus">
-      <Avatar.Image src="/img/avatar/user-4.jpg" />
+      <Avatar.Image src={photos.user4} />
       <Avatar.Fallback>LI</Avatar.Fallback>
     </Avatar>
     <Avatar name="Alan">
