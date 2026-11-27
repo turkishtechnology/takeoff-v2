@@ -21,6 +21,22 @@ import {
 } from './components/chat/base';
 import { CheckboxBase } from './components/checkbox/base';
 import { ChipBase } from './components/chip/base';
+import { CurrencyInputBase, CurrencyInputCurrencySelectBase, CurrencyInputFieldBase, CurrencyInputSymbolBase } from './components/currency-input/base';
+import {
+  ColorPickerBase,
+  ColorPickerAlphaSliderBase,
+  ColorPickerAreaBase,
+  ColorPickerChannelFieldsBase,
+  ColorPickerContentBase,
+  ColorPickerEyeDropperBase,
+  ColorPickerFormatSelectBase,
+  ColorPickerHueSliderBase,
+  ColorPickerInputBase,
+  ColorPickerPanelBase,
+  ColorPickerPreviewBase,
+  ColorPickerSwatchBase,
+  ColorPickerSwatchesBase,
+} from './components/color-picker/base';
 import {
   DialogBodyBase,
   DialogCloseBase,
@@ -100,6 +116,7 @@ import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 import { SkeletonBase } from './components/skeleton/base';
 import { ToastBase, ToasterBase } from './components/toast/base';
+import { RatingBase, RatingItemBase } from './components/rating/base';
 import {
   UploadActionsBase,
   UploadBase,
@@ -168,6 +185,23 @@ export const slotClassRegistry = {
   chatComposer: { slots: ChatComposerBase.classes },
   checkbox: { slots: CheckboxBase.classes },
   chip: { slots: ChipBase.classes },
+  colorPicker: { slots: ColorPickerBase.classes },
+  colorPickerInput: { slots: ColorPickerInputBase.classes },
+  colorPickerContent: { slots: ColorPickerContentBase.classes },
+  colorPickerPanel: { slots: ColorPickerPanelBase.classes },
+  colorPickerArea: { slots: ColorPickerAreaBase.classes },
+  colorPickerHueSlider: { slots: ColorPickerHueSliderBase.classes },
+  colorPickerAlphaSlider: { slots: ColorPickerAlphaSliderBase.classes },
+  colorPickerEyeDropper: { slots: ColorPickerEyeDropperBase.classes },
+  colorPickerPreview: { slots: ColorPickerPreviewBase.classes },
+  colorPickerFormatSelect: { slots: ColorPickerFormatSelectBase.classes },
+  colorPickerChannelFields: { slots: ColorPickerChannelFieldsBase.classes },
+  colorPickerSwatches: { slots: ColorPickerSwatchesBase.classes },
+  colorPickerSwatch: { slots: ColorPickerSwatchBase.classes },
+  currencyInput: { slots: CurrencyInputBase.classes },
+  currencyInputField: { slots: CurrencyInputFieldBase.classes },
+  currencyInputSymbol: { slots: CurrencyInputSymbolBase.classes },
+  currencyInputCurrencySelect: { slots: CurrencyInputCurrencySelectBase.classes },
   dialogTrigger: { slots: DialogTriggerBase.classes },
   dialogOverlay: { slots: DialogOverlayBase.classes },
   dialogPanel: { slots: DialogPanelBase.classes },
@@ -281,4 +315,6 @@ export const slotClassRegistry = {
   uploadItemPreview: { slots: UploadItemPreviewBase.classes },
   uploadItemActions: { slots: UploadItemActionsBase.classes },
   uploadItemAction: { slots: UploadItemActionBase.classes },
+  rating: { slots: RatingBase.classes },
+  ratingItem: { slots: RatingItemBase.classes },
 } as const;

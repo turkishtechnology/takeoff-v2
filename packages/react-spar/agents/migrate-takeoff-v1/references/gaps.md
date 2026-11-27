@@ -1,6 +1,6 @@
 # Coverage gaps
 
-These 14 v1 exports have no shipped v2 target in the current release. This is a
+These 11 v1 exports have no shipped v2 target in the current release. This is a
 temporary coverage gap, not a permanent product boundary: the areas below are
 expected to close incrementally in future v2 releases as their React API,
 accessibility behavior, token recipes, and documentation are completed. Decide
@@ -14,12 +14,9 @@ package removal remains safe.
 | `TkAvatar`, `TkAvatarGroup`    | Keep v1 or use an app-local image/initials composition.                                      |
 | `TkCarousel`                   | Keep v1 or adopt an app-owned carousel library with an accessibility review.                 |
 | `TkChart`                      | Keep v1 or retain the existing charting library.                                             |
-| `TkColorPicker`                | Keep v1; do not substitute a plain input without preserving keyboard and format behavior.    |
-| `TkCurrencyInput`              | Keep v1 or build a domain-specific controlled input with locale tests.                       |
 | `TkEditor`                     | Keep v1 or retain the current editor integration.                                            |
 | `TkGanttChart`, `TkOrgChart`   | Keep v1 or use the domain library already used by the application.                           |
 | `TkPagination`                 | Keep it for standalone pagination. `Table` includes built-in pagination for migrated tables. |
-| `TkRating`                     | Keep v1 or build a small app-local control with keyboard semantics.                          |
 | `TkTimeline`, `TkTimelineItem` | Keep v1 or compose app-local semantic list markup.                                           |
 | `TkTreeView`                   | Keep v1 or use an app-owned accessible tree implementation.                                  |
 

@@ -79,6 +79,7 @@ table needs updating.
 | `data-disabled`       | presence     | Root or Stepper item        | Component or step is disabled       |
 | `data-dragging`       | presence     | Slider thumb                | Pointer currently controls it       |
 | `data-error`          | presence     | Stepper item                | Step has an error treatment         |
+| `data-fill`           | finite-str   | Rating item                 | `full` / `half` / `empty` fill      |
 | `data-focus`          | presence     | Slider thumb                | Handle holds keyboard focus         |
 | `data-indeterminate`  | presence     | Root, Indicator (Progress)  | Indeterminate; indicator animates   |
 | `data-invalid`        | presence     | Root                        | Component is visually invalid       |
@@ -104,6 +105,7 @@ table needs updating.
 | `data-tooltip`     | Slider root                   | `auto`, `always`, `never`                                                 | When the value bubble is shown (`auto` = on drag/focus)                   |
 | `data-header-type` | Calendar root                 | `basic`, `divided`, `light`, `primary`, `dark`                            | Caption-row treatment (Core's `tk-datepicker` header vocabulary)          |
 | `data-view`        | Calendar root, trigger, board | `day`, `month`, `year`                                                    | Which board the body shows; on a trigger, the board it opens              |
+| `data-format`      | ColorPicker root              | `hex`, `rgb`, `hsl`                                                       | Active color notation                                                     |
 
 ### Semantic
 
@@ -118,6 +120,7 @@ table needs updating.
 | `data-range`          | Slider root            | Root renders more than one thumb                 |
 | `data-spread`         | Radio root             | Items share available space along the group axis |
 | `data-level`          | Input strength segment | Strength tier for filled password meter segments |
+| `data-level`          | Rating item (number)   | Score bucketed into the five-step colour scale   |
 | `data-linear`         | Stepper root           | Steps follow a linear progression                |
 | `data-reverse`        | Stepper root           | Signs and content flip along the cross axis      |
 
@@ -206,6 +209,21 @@ its attributes are wrapper-emitted. Recorded here per rule 10.
 - **Checked/unchecked state stays Spar-owned.** `Radio.Item` exposes Spar's
   `data-state="checked" | "unchecked"`; the wrapper recipe consumes that state
   for the indicator fill instead of mirroring selection in React.
+
+### Rating
+
+- **The wrapper adds only `data-type` on the root** (`star` | `heart` | `dot` |
+  `number`). Disabled, read-only, invalid and required are Spar-emitted on the
+  radiogroup, and Spar's `data-state="checked"` marks the picked item.
+- **`data-fill` is per item, derived from Spar's group value** read back through
+  `useRadioContext`: `full` up to the value, `half` on the next item for a
+  fractional part of .5 or more, `empty` after. It is a finite string rather
+  than presence attrs (rule 6), and it is the only way a display-only fractional
+  value reaches the recipe, since no item is checked then.
+- **`data-level` (1–5) is emitted on number items only.** It buckets the score
+  over `max` into Core's red-to-green scale; glyph types do not carry it.
+- **The hover preview has no attribute.** The recipe derives it from `:hover`
+  and `:has(~ :hover)`, so pointer movement never re-renders.
 
 ### Divider
 
@@ -463,6 +481,42 @@ wrapper-emitted. Recorded here per rule 10.
   `aria-current="true"` carries the selection for assistive technology.
 - **`data-editing` (State, presence) on `Chat.Composer`** while it edits a
   message.
+
+### ColorPicker
+
+ColorPicker is **v2-owned** with no upstream Spar slider or area primitive, so
+its vocabulary is wrapper-emitted. Recorded here per rule 10.
+
+- **Root:** `data-layout` (`vertical` | `horizontal` — the `orientation` prop;
+  Chat's attribute rather than `data-orientation`, because the Slider recipe
+  reads `[data-orientation='vertical']` from any ancestor and would turn the
+  hue/alpha rails upright; re-emitted on `ColorPicker.Panel`, whose grid it
+  drives), `data-format` (`hex` | `rgb` | `hsl` — the active notation; the
+  recipe widens the alpha field under `rgb` / `hsl`) and the Field-inherited
+  `data-disabled` / `data-readonly` / `data-invalid`.
+- **Area:** `data-disabled` / `data-readonly` on the plane (cursor and muting),
+  and Slider's thumb vocabulary — `data-dragging`, `data-focus` — on its
+  `role="slider"` thumb.
+- **`data-selected` (State, presence) on `ColorPicker.Swatch`** when it matches
+  the current value; `aria-pressed` carries it for assistive technology.
+- Colors are never `data-*`: the component sets `--tk-color-picker-color`,
+  `--tk-color-picker-hue` and `--tk-color-picker-opaque` inline and the recipe
+  paints with them.
+
+### CurrencyInput
+
+CurrencyInput is **v2-owned** composition: its row is `Input`'s element and its
+field is `Input.Field` with Spar's `number` mask, so it inherits their
+vocabulary (`data-invalid`, `data-disabled`, `data-mask`, …) and adds one key.
+Recorded here per rule 10.
+
+- **`data-currency` (Variant) on the root** carries the active ISO 4217 code.
+  The value is open-ended data rather than a fixed enum, but it is the root's
+  configuration in the same sense as `data-size`, so it lives with the variants.
+  It exists so a recipe can widen the trigger for a long code without a
+  JavaScript hook.
+- **No `data-*` of its own on `CurrencyInput.Symbol`** beyond `data-slot`: the
+  code is already on the root.
 
 ### PhoneInput
 

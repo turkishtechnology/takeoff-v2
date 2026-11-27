@@ -1,0 +1,208 @@
+// ---------------------------------------------------------------------------
+// Rating recipes.
+//
+// The React wrapper renders a Spar radiogroup as `.tk-rating` and each score
+// as a Spar radio item `.tk-rating-item`. Spar owns the value, keyboard, ARIA
+// and form behavior; the wrapper stamps `data-type` on the root and
+// `data-fill` (`full` / `half` / `empty`) plus `data-level` (number type) on
+// each item. Each glyph SVG carries an outline, a full and a half layer; the
+// recipe shows the one that matches `data-fill`. Pointer hover previews the
+// fill up to the hovered item in CSS only.
+// ---------------------------------------------------------------------------
+
+@mixin rating {
+  // Glyph outline (empty), glyph fill, and the value text of a filled item.
+  --tk-rating-empty: var(--states-warning-light);
+  --tk-rating-filled: var(--states-warning-base);
+  --tk-rating-filled-text: var(--states-warning-dark);
+
+  display: inline-flex;
+  align-items: flex-start;
+  max-width: 100%;
+
+  &[data-type='heart'] {
+    --tk-rating-empty: var(--states-danger-light);
+    --tk-rating-filled: var(--states-danger-base);
+    --tk-rating-filled-text: var(--states-danger-dark);
+  }
+
+  &[data-type='dot'] {
+    --tk-rating-empty: var(--states-success-light);
+    --tk-rating-filled: var(--states-success-base);
+    --tk-rating-filled-text: var(--states-success-dark);
+  }
+
+  &[data-type='number'] {
+    gap: var(--spacing-xs);
+  }
+
+  &[data-disabled] {
+    --tk-rating-empty: var(--border-light);
+    --tk-rating-filled: var(--border-light);
+    --tk-rating-filled-text: var(--text-sub-base);
+  }
+
+  // Hover preview: while the pointer is over an item, every item up to it
+  // reads as full and the rest as empty, regardless of the current value.
+  &:not([data-disabled], [data-readonly], [data-type='number']):has(.tk-rating-item:hover) {
+    .tk-rating-item {
+      color: var(--tk-rating-empty);
+
+      .tk-rating-glyph-outline {
+        stroke: var(--tk-rating-empty);
+      }
+
+      .tk-rating-glyph-full,
+      .tk-rating-glyph-half {
+        visibility: hidden;
+      }
+    }
+
+    .tk-rating-item:hover,
+    .tk-rating-item:has(~ .tk-rating-item:hover) {
+      color: var(--tk-rating-filled-text);
+
+      .tk-rating-glyph-full {
+        visibility: visible;
+      }
+    }
+  }
+}
+
+@mixin rating-item {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xxs);
+  border-radius: var(--radius-xs);
+  color: var(--tk-rating-empty);
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  font-size: var(--desktop-body-xs-size);
+  line-height: 1;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--static-light),
+      0 0 0 4px var(--states-info-base);
+  }
+
+  &[data-fill='full'],
+  &[data-fill='half'] {
+    color: var(--tk-rating-filled-text);
+  }
+
+  .tk-rating-glyph-outline {
+    stroke: var(--tk-rating-empty);
+  }
+
+  .tk-rating-glyph-full {
+    visibility: hidden;
+    fill: var(--tk-rating-filled);
+    stroke: var(--tk-rating-filled);
+  }
+
+  .tk-rating-glyph-half {
+    visibility: hidden;
+    fill: var(--tk-rating-filled);
+  }
+
+  &[data-fill='full'] .tk-rating-glyph-full,
+  &[data-fill='half'] .tk-rating-glyph-half {
+    visibility: visible;
+  }
+
+  &[data-fill='half'] .tk-rating-glyph-outline {
+    stroke: var(--tk-rating-filled);
+  }
+
+  &[data-readonly] {
+    cursor: default;
+  }
+
+  &[data-disabled] {
+    color: var(--text-sub-base);
+    cursor: not-allowed;
+  }
+
+  .tk-rating[data-type='number'] & {
+    @include rating-number;
+  }
+}
+
+// Numbered boxes: only the picked (or hovered) box takes its level colour,
+// on Core's five-step red-to-green scale.
+@mixin rating-number {
+  justify-content: center;
+  box-sizing: border-box;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  border: 1px solid var(--border-sub-base);
+  border-radius: var(--radius-m-base);
+  background-color: var(--static-light);
+  color: var(--text-darkest);
+  font-size: var(--desktop-body-s-size);
+  font-weight: 400;
+  line-height: var(--desktop-body-s-line-height);
+  transition:
+    background-color 0.15s ease-in-out,
+    color 0.15s ease-in-out;
+
+  &[data-level='1'] {
+    --tk-rating-level-hover: var(--states-danger-lightest);
+    --tk-rating-level-hover-text: var(--text-sub-base);
+    --tk-rating-level: var(--states-danger-dark);
+    --tk-rating-level-text: var(--text-lightest);
+  }
+
+  &[data-level='2'] {
+    --tk-rating-level-hover: var(--states-danger-sub-base);
+    --tk-rating-level-hover-text: var(--text-darkest);
+    --tk-rating-level: var(--states-danger-sub-base);
+    --tk-rating-level-text: var(--text-darkest);
+  }
+
+  &[data-level='3'] {
+    --tk-rating-level-hover: var(--states-warning-sub-base);
+    --tk-rating-level-hover-text: var(--text-darkest);
+    --tk-rating-level: var(--states-warning-sub-base);
+    --tk-rating-level-text: var(--text-darkest);
+  }
+
+  &[data-level='4'] {
+    --tk-rating-level-hover: var(--states-success-base);
+    --tk-rating-level-hover-text: var(--text-darkest);
+    --tk-rating-level: var(--states-success-base);
+    --tk-rating-level-text: var(--text-darkest);
+  }
+
+  &[data-level='5'] {
+    --tk-rating-level-hover: var(--states-success-darkest);
+    --tk-rating-level-hover-text: var(--text-lightest);
+    --tk-rating-level: var(--states-success-darkest);
+    --tk-rating-level-text: var(--text-lightest);
+  }
+
+  &:hover:not([data-state='checked'], [data-disabled], [data-readonly]) {
+    background-color: var(--tk-rating-level-hover);
+    color: var(--tk-rating-level-hover-text);
+  }
+
+  &[data-state='checked'] {
+    border-color: transparent;
+    background-color: var(--tk-rating-level);
+    color: var(--tk-rating-level-text);
+  }
+
+  &[data-disabled] {
+    border-color: var(--border-light);
+    background-color: var(--background-lightest);
+    color: var(--text-sub-base);
+  }
+}
