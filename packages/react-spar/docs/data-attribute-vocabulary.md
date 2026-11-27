@@ -543,6 +543,21 @@ from the Figma "timer" component.
   property (`--tk-timepicker-dial-angle`) and the recipe consumes it. Same
   rationale as Slider's thumb offset and Progress's fill width.
 
+### CurrencyInput
+
+CurrencyInput is **v2-owned** composition: its row is `Input`'s element and its
+field is `Input.Field` with Spar's `number` mask, so it inherits their
+vocabulary (`data-invalid`, `data-disabled`, `data-mask`, …) and adds one key.
+Recorded here per rule 10.
+
+- **`data-currency` (Variant) on the root** carries the active ISO 4217 code.
+  The value is open-ended data rather than a fixed enum, but it is the root's
+  configuration in the same sense as `data-size`, so it lives with the variants.
+  It exists so a recipe can widen the trigger for a long code without a
+  JavaScript hook.
+- **No `data-*` of its own on `CurrencyInput.Symbol`** beyond `data-slot`: the
+  code is already on the root.
+
 ### Upload
 
 Upload is **v2-owned** with no upstream Spar primitive, so its vocabulary is

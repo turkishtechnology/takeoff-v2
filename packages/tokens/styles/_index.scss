@@ -12,6 +12,7 @@
 @use 'recipes/chat';
 @use 'recipes/checkbox';
 @use 'recipes/chip';
+@use 'recipes/currency-input';
 @use 'recipes/datepicker';
 @use 'recipes/dialog';
 @use 'recipes/divider';
@@ -362,6 +363,22 @@
 
 .tk-select-item {
   @include select.select-item;
+}
+
+.tk-select-search {
+  @include select.select-search;
+}
+
+.tk-select-search-input {
+  @include select.select-search-input;
+}
+
+.tk-select-search-icon {
+  @include select.select-search-icon;
+}
+
+.tk-select-empty {
+  @include select.select-empty;
 }
 
 .tk-select-item-text {

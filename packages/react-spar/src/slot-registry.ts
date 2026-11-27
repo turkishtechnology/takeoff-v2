@@ -21,6 +21,7 @@ import {
 } from './components/chat/base';
 import { CheckboxBase } from './components/checkbox/base';
 import { ChipBase } from './components/chip/base';
+import { CurrencyInputBase, CurrencyInputCurrencySelectBase, CurrencyInputFieldBase, CurrencyInputSymbolBase } from './components/currency-input/base';
 import {
   DialogBodyBase,
   DialogCloseBase,
@@ -85,6 +86,8 @@ import {
   SelectSeparatorBase,
   SelectTriggerBase,
   SelectViewportBase,
+  SelectSearchBase,
+  SelectEmptyBase,
 } from './components/select/base';
 import { SliderBase, SliderRangeBase, SliderThumbBase, SliderTicksBase, SliderTrackBase, SliderValueBase } from './components/slider/base';
 import { SpinnerBase } from './components/spinner/base';
@@ -166,6 +169,10 @@ export const slotClassRegistry = {
   chatComposer: { slots: ChatComposerBase.classes },
   checkbox: { slots: CheckboxBase.classes },
   chip: { slots: ChipBase.classes },
+  currencyInput: { slots: CurrencyInputBase.classes },
+  currencyInputField: { slots: CurrencyInputFieldBase.classes },
+  currencyInputSymbol: { slots: CurrencyInputSymbolBase.classes },
+  currencyInputCurrencySelect: { slots: CurrencyInputCurrencySelectBase.classes },
   dialogTrigger: { slots: DialogTriggerBase.classes },
   dialogOverlay: { slots: DialogOverlayBase.classes },
   dialogPanel: { slots: DialogPanelBase.classes },
@@ -222,6 +229,8 @@ export const slotClassRegistry = {
   selectIndicator: { slots: SelectIndicatorBase.classes },
   selectContent: { slots: SelectContentBase.classes },
   selectViewport: { slots: SelectViewportBase.classes },
+  selectSearch: { slots: SelectSearchBase.classes },
+  selectEmpty: { slots: SelectEmptyBase.classes },
   selectItem: { slots: SelectItemBase.classes },
   selectGroup: { slots: SelectGroupBase.classes },
   selectLabel: { slots: SelectLabelBase.classes },
