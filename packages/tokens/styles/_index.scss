@@ -12,6 +12,7 @@
 @use 'recipes/chat';
 @use 'recipes/checkbox';
 @use 'recipes/chip';
+@use 'recipes/color-picker';
 @use 'recipes/currency-input';
 @use 'recipes/datepicker';
 @use 'recipes/dialog';
@@ -701,4 +702,77 @@
 
 .tk-upload-item-action {
   @include upload.upload-item-action;
+}
+
+.tk-color-picker {
+  @include color-picker.color-picker;
+}
+
+.tk-color-picker-input-preview {
+  @include color-picker.color-picker-input-preview;
+}
+
+.tk-color-picker-panel {
+  @include color-picker.color-picker-panel;
+}
+
+.tk-color-picker-controls {
+  @include color-picker.color-picker-controls;
+}
+
+.tk-color-picker-sliders {
+  @include color-picker.color-picker-sliders;
+}
+
+.tk-color-picker-fields {
+  @include color-picker.color-picker-fields;
+}
+
+.tk-color-picker-area {
+  @include color-picker.color-picker-area;
+}
+
+.tk-color-picker-area-thumb {
+  @include color-picker.color-picker-area-thumb;
+}
+
+.tk-color-picker-preview {
+  @include color-picker.color-picker-preview;
+}
+
+.tk-color-picker-eye-dropper {
+  @include color-picker.color-picker-eye-dropper;
+}
+
+.tk-color-picker-format {
+  @include color-picker.color-picker-format;
+}
+
+.tk-color-picker-channels {
+  @include color-picker.color-picker-channels;
+}
+
+.tk-color-picker-channel {
+  @include color-picker.color-picker-channel;
+}
+
+.tk-color-picker-swatches {
+  @include color-picker.color-picker-swatches;
+}
+
+.tk-color-picker-swatch {
+  @include color-picker.color-picker-swatch;
+}
+
+// Two-class selectors: these must outrank the Popover and Slider recipes.
+.tk-popover-content.tk-color-picker-content {
+  @include color-picker.color-picker-content;
+}
+
+.tk-slider.tk-color-picker-hue {
+  @include color-picker.color-picker-hue;
+}
+
+.tk-slider.tk-color-picker-alpha {
+  @include color-picker.color-picker-alpha;
 }

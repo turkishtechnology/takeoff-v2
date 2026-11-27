@@ -30,6 +30,7 @@ const sidebars: SidebarsConfig = {
         'components/chat',
         'components/checkbox',
         'components/chip',
+        'components/color-picker',
         'components/currency-input',
         'components/datepicker',
         'components/dialog',
