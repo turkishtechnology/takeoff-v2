@@ -186,6 +186,26 @@ its attributes are wrapper-emitted. Recorded here per rule 10.
   describe layout intent for the whole accordion and cascade naturally to every
   trigger via descendant selectors.
 
+### Avatar
+
+- **Root carries the variants:** `data-size` (`xxsmall` … `xxlarge`),
+  `data-variant`, `data-type` (the `appearance` prop, per the Badge/Tabs
+  precedent), and the presence flags `data-rounded` and `data-hide-shadow`.
+  Inside `Avatar.Group` the resolved group `size` / `rounded` are what the root
+  emits, so recipes never look up the group.
+- **`data-status` is Spar's, not the wrapper's.** The Spar `Avatar` root emits
+  the image loading status (`idle` | `loading` | `loaded` | `error`); the recipe
+  drops the backdrop on `loaded`. The wrapper adds no loading attribute of its
+  own (rule 7).
+- **`data-icon` on `Avatar.Fallback`** marks the default person glyph, which
+  sits on the bottom edge instead of the centre.
+- **`Avatar.Badge` is a Takeoff `Badge`.** It keeps the Badge root's `data-*`
+  (`data-dot`, `data-variant`, …) and adds `data-avatar-badge`; the Avatar
+  recipe sizes the dot from the avatar's `data-size`.
+- **`Avatar.Group`** emits `data-size` and `data-compact`; the `+N` avatar it
+  renders past `max` carries `data-overflow` and the `tk-avatar-group-overflow`
+  class.
+
 ### Radio
 
 - **`data-size`, `data-type`, and `data-position` are emitted on both the root

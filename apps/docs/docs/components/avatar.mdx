@@ -1,0 +1,390 @@
+---
+title: Avatar
+description:
+  A person's or entity's picture with an initials or icon fallback, a status
+  badge, sizes, shapes, and a group with an overflow count.
+sidebar_label: Avatar
+slug: /components/avatar
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import { Avatar, ReactSparDemoRoot } from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const avatarScope = { Avatar };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-4">
+      <Avatar name="Ada Lovelace" size="large" rounded>
+        <Avatar.Image src="/img/avatar/user-1.jpg" />
+        <Avatar.Fallback>AL</Avatar.Fallback>
+        <Avatar.Badge variant="success" />
+      </Avatar>
+      <Avatar name="Grace Hopper" size="large" appearance="filledLight" variant="info">
+        <Avatar.Image src="/img/avatar/missing.jpg" />
+        <Avatar.Fallback>GH</Avatar.Fallback>
+      </Avatar>
+      <Avatar size="large" variant="light" appearance="filledLight" rounded>
+        <Avatar.Fallback />
+      </Avatar>
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const fallbackDemo = String.raw`
+<div className="flex flex-wrap items-center justify-center gap-4">
+  <Avatar name="Ada Lovelace">
+    <Avatar.Image src="/img/avatar/user-2.jpg" />
+    <Avatar.Fallback>AL</Avatar.Fallback>
+  </Avatar>
+  <Avatar name="Broken image">
+    <Avatar.Image src="/img/avatar/missing.jpg" />
+    <Avatar.Fallback>BI</Avatar.Fallback>
+  </Avatar>
+  <Avatar>
+    <Avatar.Fallback />
+  </Avatar>
+</div>
+`;
+
+export const sizesDemo = String.raw`
+<div className="flex flex-wrap items-end justify-center gap-3">
+  <Avatar size="xxsmall" rounded><Avatar.Fallback>XS</Avatar.Fallback></Avatar>
+  <Avatar size="xsmall" rounded><Avatar.Fallback>XS</Avatar.Fallback></Avatar>
+  <Avatar size="small" rounded><Avatar.Fallback>SM</Avatar.Fallback></Avatar>
+  <Avatar size="base" rounded><Avatar.Fallback>BA</Avatar.Fallback></Avatar>
+  <Avatar size="large" rounded><Avatar.Fallback>LG</Avatar.Fallback></Avatar>
+  <Avatar size="xlarge" rounded><Avatar.Fallback>XL</Avatar.Fallback></Avatar>
+  <Avatar size="xxlarge" rounded><Avatar.Fallback>XXL</Avatar.Fallback></Avatar>
+</div>
+`;
+
+export const variantsDemo = String.raw`
+<div className="flex flex-col items-center gap-4">
+  <div className="flex flex-wrap justify-center gap-3">
+    <Avatar variant="primary"><Avatar.Fallback>PR</Avatar.Fallback></Avatar>
+    <Avatar variant="success"><Avatar.Fallback /></Avatar>
+    <Avatar variant="info"><Avatar.Fallback /></Avatar>
+    <Avatar variant="warning"><Avatar.Fallback /></Avatar>
+    <Avatar variant="danger"><Avatar.Fallback /></Avatar>
+  </div>
+  <div className="flex flex-wrap justify-center gap-3">
+    <Avatar appearance="filledLight" variant="primary"><Avatar.Fallback>PR</Avatar.Fallback></Avatar>
+    <Avatar appearance="filledLight" variant="light"><Avatar.Fallback>LI</Avatar.Fallback></Avatar>
+    <Avatar appearance="filledLight" variant="success"><Avatar.Fallback>SU</Avatar.Fallback></Avatar>
+    <Avatar appearance="filledLight" variant="info"><Avatar.Fallback>IN</Avatar.Fallback></Avatar>
+    <Avatar appearance="filledLight" variant="warning"><Avatar.Fallback>WA</Avatar.Fallback></Avatar>
+    <Avatar appearance="filledLight" variant="danger"><Avatar.Fallback>DA</Avatar.Fallback></Avatar>
+  </div>
+</div>
+`;
+
+export const badgeDemo = String.raw`
+<div className="flex flex-wrap items-center justify-center gap-4">
+  <Avatar name="Online" rounded>
+    <Avatar.Image src="/img/avatar/user-3.jpg" />
+    <Avatar.Fallback>ON</Avatar.Fallback>
+    <Avatar.Badge variant="success" />
+  </Avatar>
+  <Avatar name="Away" size="large" rounded>
+    <Avatar.Image src="/img/avatar/user-4.jpg" />
+    <Avatar.Fallback>AW</Avatar.Fallback>
+    <Avatar.Badge variant="warning" />
+  </Avatar>
+  <Avatar name="Busy" size="large">
+    <Avatar.Fallback>BU</Avatar.Fallback>
+    <Avatar.Badge variant="danger" />
+  </Avatar>
+  <Avatar size="large" rounded>
+    <Avatar.Fallback>MS</Avatar.Fallback>
+    <Avatar.Badge variant="danger" aria-label="3 unread messages">3</Avatar.Badge>
+  </Avatar>
+</div>
+`;
+
+export const groupDemo = String.raw`
+<div className="flex flex-col items-center gap-4">
+  <Avatar.Group rounded max={4} aria-label="Reviewers">
+    <Avatar name="Ada"><Avatar.Image src="/img/avatar/user-1.jpg" /><Avatar.Fallback>AD</Avatar.Fallback></Avatar>
+    <Avatar name="Grace"><Avatar.Image src="/img/avatar/user-2.jpg" /><Avatar.Fallback>GR</Avatar.Fallback></Avatar>
+    <Avatar name="Linus"><Avatar.Image src="/img/avatar/user-3.jpg" /><Avatar.Fallback>LI</Avatar.Fallback></Avatar>
+    <Avatar name="Margaret" appearance="filledLight" variant="info"><Avatar.Fallback>MH</Avatar.Fallback></Avatar>
+    <Avatar name="Alan"><Avatar.Fallback>AT</Avatar.Fallback></Avatar>
+    <Avatar name="Barbara"><Avatar.Fallback>BL</Avatar.Fallback></Avatar>
+  </Avatar.Group>
+  <Avatar.Group rounded compact max={3} size="small" aria-label="Watchers">
+    <Avatar name="Ada"><Avatar.Image src="/img/avatar/user-1.jpg" /><Avatar.Fallback>AD</Avatar.Fallback></Avatar>
+    <Avatar name="Grace"><Avatar.Image src="/img/avatar/user-2.jpg" /><Avatar.Fallback>GR</Avatar.Fallback></Avatar>
+    <Avatar name="Linus"><Avatar.Image src="/img/avatar/user-4.jpg" /><Avatar.Fallback>LI</Avatar.Fallback></Avatar>
+    <Avatar name="Alan"><Avatar.Fallback>AT</Avatar.Fallback></Avatar>
+    <Avatar name="Barbara"><Avatar.Fallback>BL</Avatar.Fallback></Avatar>
+  </Avatar.Group>
+</div>
+`;
+
+{/* prettier-ignore-end */}
+
+# Avatar
+
+`Avatar` shows a person's or entity's picture. While the picture is missing,
+loading or broken it shows a fallback instead — initials, or a person glyph — so
+a broken image never flashes. The loading status comes from the Spar `Avatar`
+primitive.
+
+## Usage
+
+```tsx
+import { Avatar } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Avatar>
+  <Avatar.Image />
+  <Avatar.Fallback />
+  <Avatar.Badge />
+</Avatar>
+
+<Avatar.Group>
+  <Avatar />
+</Avatar.Group>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={100}
+  previewWrapper={ReactSparDemoRoot}
+  scope={avatarScope}
+/>
+
+## Image and fallback
+
+`Avatar.Image` mounts its `<img>` only once the picture has loaded.
+`Avatar.Fallback` renders until then and whenever the picture fails; give it
+initials, or no children for the default person glyph. Pass `delayMs` to the
+fallback to keep a fast-loading picture from flashing it first, and
+`onLoadingStatusChange` to the image to follow the status.
+
+<LiveCode
+  code={fallbackDemo}
+  editable={false}
+  previewMinHeight={80}
+  previewWrapper={ReactSparDemoRoot}
+  scope={avatarScope}
+/>
+
+## Sizes
+
+Seven sizes, from `xxsmall` (20px) to `xxlarge` (160px). `base` is 48px. Each
+size has its own corner radius; `rounded` makes a circle.
+
+<LiveCode
+  code={sizesDemo}
+  editable={false}
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={avatarScope}
+/>
+
+## Variants and appearance
+
+`variant` colors the fallback. `appearance="filled"` (default) sets light text
+on the brand color; `filledLight` sets dark text on a tint of the variant.
+
+<LiveCode
+  code={variantsDemo}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={avatarScope}
+/>
+
+## Badge
+
+`Avatar.Badge` pins a [Badge](/docs/components/badge) to the avatar's
+bottom-start corner, scaled to the avatar's size — a dot by default, or content
+such as a count. It is decorative unless you give it an `aria-label`.
+
+<LiveCode
+  code={badgeDemo}
+  editable={false}
+  previewMinHeight={80}
+  previewWrapper={ReactSparDemoRoot}
+  scope={avatarScope}
+/>
+
+## Group
+
+`Avatar.Group` overlaps its avatars and passes its `size` and `rounded` to them
+(an avatar's own prop wins). With `max`, the avatars past it collapse into one
+`+N` avatar; `compact` sets the group on a bordered pill and hides badges.
+
+<LiveCode
+  code={groupDemo}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={avatarScope}
+/>
+
+## Accessibility
+
+- Give `Avatar` a `name`: the avatar becomes one `role="img"` named by it, and
+  the picture and fallback are hidden from assistive technology, so the person
+  is announced once whichever of them shows.
+- Without `name`, give `Avatar.Image` an `alt`; fallback text is read as is.
+- `Avatar.Badge` is decorative by default. Give it an `aria-label` when it
+  carries information that is not said elsewhere.
+- `Avatar.Group` is a `role="group"`; name it with `aria-label`. The overflow
+  avatar reads `overflowAriaLabel` (`'{count} more'` by default).
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Avatar {#avatar}
+
+See [Spar Avatar docs](https://v2.takeoffui.com/headless/docs/Components/Avatar)
+for primitive behavior.
+
+#### Props {#avatar-props}
+
+| Name                            | Type                                                                                      | Default   | Description                                                                                                                                                                                      |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -         | `Avatar.Image`, `Avatar.Fallback` and `Avatar.Badge`.                                                                                                                                            |
+| <ApiBadge label="size" />       | <code><a href="#avatar-td-avatarsize">AvatarSize</a></code>                               | 'base'    | Size scale: 20 / 24 / 32 / 48 / 64 / 96 / 160px. Inside `Avatar.Group` the group's `size` applies unless this is set.                                                                            |
+| <ApiBadge label="variant" />    | <code><a href="#avatar-td-avatarvariant">AvatarVariant</a></code>                         | 'primary' | Color of the fallback (initials or icon).                                                                                                                                                        |
+| <ApiBadge label="appearance" /> | <code><a href="#avatar-td-avatarappearance">AvatarAppearance</a></code>                   | 'filled'  | `filled` paints the brand color behind light text; `filledLight` a tint of `variant` behind dark text.                                                                                           |
+| <ApiBadge label="rounded" />    | <code>boolean</code>                                                                      | false     | Renders a circle instead of a rounded square. Inside `Avatar.Group` the group's `rounded` applies unless this is set.                                                                            |
+| <ApiBadge label="hideShadow" /> | <code>boolean</code>                                                                      | false     | Removes the drop shadow.                                                                                                                                                                         |
+| <ApiBadge label="name" />       | <code>string</code>                                                                       | -         | The person or entity the avatar stands for. When set, the avatar is one `role="img"` named by it, and the image and fallback are hidden from assistive technology so the name is announced once. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -         | Per-slot extra classes.                                                                                                                                                                          |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                                                                                                                                                               |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -         | Appends custom classes to the root slot of this part.                                                                                                                                            |
+
+#### Data attributes {#avatar-data-attributes}
+
+| Attribute                                       | Applied when                                   | Purpose                                                       |
+| ----------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                         | Stable selector for the root slot.                            |
+| <ApiBadge label="data-size" />                  | Always                                         | Reflects the resolved `size` (own, group, or theme default).  |
+| <ApiBadge label="data-variant" />               | Always                                         | Reflects the resolved `variant` prop for fallback coloring.   |
+| <ApiBadge label="data-type" />                  | Always                                         | Reflects the resolved `appearance` prop.                      |
+| <ApiBadge label="data-rounded" />               | When `rounded` is true (own or from the group) | Styling hook for the circle shape.                            |
+| <ApiBadge label="data-hide-shadow" />           | When `hideShadow` is true                      | Styling hook that removes the drop shadow.                    |
+| <ApiBadge label="data-status" />                | Always (emitted by Spar)                       | Image loading status: `idle`, `loading`, `loaded` or `error`. |
+| <ApiBadge label="data-overflow" />              | On the `+N` avatar rendered by `Avatar.Group`  | Marks the overflow avatar.                                    |
+
+### Avatar.Image {#avatar-image}
+
+See [Spar Avatar docs](https://v2.takeoffui.com/headless/docs/Components/Avatar)
+for primitive behavior.
+
+#### Props {#avatar-image-props}
+
+| Name                            | Type                                                                                      | Default | Description                                                                                                                         |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="alt" />        | <code>string</code>                                                                       | -       | Describes the picture. Required unless the root has a `name`, which then names the whole avatar and the image is marked decorative. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -       | Per-slot extra classes.                                                                                                             |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML-attribute overrides.                                                                                                  |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -       | Appends custom classes to the root slot of this part.                                                                               |
+
+#### Events {#avatar-image-events}
+
+| Name                                       | Type                                                                       | Default | Description                                                           |
+| ------------------------------------------ | -------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------- |
+| <ApiBadge label="onLoadingStatusChange" /> | <code>(status: 'loading' &#124; 'loaded' &#124; 'error') =&gt; void</code> | -       | Called whenever the image loading status changes (never with `idle`). |
+
+#### Data attributes {#avatar-image-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                            |
+| ----------------------------------------------- | ------------ | ---------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the root slot. |
+
+### Avatar.Fallback {#avatar-fallback}
+
+See [Spar Avatar docs](https://v2.takeoffui.com/headless/docs/Components/Avatar)
+for primitive behavior.
+
+#### Props {#avatar-fallback-props}
+
+| Name                            | Type                                                                                                                                              | Default | Description                                                                                                                                        |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                                                                                      | -       | Initials or any content. Without children the default person glyph renders.                                                                        |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;<a href="#avatar-td-avatarfallbackslot">AvatarFallbackSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot extra classes.                                                                                                                            |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;<a href="#avatar-td-avatarfallbackslot">AvatarFallbackSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML-attribute overrides.                                                                                                                 |
+| <ApiBadge label="delayMs" />    | <code>number</code>                                                                                                                               | -       | Waits this many milliseconds before rendering, so a fast-loading image does not flash the fallback first. Without it the fallback renders at once. |
+| <ApiBadge label="className" />  | <code>string</code>                                                                                                                               | -       | Appends custom classes to the root slot of this part.                                                                                              |
+
+#### Data attributes {#avatar-fallback-data-attributes}
+
+| Attribute                                       | Applied when               | Purpose                                    |
+| ----------------------------------------------- | -------------------------- | ------------------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                     | Stable selector for the root slot.         |
+| <ApiBadge label="data-icon" />                  | When there are no children | Styling hook for the default glyph layout. |
+
+### Avatar.Badge {#avatar-badge}
+
+#### Props {#avatar-badge-props}
+
+| Name                            | Type                                                                                      | Default   | Description                                                   |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                              | -         | Content such as a count. Without children the badge is a dot. |
+| <ApiBadge label="variant" />    | <code><a href="#avatar-td-badgevariant">BadgeVariant</a></code>                           | 'success' | Badge color, e.g. a presence status.                          |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -         | Per-slot extra classes.                                       |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -         | Per-slot HTML-attribute overrides.                            |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -         | Appends custom classes to the root slot of this part.         |
+
+#### Data attributes {#avatar-badge-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                                                       |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the root slot.                                            |
+| <ApiBadge label="data-avatar-badge" />          | Always       | Marks a Badge placed on an avatar; the Badge recipe’s own `data-*` apply too. |
+
+### Avatar.Group {#avatar-group}
+
+#### Props {#avatar-group-props}
+
+| Name                                   | Type                                                                                                                                        | Default                  | Description                                                                                              |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />          | <code>React.ReactNode</code>                                                                                                                | -                        | `Avatar` elements.                                                                                       |
+| <ApiBadge label="size" />              | <code><a href="#avatar-td-avatarsize">AvatarSize</a></code>                                                                                 | 'base'                   | Size of every avatar in the group (an avatar's own `size` wins) and of the overflow avatar.              |
+| <ApiBadge label="rounded" />           | <code>boolean</code>                                                                                                                        | false                    | Renders every avatar in the group (an avatar's own `rounded` wins) and the overflow avatar as circles.   |
+| <ApiBadge label="compact" />           | <code>boolean</code>                                                                                                                        | false                    | Sets the avatars on one bordered pill and hides their badges.                                            |
+| <ApiBadge label="max" />               | <code>number</code>                                                                                                                         | -                        | Shows at most this many avatars; the rest collapse into one `+N` avatar.                                 |
+| <ApiBadge label="overflowLabel" />     | <code>string</code>                                                                                                                         | '+&#123;count&#125;'     | Visible text of the overflow avatar. `{count}` is the number hidden. Blank falls back to the default.    |
+| <ApiBadge label="overflowAriaLabel" /> | <code>string</code>                                                                                                                         | '&#123;count&#125; more' | Accessible name of the overflow avatar. `{count}` is the number hidden. Blank falls back to the default. |
+| <ApiBadge label="classNames" />        | <code>Partial&lt;Record&lt;<a href="#avatar-td-avatargroupslot">AvatarGroupSlot</a>, string&gt;&gt;</code>                                  | -                        | Per-slot extra classes.                                                                                  |
+| <ApiBadge label="slotProps" />         | <code>Partial&lt;Record&lt;<a href="#avatar-td-avatargroupslot">AvatarGroupSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -                        | Per-slot HTML-attribute overrides.                                                                       |
+| <ApiBadge label="className" />         | <code>string</code>                                                                                                                         | -                        | Appends custom classes to the root slot of this part.                                                    |
+
+#### Data attributes {#avatar-group-data-attributes}
+
+| Attribute                                       | Applied when           | Purpose                                    |
+| ----------------------------------------------- | ---------------------- | ------------------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                 | Stable selector for the root slot.         |
+| <ApiBadge label="data-size" />                  | Always                 | Reflects the resolved group `size`.        |
+| <ApiBadge label="data-compact" />               | When `compact` is true | Styling hook for the bordered pill layout. |
+
+### Type Definitions {#avatar-type-definitions}
+
+| Name                                                                                   | Definition                                                                                                                                                                                                                              |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="avatar-td-avatarsize"><ApiBadge label="AvatarSize" /></span>                 | <code>'xxsmall' &#124; 'xsmall' &#124; 'small' &#124; 'base' &#124; 'large' &#124; 'xlarge' &#124; 'xxlarge'</code>                                                                                                                     |
+| <span id="avatar-td-avatarvariant"><ApiBadge label="AvatarVariant" /></span>           | <code>'primary' &#124; 'light' &#124; 'success' &#124; 'info' &#124; 'warning' &#124; 'danger'</code>                                                                                                                                   |
+| <span id="avatar-td-avatarappearance"><ApiBadge label="AvatarAppearance" /></span>     | <code>'filled' &#124; 'filledLight'</code>                                                                                                                                                                                              |
+| <span id="avatar-td-avatarfallbackslot"><ApiBadge label="AvatarFallbackSlot" /></span> | <code>'root' &#124; 'icon'</code>                                                                                                                                                                                                       |
+| <span id="avatar-td-badgevariant"><ApiBadge label="BadgeVariant" /></span>             | <code>'primary' &#124; 'secondary' &#124; 'neutral' &#124; 'info' &#124; 'success' &#124; 'danger' &#124; 'warning' &#124; 'verified' &#124; 'purple' &#124; 'cyan' &#124; 'business' &#124; 'teal' &#124; 'white' &#124; 'dark'</code> |
+| <span id="avatar-td-avatargroupslot"><ApiBadge label="AvatarGroupSlot" /></span>       | <code>'root' &#124; 'overflow'</code>                                                                                                                                                                                                   |
+
+{/* api-tables:end */}

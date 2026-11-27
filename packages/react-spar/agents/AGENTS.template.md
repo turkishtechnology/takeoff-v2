@@ -30,6 +30,7 @@ on headless Spar primitives and styled with Takeoff design tokens.
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Accordion`  | Grouped collapsible sections (FAQs, settings panels, itinerary details) where open/closed state is owned by Spar.                                                                            |
 | `Alert`      | Inline, page-level feedback (gate changes, billing warnings, status notices).                                                                                                                |
+| `Avatar`     | User and account pictures, assignee / reviewer / participant stacks, presence indicators on a person.                                                                                        |
 | `Badge`      | Inline status pills, category tags, count bubbles, notification dots, and overlay indicators on icons/avatars.                                                                               |
 | `Breadcrumb` | Render a hierarchical "where am I" trail of ancestor links ending in the current page.                                                                                                       |
 | `Button`     | Any clickable action — submit, CTA, toolbar action, icon-only action, or a two-state toggle (via `pressed`/`onPressedChange`).                                                               |

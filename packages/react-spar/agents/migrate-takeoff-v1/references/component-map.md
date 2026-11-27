@@ -26,6 +26,7 @@ writing code.
 | v1 export(s)                       | v2 target    | Structural change                                        |
 | ---------------------------------- | ------------ | -------------------------------------------------------- |
 | `TkAccordion`, `TkAccordionItem`   | `Accordion`  | `items` and labels become compound children.             |
+| `TkAvatar`, `TkAvatarGroup`        | `Avatar`     | `image`/`label`/`badge` become parts; see the skill.     |
 | `TkBreadcrumb`, `TkBreadcrumbItem` | `Breadcrumb` | Render breadcrumb items as children.                     |
 | `TkCard`                           | `Card`       | Move heading/body/footer props into parts or children.   |
 | `TkDialog`                         | `Dialog`     | Move header/footer and body content into compound parts. |
@@ -60,10 +61,10 @@ migration.
 
 ## v1-only gaps
 
-`TkAvatar`, `TkAvatarGroup`, `TkCarousel`, `TkChart`, `TkColorPicker`,
-`TkCurrencyInput`, `TkEditor`, `TkGanttChart`, `TkOrgChart`, `TkPagination`,
-`TkPhoneInput`, `TkRating`, `TkTimeline`, `TkTimelineItem`, `TkTreeView` have no
-shipped v2 target. See [references/gaps.md](gaps.md) before changing them.
+`TkCarousel`, `TkChart`, `TkColorPicker`, `TkCurrencyInput`, `TkEditor`,
+`TkGanttChart`, `TkOrgChart`, `TkPagination`, `TkPhoneInput`, `TkRating`,
+`TkTimeline`, `TkTimelineItem`, `TkTreeView` have no shipped v2 target. See
+[references/gaps.md](gaps.md) before changing them.
 
 ## v2 opportunities
 

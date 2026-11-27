@@ -4,6 +4,7 @@
 
 @use 'recipes/accordion';
 @use 'recipes/alert';
+@use 'recipes/avatar';
 @use 'recipes/badge';
 @use 'recipes/breadcrumb';
 @use 'recipes/button';
@@ -501,6 +502,14 @@
 
 .tk-badge {
   @include badge.badge;
+}
+
+.tk-avatar {
+  @include avatar.avatar;
+}
+
+.tk-avatar-group {
+  @include avatar.avatar-group;
 }
 
 .tk-breadcrumb {

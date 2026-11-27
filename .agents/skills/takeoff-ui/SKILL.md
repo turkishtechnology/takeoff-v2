@@ -104,9 +104,10 @@ description, and error context for nested controls)
 **Navigation & disclosure:** `takeoff-accordion` · `takeoff-breadcrumb` ·
 `takeoff-dropdown` · `takeoff-stepper` · `takeoff-tabs`
 
-**Feedback & status:** `takeoff-alert` · `takeoff-badge` · `takeoff-chip` ·
-`takeoff-progress` · `takeoff-skeleton` · `takeoff-spinner` · `takeoff-tooltip`
-· `takeoff-toast`
+**Feedback & status:** `takeoff-alert` · `takeoff-avatar` (picture with
+initials/icon fallback, status badge, `+N` group) · `takeoff-badge` ·
+`takeoff-chip` · `takeoff-progress` · `takeoff-skeleton` · `takeoff-spinner` ·
+`takeoff-tooltip` · `takeoff-toast`
 
 **Content & overlays:** `takeoff-calendar` (inline month grid: single, range,
 multiple) · `takeoff-card` · `takeoff-chat` (messaging: conversation log, read

@@ -32,6 +32,7 @@ and accessibility guidance where the component owns interaction behavior.
 | Component                             | Use it for                                                               |
 | ------------------------------------- | ------------------------------------------------------------------------ |
 | [Alert](/docs/components/alert)       | Presenting contextual success, warning, information, or danger messages. |
+| [Avatar](/docs/components/avatar)     | Showing a person's picture or initials, status, and groups.              |
 | [Badge](/docs/components/badge)       | Displaying compact status, count, or category labels.                    |
 | [Chip](/docs/components/chip)         | Representing filters, selections, and removable values.                  |
 | [Progress](/docs/components/progress) | Showing determinate or indeterminate task completion.                    |
