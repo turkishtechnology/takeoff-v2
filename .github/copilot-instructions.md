@@ -32,6 +32,7 @@ When writing or reviewing UI code here, follow the rules below.
 | `Button`        | Any clickable action — submit, CTA, toolbar action, icon-only action, or a two-state toggle (via `pressed`/`onPressedChange`).                                                               |
 | `Calendar`      | Inline date selection — booking grids, availability views, filters with a permanently visible month.                                                                                         |
 | `Card`          | You need a bordered surface that bundles a heading, body content, and an optional action footer.                                                                                             |
+| `Carousel`      | Rotating banners, image or card galleries, step-through content.                                                                                                                             |
 | `Chat`          | Person-to-person or group messaging, a support chat, a comments thread with edit/delete.                                                                                                     |
 | `Checkbox`      | Boolean opt-in/opt-out controls, accept-terms gates, multi-select lists, and tri-state "select all" parents.                                                                                 |
 | `Chip`          | Filter tags, entered/selected values, and short status metadata.                                                                                                                             |

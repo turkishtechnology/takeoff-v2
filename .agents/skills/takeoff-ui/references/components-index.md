@@ -49,6 +49,7 @@ and accessibility guidance where the component owns interaction behavior.
 | Component                             | Use it for                                                        |
 | ------------------------------------- | ----------------------------------------------------------------- |
 | [Card](/docs/components/card)         | Grouping related content, summaries, and actions.                 |
+| [Carousel](/docs/components/carousel) | Showing slides one step at a time with arrows and autoplay.       |
 | [Dialog](/docs/components/dialog)     | Handling focused forms, confirmations, and blocking decisions.    |
 | [Divider](/docs/components/divider)   | Separating related content sections or item groups.               |
 | [Drawer](/docs/components/drawer)     | Showing navigation, filters, or details over the current page.    |

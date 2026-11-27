@@ -1,6 +1,6 @@
 # Coverage gaps
 
-These 9 v1 exports have no shipped v2 target in the current release. This is a
+These 8 v1 exports have no shipped v2 target in the current release. This is a
 temporary coverage gap, not a permanent product boundary: the areas below are
 expected to close incrementally in future v2 releases as their React API,
 accessibility behavior, token recipes, and documentation are completed. Decide
@@ -12,7 +12,6 @@ package removal remains safe.
 | v1 component                 | Guidance                                                                                     |
 | ---------------------------- | -------------------------------------------------------------------------------------------- |
 | `TkAvatar`, `TkAvatarGroup`  | Keep v1 or use an app-local image/initials composition.                                      |
-| `TkCarousel`                 | Keep v1 or adopt an app-owned carousel library with an accessibility review.                 |
 | `TkChart`                    | Keep v1 or retain the existing charting library.                                             |
 | `TkEditor`                   | Keep v1 or retain the current editor integration.                                            |
 | `TkGanttChart`, `TkOrgChart` | Keep v1 or use the domain library already used by the application.                           |

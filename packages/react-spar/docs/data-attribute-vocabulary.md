@@ -470,6 +470,25 @@ follow the standard conventions (presence = `''`, finite = string).
   filter button/panel are styled by class (`.tk-table-filter-button` /
   `.tk-table-filter-panel`) rather than a Table `data-slot` anchor.
 
+### Carousel
+
+Carousel's behavior is **Spar-owned** (the headless `Carousel` primitive), and
+Spar emits its state hooks; the wrapper adds two layout keys. Recorded here per
+rule 10.
+
+- **`data-orientation` (Variant) on the root**, from Spar: the axis the slides
+  move along.
+- **`data-controls-placement` (Semantic, `inside` | `outside`) and
+  `data-controls-position` (Semantic, `distributed` | `start` | `end`) on the
+  root**, wrapper-emitted: the recipe lays out `Carousel.Controls` and reserves
+  room for `outside` from them.
+- **`data-active` (State, presence) on `Carousel.Slide`**, from Spar, while the
+  slide is inside the visible window (the others are `inert`), and **on each
+  indicator** of `Carousel.Indicators` for the current page (with
+  `aria-current="true"`).
+- **No autoplay state attribute.** The play/pause glyph is chosen in render from
+  Spar's `isPlaying`, so nothing styles it.
+
 ### Chat
 
 Chat is **v2-owned** with no upstream Spar primitive, so its vocabulary is

@@ -6,6 +6,16 @@ import { ButtonBase } from './components/button/base';
 import { CalendarBase } from './components/calendar/base';
 import { CardBase, CardBodyBase, CardDescriptionBase, CardFooterBase, CardHeaderBase, CardTitleBase } from './components/card/base';
 import {
+  CarouselAutoplayTriggerBase,
+  CarouselBase,
+  CarouselControlsBase,
+  CarouselIndicatorsBase,
+  CarouselNextTriggerBase,
+  CarouselPrevTriggerBase,
+  CarouselSlideBase,
+  CarouselViewportBase,
+} from './components/carousel/base';
+import {
   ChatBase,
   ChatComposerBase,
   ChatConversationBase,
@@ -172,6 +182,14 @@ export const slotClassRegistry = {
   cardDescription: { slots: CardDescriptionBase.classes },
   cardBody: { slots: CardBodyBase.classes },
   cardFooter: { slots: CardFooterBase.classes },
+  carousel: { slots: CarouselBase.classes },
+  carouselViewport: { slots: CarouselViewportBase.classes },
+  carouselSlide: { slots: CarouselSlideBase.classes },
+  carouselControls: { slots: CarouselControlsBase.classes },
+  carouselPrevTrigger: { slots: CarouselPrevTriggerBase.classes },
+  carouselNextTrigger: { slots: CarouselNextTriggerBase.classes },
+  carouselIndicators: { slots: CarouselIndicatorsBase.classes },
+  carouselAutoplayTrigger: { slots: CarouselAutoplayTriggerBase.classes },
   chat: { slots: ChatBase.classes },
   chatConversationList: { slots: ChatConversationListBase.classes },
   chatConversation: { slots: ChatConversationBase.classes },
