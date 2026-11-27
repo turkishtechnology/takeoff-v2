@@ -85,6 +85,8 @@ import {
   SelectSeparatorBase,
   SelectTriggerBase,
   SelectViewportBase,
+  SelectSearchBase,
+  SelectEmptyBase,
 } from './components/select/base';
 import { SliderBase, SliderRangeBase, SliderThumbBase, SliderTicksBase, SliderTrackBase, SliderValueBase } from './components/slider/base';
 import { SpinnerBase } from './components/spinner/base';
@@ -221,6 +223,8 @@ export const slotClassRegistry = {
   selectIndicator: { slots: SelectIndicatorBase.classes },
   selectContent: { slots: SelectContentBase.classes },
   selectViewport: { slots: SelectViewportBase.classes },
+  selectSearch: { slots: SelectSearchBase.classes },
+  selectEmpty: { slots: SelectEmptyBase.classes },
   selectItem: { slots: SelectItemBase.classes },
   selectGroup: { slots: SelectGroupBase.classes },
   selectLabel: { slots: SelectLabelBase.classes },
