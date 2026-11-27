@@ -28,6 +28,7 @@ writing code.
 | v1 export(s)                       | v2 target       | Structural change                                                                                                                        |
 | ---------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `TkAccordion`, `TkAccordionItem`   | `Accordion`     | `items` and labels become compound children.                                                                                             |
+| `TkAvatar`, `TkAvatarGroup`        | `Avatar`        | `image`/`label`/`badge` become parts; see the skill.                                                                                     |
 | `TkBreadcrumb`, `TkBreadcrumbItem` | `Breadcrumb`    | Render breadcrumb items as children.                                                                                                     |
 | `TkCard`                           | `Card`          | Move heading/body/footer props into parts or children.                                                                                   |
 | `TkCarousel`                       | `Carousel`      | Wrap each slide in `Carousel.Slide`; `circular` → `loop`, `itemsPerView` → `slidesPerView`, `show*` flags → place or omit control parts. |
@@ -66,9 +67,9 @@ migration.
 
 ## v1-only gaps
 
-`TkAvatar`, `TkAvatarGroup`, `TkChart`, `TkEditor`, `TkGanttChart`,
-`TkOrgChart`, `TkPagination`, `TkTreeView` have no shipped v2 target. See
-[references/gaps.md](gaps.md) before changing them.
+`TkChart`, `TkEditor`, `TkGanttChart`, `TkOrgChart`, `TkPagination`,
+`TkTreeView` have no shipped v2 target. See [references/gaps.md](gaps.md) before
+changing them.
 
 ## v2 opportunities
 

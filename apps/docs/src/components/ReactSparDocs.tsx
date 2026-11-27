@@ -10,6 +10,7 @@ import { TakeoffSparProvider } from '@takeoff-ui/react-spar';
 export {
   Accordion,
   Alert,
+  Avatar,
   Badge,
   Breadcrumb,
   Button,

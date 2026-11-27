@@ -1,5 +1,6 @@
 import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionIndicatorBase, AccordionItemBase, AccordionTriggerBase } from './components/accordion/base';
 import { AlertActionsBase, AlertBase, AlertCloseBase, AlertContentBase, AlertDescriptionBase, AlertTitleBase } from './components/alert/base';
+import { AvatarBadgeBase, AvatarBase, AvatarFallbackBase, AvatarGroupBase, AvatarImageBase } from './components/avatar/base';
 import { BadgeBase } from './components/badge/base';
 import { BreadcrumbBase, BreadcrumbItemBase, BreadcrumbLinkBase, BreadcrumbListBase, BreadcrumbPageBase, BreadcrumbSeparatorBase } from './components/breadcrumb/base';
 import { ButtonBase } from './components/button/base';
@@ -167,6 +168,11 @@ export const slotClassRegistry = {
   alertDescription: { slots: AlertDescriptionBase.classes },
   alertActions: { slots: AlertActionsBase.classes },
   alertClose: { slots: AlertCloseBase.classes },
+  avatar: { slots: AvatarBase.classes },
+  avatarImage: { slots: AvatarImageBase.classes },
+  avatarFallback: { slots: AvatarFallbackBase.classes },
+  avatarBadge: { slots: AvatarBadgeBase.classes },
+  avatarGroup: { slots: AvatarGroupBase.classes },
   badge: { slots: BadgeBase.classes },
   breadcrumb: { slots: BreadcrumbBase.classes },
   breadcrumbList: { slots: BreadcrumbListBase.classes },

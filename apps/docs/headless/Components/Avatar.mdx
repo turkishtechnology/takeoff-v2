@@ -1,0 +1,167 @@
+---
+title: Avatar
+description:
+  Headless avatar primitive that tracks an image's loading status and shows a
+  fallback while the image is missing, loading, or broken.
+---
+
+import LiveCode from '@site/src/components/headless/LiveCode';
+
+# Avatar
+
+A headless avatar: `Avatar.Image` preloads its picture off-DOM and mounts the
+`<img>` only once it has loaded, and `Avatar.Fallback` renders until then and
+whenever the picture fails. No broken image ever flashes.
+
+## Live Demo
+
+<LiveCode
+  code={`<div className='avatar-demo'>
+  <Avatar className='avatar'>
+    <Avatar.Image src='/img/avatar/user-1.jpg' alt='Ada Lovelace' />
+    <Avatar.Fallback className='fallback'>AL</Avatar.Fallback>
+  </Avatar>
+  <Avatar className='avatar'>
+    <Avatar.Image src='/img/avatar/missing.jpg' alt='Grace Hopper' />
+    <Avatar.Fallback className='fallback'>GH</Avatar.Fallback>
+  </Avatar>
+</div>`}
+  cssCode={`.avatar-demo { display: flex; gap: 12px; }
+.avatar-demo .avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: #e1e4ea;
+}
+.avatar-demo .avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-demo .fallback { color: #222530; font-size: 16px; }`}
+/>
+
+## Features
+
+- ✅ **No broken-image flash**: the `<img>` mounts only after the picture loaded
+- ✅ **Loading status**: `idle` → `loading` → `loaded` / `error`, on the root's
+  `data-status` and through `onLoadingStatusChange`
+- ✅ **Delayed fallback**: `delayMs` keeps a fast-loading picture from showing
+  the fallback first
+- ✅ **Reconciles `src`**: a new `src` restarts loading; a stale preload is
+  ignored
+- ✅ **SSR-safe**: starts `idle`, so server and client render the same markup
+- ✅ **Polymorphic Rendering**: every part takes `as`, native props and `ref`
+
+## Import
+
+```tsx
+import {
+  Avatar,
+  AvatarRoot,
+  AvatarImage,
+  AvatarFallback,
+} from '@turkish-technology/spar';
+```
+
+## Structure
+
+```tsx
+<Avatar>
+  <Avatar.Image src="/ada.png" alt="Ada Lovelace" />
+  <Avatar.Fallback>AL</Avatar.Fallback>
+</Avatar>
+```
+
+**Data Flow:**
+
+- `Avatar` holds the loading status in context and renders a `<span>`
+- `Avatar.Image` preloads with `new Image()` (forwarding `srcSet`, `sizes`,
+  `crossOrigin` and `referrerPolicy`) and reports each status to the root; an
+  empty `src` is an `error`
+- `Avatar.Fallback` renders while the status is anything but `loaded`
+- When `Avatar.Image` unmounts, the status returns to `idle`
+
+## Code Examples
+
+### Delayed fallback
+
+```tsx
+<Avatar>
+  <Avatar.Image src={src} alt="Ada Lovelace" />
+  <Avatar.Fallback delayMs={300}>AL</Avatar.Fallback>
+</Avatar>
+```
+
+### Following the status
+
+```tsx
+<Avatar>
+  <Avatar.Image
+    src={src}
+    alt="Ada Lovelace"
+    onLoadingStatusChange={status => console.log(status)}
+  />
+  <Avatar.Fallback>AL</Avatar.Fallback>
+</Avatar>
+```
+
+### Naming the avatar as a whole
+
+```tsx
+<Avatar role="img" aria-label="Ada Lovelace">
+  <Avatar.Image src={src} alt="" />
+  <Avatar.Fallback aria-hidden="true">AL</Avatar.Fallback>
+</Avatar>
+```
+
+## API Reference
+
+### Avatar / Avatar.Root
+
+**Props**
+
+| Name        | Type                | Default  | Description                          |
+| ----------- | ------------------- | -------- | ------------------------------------ |
+| `as?`       | `React.ElementType` | `"span"` | Polymorphic component type           |
+| `children?` | `React.ReactNode`   | -        | `Avatar.Image` and `Avatar.Fallback` |
+
+**HTML Attributes**
+
+| Attribute     | Value                                        | Purpose                    |
+| ------------- | -------------------------------------------- | -------------------------- |
+| `data-status` | `"idle" \| "loading" \| "loaded" \| "error"` | The image's loading status |
+
+### Avatar.Image
+
+Renders an `<img>` once the picture has loaded, `null` before that. Takes every
+native `img` attribute.
+
+**Props**
+
+| Name                     | Type                                                 | Default | Description                                          |
+| ------------------------ | ---------------------------------------------------- | ------- | ---------------------------------------------------- |
+| `as?`                    | `React.ElementType`                                  | `"img"` | Polymorphic component type                           |
+| `onLoadingStatusChange?` | `(status: 'loading' \| 'loaded' \| 'error') => void` | -       | Called whenever the status changes (never with idle) |
+
+### Avatar.Fallback
+
+**Props**
+
+| Name        | Type                | Default  | Description                           |
+| ----------- | ------------------- | -------- | ------------------------------------- |
+| `as?`       | `React.ElementType` | `"span"` | Polymorphic component type            |
+| `delayMs?`  | `number`            | -        | Milliseconds to wait before rendering |
+| `children?` | `React.ReactNode`   | -        | Content such as initials or an icon   |
+
+### useAvatarContext
+
+Returns `{ imageLoadingStatus, setImageLoadingStatus }` inside an `Avatar`;
+throws outside one.
+
+## Accessibility
+
+- Give `Avatar.Image` an `alt`, or name the root (`role="img"` + `aria-label`)
+  and hide its parts.
+- The fallback is plain content: initials are read as written.
+- Avatar has no keyboard interaction of its own.

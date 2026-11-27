@@ -22,6 +22,7 @@ const sidebars: SidebarsConfig = {
         'components/index',
         'components/accordion',
         'components/alert',
+        'components/avatar',
         'components/badge',
         'components/breadcrumb',
         'components/button',

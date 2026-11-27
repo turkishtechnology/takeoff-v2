@@ -10,6 +10,7 @@ import { useColorMode } from '@docusaurus/theme-common';
 import {
   // Compound namespace objects (for LiveCode scope)
   Accordion,
+  Avatar,
   Breadcrumb,
   Carousel,
   Collapsible,
@@ -139,6 +140,7 @@ export const LiveCode = ({ code, cssCode }: LiveCodeProps) => {
       useEffect: React.useEffect,
       // Compound namespace objects
       Accordion,
+      Avatar,
       Breadcrumb,
       Carousel,
       Collapsible,
