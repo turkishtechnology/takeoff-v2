@@ -97,6 +97,7 @@ import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 import { SkeletonBase } from './components/skeleton/base';
 import { ToastBase, ToasterBase } from './components/toast/base';
+import { RatingBase, RatingItemBase } from './components/rating/base';
 import {
   UploadActionsBase,
   UploadBase,
@@ -272,4 +273,6 @@ export const slotClassRegistry = {
   uploadItemPreview: { slots: UploadItemPreviewBase.classes },
   uploadItemActions: { slots: UploadItemActionsBase.classes },
   uploadItemAction: { slots: UploadItemActionBase.classes },
+  rating: { slots: RatingBase.classes },
+  ratingItem: { slots: RatingItemBase.classes },
 } as const;

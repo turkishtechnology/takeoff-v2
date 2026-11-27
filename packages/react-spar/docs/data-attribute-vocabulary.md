@@ -79,6 +79,7 @@ table needs updating.
 | `data-disabled`       | presence     | Root or Stepper item        | Component or step is disabled       |
 | `data-dragging`       | presence     | Slider thumb                | Pointer currently controls it       |
 | `data-error`          | presence     | Stepper item                | Step has an error treatment         |
+| `data-fill`           | finite-str   | Rating item                 | `full` / `half` / `empty` fill      |
 | `data-focus`          | presence     | Slider thumb                | Handle holds keyboard focus         |
 | `data-indeterminate`  | presence     | Root, Indicator (Progress)  | Indeterminate; indicator animates   |
 | `data-invalid`        | presence     | Root                        | Component is visually invalid       |
@@ -118,6 +119,7 @@ table needs updating.
 | `data-range`          | Slider root            | Root renders more than one thumb                 |
 | `data-spread`         | Radio root             | Items share available space along the group axis |
 | `data-level`          | Input strength segment | Strength tier for filled password meter segments |
+| `data-level`          | Rating item (number)   | Score bucketed into the five-step colour scale   |
 | `data-linear`         | Stepper root           | Steps follow a linear progression                |
 | `data-reverse`        | Stepper root           | Signs and content flip along the cross axis      |
 
@@ -206,6 +208,21 @@ its attributes are wrapper-emitted. Recorded here per rule 10.
 - **Checked/unchecked state stays Spar-owned.** `Radio.Item` exposes Spar's
   `data-state="checked" | "unchecked"`; the wrapper recipe consumes that state
   for the indicator fill instead of mirroring selection in React.
+
+### Rating
+
+- **The wrapper adds only `data-type` on the root** (`star` | `heart` | `dot` |
+  `number`). Disabled, read-only, invalid and required are Spar-emitted on the
+  radiogroup, and Spar's `data-state="checked"` marks the picked item.
+- **`data-fill` is per item, derived from Spar's group value** read back through
+  `useRadioContext`: `full` up to the value, `half` on the next item for a
+  fractional part of .5 or more, `empty` after. It is a finite string rather
+  than presence attrs (rule 6), and it is the only way a display-only fractional
+  value reaches the recipe, since no item is checked then.
+- **`data-level` (1–5) is emitted on number items only.** It buckets the score
+  over `max` into Core's red-to-green scale; glyph types do not carry it.
+- **The hover preview has no attribute.** The recipe derives it from `:hover`
+  and `:has(~ :hover)`, so pointer movement never re-renders.
 
 ### Divider
 
