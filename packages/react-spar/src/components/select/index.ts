@@ -3,6 +3,8 @@ import { SelectTrigger } from './SelectTrigger';
 import { SelectIndicator } from './SelectIndicator';
 import { SelectContent } from './SelectContent';
 import { SelectViewport } from './SelectViewport';
+import { SelectSearch } from './SelectSearch';
+import { SelectEmpty } from './SelectEmpty';
 import { SelectItem } from './SelectItem';
 import { SelectGroup } from './SelectGroup';
 import { SelectLabel } from './SelectLabel';
@@ -14,6 +16,8 @@ const Select = Object.assign(SelectRoot, {
   Indicator: SelectIndicator,
   Content: SelectContent,
   Viewport: SelectViewport,
+  Search: SelectSearch,
+  Empty: SelectEmpty,
   Item: SelectItem,
   Group: SelectGroup,
   Label: SelectLabel,
@@ -26,12 +30,14 @@ export { Select };
 export type {
   SelectArrowProps,
   SelectContentProps,
+  SelectEmptyProps,
   SelectGroupProps,
   SelectIndicatorProps,
   SelectIndicatorRenderState,
   SelectItemProps,
   SelectLabelProps,
   SelectProps,
+  SelectSearchProps,
   SelectSeparatorProps,
   SelectSize,
   SelectTriggerProps,
