@@ -1,0 +1,340 @@
+@use '../abstracts/mixins' as mixins;
+
+// ---------------------------------------------------------------------------
+// Carousel recipe — port of Core `tk-carousel`.
+//
+// Spar owns the index, page model, keyboard, autoplay and ARIA. The wrapper
+// writes `--tk-carousel-index` / `--tk-carousel-per-view` on the viewport and
+// the recipe turns them into the track position, so nothing is measured.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-carousel                — root (`data-orientation`,
+//                                 `data-controls-placement`, `data-controls-position`)
+//   .tk-carousel-viewport       — clip box (carries the position variables)
+//     .tk-carousel-track        — the translated flex row / column (internal)
+//   .tk-carousel-slide          — one slide (`data-active` inside the window)
+//   .tk-carousel-controls       — navigation holder, laid out per position
+//   .tk-carousel-prev / -next   — compose Button (small, icon-only); hidden
+//                                 while disabled, as Core drops them at the ends
+//   .tk-carousel-indicators     — the dot row
+//     .tk-carousel-indicator    — dot button (`data-active` on the current page)
+//     .tk-carousel-indicator-dot — the painted dot (internal)
+//   .tk-carousel-autoplay       — play / pause control
+// ---------------------------------------------------------------------------
+
+$gap: var(--spacing-4xl);
+$edge: var(--spacing-4xl);
+$room: var(--spacing-12xl);
+$indicator-room: var(--spacing-8xl);
+
+@mixin carousel {
+  --tk-carousel-gap: #{$gap};
+  --tk-carousel-direction: -1;
+
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  inline-size: 100%;
+
+  &:dir(rtl) {
+    --tk-carousel-direction: 1;
+  }
+
+  // Core's `verticalViewHeight` default; set a height on the root to change it.
+  &[data-orientation='vertical'] {
+    block-size: 300px;
+  }
+
+  // ---- Viewport, track, slides -------------------------------------------
+
+  .tk-carousel-viewport {
+    overflow: hidden;
+    block-size: 100%;
+  }
+
+  .tk-carousel-track {
+    --tk-carousel-offset: calc(
+      var(--tk-carousel-index, 0) * ((100% - (var(--tk-carousel-per-view, 1) - 1) * var(--tk-carousel-gap)) / var(--tk-carousel-per-view, 1) + var(--tk-carousel-gap))
+    );
+
+    display: flex;
+    gap: var(--tk-carousel-gap);
+    block-size: 100%;
+    transform: translateX(calc(var(--tk-carousel-direction) * var(--tk-carousel-offset)));
+    transition: transform 0.3s ease;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &[data-orientation='vertical'] .tk-carousel-track {
+    flex-direction: column;
+    transform: translateY(calc(-1 * var(--tk-carousel-offset)));
+  }
+
+  .tk-carousel-slide {
+    flex: 0 0 calc((100% - (var(--tk-carousel-per-view, 1) - 1) * var(--tk-carousel-gap)) / var(--tk-carousel-per-view, 1));
+    box-sizing: border-box;
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  // ---- Controls ------------------------------------------------------------
+
+  .tk-carousel-controls {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-5xl);
+    // The holder may cover the slides (distributed); only its controls take
+    // the pointer.
+    pointer-events: none;
+
+    > * {
+      pointer-events: auto;
+    }
+  }
+
+  .tk-carousel-prev,
+  .tk-carousel-next {
+    &:disabled {
+      visibility: hidden;
+    }
+  }
+
+  // Distributed: arrows on the two sides, indicators along the bottom
+  // (inline-end when vertical). The holder spans the root.
+  &[data-controls-position='distributed'] {
+    .tk-carousel-controls {
+      inset: 0;
+      align-items: flex-end;
+      padding-block-end: $edge;
+    }
+
+    .tk-carousel-prev,
+    .tk-carousel-next {
+      position: absolute;
+      inset-block-start: 50%;
+      transform: translateY(-50%);
+    }
+
+    .tk-carousel-prev {
+      inset-inline-start: $edge;
+    }
+
+    .tk-carousel-next {
+      inset-inline-end: $edge;
+    }
+  }
+
+  &[data-controls-position='distributed'][data-orientation='vertical'] {
+    .tk-carousel-controls {
+      align-items: center;
+      justify-content: flex-end;
+      padding-block-end: 0;
+      padding-inline-end: $edge;
+    }
+
+    .tk-carousel-prev,
+    .tk-carousel-next {
+      inset-inline: 50% auto;
+      transform: translateX(-50%);
+    }
+
+    .tk-carousel-prev {
+      inset-block: $edge auto;
+    }
+
+    .tk-carousel-next {
+      inset-block: auto $edge;
+    }
+  }
+
+  // Start / end: one bar holding every control.
+  &[data-controls-position='start'] .tk-carousel-controls,
+  &[data-controls-position='end'] .tk-carousel-controls {
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+
+  &[data-controls-position='start'] .tk-carousel-controls {
+    inset-block-start: $edge;
+  }
+
+  &[data-controls-position='end'] .tk-carousel-controls {
+    inset-block-end: $edge;
+  }
+
+  &[data-orientation='vertical'][data-controls-position='start'] .tk-carousel-controls,
+  &[data-orientation='vertical'][data-controls-position='end'] .tk-carousel-controls {
+    flex-direction: column;
+    inset-block: 50% auto;
+    inset-inline: auto;
+    transform: translateY(-50%);
+  }
+
+  &[data-orientation='vertical'][data-controls-position='start'] .tk-carousel-controls {
+    inset-inline-start: $edge;
+  }
+
+  &[data-orientation='vertical'][data-controls-position='end'] .tk-carousel-controls {
+    inset-inline-end: $edge;
+  }
+
+  // Outside: reserve room around the slides and pin the controls to the edge.
+  &[data-controls-placement='outside']:has(> .tk-carousel-controls) {
+    &[data-controls-position='distributed'] {
+      padding-inline: $room;
+      padding-block-end: $indicator-room;
+    }
+
+    &[data-controls-position='start'] {
+      padding-block-start: $room;
+    }
+
+    &[data-controls-position='end'] {
+      padding-block-end: $room;
+    }
+
+    &[data-orientation='vertical'] {
+      &[data-controls-position='distributed'] {
+        padding-inline: 0 $indicator-room;
+        padding-block: $room;
+      }
+
+      &[data-controls-position='start'] {
+        padding-block-start: 0;
+        padding-inline-start: $room;
+      }
+
+      &[data-controls-position='end'] {
+        padding-block-end: 0;
+        padding-inline-end: $room;
+      }
+    }
+  }
+
+  &[data-controls-placement='outside'] {
+    &[data-controls-position='distributed'] {
+      .tk-carousel-controls {
+        padding-block-end: 0;
+        padding-inline-end: 0;
+      }
+
+      .tk-carousel-prev {
+        inset-inline-start: 0;
+      }
+
+      .tk-carousel-next {
+        inset-inline-end: 0;
+      }
+
+      &[data-orientation='vertical'] {
+        .tk-carousel-prev,
+        .tk-carousel-next {
+          inset-inline: 50% auto;
+        }
+
+        .tk-carousel-prev {
+          inset-block-start: 0;
+        }
+
+        .tk-carousel-next {
+          inset-block-end: 0;
+        }
+      }
+    }
+
+    &[data-controls-position='start'] .tk-carousel-controls {
+      inset-block-start: 0;
+    }
+
+    &[data-controls-position='end'] .tk-carousel-controls {
+      inset-block-end: 0;
+    }
+
+    &[data-orientation='vertical'] {
+      &[data-controls-position='start'] .tk-carousel-controls,
+      &[data-controls-position='end'] .tk-carousel-controls {
+        inset-block: 50% auto;
+      }
+
+      &[data-controls-position='start'] .tk-carousel-controls {
+        inset-inline-start: 0;
+      }
+
+      &[data-controls-position='end'] .tk-carousel-controls {
+        inset-inline-end: 0;
+      }
+    }
+  }
+
+  // ---- Indicators ----------------------------------------------------------
+
+  .tk-carousel-indicators {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &[data-orientation='vertical'] .tk-carousel-indicators {
+    flex-direction: column;
+  }
+
+  .tk-carousel-indicator {
+    @include mixins.host-button-reset;
+
+    display: flex;
+    padding: var(--spacing-xs);
+    border-radius: 50%;
+    cursor: pointer;
+
+    @include mixins.focus-ring(var(--primary-focus));
+
+    &:hover .tk-carousel-indicator-dot {
+      background-color: var(--primary-light);
+    }
+
+    &[data-active] .tk-carousel-indicator-dot {
+      inline-size: 8px;
+      block-size: 8px;
+      background-color: var(--primary-base);
+    }
+  }
+
+  .tk-carousel-indicator-dot {
+    display: block;
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: 50%;
+    background-color: var(--background-light);
+    transition: all 0.3s ease;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  // ---- Autoplay control ----------------------------------------------------
+
+  .tk-carousel-autoplay {
+    @include mixins.host-button-reset;
+
+    display: inline-flex;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--background-light);
+    cursor: pointer;
+
+    @include mixins.focus-ring(var(--primary-focus));
+
+    svg {
+      inline-size: 20px;
+      block-size: 20px;
+    }
+  }
+}

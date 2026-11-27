@@ -1,0 +1,249 @@
+// Timeline recipe — shared style contract for the takeoff-spar Timeline
+// compound. Ports the takeoff-ui/core tk-timeline visuals onto the v2 anatomy:
+//
+//   .tk-timeline              — root <ol>
+//   .tk-timeline-item         — <li>, a grid of separator + content
+//   .tk-timeline-separator    — aria-hidden column/row holding the line
+//   .tk-timeline-indicator    — point (recipe-painted dot when empty, else custom content)
+//   .tk-timeline-connector    — line to the next item (hidden on the last one)
+//   .tk-timeline-content      — the item's children
+//   .tk-timeline-title        — event title
+//   .tk-timeline-description  — event description
+//   .tk-timeline-time         — event date/time (<time>)
+//
+// Variant attributes (root):
+//   data-orientation — horizontal | vertical
+//   data-placement   — alternate | start | end; `alternate` puts odd items
+//                      (1st, 3rd, …) after the line and even ones before it
+//
+// Child combinators keep a timeline nested inside an item's content from
+// inheriting its host's layout.
+
+$point-size: 10px;
+$point-margin: 5px;
+
+@mixin timeline {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  box-sizing: border-box;
+  font-family: var(--family-body);
+
+  > .tk-timeline-item {
+    display: grid;
+    gap: var(--spacing-xs);
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  > .tk-timeline-item > .tk-timeline-separator {
+    display: flex;
+    align-items: center;
+  }
+
+  > .tk-timeline-item > .tk-timeline-separator > .tk-timeline-indicator {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    margin: $point-margin;
+    color: var(--primary-base);
+    box-sizing: border-box;
+
+    &:empty {
+      width: $point-size;
+      height: $point-size;
+      border-radius: var(--radius-full);
+      background-color: var(--primary-base);
+
+      &::after {
+        content: '';
+        width: 4px;
+        height: 4px;
+        border-radius: var(--radius-full);
+        background-color: var(--static-light);
+      }
+    }
+
+    > svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  > .tk-timeline-item > .tk-timeline-separator > .tk-timeline-connector {
+    flex: 1;
+    background-color: var(--border-light);
+  }
+
+  > .tk-timeline-item:last-child > .tk-timeline-separator > .tk-timeline-connector {
+    visibility: hidden;
+  }
+
+  > .tk-timeline-item > .tk-timeline-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  // ---- Vertical: separator column, content beside it -----------------------
+
+  &[data-orientation='vertical'] {
+    flex-direction: column;
+
+    > .tk-timeline-item {
+      grid-template-columns: auto 1fr;
+    }
+
+    > .tk-timeline-item > .tk-timeline-separator {
+      grid-row: 1;
+      grid-column: 1;
+      flex-direction: column;
+    }
+
+    > .tk-timeline-item > .tk-timeline-separator > .tk-timeline-connector {
+      width: 1px;
+    }
+
+    > .tk-timeline-item > .tk-timeline-content {
+      grid-row: 1;
+      grid-column: 2;
+      align-items: flex-start;
+      padding-bottom: var(--spacing-6xl);
+      text-align: start;
+    }
+
+    &[data-placement='start'] > .tk-timeline-item {
+      grid-template-columns: 1fr auto;
+
+      > .tk-timeline-separator {
+        grid-column: 2;
+      }
+
+      > .tk-timeline-content {
+        grid-column: 1;
+      }
+    }
+
+    &[data-placement='alternate'] > .tk-timeline-item {
+      grid-template-columns: 1fr auto 1fr;
+
+      > .tk-timeline-separator {
+        grid-column: 2;
+      }
+
+      > .tk-timeline-content {
+        grid-column: 3;
+      }
+
+      &:nth-child(even) > .tk-timeline-content {
+        grid-column: 1;
+      }
+    }
+
+    &[data-placement='start'] > .tk-timeline-item > .tk-timeline-content,
+    &[data-placement='alternate'] > .tk-timeline-item:nth-child(even) > .tk-timeline-content {
+      align-items: flex-end;
+      text-align: end;
+    }
+  }
+
+  // ---- Horizontal: separator row, content above/below it -------------------
+
+  &[data-orientation='horizontal'] {
+    flex-direction: row;
+    align-items: stretch;
+    padding-inline: var(--spacing-l);
+
+    > .tk-timeline-item {
+      flex: 1;
+      min-width: 100px;
+      grid-template-rows: auto 1fr;
+    }
+
+    > .tk-timeline-item > .tk-timeline-separator {
+      grid-row: 1;
+      grid-column: 1;
+      flex-direction: row;
+    }
+
+    > .tk-timeline-item > .tk-timeline-separator > .tk-timeline-connector {
+      height: 1px;
+    }
+
+    > .tk-timeline-item > .tk-timeline-content {
+      grid-row: 2;
+      grid-column: 1;
+      align-items: flex-start;
+      justify-content: flex-start;
+      min-height: 20px;
+      padding-inline: calc(var(--spacing-xs) * 2) var(--spacing-6xl);
+      text-align: start;
+    }
+
+    &[data-placement='start'] > .tk-timeline-item {
+      grid-template-rows: 1fr auto;
+
+      > .tk-timeline-separator {
+        grid-row: 2;
+      }
+
+      > .tk-timeline-content {
+        grid-row: 1;
+      }
+    }
+
+    &[data-placement='alternate'] > .tk-timeline-item {
+      grid-template-rows: 1fr auto 1fr;
+
+      > .tk-timeline-separator {
+        grid-row: 2;
+      }
+
+      > .tk-timeline-content {
+        grid-row: 3;
+      }
+
+      &:nth-child(even) > .tk-timeline-content {
+        grid-row: 1;
+      }
+    }
+
+    &[data-placement='start'] > .tk-timeline-item > .tk-timeline-content,
+    &[data-placement='alternate'] > .tk-timeline-item:nth-child(even) > .tk-timeline-content {
+      justify-content: flex-end;
+    }
+  }
+}
+
+@mixin timeline-title {
+  font-family: var(--desktop-body-s-font);
+  font-size: var(--desktop-body-s-size);
+  font-weight: var(--desktop-body-s-line-weight);
+  line-height: var(--desktop-body-s-line-height);
+  color: var(--text-dark);
+  margin: 0;
+}
+
+@mixin timeline-description {
+  font-family: var(--desktop-body-xs-font);
+  font-size: var(--desktop-body-xs-size);
+  font-weight: var(--weight-regular);
+  line-height: var(--desktop-body-xs-line-height);
+  color: var(--text-base);
+  margin: 0;
+}
+
+@mixin timeline-time {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-family: var(--desktop-body-2xs-font);
+  font-size: var(--desktop-body-2xs-size);
+  font-weight: var(--desktop-body-2xs-line-weight);
+  line-height: var(--desktop-body-2xs-line-height);
+  color: var(--text-light);
+}

@@ -1,0 +1,327 @@
+---
+title: Rating
+description:
+  Lets people pick a score from a row of stars, hearts, dots or numbered boxes,
+  with half-value display, read-only and disabled states.
+sidebar_label: Rating
+sidebar_position: 20
+slug: /components/rating
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Button,
+  Rating,
+  Field,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const ratingScope = { Button, Rating, Field };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  const [score, setScore] = React.useState(3);
+
+  return (
+    <Field>
+      <Field.Label>Rate your flight</Field.Label>
+      <Rating value={score} onValueChange={setScore} showValue />
+      <Field.Description>{'You picked ' + score + ' of 5.'}</Field.Description>
+    </Field>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const typesDemo = String.raw`
+<div className="flex flex-col items-start gap-6">
+  <Rating aria-label="Star rating" type="star" defaultValue={3} />
+  <Rating aria-label="Heart rating" type="heart" defaultValue={3} />
+  <Rating aria-label="Dot rating" type="dot" defaultValue={3} />
+  <Rating aria-label="Number rating" type="number" defaultValue={3} />
+</div>
+`;
+
+export const maxDemo = String.raw`
+<div className="flex flex-col items-start gap-6">
+  <Rating aria-label="Score out of 10" max={10} defaultValue={7} showValue />
+  <Rating aria-label="Number score out of 10" type="number" max={10} defaultValue={8} />
+</div>
+`;
+
+export const halfDemo = String.raw`
+<div className="flex flex-col items-start gap-6">
+  <Rating aria-label="Average rating, 3.5 of 5" value={3.5} readOnly />
+  <Rating aria-label="Average rating, 2.5 of 5" type="heart" value={2.5} readOnly />
+</div>
+`;
+
+export const statesDemo = String.raw`
+<div className="flex flex-col items-start gap-6">
+  <Field readOnly>
+    <Field.Label>Read-only</Field.Label>
+    <Rating defaultValue={4} />
+  </Field>
+  <Field disabled>
+    <Field.Label>Disabled</Field.Label>
+    <Rating defaultValue={4} />
+  </Field>
+</div>
+`;
+
+export const formDemo = String.raw`
+function FormDemo() {
+  const [submitted, setSubmitted] = React.useState(null);
+
+  return (
+    <form
+      className="flex flex-col items-start gap-4"
+      onSubmit={event => {
+        event.preventDefault();
+        setSubmitted(new FormData(event.currentTarget).get('score'));
+      }}
+    >
+      <Field required>
+        <Field.Label>Overall score</Field.Label>
+        <Rating name="score" />
+      </Field>
+      <Button type="submit">Submit</Button>
+      <output>{submitted === null ? 'Nothing submitted yet' : 'score = ' + submitted}</output>
+    </form>
+  );
+}
+
+render(<FormDemo />);
+`;
+
+export const customDemo = String.raw`
+<Rating aria-label="Mood" defaultValue={2} itemLabel="{value} of {max} moods">
+  {['😞', '😐', '🙂', '😄'].map((emoji, index) => (
+    <Rating.Item key={emoji} value={index + 1}>
+      {({ fill }) => (
+        <span style={{ fontSize: 24, opacity: fill === 'empty' ? 0.35 : 1 }}>{emoji}</span>
+      )}
+    </Rating.Item>
+  ))}
+</Rating>
+`;
+
+{/* prettier-ignore-end */}
+
+# Rating
+
+`Rating` lets people pick a whole score from a row of stars, hearts, dots or
+numbered boxes. It is a radio group underneath: the root is a
+`role="radiogroup"` and every score is a `role="radio"`, so keyboard, focus,
+form submission and `Field` wiring come from Spar's `Radio`.
+
+Without children the root renders `max` items on its own, so `<Rating />` is the
+whole anatomy in most screens. Compose `Rating.Item`s when a score needs custom
+content.
+
+## Usage
+
+```tsx
+import { Field, Rating } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Rating aria-label="Score" defaultValue={3} />
+
+<Field>
+  <Field.Label>Rate your flight</Field.Label>
+  <Rating name="score" value={score} onValueChange={setScore} />
+</Field>
+
+<Rating aria-label="Score">
+  <Rating.Item value={1} />
+  <Rating.Item value={2} />
+</Rating>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={ratingScope}
+/>
+
+## Types
+
+`type` picks the glyph: `star` (default), `heart`, `dot`, or `number` for
+numbered boxes that take a red-to-green colour as they are picked.
+
+<LiveCode
+  code={typesDemo}
+  editable={false}
+  previewMinHeight={220}
+  previewWrapper={ReactSparDemoRoot}
+  scope={ratingScope}
+/>
+
+## Max and value text
+
+`max` sets how many items the root renders (default `5`). `showValue` prints the
+zero-padded score under each glyph; numbered boxes already show theirs.
+
+<LiveCode
+  code={maxDemo}
+  editable={false}
+  previewMinHeight={140}
+  previewWrapper={ReactSparDemoRoot}
+  scope={ratingScope}
+/>
+
+## Half values
+
+A fractional `value` (e.g. an average of `3.5`) draws a half fill on the next
+item. Half values are display-only: no item reads as checked, nothing is
+submitted, and picking always yields a whole score — so pair them with
+`readOnly` and put the exact value in the accessible name.
+
+<LiveCode
+  code={halfDemo}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={ratingScope}
+/>
+
+## Read-only and disabled
+
+`readOnly` keeps the rating focusable and its value announced, but blocks
+changes and the hover preview. `disabled` greys every item out and takes the
+group out of the tab order. Both are inherited from a surrounding `Field`.
+
+<LiveCode
+  code={statesDemo}
+  editable={false}
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={ratingScope}
+/>
+
+## Forms
+
+Give the rating a `name` and the picked score is submitted with the form as a
+string (`"4"`). `required` (own or from a `Field`) uses native radio validation.
+
+<LiveCode
+  code={formDemo}
+  editable={false}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={ratingScope}
+/>
+
+## Custom items
+
+Children replace the default glyph. A function child receives the item's `fill`
+(`'full' | 'half' | 'empty'`), `isChecked` and `value`.
+
+<LiveCode
+  code={customDemo}
+  editable={false}
+  previewMinHeight={100}
+  previewWrapper={ReactSparDemoRoot}
+  scope={ratingScope}
+/>
+
+## Accessibility
+
+- The root is a `role="radiogroup"`; name it with `aria-label` or a
+  `Field.Label`. Each item is a `role="radio"` named from `itemLabel` (default
+  `"{value} of {max}"`), so the glyphs themselves stay `aria-hidden`.
+- Arrow keys move and pick the score, Home and End jump to the first and last
+  item, and Tab leaves the group (roving tabindex).
+- `readOnly` exposes `aria-readonly` on the group; `disabled`, `required` and
+  `invalid` map to their ARIA counterparts and inherit from `Field`.
+- The hover preview is CSS only, so pointer movement never changes the value or
+  what assistive technology announces.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Rating {#rating}
+
+#### Props {#rating-props}
+
+| Name                              | Type                                                                                      | Default                                | Description                                                                                                                                                                          |
+| --------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                              | -                                      | `Rating.Item`s for custom content. When omitted, the root renders `max` default items.                                                                                               |
+| <ApiBadge label="value" />        | <code>number</code>                                                                       | -                                      | Controlled score. A fractional value (e.g. `3.5`) is display-only: it draws a half fill, but no item reads as checked and nothing is submitted.                                      |
+| <ApiBadge label="defaultValue" /> | <code>number</code>                                                                       | -                                      | Uncontrolled initial score. Same fractional rule as `value`.                                                                                                                         |
+| <ApiBadge label="max" />          | <code>number</code>                                                                       | 5                                      | Number of items rendered when the root has no children.                                                                                                                              |
+| <ApiBadge label="type" />         | <code><a href="#rating-td-ratingtype">RatingType</a></code>                               | 'star'                                 | Glyph drawn for each item.                                                                                                                                                           |
+| <ApiBadge label="showValue" />    | <code>boolean</code>                                                                      | false                                  | Prints the zero-padded score under each glyph. Number items already show their score, so it has no effect on `type="number"`.                                                        |
+| <ApiBadge label="itemLabel" />    | <code>string</code>                                                                       | '&#123;value&#125; of &#123;max&#125;' | Accessible-name template for each item. `{value}` and `{max}` are replaced; an empty string falls back to the default.                                                               |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -                                      | Per-slot class name overrides.                                                                                                                                                       |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -                                      | Per-slot HTML attribute overrides.                                                                                                                                                   |
+| <ApiBadge label="autoFocus" />    | <code>boolean</code>                                                                      | false                                  | Whether to focus the first focusable radio item on mount                                                                                                                             |
+| <ApiBadge label="id" />           | <code>string</code>                                                                       | -                                      | Custom base ID used for generating the form `name` attribute. If not provided, one will be generated automatically.                                                                  |
+| <ApiBadge label="disabled" />     | <code>boolean</code>                                                                      | false                                  | Disables entire radio group                                                                                                                                                          |
+| <ApiBadge label="name" />         | <code>string</code>                                                                       | -                                      | HTML name attribute for form submission                                                                                                                                              |
+| <ApiBadge label="readOnly" />     | <code>boolean</code>                                                                      | false                                  | Read-only state. A read-only radio group can be inspected but its value cannot change. When inside a `<Field>`, inherited automatically.                                             |
+| <ApiBadge label="required" />     | <code>boolean</code>                                                                      | false                                  | Marks group as required for form validation                                                                                                                                          |
+| <ApiBadge label="invalid" />      | <code>boolean</code>                                                                      | false                                  | Marks the group as invalid for ARIA wiring (`aria-invalid`). When nested inside a `<Field>` with `invalid`, this is inherited automatically; a direct prop on `<Radio>` always wins. |
+| <ApiBadge label="className" />    | <code>string</code>                                                                       | -                                      | Appends custom classes to the root slot of this part.                                                                                                                                |
+
+#### Events {#rating-events}
+
+| Name                               | Type                                                 | Default | Description                                                                                                                          |
+| ---------------------------------- | ---------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="onValueChange" /> | <code>(value: number) =&gt; void</code>              | -       | Called with the picked score (always a whole number).                                                                                |
+| <ApiBadge label="onKeyDown" />     | <code>KeyboardEventHandler&lt;HTMLElement&gt;</code> | -       | Native keydown handler on the radiogroup root. Runs before Spar's Arrow / Home / End navigation; `event.preventDefault()` vetoes it. |
+
+#### Data attributes {#rating-data-attributes}
+
+| Attribute                                       | Applied when                                                | Purpose                                                                                                      |
+| ----------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                      | Stable selector for wrapper styling on the root slot.                                                        |
+| <ApiBadge label="data-type" />                  | Always                                                      | Reflects the resolved `type` (`star` \| `heart` \| `dot` \| `number`) so the recipe picks the glyph colours. |
+| <ApiBadge label="data-disabled" />              | disabled (own prop or inherited from a surrounding `Field`) | Greys every item out and turns the hover preview off (Spar-emitted).                                         |
+| <ApiBadge label="data-readonly" />              | readOnly (own prop or inherited from a surrounding `Field`) | Turns the hover preview off; the value stays inspectable (Spar-emitted).                                     |
+| <ApiBadge label="data-invalid" />               | invalid (own prop or inherited from a surrounding `Field`)  | Mirrors `aria-invalid` for styling (Spar-emitted).                                                           |
+
+### Rating.Item {#rating-item}
+
+#### Props {#rating-item-props}
+
+| Name                            | Type                                                                                                                                      | Default | Description                                                                                         |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode &#124; ((state: <a href="#rating-td-ratingitemrenderprops">RatingItemRenderProps</a>) =&gt; React.ReactNode)</code> | -       | Replaces the default glyph and value text. The function form receives `{ value, fill, isChecked }`. |
+| <ApiBadge label="value" />      | <code>number</code>                                                                                                                       | -       | The whole score this item stands for.                                                               |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;<a href="#rating-td-ratingitemslot">RatingItemSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides — `root` plus the internal `icon` / `value` slots.                    |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;<a href="#rating-td-ratingitemslot">RatingItemSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides — `root` plus the internal `icon` / `value` slots.                |
+| <ApiBadge label="disabled" />   | <code>boolean</code>                                                                                                                      | false   | Disables this specific radio item                                                                   |
+| <ApiBadge label="className" />  | <code>string</code>                                                                                                                       | -       | Appends custom classes to the root slot of this part.                                               |
+
+#### Data attributes {#rating-item-data-attributes}
+
+| Attribute                                        | Applied when                | Purpose                                                                                                      |
+| ------------------------------------------------ | --------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" />  | Always                      | Stable selector for wrapper styling on the root slot.                                                        |
+| <ApiBadge label="data-slot=&quot;icon&quot;" />  | Default content             | The decorative glyph (or the number for `type="number"`); style it via `classNames.icon` / `slotProps.icon`. |
+| <ApiBadge label="data-slot=&quot;value&quot;" /> | `showValue` on a glyph type | The zero-padded score under the glyph; style it via `classNames.value` / `slotProps.value`.                  |
+| <ApiBadge label="data-fill" />                   | Always                      | `full` up to the value, `half` on the next item for a fractional part of .5 or more, `empty` after.          |
+| <ApiBadge label="data-level" />                  | `type="number"`             | The score bucketed into five steps (1–5) for the red-to-green colour scale.                                  |
+| <ApiBadge label="data-state" />                  | Always                      | `checked` on the picked score, `unchecked` otherwise (Spar-emitted).                                         |
+
+### Type Definitions {#rating-type-definitions}
+
+| Name                                                                                         | Definition                                                                     |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| <span id="rating-td-ratingtype"><ApiBadge label="RatingType" /></span>                       | <code>'star' &#124; 'heart' &#124; 'dot' &#124; 'number'</code>                |
+| <span id="rating-td-ratingitemrenderprops"><ApiBadge label="RatingItemRenderProps" /></span> | <code>&#123; value: number; fill: RatingFill; isChecked: boolean &#125;</code> |
+| <span id="rating-td-ratingitemslot"><ApiBadge label="RatingItemSlot" /></span>               | <code>'root' &#124; 'icon' &#124; 'value'</code>                               |
+
+{/* api-tables:end */}
