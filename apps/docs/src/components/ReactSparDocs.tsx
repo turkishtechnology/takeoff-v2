@@ -19,6 +19,7 @@ export {
   Checkbox,
   Chip,
   ColorPicker,
+  CurrencyInput,
   Dialog,
   Divider,
   Drawer,

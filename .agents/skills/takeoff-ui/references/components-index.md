@@ -11,6 +11,7 @@ and accessibility guidance where the component owns interaction behavior.
 | [Button](/docs/components/button)                | Triggering actions with loading, toggle, and icon support.            |
 | [Checkbox](/docs/components/checkbox)            | Selecting multiple options or representing a mixed state.             |
 | [ColorPicker](/docs/components/color-picker)     | Picking a color by area, sliders, typed values, or presets.           |
+| [CurrencyInput](/docs/components/currency-input) | Entering an amount of money with its currency.                        |
 | [Field](/docs/components/input#using-with-field) | Wiring labels, descriptions, validation, and control state.           |
 | [Input](/docs/components/input)                  | Building text inputs with labels, affixes, icons, chips, and actions. |
 | [Label](/docs/components/label)                  | Labeling controls, sections, and compact metadata.                    |
