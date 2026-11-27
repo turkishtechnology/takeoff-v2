@@ -60,6 +60,7 @@
     "@tanstack/react-table": "8.21.3",
     "@turkish-technology/spar": "workspace:*",
     "clsx": "^2.1.1",
+    "libphonenumber-js": "1.13.17",
     "react-day-picker": "10.0.2"
   },
   "peerDependencies": {

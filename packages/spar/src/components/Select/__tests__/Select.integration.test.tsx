@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '../index';
 import { Field, FieldDescription, FieldErrorMessage, FieldLabel } from '../../Field';
+import { Input, InputField } from '../../Input';
 
 describe('Select Integration', () => {
   it('submits selected value through hidden form input', async () => {
@@ -168,6 +169,66 @@ describe('Select Integration', () => {
     await user.click(readonlyTrigger);
     await user.click(screen.getByRole('option', { name: 'Basic' }));
     expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it('leaves the Field to the Input field when it sits in an Input row', () => {
+    const { rerender } = render(
+      <Field id="phone" invalid required>
+        <FieldLabel>Phone</FieldLabel>
+        <Input>
+          <Select defaultValue="TR">
+            <SelectTrigger aria-label="Country code" />
+            <SelectContent>
+              <SelectItem value="TR" label="Türkiye">
+                +90
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <InputField />
+        </Input>
+        <FieldErrorMessage>Enter a phone number</FieldErrorMessage>
+      </Field>,
+    );
+
+    const trigger = screen.getByRole('combobox', { name: 'Country code' });
+    const field = screen.getByRole('textbox', { name: 'Phone' });
+    expect(field).toHaveAttribute('id', 'phone-field');
+    expect(trigger).not.toHaveAttribute('id', 'phone-field');
+    expect(trigger).not.toHaveAttribute('aria-labelledby');
+    expect(trigger).not.toHaveAttribute('aria-describedby');
+    expect(trigger).not.toHaveAttribute('aria-invalid');
+    expect(trigger).not.toHaveAttribute('aria-required');
+
+    // The row's disabled / readOnly — its own or its Field's — reach the picker.
+    rerender(
+      <Field disabled>
+        <Input>
+          <Select>
+            <SelectTrigger aria-label="Country code" />
+          </Select>
+        </Input>
+      </Field>,
+    );
+    expect(screen.getByRole('combobox', { name: 'Country code' })).toBeDisabled();
+
+    rerender(
+      <Input readOnly>
+        <Select>
+          <SelectTrigger aria-label="Country code" />
+        </Select>
+      </Input>,
+    );
+    expect(screen.getByRole('combobox', { name: 'Country code' })).toHaveAttribute('aria-readonly', 'true');
+
+    // A direct prop still wins over the row.
+    rerender(
+      <Input disabled>
+        <Select disabled={false}>
+          <SelectTrigger aria-label="Country code" />
+        </Select>
+      </Input>,
+    );
+    expect(screen.getByRole('combobox', { name: 'Country code' })).toBeEnabled();
   });
 
   it('wires FieldLabel htmlFor and aria-describedby to the trigger', () => {

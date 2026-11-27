@@ -2,6 +2,7 @@ import { useId, useMemo, useState, useCallback, useRef, type ElementType } from 
 import { useItemRegistry, useControlledState } from '@/hooks';
 import { SelectContext } from './hooks';
 import { useOptionalFieldContext } from '../Field/hooks';
+import { useOptionalInputContext } from '../Input/hooks';
 import type { SelectProps, SelectContextValue, SelectItemData, SelectFocusStrategy } from './types';
 
 /**
@@ -14,6 +15,11 @@ import type { SelectProps, SelectContextValue, SelectItemData, SelectFocusStrate
  * ARIA IDs so FieldLabel / FieldDescription / FieldErrorMessage wire to the
  * SelectTrigger without extra plumbing. Direct props on `<Select>` override
  * the inherited values.
+ *
+ * Inside an `<Input>` row (a country or currency picker in an affix) the
+ * Select is a second control next to the field, not the Field's control: the
+ * field owns the Field's ID, label and messages, so the Select keeps its own
+ * IDs and follows only the row's `disabled` and `readOnly`.
  */
 export const Select = <T extends ElementType = 'div'>({
   id: providedId,
@@ -34,13 +40,18 @@ export const Select = <T extends ElementType = 'div'>({
   ...props
 }: SelectProps<T>) => {
   const Component = as || 'div';
-  const fieldCtx = useOptionalFieldContext();
+  const inputCtx = useOptionalInputContext();
+  const outerFieldCtx = useOptionalFieldContext();
+  // An affix Select must not claim the Field the row's field already owns.
+  const fieldCtx = inputCtx ? null : outerFieldCtx;
 
   // Direct props win; otherwise fall back to Field context; then default false.
+  // In an Input row the field carries invalid/required; the row's disabled and
+  // readOnly (already resolved against any Field) apply to the picker too.
   const resolvedInvalid = invalid ?? fieldCtx?.invalid ?? false;
-  const resolvedDisabled = disabled ?? fieldCtx?.disabled ?? false;
+  const resolvedDisabled = disabled ?? inputCtx?.disabled ?? fieldCtx?.disabled ?? false;
   const resolvedRequired = required ?? fieldCtx?.required ?? false;
-  const resolvedReadOnly = readOnly ?? fieldCtx?.readOnly ?? false;
+  const resolvedReadOnly = readOnly ?? inputCtx?.readOnly ?? fieldCtx?.readOnly ?? false;
 
   // State management - controlled/uncontrolled
   const [currentValue, setValueState] = useControlledState(controlledValue, defaultValue, onChange);

@@ -13,6 +13,7 @@ and accessibility guidance where the component owns interaction behavior.
 | [Field](/docs/components/input#using-with-field) | Wiring labels, descriptions, validation, and control state.           |
 | [Input](/docs/components/input)                  | Building text inputs with labels, affixes, icons, chips, and actions. |
 | [Label](/docs/components/label)                  | Labeling controls, sections, and compact metadata.                    |
+| [PhoneInput](/docs/components/phone-input)       | Entering a phone number with its country.                             |
 | [Radio](/docs/components/radio)                  | Choosing one option from a mutually exclusive set.                    |
 | [Select](/docs/components/select)                | Choosing from a keyboard-accessible list with typeahead.              |
 | [Switch](/docs/components/switch)                | Turning a single setting on or off.                                   |

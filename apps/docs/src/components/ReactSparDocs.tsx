@@ -25,6 +25,7 @@ export {
   Field,
   Input,
   Label,
+  PhoneInput,
   Popover,
   Progress,
   Radio,
