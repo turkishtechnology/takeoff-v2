@@ -518,6 +518,20 @@ Recorded here per rule 10.
 - **No `data-*` of its own on `CurrencyInput.Symbol`** beyond `data-slot`: the
   code is already on the root.
 
+### PhoneInput
+
+PhoneInput is **v2-owned** composition: its row is `Input`'s element and its
+field is `Input.Field` with a libphonenumber-js mask resolver, so it inherits
+their vocabulary (`data-invalid`, `data-disabled`, `data-mask`,
+`data-mask-completed`, …) and adds none. Recorded here per rule 10.
+
+- **No `data-country` on the root**: no recipe styles a country differently, so
+  the key would have no consumer (rule 9). The country is reachable through
+  `onCountryChange` and the picker's hidden input.
+- **`data-mask-completed` means "valid"** here: the resolver reports
+  libphonenumber-js's `isValid()` as `completed`.
+- **No `data-*` of its own on `PhoneInput.DialCode`** beyond `data-slot`.
+
 ### Upload
 
 Upload is **v2-owned** with no upstream Spar primitive, so its vocabulary is

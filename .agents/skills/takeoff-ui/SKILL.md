@@ -98,10 +98,11 @@ props, a11y, and a verbatim Copy-page doc in its `references/`.
 **Actions & form controls:** `takeoff-button` · `takeoff-checkbox` ·
 `takeoff-color-picker` (color field: area, hue/alpha sliders, typed channels,
 swatches) · `takeoff-currency-input` (amount with a currency picker) ·
-`takeoff-input` · `takeoff-label` · `takeoff-radio` · `takeoff-rating` ·
-`takeoff-select` · `takeoff-slider` · `takeoff-switch` · `takeoff-upload` (file
-control: browse trigger, dropzone, per-file list) · `takeoff-field` (form-field
-wrapper: label, description, and error context for nested controls)
+`takeoff-input` · `takeoff-label` · `takeoff-phone-input` (phone number with a
+country picker) · `takeoff-radio` · `takeoff-rating` · `takeoff-select` ·
+`takeoff-slider` · `takeoff-switch` · `takeoff-upload` (file control: browse
+trigger, dropzone, per-file list) · `takeoff-field` (form-field wrapper: label,
+description, and error context for nested controls)
 
 **Navigation & disclosure:** `takeoff-accordion` · `takeoff-breadcrumb` ·
 `takeoff-dropdown` · `takeoff-stepper` · `takeoff-tabs`

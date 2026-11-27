@@ -34,6 +34,7 @@ writing code.
 | `TkDialog`                         | `Dialog`        | Move header/footer and body content into compound parts.          |
 | `TkDrawer`                         | `Drawer`        | Move title/content/actions into children.                         |
 | `TkDropdown`                       | `Dropdown`      | Move menu data into trigger/content/item children.                |
+| `TkPhoneInput`                     | `PhoneInput`    | Compose `Prefix` + `CountrySelect` + `Field`; value is E.164.     |
 | `TkPopover`                        | `Popover`       | Move trigger and panel content into children.                     |
 | `TkRadio`, `TkRadioGroup`          | `Radio`         | Use the v2 group/control composition and value callback.          |
 | `TkSelect`                         | `Select`        | Replace `options` with option children.                           |
@@ -64,9 +65,9 @@ migration.
 ## v1-only gaps
 
 `TkAvatar`, `TkAvatarGroup`, `TkCarousel`, `TkChart`, `TkEditor`,
-`TkGanttChart`, `TkOrgChart`, `TkPagination`, `TkPhoneInput`, `TkTimeline`,
-`TkTimelineItem`, `TkTreeView` have no shipped v2 target. See
-[references/gaps.md](gaps.md) before changing them.
+`TkGanttChart`, `TkOrgChart`, `TkPagination`, `TkTimeline`, `TkTimelineItem`,
+`TkTreeView` have no shipped v2 target. See [references/gaps.md](gaps.md) before
+changing them.
 
 ## v2 opportunities
 

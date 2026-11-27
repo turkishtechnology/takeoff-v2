@@ -17,6 +17,7 @@ export * from './dropdown';
 export * from './field';
 export * from './input';
 export * from './label';
+export * from './phone-input';
 export * from './radio';
 export * from './popover';
 export * from './progress';

@@ -17,25 +17,17 @@ and accessibility guidance where the component owns interaction behavior.
 | Component                                        | Use it for                                                             |
 | ------------------------------------------------ | ---------------------------------------------------------------------- |
 | [Button](/docs/components/button)                | Triggering actions with loading, toggle, and icon support.             |
-| [Button](/docs/components/button)                | Triggering actions with loading, toggle, and icon support.             |
-| [Checkbox](/docs/components/checkbox)            | Selecting multiple options or representing a mixed state.              |
 | [Checkbox](/docs/components/checkbox)            | Selecting multiple options or representing a mixed state.              |
 | [ColorPicker](/docs/components/color-picker)     | Picking a color by area, sliders, typed values, or presets.            |
 | [CurrencyInput](/docs/components/currency-input) | Entering an amount of money with its currency.                         |
 | [Dropdown](/docs/components/dropdown)            | Presenting contextual action menus from a trigger.                     |
-| [Dropdown](/docs/components/dropdown)            | Presenting contextual action menus from a trigger.                     |
-| [Input](/docs/components/input)                  | Building text inputs with labels, affixes, icons, chips, and actions.  |
 | [Input](/docs/components/input)                  | Building text inputs with labels, affixes, icons, chips, and actions.  |
 | [Label](/docs/components/label)                  | Labeling controls, sections, and compact metadata.                     |
-| [Label](/docs/components/label)                  | Labeling controls, sections, and compact metadata.                     |
-| [Radio](/docs/components/radio)                  | Choosing one option from a mutually exclusive set.                     |
+| [PhoneInput](/docs/components/phone-input)       | Entering a phone number with its country.                              |
 | [Radio](/docs/components/radio)                  | Choosing one option from a mutually exclusive set.                     |
 | [Rating](/docs/components/rating)                | Picking a score from a row of stars, hearts, dots or numbers.          |
 | [Select](/docs/components/select)                | Choosing from a keyboard-accessible list with typeahead.               |
-| [Select](/docs/components/select)                | Choosing from a keyboard-accessible list with typeahead.               |
 | [Switch](/docs/components/switch)                | Turning a single setting on or off.                                    |
-| [Switch](/docs/components/switch)                | Turning a single setting on or off.                                    |
-| [Upload](/docs/components/upload)                | Selecting and validating files with browse, drag-and-drop, and a list. |
 | [Upload](/docs/components/upload)                | Selecting and validating files with browse, drag-and-drop, and a list. |
 
 ## Navigation & disclosure
