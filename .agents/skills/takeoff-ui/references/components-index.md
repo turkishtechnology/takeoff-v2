@@ -46,14 +46,15 @@ and accessibility guidance where the component owns interaction behavior.
 
 ## Content & overlays
 
-| Component                           | Use it for                                                     |
-| ----------------------------------- | -------------------------------------------------------------- |
-| [Card](/docs/components/card)       | Grouping related content, summaries, and actions.              |
-| [Dialog](/docs/components/dialog)   | Handling focused forms, confirmations, and blocking decisions. |
-| [Divider](/docs/components/divider) | Separating related content sections or item groups.            |
-| [Drawer](/docs/components/drawer)   | Showing navigation, filters, or details over the current page. |
-| [Popover](/docs/components/popover) | Displaying additional content or actions in a floating panel.  |
-| [Table](/docs/components/table)     | Presenting sortable, filterable, selectable tabular data.      |
+| Component                             | Use it for                                                        |
+| ------------------------------------- | ----------------------------------------------------------------- |
+| [Card](/docs/components/card)         | Grouping related content, summaries, and actions.                 |
+| [Dialog](/docs/components/dialog)     | Handling focused forms, confirmations, and blocking decisions.    |
+| [Divider](/docs/components/divider)   | Separating related content sections or item groups.               |
+| [Drawer](/docs/components/drawer)     | Showing navigation, filters, or details over the current page.    |
+| [Popover](/docs/components/popover)   | Displaying additional content or actions in a floating panel.     |
+| [Table](/docs/components/table)       | Presenting sortable, filterable, selectable tabular data.         |
+| [Timeline](/docs/components/timeline) | Showing a sequence of events along a horizontal or vertical line. |
 
 Start with [Composition & styling](/docs/foundations/composition-styling) to
 learn the shared compound, slot, and customization model.

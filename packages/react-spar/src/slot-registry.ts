@@ -111,6 +111,7 @@ import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
 import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
 import { PhoneInputBase, PhoneInputCountrySelectBase, PhoneInputDialCodeBase, PhoneInputFieldBase } from './components/phone-input/base';
+import { TimelineBase, TimelineDescriptionBase, TimelineItemBase, TimelineTimeBase, TimelineTitleBase } from './components/timeline/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverDescriptionBase, PopoverHeaderBase, PopoverTriggerBase } from './components/popover/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
@@ -286,6 +287,11 @@ export const slotClassRegistry = {
   phoneInputField: { slots: PhoneInputFieldBase.classes },
   phoneInputDialCode: { slots: PhoneInputDialCodeBase.classes },
   phoneInputCountrySelect: { slots: PhoneInputCountrySelectBase.classes },
+  timeline: { slots: TimelineBase.classes },
+  timelineItem: { slots: TimelineItemBase.classes },
+  timelineTitle: { slots: TimelineTitleBase.classes },
+  timelineDescription: { slots: TimelineDescriptionBase.classes },
+  timelineTime: { slots: TimelineTimeBase.classes },
   popoverTrigger: { slots: PopoverTriggerBase.classes },
   popoverContent: { slots: PopoverContentBase.classes },
   popoverHeader: { slots: PopoverHeaderBase.classes },

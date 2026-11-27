@@ -53,6 +53,7 @@ const sidebars: SidebarsConfig = {
         'components/rating',
         'components/table',
         'components/tabs',
+        'components/timeline',
         'components/toast',
         'components/tooltip',
         'components/upload',
