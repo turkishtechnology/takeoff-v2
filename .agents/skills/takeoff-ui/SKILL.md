@@ -102,7 +102,7 @@ trigger, dropzone, per-file list) · `takeoff-field` (form-field wrapper: label,
 description, and error context for nested controls)
 
 **Navigation & disclosure:** `takeoff-accordion` · `takeoff-breadcrumb` ·
-`takeoff-dropdown` · `takeoff-stepper` · `takeoff-tabs`
+`takeoff-dropdown` · `takeoff-pagination` · `takeoff-stepper` · `takeoff-tabs`
 
 **Feedback & status:** `takeoff-alert` · `takeoff-badge` · `takeoff-chip` ·
 `takeoff-progress` · `takeoff-skeleton` · `takeoff-spinner` · `takeoff-tooltip`

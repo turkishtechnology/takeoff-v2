@@ -1,0 +1,467 @@
+---
+title: Pagination
+description:
+  Moves through pages of results with page reports, a page range with ellipses,
+  first/previous/next/last controls, a page-size select, and a page-jump input.
+sidebar_label: Pagination
+slug: /components/pagination
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Pagination,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const paginationScope = {
+  Pagination,
+};
+
+<!-- prettier-ignore-start -->
+
+export const playgroundDemo = String.raw`
+<Pagination totalItems={240} />
+`;
+
+export const typeDemo = String.raw`
+<div className="grid w-full gap-6">
+  <Pagination totalItems={240} defaultPage={6} type="outlined" />
+  <Pagination totalItems={240} defaultPage={6} type="text" />
+  <Pagination totalItems={240} defaultPage={6} type="grouped" />
+</div>
+`;
+
+export const roundedDemo = String.raw`
+<Pagination totalItems={240} defaultPage={6} rounded />
+`;
+
+export const compactDemo = String.raw`
+<div className="grid w-full gap-6">
+  <Pagination totalItems={240} mode="compact" />
+  <Pagination totalItems={240} mode="compact" rounded />
+</div>
+`;
+
+export const compositionDemo = String.raw`
+<Pagination totalItems={240} defaultPage={6} type="text">
+  <Pagination.Info>
+    <Pagination.ItemsReport />
+  </Pagination.Info>
+  <Pagination.Controls>
+    <Pagination.Previous />
+    <Pagination.Pages />
+    <Pagination.Next />
+  </Pagination.Controls>
+</Pagination>
+`;
+
+export const controlledDemo = String.raw`
+function ControlledPaginationDemo() {
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(20);
+
+  return (
+    <div className="grid w-full gap-6">
+      <Pagination
+        totalItems={1000}
+        page={page}
+        onPageChange={setPage}
+        pageSize={pageSize}
+        onPageSizeChange={setPageSize}
+      >
+        <Pagination.Info />
+        <Pagination.Controls />
+        <Pagination.Actions>
+          <Pagination.PageSize options={[10, 20, 50, 100]} />
+          <Pagination.PageJump />
+        </Pagination.Actions>
+      </Pagination>
+      <span>
+        page {page}, {pageSize} per page
+      </span>
+    </div>
+  );
+}
+
+render(<ControlledPaginationDemo />);
+`;
+
+export const siblingDemo = String.raw`
+<div className="grid w-full gap-6">
+  <Pagination totalItems={500} defaultPage={25}>
+    <Pagination.Controls />
+  </Pagination>
+  <Pagination totalItems={500} defaultPage={25} siblingCount={2}>
+    <Pagination.Controls />
+  </Pagination>
+  <Pagination totalItems={500} defaultPage={25} boundaryCount={2}>
+    <Pagination.Controls />
+  </Pagination>
+</div>
+`;
+
+export const labelsDemo = String.raw`
+<Pagination
+  totalItems={240}
+  labels={{
+    landmark: 'Sayfalama',
+    pageStatus: 'Sayfa {page} / {pageCount}',
+    itemsRange: '{start}-{end} / {total} kayıt',
+    noItems: 'Kayıt yok',
+    firstPage: 'İlk sayfa',
+    previousPage: 'Önceki sayfa',
+    nextPage: 'Sonraki sayfa',
+    lastPage: 'Son sayfa',
+    pageButton: '{page}. sayfaya git',
+    currentPageButton: '{page}. sayfa, geçerli sayfa',
+    rowsPerPage: 'Sayfa başına satır',
+    pageJumpInput: 'Sayfaya git',
+    pageJumpSubmit: 'Git',
+  }}
+/>
+`;
+
+export const disabledDemo = String.raw`
+<Pagination totalItems={240} defaultPage={3} disabled />
+`;
+
+<!-- prettier-ignore-end -->
+
+# Pagination
+
+`Pagination` moves through pages of results. It reports the current page and
+item range, shows a page range that keeps the same width while paging (an
+ellipsis stands for the hidden pages), offers first/previous/next/last buttons,
+and lets the user change the page size or jump to a page by number. For a
+`Table`, use its built-in `pagination` prop instead; both share the same Spar
+primitive.
+
+## Usage
+
+```tsx
+import { Pagination } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Pagination>
+  <Pagination.Info>
+    <Pagination.PageReport />
+    <Pagination.ItemsReport />
+  </Pagination.Info>
+  <Pagination.Controls>
+    <Pagination.First />
+    <Pagination.Previous />
+    <Pagination.Pages />
+    <Pagination.Next />
+    <Pagination.Last />
+  </Pagination.Controls>
+  <Pagination.Actions>
+    <Pagination.PageSize />
+    <Pagination.PageJump />
+  </Pagination.Actions>
+</Pagination>
+```
+
+Without children, `Pagination` renders exactly this anatomy (or the compact one,
+see below), so `<Pagination totalItems={240} />` is a complete control.
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={paginationScope}
+/>
+
+## Type
+
+`type="outlined"` (the default) borders every page cell, `type="text"` leaves
+them bare, and `type="grouped"` draws one box around the control row with a
+divider between each pair of edge buttons.
+
+<LiveCode
+  code={typeDemo}
+  editable={false}
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={paginationScope}
+/>
+
+## Rounded
+
+<LiveCode
+  code={roundedDemo}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={paginationScope}
+/>
+
+## Compact
+
+`mode="compact"` swaps the page range for a page input between the previous and
+next buttons. The input applies the typed page on <kbd>Enter</kbd> or when it
+loses focus; the page size stays at the end.
+
+<LiveCode
+  code={compactDemo}
+  editable={false}
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={paginationScope}
+/>
+
+## Composition
+
+Compose the parts to drop or reorder pieces: here only the item report, the
+previous/next buttons and the page range. `Pagination.Info`,
+`Pagination.Controls` and `Pagination.Actions` render their default children
+when left empty.
+
+<LiveCode
+  code={compositionDemo}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={paginationScope}
+/>
+
+## Controlled
+
+`page` / `onPageChange` and `pageSize` / `onPageSizeChange` are controlled
+pairs; `defaultPage` / `defaultPageSize` start an uncontrolled one. Pages are
+1-based. Changing the page size keeps the first visible item on screen, so it
+can move the page as well: `onPageChange` fires first, then `onPageSizeChange`.
+
+<LiveCode
+  code={controlledDemo}
+  editable={false}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={paginationScope}
+/>
+
+## Page range
+
+The range always shows the first and last page (`boundaryCount`, default `1`)
+and the current page with `siblingCount` neighbours on each side (default `1`).
+The number of items stays the same while paging, so the row never changes width.
+
+<LiveCode
+  code={siblingDemo}
+  editable={false}
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={paginationScope}
+/>
+
+## Labels
+
+Every visible string and accessible name comes from `labels`, merged per key
+over provider `defaultProps.labels`. Templates use `{page}`, `{pageCount}`,
+`{start}`, `{end}` and `{total}`; an empty value falls back to the English
+default.
+
+<LiveCode
+  code={labelsDemo}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={paginationScope}
+/>
+
+## Disabled
+
+<LiveCode
+  code={disabledDemo}
+  editable={false}
+  previewMinHeight={120}
+  previewWrapper={ReactSparDemoRoot}
+  scope={paginationScope}
+/>
+
+## Accessibility & Keyboard
+
+- The root is a `<nav>` landmark named by `labels.landmark` (`"Pagination"`); an
+  explicit `aria-label` wins.
+- Page buttons are named `"Go to page {page}"`, and the current one
+  `"Page {page}, current page"` with `aria-current="page"`.
+- First/previous/next/last are icon buttons named by `labels`; they are natively
+  disabled when there is nowhere to go.
+- Ellipses are `aria-hidden`: the page buttons on either side already say where
+  the range jumps.
+- The page and item reports are `aria-live="polite"`, so a page change is
+  announced.
+- The page-jump input keeps digits only. <kbd>Enter</kbd>, the submit button or,
+  unless `applyOnBlur={false}`, leaving the field applies the page; a page
+  outside the range is rejected and the field shows the current page again.
+- Below a 600px container the report column hides and the controls centre.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Pagination {#pagination}
+
+#### Props {#pagination-props}
+
+| Name                                 | Type                                                                                       | Default    | Description                                                                               |
+| ------------------------------------ | ------------------------------------------------------------------------------------------ | ---------- | ----------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />        | <code>React.ReactNode</code>                                                               | -          | Parts to render. Without children the root renders the default anatomy for its `mode`.    |
+| <ApiBadge label="totalItems" />      | <code>number</code>                                                                        | -          | Total number of items across all pages. The page count is `ceil(totalItems / pageSize)`.  |
+| <ApiBadge label="pageSize" />        | <code>number</code>                                                                        | -          | Controlled page size.                                                                     |
+| <ApiBadge label="defaultPageSize" /> | <code>number</code>                                                                        | 10         | Initial page size when uncontrolled.                                                      |
+| <ApiBadge label="type" />            | <code><a href="#pagination-td-paginationtype">PaginationType</a></code>                    | 'outlined' | Visual style. Emitted as `data-type` on the root.                                         |
+| <ApiBadge label="mode" />            | <code><a href="#pagination-td-paginationmode">PaginationMode</a></code>                    | 'default'  | Layout mode. Picks the default anatomy and is emitted as `data-mode`.                     |
+| <ApiBadge label="rounded" />         | <code>boolean</code>                                                                       | false      | Fully rounded page cells. Emitted as `data-rounded`.                                      |
+| <ApiBadge label="labels" />          | <code>Partial&lt;<a href="#pagination-td-paginationlabels">PaginationLabels</a>&gt;</code> | -          | Per-key overrides of the user-facing strings, merged over provider `defaultProps.labels`. |
+| <ApiBadge label="classNames" />      | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                   | -          | Per-slot class name overrides.                                                            |
+| <ApiBadge label="slotProps" />       | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>  | -          | Per-slot HTML attribute overrides.                                                        |
+| <ApiBadge label="className" />       | <code>string</code>                                                                        | -          | Appends custom classes to the root slot of this part.                                     |
+
+#### Events {#pagination-events}
+
+| Name                                  | Type                                       | Default | Description                                                                                                                           |
+| ------------------------------------- | ------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onPageSizeChange" /> | <code>(pageSize: number) =&gt; void</code> | -       | Fires once per page-size change. When the change moves the page (the first visible item stays on screen), `onPageChange` fires first. |
+
+#### Data attributes {#pagination-data-attributes}
+
+| Attribute                                       | Applied when             | Purpose                                                                                   |
+| ----------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                   | Stable selector for wrapper styling on the root slot.                                     |
+| <ApiBadge label="data-type" />                  | Always                   | Reflects the resolved `type` (`outlined` \| `text` \| `grouped`). Emitted by the wrapper. |
+| <ApiBadge label="data-mode" />                  | Always                   | Reflects the resolved `mode` (`default` \| `compact`). Emitted by the wrapper.            |
+| <ApiBadge label="data-rounded" />               | When `rounded` is true.  | Fully rounded page cells. Emitted by the wrapper.                                         |
+| <ApiBadge label="data-disabled" />              | When `disabled` is true. | Theme hook for the disabled control. Emitted by Spar, alongside `aria-disabled`.          |
+
+### Pagination.Info {#pagination-info}
+
+#### Data attributes {#pagination-info-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Pagination.PageReport {#pagination-page-report}
+
+#### Data attributes {#pagination-page-report-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Pagination.ItemsReport {#pagination-items-report}
+
+#### Data attributes {#pagination-items-report-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Pagination.Controls {#pagination-controls}
+
+#### Data attributes {#pagination-controls-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Pagination.First {#pagination-first}
+
+#### Data attributes {#pagination-first-data-attributes}
+
+| Attribute                                       | Applied when                                               | Purpose                                               |
+| ----------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                     | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-disabled" />              | When there is no page to move to, or the root is disabled. | Mirrors the native `disabled` state. Emitted by Spar. |
+
+### Pagination.Previous {#pagination-previous}
+
+#### Data attributes {#pagination-previous-data-attributes}
+
+| Attribute                                       | Applied when                                               | Purpose                                               |
+| ----------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                     | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-disabled" />              | When there is no page to move to, or the root is disabled. | Mirrors the native `disabled` state. Emitted by Spar. |
+
+### Pagination.Pages {#pagination-pages}
+
+#### Data attributes {#pagination-pages-data-attributes}
+
+| Attribute                                           | Applied when          | Purpose                                                                                                          |
+| --------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />     | Always                | Stable selector for wrapper styling on the root slot.                                                            |
+| <ApiBadge label="data-slot=&quot;page&quot;" />     | On every page button. | Stable selector for a page button. The current one carries `aria-current="page"` (and `data-current`) from Spar. |
+| <ApiBadge label="data-slot=&quot;ellipsis&quot;" /> | On every gap marker.  | Stable selector for the `aria-hidden` ellipsis.                                                                  |
+
+### Pagination.Next {#pagination-next}
+
+#### Data attributes {#pagination-next-data-attributes}
+
+| Attribute                                       | Applied when                                               | Purpose                                               |
+| ----------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                     | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-disabled" />              | When there is no page to move to, or the root is disabled. | Mirrors the native `disabled` state. Emitted by Spar. |
+
+### Pagination.Last {#pagination-last}
+
+#### Data attributes {#pagination-last-data-attributes}
+
+| Attribute                                       | Applied when                                               | Purpose                                               |
+| ----------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                     | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-disabled" />              | When there is no page to move to, or the root is disabled. | Mirrors the native `disabled` state. Emitted by Spar. |
+
+### Pagination.Actions {#pagination-actions}
+
+#### Data attributes {#pagination-actions-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Pagination.PageSize {#pagination-page-size}
+
+#### Props {#pagination-page-size-props}
+
+| Name                           | Type                  | Default         | Description                                                       |
+| ------------------------------ | --------------------- | --------------- | ----------------------------------------------------------------- |
+| <ApiBadge label="options" />   | <code>number[]</code> | [5, 10, 20, 50] | Page sizes to offer. The active size is added when it is missing. |
+| <ApiBadge label="className" /> | <code>string</code>   | -               | Appends custom classes to the root slot of this part.             |
+
+#### Data attributes {#pagination-page-size-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Pagination.PageJump {#pagination-page-jump}
+
+#### Props {#pagination-page-jump-props}
+
+| Name                             | Type                 | Default | Description                                                                                                                                      |
+| -------------------------------- | -------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="applyOnBlur" /> | <code>boolean</code> | true    | Whether leaving the input applies the typed page. When `false`, only Enter (or the submit button) applies it and blur restores the current page. |
+| <ApiBadge label="className" />   | <code>string</code>  | -       | Appends custom classes to the root slot of this part.                                                                                            |
+
+#### Data attributes {#pagination-page-jump-data-attributes}
+
+| Attribute                                         | Applied when       | Purpose                                                  |
+| ------------------------------------------------- | ------------------ | -------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />   | Always             | Stable selector for wrapper styling on the root slot.    |
+| <ApiBadge label="data-slot=&quot;submit&quot;" /> | In `default` mode. | The submit button beside the field (a Takeoff `Button`). |
+
+### Type Definitions {#pagination-type-definitions}
+
+| Name                                                                                         | Definition                                                                                                                                                                                                                                                                                           |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="pagination-td-paginationtype"><ApiBadge label="PaginationType" /></span>           | <code>'outlined' &#124; 'text' &#124; 'grouped'</code>                                                                                                                                                                                                                                               |
+| <span id="pagination-td-paginationmode"><ApiBadge label="PaginationMode" /></span>           | <code>'default' &#124; 'compact'</code>                                                                                                                                                                                                                                                              |
+| <span id="pagination-td-paginationlabels"><ApiBadge label="PaginationLabels" /></span>       | <code>&#123; landmark: string; pageStatus: string; itemsRange: string; noItems: string; firstPage: string; previousPage: string; nextPage: string; lastPage: string; pageButton: string; currentPageButton: string; rowsPerPage: string; pageJumpInput: string; pageJumpSubmit: string &#125;</code> |
+| <span id="pagination-td-paginationpagesslot"><ApiBadge label="PaginationPagesSlot" /></span> | <code>'root' &#124; 'page' &#124; 'ellipsis'</code>                                                                                                                                                                                                                                                  |
+
+{/* api-tables:end */}

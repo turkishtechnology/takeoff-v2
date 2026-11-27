@@ -15,6 +15,7 @@ export * from './dropdown';
 export * from './field';
 export * from './input';
 export * from './label';
+export * from './pagination';
 export * from './radio';
 export * from './popover';
 export * from './progress';

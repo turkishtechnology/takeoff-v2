@@ -1,4 +1,4 @@
-/* global console */
+/* eslint-disable no-console */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -61,7 +61,9 @@ function parseComponentIndex(filePath) {
   }
 
   const hooks = [];
-  const hookRegex = /^export\s*\{([^}]+)\}\s*from\s*'\.\/hooks'/gm;
+  // Hooks and pure helpers (e.g. Pagination's `getPaginationItems`) ride along
+  // with a compound component's sub-path entry.
+  const hookRegex = /^export\s*\{([^}]+)\}\s*from\s*'\.\/(?:hooks|utils)'/gm;
   while ((match = hookRegex.exec(content)) !== null) {
     const names = match[1]
       .split(',')

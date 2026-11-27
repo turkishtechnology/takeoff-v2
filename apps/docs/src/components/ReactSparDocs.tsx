@@ -25,6 +25,7 @@ export {
   Field,
   Input,
   Label,
+  Pagination,
   Popover,
   Progress,
   Radio,

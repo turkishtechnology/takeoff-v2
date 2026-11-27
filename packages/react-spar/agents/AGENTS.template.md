@@ -46,6 +46,7 @@ on headless Spar primitives and styled with Takeoff design tokens.
 | `Field`      | Wrap one form control to attach a visible label, helper text, and a validation error message that are correctly associated for screen readers.                                               |
 | `Input`      | Any single-line (or `as="textarea"`) text entry — search boxes, email/password fields, numeric steppers/counters, tag/chips fields.                                                          |
 | `Label`      | You only need the label primitive — a section title, a caption, or a manual `htmlFor` association to a native control.                                                                       |
+| `Pagination` | Paging a list, card grid or search results whose data lives outside a `Table`.                                                                                                               |
 | `Popover`    | Anchored, dismissible panels tied to a trigger (settings, quick forms, contextual info).                                                                                                     |
 | `Progress`   | Work with a known percentage — file uploads, imports, quota and storage meters, multi-item batch jobs — or a bar-shaped indeterminate treatment for a long-running task.                     |
 | `Radio`      | Any single-choice form control: cabin/seat/plan/payment pickers, exclusive option lists.                                                                                                     |

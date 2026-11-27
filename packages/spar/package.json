@@ -63,6 +63,11 @@
       "import": "./dist/label.mjs",
       "require": "./dist/label.cjs"
     },
+    "./pagination": {
+      "types": "./dist/pagination.d.ts",
+      "import": "./dist/pagination.mjs",
+      "require": "./dist/pagination.cjs"
+    },
     "./popover": {
       "types": "./dist/popover.d.ts",
       "import": "./dist/popover.mjs",
@@ -131,6 +136,9 @@
       ],
       "label": [
         "./dist/label.d.ts"
+      ],
+      "pagination": [
+        "./dist/pagination.d.ts"
       ],
       "popover": [
         "./dist/popover.d.ts"

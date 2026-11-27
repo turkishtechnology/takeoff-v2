@@ -20,6 +20,7 @@
 @use 'recipes/field';
 @use 'recipes/input';
 @use 'recipes/label';
+@use 'recipes/pagination';
 @use 'recipes/popover';
 @use 'recipes/progress';
 @use 'recipes/radio';
@@ -425,6 +426,10 @@
 
 .tk-spinner {
   @include spinner.spinner;
+}
+
+.tk-pagination {
+  @include pagination.pagination;
 }
 
 .tk-progress {

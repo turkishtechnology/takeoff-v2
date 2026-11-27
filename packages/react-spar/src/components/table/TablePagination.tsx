@@ -1,4 +1,14 @@
 import { useState } from 'react';
+import {
+  Pagination as SparPagination,
+  PaginationEllipsis as SparPaginationEllipsis,
+  PaginationFirst as SparPaginationFirst,
+  PaginationItem as SparPaginationItem,
+  PaginationLast as SparPaginationLast,
+  PaginationNext as SparPaginationNext,
+  PaginationPrevious as SparPaginationPrevious,
+  usePaginationContext,
+} from '@turkish-technology/spar';
 import { ChevronLeftIconOutlinedRounded } from '@takeoff-icons/react/chevron-left';
 import { ChevronRightIconOutlinedRounded } from '@takeoff-icons/react/chevron-right';
 import { DoubleChevronLeftIconOutlinedRounded } from '@takeoff-icons/react/double-chevron-left';
@@ -9,26 +19,42 @@ import { Select } from '../select';
 import { formatLabel } from '../../utils';
 
 import { useTableContext } from './context';
+import type { TableLabels } from './types';
 
-type PaginationItem = number | 'start-ellipsis' | 'end-ellipsis';
-
-const getPaginationItems = (pageIndex: number, pageCount: number): PaginationItem[] => {
-  if (pageCount <= 7) return Array.from({ length: pageCount }, (_, index) => index);
-  if (pageIndex <= 3) return [0, 1, 2, 3, 4, 'end-ellipsis', pageCount - 1];
-  if (pageIndex >= pageCount - 4) return [0, 'start-ellipsis', pageCount - 5, pageCount - 4, pageCount - 3, pageCount - 2, pageCount - 1];
-  return [0, 'start-ellipsis', pageIndex - 1, pageIndex, pageIndex + 1, 'end-ellipsis', pageCount - 1];
+// The page buttons read the visible range from the Spar root, so the window
+// (one sibling each side, first and last always shown) is computed once.
+const TablePaginationPages = ({ labels }: { labels: TableLabels }) => {
+  const { items, page: currentPage } = usePaginationContext();
+  return items.map(item => {
+    if (typeof item !== 'number') return <SparPaginationEllipsis key={item} />;
+    const current = item === currentPage;
+    return (
+      <SparPaginationItem
+        key={item}
+        as={Button}
+        page={item}
+        size="small"
+        variant="neutral"
+        appearance={current ? 'outlined' : 'text'}
+        aria-label={formatLabel(current ? labels.currentPageButton : labels.pageButton, { page: item })}
+      >
+        {item}
+      </SparPaginationItem>
+    );
+  });
 };
 
 /**
  * Pagination controls — composed from Spar-derived v2 wrappers (RFC §4): a
- * `Select` for page size and `Button`s for navigation. Lives outside the
- * `<table>` so it carries no table semantics.
+ * `Select` for page size and `Button`s for navigation, rendered through the
+ * Spar Pagination primitive (TanStack owns the page, so it is controlled),
+ * which owns the page range and the edge-disabled First/Previous/Next/Last.
+ * Lives outside the `<table>` so it carries no table semantics.
  */
 export const TablePagination = () => {
   const { table, slotAttrs, pageSizeOptions, labels } = useTableContext('Table.Pagination');
   const { pageIndex, pageSize } = table.getState().pagination;
   const pageCount = table.getPageCount();
-  const paginationItems = getPaginationItems(pageIndex, pageCount);
   const [pageInput, setPageInput] = useState('');
 
   const totalRows = table.getRowCount();
@@ -51,74 +77,25 @@ export const TablePagination = () => {
   };
 
   return (
-    <div {...slotAttrs('pagination')} role="navigation" aria-label={labels.paginationLandmark}>
+    <SparPagination
+      as="div"
+      {...slotAttrs('pagination')}
+      role="navigation"
+      aria-label={labels.paginationLandmark}
+      page={pageIndex + 1}
+      onPageChange={page => table.setPageIndex(page - 1)}
+      pageCount={pageCount}
+    >
       <div {...slotAttrs('paginationInfo')}>
         <span aria-live="polite">{formatLabel(pageCount > 0 ? labels.pageStatus : labels.pageStatusUnknown, { page: pageIndex + 1, pageCount })}</span>
         <span aria-live="polite">{itemsLabel}</span>
       </div>
       <div {...slotAttrs('paginationNav')}>
-        <Button
-          size="small"
-          variant="neutral"
-          appearance="text"
-          aria-label={labels.firstPage}
-          startContent={<DoubleChevronLeftIconOutlinedRounded />}
-          disabled={!table.getCanPreviousPage()}
-          onClick={() => table.setPageIndex(0)}
-        />
-        <Button
-          size="small"
-          variant="neutral"
-          appearance="text"
-          aria-label={labels.previousPage}
-          startContent={<ChevronLeftIconOutlinedRounded />}
-          disabled={!table.getCanPreviousPage()}
-          onClick={() => table.previousPage()}
-        />
-        {paginationItems.map(item => {
-          if (typeof item !== 'number') {
-            return (
-              <span key={item} aria-hidden="true">
-                …
-              </span>
-            );
-          }
-
-          const pageNumber = item + 1;
-          const current = item === pageIndex;
-          return (
-            <Button
-              key={item}
-              type="button"
-              size="small"
-              variant="neutral"
-              appearance={current ? 'outlined' : 'text'}
-              aria-label={formatLabel(current ? labels.currentPageButton : labels.pageButton, { page: pageNumber })}
-              aria-current={current ? 'page' : undefined}
-              onClick={() => table.setPageIndex(item)}
-            >
-              {pageNumber}
-            </Button>
-          );
-        })}
-        <Button
-          size="small"
-          variant="neutral"
-          appearance="text"
-          aria-label={labels.nextPage}
-          startContent={<ChevronRightIconOutlinedRounded />}
-          disabled={!table.getCanNextPage() || pageCount <= 0}
-          onClick={() => table.nextPage()}
-        />
-        <Button
-          size="small"
-          variant="neutral"
-          appearance="text"
-          aria-label={labels.lastPage}
-          startContent={<DoubleChevronRightIconOutlinedRounded />}
-          disabled={!table.getCanNextPage() || pageCount <= 0}
-          onClick={() => table.setPageIndex(pageCount - 1)}
-        />
+        <SparPaginationFirst as={Button} size="small" variant="neutral" appearance="text" aria-label={labels.firstPage} startContent={<DoubleChevronLeftIconOutlinedRounded />} />
+        <SparPaginationPrevious as={Button} size="small" variant="neutral" appearance="text" aria-label={labels.previousPage} startContent={<ChevronLeftIconOutlinedRounded />} />
+        <TablePaginationPages labels={labels} />
+        <SparPaginationNext as={Button} size="small" variant="neutral" appearance="text" aria-label={labels.nextPage} startContent={<ChevronRightIconOutlinedRounded />} />
+        <SparPaginationLast as={Button} size="small" variant="neutral" appearance="text" aria-label={labels.lastPage} startContent={<DoubleChevronRightIconOutlinedRounded />} />
       </div>
       <div {...slotAttrs('paginationActions')}>
         <div {...slotAttrs('paginationSize')}>
@@ -165,7 +142,7 @@ export const TablePagination = () => {
           </Input>
         </div>
       </div>
-    </div>
+    </SparPagination>
   );
 };
 

@@ -38,6 +38,7 @@ const sidebars: SidebarsConfig = {
         'components/field',
         'components/input',
         'components/label',
+        'components/pagination',
         'components/popover',
         'components/progress',
         'components/select',

@@ -92,6 +92,21 @@ import { StepperBase, StepperDescriptionBase, StepperItemBase, StepperTitleBase 
 import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
 import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
+import {
+  PaginationActionsBase,
+  PaginationBase,
+  PaginationControlsBase,
+  PaginationFirstBase,
+  PaginationInfoBase,
+  PaginationItemsReportBase,
+  PaginationLastBase,
+  PaginationNextBase,
+  PaginationPageJumpBase,
+  PaginationPageReportBase,
+  PaginationPageSizeBase,
+  PaginationPagesBase,
+  PaginationPreviousBase,
+} from './components/pagination/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverDescriptionBase, PopoverHeaderBase, PopoverTriggerBase } from './components/popover/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
@@ -212,6 +227,19 @@ export const slotClassRegistry = {
   inputIncrement: { slots: InputIncrementBase.classes },
   inputChips: { slots: InputChipsBase.classes },
   label: { slots: LabelBase.classes },
+  pagination: { slots: PaginationBase.classes },
+  paginationInfo: { slots: PaginationInfoBase.classes },
+  paginationPageReport: { slots: PaginationPageReportBase.classes },
+  paginationItemsReport: { slots: PaginationItemsReportBase.classes },
+  paginationControls: { slots: PaginationControlsBase.classes },
+  paginationFirst: { slots: PaginationFirstBase.classes },
+  paginationPrevious: { slots: PaginationPreviousBase.classes },
+  paginationPages: { slots: PaginationPagesBase.classes },
+  paginationNext: { slots: PaginationNextBase.classes },
+  paginationLast: { slots: PaginationLastBase.classes },
+  paginationActions: { slots: PaginationActionsBase.classes },
+  paginationPageSize: { slots: PaginationPageSizeBase.classes },
+  paginationPageJump: { slots: PaginationPageJumpBase.classes },
   progress: { slots: ProgressBase.classes },
   progressTrack: { slots: ProgressTrackBase.classes },
   progressIndicator: { slots: ProgressIndicatorBase.classes },
