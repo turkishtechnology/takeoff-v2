@@ -37,6 +37,7 @@ export {
   Table,
   Tabs,
   TakeoffSparProvider,
+  Timeline,
   Toast,
   Toaster,
   Tooltip,

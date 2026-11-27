@@ -99,6 +99,7 @@ table needs updating.
 | `data-type`        | Root **or** Item              | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below                |
 | `data-animation`   | Root                          | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                         |
 | `data-orientation` | Root                          | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                    |
+| `data-placement`   | Timeline root                 | `alternate`, `start`, `end`                                               | Side of the line item content sits on                                     |
 | `data-thumb`       | Slider thumb                  | `min`, `max`                                                              | First / last handle of a range; middle handles carry none                 |
 | `data-track`       | Slider root                   | `normal`, `inverted`, `none`                                              | Rail fill mode: `inverted` swaps rail/fill colours, `none` drops the fill |
 | `data-tooltip`     | Slider root                   | `auto`, `always`, `never`                                                 | When the value bubble is shown (`auto` = on drag/focus)                   |
@@ -330,6 +331,20 @@ its state attributes are wrapper-emitted. Recorded here per rule 10.
   re-emits `onStepClick` but cannot change the selection), consumed by the
   recipe for the cursor and hover affordances. Matches Chip's `data-clickable`
   vocabulary.
+
+### Timeline
+
+Timeline is **v2-owned** with no upstream Spar primitive, so its vocabulary is
+wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the variants only:** `data-orientation` and `data-placement`
+  (`alternate` | `start` | `end`). There is no per-item attribute: under
+  `alternate` the recipe picks each item's side with `:nth-child`, and
+  `:last-child` hides the trailing connector, so the wrapper never derives an
+  item index.
+- **The default dot is the empty indicator.** `.tk-timeline-indicator:empty`
+  paints the dot; custom `indicator` content replaces it. There is no
+  `data-custom` flag mirroring that — `:empty` already says it (rule 9).
 
 ### Calendar
 

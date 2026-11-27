@@ -31,6 +31,7 @@
 @use 'recipes/switch';
 @use 'recipes/table';
 @use 'recipes/tabs';
+@use 'recipes/timeline';
 @use 'recipes/tooltip';
 @use 'recipes/toast';
 @use 'recipes/upload';
@@ -445,6 +446,22 @@
 
 .tk-stepper {
   @include stepper.stepper;
+}
+
+.tk-timeline {
+  @include timeline.timeline;
+}
+
+.tk-timeline-title {
+  @include timeline.timeline-title;
+}
+
+.tk-timeline-description {
+  @include timeline.timeline-description;
+}
+
+.tk-timeline-time {
+  @include timeline.timeline-time;
 }
 
 .tk-checkbox {

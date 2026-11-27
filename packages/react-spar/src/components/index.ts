@@ -25,6 +25,7 @@ export * from './stepper';
 export * from './switch';
 export * from './table';
 export * from './tabs';
+export * from './timeline';
 export * from './tooltip';
 export * from './toast';
 export * from './skeleton';

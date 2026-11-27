@@ -1,0 +1,343 @@
+---
+title: Timeline
+description:
+  A read-only sequence of events along a line. Supports horizontal and vertical
+  orientation, alternating or one-sided content, and custom indicators.
+sidebar_label: Timeline
+sidebar_position: 22
+slug: /components/timeline
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Button,
+  Timeline,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+import { AirplaneIconFilledRounded } from '@takeoff-icons/react/airplane';
+import { CheckCircleIconFilledRounded } from '@takeoff-icons/react/check-circle';
+import { FlagIconFilledRounded } from '@takeoff-icons/react/flag';
+
+export const timelineScope = {
+  Button,
+  Timeline,
+  AirplaneIconFilledRounded,
+  CheckCircleIconFilledRounded,
+  FlagIconFilledRounded,
+};
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+const events = [
+  { title: 'First Commit', date: '2024-07-07', label: '07.07.2024' },
+  { title: 'Prod', description: 'Live release', date: '2024-12-16', label: '16.12.2024' },
+  { title: 'Open Source', description: 'Open source release', date: '2025-04-12', label: '12.04.2025' },
+];
+
+function PlaygroundDemo() {
+  return (
+    <Timeline aria-label="Release history">
+      {events.map(event => (
+        <Timeline.Item key={event.title}>
+          <Timeline.Title>{event.title}</Timeline.Title>
+          {event.description && <Timeline.Description>{event.description}</Timeline.Description>}
+          <Timeline.Time dateTime={event.date}>{event.label}</Timeline.Time>
+        </Timeline.Item>
+      ))}
+    </Timeline>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const orientationDemo = String.raw`
+function OrientationDemo() {
+  return (
+    <Timeline orientation="vertical" aria-label="Release history">
+      <Timeline.Item>
+        <Timeline.Title>First Commit</Timeline.Title>
+        <Timeline.Time dateTime="2024-07-07">07.07.2024</Timeline.Time>
+      </Timeline.Item>
+      <Timeline.Item>
+        <Timeline.Title>Prod</Timeline.Title>
+        <Timeline.Description>Live release</Timeline.Description>
+        <Timeline.Time dateTime="2024-12-16">16.12.2024</Timeline.Time>
+      </Timeline.Item>
+      <Timeline.Item>
+        <Timeline.Title>Open Source</Timeline.Title>
+        <Timeline.Description>Open source release</Timeline.Description>
+        <Timeline.Time dateTime="2025-04-12">12.04.2025</Timeline.Time>
+      </Timeline.Item>
+    </Timeline>
+  );
+}
+
+render(<OrientationDemo />);
+`;
+
+export const placementDemo = String.raw`
+const steps = [
+  { title: 'Check-in', time: '09:10' },
+  { title: 'Boarding', time: '10:05' },
+  { title: 'Departure', time: '10:40' },
+];
+
+function PlacementDemo() {
+  return (
+    <div className="grid w-full gap-8 sm:grid-cols-3">
+      {['alternate', 'start', 'end'].map(placement => (
+        <div key={placement}>
+          <p className="mb-2 text-sm font-semibold">{placement}</p>
+          <Timeline orientation="vertical" placement={placement} aria-label={placement + ' timeline'}>
+            {steps.map(step => (
+              <Timeline.Item key={step.title}>
+                <Timeline.Title>{step.title}</Timeline.Title>
+                <Timeline.Time>{step.time}</Timeline.Time>
+              </Timeline.Item>
+            ))}
+          </Timeline>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+render(<PlacementDemo />);
+`;
+
+export const indicatorDemo = String.raw`
+function IndicatorDemo() {
+  return (
+    <Timeline orientation="vertical" placement="end" aria-label="Flight TK1923">
+      <Timeline.Item indicator={<CheckCircleIconFilledRounded />}>
+        <Timeline.Title>Booked</Timeline.Title>
+        <Timeline.Time dateTime="2025-05-02">2 May 2025</Timeline.Time>
+      </Timeline.Item>
+      <Timeline.Item indicator={<AirplaneIconFilledRounded />}>
+        <Timeline.Title>Departed Istanbul</Timeline.Title>
+        <Timeline.Description>Gate F4, on time</Timeline.Description>
+        <Timeline.Time dateTime="2025-05-10T10:40">10 May 2025, 10:40</Timeline.Time>
+      </Timeline.Item>
+      <Timeline.Item indicator={<FlagIconFilledRounded />}>
+        <Timeline.Title>Arrived London</Timeline.Title>
+        <Timeline.Time dateTime="2025-05-10T12:55">10 May 2025, 12:55</Timeline.Time>
+      </Timeline.Item>
+    </Timeline>
+  );
+}
+
+render(<IndicatorDemo />);
+`;
+
+export const customContentDemo = String.raw`
+function CustomContentDemo() {
+  return (
+    <Timeline orientation="vertical" aria-label="Project milestones">
+      <Timeline.Item>
+        <Timeline.Title as="h3">Design review</Timeline.Title>
+        <Timeline.Description>
+          Approved with <strong>two</strong> follow-ups.
+        </Timeline.Description>
+      </Timeline.Item>
+      <Timeline.Item>
+        <Timeline.Title as="h3">Beta</Timeline.Title>
+        <Timeline.Description>Rolled out to 5% of users.</Timeline.Description>
+        <div className="mt-2">
+          <Button size="small" appearance="outlined">
+            View report
+          </Button>
+        </div>
+      </Timeline.Item>
+      <Timeline.Item>
+        <Timeline.Title as="h3" style={{ color: 'var(--primary-base)' }}>
+          General availability
+        </Timeline.Title>
+      </Timeline.Item>
+    </Timeline>
+  );
+}
+
+render(<CustomContentDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Timeline
+
+`Timeline` shows a sequence of events along a line. It is a standalone component
+(no upstream Spar primitive) that renders a semantic ordered list — `<ol>` with
+one `<li>` per event — and lays everything out in CSS: there is no state,
+keyboard handling, or item registration. The line, the dots and the connectors
+are decorative and hidden from assistive technology.
+
+## Usage
+
+```tsx
+import { Timeline } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Timeline>
+  <Timeline.Item>
+    <Timeline.Title />
+    <Timeline.Description />
+    <Timeline.Time />
+  </Timeline.Item>
+</Timeline>
+```
+
+Give the list an accessible name with `aria-label` or `aria-labelledby`. To
+render from data, map an array to `Timeline.Item`s.
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timelineScope}
+/>
+
+## Orientation
+
+Timelines are horizontal by default. Set `orientation="vertical"` to stack the
+events; the line then runs down the middle.
+
+<LiveCode
+  code={orientationDemo}
+  editable={false}
+  noInline
+  previewMinHeight={240}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timelineScope}
+/>
+
+## Placement
+
+`placement` decides which side of the line the content sits on. `alternate` (the
+default) puts the first event after the line and switches sides from there;
+`start` and `end` keep every event on one side. In a vertical timeline `start`
+is the inline start (left in LTR); in a horizontal one it is above the line.
+
+<LiveCode
+  code={placementDemo}
+  editable={false}
+  noInline
+  previewMinHeight={240}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timelineScope}
+/>
+
+## Indicator
+
+Pass `indicator` to an item to replace the dot, typically with an icon. It is
+drawn in the primary color and stays decorative.
+
+<LiveCode
+  code={indicatorDemo}
+  editable={false}
+  noInline
+  previewMinHeight={240}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timelineScope}
+/>
+
+## Custom content
+
+An item renders any children. `Timeline.Title`, `Timeline.Description` and
+`Timeline.Time` carry the Takeoff typography; use `as` to make a title a
+heading, and place other nodes such as buttons beside them.
+
+<LiveCode
+  code={customContentDemo}
+  editable={false}
+  noInline
+  previewMinHeight={280}
+  previewWrapper={ReactSparDemoRoot}
+  scope={timelineScope}
+/>
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Timeline {#timeline}
+
+#### Props {#timeline-props}
+
+| Name                             | Type                                                                                      | Default      | Description                                                                          |
+| -------------------------------- | ----------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------ |
+| <ApiBadge label="children" />    | <code>React.ReactNode</code>                                                              | -            | `Timeline.Item` elements. Alternating sides follow each item’s position in the list. |
+| <ApiBadge label="orientation" /> | <code><a href="#timeline-td-timelineorientation">TimelineOrientation</a></code>           | 'horizontal' | Layout axis of the timeline line.                                                    |
+| <ApiBadge label="placement" />   | <code><a href="#timeline-td-timelineplacement">TimelinePlacement</a></code>               | 'alternate'  | Which side of the line item content sits on.                                         |
+| <ApiBadge label="classNames" />  | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -            | Per-slot class name overrides.                                                       |
+| <ApiBadge label="slotProps" />   | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -            | Per-slot HTML attribute overrides.                                                   |
+| <ApiBadge label="className" />   | <code>string</code>                                                                       | -            | Appends custom classes to the root slot of this part.                                |
+
+#### Data attributes {#timeline-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                                                                                                  |
+| ----------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.                                                                    |
+| <ApiBadge label="data-orientation" />           | Always       | Reflects the resolved `orientation` prop (`horizontal` \| `vertical`).                                                   |
+| <ApiBadge label="data-placement" />             | Always       | Reflects the resolved `placement` prop (`alternate` \| `start` \| `end`); the recipe alternates sides with `:nth-child`. |
+
+### Timeline.Item {#timeline-item}
+
+#### Props {#timeline-item-props}
+
+| Name                            | Type                                                                                                                                            | Default | Description                                                                                                                                     |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                                                                                    | -       | Event content — typically `Timeline.Title`, `Timeline.Description` and `Timeline.Time`, plus any other node. Renders inside the `content` slot. |
+| <ApiBadge label="indicator" />  | <code>React.ReactNode</code>                                                                                                                    | -       | Custom indicator content, replacing the default dot — typically an icon. Rendered inside the decorative, `aria-hidden` separator.               |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;<a href="#timeline-td-timelineitemslot">TimelineItemSlot</a>, string&gt;&gt;</code>                                  | -       | Per-slot class name overrides.                                                                                                                  |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;<a href="#timeline-td-timelineitemslot">TimelineItemSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                                                                                                              |
+| <ApiBadge label="className" />  | <code>string</code>                                                                                                                             | -       | Appends custom classes to the root slot of this part.                                                                                           |
+
+#### Data attributes {#timeline-item-data-attributes}
+
+| Attribute                                            | Applied when | Purpose                                                                                                       |
+| ---------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />      | Always       | Stable selector for wrapper styling on the root slot.                                                         |
+| <ApiBadge label="data-slot=&quot;separator&quot;" /> | Always       | The `aria-hidden` column (vertical) or row (horizontal) holding the indicator and the connector.              |
+| <ApiBadge label="data-slot=&quot;indicator&quot;" /> | Always       | The point on the line. Empty by default (the recipe paints the dot); holds the `indicator` content otherwise. |
+| <ApiBadge label="data-slot=&quot;connector&quot;" /> | Always       | The line to the next item; hidden on the last item.                                                           |
+| <ApiBadge label="data-slot=&quot;content&quot;" />   | Always       | The box the item’s children render in.                                                                        |
+
+### Timeline.Title {#timeline-title}
+
+#### Data attributes {#timeline-title-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Timeline.Description {#timeline-description}
+
+#### Data attributes {#timeline-description-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Timeline.Time {#timeline-time}
+
+#### Data attributes {#timeline-time-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### Type Definitions {#timeline-type-definitions}
+
+| Name                                                                                       | Definition                                                                                    |
+| ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| <span id="timeline-td-timelineorientation"><ApiBadge label="TimelineOrientation" /></span> | <code>'horizontal' &#124; 'vertical'</code>                                                   |
+| <span id="timeline-td-timelineplacement"><ApiBadge label="TimelinePlacement" /></span>     | <code>'alternate' &#124; 'start' &#124; 'end'</code>                                          |
+| <span id="timeline-td-timelineitemslot"><ApiBadge label="TimelineItemSlot" /></span>       | <code>'root' &#124; 'separator' &#124; 'indicator' &#124; 'connector' &#124; 'content'</code> |
+
+{/* api-tables:end */}
