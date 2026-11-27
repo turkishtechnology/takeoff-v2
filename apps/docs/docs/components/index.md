@@ -14,17 +14,21 @@ and accessibility guidance where the component owns interaction behavior.
 
 ## Actions & form controls
 
-| Component                             | Use it for                                                             |
-| ------------------------------------- | ---------------------------------------------------------------------- |
-| [Button](/docs/components/button)     | Triggering actions with loading, toggle, and icon support.             |
-| [Checkbox](/docs/components/checkbox) | Selecting multiple options or representing a mixed state.              |
-| [Dropdown](/docs/components/dropdown) | Presenting contextual action menus from a trigger.                     |
-| [Input](/docs/components/input)       | Building text inputs with labels, affixes, icons, chips, and actions.  |
-| [Label](/docs/components/label)       | Labeling controls, sections, and compact metadata.                     |
-| [Radio](/docs/components/radio)       | Choosing one option from a mutually exclusive set.                     |
-| [Select](/docs/components/select)     | Choosing from a keyboard-accessible list with typeahead.               |
-| [Switch](/docs/components/switch)     | Turning a single setting on or off.                                    |
-| [Upload](/docs/components/upload)     | Selecting and validating files with browse, drag-and-drop, and a list. |
+| Component                                        | Use it for                                                             |
+| ------------------------------------------------ | ---------------------------------------------------------------------- |
+| [Button](/docs/components/button)                | Triggering actions with loading, toggle, and icon support.             |
+| [Checkbox](/docs/components/checkbox)            | Selecting multiple options or representing a mixed state.              |
+| [ColorPicker](/docs/components/color-picker)     | Picking a color by area, sliders, typed values, or presets.            |
+| [CurrencyInput](/docs/components/currency-input) | Entering an amount of money with its currency.                         |
+| [Dropdown](/docs/components/dropdown)            | Presenting contextual action menus from a trigger.                     |
+| [Input](/docs/components/input)                  | Building text inputs with labels, affixes, icons, chips, and actions.  |
+| [Label](/docs/components/label)                  | Labeling controls, sections, and compact metadata.                     |
+| [PhoneInput](/docs/components/phone-input)       | Entering a phone number with its country.                              |
+| [Radio](/docs/components/radio)                  | Choosing one option from a mutually exclusive set.                     |
+| [Rating](/docs/components/rating)                | Picking a score from a row of stars, hearts, dots or numbers.          |
+| [Select](/docs/components/select)                | Choosing from a keyboard-accessible list with typeahead.               |
+| [Switch](/docs/components/switch)                | Turning a single setting on or off.                                    |
+| [Upload](/docs/components/upload)                | Selecting and validating files with browse, drag-and-drop, and a list. |
 
 ## Navigation & disclosure
 
@@ -50,17 +54,18 @@ and accessibility guidance where the component owns interaction behavior.
 
 ## Content & overlays
 
-| Component                             | Use it for                                                       |
-| ------------------------------------- | ---------------------------------------------------------------- |
-| [Calendar](/docs/components/calendar) | Picking a day, a date range, or several dates from a month grid. |
-| [Card](/docs/components/card)         | Grouping related content, summaries, and actions.                |
-| [Carousel](/docs/components/carousel) | Showing slides one step at a time with arrows and autoplay.      |
-| [Chat](/docs/components/chat)         | Messaging with read receipts, editing, and conversation lists.   |
-| [Dialog](/docs/components/dialog)     | Handling focused forms, confirmations, and blocking decisions.   |
-| [Divider](/docs/components/divider)   | Separating content sections with an optional aligned label.      |
-| [Drawer](/docs/components/drawer)     | Showing navigation, filters, or details over the current page.   |
-| [Popover](/docs/components/popover)   | Displaying additional content or actions in a floating panel.    |
-| [Table](/docs/components/table)       | Scanning, sorting, filtering, and paginating structured data.    |
+| Component                             | Use it for                                                        |
+| ------------------------------------- | ----------------------------------------------------------------- |
+| [Calendar](/docs/components/calendar) | Picking a day, a date range, or several dates from a month grid.  |
+| [Card](/docs/components/card)         | Grouping related content, summaries, and actions.                 |
+| [Carousel](/docs/components/carousel) | Showing slides one step at a time with arrows and autoplay.       |
+| [Chat](/docs/components/chat)         | Messaging with read receipts, editing, and conversation lists.    |
+| [Dialog](/docs/components/dialog)     | Handling focused forms, confirmations, and blocking decisions.    |
+| [Divider](/docs/components/divider)   | Separating content sections with an optional aligned label.       |
+| [Drawer](/docs/components/drawer)     | Showing navigation, filters, or details over the current page.    |
+| [Popover](/docs/components/popover)   | Displaying additional content or actions in a floating panel.     |
+| [Table](/docs/components/table)       | Scanning, sorting, filtering, and paginating structured data.     |
+| [Timeline](/docs/components/timeline) | Showing a sequence of events along a horizontal or vertical line. |
 
 ## Patterns
 

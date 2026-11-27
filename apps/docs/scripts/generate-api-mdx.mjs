@@ -657,6 +657,13 @@ async function generateForConfig(program, checker, configPath) {
     }
   }
 
+  // A config may spell a definition itself where the resolved one does not
+  // read well: a 245-member union of region codes, or an interface whose
+  // `extends` the resolver does not flatten.
+  for (const [typeName, definition] of Object.entries(config.typeDefinitions ?? {})) {
+    if (typeMap.has(typeName)) typeMap.set(typeName, definition);
+  }
+
   // Derive a page-level heading base from the first component.
   const pageHeadingBase = components[0]?.headingBase?.split('-')[0] ?? 'api';
 

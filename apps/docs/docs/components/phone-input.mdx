@@ -1,0 +1,421 @@
+---
+title: Phone Input
+description:
+  Phone number field with a country picker. libphonenumber-js formats and
+  validates as you type; the committed value is an E.164 string.
+sidebar_label: Phone Input
+sidebar_position: 6
+slug: /components/phone-input
+---
+
+import { ApiBadge } from '@site/src/components/ApiBadge';
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Field,
+  PhoneInput,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+
+export const flag = code =>
+  String.fromCodePoint(
+    ...[...code].map(letter => 0x1f1a5 + letter.charCodeAt(0)),
+  );
+
+export const COUNTRIES = ['TR', 'DE', 'GB', 'US', 'CA', 'FR', 'NL', 'AZ'].map(
+  code => ({
+    code,
+    icon: flag(code),
+  }),
+);
+
+export const phoneInputScope = { PhoneInput, Field, COUNTRIES, flag };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  const [phone, setPhone] = useState('+905321234567');
+  const [details, setDetails] = useState();
+  const [country, setCountry] = useState('TR');
+
+  return (
+    <div className="flex w-full max-w-90 flex-col gap-2">
+      <Field>
+        <Field.Label>Mobile number</Field.Label>
+        <PhoneInput
+          value={phone}
+          onValueChange={(next, nextDetails) => {
+            setPhone(next);
+            setDetails(nextDetails);
+          }}
+          country={country}
+          onCountryChange={setCountry}
+          countries={COUNTRIES}
+          locale="en-US"
+        >
+          <PhoneInput.Prefix>
+            <PhoneInput.CountrySelect />
+          </PhoneInput.Prefix>
+          <PhoneInput.Field />
+        </PhoneInput>
+      </Field>
+      <small>
+        value: <code>{phone || "''"}</code> · country: <code>{country}</code>
+        {details ? <> · isValid: <code>{String(details.isValid)}</code></> : null}
+      </small>
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const allCountriesDemo = String.raw`
+<Field className="w-full max-w-90">
+  <Field.Label>Telefon</Field.Label>
+  <PhoneInput locale="tr-TR">
+    <PhoneInput.Prefix>
+      <PhoneInput.CountrySelect
+        aria-label="Ülke kodu"
+        searchLabel="Ülke ara"
+        searchPlaceholder="Ara"
+        emptyLabel="Ülke bulunamadı"
+      />
+    </PhoneInput.Prefix>
+    <PhoneInput.Field />
+  </PhoneInput>
+</Field>
+`;
+
+export const fixedDemo = String.raw`
+<Field className="w-full max-w-90">
+  <Field.Label>Phone (Türkiye)</Field.Label>
+  <PhoneInput country="TR">
+    <PhoneInput.Prefix>
+      <PhoneInput.DialCode />
+    </PhoneInput.Prefix>
+    <PhoneInput.Field />
+    <PhoneInput.ClearButton />
+  </PhoneInput>
+</Field>
+`;
+
+export const sizesDemo = String.raw`
+<div className="flex w-full max-w-90 flex-col gap-3">
+  {['small', 'base', 'large'].map(size => (
+    <PhoneInput key={size} size={size} countries={COUNTRIES} defaultValue="+905321234567">
+      <PhoneInput.Prefix>
+        <PhoneInput.CountrySelect />
+      </PhoneInput.Prefix>
+      <PhoneInput.Field aria-label={size + ' phone'} />
+    </PhoneInput>
+  ))}
+</div>
+`;
+
+export const fieldDemo = String.raw`
+function FieldDemo() {
+  const [valid, setValid] = useState(false);
+  const [touched, setTouched] = useState(false);
+
+  return (
+    <form className="w-full max-w-90" onSubmit={event => event.preventDefault()}>
+      <Field invalid={touched && !valid} required>
+        <Field.Label>Contact number</Field.Label>
+        <PhoneInput
+          name="phone"
+          countries={COUNTRIES}
+          onValueChange={(_, details) => setValid(details.isValid)}
+        >
+          <PhoneInput.Prefix>
+            <PhoneInput.CountrySelect name="country" />
+          </PhoneInput.Prefix>
+          <PhoneInput.Field onBlur={() => setTouched(true)} />
+        </PhoneInput>
+        <Field.Description>Submitted as phone=+905321234567 and country=TR.</Field.Description>
+        <Field.ErrorMessage>Enter a valid phone number.</Field.ErrorMessage>
+      </Field>
+    </form>
+  );
+}
+
+render(<FieldDemo />);
+`;
+
+export const customDemo = String.raw`
+<PhoneInput countries={COUNTRIES} locale="en-GB" defaultCountry="GB" className="w-full max-w-90">
+  <PhoneInput.Prefix>
+    <PhoneInput.CountrySelect
+      contentWidth="20rem"
+      trigger={country => country && <span>{country.icon} {country.code}</span>}
+    >
+      {country => (
+        <span className="flex w-full justify-between gap-4">
+          <span>{country.icon} {country.label}</span>
+          <span>{country.dialCode}</span>
+        </span>
+      )}
+    </PhoneInput.CountrySelect>
+  </PhoneInput.Prefix>
+  <PhoneInput.Field aria-label="Phone" />
+</PhoneInput>
+`;
+
+{/* prettier-ignore-end */}
+
+`PhoneInput` is a phone number field with a country picker: the country in the
+prefix, the number on the right, as in Takeoff Core. The number is formatted as
+the user types by
+[libphonenumber-js](https://github.com/catamphetamine/libphonenumber-js)
+(`532 123 45 67` in Türkiye, `(201) 555-0123` in the US), and what your code
+receives is the E.164 string — `+905321234567`.
+
+## Usage
+
+```tsx
+import { Field, PhoneInput } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Field>
+  <Field.Label />
+  <PhoneInput>
+    <PhoneInput.Prefix>
+      <PhoneInput.CountrySelect />
+      {/* or, for a fixed country: <PhoneInput.DialCode /> */}
+    </PhoneInput.Prefix>
+    <PhoneInput.Field />
+    <PhoneInput.ClearButton />
+  </PhoneInput>
+  <Field.Description />
+  <Field.ErrorMessage />
+</Field>
+```
+
+The root renders `Input`'s row, so sizes, the focus ring, `Field` inheritance
+and the `Prefix` / `Suffix` / `ClearButton` parts are `Input`'s own, re-exposed
+so the tree uses one namespace.
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={phoneInputScope}
+/>
+
+## The value is E.164
+
+`onValueChange` receives the E.164 number on every edit that changes it — also
+while the number is still partial (`+90532`) — and `''` once the field is empty.
+Its second argument is `{ national, formatted, isValid, country }`: the digits
+after the dial code, the text the field shows, whether the number is valid for
+its country, and that country.
+
+Formatting and validation are libphonenumber-js's, with its `min` metadata;
+Spar's mask owns the caret. A trunk prefix is the library's call:
+`0532 123 45 67` stays as typed and still reports `+905321234567`, while an
+Italian number keeps its leading `0`. Digits past the longest number the country
+has are refused. `isValid` only informs you — the field never marks itself
+invalid while the user is still typing, so decide when to show the error (on
+blur, on submit).
+
+## Countries
+
+Without `countries`, the picker lists every region libphonenumber-js knows,
+named in `locale` through `Intl.DisplayNames` (`Türkiye`, `Almanya` in `tr-TR`)
+and sorted by that name. Pass `countries` to restrict or order the list; a
+consumer list keeps its own order. Each `PhoneCountry` is
+`{ code, label?, icon? }` — `icon` is any node, which is how a flag reaches the
+trigger and the rows (the package ships no flag set; these demos use emoji).
+
+<LiveCode
+  code={allCountriesDemo}
+  previewWrapper={ReactSparDemoRoot}
+  scope={phoneInputScope}
+/>
+
+Picking a country clears the number and moves focus to the field, as Core does:
+a number typed for one numbering plan is not a number in another. Typing or
+pasting `+<code>…` works too — the country's own code collapses into the
+national format, and another listed country's code moves the picker there. A
+`+1` number keeps a NANP field on its region (`+1` is shared by 25 of them). A
+`value` set from outside that belongs to another listed country moves the picker
+and calls `onCountryChange`.
+
+## A fixed country
+
+Without a picker, `PhoneInput.DialCode` shows the country's dial code.
+
+<LiveCode
+  code={fixedDemo}
+  previewWrapper={ReactSparDemoRoot}
+  scope={phoneInputScope}
+/>
+
+## Sizes
+
+<LiveCode
+  code={sizesDemo}
+  previewWrapper={ReactSparDemoRoot}
+  scope={phoneInputScope}
+/>
+
+## Forms and `Field`
+
+`name` submits the E.164 number through a hidden input; `CountrySelect` takes
+its own `name` for the ISO code. `disabled`, `invalid`, `readOnly` and
+`required` are inherited from a surrounding `Field`. The Field's label names the
+number field; the picker keeps its own name, and the row's `disabled` /
+`readOnly` reach it.
+
+<LiveCode
+  code={fieldDemo}
+  noInline
+  previewWrapper={ReactSparDemoRoot}
+  scope={phoneInputScope}
+/>
+
+## Customizing the picker
+
+The default trigger shows the icon and the dial code; a search field tops the
+list; each row shows icon, name and dial code. The search matches the name, the
+ISO code and the dial code, ignoring case and accents — `turkiye`, `tr` and `90`
+all find Türkiye, and the four Turkish i's (`I İ ı i`) count as one letter.
+Rename it with `searchLabel` / `searchPlaceholder`, change the no-match text
+with `emptyLabel`, or drop the field with `searchable={false}` for a short list.
+`trigger` and `children` replace the content when the default does not fit.
+
+<LiveCode
+  code={customDemo}
+  previewWrapper={ReactSparDemoRoot}
+  scope={phoneInputScope}
+/>
+
+For a picker that is not a `Select`, `usePhoneInputContext()` gives the active
+`country`, the resolved `countries` and `pickCountry`.
+
+## Accessibility
+
+- The trigger shows only an icon and a dial code, so it is named
+  `"Country code"` by default. Pass `aria-label` to translate it.
+- The list opens on its search field, which is the combobox: arrows move through
+  the matches and <kbd>Enter</kbd> picks one. Without the search
+  (`searchable={false}`), each row's name is the typeahead key.
+- A search that matches nothing is announced through a polite status.
+- `PhoneInput.DialCode` is hidden from assistive tech; put the country in the
+  `Field.Label` when it matters.
+- The number field is `type="tel"` with `autoComplete="tel-national"`, so phones
+  open the dial pad and browsers offer saved numbers.
+
+## Bundle size
+
+libphonenumber-js is a dependency of `@takeoff-ui/react-spar`, imported from its
+`min` entry: about 33 KB gzipped (142 KB minified), plus 1.5 KB for the example
+numbers used as placeholders. Only bundles that import `PhoneInput` include it.
+
+## Related
+
+- [`Input`](./input) — the row, the parts it shares and the mask
+- [`Select`](./select) — the picker used for the country list
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### PhoneInput {#phone-input}
+
+#### Props {#phone-input-props}
+
+| Name                                | Type                                                                                      | Default              | Description                                                                                                                                                                                           |
+| ----------------------------------- | ----------------------------------------------------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />       | <code>React.ReactNode</code>                                                              | -                    | Anatomy: `PhoneInput.Field`, `PhoneInput.Prefix` / `Suffix`, `PhoneInput.CountrySelect`, `PhoneInput.DialCode`, `PhoneInput.ClearButton`.                                                             |
+| <ApiBadge label="value" />          | <code>string</code>                                                                       | -                    | Controlled number in E.164 (`'+905321234567'`). `''` is empty.                                                                                                                                        |
+| <ApiBadge label="defaultValue" />   | <code>string</code>                                                                       | -                    | Initial number for uncontrolled usage, in E.164.                                                                                                                                                      |
+| <ApiBadge label="country" />        | <code><a href="#phone-td-phonecountrycode">PhoneCountryCode</a></code>                    | -                    | Controlled country. Pair with `onCountryChange`.                                                                                                                                                      |
+| <ApiBadge label="defaultCountry" /> | <code><a href="#phone-td-phonecountrycode">PhoneCountryCode</a></code>                    | 'TR'                 | Initial country for uncontrolled usage.                                                                                                                                                               |
+| <ApiBadge label="countries" />      | <code><a href="#phone-td-phonecountry">PhoneCountry</a>[]</code>                          | -                    | The selectable countries, in display order. `PhoneCountry` is `{ code: PhoneCountryCode; label?: string; icon?: React.ReactNode }`. Defaults to every region libphonenumber-js knows, sorted by name. |
+| <ApiBadge label="locale" />         | <code>string</code>                                                                       | the runtime's locale | BCP 47 locale for country names, their order and search folding. Pass it explicitly when the page is server-rendered.                                                                                 |
+| <ApiBadge label="name" />           | <code>string</code>                                                                       | -                    | Submits the E.164 number under this name. The country has its own `name` on `CountrySelect`.                                                                                                          |
+| <ApiBadge label="form" />           | <code>string</code>                                                                       | -                    | Form the hidden number input belongs to, when it is outside it.                                                                                                                                       |
+| <ApiBadge label="classNames" />     | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -                    | Per-slot class name overrides.                                                                                                                                                                        |
+| <ApiBadge label="slotProps" />      | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -                    | Per-slot HTML attribute overrides.                                                                                                                                                                    |
+| <ApiBadge label="id" />             | <code>string</code>                                                                       | -                    | Custom base ID for ARIA relationships. If not provided, one will be generated automatically. Sub-element IDs are derived as `${id}-field`, `${id}-label`, etc.                                        |
+| <ApiBadge label="disabled" />       | <code>boolean</code>                                                                      | -                    | Input disabled state. When inside a Field, inherited from Field.                                                                                                                                      |
+| <ApiBadge label="size" />           | <code><a href="#phone-td-inputsize">InputSize</a></code>                                  | 'base'               | Size scale, forwarded to `Input`.                                                                                                                                                                     |
+| <ApiBadge label="readOnly" />       | <code>boolean</code>                                                                      | -                    | Input read-only state. When inside a Field, inherited from Field.                                                                                                                                     |
+| <ApiBadge label="required" />       | <code>boolean</code>                                                                      | -                    | Input required state. When inside a Field, inherited from Field.                                                                                                                                      |
+| <ApiBadge label="invalid" />        | <code>boolean</code>                                                                      | false                | Marks the row invalid. Inherited from `<Field>` automatically; pass this prop only to override.                                                                                                       |
+| <ApiBadge label="className" />      | <code>string</code>                                                                       | -                    | Appends custom classes to the root slot of this part.                                                                                                                                                 |
+
+#### Events {#phone-input-events}
+
+| Name                                 | Type                                                                                                                    | Default | Description                                                                                                  |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="onValueChange" />   | <code>(value: string, details: <a href="#phone-td-phoneinputvaluedetails">PhoneInputValueDetails</a>) =&gt; void</code> | -       | Called with the E.164 number on every edit that changes it (`''` once nothing names one).                    |
+| <ApiBadge label="onCountryChange" /> | <code>(country: <a href="#phone-td-phonecountrycode">PhoneCountryCode</a>) =&gt; void</code>                            | -       | Called with the next country when the user picks one, types `+<another code>`, or `value` names another one. |
+
+#### Data attributes {#phone-input-data-attributes}
+
+| Attribute                                                                         | Applied when                   | Purpose                                               |
+| --------------------------------------------------------------------------------- | ------------------------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-invalid / data-disabled / data-readonly / data-required" /> | When the matching state is on. | Input's own state hooks — the row is Input's element. |
+
+### PhoneInput.Field {#phone-input-field}
+
+#### Data attributes {#phone-input-field-data-attributes}
+
+| Attribute                                            | Applied when                                       | Purpose                       |
+| ---------------------------------------------------- | -------------------------------------------------- | ----------------------------- |
+| <ApiBadge label="data-mask / data-mask-completed" /> | Always / once the number is valid for its country. | Spar's mask hooks, unchanged. |
+
+### PhoneInput.DialCode {#phone-input-dial-code}
+
+#### Data attributes {#phone-input-dial-code-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                            |
+| ----------------------------------------------- | ------------ | ---------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the root slot. |
+
+### PhoneInput.CountrySelect {#phone-input-country-select}
+
+#### Props {#phone-input-country-select-props}
+
+| Name                                   | Type                                                                                                                       | Default               | Description                                                                                                 |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />          | <code>(country: <a href="#phone-td-phoneinputcountry">PhoneInputCountry</a>) =&gt; React.ReactNode</code>                  | icon, name, dial code | Replaces a list row's content. Receives the country with its name and dial code resolved.                   |
+| <ApiBadge label="trigger" />           | <code>(country: <a href="#phone-td-phoneinputcountry">PhoneInputCountry</a> &#124; undefined) =&gt; React.ReactNode</code> | icon and dial code    | Replaces the trigger's content; the chevron stays.                                                          |
+| <ApiBadge label="aria-label" />        | <code>string</code>                                                                                                        | 'Country code'        | Accessible name of the trigger, which shows only an icon and a dial code.                                   |
+| <ApiBadge label="searchable" />        | <code>boolean</code>                                                                                                       | true                  | Show a search field above the list that filters by name, ISO code and dial code, ignoring case and accents. |
+| <ApiBadge label="searchLabel" />       | <code>string</code>                                                                                                        | 'Search countries'    | Accessible name of the search field.                                                                        |
+| <ApiBadge label="searchPlaceholder" /> | <code>string</code>                                                                                                        | 'Search'              | Placeholder of the search field.                                                                            |
+| <ApiBadge label="emptyLabel" />        | <code>string</code>                                                                                                        | 'No countries found'  | What the list says once a search matches nothing.                                                           |
+| <ApiBadge label="classNames" />        | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                                                   | -                     | Per-slot class name overrides.                                                                              |
+| <ApiBadge label="slotProps" />         | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>                                  | -                     | Per-slot HTML attribute overrides.                                                                          |
+| <ApiBadge label="disabled" />          | <code>boolean</code>                                                                                                       | -                     | Disables the entire select. When inside a Field, inherited from Field.                                      |
+| <ApiBadge label="name" />              | <code>string</code>                                                                                                        | -                     | Form field name                                                                                             |
+| <ApiBadge label="open" />              | <code>boolean</code>                                                                                                       | -                     | Controlled open state                                                                                       |
+| <ApiBadge label="defaultOpen" />       | <code>boolean</code>                                                                                                       | false                 | Uncontrolled initial open state                                                                             |
+| <ApiBadge label="contentWidth" />      | <code><a href="#phone-td-selectcontentwidth">SelectContentWidth</a></code>                                                 | 'content'             | How the portalled SelectContent panel computes its width. See `SelectContentWidth`.                         |
+| <ApiBadge label="className" />         | <code>string</code>                                                                                                        | -                     | Appends custom classes to the root slot of this part.                                                       |
+
+#### Events {#phone-input-country-select-events}
+
+| Name                              | Type                                    | Default | Description                      |
+| --------------------------------- | --------------------------------------- | ------- | -------------------------------- |
+| <ApiBadge label="onOpenChange" /> | <code>(open: boolean) =&gt; void</code> | -       | Callback when open state changes |
+
+### Type Definitions {#phone-type-definitions}
+
+| Name                                                                                          | Definition                                                                                                                                           |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="phone-td-phonecountrycode"><ApiBadge label="PhoneCountryCode" /></span>             | <code>'TR' &#124; 'US' &#124; 'DE' &#124; … — an ISO 3166-1 alpha-2 region libphonenumber-js knows (its CountryCode)</code>                          |
+| <span id="phone-td-phonecountry"><ApiBadge label="PhoneCountry" /></span>                     | <code>&#123; code: <a href="#phone-td-phonecountrycode">PhoneCountryCode</a>; label?: string; icon?: ReactNode &#125;</code>                         |
+| <span id="phone-td-inputsize"><ApiBadge label="InputSize" /></span>                           | <code>'small' &#124; 'base' &#124; 'large'</code>                                                                                                    |
+| <span id="phone-td-phoneinputvaluedetails"><ApiBadge label="PhoneInputValueDetails" /></span> | <code>&#123; national: string; formatted: string; isValid: boolean; country: <a href="#phone-td-phonecountrycode">PhoneCountryCode</a> &#125;</code> |
+| <span id="phone-td-phoneinputcountry"><ApiBadge label="PhoneInputCountry" /></span>           | <code><a href="#phone-td-phonecountry">PhoneCountry</a> &amp; &#123; label: string; dialCode: string &#125;</code>                                   |
+| <span id="phone-td-selectcontentwidth"><ApiBadge label="SelectContentWidth" /></span>         | <code>'trigger' &#124; 'content' &#124; number &#124; string</code>                                                                                  |
+
+{/* api-tables:end */}
