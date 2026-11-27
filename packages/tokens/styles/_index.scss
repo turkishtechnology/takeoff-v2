@@ -9,6 +9,7 @@
 @use 'recipes/button';
 @use 'recipes/calendar';
 @use 'recipes/card';
+@use 'recipes/carousel';
 @use 'recipes/chat';
 @use 'recipes/checkbox';
 @use 'recipes/chip';
@@ -201,6 +202,10 @@
 
 .tk-card-footer {
   @include card.card-footer;
+}
+
+.tk-carousel {
+  @include carousel.carousel;
 }
 
 .tk-accordion {

@@ -15,6 +15,7 @@ export {
   Button,
   Calendar,
   Card,
+  Carousel,
   Chat,
   Checkbox,
   Chip,

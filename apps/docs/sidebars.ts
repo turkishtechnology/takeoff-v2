@@ -27,6 +27,7 @@ const sidebars: SidebarsConfig = {
         'components/button',
         'components/calendar',
         'components/card',
+        'components/carousel',
         'components/chat',
         'components/checkbox',
         'components/chip',

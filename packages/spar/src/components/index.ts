@@ -1,6 +1,7 @@
 export * from './Breadcrumb';
 export * from './Accordion';
 export * from './Button';
+export * from './Carousel';
 export * from './Collapsible';
 export * from './Field';
 export * from './Label';

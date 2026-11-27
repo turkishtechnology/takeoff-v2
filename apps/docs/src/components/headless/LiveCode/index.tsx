@@ -11,6 +11,7 @@ import {
   // Compound namespace objects (for LiveCode scope)
   Accordion,
   Breadcrumb,
+  Carousel,
   Collapsible,
   Dialog,
   DropdownMenu,
@@ -139,6 +140,7 @@ export const LiveCode = ({ code, cssCode }: LiveCodeProps) => {
       // Compound namespace objects
       Accordion,
       Breadcrumb,
+      Carousel,
       Collapsible,
       Dialog,
       DropdownMenu,
