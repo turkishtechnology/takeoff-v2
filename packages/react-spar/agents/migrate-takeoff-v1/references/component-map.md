@@ -23,31 +23,31 @@ writing code.
 
 ## Compound rewrites
 
-| v1 export(s)                       | v2 target    | Structural change                                        |
-| ---------------------------------- | ------------ | -------------------------------------------------------- |
-| `TkAccordion`, `TkAccordionItem`   | `Accordion`  | `items` and labels become compound children.             |
-| `TkBreadcrumb`, `TkBreadcrumbItem` | `Breadcrumb` | Render breadcrumb items as children.                     |
-| `TkCard`                           | `Card`       | Move heading/body/footer props into parts or children.   |
-| `TkDialog`                         | `Dialog`     | Move header/footer and body content into compound parts. |
-| `TkDrawer`                         | `Drawer`     | Move title/content/actions into children.                |
-| `TkDropdown`                       | `Dropdown`   | Move menu data into trigger/content/item children.       |
-| `TkPopover`                        | `Popover`    | Move trigger and panel content into children.            |
-| `TkRadio`, `TkRadioGroup`          | `Radio`      | Use the v2 group/control composition and value callback. |
-| `TkSelect`                         | `Select`     | Replace `options` with option children.                  |
-| `TkStep`, `TkStepper`              | `Stepper`    | Render step children and map active state.               |
-| `TkTable`                          | `Table`      | Replace `columns`/`data` with v2 table anatomy.          |
-| `TkTabs`, `TkTabsItem`             | `Tabs`       | Render tab triggers and panels as children.              |
-| `TkTooltip`                        | `Tooltip`    | Use the v2 trigger/content composition.                  |
-| `TkUpload`                         | `Upload`     | Map file handling to the v2 browse/dropzone API.         |
+| v1 export(s)                                         | v2 target           | Structural change                                                                                                                                                                                                                                                                     |
+| ---------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TkAccordion`, `TkAccordionItem`                     | `Accordion`         | `items` and labels become compound children.                                                                                                                                                                                                                                          |
+| `TkBreadcrumb`, `TkBreadcrumbItem`                   | `Breadcrumb`        | Render breadcrumb items as children.                                                                                                                                                                                                                                                  |
+| `TkCard`                                             | `Card`              | Move heading/body/footer props into parts or children.                                                                                                                                                                                                                                |
+| `TkDialog`                                           | `Dialog`            | Move header/footer and body content into compound parts.                                                                                                                                                                                                                              |
+| `TkDrawer`                                           | `Drawer`            | Move title/content/actions into children.                                                                                                                                                                                                                                             |
+| `TkDropdown`                                         | `Dropdown`          | Move menu data into trigger/content/item children.                                                                                                                                                                                                                                    |
+| `TkPopover`                                          | `Popover`           | Move trigger and panel content into children.                                                                                                                                                                                                                                         |
+| `TkRadio`, `TkRadioGroup`                            | `Radio`             | Use the v2 group/control composition and value callback.                                                                                                                                                                                                                              |
+| `TkSelect`                                           | `Select`            | Replace `options` with option children.                                                                                                                                                                                                                                               |
+| `TkStep`, `TkStepper`                                | `Stepper`           | Render step children and map active state.                                                                                                                                                                                                                                            |
+| `TkTable`                                            | `Table`             | Replace `columns`/`data` with v2 table anatomy.                                                                                                                                                                                                                                       |
+| `TkTabs`, `TkTabsItem`                               | `Tabs`              | Render tab triggers and panels as children.                                                                                                                                                                                                                                           |
+| `TkToggleButtonGroup`, `TkToggleButton` (in a group) | `ToggleButtonGroup` | Items become `ToggleButtonGroup.Item`; `direction` becomes `orientation`, button `type` becomes `appearance`, `icon` becomes `startContent` / `endContent`; `tk-change` becomes `onValueChange`. A second press now releases the item (`deselectable={false}` keeps Core's behavior). |
+| `TkTooltip`                                          | `Tooltip`           | Use the v2 trigger/content composition.                                                                                                                                                                                                                                               |
+| `TkUpload`                                           | `Upload`            | Map file handling to the v2 browse/dropzone API.                                                                                                                                                                                                                                      |
 
 ## Special mappings
 
-| v1 export             | v2 approach                                                                                                                                                                                       |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TkIcon`              | Not a v2 component. Import the named JSX icon from `@takeoff-icons/react/<name>`.                                                                                                                 |
-| `TkDatepicker`        | Not a v2 component, by decision. Compose `Popover` + `Calendar`, with `useDatePicker` for a typable field. Read the `takeoff-datepicker` skill first; Core prop parity is not claimed. See below. |
-| `TkToggleButton`      | `Button` with `pressed` and `onPressedChange`.                                                                                                                                                    |
-| `TkToggleButtonGroup` | `Button` instances with the v2 pressed state; preserve group behavior in app code.                                                                                                                |
+| v1 export        | v2 approach                                                                                                                                                                                                        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `TkIcon`         | Not a v2 component. Import the named JSX icon from `@takeoff-icons/react/<name>`.                                                                                                                                  |
+| `TkDatepicker`   | Not a v2 component, by decision. Compose `Popover` + `Calendar`, with `useDatePicker` for a typable field. Read the `takeoff-datepicker` skill first; Core prop parity is not claimed. See below.                  |
+| `TkToggleButton` | Outside a group: `Button` with `pressed` / `onPressedChange` (or `defaultPressed`); switch `appearance` (e.g. `text` → `filled`) for the transparent-until-selected look. Inside a group: see `ToggleButtonGroup`. |
 
 `TkDatepicker` is the one special mapping that replaces a single v1 element with
 a composition the consumer owns. `docs/datepicker-contract.md` records why there

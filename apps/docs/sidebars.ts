@@ -50,6 +50,7 @@ const sidebars: SidebarsConfig = {
         'components/table',
         'components/tabs',
         'components/toast',
+        'components/toggle-button-group',
         'components/tooltip',
         'components/upload',
       ],

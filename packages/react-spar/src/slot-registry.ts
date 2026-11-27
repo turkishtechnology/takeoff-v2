@@ -93,6 +93,7 @@ import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
 import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverDescriptionBase, PopoverHeaderBase, PopoverTriggerBase } from './components/popover/base';
+import { ToggleButtonGroupBase, ToggleButtonGroupItemBase } from './components/toggle-button-group/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 import { SkeletonBase } from './components/skeleton/base';
@@ -243,6 +244,8 @@ export const slotClassRegistry = {
   tabsList: { slots: TabsListBase.classes },
   tabsTrigger: { slots: TabsTriggerBase.classes },
   tabsContent: { slots: TabsContentBase.classes },
+  toggleButtonGroup: { slots: ToggleButtonGroupBase.classes },
+  toggleButtonGroupItem: { slots: ToggleButtonGroupItemBase.classes },
   popoverTrigger: { slots: PopoverTriggerBase.classes },
   popoverContent: { slots: PopoverContentBase.classes },
   popoverHeader: { slots: PopoverHeaderBase.classes },

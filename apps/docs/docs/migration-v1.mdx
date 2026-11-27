@@ -134,7 +134,9 @@ time-picker props have no v2 equivalent — so treat each date field as a rewrit
 and keep v1 where a screen depends on time selection. For `TkTextarea`, use the
 v2 `Input` compound component with `<Input.Field as="textarea" rows={...} />`;
 the `Input` skill is authoritative for the supported props and accessibility
-behavior.
+behavior. `TkToggleButtonGroup` maps to `ToggleButtonGroup`; a lone
+`TkToggleButton` is a `Button` with `pressed` / `onPressedChange` (or
+`defaultPressed`).
 
 When a gap closes, the migration map and the component's own v2 skill become the
 source of truth. The inventory commands keep identifying any remaining gap usage

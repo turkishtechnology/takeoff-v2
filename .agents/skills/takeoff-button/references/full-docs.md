@@ -191,20 +191,21 @@ for primitive behavior.
 
 #### Props {#button-props}
 
-| Name         | Type                                                             | Default   | Description                                                                                                                         |
-| ------------ | ---------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| children     | `React.ReactNode`                                                | -         | Button label content.                                                                                                               |
-| variant      | `ButtonVariant`                                                  | 'primary' | Color variant.                                                                                                                      |
-| appearance   | `ButtonAppearance`                                               | 'filled'  | Visual appearance.                                                                                                                  |
-| size         | `ButtonSize`                                                     | 'base'    | Size scale.                                                                                                                         |
-| rounded      | `boolean`                                                        | false     | Renders a pill-shaped (circular) button. Ideal for icon-only actions.                                                               |
-| startContent | `React.ReactNode`                                                | -         | Content rendered before children — typically an icon, but accepts any node (spinner, badge, kbd, etc.). Wrapped in the `icon` slot. |
-| endContent   | `React.ReactNode`                                                | -         | Content rendered after children. Same shape as `startContent`.                                                                      |
-| loading      | `boolean`                                                        | -         | Whether the button shows a loading spinner.                                                                                         |
-| pressed      | `boolean`                                                        | -         | Whether the button is pressed. When defined, creates a toggle button.                                                               |
-| classNames   | `Partial<Record<ButtonSlot, string>>`                            | -         | Per-slot extra classes.                                                                                                             |
-| slotProps    | `Partial<Record<ButtonSlot, React.HTMLAttributes<HTMLElement>>>` | -         | Per-slot HTML-attribute overrides.                                                                                                  |
-| className    | `string`                                                         | -         | Appends custom classes to the root slot of this part.                                                                               |
+| Name           | Type                                                             | Default   | Description                                                                                                                                                                                                                 |
+| -------------- | ---------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| children       | `React.ReactNode`                                                | -         | Button label content.                                                                                                                                                                                                       |
+| variant        | `ButtonVariant`                                                  | 'primary' | Color variant.                                                                                                                                                                                                              |
+| appearance     | `ButtonAppearance`                                               | 'filled'  | Visual appearance.                                                                                                                                                                                                          |
+| size           | `ButtonSize`                                                     | 'base'    | Size scale.                                                                                                                                                                                                                 |
+| rounded        | `boolean`                                                        | false     | Renders a pill-shaped (circular) button. Ideal for icon-only actions.                                                                                                                                                       |
+| startContent   | `React.ReactNode`                                                | -         | Content rendered before children — typically an icon, but accepts any node (spinner, badge, kbd, etc.). Wrapped in the `content` slot (there is no `icon` slot — target it via `classNames.content` / `slotProps.content`). |
+| endContent     | `React.ReactNode`                                                | -         | Content rendered after children. Same shape as `startContent`, also wrapped in the `content` slot.                                                                                                                          |
+| loading        | `boolean`                                                        | -         | Whether the button shows a loading spinner.                                                                                                                                                                                 |
+| pressed        | `boolean`                                                        | -         | Controlled pressed state. When defined, creates a toggle button; use `defaultPressed` for an uncontrolled one.                                                                                                              |
+| classNames     | `Partial<Record<ButtonSlot, string>>`                            | -         | Per-slot extra classes.                                                                                                                                                                                                     |
+| slotProps      | `Partial<Record<ButtonSlot, React.HTMLAttributes<HTMLElement>>>` | -         | Per-slot HTML-attribute overrides.                                                                                                                                                                                          |
+| defaultPressed | `boolean`                                                        | undefined | Uncontrolled initial toggle state - when defined (and `isPressed` is not), creates a toggle button that manages its own pressed state                                                                                       |
+| className      | `string`                                                         | -         | Appends custom classes to the root slot of this part.                                                                                                                                                                       |
 
 #### Events {#button-events}
 
@@ -233,3 +234,8 @@ for primitive behavior.
 | ButtonAppearance | `'filled' \| 'filledLight' \| 'outlined' \| 'text'`                                                           |
 | ButtonSize       | `'small' \| 'base' \| 'large'`                                                                                |
 | ButtonSlot       | `'root' \| 'content' \| 'label' \| 'spinner'`                                                                 |
+
+## When to use
+
+Any clickable action — submit, CTA, toolbar action, icon-only action, or a
+two-state toggle (via `pressed`/`onPressedChange`).

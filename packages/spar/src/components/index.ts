@@ -12,6 +12,7 @@ export * from './Input';
 export * from './Checkbox';
 export * from './Switch';
 export * from './Tabs';
+export * from './ToggleGroup';
 export * from './Popover';
 export * from './Dialog';
 export * from './Toast';
