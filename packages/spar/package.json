@@ -28,6 +28,11 @@
       "import": "./dist/button.mjs",
       "require": "./dist/button.cjs"
     },
+    "./carousel": {
+      "types": "./dist/carousel.d.ts",
+      "import": "./dist/carousel.mjs",
+      "require": "./dist/carousel.cjs"
+    },
     "./checkbox": {
       "types": "./dist/checkbox.d.ts",
       "import": "./dist/checkbox.mjs",
@@ -110,6 +115,9 @@
       ],
       "button": [
         "./dist/button.d.ts"
+      ],
+      "carousel": [
+        "./dist/carousel.d.ts"
       ],
       "checkbox": [
         "./dist/checkbox.d.ts"

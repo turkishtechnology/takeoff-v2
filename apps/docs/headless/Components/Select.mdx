@@ -161,6 +161,8 @@ visual indicators are composed manually.
 - ✅ Grouping lists with groups, labels, and separators
 - ✅ Optional scrollable `Select.Viewport` that keeps the highlighted option in
   view
+- ✅ Optional `Select.Search` filter field (APG combobox with an
+  `aria-activedescendant` listbox); you filter the items
 - ✅ Disabling at the Root or Item level
 - ✅ Compound structure built around Root/Trigger/Content/Item
 
@@ -531,6 +533,50 @@ rgba(0, 0, 0, 0.08); outline: none; }
 
 </div>
 
+### Searchable Select
+
+`Select.Search` adds a filter field above the options. It takes focus when the
+list opens; characters, <kbd>Space</kbd>, <kbd>Home</kbd> and <kbd>End</kbd>
+edit the query, while arrows, <kbd>PageUp</kbd> / <kbd>PageDown</kbd>,
+
+<kbd>Enter</kbd> and <kbd>Esc</kbd> still drive the list. The search does not
+filter — render only the `Select.Item`s that match its `value`. When the
+highlighted option is filtered out, the highlight moves to the first one left;
+the query resets to `''` while the list is closed.
+
+```tsx
+function AirportSelect() {
+  const [query, setQuery] = useState('');
+  const visible = AIRPORTS.filter(a =>
+    a.label.toLowerCase().includes(query.toLowerCase()),
+  );
+
+  return (
+    <Select>
+      <Select.Trigger placeholder="Choose an airport" />
+      <Select.Content>
+        <Select.Search
+          aria-label="Search airports"
+          value={query}
+          onValueChange={setQuery}
+        />
+        <Select.Viewport className="select-viewport">
+          {visible.map(a => (
+            <Select.Item key={a.value} value={a.value} label={a.label}>
+              {a.label}
+            </Select.Item>
+          ))}
+        </Select.Viewport>
+      </Select.Content>
+    </Select>
+  );
+}
+```
+
+With a search present, `Select.Viewport` becomes the `listbox` (a listbox may
+own only options and groups, never a text field) and the search becomes the
+`combobox`, so the items must sit inside a `Select.Viewport`.
+
 ### With Field (label, description, error)
 
 Wrap `Select` with `Field` to attach a label, helper text, and an error message.
@@ -795,6 +841,32 @@ Popup content layer. It does not render when closed.
 - `Select.Arrow` is positioned automatically through context when rendered
   inside Content
 
+### Select.Search
+
+A filter field inside `Select.Content`. With one mounted it is the APG combobox:
+`role="combobox"`, `aria-expanded`, `aria-autocomplete="list"`, `aria-controls`
+pointing at `Select.Viewport` (now the listbox), and `aria-activedescendant`
+pointing at the highlighted option. Give it an accessible name with
+`aria-label`.
+
+**Props**
+
+| Name             | Type                                  | Default     | Description                                                       |
+| ---------------- | ------------------------------------- | ----------- | ----------------------------------------------------------------- |
+| `as?`            | `React.ElementType`                   | `'input'`   | Polymorphic element type to render                                |
+| `value?`         | `string`                              | `undefined` | Controlled query                                                  |
+| `defaultValue?`  | `string`                              | `''`        | Initial query for uncontrolled usage                              |
+| `onValueChange?` | `(value: string) => void`             | `undefined` | Called on every edit, and with `''` once the list is closed       |
+| `ref?`           | `React.Ref<HTMLInputElement \| null>` | `undefined` | Forwarded ref to the input                                        |
+| `...props`       | `InputHTMLAttributes`                 | -           | All standard input attributes (`aria-label`, `placeholder`, etc.) |
+
+**Events**
+
+| Name            | Parameters      | Description          | When Triggered                                           |
+| --------------- | --------------- | -------------------- | -------------------------------------------------------- |
+| `onValueChange` | `value: string` | The query changed    | On every edit; with `''` while closed                    |
+| `onChange`      | `ChangeEvent`   | Native change, first | Before `onValueChange`; `preventDefault` vetoes the edit |
+
 ### Select.Viewport
 
 An optional scrollable region that wraps the options. Use it when the list can
@@ -811,7 +883,8 @@ so it stays pinned while the options scroll.
 
 Defaults to `role="presentation"` so it stays transparent in the accessibility
 tree, preserving the `listbox` → `option` structure. Override `role` if you need
-different semantics.
+different semantics. With a `Select.Search` in the content it becomes the
+`listbox` itself (and takes an `id` and `aria-labelledby`), overriding `role`.
 
 **Props**
 

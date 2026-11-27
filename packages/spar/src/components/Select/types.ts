@@ -205,6 +205,29 @@ export type SelectContentProps<T extends ElementType = 'div'> = PolymorphicProps
 export type SelectViewportProps<T extends ElementType = 'div'> = PolymorphicProps<'div', T>;
 
 /**
+ * Own props for SelectSearch
+ */
+export interface SelectSearchOwnProps {
+  /** Controlled query. Pair with `onValueChange`. */
+  value?: string;
+  /** Initial query for uncontrolled usage. @defaultValue '' */
+  defaultValue?: string;
+  /**
+   * Called with the query on every edit, and with `''` once the list is closed.
+   * Filter the rendered `SelectItem`s with it — the search does not filter by itself.
+   */
+  onValueChange?: (value: string) => void;
+}
+
+/**
+ * Props for SelectSearch component
+ * @remarks A filter field inside `SelectContent`. With one present, the field
+ * takes focus on open and becomes the combobox, and `SelectViewport` becomes the
+ * listbox — so a search requires the items to sit inside a `SelectViewport`.
+ */
+export type SelectSearchProps<T extends ElementType = 'input'> = PolymorphicProps<'input', T, SelectSearchOwnProps>;
+
+/**
  * Render props provided to children function for SelectItem
  */
 export interface SelectItemRenderProps {
@@ -352,6 +375,14 @@ export interface SelectCollectionContextValue {
   highlightedId: string | null;
   /** Runs `onCloseAutoFocus` and, unless vetoed, moves focus back to the trigger. */
   returnFocusToTrigger: () => void;
+  /** Whether a `SelectSearch` is mounted in this content. Moves the listbox role to the viewport. */
+  hasSearch: boolean;
+  /** Called by `SelectSearch` on mount and unmount. */
+  registerSearch: (present: boolean) => void;
+  /** The search field, focused on open in place of the content. */
+  searchRef: RefObject<HTMLInputElement | null>;
+  /** Id the viewport takes when it becomes the listbox; the search points `aria-controls` at it. */
+  listboxId: string;
 }
 
 /**
