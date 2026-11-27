@@ -18,6 +18,7 @@ export {
   Chat,
   Checkbox,
   Chip,
+  ColorPicker,
   CurrencyInput,
   Dialog,
   Divider,

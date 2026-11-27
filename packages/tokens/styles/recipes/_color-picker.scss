@@ -1,0 +1,312 @@
+// ---------------------------------------------------------------------------
+// ColorPicker recipe
+// ---------------------------------------------------------------------------
+// Layout and sizes follow Core `tk-color-picker`: a 280px panel, a 264px
+// saturation/brightness area, 12px hue/alpha rails with a white thumb carrying
+// a blue dot, a 32px preview and 20px preset swatches.
+//
+// Every painted color reaches the CSS through a custom property the component
+// sets inline (`--tk-color-picker-color`, `--tk-color-picker-hue`,
+// `--tk-color-picker-opaque`), so the recipe owns the gradients and the
+// checkerboard, and no color is written into a `background` attribute by JS.
+// ---------------------------------------------------------------------------
+
+// Checkerboard shown under translucent colors.
+@mixin checkerboard($size: 8px) {
+  background-color: var(--static-light);
+  background-image:
+    linear-gradient(45deg, var(--background-light) 25%, transparent 25%), linear-gradient(-45deg, var(--background-light) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--background-light) 75%), linear-gradient(-45deg, transparent 75%, var(--background-light) 75%);
+  background-size: $size $size;
+  background-position:
+    0 0,
+    0 calc($size / 2),
+    calc($size / 2) calc($size / -2),
+    calc($size / -2) 0;
+}
+
+// A color painted over the checkerboard.
+@mixin painted-swatch {
+  position: relative;
+  overflow: hidden;
+
+  @include checkerboard;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--tk-color-picker-color, transparent);
+  }
+}
+
+@mixin color-picker {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  font-family: var(--family-body);
+}
+
+@mixin color-picker-input-preview {
+  display: block;
+  box-sizing: border-box;
+  width: var(--spacing-4xl);
+  height: var(--spacing-4xl);
+  border: var(--spacing-px) solid var(--border-light);
+  border-radius: var(--radius-full);
+
+  @include painted-swatch;
+}
+
+// Mounted on `.tk-popover-content.tk-color-picker-content`: a single class
+// would tie with the Popover recipe and lose to it (see the DatePicker recipe).
+@mixin color-picker-content {
+  max-width: none;
+  width: max-content;
+  padding: 0;
+  gap: 0;
+  border-radius: var(--radius-xl);
+}
+
+@mixin color-picker-panel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4xl);
+  width: calc(var(--spacing-64xl) + var(--spacing-6xl)); // 280px
+  padding: var(--spacing-m-base);
+  background: var(--static-light);
+  border-radius: var(--radius-xl);
+
+  // Inline, the panel is its own surface. A ring rather than a border, so the
+  // 280px stays Core's content box and the 11 presets fit on one row.
+  :not(.tk-color-picker-content) > & {
+    box-shadow: 0 0 0 var(--spacing-px) var(--border-light);
+  }
+
+  &[data-layout='horizontal'] {
+    display: grid;
+    grid-template-columns: var(--spacing-8xl) 1fr;
+    column-gap: var(--spacing-m-base);
+
+    > :not(.tk-color-picker-controls, .tk-color-picker-area) {
+      grid-column: 1 / -1;
+    }
+
+    > .tk-color-picker-area {
+      height: calc(var(--spacing-64xl) + var(--spacing-m-base)); // 264px
+    }
+  }
+}
+
+@mixin color-picker-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-m-base);
+
+  [data-layout='horizontal'] > & {
+    flex-direction: column;
+    gap: var(--spacing-4xl);
+  }
+}
+
+@mixin color-picker-sliders {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-m-base);
+  min-width: 0;
+
+  [data-layout='horizontal'] & {
+    flex-direction: row;
+    justify-content: center;
+    min-height: 0;
+    width: 100%;
+  }
+}
+
+@mixin color-picker-fields {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-m-base);
+}
+
+@mixin color-picker-area {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: calc(var(--spacing-64xl) + var(--spacing-m-base)); // 264px
+  background: linear-gradient(to top, #000, rgba(0, 0, 0, 0)), linear-gradient(to right, #fff, rgba(255, 255, 255, 0)), var(--tk-color-picker-hue, red);
+  border: var(--spacing-px) solid var(--border-light);
+  border-radius: var(--radius-m-base);
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &[data-readonly] {
+    cursor: default;
+  }
+}
+
+@mixin color-picker-area-thumb {
+  position: absolute;
+  box-sizing: border-box;
+  width: var(--spacing-2xl);
+  height: var(--spacing-2xl);
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--static-light);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  outline: none;
+
+  &[data-focus] {
+    box-shadow:
+      0 0 2px rgba(0, 0, 0, 0.5),
+      var(--primary-focus);
+  }
+}
+
+// The picker's layout hook is `data-layout`, not `data-orientation`: the Slider
+// recipe reads `[data-orientation='vertical']` from any ancestor, so a vertical
+// picker would turn its horizontal hue and alpha rails upright.
+//
+// Hue and alpha are Takeoff Sliders; these classes repaint the rail and the
+// thumb. Mounted on `.tk-slider.tk-color-picker-hue` (two classes) so they win
+// over the Slider recipe.
+@mixin color-picker-channel-slider {
+  --tk-slider-rail-size: var(--spacing-xl); // 12px
+  --tk-slider-thumb-size: var(--spacing-5xl); // 20px (10px box + 4px padding + border)
+
+  .tk-slider-track {
+    border: var(--spacing-px) solid var(--border-light);
+  }
+
+  .tk-slider-thumb {
+    background: var(--static-light);
+    border-color: var(--border-light);
+
+    &::before {
+      background: var(--primary-base);
+    }
+  }
+}
+
+@mixin color-picker-hue {
+  @include color-picker-channel-slider;
+
+  .tk-slider-track {
+    background: linear-gradient(to right, red 0%, #ff0 17%, lime 33%, cyan 50%, blue 67%, #f0f 83%, red 100%);
+  }
+
+  &[data-orientation='vertical'] .tk-slider-track {
+    // A vertical Slider runs bottom-to-top.
+    background: linear-gradient(to top, red 0%, #ff0 17%, lime 33%, cyan 50%, blue 67%, #f0f 83%, red 100%);
+  }
+}
+
+@mixin color-picker-alpha {
+  @include color-picker-channel-slider;
+
+  .tk-slider-track {
+    background:
+      linear-gradient(to right, transparent, var(--tk-color-picker-opaque, #000)),
+      repeating-conic-gradient(var(--background-light) 0% 25%, var(--static-light) 0% 50%) 0 0 / 8px 8px;
+  }
+
+  &[data-orientation='vertical'] .tk-slider-track {
+    background:
+      linear-gradient(to top, transparent, var(--tk-color-picker-opaque, #000)),
+      repeating-conic-gradient(var(--background-light) 0% 25%, var(--static-light) 0% 50%) 0 0 / 8px 8px;
+  }
+}
+
+@mixin color-picker-preview {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: var(--spacing-8xl);
+  height: var(--spacing-8xl);
+  border: var(--spacing-px) solid var(--border-light);
+  border-radius: var(--radius-m-base);
+
+  @include painted-swatch;
+}
+
+@mixin color-picker-eye-dropper {
+  flex-shrink: 0;
+}
+
+@mixin color-picker-format {
+  flex-shrink: 0;
+  width: calc(var(--spacing-16xl) + var(--spacing-xs)); // 68px: fits "HEX" plus the chevron
+}
+
+@mixin color-picker-channels {
+  display: flex;
+  flex: 1;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+@mixin color-picker-channel {
+  flex: 1;
+  min-width: 0;
+  // Core packs four channel fields into a 280px panel; the small Input's 8px
+  // inline padding would leave three digits no room. `[data-size]` matches the
+  // Input size rule's specificity, and this block is emitted after it.
+  &[data-size] {
+    padding-inline: var(--spacing-s);
+  }
+
+  // The alpha field is fixed-width beside the hex field (Core's 56px plus room
+  // for the `%` suffix).
+  &:last-child:not(:first-child) {
+    flex: 0 0 var(--spacing-16xl);
+  }
+
+  [data-format='rgb'] &,
+  [data-format='hsl'] & {
+    &:last-child:not(:first-child) {
+      flex: 1;
+    }
+  }
+}
+
+@mixin color-picker-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xxs);
+}
+
+@mixin color-picker-swatch {
+  box-sizing: border-box;
+  width: var(--spacing-5xl);
+  height: var(--spacing-5xl);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+
+  @include painted-swatch;
+
+  &[data-selected] {
+    box-shadow:
+      0 0 0 1px var(--static-light),
+      0 0 0 3px var(--primary-base);
+  }
+
+  &:focus-visible {
+    outline: 2px solid transparent;
+    box-shadow: var(--primary-focus);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}

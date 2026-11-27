@@ -8,6 +8,7 @@ export * from './card';
 export * from './chat';
 export * from './checkbox';
 export * from './chip';
+export * from './color-picker';
 export * from './currency-input';
 export * from './drawer';
 export * from './dialog';

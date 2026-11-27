@@ -35,6 +35,7 @@ When writing or reviewing UI code here, follow the rules below.
 | `Chat`          | Person-to-person or group messaging, a support chat, a comments thread with edit/delete.                                                                                                     |
 | `Checkbox`      | Boolean opt-in/opt-out controls, accept-terms gates, multi-select lists, and tri-state "select all" parents.                                                                                 |
 | `Chip`          | Filter tags, entered/selected values, and short status metadata.                                                                                                                             |
+| `ColorPicker`   | Any setting whose value is a color — brand/theme color, label or category color, chart series color.                                                                                         |
 | `CurrencyInput` | Any amount of money — prices, fares, refunds, deposits, rates.                                                                                                                               |
 | `Datepicker`    | **There is no `DatePicker` component.** A date picker is `Popover` + `Calendar`, composed in the consumer's own component.                                                                   |
 | `Dialog`        | A modal layer that interrupts the flow for content, forms, or confirmations.                                                                                                                 |

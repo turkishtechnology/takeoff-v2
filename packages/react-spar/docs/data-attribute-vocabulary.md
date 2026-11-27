@@ -104,6 +104,7 @@ table needs updating.
 | `data-tooltip`     | Slider root                   | `auto`, `always`, `never`                                                 | When the value bubble is shown (`auto` = on drag/focus)                   |
 | `data-header-type` | Calendar root                 | `basic`, `divided`, `light`, `primary`, `dark`                            | Caption-row treatment (Core's `tk-datepicker` header vocabulary)          |
 | `data-view`        | Calendar root, trigger, board | `day`, `month`, `year`                                                    | Which board the body shows; on a trigger, the board it opens              |
+| `data-format`      | ColorPicker root              | `hex`, `rgb`, `hsl`                                                       | Active color notation                                                     |
 
 ### Semantic
 
@@ -463,6 +464,27 @@ wrapper-emitted. Recorded here per rule 10.
   `aria-current="true"` carries the selection for assistive technology.
 - **`data-editing` (State, presence) on `Chat.Composer`** while it edits a
   message.
+
+### ColorPicker
+
+ColorPicker is **v2-owned** with no upstream Spar slider or area primitive, so
+its vocabulary is wrapper-emitted. Recorded here per rule 10.
+
+- **Root:** `data-layout` (`vertical` | `horizontal` — the `orientation` prop;
+  Chat's attribute rather than `data-orientation`, because the Slider recipe
+  reads `[data-orientation='vertical']` from any ancestor and would turn the
+  hue/alpha rails upright; re-emitted on `ColorPicker.Panel`, whose grid it
+  drives), `data-format` (`hex` | `rgb` | `hsl` — the active notation; the
+  recipe widens the alpha field under `rgb` / `hsl`) and the Field-inherited
+  `data-disabled` / `data-readonly` / `data-invalid`.
+- **Area:** `data-disabled` / `data-readonly` on the plane (cursor and muting),
+  and Slider's thumb vocabulary — `data-dragging`, `data-focus` — on its
+  `role="slider"` thumb.
+- **`data-selected` (State, presence) on `ColorPicker.Swatch`** when it matches
+  the current value; `aria-pressed` carries it for assistive technology.
+- Colors are never `data-*`: the component sets `--tk-color-picker-color`,
+  `--tk-color-picker-hue` and `--tk-color-picker-opaque` inline and the recipe
+  paints with them.
 
 ### CurrencyInput
 
