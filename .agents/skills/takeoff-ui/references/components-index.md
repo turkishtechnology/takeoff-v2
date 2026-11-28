@@ -30,6 +30,7 @@ and accessibility guidance where the component owns interaction behavior.
 | [Accordion](/docs/components/accordion)   | Organizing related details into collapsible sections.        |
 | [Breadcrumb](/docs/components/breadcrumb) | Showing the current location within a hierarchy.             |
 | [Dropdown](/docs/components/dropdown)     | Presenting a keyboard-accessible menu of contextual actions. |
+| [Pagination](/docs/components/pagination) | Moving through pages of results with page size and jump.     |
 | [Stepper](/docs/components/stepper)       | Showing and navigating progress through an ordered workflow. |
 | [Tabs](/docs/components/tabs)             | Switching between related panels without leaving the task.   |
 

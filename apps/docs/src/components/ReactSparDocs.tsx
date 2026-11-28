@@ -30,6 +30,7 @@ export {
   Input,
   Label,
   PhoneInput,
+  Pagination,
   Popover,
   Progress,
   Radio,

@@ -18,3 +18,4 @@ export * from './ToggleGroup';
 export * from './Popover';
 export * from './Dialog';
 export * from './Toast';
+export * from './Pagination';

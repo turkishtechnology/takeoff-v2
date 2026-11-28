@@ -1,6 +1,6 @@
 # Coverage gaps
 
-These 6 v1 exports have no shipped v2 target in the current release. This is a
+These 5 v1 exports have no shipped v2 target in the current release. This is a
 temporary coverage gap, not a permanent product boundary: the areas below are
 expected to close incrementally in future v2 releases as their React API,
 accessibility behavior, token recipes, and documentation are completed. Decide
@@ -9,13 +9,12 @@ replacement, or defer the screen. Revisit the decision when a corresponding v2
 component and skill ship, and record the decision in the migration issue so
 package removal remains safe.
 
-| v1 component                 | Guidance                                                                                     |
-| ---------------------------- | -------------------------------------------------------------------------------------------- |
-| `TkChart`                    | Keep v1 or retain the existing charting library.                                             |
-| `TkEditor`                   | Keep v1 or retain the current editor integration.                                            |
-| `TkGanttChart`, `TkOrgChart` | Keep v1 or use the domain library already used by the application.                           |
-| `TkPagination`               | Keep it for standalone pagination. `Table` includes built-in pagination for migrated tables. |
-| `TkTreeView`                 | Keep v1 or use an app-owned accessible tree implementation.                                  |
+| v1 component                 | Guidance                                                           |
+| ---------------------------- | ------------------------------------------------------------------ |
+| `TkChart`                    | Keep v1 or retain the existing charting library.                   |
+| `TkEditor`                   | Keep v1 or retain the current editor integration.                  |
+| `TkGanttChart`, `TkOrgChart` | Keep v1 or use the domain library already used by the application. |
+| `TkTreeView`                 | Keep v1 or use an app-owned accessible tree implementation.        |
 
 Raw custom-element usage and direct DOM event listeners are also blockers even
 when a React wrapper has a mapping. Migrate those call sites separately.

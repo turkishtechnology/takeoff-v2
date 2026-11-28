@@ -262,6 +262,23 @@ its attributes are wrapper-emitted. Recorded here per rule 10.
 - **The hover preview has no attribute.** The recipe derives it from `:hover`
   and `:has(~ :hover)`, so pointer movement never re-renders.
 
+### Pagination
+
+Pagination wraps the new Spar `Pagination` primitive. Recorded here per rule 10.
+
+- **Root carries the variants:** `data-type` (`outlined` | `text` | `grouped` —
+  Core's vocabulary), `data-mode` (`default` | `compact`) and `data-rounded`
+  (presence). Every part is styled through root-level descendant selectors, so
+  no part re-emits them. `data-disabled` / `aria-disabled` are Spar-emitted.
+- **The current page is not mirrored** (rule 7). Spar's `Pagination.Item`
+  carries `aria-current="page"` (and its own `data-current`); the recipe keys on
+  `[aria-current='page']`.
+- **Edge buttons carry Spar's `data-disabled`** next to the native `disabled`
+  when there is no page to move to; the recipe styles `:disabled`.
+- **The page-input width is a custom property, not an attribute.**
+  `Pagination.PageJump` writes `--tk-pagination-digits` (the page count's digit
+  count) inline, a continuous value (Skeleton precedent).
+
 ### Divider
 
 Divider is **v2-owned** (no upstream Spar primitive), so the wrapper emits its

@@ -36,6 +36,7 @@ writing code.
 | `TkDialog`                                           | `Dialog`            | Move header/footer and body content into compound parts.                                                                                                                                                                                                                              |
 | `TkDrawer`                                           | `Drawer`            | Move title/content/actions into children.                                                                                                                                                                                                                                             |
 | `TkDropdown`                                         | `Dropdown`          | Move menu data into trigger/content/item children.                                                                                                                                                                                                                                    |
+| `TkPagination`                                       | `Pagination`        | `currentPage` → `page`, `rowsPerPage` → `pageSize`.                                                                                                                                                                                                                                   |
 | `TkPhoneInput`                                       | `PhoneInput`        | Compose `Prefix` + `CountrySelect` + `Field`; value is E.164.                                                                                                                                                                                                                         |
 | `TkPopover`                                          | `Popover`           | Move trigger and panel content into children.                                                                                                                                                                                                                                         |
 | `TkRadio`, `TkRadioGroup`                            | `Radio`             | Use the v2 group/control composition and value callback.                                                                                                                                                                                                                              |
@@ -50,11 +51,12 @@ writing code.
 
 ## Special mappings
 
-| v1 export        | v2 approach                                                                                                                                                                                                        |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `TkIcon`         | Not a v2 component. Import the named JSX icon from `@takeoff-icons/react/<name>`.                                                                                                                                  |
-| `TkDatepicker`   | Not a v2 component, by decision. Compose `Popover` + `Calendar`, with `useDatePicker` for a typable field. Read the `takeoff-datepicker` skill first; Core prop parity is not claimed. See below.                  |
-| `TkToggleButton` | Outside a group: `Button` with `pressed` / `onPressedChange` (or `defaultPressed`); switch `appearance` (e.g. `text` → `filled`) for the transparent-until-selected look. Inside a group: see `ToggleButtonGroup`. |
+| v1 export             | v2 approach                                                                                                                                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `TkIcon`              | Not a v2 component. Import the named JSX icon from `@takeoff-icons/react/<name>`.                                                                                                                                  |
+| `TkDatepicker`        | Not a v2 component, by decision. Compose `Popover` + `Calendar`, with `useDatePicker` for a typable field. Read the `takeoff-datepicker` skill first; Core prop parity is not claimed. See below.                  |
+| `TkToggleButton`      | Outside a group: `Button` with `pressed` / `onPressedChange` (or `defaultPressed`); switch `appearance` (e.g. `text` → `filled`) for the transparent-until-selected look. Inside a group: see `ToggleButtonGroup`. |
+| `TkToggleButtonGroup` | `Button` instances with the v2 pressed state; preserve group behavior in app code.                                                                                                                                 |
 
 `TkDatepicker` is the one special mapping that replaces a single v1 element with
 a composition the consumer owns. `docs/datepicker-contract.md` records why there
@@ -67,9 +69,8 @@ migration.
 
 ## v1-only gaps
 
-`TkChart`, `TkEditor`, `TkGanttChart`, `TkOrgChart`, `TkPagination`,
-`TkTreeView` have no shipped v2 target. See [references/gaps.md](gaps.md) before
-changing them.
+`TkChart`, `TkEditor`, `TkGanttChart`, `TkOrgChart`, `TkTreeView` have no
+shipped v2 target. See [references/gaps.md](gaps.md) before changing them.
 
 ## v2 opportunities
 
