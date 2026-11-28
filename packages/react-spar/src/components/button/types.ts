@@ -48,7 +48,10 @@ export interface ButtonOwnProps {
   endContent?: ReactNode;
   /** Whether the button shows a loading spinner. */
   loading?: boolean;
-  /** Whether the button is pressed. When defined, creates a toggle button. */
+  /**
+   * Controlled pressed state. When defined, creates a toggle button; use
+   * `defaultPressed` for an uncontrolled one.
+   */
   pressed?: boolean;
   /** Per-slot extra classes. */
   classNames?: ClassNamesMap<ButtonSlot>;
@@ -65,9 +68,11 @@ export type ButtonProps<T extends ElementType = 'button'> = PolymorphicProps<
   'button',
   T,
   ButtonOwnProps &
-    // Toggle-button wiring from Spar. `disabled` is inherited from the
-    // polymorphic element's native attributes (not picked).
-    Pick<SparButtonProps, 'onPressedChange'>
+    // Toggle-button wiring from Spar: the uncontrolled `defaultPressed` and the
+    // change callback (the controlled state is the wrapper's own `pressed`).
+    // `disabled` is inherited from the polymorphic element's native attributes
+    // (not picked).
+    Pick<SparButtonProps, 'defaultPressed' | 'onPressedChange'>
 >;
 
 declare module '../../core/theme' {

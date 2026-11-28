@@ -100,9 +100,10 @@ props, a11y, and a verbatim Copy-page doc in its `references/`.
 swatches) · `takeoff-currency-input` (amount with a currency picker) ·
 `takeoff-input` · `takeoff-label` · `takeoff-phone-input` (phone number with a
 country picker) · `takeoff-radio` · `takeoff-rating` · `takeoff-select` ·
-`takeoff-slider` · `takeoff-switch` · `takeoff-upload` (file control: browse
-trigger, dropzone, per-file list) · `takeoff-field` (form-field wrapper: label,
-description, and error context for nested controls)
+`takeoff-slider` · `takeoff-switch` · `takeoff-toggle-button-group` ·
+`takeoff-upload` (file control: browse trigger, dropzone, per-file list) ·
+`takeoff-field` (form-field wrapper: label, description, and error context for
+nested controls)
 
 **Navigation & disclosure:** `takeoff-accordion` · `takeoff-breadcrumb` ·
 `takeoff-dropdown` · `takeoff-pagination` · `takeoff-stepper` · `takeoff-tabs`

@@ -552,6 +552,22 @@ describe('Button', () => {
       expect(button).toHaveAttribute('aria-pressed', 'true');
     });
 
+    it('manages its own pressed state from defaultPressed', async () => {
+      const user = userEvent.setup();
+      const onPressedChange = vi.fn();
+      render(
+        <Button defaultPressed onPressedChange={onPressedChange}>
+          Bold
+        </Button>,
+      );
+
+      const button = screen.getByRole('button', { name: 'Bold', pressed: true });
+      await user.click(button);
+      expect(button).toHaveAttribute('aria-pressed', 'false');
+      expect(button).not.toHaveAttribute('data-pressed');
+      expect(onPressedChange).toHaveBeenCalledExactlyOnceWith(false);
+    });
+
     it('keeps a pressed value fixed when no onPressedChange handler is provided', async () => {
       const user = userEvent.setup();
       render(<Button pressed>Bold</Button>);

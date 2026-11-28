@@ -58,6 +58,7 @@ const sidebars: SidebarsConfig = {
         'components/tabs',
         'components/timeline',
         'components/toast',
+        'components/toggle-button-group',
         'components/tooltip',
         'components/upload',
       ],
