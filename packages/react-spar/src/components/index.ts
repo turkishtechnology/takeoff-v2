@@ -32,6 +32,7 @@ export * from './table';
 export * from './tabs';
 export * from './timeline';
 export * from './toggle-button-group';
+export * from './time-picker';
 export * from './tooltip';
 export * from './toast';
 export * from './skeleton';

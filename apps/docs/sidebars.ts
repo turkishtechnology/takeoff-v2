@@ -56,6 +56,7 @@ const sidebars: SidebarsConfig = {
         'components/table',
         'components/tabs',
         'components/timeline',
+        'components/time-picker',
         'components/toast',
         'components/toggle-button-group',
         'components/tooltip',

@@ -20,6 +20,7 @@ and accessibility guidance where the component owns interaction behavior.
 | [Rating](/docs/components/rating)                         | Picking a score from a row of stars, hearts, dots or numbers.         |
 | [Select](/docs/components/select)                         | Choosing from a keyboard-accessible list with typeahead.              |
 | [Switch](/docs/components/switch)                         | Turning a single setting on or off.                                   |
+| [TimePicker](/docs/components/time-picker)                | Picking an hour and a minute for a form or a filter.                  |
 | [ToggleButtonGroup](/docs/components/toggle-button-group) | Switching views or toggling options from a row of buttons.            |
 
 ## Navigation & disclosure

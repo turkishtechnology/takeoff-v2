@@ -355,7 +355,7 @@ for primitive behavior.
 | data-pressed        | When the item is pressed.                              | Presence hook for the pressed state. Emitted by Spar Button.                                               |
 | data-disabled       | When the item or the group is disabled.                | Theme hook for the disabled item. Emitted by Spar Button.                                                  |
 
-### Type Definitions {#toggle-type-definitions}
+### Type Definitions {#toggle-button-group-type-definitions}
 
 | Name                        | Definition                                                      |
 | --------------------------- | --------------------------------------------------------------- |

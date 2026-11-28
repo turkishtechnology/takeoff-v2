@@ -123,6 +123,7 @@ import { TableBase } from './components/table/base';
 import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
 import { PhoneInputBase, PhoneInputCountrySelectBase, PhoneInputDialCodeBase, PhoneInputFieldBase } from './components/phone-input/base';
 import { TimelineBase, TimelineDescriptionBase, TimelineItemBase, TimelineTimeBase, TimelineTitleBase } from './components/timeline/base';
+import { TimePickerBase, TimePickerBodyBase, TimePickerFooterBase, TimePickerHeaderBase, TimePickerMeridiemBase } from './components/time-picker/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverDescriptionBase, PopoverHeaderBase, PopoverTriggerBase } from './components/popover/base';
 import { ToggleButtonGroupBase, ToggleButtonGroupItemBase } from './components/toggle-button-group/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
@@ -319,6 +320,11 @@ export const slotClassRegistry = {
   timelineTime: { slots: TimelineTimeBase.classes },
   toggleButtonGroup: { slots: ToggleButtonGroupBase.classes },
   toggleButtonGroupItem: { slots: ToggleButtonGroupItemBase.classes },
+  timePicker: { slots: TimePickerBase.classes },
+  timePickerHeader: { slots: TimePickerHeaderBase.classes },
+  timePickerBody: { slots: TimePickerBodyBase.classes },
+  timePickerFooter: { slots: TimePickerFooterBase.classes },
+  timePickerMeridiem: { slots: TimePickerMeridiemBase.classes },
   popoverTrigger: { slots: PopoverTriggerBase.classes },
   popoverContent: { slots: PopoverContentBase.classes },
   popoverHeader: { slots: PopoverHeaderBase.classes },
