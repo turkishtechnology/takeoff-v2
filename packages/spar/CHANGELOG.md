@@ -1,5 +1,185 @@
 # @turkish-technology/spar
 
+## 0.4.0
+
+### Minor Changes
+
+- [#294](https://github.com/turkishtechnology/takeoff-v2/pull/294)
+  [`2a36098`](https://github.com/turkishtechnology/takeoff-v2/commit/2a3609882d4a177fbda37c082f674dd6b0401728)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `Avatar`, a
+  person's or entity's picture with a fallback. `Avatar.Image` mounts its
+  `<img>` only once the picture has loaded, and `Avatar.Fallback` (initials, or
+  a person glyph without children) shows while it is missing, loading or broken,
+  optionally after `delayMs`.
+
+  - Seven sizes from `xxsmall` (20px) to `xxlarge` (160px), `variant`,
+    `appearance` (`filled` / `filledLight`), `rounded`, and `hideShadow`.
+  - `name` makes the avatar one `role="img"` named by it.
+  - `Avatar.Badge` pins a Takeoff `Badge` (a dot, or a count) to the corner,
+    scaled to the avatar.
+  - `Avatar.Group` overlaps its avatars, passes `size` / `rounded` down,
+    collapses the ones past `max` into a `+N` avatar (`overflowLabel` /
+    `overflowAriaLabel`), and has a `compact` pill layout.
+
+  `@turkish-technology/spar` adds the headless `Avatar` / `AvatarImage` /
+  `AvatarFallback` primitive that tracks the image loading status
+  (`data-status`, `onLoadingStatusChange`). `@takeoff-design/tokens` ships the
+  `tk-avatar` recipe.
+
+- [#293](https://github.com/turkishtechnology/takeoff-v2/pull/293)
+  [`5aacc48`](https://github.com/turkishtechnology/takeoff-v2/commit/5aacc485bd3cd9fd8f1c7e47defefff0d02776b7)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `Carousel` — the
+  port of Core `tk-carousel`, following the WAI-ARIA carousel pattern.
+
+  ```tsx
+  <Carousel aria-label="Featured destinations" autoplay slidesPerView={1}>
+    <Carousel.Viewport>
+      <Carousel.Slide>…</Carousel.Slide>
+    </Carousel.Viewport>
+    <Carousel.Controls />
+  </Carousel>
+  ```
+
+  - Spar ships a new headless `Carousel` primitive
+    (`@turkish-technology/spar/carousel`): index state (`value` / `defaultValue`
+    / `onValueChange`), `loop`, `slidesPerView`, `orientation`, arrow-key
+    navigation (flipped in RTL), and autoplay that pauses on hover and focus,
+    stops from its control, starts stopped under `prefers-reduced-motion` and
+    stops on the last page without `loop`. Slides outside the window are
+    `inert`.
+  - `@takeoff-ui/react-spar` adds the styled parts: `Carousel.Viewport`,
+    `Carousel.Slide`, `Carousel.Controls`, `Carousel.PrevTrigger`,
+    `Carousel.NextTrigger`, `Carousel.Indicators` and
+    `Carousel.AutoplayTrigger`, with `controlsPlacement` (`inside` | `outside`),
+    `controlsPosition` (`distributed` | `start` | `end`) and localizable
+    `labels`.
+  - The tokens package adds the `tk-carousel` recipe; the track moves with CSS
+    variables only, without layout measurement.
+
+- [#291](https://github.com/turkishtechnology/takeoff-v2/pull/291)
+  [`a298f3c`](https://github.com/turkishtechnology/takeoff-v2/commit/a298f3ca32fd5699b4b2a5ee78e29c9f8d23aa00)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `ColorPicker`
+  (Core `tk-color-picker`): a typable color field that opens a panel with a
+  saturation/brightness area, hue and alpha sliders, typed HEX / RGB / HSL
+  channel fields, an eyedropper and preset swatches. Render `ColorPicker.Panel`
+  alone for the inline picker; `orientation="horizontal"` is Core's second
+  layout. The value is a CSS string in the active `format`, and typed text is
+  parsed in any of the three notations.
+
+  ```tsx
+  <Field>
+    <Field.Label>Brand color</Field.Label>
+    <ColorPicker value={color} onValueChange={setColor} format="rgb" />
+  </Field>
+  ```
+
+  Spar adds `FieldReset`, which ends the surrounding `Field` scope for a
+  subtree, so a composite control's own sub-controls do not take the Field's
+  label and id.
+
+- [#295](https://github.com/turkishtechnology/takeoff-v2/pull/295)
+  [`1ebeced`](https://github.com/turkishtechnology/takeoff-v2/commit/1ebeced5629451b0eb2b0ad6fb38a0f3fbda5ba3)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `Pagination` —
+  page navigation for lists and search results (Core `tk-pagination`): page and
+  item reports, a page range with ellipses, first/previous/next/last buttons, a
+  page-size select and a page-jump input, in `outlined`, `text` and `grouped`
+  types, a `compact` mode and a `rounded` shape.
+
+  ```tsx
+  <Pagination totalItems={240} page={page} onPageChange={setPage} />
+  ```
+
+  Without children the root renders the full anatomy; compose `Pagination.Info`
+  / `Controls` / `Actions` and their parts to change it. Every string is
+  localizable through `labels`.
+
+  Spar gains a headless `Pagination` primitive (`Pagination.Item`, `.First`,
+  `.Previous`, `.Next`, `.Last`, `.Ellipsis`, `usePaginationContext` and the
+  pure `getPaginationItems`) that owns the page state, the page range and the
+  edge-disabled buttons, exported from `@turkish-technology/spar/pagination`.
+  `Table`'s built-in pagination now renders through it; its API and output are
+  unchanged. The tokens package ships the `.tk-pagination` recipe.
+
+- [#288](https://github.com/turkishtechnology/takeoff-v2/pull/288)
+  [`0e66855`](https://github.com/turkishtechnology/takeoff-v2/commit/0e668559437a2c577c5d1ca08298ced20bc38372)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `Select.Search` —
+  a filter field above a Select's options — and `Select.Empty` for when nothing
+  matches.
+
+  ```tsx
+  <Select.Content>
+    <Select.Search value={query} onValueChange={setQuery} />
+    <Select.Viewport>
+      {visible.map(item => (
+        <Select.Item key={item.value} value={item.value} label={item.label}>
+          {item.label}
+        </Select.Item>
+      ))}
+      {visible.length === 0 ? <Select.Empty>No results</Select.Empty> : null}
+    </Select.Viewport>
+  </Select.Content>
+  ```
+
+  The field takes focus when the list opens. Typing edits the query instead of
+  running typeahead; arrows, Enter and Escape still drive the list, and the
+  highlight moves to the first match when the highlighted option is filtered
+  out. The query resets when the list closes. You filter the items yourself.
+
+  With a search present, `Select.Viewport` becomes the listbox and the field the
+  combobox, so the items must sit inside a `Select.Viewport`. Selects without a
+  search are unchanged.
+
+- [#297](https://github.com/turkishtechnology/takeoff-v2/pull/297)
+  [`170026d`](https://github.com/turkishtechnology/takeoff-v2/commit/170026d0bbac857abb48f53c6a27296da1108077)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add
+  `ToggleButtonGroup` (Core `tk-toggle-button-group` + `tk-toggle-button`): a
+  row or column of toggle buttons with single or `multiple` selection. The group
+  is one tab stop; the arrow keys along `orientation`, Home and End move focus,
+  wrap and skip disabled items, and Space / Enter press the focused item. Items
+  are `aria-pressed` buttons in a `role="group"`. In single mode a second press
+  releases the item (`''`); `deselectable={false}` keeps one pressed. The
+  Takeoff look comes from the group `type` (`basic` / `divided` / `light`),
+  `rounded`, `size`, and the pressed item's `variant` and `appearance`.
+
+  Spar gains the headless `ToggleGroup` / `ToggleGroupItem` primitive behind it
+  (also at `@turkish-technology/spar/toggle-group`), and its `Button` accepts
+  `defaultPressed` for an uncontrolled toggle; react-spar's `Button` exposes it
+  too.
+
+### Patch Changes
+
+- [#296](https://github.com/turkishtechnology/takeoff-v2/pull/296)
+  [`c4bee5d`](https://github.com/turkishtechnology/takeoff-v2/commit/c4bee5d158f85727528c86173e6fa4da7a900a30)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `PhoneInput` — a
+  phone number field with a country picker. The number is formatted as the user
+  types by libphonenumber-js (`532 123 45 67` in Türkiye), and the value is an
+  E.164 string (`+905321234567`).
+
+  ```tsx
+  <PhoneInput value={phone} onValueChange={setPhone} locale="tr-TR">
+    <PhoneInput.Prefix>
+      <PhoneInput.CountrySelect />
+    </PhoneInput.Prefix>
+    <PhoneInput.Field />
+  </PhoneInput>
+  ```
+
+  - `PhoneInput.CountrySelect` lists every region by default, named in `locale`,
+    opens on a search field (name, ISO code or dial code; case- and
+    accent-insensitive), and binds to `country` / `onCountryChange` on the root.
+    Picking a country clears the number and focuses the field.
+  - `PhoneInput.DialCode` shows the dial code for a fixed country.
+  - `onValueChange` also passes `{ national, formatted, isValid, country }`.
+  - Typing or pasting `+<code>…` moves the picker to that country.
+  - `name` submits the E.164 number through a hidden input.
+  - `libphonenumber-js` (MIT, `min` metadata, about 33 KB gzipped) is a new
+    dependency of `@takeoff-ui/react-spar`; only bundles that import
+    `PhoneInput` include it.
+
+  Spar: a `Select` inside an `Input` row (an affix picker) no longer claims the
+  surrounding `Field`'s control ID, label and messages — the row's field owns
+  them. It keeps its own IDs and follows the row's `disabled` / `readOnly`.
+
 ## 0.3.2
 
 ### Patch Changes

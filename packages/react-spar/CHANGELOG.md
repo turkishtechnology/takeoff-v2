@@ -1,5 +1,349 @@
 # @takeoff-ui/react-spar
 
+## 0.8.0
+
+### Minor Changes
+
+- [#294](https://github.com/turkishtechnology/takeoff-v2/pull/294)
+  [`2a36098`](https://github.com/turkishtechnology/takeoff-v2/commit/2a3609882d4a177fbda37c082f674dd6b0401728)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `Avatar`, a
+  person's or entity's picture with a fallback. `Avatar.Image` mounts its
+  `<img>` only once the picture has loaded, and `Avatar.Fallback` (initials, or
+  a person glyph without children) shows while it is missing, loading or broken,
+  optionally after `delayMs`.
+
+  - Seven sizes from `xxsmall` (20px) to `xxlarge` (160px), `variant`,
+    `appearance` (`filled` / `filledLight`), `rounded`, and `hideShadow`.
+  - `name` makes the avatar one `role="img"` named by it.
+  - `Avatar.Badge` pins a Takeoff `Badge` (a dot, or a count) to the corner,
+    scaled to the avatar.
+  - `Avatar.Group` overlaps its avatars, passes `size` / `rounded` down,
+    collapses the ones past `max` into a `+N` avatar (`overflowLabel` /
+    `overflowAriaLabel`), and has a `compact` pill layout.
+
+  `@turkish-technology/spar` adds the headless `Avatar` / `AvatarImage` /
+  `AvatarFallback` primitive that tracks the image loading status
+  (`data-status`, `onLoadingStatusChange`). `@takeoff-design/tokens` ships the
+  `tk-avatar` recipe.
+
+- [#293](https://github.com/turkishtechnology/takeoff-v2/pull/293)
+  [`5aacc48`](https://github.com/turkishtechnology/takeoff-v2/commit/5aacc485bd3cd9fd8f1c7e47defefff0d02776b7)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `Carousel` — the
+  port of Core `tk-carousel`, following the WAI-ARIA carousel pattern.
+
+  ```tsx
+  <Carousel aria-label="Featured destinations" autoplay slidesPerView={1}>
+    <Carousel.Viewport>
+      <Carousel.Slide>…</Carousel.Slide>
+    </Carousel.Viewport>
+    <Carousel.Controls />
+  </Carousel>
+  ```
+
+  - Spar ships a new headless `Carousel` primitive
+    (`@turkish-technology/spar/carousel`): index state (`value` / `defaultValue`
+    / `onValueChange`), `loop`, `slidesPerView`, `orientation`, arrow-key
+    navigation (flipped in RTL), and autoplay that pauses on hover and focus,
+    stops from its control, starts stopped under `prefers-reduced-motion` and
+    stops on the last page without `loop`. Slides outside the window are
+    `inert`.
+  - `@takeoff-ui/react-spar` adds the styled parts: `Carousel.Viewport`,
+    `Carousel.Slide`, `Carousel.Controls`, `Carousel.PrevTrigger`,
+    `Carousel.NextTrigger`, `Carousel.Indicators` and
+    `Carousel.AutoplayTrigger`, with `controlsPlacement` (`inside` | `outside`),
+    `controlsPosition` (`distributed` | `start` | `end`) and localizable
+    `labels`.
+  - The tokens package adds the `tk-carousel` recipe; the track moves with CSS
+    variables only, without layout measurement.
+
+- [#291](https://github.com/turkishtechnology/takeoff-v2/pull/291)
+  [`a298f3c`](https://github.com/turkishtechnology/takeoff-v2/commit/a298f3ca32fd5699b4b2a5ee78e29c9f8d23aa00)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `ColorPicker`
+  (Core `tk-color-picker`): a typable color field that opens a panel with a
+  saturation/brightness area, hue and alpha sliders, typed HEX / RGB / HSL
+  channel fields, an eyedropper and preset swatches. Render `ColorPicker.Panel`
+  alone for the inline picker; `orientation="horizontal"` is Core's second
+  layout. The value is a CSS string in the active `format`, and typed text is
+  parsed in any of the three notations.
+
+  ```tsx
+  <Field>
+    <Field.Label>Brand color</Field.Label>
+    <ColorPicker value={color} onValueChange={setColor} format="rgb" />
+  </Field>
+  ```
+
+  Spar adds `FieldReset`, which ends the surrounding `Field` scope for a
+  subtree, so a composite control's own sub-controls do not take the Field's
+  label and id.
+
+- [#289](https://github.com/turkishtechnology/takeoff-v2/pull/289)
+  [`87dc2ff`](https://github.com/turkishtechnology/takeoff-v2/commit/87dc2ff542d83585266869c4ca45483740251d49)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `CurrencyInput` —
+  an amount field with a currency. The amount is grouped as the user types by
+  the Input `number` mask, following `locale` (`1.234,56` in tr-TR), and the
+  value is a plain `number` (`undefined` when empty).
+
+  ```tsx
+  <CurrencyInput value={amount} onValueChange={setAmount} locale="tr-TR">
+    <CurrencyInput.Field />
+    <CurrencyInput.Suffix>
+      <CurrencyInput.CurrencySelect currencies={CURRENCIES} />
+    </CurrencyInput.Suffix>
+  </CurrencyInput>
+  ```
+
+  - `CurrencyInput.CurrencySelect` opens on a search field (code, name or
+    symbol; case- and accent-insensitive), shows each currency's icon, symbol
+    and name, and binds to `currency` / `onCurrencyChange` on the root.
+  - `CurrencyInput.Symbol` shows the locale's symbol for a fixed currency.
+  - Fraction digits follow the currency (TRY 2, JPY 0); `decimalScale`,
+    `integerScale` and `allowNegative` adjust them.
+  - `name` submits the amount canonically (`1234.5`) through a hidden input.
+
+- [#256](https://github.com/turkishtechnology/takeoff-v2/pull/256)
+  [`c7f0e5b`](https://github.com/turkishtechnology/takeoff-v2/commit/c7f0e5b5a187ed5bfcee5eeb1355a5e605ffb6cd)
+  Thanks [@mhaktan](https://github.com/mhaktan)! - Add two branded loaders.
+  `GlobeSpinner` is a circular loader: an accent arc orbits a rotating globe, a
+  plane leads it and `GlobeSpinner.Label` rides inside the arc. `FlightLoader`
+  is a loading card with a plane taking off from a runway, an indeterminate bar
+  and the `FlightLoader.Logo`, `FlightLoader.Tagline` and `FlightLoader.Status`
+  parts. Both use `variant` for the accent color, accept
+  `--tk-globe-spinner-accent` / `--tk-flight-loader-accent` for off-palette
+  colors, keep `Spinner`'s `status` semantics, and slow down (rather than stop)
+  under `prefers-reduced-motion`. The tokens package ships the `globe-spinner`
+  and `flight-loader` recipes.
+
+- [#295](https://github.com/turkishtechnology/takeoff-v2/pull/295)
+  [`1ebeced`](https://github.com/turkishtechnology/takeoff-v2/commit/1ebeced5629451b0eb2b0ad6fb38a0f3fbda5ba3)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `Pagination` —
+  page navigation for lists and search results (Core `tk-pagination`): page and
+  item reports, a page range with ellipses, first/previous/next/last buttons, a
+  page-size select and a page-jump input, in `outlined`, `text` and `grouped`
+  types, a `compact` mode and a `rounded` shape.
+
+  ```tsx
+  <Pagination totalItems={240} page={page} onPageChange={setPage} />
+  ```
+
+  Without children the root renders the full anatomy; compose `Pagination.Info`
+  / `Controls` / `Actions` and their parts to change it. Every string is
+  localizable through `labels`.
+
+  Spar gains a headless `Pagination` primitive (`Pagination.Item`, `.First`,
+  `.Previous`, `.Next`, `.Last`, `.Ellipsis`, `usePaginationContext` and the
+  pure `getPaginationItems`) that owns the page state, the page range and the
+  edge-disabled buttons, exported from `@turkish-technology/spar/pagination`.
+  `Table`'s built-in pagination now renders through it; its API and output are
+  unchanged. The tokens package ships the `.tk-pagination` recipe.
+
+- [#296](https://github.com/turkishtechnology/takeoff-v2/pull/296)
+  [`c4bee5d`](https://github.com/turkishtechnology/takeoff-v2/commit/c4bee5d158f85727528c86173e6fa4da7a900a30)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `PhoneInput` — a
+  phone number field with a country picker. The number is formatted as the user
+  types by libphonenumber-js (`532 123 45 67` in Türkiye), and the value is an
+  E.164 string (`+905321234567`).
+
+  ```tsx
+  <PhoneInput value={phone} onValueChange={setPhone} locale="tr-TR">
+    <PhoneInput.Prefix>
+      <PhoneInput.CountrySelect />
+    </PhoneInput.Prefix>
+    <PhoneInput.Field />
+  </PhoneInput>
+  ```
+
+  - `PhoneInput.CountrySelect` lists every region by default, named in `locale`,
+    opens on a search field (name, ISO code or dial code; case- and
+    accent-insensitive), and binds to `country` / `onCountryChange` on the root.
+    Picking a country clears the number and focuses the field.
+  - `PhoneInput.DialCode` shows the dial code for a fixed country.
+  - `onValueChange` also passes `{ national, formatted, isValid, country }`.
+  - Typing or pasting `+<code>…` moves the picker to that country.
+  - `name` submits the E.164 number through a hidden input.
+  - `libphonenumber-js` (MIT, `min` metadata, about 33 KB gzipped) is a new
+    dependency of `@takeoff-ui/react-spar`; only bundles that import
+    `PhoneInput` include it.
+
+  Spar: a `Select` inside an `Input` row (an affix picker) no longer claims the
+  surrounding `Field`'s control ID, label and messages — the row's field owns
+  them. It keeps its own IDs and follows the row's `disabled` / `readOnly`.
+
+- [#290](https://github.com/turkishtechnology/takeoff-v2/pull/290)
+  [`99db051`](https://github.com/turkishtechnology/takeoff-v2/commit/99db0519d6c1da63e04740a47b9207583a7445af)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `Rating` — pick a
+  score from a row of stars, hearts, dots or numbered boxes (Core `tk-rating`).
+  It is built on Spar's `Radio`, so keyboard, form submission and `Field`
+  inheritance come for free; the score is a plain `number`.
+
+  ```tsx
+  <Rating
+    value={score}
+    onValueChange={setScore}
+    type="star"
+    max={5}
+    showValue
+  />
+  ```
+
+  A fractional `value` (e.g. `3.5`) draws a half fill for display; the hover
+  preview is CSS only. The tokens package ships the `.tk-rating` /
+  `.tk-rating-item` recipe.
+
+- [#288](https://github.com/turkishtechnology/takeoff-v2/pull/288)
+  [`0e66855`](https://github.com/turkishtechnology/takeoff-v2/commit/0e668559437a2c577c5d1ca08298ced20bc38372)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `Select.Search` —
+  a filter field above a Select's options — and `Select.Empty` for when nothing
+  matches.
+
+  ```tsx
+  <Select.Content>
+    <Select.Search value={query} onValueChange={setQuery} />
+    <Select.Viewport>
+      {visible.map(item => (
+        <Select.Item key={item.value} value={item.value} label={item.label}>
+          {item.label}
+        </Select.Item>
+      ))}
+      {visible.length === 0 ? <Select.Empty>No results</Select.Empty> : null}
+    </Select.Viewport>
+  </Select.Content>
+  ```
+
+  The field takes focus when the list opens. Typing edits the query instead of
+  running typeahead; arrows, Enter and Escape still drive the list, and the
+  highlight moves to the first match when the highlighted option is filtered
+  out. The query resets when the list closes. You filter the items yourself.
+
+  With a search present, `Select.Viewport` becomes the listbox and the field the
+  combobox, so the items must sit inside a `Select.Viewport`. Selects without a
+  search are unchanged.
+
+- [#287](https://github.com/turkishtechnology/takeoff-v2/pull/287)
+  [`751ce4d`](https://github.com/turkishtechnology/takeoff-v2/commit/751ce4dc56054654f29fe0e9272680504e6794e5)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `TimePicker` — an
+  inline panel for picking a time of day, with two bodies over one value model.
+
+  `columns` stacks each unit as a spinning column. `dial` pairs two large number
+  fields with a dial, and picking an hour hands the turn to the minutes. Both
+  commit a `Date`, so the picker pairs with `Calendar` and with any form that
+  already stores a moment.
+
+  ```tsx
+  <TimePicker
+    className="tk-timepicker-panel"
+    aria-labelledby="timer-heading"
+    value={time}
+    onValueChange={setTime}
+  >
+    <TimePicker.Header>
+      <h5 id="timer-heading">Timer</h5>
+    </TimePicker.Header>
+    <TimePicker.Body />
+    <TimePicker.Footer>
+      <Button onClick={apply}>Continue</Button>
+    </TimePicker.Footer>
+  </TimePicker>
+  ```
+
+  - **`TimePicker.Body` is the picking surface**; the root is a chrome-free
+    state owner, so a bare body drops into a `Popover.Content` and the opt-in
+    `tk-timepicker-panel` class draws a standalone panel — the split
+    `tk-datepicker-panel` already makes. Header and Footer are optional layout
+    rows, and the panel ships no trigger: whether a picker commits live or
+    behind an Apply button is a per-form answer, so it is composed.
+  - **The columns are drawn at the strip scale** — 40px cells with 14px digits,
+    every cell in one ink and the selection band alone marking the choice. That
+    is the smaller of the two scales the design draws; the 48px/20px one reads
+    as oversized in use. Both are reachable either way through the
+    `--tk-timepicker-*` palette.
+  - **`compact` is the shorter form of either body** — the dial stacks under its
+    number fields instead of sitting beside them, and the column body drops the
+    spinning columns for those same fields. A column-placed meridiem comes along
+    as a two-cell box beside them rather than a third number field.
+  - **`size` scales the columns** — `base` is a 40px cell with 14px digits,
+    `small` a 32px cell with 12px digits in the recessive ink, for a picker
+    sitting beside something else. Two values because the design draws two, the
+    same call Calendar makes for its day cell. `columns` only; the dial has one
+    drawn scale.
+  - **`type` treats the panel** — `basic` | `divided` | `light` | `dark` |
+    `primary`. Unlike Calendar's `headerType` the treatment reaches the body,
+    not just the header, so the prop is `type`. Every colour in the recipe
+    resolves through one `--tk-timepicker-*` palette on the root, which is both
+    how a treatment is expressed and the supported way to build one the package
+    does not ship.
+  - **The product vocabulary is preserved**: `timeFormat` (`12` / `24`),
+    `hourStep`, `minuteStep`, `minTime` / `maxTime`. The bounds take a `Date`,
+    matching Calendar's `minDate` / `maxDate`, and only their time of day is
+    read. `showSeconds` and `secondStep` are new, from the seconds column the
+    design defines.
+  - **`meridiem` places AM/PM** — `column` (default) gives it a spinning column
+    of its own; `toggle` hands it to a composed `TimePicker.Meridiem`, a
+    `role="radiogroup"` segmented control the consumer places (typically in the
+    header), one tab stop with the arrows moving between the two halves. For
+    panels where a fourth column will not fit. The prop decides the form and the
+    part decides where, rather than one registering with the other, so the
+    layout never waits on an effect.
+  - **`isTimeUnavailable` closes individual times inside the bounds** — a lunch
+    hour, a booked slot. Asked once per rendered cell with the time that cell
+    would commit and the unit being asked about, so a column of hours asks 24
+    times rather than resolving 1440 minutes.
+  - **`name` / `form` submit the value** through a hidden field carrying `HH:mm`
+    (or `HH:mm:ss` with `showSeconds`) — the shape a native
+    `<input type="time">` posts. Empty until something is picked, so a
+    `required` field is not silently satisfied with midnight.
+  - **A coarse unit is judged by whether any finer value it allows is in
+    bounds.** Under a 17:30 ceiling the hour 17 stays selectable and picking it
+    pulls the minutes down, rather than stranding the column on a value it
+    cannot leave. A bound that lands off the step grid is spliced into the
+    column that shows it.
+  - **Each unit is one tab stop and one `role="spinbutton"`.** The value cells,
+    the arrows and the whole dial are pointer affordances — hidden from
+    assistive tech, out of the tab order — because every value they offer is
+    reachable from the unit they drive.
+  - Tokens ship `_timepicker.scss`, built from the Figma `component/timepicker`
+    values.
+
+- [#292](https://github.com/turkishtechnology/takeoff-v2/pull/292)
+  [`ce73bd5`](https://github.com/turkishtechnology/takeoff-v2/commit/ce73bd585ee08fc669fe4553c8066ef218acffaa)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add `Timeline`, a
+  read-only sequence of events along a horizontal or vertical line (Takeoff Core
+  `tk-timeline`). Compose `Timeline.Item` with `Timeline.Title`,
+  `Timeline.Description` and `Timeline.Time`; `placement` (`alternate` | `start`
+  | `end`) picks the side of the line, and `indicator` swaps the dot for an
+  icon.
+
+  `@takeoff-design/tokens` ships the `tk-timeline-*` recipe.
+
+- [#297](https://github.com/turkishtechnology/takeoff-v2/pull/297)
+  [`170026d`](https://github.com/turkishtechnology/takeoff-v2/commit/170026d0bbac857abb48f53c6a27296da1108077)
+  Thanks [@harun-demir](https://github.com/harun-demir)! - Add
+  `ToggleButtonGroup` (Core `tk-toggle-button-group` + `tk-toggle-button`): a
+  row or column of toggle buttons with single or `multiple` selection. The group
+  is one tab stop; the arrow keys along `orientation`, Home and End move focus,
+  wrap and skip disabled items, and Space / Enter press the focused item. Items
+  are `aria-pressed` buttons in a `role="group"`. In single mode a second press
+  releases the item (`''`); `deselectable={false}` keeps one pressed. The
+  Takeoff look comes from the group `type` (`basic` / `divided` / `light`),
+  `rounded`, `size`, and the pressed item's `variant` and `appearance`.
+
+  Spar gains the headless `ToggleGroup` / `ToggleGroupItem` primitive behind it
+  (also at `@turkish-technology/spar/toggle-group`), and its `Button` accepts
+  `defaultPressed` for an uncontrolled toggle; react-spar's `Button` exposes it
+  too.
+
+### Patch Changes
+
+- Updated dependencies
+  [[`2a36098`](https://github.com/turkishtechnology/takeoff-v2/commit/2a3609882d4a177fbda37c082f674dd6b0401728),
+  [`5aacc48`](https://github.com/turkishtechnology/takeoff-v2/commit/5aacc485bd3cd9fd8f1c7e47defefff0d02776b7),
+  [`a298f3c`](https://github.com/turkishtechnology/takeoff-v2/commit/a298f3ca32fd5699b4b2a5ee78e29c9f8d23aa00),
+  [`1ebeced`](https://github.com/turkishtechnology/takeoff-v2/commit/1ebeced5629451b0eb2b0ad6fb38a0f3fbda5ba3),
+  [`c4bee5d`](https://github.com/turkishtechnology/takeoff-v2/commit/c4bee5d158f85727528c86173e6fa4da7a900a30),
+  [`0e66855`](https://github.com/turkishtechnology/takeoff-v2/commit/0e668559437a2c577c5d1ca08298ced20bc38372),
+  [`170026d`](https://github.com/turkishtechnology/takeoff-v2/commit/170026d0bbac857abb48f53c6a27296da1108077)]:
+  - @turkish-technology/spar@0.4.0
+
 ## 0.7.1
 
 ### Patch Changes
