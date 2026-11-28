@@ -1,0 +1,869 @@
+@use '../abstracts/mixins' as mixins;
+
+// ---------------------------------------------------------------------------
+// TimePicker recipe — shared style contract for the takeoff-spar TimePicker
+// compound. Two bodies pick the same time: `columns` stacks the units as spinning
+// columns, `dial` pairs two number fields with a dial.
+//
+//   .tk-timepicker              — root; state owner and the labelled group.
+//                                 Chrome-free, so a bare `TimePicker.Body`
+//                                 drops into a `Popover.Content` unchanged;
+//                                 `.tk-timepicker-panel` below is the opt-in
+//                                 standalone panel (the `tk-datepicker-panel`
+//                                 precedent)
+//   .tk-timepicker-header       — title row
+//   .tk-timepicker-body         — picking surface
+//   .tk-timepicker-footer       — action row
+//
+// `columns` body:
+//   .tk-timepicker-columns      — the row of columns; positions the band
+//   .tk-timepicker-highlight    — the selection band, drawn behind the middle
+//                                 row of every column at once
+//   .tk-timepicker-column       — one unit; the role="spinbutton" focus stop
+//   .tk-timepicker-previous     — selects the value drawn above
+//   .tk-timepicker-next         — selects the value drawn below
+//   .tk-timepicker-chevron      — the trigger glyph
+//   .tk-timepicker-value-group  — the three cells
+//   .tk-timepicker-value        — one cell
+//   .tk-timepicker-separator    — ':' between time units, '-' before AM/PM
+//
+// shared:
+//   .tk-timepicker-meridiem        — AM/PM as a segmented control, composed as
+//                                    `TimePicker.Meridiem` when
+//                                    `meridiem="toggle"` takes it out of the row
+//   .tk-timepicker-meridiem-option — one of its two choices
+//
+// `dial` body:
+//   .tk-timepicker-input-group  — the number fields
+//   .tk-timepicker-input        — one field; also a role="spinbutton" stop
+//   .tk-timepicker-input-value  — its number
+//   .tk-timepicker-input-label  — its caption
+//   .tk-timepicker-input-stack  — the meridiem beside them; a spinbutton stop
+//   .tk-timepicker-input-option — one of its two half-days
+//   .tk-timepicker-dial         — the dial; aria-hidden, pointer affordance
+//   .tk-timepicker-dial-face    — the decorative rings
+//   .tk-timepicker-dial-hand    — one hand, rotated by --tk-timepicker-dial-angle
+//   .tk-timepicker-dial-cap     — the centre pin
+//   .tk-timepicker-dial-number  — one hour/minute mark, placed by the same var
+//
+// State/variant attributes:
+//   data-compact      — presence (root and body); the shorter form of whichever
+//                       body renders — the dial stacks under its fields, the
+//                       column body drops the columns for those fields
+//   data-mode         — columns | dial (root and body; mirrored on the body so a
+//                       Popover may sit between the two in the DOM)
+//   data-size         — small | base (root); the column scale. `small` is a 32px
+//                       cell with 12px digits in the recessive ink
+//   data-type         — basic | divided | light | dark | primary (root); panel
+//                       treatment. Every
+//                       colour below resolves through the --tk-timepicker-*
+//                       palette on the root, which is the only thing a
+//                       treatment repaints
+//   data-time-format  — 12 | 24 (root)
+//   data-empty        — root; nothing picked yet, the body shows the reference
+//                       time
+//   data-disabled / data-readonly / data-invalid / data-required — root state
+//   data-unit         — hour | minute | second | meridiem, on each column,
+//                       field and hand
+//   data-active       — the field the dial is currently editing
+//   data-selected     — the committed cell / dial mark
+//   data-disabled     — a cell or mark the bounds forbid
+//   data-blank        — a padding cell past either end of the list (the root's
+//                       data-empty is a different question — nothing picked)
+//
+// The palette on the root is what a treatment repaints; two entries are worth
+// naming: `--tk-timepicker-separator-ink` is punctuation rather than a disabled
+// state, and `--tk-timepicker-toggle-ink` is the chosen half-day.
+//
+// Geometry the wrapper writes inline, because an angle is a continuous value
+// and not a data-* hook: --tk-timepicker-dial-angle on each hand and mark.
+// ---------------------------------------------------------------------------
+
+@mixin timepicker {
+  // Figma `component/timepicker` maps onto the primitives below; the comments
+  // carry the exact component-token name each value comes from, so a token can
+  // be traced in either direction. Two things about those names: they still say
+  // `basic` where the component now says `columns` (the file is Figma-synced,
+  // so it is not ours to rename), and the five `timer-body-compact-*` entries
+  // have no counterpart here — the compact layout is not shipped.
+  --tk-timepicker-cell-size: var(--spacing-10xl); // 40px
+  --tk-timepicker-column-width: var(--spacing-10xl); // 40px
+  --tk-timepicker-column-gap: var(--spacing-s); // timer-body-basic-timer-column-gap
+  --tk-timepicker-cell-gap: var(--spacing-xs); // timer-body-basic-timer-number-gap
+  --tk-timepicker-columns-gap: var(--spacing-s); // timer-body-basic-content-gap
+  // The strip scale (Body/Small-14 on a 40px cell), not the 20px one the
+  // standalone panel is drawn at. A product call: the larger digits read as
+  // oversized in use. At this scale the design gives every cell the same ink
+  // and weight and leaves the band to mark the selection, which is what the
+  // value cell does below.
+  --tk-timepicker-value-size: var(--size-sm); // Body/Small-14
+  --tk-timepicker-value-line-height: var(--line-height-base-tight); // 20px
+  // The value cells carry their own ink because the two scales tone them
+  // differently: `base` at full contrast, `small` recessive.
+  --tk-timepicker-value-ink: var(--tk-timepicker-ink);
+  --tk-timepicker-radius: var(--radius-m-base); // 8px
+
+  // Every colour the parts use is named here so a panel treatment can repaint
+  // the whole surface from one place. Core's `tk-datepicker` time panel is the
+  // reference for `light` and `dark` below.
+  --tk-timepicker-surface: var(--static-light);
+  --tk-timepicker-band: var(--background-lightest);
+  --tk-timepicker-band-border: var(--border-light);
+  --tk-timepicker-divider: var(--border-light);
+  --tk-timepicker-ink: var(--text-darkest);
+  // The recessive ink: the `dial` field captions and the unchosen half of the
+  // meridiem toggle. One step darker than Figma's `text/sub-base`, which is
+  // 2.6:1 on white — both of those are real text, so they owe 4.5:1 rather than
+  // the decorative exemption. `--text-dark` clears it at 7.1:1. The value cells
+  // do not use it: at this scale every cell shares one ink and the band alone
+  // marks the selection.
+  --tk-timepicker-ink-muted: var(--text-dark);
+  --tk-timepicker-ink-faint: var(--text-light);
+  // Punctuation, not a disabled state — so it does not share `ink-faint`, where
+  // being barely there is the whole point. Legible at 4.3:1 without competing
+  // with the values it separates.
+  --tk-timepicker-separator-ink: var(--text-base);
+  --tk-timepicker-icon: var(--icon-base);
+  --tk-timepicker-icon-strong: var(--icon-darkest);
+  --tk-timepicker-icon-faint: var(--icon-light);
+  --tk-timepicker-field: var(--background-lightest);
+  --tk-timepicker-field-border: var(--border-light);
+  // One step off `--tk-timepicker-field`: the chosen half-day is marked inside a
+  // field box, where the band tone — which equals the field on every treatment —
+  // would read as no mark at all.
+  --tk-timepicker-stack-fill: var(--background-light);
+  --tk-timepicker-dial-ring-color: var(--background-lightest);
+  --tk-timepicker-accent: var(--primary-base);
+  --tk-timepicker-on-accent: var(--static-white);
+  // The chosen half-day. Brand-coloured on a light surface; on a repainted one
+  // the brand has nothing to sit against, so the treatments below hand it the
+  // full-contrast ink instead.
+  --tk-timepicker-toggle-ink: var(--tk-timepicker-accent);
+  // The toggle is drawn per treatment rather than following the surface: a bare
+  // pill on `basic`, an outlined one from `divided` on, and a white track
+  // carrying a filled pill on the two repainted treatments. Each block below
+  // sets only what it changes.
+  --tk-timepicker-toggle-track: transparent;
+  --tk-timepicker-toggle-border: transparent;
+  --tk-timepicker-toggle-pill: var(--static-light);
+
+  --tk-timepicker-dial-size: var(--spacing-72xl); // 288px
+  --tk-timepicker-dial-mark-size: var(--spacing-14xl); // 56px
+  --tk-timepicker-dial-radius: 116px; // centre-to-mark, from the 288px board
+  // A 24-hour face carries twice as many hours, so 12–23 sit on a second ring
+  // inside the first. Radius and mark size are set so the rings touch without
+  // colliding: 68 + 20 = 88 = 116 − 28.
+  --tk-timepicker-dial-inner-radius: 68px;
+  --tk-timepicker-dial-inner-mark-size: var(--spacing-10xl); // 40px
+  --tk-timepicker-dial-face-size: 184px;
+  --tk-timepicker-dial-ring: var(--spacing-5xl); // 20px
+
+  box-sizing: border-box;
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  color: var(--tk-timepicker-ink);
+  // A pointer drag across the columns would otherwise select the digits.
+  user-select: none;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: inherit;
+  }
+
+  // The design defines no disabled or read-only panel, so both are derived from
+  // the house treatment the other controls use: disabled recedes and stops
+  // taking the pointer, read-only keeps the value at full contrast and only
+  // drops the affordances that would change it.
+  // `light` tints the surface and inverts the band to white against it, and
+  // `dark` repaints the panel outright — both ported from Core's
+  // `tk-datepicker-timepicker-body-light` / `-dark`. The dark treatment reaches
+  // for palette-scale tokens rather than semantic ones on purpose: a semantic
+  // token flips with the colour mode, which would undo the treatment in dark
+  // mode. Card and Dialog take the same shortcut for their dark header.
+  // The strip scale, for a picker sitting beside something else. Columns only —
+  // the dial has one drawn size.
+  &[data-size='small'] {
+    --tk-timepicker-cell-size: var(--spacing-8xl); // 32px
+    --tk-timepicker-column-width: var(--spacing-8xl);
+    --tk-timepicker-value-size: var(--size-xs); // Body/X-Small-12
+    --tk-timepicker-value-line-height: var(--line-height-lg-none); // 18px
+    // The treatment's own recessive ink, not a fixed grey: `--text-base` is the
+    // tone the design gives this scale on a white panel, but pinned there it
+    // rides every treatment unchanged — 3.4:1 on `dark` and 1.34:1 on
+    // `primary`, where the digits all but disappear. `ink-muted` is the same
+    // idea expressed per treatment, and clears 4.5:1 on all five.
+    --tk-timepicker-value-ink: var(--tk-timepicker-ink-muted);
+  }
+
+  &[data-type='light'] {
+    --tk-timepicker-toggle-border: var(--border-light);
+    --tk-timepicker-surface: var(--background-lightest);
+    --tk-timepicker-band: var(--static-light);
+    --tk-timepicker-field: var(--static-light);
+    --tk-timepicker-dial-ring-color: var(--static-light);
+  }
+
+  // `divided` changes no colour — it only rules the chrome off the picking
+  // surface, the way Card's `divided` header does.
+  &[data-type='divided'] {
+    --tk-timepicker-toggle-border: var(--border-light);
+
+    .tk-timepicker-header {
+      border-bottom: 1px solid var(--tk-timepicker-divider);
+    }
+
+    .tk-timepicker-footer {
+      border-top: 1px solid var(--tk-timepicker-divider);
+    }
+  }
+
+  &[data-type='dark'] {
+    --tk-timepicker-surface: var(--neutral-800);
+    --tk-timepicker-band: var(--neutral-900);
+    --tk-timepicker-band-border: var(--border-dark);
+    --tk-timepicker-divider: var(--border-dark);
+    --tk-timepicker-ink: var(--static-white);
+    --tk-timepicker-ink-muted: var(--neutral-400);
+    --tk-timepicker-ink-faint: var(--neutral-600);
+    --tk-timepicker-icon: var(--neutral-400);
+    --tk-timepicker-icon-strong: var(--static-white);
+    --tk-timepicker-icon-faint: var(--neutral-600);
+    --tk-timepicker-field: var(--neutral-900);
+    --tk-timepicker-field-border: var(--border-dark);
+    --tk-timepicker-stack-fill: var(--neutral-700);
+    --tk-timepicker-dial-ring-color: var(--neutral-900);
+    // The brand red is 2.5:1 on this surface — the dial's hands would all but
+    // vanish. A lighter step of the same brand clears the 3:1 a graphical
+    // object owes (6.1:1), and the dark ink rides on top of it.
+    --tk-timepicker-accent: var(--primary-200);
+    --tk-timepicker-on-accent: var(--neutral-800);
+    // A white track carrying a black pill; the ink rides the pill, not the panel.
+    --tk-timepicker-toggle-border: var(--border-light);
+    --tk-timepicker-toggle-track: var(--static-white);
+    --tk-timepicker-toggle-pill: var(--neutral-900);
+    --tk-timepicker-toggle-ink: var(--static-white);
+    --tk-timepicker-separator-ink: var(--tk-timepicker-ink-muted);
+  }
+
+  // The brand surface. The tones are picked by contrast rather than by
+  // symmetry with the scale: a band one step *lighter* than the surface leaves
+  // the selected value at 3.2:1, so the band goes darker (9.7:1 under white)
+  // and the neighbours take the lightest tint that still clears 4.5:1. The
+  // accent inverts to white, since a red hand on a red panel reads as nothing.
+  &[data-type='primary'] {
+    --tk-timepicker-surface: var(--primary-base);
+    --tk-timepicker-band: var(--primary-700);
+    --tk-timepicker-band-border: var(--primary-400);
+    --tk-timepicker-divider: var(--primary-400);
+    --tk-timepicker-ink: var(--static-white);
+    --tk-timepicker-ink-muted: var(--primary-50);
+    --tk-timepicker-ink-faint: var(--primary-200);
+    --tk-timepicker-icon: var(--primary-50);
+    --tk-timepicker-icon-strong: var(--static-white);
+    --tk-timepicker-icon-faint: var(--primary-300);
+    --tk-timepicker-field: var(--primary-700);
+    --tk-timepicker-field-border: var(--primary-400);
+    --tk-timepicker-stack-fill: var(--primary-600);
+    --tk-timepicker-dial-ring-color: var(--primary-700);
+    --tk-timepicker-accent: var(--static-white);
+    --tk-timepicker-on-accent: var(--primary-base);
+    // A white track carrying a brand-filled pill.
+    --tk-timepicker-toggle-border: var(--border-light);
+    --tk-timepicker-toggle-track: var(--static-white);
+    --tk-timepicker-toggle-pill: var(--primary-base);
+    --tk-timepicker-toggle-ink: var(--static-white);
+    --tk-timepicker-separator-ink: var(--tk-timepicker-ink-muted);
+  }
+
+  // A heading dropped into the header keeps the panel's scale and ink instead of
+  // the host's. Emitted from the root rather than the header mixin for the
+  // specificity: a bare `.tk-timepicker-header h5` ties with a host stylesheet's
+  // own `h1–h6` rule and loses on source order — which is exactly what left the
+  // title dark on a dark panel.
+  .tk-timepicker-header {
+    :is(h1, h2, h3, h4, h5, h6) {
+      margin: 0;
+      font-size: inherit;
+      line-height: inherit;
+      font-weight: 400;
+      color: var(--tk-timepicker-ink);
+    }
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+
+    .tk-timepicker-value,
+    .tk-timepicker-input-value,
+    .tk-timepicker-dial-number {
+      color: var(--tk-timepicker-ink-faint);
+      pointer-events: none;
+    }
+
+    .tk-timepicker-previous,
+    .tk-timepicker-next,
+    .tk-timepicker-meridiem-option {
+      color: var(--tk-timepicker-icon-faint);
+      pointer-events: none;
+    }
+
+    .tk-timepicker-dial-hand,
+    .tk-timepicker-dial-cap {
+      background: var(--background-sub-base);
+    }
+
+    .tk-timepicker-dial-number[data-selected] {
+      background: var(--background-light);
+      color: var(--tk-timepicker-ink-faint);
+    }
+  }
+
+  &[data-readonly] {
+    .tk-timepicker-value,
+    .tk-timepicker-input-value,
+    .tk-timepicker-dial-number {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    // The arrows are pure affordance — with nothing to commit they would be a
+    // dead control, so they recede rather than sit there inert.
+    .tk-timepicker-previous,
+    .tk-timepicker-next {
+      color: var(--tk-timepicker-icon-faint);
+      pointer-events: none;
+    }
+  }
+
+  &[data-invalid] .tk-timepicker-input-value {
+    border-color: var(--states-danger-base);
+  }
+
+  // The panel is opt-in: the root ships chrome-free so `TimePicker.Body` can go
+  // straight into a `Popover.Content`, which draws its own surface. Add this
+  // class for a standalone panel — the same split `tk-datepicker-panel` makes.
+  &.tk-timepicker-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--tk-timepicker-surface);
+    border: 1px solid var(--tk-timepicker-band-border);
+    border-radius: var(--radius-xl);
+    // The header, body and footer each paint the surface — that is what lets a
+    // `light` / `dark` treatment reach a panel-less picker inside a
+    // `Popover.Content` — so their square boxes would otherwise square off the
+    // rounded corners. Clipped here rather than rounding the first and last
+    // rows, which breaks as soon as the composed order changes. Figma's Timer
+    // frame clips for the same reason. The rows carry 12–16px of padding, so
+    // no focus ring reaches the edge.
+    overflow: hidden;
+    // Three stacked layers share one alpha color; the depth comes from the
+    // offset/blur/spread, not the color. (No composite elevation token exists.)
+    box-shadow:
+      0 2px 2px -1px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
+      0 6px 12px 2px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
+      0 8px 20px 4px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08));
+  }
+}
+
+@mixin timepicker-header {
+  background: var(--tk-timepicker-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-4xl); // timer-header-h-padding / -v-padding
+  // The row is a layout owner; its children keep their own type. A heading
+  // dropped in still reads at the panel's scale rather than a browser default —
+  // the rule for that lives on the root mixin, for the specificity.
+  font-size: var(--size-base);
+  line-height: var(--line-height-base-normal);
+}
+
+@mixin timepicker-footer {
+  background: var(--tk-timepicker-surface);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-m-base); // timer-footer-gap
+  padding: var(--spacing-4xl); // timer-footer-h-padding / -v-padding
+}
+
+@mixin timepicker-body {
+  background: var(--tk-timepicker-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl) var(--spacing-4xl); // timer-body-basic-v-padding / -h-padding
+
+  &[data-mode='dial'] {
+    gap: var(--spacing-4xl); // timer-body-clock-gap
+    padding: var(--spacing-xl) var(--spacing-4xl);
+
+    // `compact` stacks the dial under its fields, for a panel with height
+    // rather than width. Only the axis changes — the gap and padding are the
+    // same tokens either way.
+    &[data-compact] {
+      flex-direction: column;
+    }
+  }
+}
+
+@mixin timepicker-meridiem {
+  // Sized by where it is placed — the header row, a footer, a bare panel child.
+  // It claims no width of its own, so a consumer's own layout decides.
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--spacing-m-base);
+  padding: var(--spacing-xs);
+  // Always declared, transparent on `basic`, so the toggle keeps one height
+  // whichever treatment draws it.
+  border: 1px solid var(--tk-timepicker-toggle-border);
+  border-radius: var(--radius-l);
+  background: var(--tk-timepicker-toggle-track);
+}
+
+@mixin timepicker-meridiem-option {
+  @include mixins.host-button-reset;
+
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--spacing-6xl); // 24px
+  padding-inline: var(--spacing-l); // 10px
+  border-radius: var(--tk-timepicker-radius);
+  font-size: var(--size-xs); // body/xs
+  line-height: var(--line-height-lg-none);
+  // Fixed rather than the panel's recessive ink: the track under it is light on
+  // every treatment, so a tone tuned to a repainted surface would be wrong here.
+  color: var(--text-base);
+  cursor: pointer;
+
+  @include timepicker-focus;
+
+  &[data-selected] {
+    background: var(--tk-timepicker-toggle-pill);
+    color: var(--tk-timepicker-toggle-ink);
+    // The raised half of a segmented control; the same three-layer elevation
+    // the panel itself uses.
+    box-shadow:
+      0 2px 2px -1px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
+      0 6px 12px -2px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
+      0 8px 20px 0 var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08));
+  }
+
+  &:hover:not(:disabled, [data-selected]) {
+    color: var(--text-darkest);
+  }
+
+  &:disabled {
+    color: var(--text-light);
+    cursor: not-allowed;
+  }
+}
+
+// --- columns body ----------------------------------------------------------
+
+@mixin timepicker-columns {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tk-timepicker-columns-gap);
+}
+
+@mixin timepicker-highlight {
+  position: absolute;
+  inset-inline: 0;
+  // The band sits on the middle cell: one chevron cell, the gap below it, and
+  // the first cell of the group with its own gap. Derived rather than hardcoded
+  // so a changed cell size cannot slide the band off the selection.
+  top: calc(var(--tk-timepicker-cell-size) + var(--tk-timepicker-column-gap) + var(--tk-timepicker-cell-size) + var(--tk-timepicker-cell-gap));
+  height: var(--tk-timepicker-cell-size);
+  border: 1px solid var(--tk-timepicker-band-border);
+  border-radius: var(--tk-timepicker-radius);
+  background: var(--tk-timepicker-band);
+  pointer-events: none;
+}
+
+@mixin timepicker-column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tk-timepicker-column-gap);
+  width: var(--tk-timepicker-column-width);
+  border-radius: var(--tk-timepicker-radius);
+
+  @include timepicker-focus;
+
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+}
+
+@mixin timepicker-value-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tk-timepicker-cell-gap);
+}
+
+@mixin timepicker-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--tk-timepicker-cell-size);
+  border-radius: var(--tk-timepicker-radius);
+  font-size: var(--tk-timepicker-value-size);
+  line-height: var(--tk-timepicker-value-line-height);
+  // Declared, not inherited: without it a host stylesheet's own body weight
+  // reaches the cells, and a page set to 500 renders the neighbours heavier
+  // than the value they sit around.
+  font-weight: var(--weight-regular);
+  font-variant-numeric: tabular-nums;
+  // Every cell in one ink, the band alone marking the selection — the design's
+  // own treatment at both scales. Nothing recedes, so no cell sits at a
+  // different contrast from its neighbours.
+  color: var(--tk-timepicker-value-ink);
+  cursor: pointer;
+
+  &[data-selected] {
+    cursor: default;
+  }
+
+  &[data-disabled] {
+    color: var(--tk-timepicker-ink-faint);
+    cursor: not-allowed;
+  }
+
+  &[data-blank] {
+    cursor: default;
+  }
+}
+
+@mixin timepicker-step-trigger {
+  @include mixins.host-button-reset;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--tk-timepicker-cell-size);
+  color: var(--tk-timepicker-icon);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    color: var(--tk-timepicker-icon-strong);
+  }
+
+  &:disabled {
+    color: var(--tk-timepicker-icon-faint);
+    cursor: not-allowed;
+  }
+}
+
+@mixin timepicker-previous {
+  @include timepicker-step-trigger;
+
+  border-bottom: 1px solid var(--tk-timepicker-divider);
+}
+
+@mixin timepicker-next {
+  @include timepicker-step-trigger;
+
+  border-top: 1px solid var(--tk-timepicker-divider);
+}
+
+@mixin timepicker-chevron {
+  display: inline-flex;
+
+  svg {
+    width: var(--spacing-6xl); // 24px
+    height: var(--spacing-6xl);
+    fill: currentcolor;
+  }
+}
+
+@mixin timepicker-separator {
+  // Positioned, like the column beside it: the selection band is absolute and
+  // would otherwise paint over an in-flow separator, which sits at exactly the
+  // band's height.
+  position: relative;
+  align-self: center;
+  width: var(--spacing-none);
+  text-align: center;
+  font-size: var(--tk-timepicker-value-size);
+  line-height: var(--tk-timepicker-value-line-height);
+  font-weight: 300;
+  color: var(--tk-timepicker-separator-ink);
+
+  // Between two number fields it stands beside 48px digits rather than 14px
+  // cells, and the design inks it with the brand there. Boxed to the field's own
+  // height so it centres on the number, not on the number plus its caption.
+  .tk-timepicker-input-group > & {
+    display: flex;
+    align-self: flex-start;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-xs); // 4px, as drawn — the glyph overhangs into the gap
+    height: var(--spacing-20xl); // the field beside it
+    font-size: var(--size-5xl); // Title/H2-48
+    line-height: 1.5; // 72px
+    color: var(--tk-timepicker-accent);
+  }
+}
+
+// --- dial body -------------------------------------------------------------
+
+/**
+ * The panel's focus indicator. Not the shared `--primary-focus` ring: its 4px
+ * halo needs clear space, and every focusable thing here — a 48px column, a
+ * 112px field, the half-day stack — sits in a row with 8px between neighbours,
+ * where the halo reads as a glow around the group rather than a mark on one
+ * control. An accent ring on the control's own box says the same thing inside
+ * the space there is.
+ */
+@mixin timepicker-focus {
+  &:focus-visible {
+    // Painted transparent so forced-colors mode, which drops box-shadows and
+    // recolours outlines, still has an indicator to show.
+    outline: 2px solid transparent;
+    box-shadow: inset 0 0 0 2px var(--tk-timepicker-accent);
+  }
+}
+
+@mixin timepicker-input-group {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-m-base); // timer-body-clock-input-group-gap
+}
+
+@mixin timepicker-input {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-none); // timer-body-clock-input-gap
+  border-radius: var(--tk-timepicker-radius);
+}
+
+@mixin timepicker-input-value {
+  // A native input under a two-digit mask, so the number can be typed, selected
+  // and pasted. Reset to the recipe's own box rather than the UA's.
+  appearance: none;
+  box-sizing: border-box;
+  margin: 0;
+  // Figma's clock field is a 72px square inside a ~110px box; the wider box
+  // keeps two 48px digits off the border and the pair the width of the dial's
+  // input group.
+  width: var(--spacing-28xl); // 112px
+  height: var(--spacing-20xl); // 80px
+  padding-inline: var(--spacing-2xl); // 14px
+  border: 1px solid var(--tk-timepicker-field-border);
+  border-radius: var(--tk-timepicker-radius);
+  background: var(--tk-timepicker-field);
+  text-align: center;
+  font-family: inherit;
+  font-size: var(--size-5xl); // Title/H2-48
+  line-height: 1;
+  // Declared for the same reason the column cells declare it: a host page set
+  // to 500 would otherwise reach the digits.
+  font-weight: var(--weight-regular);
+  font-variant-numeric: tabular-nums;
+  color: var(--tk-timepicker-ink);
+  caret-color: var(--tk-timepicker-accent);
+
+  &::selection {
+    background: var(--tk-timepicker-band-border);
+  }
+
+  // The design already marks the field being edited with the accent border, so
+  // focus says the same thing one weight louder. Not the shared ring: its 4px
+  // halo on a 112px box wedged between two others with 8px between them reads
+  // as a glow around the whole row rather than around one field.
+  @include timepicker-focus;
+
+  &:focus-visible {
+    border-color: var(--tk-timepicker-accent);
+  }
+
+  // The dial edits one field at a time; the active one says so.
+  [data-active] > & {
+    border-color: var(--tk-timepicker-accent);
+  }
+
+  &:disabled {
+    color: var(--tk-timepicker-ink-faint);
+    cursor: not-allowed;
+  }
+}
+
+@mixin timepicker-input-label {
+  padding-top: var(--spacing-xs);
+  font-size: var(--size-xs); // Label/Small-12
+  line-height: var(--line-height-lg-none);
+  color: var(--tk-timepicker-ink-muted);
+}
+
+@mixin timepicker-input-stack {
+  // The meridiem beside two number fields. It has two values, not sixty, so the
+  // design gives it a segmented shape instead of a third 112px box — sized to
+  // the field's height so the row reads as one band.
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  width: var(--spacing-12xl); // 48px
+  height: var(--spacing-20xl); // 80px
+  // The cells paint to the edge; without this their corners square off the box.
+  overflow: hidden;
+  border: 1px solid var(--tk-timepicker-field-border);
+  border-radius: var(--tk-timepicker-radius);
+  background: var(--tk-timepicker-field);
+
+  @include timepicker-focus;
+
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+}
+
+@mixin timepicker-input-option {
+  @include mixins.host-button-reset;
+
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--spacing-xl); // 12px
+  font-size: var(--size-sm); // Label/Medium-14
+  line-height: var(--line-height-base-tight); // 20px
+  color: var(--tk-timepicker-ink);
+  cursor: pointer;
+
+  &[data-selected] {
+    background: var(--tk-timepicker-stack-fill);
+    cursor: default;
+  }
+
+  &:disabled {
+    color: var(--tk-timepicker-ink-faint);
+    cursor: not-allowed;
+  }
+}
+
+@mixin timepicker-dial {
+  position: relative;
+  flex: none;
+  width: var(--tk-timepicker-dial-size);
+  height: var(--tk-timepicker-dial-size);
+}
+
+@mixin timepicker-dial-face {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--tk-timepicker-dial-face-size);
+  height: var(--tk-timepicker-dial-face-size);
+  margin: calc(var(--tk-timepicker-dial-face-size) / -2);
+  border: var(--tk-timepicker-dial-ring) solid var(--tk-timepicker-dial-ring-color);
+  border-radius: var(--radius-full);
+
+  // The second ring. Decorative, so it stays a pseudo-element rather than
+  // spending a slot node on it.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: var(--spacing-5xl);
+    border: var(--spacing-xl) solid var(--tk-timepicker-dial-ring-color);
+    border-radius: var(--radius-full);
+  }
+}
+
+@mixin timepicker-dial-hand {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  // Grown from the centre and rotated about its own base, so the angle the
+  // wrapper writes is read straight off the clock face.
+  height: calc(var(--tk-timepicker-dial-radius) - var(--tk-timepicker-dial-mark-size) / 2);
+  transform-origin: top center;
+  transform: translate(-50%, 0) rotate(calc(var(--tk-timepicker-dial-angle, 0deg) + 180deg));
+  background: var(--tk-timepicker-accent);
+
+  // Forced-colors drops backgrounds, which would leave the dial with no hands
+  // at all. A system colour survives it.
+  @media (forced-colors: active) {
+    background: CanvasText;
+  }
+  border-radius: var(--radius-full);
+
+  // The hour hand is the short one, as on any clock.
+  &[data-unit='hour'] {
+    height: calc((var(--tk-timepicker-dial-radius) - var(--tk-timepicker-dial-mark-size) / 2) * 0.62);
+  }
+
+  // On the 24-hour face it stops at whichever ring its hour is on.
+  &[data-unit='hour'][data-ring='inner'] {
+    height: calc(var(--tk-timepicker-dial-inner-radius) - var(--tk-timepicker-dial-inner-mark-size) / 2);
+  }
+}
+
+@mixin timepicker-dial-cap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
+  margin: calc(var(--spacing-xl) / -2);
+  border-radius: var(--radius-full);
+  background: var(--tk-timepicker-accent);
+
+  @media (forced-colors: active) {
+    background: CanvasText;
+  }
+}
+
+@mixin timepicker-dial-number {
+  @include mixins.host-button-reset;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tk-timepicker-dial-mark-size);
+  height: var(--tk-timepicker-dial-mark-size);
+  margin: calc(var(--tk-timepicker-dial-mark-size) / -2);
+  // Out along the angle, then back upright so the digits never tilt.
+  transform: rotate(var(--tk-timepicker-dial-angle, 0deg)) translateY(calc(var(--tk-timepicker-dial-radius) * -1)) rotate(calc(var(--tk-timepicker-dial-angle, 0deg) * -1));
+
+  // The 24-hour face's second ring: closer in, and smaller so the two do not
+  // collide at the diagonals.
+  &[data-ring='inner'] {
+    width: var(--tk-timepicker-dial-inner-mark-size);
+    height: var(--tk-timepicker-dial-inner-mark-size);
+    margin: calc(var(--tk-timepicker-dial-inner-mark-size) / -2);
+    transform: rotate(var(--tk-timepicker-dial-angle, 0deg)) translateY(calc(var(--tk-timepicker-dial-inner-radius) * -1)) rotate(calc(var(--tk-timepicker-dial-angle, 0deg) * -1));
+    font-size: var(--size-base);
+  }
+  border-radius: var(--radius-full);
+  font-size: var(--size-2xl); // Body/2x-Large-24
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--tk-timepicker-ink);
+  cursor: pointer;
+
+  &[data-selected] {
+    background: var(--tk-timepicker-accent);
+    color: var(--tk-timepicker-on-accent);
+  }
+
+  &:hover:not(:disabled, [data-selected]) {
+    background: var(--tk-timepicker-dial-ring-color);
+  }
+
+  &:disabled {
+    color: var(--tk-timepicker-ink-faint);
+    cursor: not-allowed;
+  }
+}

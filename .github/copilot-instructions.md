@@ -61,6 +61,7 @@ When writing or reviewing UI code here, follow the rules below.
 | `Switch`            | Any boolean toggle that applies immediately.                                                                                                                                                 |
 | `Table`             | Rendering tabular data with any of sorting, filtering, pagination, row selection, expandable/tree rows, sticky columns, user-resizable columns, loading/empty states, or server-side paging. |
 | `Tabs`              | A UI needs a tablist that swaps panels — settings sections, detail views, segmented controls.                                                                                                |
+| `TimePicker`        | Picking an hour and a minute — a departure time, a reminder, a shift start.                                                                                                                  |
 | `Timeline`          | Release histories, order or flight tracking, audit trails, and milestone lists — anything read as "this happened, then this".                                                                |
 | `Toast`             | Any ephemeral, auto-dismissing notification fired imperatively (success/error/info/warning/loading, promise results, undo actions).                                                          |
 | `ToggleButtonGroup` | Switching between a few views or modes, alignment / formatting toolbars, small filter sets.                                                                                                  |

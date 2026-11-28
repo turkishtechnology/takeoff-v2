@@ -45,6 +45,7 @@ export {
   Tabs,
   TakeoffSparProvider,
   Timeline,
+  TimePicker,
   Toast,
   Toaster,
   ToggleButtonGroup,

@@ -459,7 +459,7 @@ An outside click closes the panel and keeps the current value.
 | data-slot="root" | Always                                    | Stable selector for wrapper styling on the root slot.                         |
 | data-selected    | When the swatch matches the current value | Draws the selection ring; `aria-pressed` carries it for assistive technology. |
 
-### Type Definitions {#color-type-definitions}
+### Type Definitions {#color-picker-type-definitions}
 
 | Name                         | Definition                                                                                                                                                                                                                                                                                         |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
