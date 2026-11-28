@@ -73,25 +73,31 @@ table needs updating.
 
 ### State
 
-| Attribute             | Value        | Scope                       | Meaning                             |
-| --------------------- | ------------ | --------------------------- | ----------------------------------- |
-| `data-complete`       | presence     | Root (Progress)             | Determinate value reached `max`     |
-| `data-disabled`       | presence     | Root or Stepper item        | Component or step is disabled       |
-| `data-dragging`       | presence     | Slider thumb                | Pointer currently controls it       |
-| `data-error`          | presence     | Stepper item                | Step has an error treatment         |
-| `data-focus`          | presence     | Slider thumb                | Handle holds keyboard focus         |
-| `data-indeterminate`  | presence     | Root, Indicator (Progress)  | Indeterminate; indicator animates   |
-| `data-invalid`        | presence     | Root                        | Component is visually invalid       |
-| `data-loading`        | presence     | Root                        | Component is in loading state       |
-| `data-active`         | presence     | TimePicker `dial` field     | The field the dial currently edits  |
-| `data-blank`          | presence     | TimePicker value cell       | Padding cell past the list's end    |
-| `data-compact`        | presence     | TimePicker root, body       | Dial stacks under its fields        |
-| `data-empty`          | presence     | Root (TimePicker)           | No time has been picked yet         |
-| `data-readonly`       | presence     | Root (Slider)               | Value renders, interaction blocked  |
-| `data-required`       | presence     | Root (Slider)               | Control is required                 |
-| `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state  |
-| `data-state="open"`   | presence-str | Spar Accordion item/trigger | Disclosure is open (Spar-emitted)   |
-| `data-state="closed"` | presence-str | Spar Accordion item/trigger | Disclosure is closed (Spar-emitted) |
+| Attribute            | Value      | Scope                      | Meaning                             |
+| -------------------- | ---------- | -------------------------- | ----------------------------------- |
+| `data-complete`      | presence   | Root (Progress)            | Determinate value reached `max`     |
+| `data-disabled`      | presence   | Root or Stepper item       | Component or step is disabled       |
+| `data-dragging`      | presence   | Slider thumb               | Pointer currently controls it       |
+| `data-error`         | presence   | Stepper item               | Step has an error treatment         |
+| `data-fill`          | finite-str | Rating item                | `full` / `half` / `empty` fill      |
+| `data-focus`         | presence   | Slider thumb               | Handle holds keyboard focus         |
+| `data-indeterminate` | presence   | Root, Indicator (Progress) | Indeterminate; indicator animates   |
+| `data-invalid`       | presence   | Root                       | Component is visually invalid       |
+| `data-loading`       | presence   | Root                       | Component is in loading state       |
+| `data-multiple`      | presence   | Root (ToggleButtonGroup)   | Group allows multiple pressed items |
+| `data-pressed`       | presence   | Button / toggle group item | Toggle is pressed (Spar-emitted)    |
+
+| `data-active` | presence | TimePicker `dial` field | The field the dial
+currently edits | | `data-blank` | presence | TimePicker value cell | Padding
+cell past the list's end | | `data-compact` | presence | TimePicker root, body |
+Dial stacks under its fields | | `data-empty` | presence | Root (TimePicker) |
+No time has been picked yet | | `data-readonly` | presence | Root (Slider) |
+Value renders, interaction blocked | | `data-required` | presence | Root
+(Slider) | Control is required | | `data-state` | finite-str | Primitive-owned
+element | Mutually exclusive primitive state | | `data-state="open"` |
+presence-str | Spar Accordion item/trigger | Disclosure is open (Spar-emitted) |
+| `data-state="closed"` | presence-str | Spar Accordion item/trigger |
+Disclosure is closed (Spar-emitted) |
 
 ### Variant
 
@@ -103,15 +109,20 @@ table needs updating.
 | `data-type`        | Root **or** Item              | `filled`, `outlined`, `grouped`, `divided`, `card`, `rectangle`, `circle` | Owner depends on component — see component decisions below                |
 | `data-animation`   | Root                          | `shimmer`, `none`                                                         | Loading-animation mode (Skeleton)                                         |
 | `data-orientation` | Root                          | `horizontal`, `vertical`                                                  | Axis of the component's layout or line                                    |
+| `data-placement`   | Timeline root                 | `alternate`, `start`, `end`                                               | Side of the line item content sits on                                     |
 | `data-thumb`       | Slider thumb                  | `min`, `max`                                                              | First / last handle of a range; middle handles carry none                 |
 | `data-track`       | Slider root                   | `normal`, `inverted`, `none`                                              | Rail fill mode: `inverted` swaps rail/fill colours, `none` drops the fill |
 | `data-tooltip`     | Slider root                   | `auto`, `always`, `never`                                                 | When the value bubble is shown (`auto` = on drag/focus)                   |
 | `data-header-type` | Calendar root                 | `basic`, `divided`, `light`, `primary`, `dark`                            | Caption-row treatment (Core's `tk-datepicker` header vocabulary)          |
 | `data-view`        | Calendar root, trigger, board | `day`, `month`, `year`                                                    | Which board the body shows; on a trigger, the board it opens              |
-| `data-size`        | TimePicker root               | `small`, `base`                                                           | Column scale; `small` is the 32px cell                                    |
-| `data-time-format` | TimePicker root               | `12`, `24`                                                                | Twelve- or twenty-four-hour clock                                         |
-| `data-type`        | TimePicker root               | `basic`, `divided`, `light`, `dark`, `primary`                            | Panel treatment; repaints the surface, the band and the ink               |
-| `data-unit`        | TimePicker unit               | `hour`, `minute`, `second`, `meridiem`                                    | Which part of the time a column, field or hand belongs to                 |
+| `data-format`      | ColorPicker root              | `hex`, `rgb`, `hsl`                                                       | Active color notation                                                     |
+
+| `data-size` | TimePicker root | `small`, `base` | Column scale; `small` is the
+32px cell | | `data-time-format` | TimePicker root | `12`, `24` | Twelve- or
+twenty-four-hour clock | | `data-type` | TimePicker root | `basic`, `divided`,
+`light`, `dark`, `primary` | Panel treatment; repaints the surface, the band and
+the ink | | `data-unit` | TimePicker unit | `hour`, `minute`, `second`,
+`meridiem` | Which part of the time a column, field or hand belongs to |
 
 ### Semantic
 
@@ -126,6 +137,7 @@ table needs updating.
 | `data-range`          | Slider root            | Root renders more than one thumb                 |
 | `data-spread`         | Radio root             | Items share available space along the group axis |
 | `data-level`          | Input strength segment | Strength tier for filled password meter segments |
+| `data-level`          | Rating item (number)   | Score bucketed into the five-step colour scale   |
 | `data-linear`         | Stepper root           | Steps follow a linear progression                |
 | `data-reverse`        | Stepper root           | Signs and content flip along the cross axis      |
 
@@ -194,6 +206,26 @@ its attributes are wrapper-emitted. Recorded here per rule 10.
   describe layout intent for the whole accordion and cascade naturally to every
   trigger via descendant selectors.
 
+### Avatar
+
+- **Root carries the variants:** `data-size` (`xxsmall` … `xxlarge`),
+  `data-variant`, `data-type` (the `appearance` prop, per the Badge/Tabs
+  precedent), and the presence flags `data-rounded` and `data-hide-shadow`.
+  Inside `Avatar.Group` the resolved group `size` / `rounded` are what the root
+  emits, so recipes never look up the group.
+- **`data-status` is Spar's, not the wrapper's.** The Spar `Avatar` root emits
+  the image loading status (`idle` | `loading` | `loaded` | `error`); the recipe
+  drops the backdrop on `loaded`. The wrapper adds no loading attribute of its
+  own (rule 7).
+- **`data-icon` on `Avatar.Fallback`** marks the default person glyph, which
+  sits on the bottom edge instead of the centre.
+- **`Avatar.Badge` is a Takeoff `Badge`.** It keeps the Badge root's `data-*`
+  (`data-dot`, `data-variant`, …) and adds `data-avatar-badge`; the Avatar
+  recipe sizes the dot from the avatar's `data-size`.
+- **`Avatar.Group`** emits `data-size` and `data-compact`; the `+N` avatar it
+  renders past `max` carries `data-overflow` and the `tk-avatar-group-overflow`
+  class.
+
 ### Radio
 
 - **`data-size`, `data-type`, and `data-position` are emitted on both the root
@@ -214,6 +246,21 @@ its attributes are wrapper-emitted. Recorded here per rule 10.
 - **Checked/unchecked state stays Spar-owned.** `Radio.Item` exposes Spar's
   `data-state="checked" | "unchecked"`; the wrapper recipe consumes that state
   for the indicator fill instead of mirroring selection in React.
+
+### Rating
+
+- **The wrapper adds only `data-type` on the root** (`star` | `heart` | `dot` |
+  `number`). Disabled, read-only, invalid and required are Spar-emitted on the
+  radiogroup, and Spar's `data-state="checked"` marks the picked item.
+- **`data-fill` is per item, derived from Spar's group value** read back through
+  `useRadioContext`: `full` up to the value, `half` on the next item for a
+  fractional part of .5 or more, `empty` after. It is a finite string rather
+  than presence attrs (rule 6), and it is the only way a display-only fractional
+  value reaches the recipe, since no item is checked then.
+- **`data-level` (1–5) is emitted on number items only.** It buckets the score
+  over `max` into Core's red-to-green scale; glyph types do not carry it.
+- **The hover preview has no attribute.** The recipe derives it from `:hover`
+  and `:has(~ :hover)`, so pointer movement never re-renders.
 
 ### Divider
 
@@ -339,6 +386,20 @@ its state attributes are wrapper-emitted. Recorded here per rule 10.
   recipe for the cursor and hover affordances. Matches Chip's `data-clickable`
   vocabulary.
 
+### Timeline
+
+Timeline is **v2-owned** with no upstream Spar primitive, so its vocabulary is
+wrapper-emitted. Recorded here per rule 10.
+
+- **Root carries the variants only:** `data-orientation` and `data-placement`
+  (`alternate` | `start` | `end`). There is no per-item attribute: under
+  `alternate` the recipe picks each item's side with `:nth-child`, and
+  `:last-child` hides the trailing connector, so the wrapper never derives an
+  item index.
+- **The default dot is the empty indicator.** `.tk-timeline-indicator:empty`
+  paints the dot; custom `indicator` content replaces it. There is no
+  `data-custom` flag mirroring that — `:empty` already says it (rule 9).
+
 ### Calendar
 
 Calendar is a **v2-owned, react-day-picker-backed** component with no upstream
@@ -445,6 +506,25 @@ follow the standard conventions (presence = `''`, finite = string).
   filter button/panel are styled by class (`.tk-table-filter-button` /
   `.tk-table-filter-panel`) rather than a Table `data-slot` anchor.
 
+### Carousel
+
+Carousel's behavior is **Spar-owned** (the headless `Carousel` primitive), and
+Spar emits its state hooks; the wrapper adds two layout keys. Recorded here per
+rule 10.
+
+- **`data-orientation` (Variant) on the root**, from Spar: the axis the slides
+  move along.
+- **`data-controls-placement` (Semantic, `inside` | `outside`) and
+  `data-controls-position` (Semantic, `distributed` | `start` | `end`) on the
+  root**, wrapper-emitted: the recipe lays out `Carousel.Controls` and reserves
+  room for `outside` from them.
+- **`data-active` (State, presence) on `Carousel.Slide`**, from Spar, while the
+  slide is inside the visible window (the others are `inert`), and **on each
+  indicator** of `Carousel.Indicators` for the current page (with
+  `aria-current="true"`).
+- **No autoplay state attribute.** The play/pause glyph is chosen in render from
+  Spar's `isPlaying`, so nothing styles it.
+
 ### Chat
 
 Chat is **v2-owned** with no upstream Spar primitive, so its vocabulary is
@@ -471,6 +551,27 @@ wrapper-emitted. Recorded here per rule 10.
   `aria-current="true"` carries the selection for assistive technology.
 - **`data-editing` (State, presence) on `Chat.Composer`** while it edits a
   message.
+
+### ColorPicker
+
+ColorPicker is **v2-owned** with no upstream Spar slider or area primitive, so
+its vocabulary is wrapper-emitted. Recorded here per rule 10.
+
+- **Root:** `data-layout` (`vertical` | `horizontal` — the `orientation` prop;
+  Chat's attribute rather than `data-orientation`, because the Slider recipe
+  reads `[data-orientation='vertical']` from any ancestor and would turn the
+  hue/alpha rails upright; re-emitted on `ColorPicker.Panel`, whose grid it
+  drives), `data-format` (`hex` | `rgb` | `hsl` — the active notation; the
+  recipe widens the alpha field under `rgb` / `hsl`) and the Field-inherited
+  `data-disabled` / `data-readonly` / `data-invalid`.
+- **Area:** `data-disabled` / `data-readonly` on the plane (cursor and muting),
+  and Slider's thumb vocabulary — `data-dragging`, `data-focus` — on its
+  `role="slider"` thumb.
+- **`data-selected` (State, presence) on `ColorPicker.Swatch`** when it matches
+  the current value; `aria-pressed` carries it for assistive technology.
+- Colors are never `data-*`: the component sets `--tk-color-picker-color`,
+  `--tk-color-picker-hue` and `--tk-color-picker-opaque` inline and the recipe
+  paints with them.
 
 ### TimePicker
 
@@ -557,6 +658,37 @@ Recorded here per rule 10.
   JavaScript hook.
 - **No `data-*` of its own on `CurrencyInput.Symbol`** beyond `data-slot`: the
   code is already on the root.
+
+### PhoneInput
+
+PhoneInput is **v2-owned** composition: its row is `Input`'s element and its
+field is `Input.Field` with a libphonenumber-js mask resolver, so it inherits
+their vocabulary (`data-invalid`, `data-disabled`, `data-mask`,
+`data-mask-completed`, …) and adds none. Recorded here per rule 10.
+
+- **No `data-country` on the root**: no recipe styles a country differently, so
+  the key would have no consumer (rule 9). The country is reachable through
+  `onCountryChange` and the picker's hidden input.
+- **`data-mask-completed` means "valid"** here: the resolver reports
+  libphonenumber-js's `isValid()` as `completed`.
+- **No `data-*` of its own on `PhoneInput.DialCode`** beyond `data-slot`.
+
+### ToggleButtonGroup
+
+The group wraps Spar's `ToggleGroup` and each item is a Spar `Button` toggle, so
+state attributes are Spar-owned and not mirrored (rule 7).
+
+- **Spar emits the state:** `data-orientation`, `data-multiple` and
+  `data-disabled` on the group; `aria-pressed`, `data-pressed` and
+  `data-disabled` on each item. The recipe keys the pressed appearance on
+  `[aria-pressed='true']`.
+- **The group carries its own visual variants:** `data-type` (`basic` |
+  `divided` | `light` — Core's group vocabulary), `data-size` and `data-rounded`
+  (presence). The rounded radius reaches items through a descendant selector.
+- **Items re-emit the cascaded visuals:** `data-size`, `data-variant` and
+  `data-type` (the `appearance`, Button's mapping) are written on every item
+  from the group context, so an item override wins without an ancestor lookup
+  (Radio / Accordion precedent). `data-icon-only` (presence) is Button's.
 
 ### Upload
 

@@ -657,6 +657,13 @@ async function generateForConfig(program, checker, configPath) {
     }
   }
 
+  // A config may spell a definition itself where the resolved one does not
+  // read well: a 245-member union of region codes, or an interface whose
+  // `extends` the resolver does not flatten.
+  for (const [typeName, definition] of Object.entries(config.typeDefinitions ?? {})) {
+    if (typeMap.has(typeName)) typeMap.set(typeName, definition);
+  }
+
   // The first entry is always the root component, so its `headingBase` *is* the
   // page base — the parts that follow are the ones carrying a `-suffix`. Taken
   // whole rather than split on the first hyphen, which silently truncated a

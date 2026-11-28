@@ -214,7 +214,8 @@ toggle functionality.
 | `disabled?`        | `boolean`                                       | `false`     | Disabled state - properly announced to screen readers       |
 | `autoFocus?`       | `boolean`                                       | `false`     | Whether the button should receive focus when first rendered |
 | `isLoading?`       | `boolean`                                       | `false`     | Loading state with screen reader support                    |
-| `isPressed?`       | `boolean`                                       | `undefined` | Toggle state - when defined, creates a toggle button        |
+| `isPressed?`       | `boolean`                                       | `undefined` | Controlled toggle state - when defined, creates a toggle    |
+| `defaultPressed?`  | `boolean`                                       | `undefined` | Uncontrolled initial toggle state; creates a toggle button  |
 | `onPressedChange?` | `(pressed: boolean) => void`                    | `undefined` | Callback fired when toggle state changes                    |
 | `children?`        | `React.ReactNode`                               | `undefined` | Component content                                           |
 | `onClick?`         | `React.MouseEventHandler<HTMLButtonElement>`    | `undefined` | Click event handler                                         |

@@ -6,18 +6,22 @@ and accessibility guidance where the component owns interaction behavior.
 
 ## Actions & form controls
 
-| Component                                        | Use it for                                                            |
-| ------------------------------------------------ | --------------------------------------------------------------------- |
-| [Button](/docs/components/button)                | Triggering actions with loading, toggle, and icon support.            |
-| [Checkbox](/docs/components/checkbox)            | Selecting multiple options or representing a mixed state.             |
-| [CurrencyInput](/docs/components/currency-input) | Entering an amount of money with its currency.                        |
-| [Field](/docs/components/input#using-with-field) | Wiring labels, descriptions, validation, and control state.           |
-| [Input](/docs/components/input)                  | Building text inputs with labels, affixes, icons, chips, and actions. |
-| [Label](/docs/components/label)                  | Labeling controls, sections, and compact metadata.                    |
-| [Radio](/docs/components/radio)                  | Choosing one option from a mutually exclusive set.                    |
-| [Select](/docs/components/select)                | Choosing from a keyboard-accessible list with typeahead.              |
-| [Switch](/docs/components/switch)                | Turning a single setting on or off.                                   |
-| [TimePicker](/docs/components/time-picker)       | Picking an hour and a minute for a form or a filter.                  |
+| Component                                                 | Use it for                                                            |
+| --------------------------------------------------------- | --------------------------------------------------------------------- |
+| [Button](/docs/components/button)                         | Triggering actions with loading, toggle, and icon support.            |
+| [Checkbox](/docs/components/checkbox)                     | Selecting multiple options or representing a mixed state.             |
+| [ColorPicker](/docs/components/color-picker)              | Picking a color by area, sliders, typed values, or presets.           |
+| [CurrencyInput](/docs/components/currency-input)          | Entering an amount of money with its currency.                        |
+| [Field](/docs/components/input#using-with-field)          | Wiring labels, descriptions, validation, and control state.           |
+| [Input](/docs/components/input)                           | Building text inputs with labels, affixes, icons, chips, and actions. |
+| [Label](/docs/components/label)                           | Labeling controls, sections, and compact metadata.                    |
+| [PhoneInput](/docs/components/phone-input)                | Entering a phone number with its country.                             |
+| [Radio](/docs/components/radio)                           | Choosing one option from a mutually exclusive set.                    |
+| [Rating](/docs/components/rating)                         | Picking a score from a row of stars, hearts, dots or numbers.         |
+| [Select](/docs/components/select)                         | Choosing from a keyboard-accessible list with typeahead.              |
+| [Switch](/docs/components/switch)                         | Turning a single setting on or off.                                   |
+| [TimePicker](/docs/components/time-picker)                | Picking an hour and a minute for a form or a filter.                  |
+| [ToggleButtonGroup](/docs/components/toggle-button-group) | Switching views or toggling options from a row of buttons.            |
 
 ## Navigation & disclosure
 
@@ -34,6 +38,7 @@ and accessibility guidance where the component owns interaction behavior.
 | Component                             | Use it for                                                               |
 | ------------------------------------- | ------------------------------------------------------------------------ |
 | [Alert](/docs/components/alert)       | Presenting contextual success, warning, information, or danger messages. |
+| [Avatar](/docs/components/avatar)     | Showing a person's picture or initials, status, and groups.              |
 | [Badge](/docs/components/badge)       | Displaying compact status, count, or category labels.                    |
 | [Chip](/docs/components/chip)         | Representing filters, selections, and removable values.                  |
 | [Progress](/docs/components/progress) | Showing determinate or indeterminate task completion.                    |
@@ -44,14 +49,16 @@ and accessibility guidance where the component owns interaction behavior.
 
 ## Content & overlays
 
-| Component                           | Use it for                                                     |
-| ----------------------------------- | -------------------------------------------------------------- |
-| [Card](/docs/components/card)       | Grouping related content, summaries, and actions.              |
-| [Dialog](/docs/components/dialog)   | Handling focused forms, confirmations, and blocking decisions. |
-| [Divider](/docs/components/divider) | Separating related content sections or item groups.            |
-| [Drawer](/docs/components/drawer)   | Showing navigation, filters, or details over the current page. |
-| [Popover](/docs/components/popover) | Displaying additional content or actions in a floating panel.  |
-| [Table](/docs/components/table)     | Presenting sortable, filterable, selectable tabular data.      |
+| Component                             | Use it for                                                        |
+| ------------------------------------- | ----------------------------------------------------------------- |
+| [Card](/docs/components/card)         | Grouping related content, summaries, and actions.                 |
+| [Carousel](/docs/components/carousel) | Showing slides one step at a time with arrows and autoplay.       |
+| [Dialog](/docs/components/dialog)     | Handling focused forms, confirmations, and blocking decisions.    |
+| [Divider](/docs/components/divider)   | Separating related content sections or item groups.               |
+| [Drawer](/docs/components/drawer)     | Showing navigation, filters, or details over the current page.    |
+| [Popover](/docs/components/popover)   | Displaying additional content or actions in a floating panel.     |
+| [Table](/docs/components/table)       | Presenting sortable, filterable, selectable tabular data.         |
+| [Timeline](/docs/components/timeline) | Showing a sequence of events along a horizontal or vertical line. |
 
 Start with [Composition & styling](/docs/foundations/composition-styling) to
 learn the shared compound, slot, and customization model.

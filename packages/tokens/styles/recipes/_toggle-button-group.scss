@@ -1,0 +1,246 @@
+@use '../abstracts/mixins' as mixins;
+
+// ---------------------------------------------------------------------------
+// ToggleButtonGroup recipes.
+//
+// The React wrapper renders the Spar toggle group as `.tk-toggle-button-group`
+// and each Spar Button toggle as `.tk-toggle-button-group-item`. Spar owns the
+// pressed state (`aria-pressed` / `[data-pressed]`), roving focus, keyboard and
+// disabled behavior. Colours and spacing follow takeoff-ui core
+// `tk-toggle-button` / `tk-toggle-button-group`: an item is transparent until
+// pressed, then drawn by its `data-variant` + `data-type` (appearance).
+// ---------------------------------------------------------------------------
+
+$pressed-shadow:
+  0 2px 2px -1px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
+  0 6px 12px -2px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08)),
+  0 8px 20px 0 var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08));
+
+@mixin toggle-button-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-m-base);
+  padding: var(--spacing-xs);
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(--radius-l);
+  background-color: var(--static-light);
+
+  &[data-orientation='vertical'] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  &[data-type='basic'] {
+    background-color: transparent;
+  }
+
+  &[data-type='divided'] {
+    border-color: var(--border-light);
+  }
+
+  &[data-type='light'] {
+    border-color: var(--border-light);
+    background-color: var(--background-lightest);
+  }
+
+  &[data-rounded] {
+    border-radius: var(--radius-full);
+
+    &[data-orientation='vertical'] {
+      border-radius: var(--radius-3xl);
+    }
+
+    .tk-toggle-button-group-item {
+      border-radius: var(--radius-full);
+    }
+  }
+}
+
+// Pressed treatment for one appearance: background, optional border, and the
+// label / icon colour.
+@mixin toggle-button-group-item-pressed($bg, $color, $border: transparent) {
+  &[aria-pressed='true']:not([data-disabled]) {
+    background-color: $bg;
+    border-color: $border;
+    color: $color;
+    box-shadow: $pressed-shadow;
+
+    .tk-toggle-button-group-item-content {
+      color: $color;
+    }
+  }
+}
+
+@mixin toggle-button-group-item-size($min-height, $font-size, $line-height, $h-padding, $gap, $icon-size, $full-padding) {
+  min-height: $min-height;
+  padding: var(--button-sizes-large-v-padding) $h-padding;
+  gap: $gap;
+  font-size: $font-size;
+  line-height: $line-height;
+
+  .tk-toggle-button-group-item-content {
+    width: $icon-size;
+    height: $icon-size;
+    font-size: $icon-size;
+  }
+
+  &[data-icon-only] {
+    padding: $full-padding;
+  }
+}
+
+@mixin toggle-button-group-item {
+  display: inline-flex;
+  flex: 1 0 auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  border: 1px solid transparent;
+  border-radius: var(--button-sizes-base-radius);
+  background-color: transparent;
+  color: var(--text-base);
+  font-family: var(--desktop-body-m-base-font, 'tk-text', sans-serif);
+  font-weight: 400;
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    color 150ms ease;
+
+  .tk-toggle-button-group-item-label {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .tk-toggle-button-group-item-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+    color: currentColor;
+  }
+
+  .tk-toggle-button-group-item-content svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+  }
+
+  &:where(:not([data-disabled]):not([aria-pressed='true'])):hover {
+    color: var(--text-darkest);
+  }
+
+  @include mixins.focus-ring(var(--neutral-focus));
+
+  &[data-variant='primary'] {
+    @include mixins.focus-ring(var(--primary-focus));
+  }
+
+  @include mixins.disabled-state {
+    color: var(--text-sub-base);
+    cursor: not-allowed;
+    pointer-events: none;
+
+    .tk-toggle-button-group-item-content {
+      color: var(--icon-sub-base);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Pressed appearances — colours matched to takeoff-ui core tk-toggle-button
+  // -------------------------------------------------------------------------
+
+  &[data-variant='neutral'] {
+    &[data-type='filled'] {
+      @include toggle-button-group-item-pressed(var(--background-darkest), var(--text-lightest));
+    }
+
+    &[data-type='filledLight'] {
+      @include toggle-button-group-item-pressed(var(--background-light), var(--background-darkest));
+    }
+
+    &[data-type='outlined'] {
+      @include toggle-button-group-item-pressed(var(--background-lightest), var(--background-darkest), var(--border-sub-base));
+    }
+
+    &[data-type='text'] {
+      @include toggle-button-group-item-pressed(var(--static-light), var(--background-darkest));
+    }
+
+    &[data-type='raised'] {
+      @include toggle-button-group-item-pressed(var(--background-darkest), var(--text-lightest), var(--static-black));
+    }
+  }
+
+  &[data-variant='primary'] {
+    &[data-type='filled'] {
+      @include toggle-button-group-item-pressed(var(--primary-base), var(--static-white));
+    }
+
+    &[data-type='filledLight'] {
+      @include toggle-button-group-item-pressed(var(--primary-lightest), var(--primary-base));
+    }
+
+    &[data-type='outlined'] {
+      @include toggle-button-group-item-pressed(var(--background-lightest), var(--primary-base), var(--primary-sub-base));
+    }
+
+    &[data-type='text'] {
+      @include toggle-button-group-item-pressed(var(--static-light), var(--primary-base));
+    }
+
+    &[data-type='raised'] {
+      @include toggle-button-group-item-pressed(var(--primary-base), var(--static-white), var(--primary-sub-base));
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Sizes — Button's size tokens
+  // -------------------------------------------------------------------------
+
+  &[data-size='small'] {
+    @include toggle-button-group-item-size(
+      2rem,
+      var(--desktop-label-s-size),
+      var(--desktop-label-s-line-height),
+      var(--button-sizes-small-h-padding),
+      var(--button-sizes-small-gap),
+      var(--button-sizes-small-icon-size),
+      var(--button-sizes-small-full-padding)
+    );
+  }
+
+  &[data-size='base'] {
+    @include toggle-button-group-item-size(
+      2.5rem,
+      var(--desktop-label-m-base-size),
+      var(--desktop-label-m-base-line-height),
+      var(--button-sizes-base-h-padding),
+      var(--button-sizes-base-gap),
+      var(--button-sizes-base-icon-size),
+      var(--button-sizes-base-full-padding)
+    );
+  }
+
+  &[data-size='large'] {
+    @include toggle-button-group-item-size(
+      3rem,
+      var(--desktop-label-l-size),
+      var(--desktop-label-l-line-height),
+      var(--button-sizes-large-h-padding),
+      var(--button-sizes-large-gap),
+      var(--button-sizes-large-icon-size),
+      var(--button-sizes-large-full-padding)
+    );
+  }
+}
