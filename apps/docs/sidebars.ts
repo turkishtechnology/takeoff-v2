@@ -40,6 +40,8 @@ const sidebars: SidebarsConfig = {
         'components/drawer',
         'components/dropdown',
         'components/field',
+        'components/flight-loader',
+        'components/globe-spinner',
         'components/input',
         'components/label',
         'components/phone-input',
