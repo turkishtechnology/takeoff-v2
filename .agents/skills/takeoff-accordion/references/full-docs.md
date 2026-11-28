@@ -363,7 +363,7 @@ Disabled items skip both pointer and keyboard activation and surface
 ### Accordion {#accordion}
 
 See
-[Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion)
+[Spar Accordion docs](https://v2.takeoffui.com/headless/docs/Components/Accordion)
 for primitive behavior.
 
 #### Props {#accordion-props}
@@ -401,7 +401,7 @@ for primitive behavior.
 ### Accordion.Item {#accordion-item}
 
 See
-[Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion)
+[Spar Accordion docs](https://v2.takeoffui.com/headless/docs/Components/Accordion)
 for primitive behavior.
 
 #### Props {#accordion-item-props}
@@ -429,7 +429,7 @@ for primitive behavior.
 ### Accordion.Header {#accordion-header}
 
 See
-[Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion)
+[Spar Accordion docs](https://v2.takeoffui.com/headless/docs/Components/Accordion)
 for primitive behavior.
 
 #### Props {#accordion-header-props}
@@ -453,7 +453,7 @@ for primitive behavior.
 ### Accordion.Trigger {#accordion-trigger}
 
 See
-[Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion)
+[Spar Accordion docs](https://v2.takeoffui.com/headless/docs/Components/Accordion)
 for primitive behavior.
 
 #### Props {#accordion-trigger-props}
@@ -477,7 +477,7 @@ for primitive behavior.
 ### Accordion.Content {#accordion-content}
 
 See
-[Spar Accordion docs](https://spar.app.turkishtechlab.com/docs/Components/Accordion)
+[Spar Accordion docs](https://v2.takeoffui.com/headless/docs/Components/Accordion)
 for primitive behavior.
 
 #### Props {#accordion-content-props}

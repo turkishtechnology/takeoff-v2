@@ -1,0 +1,180 @@
+import { useCallback, useMemo, useRef, ElementType } from 'react';
+import { useMergedRef, useAutoFocus, useControlledState } from '@/hooks';
+import type { ButtonProps } from './types';
+
+/**
+ * A headless, accessible button component that provides complete keyboard support and toggle functionality.
+ *
+ * When rendered as a non-native element (`as='a'`, a router link, `as='div'`)
+ * while `disabled` or `isLoading`, the click's default action is cancelled so an
+ * anchor cannot navigate; a plain `as='a'` additionally loses its `href`.
+ */
+export const Button = <T extends ElementType = 'button'>({
+  as,
+  type = 'button',
+  disabled = false,
+  autoFocus = false,
+  isLoading = false,
+  isPressed,
+  defaultPressed,
+  onPressedChange,
+  children,
+  onClick,
+  onKeyDown,
+  className,
+  style,
+  ref,
+  ...htmlProps
+}: ButtonProps<T>) => {
+  const Component = as || 'button';
+  const isNativeButton = Component === 'button';
+  // A toggle button is either controlled (`isPressed`) or uncontrolled
+  // (`defaultPressed`); `onPressedChange` reports every change in both modes.
+  const isToggle = isPressed !== undefined || defaultPressed !== undefined;
+  const [pressedState, setPressed] = useControlledState(isPressed, defaultPressed, onPressedChange);
+  const currentPressed = pressedState ?? false;
+
+  // Interactive state
+  const isInteractive = !disabled && !isLoading;
+
+  // Refs
+  const internalRef = useRef<HTMLElement>(null);
+  const mergedRef = useMergedRef(internalRef, ref);
+
+  // Auto focus handling
+  useAutoFocus(internalRef, autoFocus);
+
+  // Unified activation handler for click and keyboard
+  const handleActivation = useCallback(
+    (event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => {
+      if (!isInteractive) return;
+
+      // Toggle logic
+      if (isToggle) {
+        setPressed(!currentPressed);
+      }
+
+      // Fire click handler for both mouse and keyboard activation
+      if (onClick) {
+        onClick(event as React.MouseEvent<HTMLButtonElement>);
+      }
+    },
+    [isInteractive, isToggle, currentPressed, setPressed, onClick],
+  );
+
+  // Click handler
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      // A native <button disabled> never dispatches click. Non-native elements
+      // (anchors, router links) keep their default action while inert, so the
+      // click must be cancelled to stop navigation.
+      if (!isInteractive && !isNativeButton) {
+        event.preventDefault();
+      }
+      handleActivation(event);
+    },
+    [isInteractive, isNativeButton, handleActivation],
+  );
+
+  // Keyboard handler
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLElement>) => {
+      // Native <button> elements already fire a click event on Enter/Space.
+      // Calling preventDefault here would block type='submit' form submission.
+      // Only intercept keyboard for non-native elements (div, a, span, etc.).
+      if (Component !== 'button' && (event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault();
+        handleActivation(event);
+      }
+
+      if (onKeyDown) {
+        onKeyDown(event as React.KeyboardEvent<HTMLButtonElement>);
+      }
+    },
+    [Component, handleActivation, onKeyDown],
+  );
+
+  // Memoize data attributes to prevent object recreation
+  const dataAttributes = useMemo(
+    () => ({
+      'data-disabled': disabled ? '' : undefined,
+      'data-loading': isLoading ? '' : undefined,
+      'data-pressed': isToggle && currentPressed ? '' : undefined,
+      'data-autofocus': autoFocus ? '' : undefined,
+    }),
+    [disabled, isLoading, isToggle, currentPressed, autoFocus],
+  );
+
+  // Determine ARIA attributes
+  const ariaAttributes = useMemo(() => {
+    const attrs: Record<string, boolean | string> = {};
+
+    // Only add aria-pressed for toggle buttons
+    if (isToggle) {
+      attrs['aria-pressed'] = currentPressed;
+    }
+
+    // Loading state
+    if (isLoading) {
+      attrs['aria-busy'] = true;
+      attrs['aria-live'] = 'polite';
+    }
+
+    // Disabled state - only add aria-disabled for non-native button elements
+    // Native buttons already communicate disabled state via the disabled attribute
+    if (disabled && Component !== 'button') {
+      attrs['aria-disabled'] = true;
+    }
+
+    return attrs;
+  }, [isToggle, currentPressed, isLoading, disabled, Component]);
+
+  // Build props for the element
+  const elementProps: Record<string, unknown> = {
+    ref: mergedRef,
+    className,
+    style,
+    onClick: handleClick,
+    onKeyDown: handleKeyDown,
+    ...dataAttributes,
+    ...ariaAttributes,
+    ...htmlProps,
+  };
+
+  // Set tabIndex if not already provided
+  if (!('tabIndex' in htmlProps)) {
+    elementProps.tabIndex = disabled ? -1 : 0;
+  }
+
+  // Add button-specific props when rendering as button
+  if (isNativeButton) {
+    (elementProps as React.ButtonHTMLAttributes<HTMLButtonElement>).type = type;
+    (elementProps as React.ButtonHTMLAttributes<HTMLButtonElement>).disabled = disabled;
+  }
+
+  // Add role and aria-disabled when not rendering as button (only if not already set)
+  if (!isNativeButton) {
+    if (!('role' in htmlProps)) {
+      elementProps.role = 'button';
+    }
+    if (disabled && !('aria-disabled' in htmlProps)) {
+      elementProps['aria-disabled'] = true;
+    }
+    // Remove native disabled and type if present, using Record<string, unknown>
+    if ('disabled' in elementProps) {
+      delete elementProps['disabled'];
+    }
+    if ('type' in elementProps) {
+      delete elementProps['type'];
+    }
+    // An inert anchor must not stay a navigable link: drop `href` so it is
+    // neither followed on click nor exposed as a link target.
+    if (Component === 'a' && !isInteractive && 'href' in elementProps) {
+      delete elementProps['href'];
+    }
+  }
+
+  return <Component {...elementProps}>{children}</Component>;
+};
+
+Button.displayName = 'Button';

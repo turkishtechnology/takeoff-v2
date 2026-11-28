@@ -1,10 +1,12 @@
+import Link from '@docusaurus/Link';
 import { Highlight, type PrismTheme } from 'prism-react-renderer';
 import { useState, type JSX } from 'react';
 import { DocumentSearchIconOutlinedRounded } from '@takeoff-icons/react/document-search';
 import { OpenIconOutlinedRounded } from '@takeoff-icons/react/open';
 import styles from './OneSurface.module.css';
 
-const SPAR_DOCS_URL = 'https://spar.app.turkishtechlab.com/';
+// Spar's docs are part of this site now (Takeoff Headless).
+const SPAR_DOCS_PATH = '/headless/';
 const TAKEOFF_UI_CORE_URL = 'https://takeoffui.com';
 
 /* ── Framework icons (inline SVG) ─────────────────────────────────── */
@@ -196,13 +198,12 @@ export default function OneSurface(): JSX.Element {
               React-Spar
             </span>
 
-            <a href={SPAR_DOCS_URL} className={`${styles.pill} ${styles.pillLink}`} target="_blank" rel="noreferrer noopener">
+            <Link to={SPAR_DOCS_PATH} className={`${styles.pill} ${styles.pillLink}`}>
               <span className={styles.pillIcon}>
                 <DocumentSearchIconOutlinedRounded />
               </span>
               Spar
-              <OpenIconOutlinedRounded className={styles.arrowIcon} />
-            </a>
+            </Link>
 
             <a href={TAKEOFF_UI_CORE_URL} className={`${styles.pill} ${styles.pillLink}`} target="_blank" rel="noreferrer noopener">
               <TakeoffCoreIcon />

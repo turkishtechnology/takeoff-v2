@@ -96,23 +96,30 @@ Each component has its own `takeoff-<name>` skill with import, examples, key
 props, a11y, and a verbatim Copy-page doc in its `references/`.
 
 **Actions & form controls:** `takeoff-button` · `takeoff-checkbox` ·
-`takeoff-input` · `takeoff-label` · `takeoff-radio` · `takeoff-select` ·
-`takeoff-slider` · `takeoff-switch` · `takeoff-upload` (file control: browse
-trigger, dropzone, per-file list) · `takeoff-field` (form-field wrapper: label,
-description, and error context for nested controls)
+`takeoff-color-picker` (color field: area, hue/alpha sliders, typed channels,
+swatches) · `takeoff-currency-input` (amount with a currency picker) ·
+`takeoff-input` · `takeoff-label` · `takeoff-phone-input` (phone number with a
+country picker) · `takeoff-radio` · `takeoff-rating` · `takeoff-select` ·
+`takeoff-slider` · `takeoff-switch` · `takeoff-time-picker` (inline time panel:
+unit columns or a dial) · `takeoff-toggle-button-group` · `takeoff-upload` (file
+control: browse trigger, dropzone, per-file list) · `takeoff-field` (form-field
+wrapper: label, description, and error context for nested controls)
 
 **Navigation & disclosure:** `takeoff-accordion` · `takeoff-breadcrumb` ·
-`takeoff-dropdown` · `takeoff-stepper` · `takeoff-tabs`
+`takeoff-dropdown` · `takeoff-pagination` · `takeoff-stepper` · `takeoff-tabs`
 
-**Feedback & status:** `takeoff-alert` · `takeoff-badge` · `takeoff-chip` ·
-`takeoff-progress` · `takeoff-skeleton` · `takeoff-spinner` · `takeoff-tooltip`
-· `takeoff-toast` · `takeoff-globe-spinner` (branded circular loader) ·
-`takeoff-flight-loader` (branded loading card)
+**Feedback & status:** `takeoff-alert` · `takeoff-avatar` (picture with
+initials/icon fallback, status badge, `+N` group) · `takeoff-badge` ·
+`takeoff-chip` · `takeoff-progress` · `takeoff-skeleton` · `takeoff-spinner` ·
+`takeoff-tooltip` · `takeoff-toast` · `takeoff-globe-spinner` (branded circular
+loader) · `takeoff-flight-loader` (branded loading card)
 
 **Content & overlays:** `takeoff-calendar` (inline month grid: single, range,
-multiple) · `takeoff-card` · `takeoff-chat` (messaging: conversation log, read
-receipts, timed edit/delete, conversation list) · `takeoff-dialog` ·
-`takeoff-divider` · `takeoff-drawer` · `takeoff-popover` · `takeoff-table`
+multiple) · `takeoff-card` · `takeoff-carousel` (slides with arrows, indicators,
+autoplay) · `takeoff-chat` (messaging: conversation log, read receipts, timed
+edit/delete, conversation list) · `takeoff-dialog` · `takeoff-divider` ·
+`takeoff-drawer` · `takeoff-popover` · `takeoff-table` · `takeoff-timeline`
+(read-only event sequence along a line)
 
 ## Patterns → composition skills
 
@@ -136,7 +143,6 @@ Patterns in `references/forms-react-hook-form.md` and
 - Components index: `references/components-index.md`
 - Composition & styling: `references/composition-styling.md`
 - Theming: `references/theming.md`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/
-- LLM corpus: https://takeoff-v2.app.turkishtechlab.com/llms.txt (and
-  `/llms-full.txt`)
+- Live docs: https://v2.takeoffui.com/docs/
+- LLM corpus: https://v2.takeoffui.com/llms.txt (and `/llms-full.txt`)
 - Source: `packages/react-spar/`

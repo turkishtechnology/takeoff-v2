@@ -1,0 +1,620 @@
+---
+title: Breadcrumb
+description:
+  Accessible headless breadcrumb navigation component for hierarchical page
+  structures
+---
+
+import React from 'react';
+import LiveCode from '@site/src/components/headless/LiveCode';
+import AnatomyViewer from '@site/src/components/headless/AnatomyViewer/AnatomyViewer';
+import { Breadcrumb } from '@turkish-technology/spar';
+
+# Breadcrumb
+
+A fully accessible headless breadcrumb component for displaying hierarchical
+navigation paths with complete keyboard support and screen reader compatibility.
+
+## Live Demo
+
+<div className='breadcrumb-demo-container'>
+  <LiveCode
+    code={`<div className='breadcrumb-demo-container'>
+    <Breadcrumb.Root>
+      <Breadcrumb.List className='breadcrumb-list'>
+        <Breadcrumb.Item className='breadcrumb-item'>
+          <Breadcrumb.Link className='breadcrumb-link'>step 0</Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator className='breadcrumb-separator'>/</Breadcrumb.Separator>
+        <Breadcrumb.Item className='breadcrumb-item'>
+          <Breadcrumb.Page className='breadcrumb-page'>step 1</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  </div>`}
+    cssCode={`.breadcrumb-demo-container .breadcrumb-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumb-demo-container .breadcrumb-link, .breadcrumb-demo-container
+.breadcrumb-page { display: inline-flex; align-items: center; min-height: 36px;
+padding: 0 12px; border-radius: 999px; background: rgba(0, 0, 0, 0.04);
+font-size: 13px; line-height: 18px; }
+
+.breadcrumb-demo-container .breadcrumb-link { border: 1px solid #e1e4ea; color:
+#717784; }
+
+[data-theme='dark'] .breadcrumb-demo-container .breadcrumb-link { border-color:
+#2b303b; color: #99a0ae; background-color: rgba(255, 255, 255, 0.04); }
+
+.breadcrumb-demo-container .breadcrumb-separator { text-align: center; color:
+#99a0ae; }
+
+.breadcrumb-demo-container .breadcrumb-page { border: 1px solid #cacfd8;
+background: rgba(0, 0, 0, 0.08); color: #222530; }
+
+[data-theme='dark'] .breadcrumb-demo-container .breadcrumb-page { border-color:
+#525866; background-color: rgba(255, 255, 255, 0.12); color: #f2f5f8; }
+
+.breadcrumb-demo-container .breadcrumb-item, .breadcrumb-demo-container
+.breadcrumb-separator { margin-top: 0; font-size: 13px; }
+
+[data-theme='dark'] .breadcrumb-demo-container .breadcrumb-separator { color:
+#717784; }`} />
+
+</div>
+
+This example shows a minimal breadcrumb trail with one navigable step and one
+current-page indicator.
+
+## Features
+
+- ✅ Automatic position detection for styling hooks
+- ✅ External link security (rel="noopener noreferrer")
+- ✅ Polymorphic components with 'as' prop support
+- ✅ Navigation integration with custom routing
+- ✅ Individual and global disabled states
+- ✅ Render props support for conditional rendering based on item state
+- ✅ Full support for icons and custom content in links
+
+## Import
+
+```tsx
+import { Breadcrumb } from '@turkish-technology/spar';
+```
+
+## Anatomy
+
+The Breadcrumb component is built as a compound component with multiple parts:
+
+<AnatomyViewer
+  parts={[
+    {
+      name: 'root',
+      label: 'Root',
+      description: 'Navigation landmark container',
+    },
+    {
+      name: 'list',
+      label: 'List',
+      description: 'Ordered list with position calculation',
+    },
+    {
+      name: 'item',
+      label: 'Item',
+      description: 'Individual list item wrapper',
+    },
+    { name: 'link', label: 'Link', description: 'Navigational link element' },
+    { name: 'page', label: 'Page', description: 'Current page indicator' },
+    {
+      name: 'separator',
+      label: 'Separator',
+      description: 'Visual separator element',
+    },
+  ]}
+>
+  <div className="breadcrumb-demo-container">
+    <Breadcrumb.Root data-spar-part="root">
+      <Breadcrumb.List className="breadcrumb-list" data-spar-part="list">
+        <Breadcrumb.Item className="breadcrumb-item" data-spar-part="item">
+          <Breadcrumb.Link className="breadcrumb-link" data-spar-part="link">
+            {'step 0'}
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator
+          className="breadcrumb-separator"
+          data-spar-part="separator"
+        >
+          {'/'}
+        </Breadcrumb.Separator>
+        <Breadcrumb.Item className="breadcrumb-item" data-spar-part="item">
+          <Breadcrumb.Page className="breadcrumb-page" data-spar-part="page">
+            {'step 1'}
+          </Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  </div>
+</AnatomyViewer>
+
+### Structure
+
+```tsx
+<Breadcrumb.Root>
+  <Breadcrumb.List>
+    <Breadcrumb.Item>
+      <Breadcrumb.Link />
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator />
+    <Breadcrumb.Item>
+      <Breadcrumb.Page />
+    </Breadcrumb.Item>
+  </Breadcrumb.List>
+</Breadcrumb.Root>
+```
+
+**Data Flow:**
+
+- `Breadcrumb.Root` provides navigation context and manages shared state
+- `Breadcrumb.List` calculates position data (first, middle, last) for items
+- `Breadcrumb.Item` receives position information for styling hooks
+- `Breadcrumb.Link` handles navigation and routing integration
+- `Breadcrumb.Page` marks the current page with proper ARIA attributes
+- `Breadcrumb.Separator` provides visual separation (hidden from screen readers)
+
+## Code Examples
+
+### Basic Navigation
+
+```tsx
+function SimpleBreadcrumb() {
+  return (
+    <Breadcrumb.Root>
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator>/</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link href="/docs">Documentation</Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator>/</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>Breadcrumb</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  );
+}
+```
+
+### Router Integration
+
+```tsx {4,6-8,12}
+import { useRouter } from 'next/router';
+
+function RouterBreadcrumb() {
+  const router = useRouter();
+
+  const handleNavigate = (href: string, event: PressEvent) => {
+    event.preventDefault();
+    router.push(href);
+  };
+
+  return (
+    <Breadcrumb.Root onNavigate={handleNavigate} aria-label="Site navigation">
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link href="/">Dashboard</Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator>→</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link href="/users">Users</Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator>→</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>Profile Settings</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  );
+}
+```
+
+### External Links with Security
+
+```tsx {10-12}
+function ExternalLinksBreadcrumb() {
+  return (
+    <Breadcrumb.Root>
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link href="/">Internal</Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator>|</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link
+            href="https://external-docs.example.com"
+            isExternal={true}
+          >
+            External Docs
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator>|</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>Current Page</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  );
+}
+```
+
+### Disabled States
+
+```tsx {2,6,10,17-19}
+function DisabledBreadcrumb() {
+  const [isNavigationDisabled, setIsNavigationDisabled] = React.useState(false);
+
+  return (
+    <div>
+      <button onClick={() => setIsNavigationDisabled(!isNavigationDisabled)}>
+        Toggle Navigation: {isNavigationDisabled ? 'Disabled' : 'Enabled'}
+      </button>
+
+      <Breadcrumb.Root disabled={isNavigationDisabled}>
+        <Breadcrumb.List>
+          <Breadcrumb.Item>
+            <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+          </Breadcrumb.Item>
+          <Breadcrumb.Separator>›</Breadcrumb.Separator>
+          <Breadcrumb.Item>
+            <Breadcrumb.Link href="/products" disabled={true}>
+              Products (Individual Disabled)
+            </Breadcrumb.Link>
+          </Breadcrumb.Item>
+          <Breadcrumb.Separator>›</Breadcrumb.Separator>
+          <Breadcrumb.Item>
+            <Breadcrumb.Page>Current</Breadcrumb.Page>
+          </Breadcrumb.Item>
+        </Breadcrumb.List>
+      </Breadcrumb.Root>
+    </div>
+  );
+}
+```
+
+### With Icons
+
+```tsx
+function IconBreadcrumb() {
+  // Simple SVG icon components
+  const HomeIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M8 1l7 7-1.5 1.5L12 8v6H9V9H7v5H4V8L2.5 9.5 1 8z" />
+    </svg>
+  );
+
+  const FolderIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M7 3l2 2h5v8H2V3h5z" />
+    </svg>
+  );
+
+  const FileIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M9 1H3v14h10V5L9 1z" />
+    </svg>
+  );
+
+  return (
+    <Breadcrumb.Root>
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link href="/">
+            <HomeIcon />
+            <span>Home</span>
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator>/</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link href="/documents">
+            <FolderIcon />
+            <span>Documents</span>
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator>/</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>
+            <FileIcon />
+            <span>Report.pdf</span>
+          </Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  );
+}
+```
+
+### Custom Event Handling
+
+```tsx {2-4,11}
+function CustomEventBreadcrumb() {
+  const handleCustomPress = (event: PressEvent) => {
+    console.log('Custom action triggered:', event.type);
+    // Custom logic here - overrides default navigation
+  };
+
+  return (
+    <Breadcrumb.Root>
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link href="/" onPress={handleCustomPress}>
+            Custom Action Link
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator>•</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>Current</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  );
+}
+```
+
+### Render Props
+
+`Breadcrumb.Item` accepts a render function as children, providing access to
+`position`, `isCurrent`, and `isDisabled` state. This is useful for
+conditionally rendering custom components like Next.js `Link` or React Router
+`Link` based on item state.
+
+```tsx {8-12,20-24}
+import NextLink from 'next/link';
+
+function RenderPropsBreadcrumb() {
+  return (
+    <Breadcrumb.Root>
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          {({ isCurrent, position, isDisabled }) =>
+            isCurrent ? (
+              <Breadcrumb.Page>{`Current (${position})`}</Breadcrumb.Page>
+            ) : (
+              <Breadcrumb.Link as={NextLink} href="/home" disabled={isDisabled}>
+                Home
+              </Breadcrumb.Link>
+            )
+          }
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator>/</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          {({ isCurrent }) =>
+            isCurrent ? (
+              <Breadcrumb.Page>Settings</Breadcrumb.Page>
+            ) : (
+              <Breadcrumb.Link href="/settings">Settings</Breadcrumb.Link>
+            )
+          }
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  );
+}
+```
+
+The render function receives the following properties:
+
+| Property     | Type                            | Description                                         |
+| ------------ | ------------------------------- | --------------------------------------------------- |
+| `position`   | `'first' \| 'middle' \| 'last'` | Position of the item in the breadcrumb trail        |
+| `isCurrent`  | `boolean`                       | Whether this item is the current (last) page        |
+| `isDisabled` | `boolean`                       | Whether breadcrumb navigation is disabled from root |
+
+### Polymorphic Usage
+
+```tsx {5-8,12,14}
+import { Link } from 'react-router-dom';
+
+function PolymorphicBreadcrumb() {
+  return (
+    <Breadcrumb.Root as="section">
+      <Breadcrumb.List as="ul">
+        <Breadcrumb.Item as="div">
+          <Breadcrumb.Link as={Link} to="/home">
+            React Router Link
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator as="span">–</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          <Breadcrumb.Page as="h1">Page Title</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  );
+}
+```
+
+## API Reference
+
+### Breadcrumb / Breadcrumb.Root
+
+Navigation landmark container that provides context and manages shared state for
+all breadcrumb components. `Breadcrumb` and `Breadcrumb.Root` are the same
+component - the difference is only import/notation style.
+
+**Props**
+
+| Name          | Type                | Default        | Description                                      |
+| ------------- | ------------------- | -------------- | ------------------------------------------------ |
+| `children`    | `React.ReactNode`   | -              | Breadcrumb content                               |
+| `as?`         | `React.ElementType` | `'nav'`        | Polymorphic element type                         |
+| `aria-label?` | `string`            | `'Breadcrumb'` | Accessible name for navigation landmark          |
+| `onNavigate?` | `NavigationHandler` | `undefined`    | Navigation event handler for routing integration |
+| `disabled?`   | `boolean`           | `false`        | Disable all breadcrumb navigation                |
+
+**Events**
+
+| Name         | Parameters                          | Description                                        | When Triggered                    |
+| ------------ | ----------------------------------- | -------------------------------------------------- | --------------------------------- |
+| `onNavigate` | `(href: string, event: PressEvent)` | Navigation handler called when links are activated | Link click or keyboard activation |
+
+**HTML Attributes**
+
+| Attribute       | Value    | Purpose                           |
+| --------------- | -------- | --------------------------------- |
+| `aria-label`    | `string` | Value from `aria-label` prop      |
+| `aria-disabled` | `"true"` | Present when `disabled` is `true` |
+| `data-disabled` | `""`     | Present when `disabled` is `true` |
+
+### Breadcrumb.List
+
+Ordered list container that provides semantic structure and automatically
+calculates position data for child items.
+
+**Props**
+
+| Name       | Type                | Default | Description              |
+| ---------- | ------------------- | ------- | ------------------------ |
+| `children` | `React.ReactNode`   | -       | List items content       |
+| `as?`      | `React.ElementType` | `'ol'`  | Polymorphic element type |
+
+**Events**
+
+| Name                   | Parameters | Description                   | When Triggered            |
+| ---------------------- | ---------- | ----------------------------- | ------------------------- |
+| _(No specific events)_ | -          | Inherits standard HTML events | Standard DOM interactions |
+
+### Breadcrumb.Item
+
+List item wrapper that receives position and current state from parent
+Breadcrumb.List for styling hooks and accessibility.
+
+**Props**
+
+| Name       | Type                                                                         | Default | Description                                          |
+| ---------- | ---------------------------------------------------------------------------- | ------- | ---------------------------------------------------- |
+| `children` | `React.ReactNode \| ((props: BreadcrumbItemRenderProps) => React.ReactNode)` | -       | Item content or render function receiving item state |
+| `as?`      | `React.ElementType`                                                          | `'li'`  | Polymorphic element type                             |
+
+`position` and `isCurrent` are not props: each item registers with its
+`Breadcrumb.List` and derives them automatically from DOM order. Read them
+through the render-function children or the `data-position` / `data-current`
+attributes.
+
+**Events**
+
+| Name                   | Parameters | Description                   | When Triggered            |
+| ---------------------- | ---------- | ----------------------------- | ------------------------- |
+| _(No specific events)_ | -          | Inherits standard HTML events | Standard DOM interactions |
+
+**HTML Attributes**
+
+| Attribute       | Value                           | Purpose                               |
+| --------------- | ------------------------------- | ------------------------------------- |
+| `data-position` | `"first" \| "middle" \| "last"` | Indicates position in breadcrumb      |
+| `data-current`  | `""`                            | Present when this is the current page |
+
+### Breadcrumb.Link
+
+Interactive link component with accessibility features, routing integration, and
+security for external links.
+
+**Props**
+
+| Name          | Type                          | Default     | Description                                                        |
+| ------------- | ----------------------------- | ----------- | ------------------------------------------------------------------ |
+| `children`    | `React.ReactNode`             | -           | Link text content                                                  |
+| `as?`         | `React.ElementType`           | `'a'`       | Polymorphic element type                                           |
+| `href?`       | `string`                      | `undefined` | Link destination                                                   |
+| `disabled?`   | `boolean`                     | `false`     | Disable this specific link                                         |
+| `isExternal?` | `boolean`                     | `false`     | Indicates external link (adds security attributes)                 |
+| `onPress?`    | `(event: PressEvent) => void` | `undefined` | Press handler for click/Enter/Space; replaces `onNavigate`         |
+| `target?`     | `string`                      | `undefined` | Link target (auto-set to '\_blank' for external links)             |
+| `rel?`        | `string`                      | `undefined` | Link relationship (auto-set to 'noopener noreferrer' for external) |
+
+**Events**
+
+| Name        | Parameters                     | Description                                     | When Triggered                                                                                                                                                          |
+| ----------- | ------------------------------ | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `onPress`   | `(event: PressEvent)`          | Custom press handler that replaces `onNavigate` | Click, Enter, or Space key, after `onClick`/`onKeyDown` and unless they called `preventDefault()`. Not called while disabled                                            |
+| `onClick`   | `(event: React.MouseEvent)`    | Standard click handler, runs first              | Every click on an enabled link; `preventDefault()` skips `onPress`/`onNavigate`. Not called while disabled                                                              |
+| `onKeyDown` | `(event: React.KeyboardEvent)` | Standard keyboard handler, runs first           | Every key on an enabled link; on Enter/Space `preventDefault()` skips `onPress`/`onNavigate`. While disabled, Enter/Space are blocked and every other key still arrives |
+
+**HTML Attributes**
+
+| Attribute       | Value    | Purpose                       |
+| --------------- | -------- | ----------------------------- |
+| `aria-disabled` | `"true"` | Present when link is disabled |
+| `data-disabled` | `""`     | Present when link is disabled |
+| `data-external` | `""`     | Present when link is external |
+| `tabIndex`      | `-1`     | Set to `-1` when disabled     |
+
+### Breadcrumb.Page
+
+Non-interactive current page indicator with proper semantic marking for screen
+readers.
+
+**Props**
+
+| Name       | Type                | Default  | Description              |
+| ---------- | ------------------- | -------- | ------------------------ |
+| `children` | `React.ReactNode`   | -        | Current page name        |
+| `as?`      | `React.ElementType` | `'span'` | Polymorphic element type |
+
+**Events**
+
+| Name                   | Parameters | Description                   | When Triggered            |
+| ---------------------- | ---------- | ----------------------------- | ------------------------- |
+| _(No specific events)_ | -          | Inherits standard HTML events | Standard DOM interactions |
+
+**HTML Attributes**
+
+| Attribute      | Value    | Purpose                                    |
+| -------------- | -------- | ------------------------------------------ |
+| `aria-current` | `"page"` | Always present; marks the current page     |
+| `data-current` | `""`     | Always present on the current page element |
+
+### Breadcrumb.Separator
+
+Visual separator between breadcrumb items, hidden from screen readers to prevent
+verbose announcements.
+
+**Props**
+
+| Name           | Type                | Default     | Description              |
+| -------------- | ------------------- | ----------- | ------------------------ |
+| `children?`    | `React.ReactNode`   | `undefined` | Custom separator content |
+| `as?`          | `React.ElementType` | `'li'`      | Polymorphic element type |
+| `aria-hidden?` | `boolean`           | `true`      | Hide from screen readers |
+
+**Events**
+
+| Name                   | Parameters | Description                   | When Triggered            |
+| ---------------------- | ---------- | ----------------------------- | ------------------------- |
+| _(No specific events)_ | -          | Inherits standard HTML events | Standard DOM interactions |
+
+## Keyboard Interactions
+
+Complete keyboard behavior for the entire breadcrumb component:
+
+| Key           | Action            | Context      | Notes                                                    |
+| ------------- | ----------------- | ------------ | -------------------------------------------------------- |
+| `Tab`         | Navigate forward  | Always       | Moves focus to next focusable breadcrumb link            |
+| `Shift + Tab` | Navigate backward | Always       | Moves focus to previous focusable breadcrumb link        |
+| `Enter`       | Activate link     | Focused link | Triggers navigation or onPress handler                   |
+| `Space`       | Activate link     | Focused link | Alternative activation method for links                  |
+| `Escape`      | No action         | Breadcrumb   | Breadcrumbs don't trap focus or need escape behavior     |
+| `Arrow Keys`  | No action         | Breadcrumb   | Not applicable - breadcrumbs use standard tab navigation |
+| `Home`        | No action         | Breadcrumb   | Not applicable - use Tab to navigate to first link       |
+| `End`         | No action         | Breadcrumb   | Not applicable - use Tab to navigate to last link        |
+
+**Note**: Disabled links are automatically skipped in the tab order and do not
+respond to keyboard activation. The current page element (Breadcrumb.Page) is
+not focusable as it represents static content.

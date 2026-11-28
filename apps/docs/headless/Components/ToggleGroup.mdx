@@ -1,0 +1,183 @@
+---
+title: ToggleGroup
+description:
+  Headless toggle-button group with single or multiple selection, a roving tab
+  stop and arrow-key navigation.
+---
+
+import React from 'react';
+import LiveCode from '@site/src/components/headless/LiveCode';
+import { ToggleGroup } from '@turkish-technology/spar';
+
+# ToggleGroup
+
+A headless group of toggle buttons. In single mode one item is pressed at a
+time; with `multiple` any number can be. The group is one tab stop and the arrow
+keys move focus between its items. Each item is a Spar [`Button`](./Button.mdx)
+toggle, so `aria-pressed`, `data-pressed` and Space/Enter activation are the
+Button's.
+
+## Live Demo
+
+<LiveCode
+  code={`<div className='toggle-group-demo'>
+<ToggleGroup aria-label='View' defaultValue='list' className='toggle-group'>
+  <ToggleGroup.Item value='list' className='toggle-group-item'>List</ToggleGroup.Item>
+  <ToggleGroup.Item value='grid' className='toggle-group-item'>Grid</ToggleGroup.Item>
+  <ToggleGroup.Item value='map' className='toggle-group-item' disabled>Map</ToggleGroup.Item>
+</ToggleGroup>
+</div>`}
+cssCode={`.toggle-group-demo .toggle-group { display: inline-flex; gap: 4px;
+padding: 4px; border: 1px solid #e1e4ea; border-radius: 12px; }
+
+[data-theme='dark'] .toggle-group-demo .toggle-group { border-color: #2b303b; }
+
+.toggle-group-demo .toggle-group-item { padding: 6px 14px; border: none;
+border-radius: 8px; background: transparent; color: #717784; font-size: 14px;
+cursor: pointer; }
+
+.toggle-group-demo .toggle-group-item[aria-pressed='true'] { background:
+#222530; color: #fff; }
+
+[data-theme='dark'] .toggle-group-demo .toggle-group-item[aria-pressed='true'] {
+background: #f2f5f8; color: #222530; }
+
+.toggle-group-demo .toggle-group-item:disabled { opacity: 0.5; cursor:
+not-allowed; } `} />
+
+## Features
+
+- ✅ Single (`string`) or `multiple` (`string[]`) selection, controlled or
+  uncontrolled
+- ✅ Single mode releases the pressed item on a second press (reports `''`);
+  `deselectable={false}` keeps one pressed
+- ✅ Roving tabindex: one tab stop — the focused item, else the first pressed
+  enabled item, else the first enabled item
+- ✅ Arrow keys along `orientation`, Home / End, wrapping, disabled items
+  skipped; moving focus never changes the value
+- ✅ `role="group"` with `aria-pressed` items (WAI-ARIA toggle buttons)
+- ✅ Polymorphic root and items via `as`
+
+## Import
+
+```tsx
+import { ToggleGroup } from '@turkish-technology/spar';
+```
+
+## Anatomy
+
+```tsx
+<ToggleGroup.Root>
+  <ToggleGroup.Item />
+  <ToggleGroup.Item />
+</ToggleGroup.Root>
+```
+
+`ToggleGroup` and `ToggleGroup.Root` are the same component; `ToggleGroupItem`
+is also exported on its own.
+
+## Code Examples
+
+### Multiple selection
+
+```tsx
+<ToggleGroup aria-label="Format" multiple defaultValue={['bold']}>
+  <ToggleGroup.Item value="bold">Bold</ToggleGroup.Item>
+  <ToggleGroup.Item value="italic">Italic</ToggleGroup.Item>
+  <ToggleGroup.Item value="underline">Underline</ToggleGroup.Item>
+</ToggleGroup>
+```
+
+### Controlled, one item always pressed
+
+```tsx
+function TripType() {
+  const [trip, setTrip] = React.useState('round');
+
+  return (
+    <ToggleGroup
+      aria-label="Trip type"
+      value={trip}
+      onValueChange={value => setTrip(value as string)}
+      deselectable={false}
+    >
+      <ToggleGroup.Item value="one-way">One way</ToggleGroup.Item>
+      <ToggleGroup.Item value="round">Round trip</ToggleGroup.Item>
+    </ToggleGroup>
+  );
+}
+```
+
+### Vertical
+
+```tsx
+<ToggleGroup aria-label="Seat" orientation="vertical">
+  <ToggleGroup.Item value="window">Window</ToggleGroup.Item>
+  <ToggleGroup.Item value="aisle">Aisle</ToggleGroup.Item>
+</ToggleGroup>
+```
+
+## API Reference
+
+### ToggleGroup / ToggleGroup.Root
+
+#### Props
+
+| Name            | Type                                                | Default        | Description                                                               |
+| --------------- | --------------------------------------------------- | -------------- | ------------------------------------------------------------------------- |
+| `multiple?`     | `boolean`                                           | `false`        | Any number of items can be pressed                                        |
+| `value?`        | `string \| string[]`                                | `undefined`    | Controlled pressed value(s)                                               |
+| `defaultValue?` | `string \| string[]`                                | `undefined`    | Initial pressed value(s) for uncontrolled usage                           |
+| `deselectable?` | `boolean`                                           | `true`         | Single mode: a second press releases the item. Ignored with `multiple`    |
+| `disabled?`     | `boolean`                                           | `false`        | Disables every item                                                       |
+| `orientation?`  | `'horizontal' \| 'vertical'`                        | `'horizontal'` | Arrow-key axis: Left/Right or Up/Down                                     |
+| `as?`           | `React.ElementType`                                 | `'div'`        | Element type to render                                                    |
+| `...props`      | `ComponentPropsWithRef<'div'>` + `as` element props | —              | Forwards supported HTML attributes/events to the root (name it with ARIA) |
+
+#### Events
+
+| Name             | Parameters                                   | Description                    | When Triggered                                                         |
+| ---------------- | -------------------------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
+| `onValueChange?` | `value: string \| string[]`                  | Reports the next pressed value | An item is pressed or released; `string` in single mode, else an array |
+| `onKeyDown?`     | `event: React.KeyboardEvent<HTMLDivElement>` | Custom key handler (composed)  | Runs first; `preventDefault()` vetoes the built-in navigation          |
+
+#### HTML Attributes
+
+| Attribute          | Value                    | Purpose                     |
+| ------------------ | ------------------------ | --------------------------- |
+| `role`             | `group`                  | Groups the toggle buttons   |
+| `data-orientation` | `horizontal \| vertical` | Exposes the navigation axis |
+| `data-multiple`    | present when `multiple`  | Marks multiple selection    |
+| `data-disabled`    | present when `disabled`  | Marks a disabled group      |
+
+### ToggleGroup.Item
+
+Accepts every [`Button`](./Button.mdx) prop except `isPressed`, `defaultPressed`
+and `onPressedChange`, which the group owns.
+
+#### Props
+
+| Name        | Type                | Default    | Description                              |
+| ----------- | ------------------- | ---------- | ---------------------------------------- |
+| `value`     | `string`            | —          | Value this item contributes when pressed |
+| `disabled?` | `boolean`           | `false`    | Disables the item; navigation skips it   |
+| `as?`       | `React.ElementType` | `'button'` | Element type to render                   |
+
+#### HTML Attributes
+
+| Attribute      | Value                          | Purpose                     |
+| -------------- | ------------------------------ | --------------------------- |
+| `aria-pressed` | `true \| false`                | Pressed state (Spar Button) |
+| `data-pressed` | present when pressed           | Styling hook (Spar Button)  |
+| `data-value`   | the item `value`               | Identifies the item         |
+| `tabindex`     | `0` on the tab stop, else `-1` | Roving tabindex             |
+
+## Keyboard Interactions
+
+| Key               | Action                                                |
+| ----------------- | ----------------------------------------------------- |
+| `Tab`             | Moves focus into the group (one stop), then out of it |
+| `ArrowRight/Left` | Next / previous item when horizontal; wraps           |
+| `ArrowDown/Up`    | Next / previous item when vertical; wraps             |
+| `Home` / `End`    | First / last enabled item                             |
+| `Space` / `Enter` | Presses or releases the focused item                  |

@@ -1,0 +1,99 @@
+name: Deploy docs
+
+# Builds the docs site and publishes it to S3 + CloudFront (infra/, see
+# infra/README.md). Runs on every push to `main`, the same trigger the Dokploy
+# deploy used, so "merge develop into main" still means "ship the docs".
+#
+# Repository variables (Settings → Secrets and variables → Actions → Variables),
+# all from the stack outputs:
+#   AWS_REGION, DOCS_BUCKET, DOCS_DISTRIBUTION_ID, DOCS_SITE_URL,
+#   DOCS_DEPLOY_ROLE_ARN (OIDC; leave unset when the stack runs with
+#   github.oidcProvider "none" and set the AWS_ACCESS_KEY_ID /
+#   AWS_SECRET_ACCESS_KEY secrets instead)
+# Repository secret: ALGOLIA_SEARCH_API_KEY (search-only key).
+#
+# Until DOCS_BUCKET is set the job is skipped, so this workflow can land
+# before the AWS stack exists.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never cancel a deploy halfway through the upload; queue the next one.
+concurrency:
+  group: deploy-docs
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # GitHub OIDC → AWS deploy role
+
+jobs:
+  deploy:
+    if: vars.DOCS_BUCKET != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # react-spar (built by the docs prebuild) reads spar's dist.
+      - name: Build spar
+        run: pnpm turbo build --filter=@turkish-technology/spar
+
+      - name: Build docs
+        run: |
+          if [ -z "$ALGOLIA_SEARCH_API_KEY" ]; then
+            echo "::error::ALGOLIA_SEARCH_API_KEY secret is missing; the published site must have search."
+            exit 1
+          fi
+          pnpm --filter docs build
+        env:
+          ALGOLIA_SEARCH_API_KEY: ${{ secrets.ALGOLIA_SEARCH_API_KEY }}
+          DOCS_SITE_URL: ${{ vars.DOCS_SITE_URL }}
+
+      - name: AWS credentials (OIDC role)
+        if: vars.DOCS_DEPLOY_ROLE_ARN != ''
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.DOCS_DEPLOY_ROLE_ARN }}
+          role-session-name: deploy-docs-${{ github.run_id }}
+
+      - name: AWS credentials (access key fallback)
+        if: vars.DOCS_DEPLOY_ROLE_ARN == ''
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Upload and invalidate
+        run: bash infra/scripts/publish-site.sh apps/docs/build
+        env:
+          DOCS_BUCKET: ${{ vars.DOCS_BUCKET }}
+          DOCS_DISTRIBUTION_ID: ${{ vars.DOCS_DISTRIBUTION_ID }}
+
+      - name: Smoke test
+        if: vars.DOCS_SITE_URL != ''
+        run: |
+          set -euo pipefail
+          # The invalidation is still running, but new edge requests already miss.
+          for path in / /docs/components/button /headless /icons /llms.txt; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$DOCS_SITE_URL$path")
+            echo "$code $path"
+            [ "$code" = 200 ] || exit 1
+          done
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$DOCS_SITE_URL/this-page-does-not-exist")
+          echo "$code /this-page-does-not-exist"
+          [ "$code" = 404 ]
+        env:
+          DOCS_SITE_URL: ${{ vars.DOCS_SITE_URL }}

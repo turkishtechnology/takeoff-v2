@@ -7,7 +7,7 @@
  */
 
 const selectTypesFile = 'packages/react-spar/src/components/select/types.ts';
-const sparSelectDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Select';
+const sparSelectDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Select';
 
 const childrenOverride = description => ({
   type: 'React.ReactNode',
@@ -156,6 +156,41 @@ export default {
       sparDocsLabel: 'Spar Select docs',
       propOverrides: {
         children: childrenOverride('`Select.Item`, `Select.Group`, `Select.Separator`.'),
+        className: classNameOverride,
+      },
+      dataAttributes: [dataSlotRoot],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectSearchProps',
+      displayName: 'Select.Search',
+      headingBase: 'select-search',
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      sparDocsUrl: sparSelectDocsUrl,
+      sparDocsLabel: 'Spar Select docs',
+      sparBehaviorProps: ['value', 'defaultValue', 'onValueChange'],
+      propOverrides: {
+        'aria-label': { default: "'Search'", description: 'Accessible name of the field. A blank value falls back to the default.' },
+        'placeholder': { default: "'Search'", description: 'Placeholder shown while the field is empty.' },
+        'className': { type: 'string', description: 'Appends custom classes to the wrapper (`root` slot).' },
+      },
+      dataAttributes: [
+        { attribute: 'data-slot="root"', appliedWhen: 'Always', purpose: 'The framed row around the icon and the input.' },
+        { attribute: 'data-slot="input"', appliedWhen: 'Always', purpose: "The text field — Spar's combobox." },
+        { attribute: 'data-slot="icon"', appliedWhen: 'Always', purpose: 'The leading search glyph.' },
+      ],
+    },
+    {
+      sourceFile: selectTypesFile,
+      typeName: 'SelectEmptyProps',
+      displayName: 'Select.Empty',
+      headingBase: 'select-empty',
+      prependPropNames: ['children'],
+      appendPropNames: ['className'],
+      skipPropNames: ['ref'],
+      propOverrides: {
+        children: childrenOverride('What to say once nothing matches.'),
         className: classNameOverride,
       },
       dataAttributes: [dataSlotRoot],

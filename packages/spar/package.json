@@ -1,0 +1,275 @@
+{
+  "name": "@turkish-technology/spar",
+  "version": "0.3.2",
+  "description": "A modern headless React component library providing unstyled, accessible UI primitives",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.esm.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.esm.js"
+    },
+    "./accordion": {
+      "types": "./dist/accordion.d.ts",
+      "import": "./dist/accordion.mjs",
+      "require": "./dist/accordion.cjs"
+    },
+    "./breadcrumb": {
+      "types": "./dist/breadcrumb.d.ts",
+      "import": "./dist/breadcrumb.mjs",
+      "require": "./dist/breadcrumb.cjs"
+    },
+    "./button": {
+      "types": "./dist/button.d.ts",
+      "import": "./dist/button.mjs",
+      "require": "./dist/button.cjs"
+    },
+    "./carousel": {
+      "types": "./dist/carousel.d.ts",
+      "import": "./dist/carousel.mjs",
+      "require": "./dist/carousel.cjs"
+    },
+    "./checkbox": {
+      "types": "./dist/checkbox.d.ts",
+      "import": "./dist/checkbox.mjs",
+      "require": "./dist/checkbox.cjs"
+    },
+    "./collapsible": {
+      "types": "./dist/collapsible.d.ts",
+      "import": "./dist/collapsible.mjs",
+      "require": "./dist/collapsible.cjs"
+    },
+    "./dialog": {
+      "types": "./dist/dialog.d.ts",
+      "import": "./dist/dialog.mjs",
+      "require": "./dist/dialog.cjs"
+    },
+    "./dropdown-menu": {
+      "types": "./dist/dropdown-menu.d.ts",
+      "import": "./dist/dropdown-menu.mjs",
+      "require": "./dist/dropdown-menu.cjs"
+    },
+    "./field": {
+      "types": "./dist/field.d.ts",
+      "import": "./dist/field.mjs",
+      "require": "./dist/field.cjs"
+    },
+    "./input": {
+      "types": "./dist/input.d.ts",
+      "import": "./dist/input.mjs",
+      "require": "./dist/input.cjs"
+    },
+    "./label": {
+      "types": "./dist/label.d.ts",
+      "import": "./dist/label.mjs",
+      "require": "./dist/label.cjs"
+    },
+    "./pagination": {
+      "types": "./dist/pagination.d.ts",
+      "import": "./dist/pagination.mjs",
+      "require": "./dist/pagination.cjs"
+    },
+    "./popover": {
+      "types": "./dist/popover.d.ts",
+      "import": "./dist/popover.mjs",
+      "require": "./dist/popover.cjs"
+    },
+    "./radio": {
+      "types": "./dist/radio.d.ts",
+      "import": "./dist/radio.mjs",
+      "require": "./dist/radio.cjs"
+    },
+    "./select": {
+      "types": "./dist/select.d.ts",
+      "import": "./dist/select.mjs",
+      "require": "./dist/select.cjs"
+    },
+    "./switch": {
+      "types": "./dist/switch.d.ts",
+      "import": "./dist/switch.mjs",
+      "require": "./dist/switch.cjs"
+    },
+    "./tabs": {
+      "types": "./dist/tabs.d.ts",
+      "import": "./dist/tabs.mjs",
+      "require": "./dist/tabs.cjs"
+    },
+    "./toast": {
+      "types": "./dist/toast.d.ts",
+      "import": "./dist/toast.mjs",
+      "require": "./dist/toast.cjs"
+    },
+    "./toggle-group": {
+      "types": "./dist/toggle-group.d.ts",
+      "import": "./dist/toggle-group.mjs",
+      "require": "./dist/toggle-group.cjs"
+    },
+    "./tooltip": {
+      "types": "./dist/tooltip.d.ts",
+      "import": "./dist/tooltip.mjs",
+      "require": "./dist/tooltip.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "accordion": [
+        "./dist/accordion.d.ts"
+      ],
+      "breadcrumb": [
+        "./dist/breadcrumb.d.ts"
+      ],
+      "button": [
+        "./dist/button.d.ts"
+      ],
+      "carousel": [
+        "./dist/carousel.d.ts"
+      ],
+      "checkbox": [
+        "./dist/checkbox.d.ts"
+      ],
+      "collapsible": [
+        "./dist/collapsible.d.ts"
+      ],
+      "dialog": [
+        "./dist/dialog.d.ts"
+      ],
+      "dropdown-menu": [
+        "./dist/dropdown-menu.d.ts"
+      ],
+      "field": [
+        "./dist/field.d.ts"
+      ],
+      "input": [
+        "./dist/input.d.ts"
+      ],
+      "label": [
+        "./dist/label.d.ts"
+      ],
+      "pagination": [
+        "./dist/pagination.d.ts"
+      ],
+      "popover": [
+        "./dist/popover.d.ts"
+      ],
+      "radio": [
+        "./dist/radio.d.ts"
+      ],
+      "select": [
+        "./dist/select.d.ts"
+      ],
+      "switch": [
+        "./dist/switch.d.ts"
+      ],
+      "tabs": [
+        "./dist/tabs.d.ts"
+      ],
+      "toast": [
+        "./dist/toast.d.ts"
+      ],
+      "toggle-group": [
+        "./dist/toggle-group.d.ts"
+      ],
+      "tooltip": [
+        "./dist/tooltip.d.ts"
+      ],
+      "*": [
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.mjs",
+    "dist/**/*.cjs",
+    "dist/**/*.d.ts",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "pnpm run clean && rspack build && tsc --emitDeclarationOnly && node scripts/postbuild.mjs",
+    "dev": "rspack build --watch",
+    "prepublishOnly": "pnpm run build && pnpm run check-types && pnpm run lint",
+    "prepack": "pnpm run build",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "check-types": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest --testPathPatterns=\"(test|spec)\\.(ts|tsx)$\"",
+    "test:integration": "jest --testPathPatterns=\"integration\\.(test|spec)\\.(ts|tsx)$\"",
+    "test:a11y-unit": "jest --testPathPatterns=\"a11y\\.(test|spec)\\.(ts|tsx)$\"",
+    "size-check": "size-limit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/turkishtechnology/takeoff-v2.git",
+    "directory": "packages/spar"
+  },
+  "author": {
+    "name": "Turkish Technology",
+    "email": "info@thy.com",
+    "url": "https://turkishtechnology.com/"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
+  },
+  "devDependencies": {
+    "@rspack/cli": "^1.0.0",
+    "@rspack/core": "^1.0.0",
+    "@size-limit/preset-small-lib": "^11.0.0",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "@types/jest-axe": "^3.5.9",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "jest": "^30.1.1",
+    "jest-axe": "^10.0.0",
+    "jest-environment-jsdom": "^30.1.1",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "size-limit": "^11.0.0",
+    "ts-jest": "^29.4.1",
+    "tslib": "^2.7.0",
+    "typescript": "^5.8.2"
+  },
+  "keywords": [
+    "react",
+    "react-components",
+    "spar",
+    "headless-ui",
+    "headless-components",
+    "accessible",
+    "accessibility",
+    "a11y",
+    "unstyled",
+    "ui-primitives",
+    "component-library",
+    "typescript",
+    "wcag",
+    "aria",
+    "react-19"
+  ],
+  "dependencies": {
+    "@floating-ui/react-dom": "^2.1.6"
+  }
+}

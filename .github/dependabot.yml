@@ -20,6 +20,7 @@ updates:
       - "/"
       - "/packages/*"
       - "/apps/*"
+      - "/infra"
     schedule:
       interval: "weekly"
       day: "monday"

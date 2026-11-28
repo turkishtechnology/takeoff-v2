@@ -38,6 +38,10 @@ import { Field, Select } from '@takeoff-ui/react-spar';
 - `Select.Content` — the portalled `role="listbox"` dropdown panel (positioned
   with Floating UI).
 - `Select.Viewport` — optional bounded scroll container for long option lists.
+- `Select.Search` — filter field above the viewport. Takes focus on open; you
+  filter the rendered items with its `value`. With a search, the viewport is the
+  listbox, so the items must sit inside `Select.Viewport`.
+- `Select.Empty` — what to show once a search matches nothing.
 - `Select.Item` — a selectable option; needs a `value` and a `label` (text used
   for typeahead + trigger display).
 - `Select.Group` — groups related items under a label.
@@ -138,6 +142,37 @@ function ControlledSelect() {
 </Select>
 ```
 
+### Searching a long list
+
+```tsx
+const [query, setQuery] = useState('');
+const visible = AIRPORTS.filter(a =>
+  a.name.toLowerCase().includes(query.toLowerCase()),
+);
+
+<Select defaultValue="IST">
+  <Select.Trigger placeholder="Choose an airport" />
+  <Select.Content>
+    <Select.Search
+      value={query}
+      onValueChange={setQuery}
+      placeholder="Search airports"
+    />
+    <Select.Viewport>
+      {visible.map(a => (
+        <Select.Item key={a.code} value={a.code} label={a.name}>
+          {a.name}
+        </Select.Item>
+      ))}
+      {visible.length === 0 ? <Select.Empty>No airports</Select.Empty> : null}
+    </Select.Viewport>
+  </Select.Content>
+</Select>;
+```
+
+The query resets to `''` when the list closes. Typing edits the query (no
+typeahead); arrows and Enter still pick from the list.
+
 ### Invalid state
 
 ```tsx
@@ -186,22 +221,24 @@ out of the built-in indicator/value wrapper) and place a standalone
 
 ## Key props
 
-| Prop                                 | Type                                                | Default                 | Notes                                             |
-| ------------------------------------ | --------------------------------------------------- | ----------------------- | ------------------------------------------------- |
-| `value`                              | `string`                                            | -                       | Controlled selected value (pair with `onChange`). |
-| `defaultValue`                       | `string`                                            | -                       | Uncontrolled initial value.                       |
-| `onChange`                           | `(value: string) => void`                           | -                       | Fires when selection changes.                     |
-| `size`                               | `'small' \| 'base' \| 'large'`                      | `'base'`                | Size scale.                                       |
-| `invalid`                            | `boolean`                                           | `false`                 | Danger-state styling for validation.              |
-| `disabled` / `required` / `readOnly` | `boolean`                                           | -                       | Form state; inherited from a wrapping `Field`.    |
-| `open` / `defaultOpen`               | `boolean`                                           | - / `false`             | Controlled / uncontrolled open state.             |
-| `onOpenChange`                       | `(open: boolean) => void`                           | -                       | Fires when the dropdown opens/closes.             |
-| `contentWidth`                       | `'trigger' \| 'content' \| number \| string`        | `'trigger'`             | How the panel computes its width.                 |
-| `Select.Trigger` `placeholder`       | `React.ReactNode`                                   | -                       | Shown when no value is selected.                  |
-| `Select.Trigger` `indicator`         | `boolean \| ReactNode \| ((s:{isOpen})=>ReactNode)` | `true`                  | Disclosure indicator; `false` hides it.           |
-| `Select.Content` `side` / `align`    | `Side` / `Align`                                    | `'bottom'` / `'center'` | Floating UI positioning.                          |
-| `Select.Item` `value` / `label`      | `string`                                            | -                       | Option value + display/typeahead text.            |
-| `Select.Item` `disabled`             | `boolean`                                           | `false`                 | Disables the option.                              |
+| Prop                                                       | Type                                                | Default                 | Notes                                             |
+| ---------------------------------------------------------- | --------------------------------------------------- | ----------------------- | ------------------------------------------------- |
+| `value`                                                    | `string`                                            | -                       | Controlled selected value (pair with `onChange`). |
+| `defaultValue`                                             | `string`                                            | -                       | Uncontrolled initial value.                       |
+| `onChange`                                                 | `(value: string) => void`                           | -                       | Fires when selection changes.                     |
+| `size`                                                     | `'small' \| 'base' \| 'large'`                      | `'base'`                | Size scale.                                       |
+| `invalid`                                                  | `boolean`                                           | `false`                 | Danger-state styling for validation.              |
+| `disabled` / `required` / `readOnly`                       | `boolean`                                           | -                       | Form state; inherited from a wrapping `Field`.    |
+| `open` / `defaultOpen`                                     | `boolean`                                           | - / `false`             | Controlled / uncontrolled open state.             |
+| `onOpenChange`                                             | `(open: boolean) => void`                           | -                       | Fires when the dropdown opens/closes.             |
+| `contentWidth`                                             | `'trigger' \| 'content' \| number \| string`        | `'trigger'`             | How the panel computes its width.                 |
+| `Select.Trigger` `placeholder`                             | `React.ReactNode`                                   | -                       | Shown when no value is selected.                  |
+| `Select.Trigger` `indicator`                               | `boolean \| ReactNode \| ((s:{isOpen})=>ReactNode)` | `true`                  | Disclosure indicator; `false` hides it.           |
+| `Select.Content` `side` / `align`                          | `Side` / `Align`                                    | `'bottom'` / `'center'` | Floating UI positioning.                          |
+| `Select.Item` `value` / `label`                            | `string`                                            | -                       | Option value + display/typeahead text.            |
+| `Select.Item` `disabled`                                   | `boolean`                                           | `false`                 | Disables the option.                              |
+| `Select.Search` `value` / `defaultValue` / `onValueChange` | `string` / `(query: string) => void`                | `''`                    | The query; filter the items with it.              |
+| `Select.Search` `aria-label` / `placeholder`               | `string`                                            | `'Search'`              | Field name and placeholder.                       |
 
 Full props, events, data attributes & type definitions: see
 `references/full-docs.md`.
@@ -220,10 +257,13 @@ Full props, events, data attributes & type definitions: see
 - Keyboard: Enter/Space opens or selects; ↓/↑ open and move highlight; Home/End
   jump to first/last; Esc closes without changing selection; typing characters
   does typeahead to the first matching item.
+- With `Select.Search`, the field is the combobox (`aria-activedescendant` →
+  highlighted option) and the viewport is the listbox; typing edits the query
+  and Space / Home / End stay in the field.
 
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/components/select
+- Live docs: https://v2.takeoffui.com/docs/components/select
 - Source: `packages/react-spar/src/components/select/`
-- Spar primitive: https://spar.app.turkishtechlab.com/docs/Components/Select
+- Spar primitive: https://v2.takeoffui.com/headless/docs/Components/Select

@@ -1,0 +1,106 @@
+import { useCallback, useEffect, useRef, useState, ElementType } from 'react';
+import { useMergedRef } from '@/hooks';
+import { useTabsContext } from './hooks';
+import type { TabsTriggerProps, TabsTriggerRenderProps } from './types';
+import { Button } from '../Button';
+import type { ButtonProps } from '../Button/types';
+
+/**
+ * TabsTrigger component representing a clickable tab button with full accessibility support.
+ * Supports render props pattern for complete rendering control.
+ */
+export const TabsTrigger = <T extends ElementType = 'button'>({
+  value,
+  disabled = false,
+  autoFocus = false,
+  as,
+  children,
+  onClick,
+  onFocus,
+  onBlur,
+  ref,
+  ...props
+}: TabsTriggerProps<T>) => {
+  const { selectedValue, onValueChange, orientation, registerTab, unregisterTab, baseId } = useTabsContext();
+  const internalRef = useRef<HTMLButtonElement>(null);
+  const mergedRef = useMergedRef(internalRef, ref);
+  const triggerId = `${baseId}-trigger-${value}`;
+  const panelId = `${baseId}-panel-${value}`;
+  const [isFocused, setIsFocused] = useState(false);
+
+  const isSelected = selectedValue === value;
+
+  useEffect(() => {
+    const element = internalRef.current;
+    if (element) {
+      registerTab(value, element);
+      return () => unregisterTab(value);
+    }
+    return undefined;
+  }, [value, registerTab, unregisterTab]);
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (!disabled) {
+        onValueChange(value);
+      }
+      onClick?.(event as React.MouseEvent<HTMLButtonElement>);
+    },
+    [disabled, onValueChange, value, onClick],
+  );
+
+  const handleFocus = useCallback(
+    (event: React.FocusEvent<HTMLButtonElement>) => {
+      setIsFocused(true);
+      onFocus?.(event as React.FocusEvent<HTMLButtonElement>);
+    },
+    [onFocus],
+  );
+
+  const handleBlur = useCallback(
+    (event: React.FocusEvent<HTMLButtonElement>) => {
+      setIsFocused(false);
+      onBlur?.(event as React.FocusEvent<HTMLButtonElement>);
+    },
+    [onBlur],
+  );
+
+  // Function to select this tab programmatically
+  const selectTab = useCallback(() => {
+    if (!disabled) {
+      onValueChange(value);
+    }
+  }, [disabled, onValueChange, value]);
+
+  // Render props for children function
+  const renderProps: TabsTriggerRenderProps = {
+    isSelected,
+    select: selectTab,
+    disabled,
+    isFocused,
+    orientation,
+  };
+
+  const buttonProps = {
+    ...(as && { as }),
+    'ref': mergedRef,
+    'id': triggerId,
+    disabled,
+    autoFocus,
+    'role': 'tab' as const,
+    'aria-selected': isSelected,
+    'aria-controls': panelId,
+    'data-state': isSelected ? 'active' : 'inactive',
+    'data-orientation': orientation,
+    'data-value': value,
+    'tabIndex': isSelected ? 0 : -1,
+    'onClick': handleClick,
+    'onFocus': handleFocus,
+    'onBlur': handleBlur,
+    ...props,
+  } as ButtonProps<T>;
+
+  return <Button {...buttonProps}>{typeof children === 'function' ? children(renderProps) : children}</Button>;
+};
+
+TabsTrigger.displayName = 'TabsTrigger';

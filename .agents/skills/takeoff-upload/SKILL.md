@@ -259,5 +259,5 @@ thumbnail.
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/components/upload
+- Live docs: https://v2.takeoffui.com/docs/components/upload
 - Source: `packages/react-spar/src/components/upload/`

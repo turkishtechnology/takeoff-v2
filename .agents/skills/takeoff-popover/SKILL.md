@@ -180,6 +180,6 @@ Full props, events, data attributes & type definitions: see
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/components/popover
+- Live docs: https://v2.takeoffui.com/docs/components/popover
 - Source: `packages/react-spar/src/components/popover/`
-- Spar primitive: https://spar.app.turkishtechlab.com/docs/Components/Popover
+- Spar primitive: https://v2.takeoffui.com/headless/docs/Components/Popover

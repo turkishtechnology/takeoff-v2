@@ -481,8 +481,7 @@ render(<InvalidDemo />);
 
 ### Select {#select}
 
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+See [Spar Select docs](https://v2.takeoffui.com/headless/docs/Components/Select)
 for primitive behavior.
 
 #### Props {#select-props}
@@ -525,8 +524,7 @@ for primitive behavior.
 
 ### Select.Trigger {#select-trigger}
 
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+See [Spar Select docs](https://v2.takeoffui.com/headless/docs/Components/Select)
 for primitive behavior.
 
 #### Props {#select-trigger-props}
@@ -553,8 +551,7 @@ for primitive behavior.
 
 ### Select.Indicator {#select-indicator}
 
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+See [Spar Select docs](https://v2.takeoffui.com/headless/docs/Components/Select)
 for primitive behavior.
 
 #### Data attributes {#select-indicator-data-attributes}
@@ -565,8 +562,7 @@ for primitive behavior.
 
 ### Select.Content {#select-content}
 
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+See [Spar Select docs](https://v2.takeoffui.com/headless/docs/Components/Select)
 for primitive behavior.
 
 #### Props {#select-content-props}
@@ -598,8 +594,7 @@ for primitive behavior.
 
 ### Select.Viewport {#select-viewport}
 
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+See [Spar Select docs](https://v2.takeoffui.com/headless/docs/Components/Select)
 for primitive behavior.
 
 #### Data attributes {#select-viewport-data-attributes}
@@ -610,8 +605,7 @@ for primitive behavior.
 
 ### Select.Item {#select-item}
 
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+See [Spar Select docs](https://v2.takeoffui.com/headless/docs/Components/Select)
 for primitive behavior.
 
 #### Props {#select-item-props}
@@ -637,8 +631,7 @@ for primitive behavior.
 
 ### Select.Group {#select-group}
 
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+See [Spar Select docs](https://v2.takeoffui.com/headless/docs/Components/Select)
 for primitive behavior.
 
 #### Data attributes {#select-group-data-attributes}
@@ -649,8 +642,7 @@ for primitive behavior.
 
 ### Select.Label {#select-label}
 
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+See [Spar Select docs](https://v2.takeoffui.com/headless/docs/Components/Select)
 for primitive behavior.
 
 #### Data attributes {#select-label-data-attributes}
@@ -661,8 +653,7 @@ for primitive behavior.
 
 ### Select.Separator {#select-separator}
 
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+See [Spar Select docs](https://v2.takeoffui.com/headless/docs/Components/Select)
 for primitive behavior.
 
 #### Data attributes {#select-separator-data-attributes}
@@ -673,8 +664,7 @@ for primitive behavior.
 
 ### Select.Arrow {#select-arrow}
 
-See
-[Spar Select docs](https://spar.app.turkishtechlab.com/docs/Components/Select)
+See [Spar Select docs](https://v2.takeoffui.com/headless/docs/Components/Select)
 for primitive behavior.
 
 #### Data attributes {#select-arrow-data-attributes}

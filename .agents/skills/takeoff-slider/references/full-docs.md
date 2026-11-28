@@ -707,4 +707,4 @@ alongside the parts. Their slots and per-part behavior:
 
 - Docs: `apps/docs/docs/components/slider.mdx`
 - Component: `packages/react-spar/src/components/slider/`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/components/slider
+- Live docs: https://v2.takeoffui.com/docs/components/slider

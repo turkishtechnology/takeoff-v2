@@ -4,14 +4,18 @@
 
 @use 'recipes/accordion';
 @use 'recipes/alert';
+@use 'recipes/avatar';
 @use 'recipes/badge';
 @use 'recipes/breadcrumb';
 @use 'recipes/button';
 @use 'recipes/calendar';
 @use 'recipes/card';
+@use 'recipes/carousel';
 @use 'recipes/chat';
 @use 'recipes/checkbox';
 @use 'recipes/chip';
+@use 'recipes/color-picker';
+@use 'recipes/currency-input';
 @use 'recipes/datepicker';
 @use 'recipes/dialog';
 @use 'recipes/divider';
@@ -22,9 +26,12 @@
 @use 'recipes/globe-spinner';
 @use 'recipes/input';
 @use 'recipes/label';
+@use 'recipes/phone-input';
+@use 'recipes/pagination';
 @use 'recipes/popover';
 @use 'recipes/progress';
 @use 'recipes/radio';
+@use 'recipes/rating';
 @use 'recipes/select';
 @use 'recipes/skeleton';
 @use 'recipes/slider';
@@ -33,6 +40,9 @@
 @use 'recipes/switch';
 @use 'recipes/table';
 @use 'recipes/tabs';
+@use 'recipes/timeline';
+@use 'recipes/toggle-button-group';
+@use 'recipes/timepicker';
 @use 'recipes/tooltip';
 @use 'recipes/toast';
 @use 'recipes/upload';
@@ -207,6 +217,10 @@
   @include card.card-footer;
 }
 
+.tk-carousel {
+  @include carousel.carousel;
+}
+
 .tk-accordion {
   @include accordion.accordion;
 }
@@ -367,6 +381,22 @@
   @include select.select-item;
 }
 
+.tk-select-search {
+  @include select.select-search;
+}
+
+.tk-select-search-input {
+  @include select.select-search-input;
+}
+
+.tk-select-search-icon {
+  @include select.select-search-icon;
+}
+
+.tk-select-empty {
+  @include select.select-empty;
+}
+
 .tk-select-item-text {
   @include select.select-item-text;
 }
@@ -431,6 +461,10 @@
   @include spinner.spinner;
 }
 
+.tk-pagination {
+  @include pagination.pagination;
+}
+
 .tk-flight-loader {
   @include flight-loader.flight-loader;
 }
@@ -459,6 +493,22 @@
   @include stepper.stepper;
 }
 
+.tk-timeline {
+  @include timeline.timeline;
+}
+
+.tk-timeline-title {
+  @include timeline.timeline-title;
+}
+
+.tk-timeline-description {
+  @include timeline.timeline-description;
+}
+
+.tk-timeline-time {
+  @include timeline.timeline-time;
+}
+
 .tk-checkbox {
   @include checkbox.checkbox;
 }
@@ -479,6 +529,14 @@
   @include radio.radio-item;
 }
 
+.tk-rating {
+  @include rating.rating;
+}
+
+.tk-rating-item {
+  @include rating.rating-item;
+}
+
 .tk-tabs {
   @include tabs.tabs;
 }
@@ -493,6 +551,118 @@
 
 .tk-tabs-content {
   @include tabs.tabs-content;
+}
+
+.tk-toggle-button-group {
+  @include toggle-button-group.toggle-button-group;
+}
+
+.tk-toggle-button-group-item {
+  @include toggle-button-group.toggle-button-group-item;
+}
+
+.tk-timepicker {
+  @include timepicker.timepicker;
+}
+
+.tk-timepicker-header {
+  @include timepicker.timepicker-header;
+}
+
+.tk-timepicker-body {
+  @include timepicker.timepicker-body;
+}
+
+.tk-timepicker-footer {
+  @include timepicker.timepicker-footer;
+}
+
+.tk-timepicker-columns {
+  @include timepicker.timepicker-columns;
+}
+
+.tk-timepicker-highlight {
+  @include timepicker.timepicker-highlight;
+}
+
+.tk-timepicker-column {
+  @include timepicker.timepicker-column;
+}
+
+.tk-timepicker-previous {
+  @include timepicker.timepicker-previous;
+}
+
+.tk-timepicker-next {
+  @include timepicker.timepicker-next;
+}
+
+.tk-timepicker-chevron {
+  @include timepicker.timepicker-chevron;
+}
+
+.tk-timepicker-value-group {
+  @include timepicker.timepicker-value-group;
+}
+
+.tk-timepicker-value {
+  @include timepicker.timepicker-value;
+}
+
+.tk-timepicker-separator {
+  @include timepicker.timepicker-separator;
+}
+
+.tk-timepicker-meridiem {
+  @include timepicker.timepicker-meridiem;
+}
+
+.tk-timepicker-meridiem-option {
+  @include timepicker.timepicker-meridiem-option;
+}
+
+.tk-timepicker-input-group {
+  @include timepicker.timepicker-input-group;
+}
+
+.tk-timepicker-input {
+  @include timepicker.timepicker-input;
+}
+
+.tk-timepicker-input-value {
+  @include timepicker.timepicker-input-value;
+}
+
+.tk-timepicker-input-label {
+  @include timepicker.timepicker-input-label;
+}
+
+.tk-timepicker-input-stack {
+  @include timepicker.timepicker-input-stack;
+}
+
+.tk-timepicker-input-option {
+  @include timepicker.timepicker-input-option;
+}
+
+.tk-timepicker-dial {
+  @include timepicker.timepicker-dial;
+}
+
+.tk-timepicker-dial-face {
+  @include timepicker.timepicker-dial-face;
+}
+
+.tk-timepicker-dial-hand {
+  @include timepicker.timepicker-dial-hand;
+}
+
+.tk-timepicker-dial-cap {
+  @include timepicker.timepicker-dial-cap;
+}
+
+.tk-timepicker-dial-number {
+  @include timepicker.timepicker-dial-number;
 }
 
 .tk-tooltip-content {
@@ -513,6 +683,14 @@
 
 .tk-badge {
   @include badge.badge;
+}
+
+.tk-avatar {
+  @include avatar.avatar;
+}
+
+.tk-avatar-group {
+  @include avatar.avatar-group;
 }
 
 .tk-breadcrumb {
@@ -687,4 +865,77 @@
 
 .tk-upload-item-action {
   @include upload.upload-item-action;
+}
+
+.tk-color-picker {
+  @include color-picker.color-picker;
+}
+
+.tk-color-picker-input-preview {
+  @include color-picker.color-picker-input-preview;
+}
+
+.tk-color-picker-panel {
+  @include color-picker.color-picker-panel;
+}
+
+.tk-color-picker-controls {
+  @include color-picker.color-picker-controls;
+}
+
+.tk-color-picker-sliders {
+  @include color-picker.color-picker-sliders;
+}
+
+.tk-color-picker-fields {
+  @include color-picker.color-picker-fields;
+}
+
+.tk-color-picker-area {
+  @include color-picker.color-picker-area;
+}
+
+.tk-color-picker-area-thumb {
+  @include color-picker.color-picker-area-thumb;
+}
+
+.tk-color-picker-preview {
+  @include color-picker.color-picker-preview;
+}
+
+.tk-color-picker-eye-dropper {
+  @include color-picker.color-picker-eye-dropper;
+}
+
+.tk-color-picker-format {
+  @include color-picker.color-picker-format;
+}
+
+.tk-color-picker-channels {
+  @include color-picker.color-picker-channels;
+}
+
+.tk-color-picker-channel {
+  @include color-picker.color-picker-channel;
+}
+
+.tk-color-picker-swatches {
+  @include color-picker.color-picker-swatches;
+}
+
+.tk-color-picker-swatch {
+  @include color-picker.color-picker-swatch;
+}
+
+// Two-class selectors: these must outrank the Popover and Slider recipes.
+.tk-popover-content.tk-color-picker-content {
+  @include color-picker.color-picker-content;
+}
+
+.tk-slider.tk-color-picker-hue {
+  @include color-picker.color-picker-hue;
+}
+
+.tk-slider.tk-color-picker-alpha {
+  @include color-picker.color-picker-alpha;
 }

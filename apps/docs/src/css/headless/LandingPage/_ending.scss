@@ -1,0 +1,49 @@
+.ending-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  background: #c90019;
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  // The illustration gives way first, so the call to action keeps its two lines.
+  > div:last-child {
+    min-width: 0;
+  }
+
+  // Phones: the illustration on top, the call to action below it.
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+  }
+}
+.ending-texts {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-end;
+  font-weight: 600;
+  font-size: clamp(1.5rem, 1rem + 1.6vw, 2.25rem);
+  // Infima's default; this site inherits a fixed 24px, which made the
+  // negative title margin below overlap the two lines.
+  line-height: 1.65;
+  margin: 0 0 0 60px;
+  flex: none;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    align-self: flex-start;
+    margin: 0 1.25rem 1.5rem;
+  }
+}
+
+.ending-title1 {
+  color: #eeb0b8;
+  margin-bottom: -0.7em;
+}
+
+.ending-title2 {
+  color: #fff;
+}

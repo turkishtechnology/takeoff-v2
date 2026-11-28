@@ -1,0 +1,15 @@
+{
+  "$comment": "Copy to config.json (git-ignored: it holds the account's certificate ARN) and fill in. No secrets here.",
+  "stackName": "TakeoffDocs",
+  "region": "eu-north-1",
+  "projectTag": "takeoff-docs",
+  "domain": {
+    "name": "v2.takeoffui.com",
+    "certificateArn": "arn:aws:acm:us-east-1:111111111111:certificate/00000000-0000-0000-0000-000000000000"
+  },
+  "github": {
+    "repository": "turkishtechnology/takeoff-v2",
+    "branch": "main",
+    "oidcProvider": "create"
+  }
+}

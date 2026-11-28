@@ -185,6 +185,6 @@ Full props, events, data attributes & type definitions: see
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/components/tooltip
+- Live docs: https://v2.takeoffui.com/docs/components/tooltip
 - Source: `packages/react-spar/src/components/tooltip/`
-- Spar primitive: https://spar.app.turkishtechlab.com/docs/Components/Tooltip
+- Spar primitive: https://v2.takeoffui.com/headless/docs/Components/Tooltip

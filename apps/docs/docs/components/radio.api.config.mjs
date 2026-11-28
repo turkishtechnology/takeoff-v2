@@ -7,7 +7,7 @@
  */
 
 const radioTypesFile = 'packages/react-spar/src/components/radio/types.ts';
-const sparRadioDocsUrl = 'https://spar.app.turkishtechlab.com/docs/Components/Radio';
+const sparRadioDocsUrl = 'https://v2.takeoffui.com/headless/docs/Components/Radio';
 
 const childrenOverride = description => ({
   type: 'React.ReactNode',

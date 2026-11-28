@@ -36,11 +36,13 @@
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import process from 'node:process';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const DOCS_APP_DIR = resolve(SCRIPT_DIR, '..');
 const DOCS_DIR = join(DOCS_APP_DIR, 'docs');
 const ICONS_DIR = join(DOCS_APP_DIR, 'icons');
+const HEADLESS_DIR = join(DOCS_APP_DIR, 'headless');
 const STATIC_DIR = join(DOCS_APP_DIR, 'static');
 const CONFIG_FILE = join(DOCS_APP_DIR, 'docusaurus.config.ts');
 const SKILLS_DIR = resolve(DOCS_APP_DIR, '../../.agents/skills');
@@ -58,6 +60,7 @@ const ROUTE_BASE = '/docs';
 const DOC_TREES = [
   { dir: DOCS_DIR, routeBase: ROUTE_BASE, staticSubdir: 'docs' },
   { dir: ICONS_DIR, routeBase: '/icons', staticSubdir: 'icons', section: 'Icons' },
+  { dir: HEADLESS_DIR, routeBase: '/headless/docs', staticSubdir: 'headless', section: 'Takeoff Headless' },
 ];
 
 /**
@@ -81,13 +84,17 @@ const SECTIONS = [
 
 // --- site URL (read from docusaurus.config.ts, with a safe fallback) ---------
 
+// Same precedence as the config: DOCS_SITE_URL (set by the deploy workflow), then the
+// config's default (`url: process.env.DOCS_SITE_URL || '<default>'` or `url: '<default>'`).
 function readSiteUrl() {
-  let url = 'https://takeoff-v2.app.turkishtechlab.com';
-  try {
-    const cfg = readFileSync(CONFIG_FILE, 'utf8');
-    url = cfg.match(/\burl:\s*'([^']+)'/u)?.[1] ?? url;
-  } catch {
-    // keep fallback
+  let url = process.env.DOCS_SITE_URL || 'https://v2.takeoffui.com';
+  if (!process.env.DOCS_SITE_URL) {
+    try {
+      const cfg = readFileSync(CONFIG_FILE, 'utf8');
+      url = cfg.match(/\burl:\s*(?:process\.env\.DOCS_SITE_URL\s*\|\|\s*)?'([^']+)'/u)?.[1] ?? url;
+    } catch {
+      // keep fallback
+    }
   }
   return url.replace(/\/$/u, '');
 }

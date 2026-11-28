@@ -402,7 +402,7 @@ key).
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/components/table
+- Live docs: https://v2.takeoffui.com/docs/components/table
 - Source: `packages/react-spar/src/components/table/`
 - Built on
   [`@tanstack/react-table`](https://tanstack.com/table/latest/docs/introduction)

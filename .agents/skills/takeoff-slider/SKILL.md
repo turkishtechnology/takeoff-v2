@@ -306,6 +306,6 @@ Full props, events, data attributes, per-part APIs & type definitions: see
 ## Reference
 
 - Full component docs (Copy page): `references/full-docs.md`
-- Live docs: https://takeoff-v2.app.turkishtechlab.com/docs/components/slider
+- Live docs: https://v2.takeoffui.com/docs/components/slider
 - Source: `packages/react-spar/src/components/slider/`
 - Spar primitive: none — Slider is a standalone takeoff-spar component.

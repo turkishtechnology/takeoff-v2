@@ -338,7 +338,7 @@ built-in navigation or selection for that event.
 
 ### Radio {#radio}
 
-See [Spar Radio docs](https://spar.app.turkishtechlab.com/docs/Components/Radio)
+See [Spar Radio docs](https://v2.takeoffui.com/headless/docs/Components/Radio)
 for primitive behavior.
 
 #### Props {#radio-props}
@@ -369,7 +369,7 @@ for primitive behavior.
 
 ### Radio.Item {#radio-item}
 
-See [Spar Radio docs](https://spar.app.turkishtechlab.com/docs/Components/Radio)
+See [Spar Radio docs](https://v2.takeoffui.com/headless/docs/Components/Radio)
 for primitive behavior.
 
 #### Props {#radio-item-props}

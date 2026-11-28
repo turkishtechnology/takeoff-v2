@@ -1,0 +1,263 @@
+// Pagination recipe — style contract for the standalone takeoff-spar Pagination
+// compound (Core `tk-pagination`). Anatomy:
+//
+//   .tk-pagination               — root landmark (Spar Pagination)
+//   .tk-pagination-info          — start column: the two reports, stacked
+//   .tk-pagination-page-report   — "Page x of y"
+//   .tk-pagination-items-report  — "Items a-b of n"
+//   .tk-pagination-controls      — the button row
+//   .tk-pagination-first/-previous/-next/-last — edge buttons (Spar parts)
+//   .tk-pagination-pages         — the page range
+//   .tk-pagination-page          — one page button (Spar Item; aria-current)
+//   .tk-pagination-ellipsis      — gap marker
+//   .tk-pagination-actions       — end column
+//   .tk-pagination-page-size     — wraps the Takeoff Select
+//   .tk-pagination-page-jump     — wraps the Takeoff Input (+ submit Button)
+//
+// Root attributes: data-type (outlined | text | grouped), data-mode
+// (default | compact), data-rounded, data-disabled (Spar). The current page is
+// keyed on Spar's `aria-current="page"`. Everything renders inside the root
+// (the Select list is portalled but styled by the Select recipe), so every
+// rule nests under it. Below a 600px container the info column hides and the
+// rest centres (Core's breakpoint).
+
+@mixin pagination {
+  // A full-width bar like Core's block-level host. Size containment gives the
+  // root no intrinsic width, so without an explicit width a centring parent
+  // would shrink it to nothing and trip the narrow layout below.
+  box-sizing: border-box;
+  width: 100%;
+  container-type: inline-size;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pagination-base-container-gap);
+  font-family: var(--family-body, 'Geologica', sans-serif);
+
+  .tk-pagination-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--pagination-base-tag-gap);
+    margin-inline-end: auto;
+  }
+
+  .tk-pagination-page-report,
+  .tk-pagination-items-report {
+    color: var(--text-base);
+    font-size: var(--desktop-body-xs-size);
+    line-height: var(--desktop-body-xs-line-height);
+  }
+
+  .tk-pagination-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--pagination-base-gap);
+  }
+
+  .tk-pagination-pages {
+    display: contents;
+  }
+
+  .tk-pagination-first,
+  .tk-pagination-previous,
+  .tk-pagination-next,
+  .tk-pagination-last,
+  .tk-pagination-page,
+  .tk-pagination-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: var(--pagination-cell-base-size);
+    height: var(--pagination-cell-base-size);
+    // Core's cell padding: the design's 8/12px measure as 6/11px once the
+    // 1px border is counted.
+    padding: 6px 11px;
+    margin: 0;
+    border: var(--spacing-px, 1px) solid transparent;
+    border-radius: var(--pagination-cell-base-radius);
+    background: none;
+    color: var(--text-darkest);
+    font-family: inherit;
+    font-size: var(--desktop-body-s-size);
+    line-height: var(--desktop-body-s-line-height);
+  }
+
+  .tk-pagination-first,
+  .tk-pagination-previous,
+  .tk-pagination-next,
+  .tk-pagination-last,
+  .tk-pagination-page {
+    cursor: pointer;
+    outline: none;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      color: var(--icon-base);
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--background-lightest);
+    }
+
+    &:focus-visible {
+      border-color: var(--states-info-base);
+      box-shadow: var(--primary-focus);
+    }
+
+    &:disabled {
+      cursor: default;
+      color: var(--text-sub-base);
+
+      svg {
+        color: var(--text-sub-base);
+      }
+    }
+  }
+
+  .tk-pagination-first,
+  .tk-pagination-previous,
+  .tk-pagination-next,
+  .tk-pagination-last {
+    padding-inline: 0;
+  }
+
+  // The first/previous and next/last pairs sit closer than the page cells.
+  .tk-pagination-first + .tk-pagination-previous,
+  .tk-pagination-next + .tk-pagination-last {
+    margin-inline-start: calc(var(--pagination-base-arrow-gap) - var(--pagination-base-gap));
+  }
+
+  .tk-pagination-ellipsis {
+    color: var(--text-base);
+  }
+
+  .tk-pagination-page[aria-current='page'] {
+    border-color: var(--states-info-sub-base);
+    background: var(--background-lightest);
+  }
+
+  .tk-pagination-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--pagination-base-right-gap);
+    margin-inline-start: auto;
+  }
+
+  .tk-pagination-page-size {
+    display: flex;
+    align-items: center;
+    width: 75px;
+  }
+
+  .tk-pagination-page-jump {
+    display: flex;
+    align-items: center;
+    flex: none;
+    min-width: 70px;
+    width: calc(48px + var(--tk-pagination-digits, 1) * 1ch);
+
+    .tk-input {
+      width: 100%;
+    }
+
+    .tk-button .tk-button-content svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  // --- type ---------------------------------------------------------------
+
+  &[data-type='outlined'] .tk-pagination-page:not([aria-current='page']) {
+    border-color: var(--border-light);
+  }
+
+  &[data-type='grouped'] .tk-pagination-controls {
+    padding: var(--pagination-base-container-v-padding) 0;
+    border: var(--spacing-px, 1px) solid var(--border-light);
+    border-radius: var(--pagination-cell-base-radius);
+    background: var(--static-light);
+  }
+
+  // Core draws a 16px divider between each edge pair; a border on the inner
+  // button keeps it out of the DOM.
+  &[data-type='grouped'] .tk-pagination-first + .tk-pagination-previous,
+  &[data-type='grouped'] .tk-pagination-next + .tk-pagination-last {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: calc((100% - 16px) / 2);
+      inset-inline-start: calc(var(--pagination-base-arrow-gap) / -2 - 0.5px);
+      width: 1px;
+      background: var(--border-light);
+    }
+  }
+
+  &[data-type='grouped'] .tk-pagination-next + .tk-pagination-last::before {
+    inset-inline-start: auto;
+    inset-inline-end: calc(100% + var(--pagination-base-arrow-gap) / 2 - 0.5px);
+  }
+
+  &[data-rounded]:not([data-mode='compact']) .tk-pagination-page {
+    border-radius: var(--radius-full, 9999px);
+  }
+
+  // --- compact ------------------------------------------------------------
+
+  &[data-mode='compact'] {
+    .tk-pagination-first,
+    .tk-pagination-previous,
+    .tk-pagination-next,
+    .tk-pagination-last {
+      // Core's compact cell.
+      width: 36px;
+      min-width: 36px;
+      height: 36px;
+      border-color: var(--border-light);
+    }
+
+    .tk-pagination-controls .tk-pagination-page-report {
+      font-size: var(--desktop-body-s-size);
+      line-height: var(--desktop-body-s-line-height);
+    }
+
+    .tk-pagination-controls .tk-pagination-page-jump {
+      min-width: 48px;
+      width: calc(24px + var(--tk-pagination-digits, 1) * 1ch);
+    }
+  }
+
+  &[data-mode='compact'][data-rounded] {
+    .tk-pagination-first,
+    .tk-pagination-previous,
+    .tk-pagination-next,
+    .tk-pagination-last {
+      border-radius: var(--radius-full, 9999px);
+    }
+  }
+
+  &[data-disabled] {
+    opacity: 0.6;
+  }
+
+  // The root is the query container, so only its children can respond.
+  @container (max-width: 600px) {
+    .tk-pagination-info {
+      display: none;
+    }
+
+    .tk-pagination-controls,
+    .tk-pagination-actions {
+      justify-content: center;
+      margin-inline: 0;
+      width: 100%;
+    }
+  }
+}

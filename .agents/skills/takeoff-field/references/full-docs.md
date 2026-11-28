@@ -1,9 +1,8 @@
 # Field — @takeoff-ui/react-spar
 
 > **Field has no standalone Copy-page doc.** It is documented inside the **Forms
-> guides**. See:
-> https://takeoff-v2.app.turkishtechlab.com/docs/forms/react-hook-form and:
-> https://takeoff-v2.app.turkishtechlab.com/docs/forms/tanstack-form
+> guides**. See: https://v2.takeoffui.com/docs/forms/react-hook-form and:
+> https://v2.takeoffui.com/docs/forms/tanstack-form
 
 `Field` is the form-field wrapper from Takeoff UI / Spar React. It provides the
 shared ARIA context (label association, description / `aria-describedby`, error
@@ -339,10 +338,8 @@ From `@takeoff-ui/react-spar`:
 
 Field is documented within the Takeoff Forms guides:
 
-- React Hook Form:
-  https://takeoff-v2.app.turkishtechlab.com/docs/forms/react-hook-form
-- TanStack Form:
-https://takeoff-v2.app.turkishtechlab.com/docs/forms/tanstack-form
+- React Hook Form: https://v2.takeoffui.com/docs/forms/react-hook-form
+- TanStack Form: https://v2.takeoffui.com/docs/forms/tanstack-form
 </content>
 
 </invoke>

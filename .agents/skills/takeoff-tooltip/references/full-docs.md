@@ -269,7 +269,7 @@ render(<ControlledDemo />);
 ### Tooltip {#tooltip}
 
 See
-[Spar Tooltip docs](https://spar.app.turkishtechlab.com/docs/Components/Tooltip)
+[Spar Tooltip docs](https://v2.takeoffui.com/headless/docs/Components/Tooltip)
 for primitive behavior.
 
 #### Props {#tooltip-props}

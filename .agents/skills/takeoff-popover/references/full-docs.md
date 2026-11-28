@@ -296,7 +296,7 @@ render(<ControlledDemo />);
 ### Popover {#popover}
 
 See
-[Spar Popover docs](https://spar.app.turkishtechlab.com/docs/Components/Popover)
+[Spar Popover docs](https://v2.takeoffui.com/headless/docs/Components/Popover)
 for primitive behavior.
 
 #### Props {#popover-props}
