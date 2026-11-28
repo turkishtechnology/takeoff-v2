@@ -12,10 +12,17 @@ export interface ButtonOwnProps {
   isLoading?: boolean;
 
   /**
-   * Toggle state - when defined, creates a toggle button
+   * Controlled toggle state - when defined, creates a toggle button
    * @defaultValue undefined
    */
   isPressed?: boolean;
+
+  /**
+   * Uncontrolled initial toggle state - when defined (and `isPressed` is not),
+   * creates a toggle button that manages its own pressed state
+   * @defaultValue undefined
+   */
+  defaultPressed?: boolean;
 
   /**
    * Callback fired when toggle state changes

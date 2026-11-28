@@ -2,6 +2,7 @@ import { Select as SelectRoot } from './Select';
 import { SelectTrigger } from './SelectTrigger';
 import { SelectContent } from './SelectContent';
 import { SelectViewport } from './SelectViewport';
+import { SelectSearch } from './SelectSearch';
 import { SelectItem } from './SelectItem';
 import { SelectGroup } from './SelectGroup';
 import { SelectLabel } from './SelectLabel';
@@ -14,6 +15,7 @@ const Select = SelectRoot as typeof SelectRoot & {
   Trigger: typeof SelectTrigger;
   Content: typeof SelectContent;
   Viewport: typeof SelectViewport;
+  Search: typeof SelectSearch;
   Item: typeof SelectItem;
   Group: typeof SelectGroup;
   Label: typeof SelectLabel;
@@ -25,13 +27,14 @@ Select.Root = SelectRoot;
 Select.Trigger = SelectTrigger;
 Select.Content = SelectContent;
 Select.Viewport = SelectViewport;
+Select.Search = SelectSearch;
 Select.Item = SelectItem;
 Select.Group = SelectGroup;
 Select.Label = SelectLabel;
 Select.Separator = SelectSeparator;
 Select.Arrow = SelectArrow;
 
-export { Select, SelectRoot, SelectTrigger, SelectContent, SelectViewport, SelectItem, SelectGroup, SelectLabel, SelectSeparator, SelectArrow };
+export { Select, SelectRoot, SelectTrigger, SelectContent, SelectViewport, SelectSearch, SelectItem, SelectGroup, SelectLabel, SelectSeparator, SelectArrow };
 
 export type {
   SelectProps,
@@ -39,6 +42,8 @@ export type {
   SelectTriggerRenderProps,
   SelectContentProps,
   SelectViewportProps,
+  SelectSearchProps,
+  SelectSearchOwnProps,
   SelectItemProps,
   SelectItemRenderProps,
   SelectGroupProps,

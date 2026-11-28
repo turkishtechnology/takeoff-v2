@@ -1,0 +1,137 @@
+---
+title: Carousel
+description:
+  Headless carousel primitives following the WAI-ARIA carousel pattern - slide
+  index state, several slides per view, looping, arrow-key navigation and
+  auto-rotation that pauses on hover and focus.
+---
+
+import LiveCode from '@site/src/components/headless/LiveCode';
+
+# Carousel
+
+A headless, accessible carousel. Spar owns the slide index, the page model,
+keyboard navigation, auto-rotation and the ARIA wiring; you render the track and
+move it with the index from `useCarouselContext()` (or style off `data-active`).
+
+## Live Demo
+
+<LiveCode
+  code={`<Carousel.Root aria-label='Destinations' className='carousel-demo'>
+  <Carousel.Viewport className='carousel-viewport'>
+    {['Istanbul', 'London', 'Tokyo'].map(city => (
+      <Carousel.Slide key={city} className='carousel-slide'>{city}</Carousel.Slide>
+    ))}
+  </Carousel.Viewport>
+  <div className='carousel-controls'>
+    <Carousel.PrevTrigger aria-label='Previous slide'>‹</Carousel.PrevTrigger>
+    {[0, 1, 2].map(index => (
+      <Carousel.Indicator key={index} index={index} aria-label={'Go to slide ' + (index + 1)} className='carousel-dot' />
+    ))}
+    <Carousel.NextTrigger aria-label='Next slide'>›</Carousel.NextTrigger>
+  </div>
+</Carousel.Root>`}
+  cssCode={`.carousel-demo { width: 320px; }
+.carousel-demo .carousel-slide { padding: 48px 0; text-align: center; border-radius: 8px; background: rgba(0, 0, 0, 0.08); }
+.carousel-demo .carousel-slide:not([data-active]) { display: none; }
+.carousel-demo .carousel-controls { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 8px; }
+.carousel-demo .carousel-dot { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: #c0c4cc; }
+.carousel-demo .carousel-dot[data-active] { background: #222530; }`}
+/>
+
+## Features
+
+- Index of the first visible slide, controlled or uncontrolled.
+- `slidesPerView`: one step per move, `slideCount - slidesPerView + 1` pages.
+- `loop` (default) wraps; without it the end triggers are `disabled`.
+- ArrowLeft / ArrowRight (ArrowUp / ArrowDown when vertical), flipped in RTL,
+  ignored inside text fields.
+- Auto-rotation pauses on hover and focus, stops from
+  `Carousel.AutoplayTrigger`, starts stopped under `prefers-reduced-motion`, and
+  stops on the last page without `loop`.
+- Slides outside the visible window are `inert`.
+
+## Import
+
+```tsx
+import { Carousel, useCarouselContext } from '@turkish-technology/spar';
+// or: import { Carousel } from '@turkish-technology/spar/carousel';
+```
+
+## Anatomy
+
+```tsx
+<Carousel.Root aria-label="…">
+  <Carousel.AutoplayTrigger />
+  <Carousel.PrevTrigger />
+  <Carousel.NextTrigger />
+  <Carousel.Viewport>
+    <Carousel.Slide />
+  </Carousel.Viewport>
+  <Carousel.Indicator index={0} />
+</Carousel.Root>
+```
+
+## API Reference
+
+### Carousel / Carousel.Root
+
+| Name                | Type                                       | Default                          | Description                                                 |
+| ------------------- | ------------------------------------------ | -------------------------------- | ----------------------------------------------------------- |
+| `id?`               | `string`                                   | generated                        | Base id; the viewport is `${id}-viewport`                   |
+| `value?`            | `number`                                   | —                                | Controlled index of the first visible slide                 |
+| `defaultValue?`     | `number`                                   | `0`                              | Initial index for uncontrolled usage                        |
+| `onValueChange?`    | `(value: number) => void`                  | —                                | Called on navigation; not called when the target is current |
+| `loop?`             | `boolean`                                  | `true`                           | Wrap from the last page to the first and back               |
+| `slidesPerView?`    | `number`                                   | `1`                              | Slides visible at once                                      |
+| `orientation?`      | `'horizontal' \| 'vertical'`               | `'horizontal'`                   | Axis; selects the arrow keys                                |
+| `autoplay?`         | `boolean`                                  | `false`                          | Advance on its own                                          |
+| `autoplayInterval?` | `number`                                   | `3000`                           | Milliseconds between steps                                  |
+| `isPlaying?`        | `boolean`                                  | —                                | Controlled autoplay state                                   |
+| `defaultPlaying?`   | `boolean`                                  | `!prefersReducedMotion`          | Initial autoplay state                                      |
+| `onPlayingChange?`  | `(isPlaying: boolean) => void`             | —                                | Called when the autoplay control toggles or rotation ends   |
+| `getSlideLabel?`    | `(index: number, count: number) => string` | `` `${index + 1} of ${count}` `` | Accessible name of each slide                               |
+
+Renders `role="region"`, `aria-roledescription="carousel"` (overridable) and
+`data-orientation`.
+
+### Carousel.Viewport
+
+Renders the slide container with `id="${id}-viewport"` and `aria-live` (`off`
+while rotating, `polite` otherwise).
+
+### Carousel.Slide
+
+`role="group"`, `aria-roledescription="slide"`, `aria-label` from
+`getSlideLabel`, `data-active` and `inert` outside the window. Children may be
+`({ index, isActive }) => ReactNode`.
+
+### Carousel.PrevTrigger / Carousel.NextTrigger
+
+`<button type="button">` with `aria-controls` → viewport; `disabled` when no
+step exists. Give it an `aria-label`.
+
+### Carousel.Indicator
+
+Props: `index` (page start). `aria-current="true"` and `data-active` on the
+current page.
+
+### Carousel.AutoplayTrigger
+
+Toggles autoplay; renders nothing without `autoplay`. Children may be
+`({ isPlaying }) => ReactNode`; change the `aria-label` with the state.
+
+### useCarouselContext()
+
+Returns `value`, `slideCount`, `pageCount`, `slidesPerView`, `orientation`,
+`loop`, `canGoPrev`, `canGoNext`, `autoplay`, `isPlaying`, `isRotating`,
+`viewportId`, and `goTo` / `goPrev` / `goNext` / `setPlaying`.
+
+## Keyboard Interactions
+
+| Key          | Action         | Context                      |
+| ------------ | -------------- | ---------------------------- |
+| `ArrowRight` | Next slide     | Horizontal (previous in RTL) |
+| `ArrowLeft`  | Previous slide | Horizontal (next in RTL)     |
+| `ArrowDown`  | Next slide     | Vertical                     |
+| `ArrowUp`    | Previous slide | Vertical                     |

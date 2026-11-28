@@ -1,0 +1,284 @@
+// ---------------------------------------------------------------------------
+// FlightLoader recipe — apply to `.tk-flight-loader` root and its parts.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-flight-loader          — root (card, accessibility owner)
+//   .tk-flight-loader-scene    — aria-hidden runway + plane (internal)
+//   .tk-flight-loader-progress — aria-hidden indeterminate bar (internal)
+//   .tk-flight-loader-logo     — FlightLoader.Logo (img)
+//   .tk-flight-loader-tagline  — FlightLoader.Tagline
+//   .tk-flight-loader-status   — FlightLoader.Status
+//
+// Visual order is fixed with `order`, so consumers may write the parts in any
+// order: logo → scene → tagline → progress → status.
+//
+// State/variant attributes on root:
+//   data-variant — accent color (plane tail, progress bar)
+//
+// Custom properties (set on the root to go off-palette):
+//   --tk-flight-loader-accent, --tk-flight-loader-plane,
+//   --tk-flight-loader-detail, --tk-flight-loader-runway
+//
+// Each plane movement (run, climb, pitch) sits on its own element so every
+// curve stays continuous, and only `transform` is animated so the motion runs
+// on browsers without the individual `translate` / `rotate` properties.
+// ---------------------------------------------------------------------------
+
+@mixin flight-loader-keyframes {
+  @keyframes tk-flight-loader-run {
+    0% {
+      transform: translate3d(-80px, 0, 0);
+      animation-timing-function: cubic-bezier(0.45, 0, 0.85, 0.9);
+    }
+
+    80%,
+    100% {
+      transform: translate3d(var(--tk-flight-loader-run-distance), 0, 0);
+    }
+  }
+
+  @keyframes tk-flight-loader-fade {
+    0%,
+    70% {
+      opacity: 1;
+    }
+
+    80%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes tk-flight-loader-climb {
+    0%,
+    46% {
+      transform: translate3d(0, 0, 0);
+      animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.7);
+    }
+
+    80%,
+    100% {
+      transform: translate3d(0, -64px, 0);
+    }
+  }
+
+  @keyframes tk-flight-loader-pitch {
+    0%,
+    42% {
+      transform: rotate(0deg);
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    56% {
+      transform: rotate(-10deg);
+      animation-timing-function: ease-in-out;
+    }
+
+    80%,
+    100% {
+      transform: rotate(-13deg);
+    }
+  }
+
+  @keyframes tk-flight-loader-gear {
+    0%,
+    55% {
+      opacity: 1;
+    }
+
+    62%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes tk-flight-loader-runway {
+    to {
+      background-position: -24px 0;
+    }
+  }
+
+  @keyframes tk-flight-loader-bar {
+    from {
+      left: -35%;
+    }
+
+    to {
+      left: 100%;
+    }
+  }
+}
+
+@mixin flight-loader {
+  --tk-flight-loader-duration: 3.6s;
+  --tk-flight-loader-run-distance: 300px;
+  --tk-flight-loader-accent: var(--primary-base);
+  --tk-flight-loader-plane: var(--text-darkest);
+  --tk-flight-loader-detail: var(--text-sub-base);
+  --tk-flight-loader-runway: var(--border-light);
+
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20rem;
+  max-width: 100%;
+  padding: 28px 28px 24px;
+  color: var(--text-sub-base);
+  background: var(--static-light);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 24px var(--shadow-black-alpha-base, rgba(82, 88, 102, 0.08));
+
+  .tk-flight-loader-logo {
+    order: 1;
+    display: block;
+    max-width: 180px;
+    max-height: 80px;
+    object-fit: contain;
+  }
+
+  .tk-flight-loader-scene {
+    order: 2;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 72px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+
+  .tk-flight-loader-tagline {
+    order: 3;
+    margin: 14px 0 0;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .tk-flight-loader-progress {
+    order: 4;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 3px;
+    margin-top: 18px;
+    overflow: hidden;
+    background: var(--background-lightest);
+    border-radius: var(--radius-full);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 35%;
+      background: var(--tk-flight-loader-accent);
+      border-radius: var(--radius-full);
+      animation: tk-flight-loader-bar 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    }
+  }
+
+  .tk-flight-loader-status {
+    order: 5;
+    margin: 10px 0 0;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  // Scene internals -------------------------------------------------------
+
+  .tk-flight-loader-runway {
+    position: absolute;
+    right: 0;
+    bottom: 8px;
+    left: 0;
+    height: 2px;
+    background-color: var(--tk-flight-loader-runway);
+    background-image: repeating-linear-gradient(90deg, var(--tk-flight-loader-detail) 0 10px, transparent 10px 24px);
+    animation: tk-flight-loader-runway 0.45s linear infinite;
+  }
+
+  .tk-flight-loader-plane {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    display: block;
+    width: 64px;
+    will-change: transform, opacity;
+    animation:
+      tk-flight-loader-run var(--tk-flight-loader-duration) infinite,
+      tk-flight-loader-fade var(--tk-flight-loader-duration) linear infinite;
+  }
+
+  .tk-flight-loader-plane-climb {
+    display: block;
+    will-change: transform;
+    animation: tk-flight-loader-climb var(--tk-flight-loader-duration) infinite;
+  }
+
+  .tk-flight-loader-plane-body {
+    display: block;
+    width: 100%;
+    transform-origin: 30% 85%;
+    will-change: transform;
+    animation: tk-flight-loader-pitch var(--tk-flight-loader-duration) infinite;
+  }
+
+  .tk-flight-loader-plane-tail {
+    fill: var(--tk-flight-loader-accent);
+  }
+
+  .tk-flight-loader-plane-fuselage {
+    fill: var(--tk-flight-loader-plane);
+  }
+
+  .tk-flight-loader-plane-wing,
+  .tk-flight-loader-plane-gear {
+    fill: var(--tk-flight-loader-detail);
+  }
+
+  .tk-flight-loader-plane-gear {
+    animation: tk-flight-loader-gear var(--tk-flight-loader-duration) linear infinite;
+  }
+
+  &[data-variant='primary'] {
+    --tk-flight-loader-accent: var(--primary-base);
+  }
+
+  &[data-variant='secondary'] {
+    --tk-flight-loader-accent: var(--secondary-base);
+  }
+
+  &[data-variant='neutral'] {
+    --tk-flight-loader-accent: var(--background-darkest);
+  }
+
+  &[data-variant='info'] {
+    --tk-flight-loader-accent: var(--states-info-base);
+  }
+
+  &[data-variant='success'] {
+    --tk-flight-loader-accent: var(--states-success-base);
+  }
+
+  &[data-variant='danger'] {
+    --tk-flight-loader-accent: var(--states-danger-base);
+  }
+
+  &[data-variant='warning'] {
+    --tk-flight-loader-accent: var(--states-warning-base);
+  }
+
+  // Slow down rather than stop: a loader that does not move reads as frozen.
+  @media (prefers-reduced-motion: reduce) {
+    --tk-flight-loader-duration: 7.2s;
+
+    .tk-flight-loader-progress::before {
+      animation-duration: 2.8s;
+    }
+  }
+}
