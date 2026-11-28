@@ -28,6 +28,11 @@
       "import": "./dist/button.mjs",
       "require": "./dist/button.cjs"
     },
+    "./carousel": {
+      "types": "./dist/carousel.d.ts",
+      "import": "./dist/carousel.mjs",
+      "require": "./dist/carousel.cjs"
+    },
     "./checkbox": {
       "types": "./dist/checkbox.d.ts",
       "import": "./dist/checkbox.mjs",
@@ -63,6 +68,11 @@
       "import": "./dist/label.mjs",
       "require": "./dist/label.cjs"
     },
+    "./pagination": {
+      "types": "./dist/pagination.d.ts",
+      "import": "./dist/pagination.mjs",
+      "require": "./dist/pagination.cjs"
+    },
     "./popover": {
       "types": "./dist/popover.d.ts",
       "import": "./dist/popover.mjs",
@@ -93,6 +103,11 @@
       "import": "./dist/toast.mjs",
       "require": "./dist/toast.cjs"
     },
+    "./toggle-group": {
+      "types": "./dist/toggle-group.d.ts",
+      "import": "./dist/toggle-group.mjs",
+      "require": "./dist/toggle-group.cjs"
+    },
     "./tooltip": {
       "types": "./dist/tooltip.d.ts",
       "import": "./dist/tooltip.mjs",
@@ -110,6 +125,9 @@
       ],
       "button": [
         "./dist/button.d.ts"
+      ],
+      "carousel": [
+        "./dist/carousel.d.ts"
       ],
       "checkbox": [
         "./dist/checkbox.d.ts"
@@ -132,6 +150,9 @@
       "label": [
         "./dist/label.d.ts"
       ],
+      "pagination": [
+        "./dist/pagination.d.ts"
+      ],
       "popover": [
         "./dist/popover.d.ts"
       ],
@@ -149,6 +170,9 @@
       ],
       "toast": [
         "./dist/toast.d.ts"
+      ],
+      "toggle-group": [
+        "./dist/toggle-group.d.ts"
       ],
       "tooltip": [
         "./dist/tooltip.d.ts"
@@ -207,23 +231,23 @@
     "react-dom": ">=19.0.0"
   },
   "devDependencies": {
-    "@rspack/cli": "^1.0.0",
-    "@rspack/core": "^1.0.0",
-    "@size-limit/preset-small-lib": "^11.0.0",
-    "@testing-library/jest-dom": "^6.8.0",
+    "@rspack/cli": "^2.3.4",
+    "@rspack/core": "^2.3.4",
+    "@size-limit/preset-small-lib": "^14.3.0",
+    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
+    "@testing-library/user-event": "^14.6.13",
     "@types/jest": "^30.0.0",
     "@types/jest-axe": "^3.5.9",
-    "@types/node": "^22.10.2",
-    "@types/react": "^19.2.7",
+    "@types/node": "^26.6.7",
+    "@types/react": "^19.3.1",
     "@types/react-dom": "^19.2.3",
     "jest": "^30.1.1",
-    "jest-axe": "^10.0.0",
+    "jest-axe": "^11.0.0",
     "jest-environment-jsdom": "^30.1.1",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "size-limit": "^11.0.0",
+    "size-limit": "^14.3.0",
     "ts-jest": "^29.4.1",
     "tslib": "^2.7.0",
     "typescript": "^5.8.2"

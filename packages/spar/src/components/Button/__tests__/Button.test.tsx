@@ -110,6 +110,49 @@ describe('Button', () => {
     expect(button).toHaveAttribute('aria-pressed', 'false');
   });
 
+  it('manages its own pressed state from defaultPressed and reports each change', async () => {
+    const user = userEvent.setup();
+    const onPressedChange = jest.fn();
+    render(
+      <Button defaultPressed onPressedChange={onPressedChange}>
+        Bold
+      </Button>,
+    );
+    const button = screen.getByRole('button', { name: 'Bold' });
+
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+    expect(button).toHaveAttribute('data-pressed', '');
+
+    await user.click(button);
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+    expect(button).not.toHaveAttribute('data-pressed');
+    expect(onPressedChange).toHaveBeenLastCalledWith(false);
+
+    await user.click(button);
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+    expect(onPressedChange).toHaveBeenLastCalledWith(true);
+    expect(onPressedChange).toHaveBeenCalledTimes(2);
+  });
+
+  it('lets isPressed win over defaultPressed', async () => {
+    const user = userEvent.setup();
+    render(
+      <Button isPressed={false} defaultPressed>
+        Italic
+      </Button>,
+    );
+    const button = screen.getByRole('button', { name: 'Italic' });
+
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+    await user.click(button);
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('is not a toggle when neither isPressed nor defaultPressed is set', () => {
+    render(<Button>Plain</Button>);
+    expect(screen.getByRole('button', { name: 'Plain' })).not.toHaveAttribute('aria-pressed');
+  });
+
   it('applies autofocus behavior and state data attribute', async () => {
     render(<Button autoFocus>Auto focus</Button>);
     const button = screen.getByRole('button', { name: 'Auto focus' });

@@ -1,5 +1,5 @@
-import { useState, useCallback, useMemo, useRef, ElementType } from 'react';
-import { useMergedRef, useAutoFocus } from '@/hooks';
+import { useCallback, useMemo, useRef, ElementType } from 'react';
+import { useMergedRef, useAutoFocus, useControlledState } from '@/hooks';
 import type { ButtonProps } from './types';
 
 /**
@@ -16,6 +16,7 @@ export const Button = <T extends ElementType = 'button'>({
   autoFocus = false,
   isLoading = false,
   isPressed,
+  defaultPressed,
   onPressedChange,
   children,
   onClick,
@@ -27,12 +28,11 @@ export const Button = <T extends ElementType = 'button'>({
 }: ButtonProps<T>) => {
   const Component = as || 'button';
   const isNativeButton = Component === 'button';
-  // Internal state for uncontrolled toggle
-  const [internalPressed, setInternalPressed] = useState<boolean>(false);
-
-  // Determine if this is a toggle button and current pressed state
-  const isToggle = isPressed !== undefined;
-  const currentPressed = isToggle ? isPressed : internalPressed;
+  // A toggle button is either controlled (`isPressed`) or uncontrolled
+  // (`defaultPressed`); `onPressedChange` reports every change in both modes.
+  const isToggle = isPressed !== undefined || defaultPressed !== undefined;
+  const [pressedState, setPressed] = useControlledState(isPressed, defaultPressed, onPressedChange);
+  const currentPressed = pressedState ?? false;
 
   // Interactive state
   const isInteractive = !disabled && !isLoading;
@@ -51,12 +51,7 @@ export const Button = <T extends ElementType = 'button'>({
 
       // Toggle logic
       if (isToggle) {
-        const newPressed = !currentPressed;
-        if (onPressedChange) {
-          onPressedChange(newPressed);
-        } else {
-          setInternalPressed(newPressed);
-        }
+        setPressed(!currentPressed);
       }
 
       // Fire click handler for both mouse and keyboard activation
@@ -64,7 +59,7 @@ export const Button = <T extends ElementType = 'button'>({
         onClick(event as React.MouseEvent<HTMLButtonElement>);
       }
     },
-    [isInteractive, isToggle, currentPressed, onPressedChange, onClick],
+    [isInteractive, isToggle, currentPressed, setPressed, onClick],
   );
 
   // Click handler
@@ -115,7 +110,7 @@ export const Button = <T extends ElementType = 'button'>({
     const attrs: Record<string, boolean | string> = {};
 
     // Only add aria-pressed for toggle buttons
-    if (isToggle && currentPressed !== undefined) {
+    if (isToggle) {
       attrs['aria-pressed'] = currentPressed;
     }
 
