@@ -129,6 +129,11 @@ function ToggleButton() {
 }
 ```
 
+Uncontrolled: `<Button defaultPressed>Notify me</Button>` manages its own state
+(`onPressedChange` still reports each change). For a set of toggles with single
+or multiple selection and one tab stop, use `ToggleButtonGroup` (the
+`takeoff-toggle-button-group` skill).
+
 ## Key props
 
 | Prop                   | Type                             | Default     | Notes                                                                                        |
@@ -142,7 +147,8 @@ function ToggleButton() {
 | endContent             | `React.ReactNode`                | -           | Node rendered after children.                                                                |
 | loading                | `boolean`                        | -           | Shows a spinner; sets `aria-busy`.                                                           |
 | disabled               | `boolean`                        | -           | Native disabled state.                                                                       |
-| pressed                | `boolean`                        | -           | When defined, makes a toggle button.                                                         |
+| pressed                | `boolean`                        | -           | Controlled pressed state; when defined, makes a toggle button.                               |
+| defaultPressed         | `boolean`                        | -           | Uncontrolled initial pressed state; when defined, makes a toggle button.                     |
 | onPressedChange        | `(pressed: boolean) => void`     | -           | Fires when toggle state changes.                                                             |
 | classNames / slotProps | `Partial<Record<ButtonSlot, …>>` | -           | Per-slot (`root \| content \| label \| spinner`) class/attribute overrides.                  |
 

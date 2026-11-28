@@ -98,6 +98,11 @@
       "import": "./dist/toast.mjs",
       "require": "./dist/toast.cjs"
     },
+    "./toggle-group": {
+      "types": "./dist/toggle-group.d.ts",
+      "import": "./dist/toggle-group.mjs",
+      "require": "./dist/toggle-group.cjs"
+    },
     "./tooltip": {
       "types": "./dist/tooltip.d.ts",
       "import": "./dist/tooltip.mjs",
@@ -157,6 +162,9 @@
       ],
       "toast": [
         "./dist/toast.d.ts"
+      ],
+      "toggle-group": [
+        "./dist/toggle-group.d.ts"
       ],
       "tooltip": [
         "./dist/tooltip.d.ts"

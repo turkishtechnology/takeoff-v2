@@ -6,20 +6,21 @@ and accessibility guidance where the component owns interaction behavior.
 
 ## Actions & form controls
 
-| Component                                        | Use it for                                                            |
-| ------------------------------------------------ | --------------------------------------------------------------------- |
-| [Button](/docs/components/button)                | Triggering actions with loading, toggle, and icon support.            |
-| [Checkbox](/docs/components/checkbox)            | Selecting multiple options or representing a mixed state.             |
-| [ColorPicker](/docs/components/color-picker)     | Picking a color by area, sliders, typed values, or presets.           |
-| [CurrencyInput](/docs/components/currency-input) | Entering an amount of money with its currency.                        |
-| [Field](/docs/components/input#using-with-field) | Wiring labels, descriptions, validation, and control state.           |
-| [Input](/docs/components/input)                  | Building text inputs with labels, affixes, icons, chips, and actions. |
-| [Label](/docs/components/label)                  | Labeling controls, sections, and compact metadata.                    |
-| [PhoneInput](/docs/components/phone-input)       | Entering a phone number with its country.                             |
-| [Radio](/docs/components/radio)                  | Choosing one option from a mutually exclusive set.                    |
-| [Rating](/docs/components/rating)                | Picking a score from a row of stars, hearts, dots or numbers.         |
-| [Select](/docs/components/select)                | Choosing from a keyboard-accessible list with typeahead.              |
-| [Switch](/docs/components/switch)                | Turning a single setting on or off.                                   |
+| Component                                                 | Use it for                                                            |
+| --------------------------------------------------------- | --------------------------------------------------------------------- |
+| [Button](/docs/components/button)                         | Triggering actions with loading, toggle, and icon support.            |
+| [Checkbox](/docs/components/checkbox)                     | Selecting multiple options or representing a mixed state.             |
+| [ColorPicker](/docs/components/color-picker)              | Picking a color by area, sliders, typed values, or presets.           |
+| [CurrencyInput](/docs/components/currency-input)          | Entering an amount of money with its currency.                        |
+| [Field](/docs/components/input#using-with-field)          | Wiring labels, descriptions, validation, and control state.           |
+| [Input](/docs/components/input)                           | Building text inputs with labels, affixes, icons, chips, and actions. |
+| [Label](/docs/components/label)                           | Labeling controls, sections, and compact metadata.                    |
+| [PhoneInput](/docs/components/phone-input)                | Entering a phone number with its country.                             |
+| [Radio](/docs/components/radio)                           | Choosing one option from a mutually exclusive set.                    |
+| [Rating](/docs/components/rating)                         | Picking a score from a row of stars, hearts, dots or numbers.         |
+| [Select](/docs/components/select)                         | Choosing from a keyboard-accessible list with typeahead.              |
+| [Switch](/docs/components/switch)                         | Turning a single setting on or off.                                   |
+| [ToggleButtonGroup](/docs/components/toggle-button-group) | Switching views or toggling options from a row of buttons.            |
 
 ## Navigation & disclosure
 

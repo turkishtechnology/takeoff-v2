@@ -124,6 +124,7 @@ import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './comp
 import { PhoneInputBase, PhoneInputCountrySelectBase, PhoneInputDialCodeBase, PhoneInputFieldBase } from './components/phone-input/base';
 import { TimelineBase, TimelineDescriptionBase, TimelineItemBase, TimelineTimeBase, TimelineTitleBase } from './components/timeline/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverDescriptionBase, PopoverHeaderBase, PopoverTriggerBase } from './components/popover/base';
+import { ToggleButtonGroupBase, ToggleButtonGroupItemBase } from './components/toggle-button-group/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 import { SkeletonBase } from './components/skeleton/base';
@@ -316,6 +317,8 @@ export const slotClassRegistry = {
   timelineTitle: { slots: TimelineTitleBase.classes },
   timelineDescription: { slots: TimelineDescriptionBase.classes },
   timelineTime: { slots: TimelineTimeBase.classes },
+  toggleButtonGroup: { slots: ToggleButtonGroupBase.classes },
+  toggleButtonGroupItem: { slots: ToggleButtonGroupItemBase.classes },
   popoverTrigger: { slots: PopoverTriggerBase.classes },
   popoverContent: { slots: PopoverContentBase.classes },
   popoverHeader: { slots: PopoverHeaderBase.classes },

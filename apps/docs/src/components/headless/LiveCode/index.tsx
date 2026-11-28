@@ -26,6 +26,7 @@ import {
   Tooltip,
   Toast,
   Toaster,
+  ToggleGroup,
   createToaster,
   // Simple components
   Button,
@@ -156,6 +157,7 @@ export const LiveCode = ({ code, cssCode }: LiveCodeProps) => {
       Tooltip,
       Toast,
       Toaster,
+      ToggleGroup,
       createToaster,
       // Simple components
       Button,

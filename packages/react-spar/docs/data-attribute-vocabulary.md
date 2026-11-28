@@ -84,6 +84,8 @@ table needs updating.
 | `data-indeterminate`  | presence     | Root, Indicator (Progress)  | Indeterminate; indicator animates   |
 | `data-invalid`        | presence     | Root                        | Component is visually invalid       |
 | `data-loading`        | presence     | Root                        | Component is in loading state       |
+| `data-multiple`       | presence     | Root (ToggleButtonGroup)    | Group allows multiple pressed items |
+| `data-pressed`        | presence     | Button / toggle group item  | Toggle is pressed (Spar-emitted)    |
 | `data-readonly`       | presence     | Root (Slider)               | Value renders, interaction blocked  |
 | `data-required`       | presence     | Root (Slider)               | Control is required                 |
 | `data-state`          | finite-str   | Primitive-owned element     | Mutually exclusive primitive state  |
@@ -585,6 +587,23 @@ their vocabulary (`data-invalid`, `data-disabled`, `data-mask`,
 - **`data-mask-completed` means "valid"** here: the resolver reports
   libphonenumber-js's `isValid()` as `completed`.
 - **No `data-*` of its own on `PhoneInput.DialCode`** beyond `data-slot`.
+
+### ToggleButtonGroup
+
+The group wraps Spar's `ToggleGroup` and each item is a Spar `Button` toggle, so
+state attributes are Spar-owned and not mirrored (rule 7).
+
+- **Spar emits the state:** `data-orientation`, `data-multiple` and
+  `data-disabled` on the group; `aria-pressed`, `data-pressed` and
+  `data-disabled` on each item. The recipe keys the pressed appearance on
+  `[aria-pressed='true']`.
+- **The group carries its own visual variants:** `data-type` (`basic` |
+  `divided` | `light` — Core's group vocabulary), `data-size` and `data-rounded`
+  (presence). The rounded radius reaches items through a descendant selector.
+- **Items re-emit the cascaded visuals:** `data-size`, `data-variant` and
+  `data-type` (the `appearance`, Button's mapping) are written on every item
+  from the group context, so an item override wins without an ancestor lookup
+  (Radio / Accordion precedent). `data-icon-only` (presence) is Button's.
 
 ### Upload
 

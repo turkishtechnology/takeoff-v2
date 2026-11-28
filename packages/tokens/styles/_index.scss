@@ -38,6 +38,7 @@
 @use 'recipes/table';
 @use 'recipes/tabs';
 @use 'recipes/timeline';
+@use 'recipes/toggle-button-group';
 @use 'recipes/tooltip';
 @use 'recipes/toast';
 @use 'recipes/upload';
@@ -532,6 +533,14 @@
 
 .tk-tabs-content {
   @include tabs.tabs-content;
+}
+
+.tk-toggle-button-group {
+  @include toggle-button-group.toggle-button-group;
+}
+
+.tk-toggle-button-group-item {
+  @include toggle-button-group.toggle-button-group-item;
 }
 
 .tk-tooltip-content {

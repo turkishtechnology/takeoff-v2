@@ -1,0 +1,429 @@
+---
+title: ToggleButtonGroup
+description:
+  A set of toggle buttons with single or multiple selection and one keyboard tab
+  stop — for view switchers, alignment and formatting toolbars, and filters.
+sidebar_label: ToggleButtonGroup
+sidebar_position: 20
+slug: /components/toggle-button-group
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Button,
+  ReactSparDemoRoot,
+  ToggleButtonGroup,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+import { AlignCenterIconOutlinedRounded } from '@takeoff-icons/react/align-center';
+import { AlignLeftIconOutlinedRounded } from '@takeoff-icons/react/align-left';
+import { AlignRightIconOutlinedRounded } from '@takeoff-icons/react/align-right';
+import { MapIconOutlinedRounded } from '@takeoff-icons/react/map';
+
+export const toggleButtonGroupScope = {
+  AlignCenterIconOutlinedRounded,
+  AlignLeftIconOutlinedRounded,
+  AlignRightIconOutlinedRounded,
+  Button,
+  MapIconOutlinedRounded,
+  ToggleButtonGroup,
+};
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  return (
+    <ToggleButtonGroup aria-label="Fare view" type="light" defaultValue="list">
+      <ToggleButtonGroup.Item value="list">List</ToggleButtonGroup.Item>
+      <ToggleButtonGroup.Item value="calendar">Calendar</ToggleButtonGroup.Item>
+      <ToggleButtonGroup.Item value="map" startContent={<MapIconOutlinedRounded />}>
+        Map
+      </ToggleButtonGroup.Item>
+    </ToggleButtonGroup>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const multipleDemo = String.raw`
+function MultipleDemo() {
+  return (
+    <ToggleButtonGroup aria-label="Cabin filters" multiple type="divided" defaultValue={['economy', 'business']}>
+      <ToggleButtonGroup.Item value="economy">Economy</ToggleButtonGroup.Item>
+      <ToggleButtonGroup.Item value="business">Business</ToggleButtonGroup.Item>
+      <ToggleButtonGroup.Item value="first">First</ToggleButtonGroup.Item>
+    </ToggleButtonGroup>
+  );
+}
+
+render(<MultipleDemo />);
+`;
+
+export const controlledDemo = String.raw`
+function ControlledDemo() {
+  const [trip, setTrip] = React.useState('round');
+
+  return (
+    <div className="flex flex-col items-start gap-3">
+      <ToggleButtonGroup
+        aria-label="Trip type"
+        type="light"
+        value={trip}
+        onValueChange={value => setTrip(value)}
+        deselectable={false}
+      >
+        <ToggleButtonGroup.Item value="one-way">One way</ToggleButtonGroup.Item>
+        <ToggleButtonGroup.Item value="round">Round trip</ToggleButtonGroup.Item>
+        <ToggleButtonGroup.Item value="multi">Multi-city</ToggleButtonGroup.Item>
+      </ToggleButtonGroup>
+      <p className="text-sm">Selected: {trip}</p>
+    </div>
+  );
+}
+
+render(<ControlledDemo />);
+`;
+
+export const typesDemo = String.raw`
+function TypesDemo() {
+  return (
+    <div className="flex flex-col items-start gap-4">
+      {['basic', 'divided', 'light'].map(type => (
+        <ToggleButtonGroup key={type} aria-label={type + ' group'} type={type} defaultValue="day">
+          <ToggleButtonGroup.Item value="day">Day</ToggleButtonGroup.Item>
+          <ToggleButtonGroup.Item value="week">Week</ToggleButtonGroup.Item>
+          <ToggleButtonGroup.Item value="month">Month</ToggleButtonGroup.Item>
+        </ToggleButtonGroup>
+      ))}
+    </div>
+  );
+}
+
+render(<TypesDemo />);
+`;
+
+export const appearancesDemo = String.raw`
+function AppearancesDemo() {
+  const appearances = ['filled', 'filledLight', 'outlined', 'text', 'raised'];
+
+  return (
+    <div className="flex flex-col items-start gap-4">
+      {['neutral', 'primary'].map(variant => (
+        <div key={variant} className="flex flex-wrap gap-4">
+          {appearances.map(appearance => (
+            <ToggleButtonGroup
+              key={appearance}
+              aria-label={variant + ' ' + appearance}
+              type="divided"
+              variant={variant}
+              appearance={appearance}
+              defaultValue="on"
+            >
+              <ToggleButtonGroup.Item value="on">{appearance}</ToggleButtonGroup.Item>
+              <ToggleButtonGroup.Item value="off">Off</ToggleButtonGroup.Item>
+            </ToggleButtonGroup>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+render(<AppearancesDemo />);
+`;
+
+export const sizesDemo = String.raw`
+function SizesDemo() {
+  return (
+    <div className="flex flex-col items-start gap-4">
+      {['small', 'base', 'large'].map(size => (
+        <ToggleButtonGroup key={size} aria-label={size + ' group'} type="light" size={size} defaultValue="a">
+          <ToggleButtonGroup.Item value="a">{size}</ToggleButtonGroup.Item>
+          <ToggleButtonGroup.Item value="b">Option</ToggleButtonGroup.Item>
+          <ToggleButtonGroup.Item value="c">Option</ToggleButtonGroup.Item>
+        </ToggleButtonGroup>
+      ))}
+    </div>
+  );
+}
+
+render(<SizesDemo />);
+`;
+
+export const layoutDemo = String.raw`
+function LayoutDemo() {
+  return (
+    <div className="flex flex-wrap items-start gap-6">
+      <ToggleButtonGroup aria-label="Text alignment" type="light" rounded defaultValue="left">
+        <ToggleButtonGroup.Item value="left" aria-label="Align left" startContent={<AlignLeftIconOutlinedRounded />} />
+        <ToggleButtonGroup.Item value="center" aria-label="Align center" startContent={<AlignCenterIconOutlinedRounded />} />
+        <ToggleButtonGroup.Item value="right" aria-label="Align right" startContent={<AlignRightIconOutlinedRounded />} />
+      </ToggleButtonGroup>
+      <ToggleButtonGroup aria-label="Seat side" type="divided" orientation="vertical" defaultValue="window">
+        <ToggleButtonGroup.Item value="window">Window</ToggleButtonGroup.Item>
+        <ToggleButtonGroup.Item value="middle" disabled>
+          Middle
+        </ToggleButtonGroup.Item>
+        <ToggleButtonGroup.Item value="aisle">Aisle</ToggleButtonGroup.Item>
+      </ToggleButtonGroup>
+    </div>
+  );
+}
+
+render(<LayoutDemo />);
+`;
+
+export const standaloneDemo = String.raw`
+function StandaloneDemo() {
+  return (
+    <Button variant="secondary" appearance="outlined" defaultPressed>
+      Notify me
+    </Button>
+  );
+}
+
+render(<StandaloneDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# ToggleButtonGroup
+
+`ToggleButtonGroup` is a row (or column) of toggle buttons. In single mode one
+item is pressed at a time; with `multiple` any number can be. The group is a
+single tab stop and the arrow keys move between its items. Behavior comes from
+the headless Spar `ToggleGroup` primitive; this wrapper adds the Takeoff group
+surface and the pressed-item appearances.
+
+## Usage
+
+```tsx
+import { ToggleButtonGroup } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<ToggleButtonGroup>
+  <ToggleButtonGroup.Item />
+</ToggleButtonGroup>
+```
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={100}
+  previewWrapper={ReactSparDemoRoot}
+  scope={toggleButtonGroupScope}
+/>
+
+## Multiple selection
+
+With `multiple`, every item toggles on its own and `value` / `onValueChange` use
+a `string[]`.
+
+<LiveCode
+  code={multipleDemo}
+  editable={false}
+  noInline
+  previewMinHeight={100}
+  previewWrapper={ReactSparDemoRoot}
+  scope={toggleButtonGroupScope}
+/>
+
+## Controlled
+
+`onValueChange` reports a `string` in single mode and a `string[]` with
+`multiple`. In single mode, pressing the pressed item releases it and reports
+`''`; set `deselectable={false}` when one option must stay selected.
+
+<LiveCode
+  code={controlledDemo}
+  editable={false}
+  noInline
+  previewMinHeight={130}
+  previewWrapper={ReactSparDemoRoot}
+  scope={toggleButtonGroupScope}
+/>
+
+## Group types
+
+`type` draws the group surface: `basic` (transparent), `divided` (bordered
+track) or `light` (bordered, lightest background).
+
+<LiveCode
+  code={typesDemo}
+  editable={false}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={toggleButtonGroupScope}
+/>
+
+## Appearances and variants
+
+An item that is not pressed is transparent. `appearance` and `variant` decide
+how the pressed item is drawn. Both cascade from the group and can be set per
+item.
+
+<LiveCode
+  code={appearancesDemo}
+  editable={false}
+  noInline
+  previewMinHeight={160}
+  previewWrapper={ReactSparDemoRoot}
+  scope={toggleButtonGroupScope}
+/>
+
+## Sizes
+
+<LiveCode
+  code={sizesDemo}
+  editable={false}
+  noInline
+  previewMinHeight={200}
+  previewWrapper={ReactSparDemoRoot}
+  scope={toggleButtonGroupScope}
+/>
+
+## Icons, rounded and vertical
+
+`startContent` / `endContent` place an icon around the label. An item without
+children is icon-only and needs an `aria-label`. `rounded` makes the group and
+its items pill-shaped; `orientation="vertical"` stacks them and switches the
+arrow keys to <kbd>↑</kbd> / <kbd>↓</kbd>. Disabled items are skipped.
+
+<LiveCode
+  code={layoutDemo}
+  editable={false}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={toggleButtonGroupScope}
+/>
+
+## A single toggle button
+
+A lone toggle is a [`Button`](/docs/components/button) with `pressed` /
+`onPressedChange` (controlled) or `defaultPressed` (uncontrolled); it renders
+the same `aria-pressed` state.
+
+<LiveCode
+  code={standaloneDemo}
+  editable={false}
+  noInline
+  previewMinHeight={80}
+  previewWrapper={ReactSparDemoRoot}
+  scope={toggleButtonGroupScope}
+/>
+
+## Accessibility & Keyboard
+
+- The root renders `role="group"`. Name it with `aria-label` or
+  `aria-labelledby`.
+- Each `ToggleButtonGroup.Item` is a native `<button>` with `aria-pressed`, in
+  both single and multiple mode.
+- Exactly one item is in the tab order: the last focused item, else the first
+  pressed one, else the first enabled one.
+
+| Key                                 | Behavior                                                        |
+| ----------------------------------- | --------------------------------------------------------------- |
+| <kbd>Tab</kbd>                      | Move focus into the group, then out of it.                      |
+| <kbd>→</kbd> / <kbd>←</kbd>         | Next / previous item (horizontal); wraps, skips disabled items. |
+| <kbd>↓</kbd> / <kbd>↑</kbd>         | Next / previous item (vertical); wraps, skips disabled items.   |
+| <kbd>Home</kbd> / <kbd>End</kbd>    | First / last enabled item.                                      |
+| <kbd>Space</kbd> / <kbd>Enter</kbd> | Press or release the focused item. Moving focus never selects.  |
+
+:::info Consumer event handlers are composed with Spar's
+
+A consumer `onKeyDown` / `onBlur` on `ToggleButtonGroup` and `onFocus` on
+`ToggleButtonGroup.Item` run _before_ the built-in handler. Call
+`event.preventDefault()` inside the group's `onKeyDown` to veto the built-in
+navigation for that key.
+
+:::
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### ToggleButtonGroup {#toggle-button-group}
+
+See
+[Spar ToggleGroup docs](https://v2.takeoffui.com/headless/docs/Components/ToggleGroup)
+for primitive behavior.
+
+#### Props {#toggle-button-group-props}
+
+| Name                            | Type                                                                                          | Default   | Description                                                                           |
+| ------------------------------- | --------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />   | <code>React.ReactNode</code>                                                                  | -         | `ToggleButtonGroup.Item` elements.                                                    |
+| <ApiBadge label="type" />       | <code><a href="#toggle-td-togglebuttongrouptype">ToggleButtonGroupType</a></code>             | 'basic'   | Group surface.                                                                        |
+| <ApiBadge label="rounded" />    | <code>boolean</code>                                                                          | false     | Pill-shaped group and items.                                                          |
+| <ApiBadge label="size" />       | <code><a href="#toggle-td-togglebuttongroupsize">ToggleButtonGroupSize</a></code>             | 'base'    | Size scale. Cascades to every `ToggleButtonGroup.Item`; an item's own `size` wins.    |
+| <ApiBadge label="variant" />    | <code><a href="#toggle-td-togglebuttongroupvariant">ToggleButtonGroupVariant</a></code>       | 'neutral' | Colour of a pressed item. Cascades to every item; an item's own `variant` wins.       |
+| <ApiBadge label="appearance" /> | <code><a href="#toggle-td-togglebuttongroupappearance">ToggleButtonGroupAppearance</a></code> | 'filled'  | How a pressed item is drawn. Cascades to every item; an item's own `appearance` wins. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                      | -         | Per-slot class name overrides.                                                        |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>     | -         | Per-slot HTML attribute overrides.                                                    |
+| <ApiBadge label="className" />  | <code>string</code>                                                                           | -         | Appends custom classes to the root slot of this part.                                 |
+
+#### Data attributes {#toggle-button-group-data-attributes}
+
+| Attribute                                       | Applied when             | Purpose                                                                           |
+| ----------------------------------------------- | ------------------------ | --------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                   | Stable selector for wrapper styling on the root slot.                             |
+| <ApiBadge label="data-type" />                  | Always                   | Reflects the resolved group `type` (`basic` / `divided` / `light`).               |
+| <ApiBadge label="data-size" />                  | Always                   | Reflects the resolved `size` so theme recipes can scope size variants.            |
+| <ApiBadge label="data-rounded" />               | When `rounded` is true.  | Pill-shaped group and items.                                                      |
+| <ApiBadge label="data-orientation" />           | Always                   | Reflects the resolved `orientation` (`horizontal` / `vertical`). Emitted by Spar. |
+| <ApiBadge label="data-multiple" />              | When `multiple` is true. | Marks a multiple-selection group. Emitted by Spar.                                |
+| <ApiBadge label="data-disabled" />              | When `disabled` is true. | Theme hook for the disabled group. Emitted by Spar.                               |
+
+### ToggleButtonGroup.Item {#toggle-button-group-item}
+
+See
+[Spar ToggleGroup docs](https://v2.takeoffui.com/headless/docs/Components/ToggleGroup)
+for primitive behavior.
+
+#### Props {#toggle-button-group-item-props}
+
+| Name                              | Type                                                                                                                                                            | Default                  | Description                                                                                                                                  |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />     | <code>React.ReactNode</code>                                                                                                                                    | -                        | The label, wrapped in the `label` slot.                                                                                                      |
+| <ApiBadge label="size" />         | <code><a href="#toggle-td-togglebuttongroupsize">ToggleButtonGroupSize</a></code>                                                                               | inherited from the group | Size scale for this item.                                                                                                                    |
+| <ApiBadge label="variant" />      | <code><a href="#toggle-td-togglebuttongroupvariant">ToggleButtonGroupVariant</a></code>                                                                         | inherited from the group | Pressed colour for this item.                                                                                                                |
+| <ApiBadge label="appearance" />   | <code><a href="#toggle-td-togglebuttongroupappearance">ToggleButtonGroupAppearance</a></code>                                                                   | inherited from the group | Pressed drawing for this item.                                                                                                               |
+| <ApiBadge label="startContent" /> | <code>React.ReactNode</code>                                                                                                                                    | -                        | Content before the label — typically an icon. Wrapped in the `content` slot. An item with no children is icon-only: give it an `aria-label`. |
+| <ApiBadge label="endContent" />   | <code>React.ReactNode</code>                                                                                                                                    | -                        | Content after the label. Wrapped in the `content` slot.                                                                                      |
+| <ApiBadge label="classNames" />   | <code>Partial&lt;Record&lt;<a href="#toggle-td-togglebuttongroupitemslot">ToggleButtonGroupItemSlot</a>, string&gt;&gt;</code>                                  | -                        | Per-slot class name overrides.                                                                                                               |
+| <ApiBadge label="slotProps" />    | <code>Partial&lt;Record&lt;<a href="#toggle-td-togglebuttongroupitemslot">ToggleButtonGroupItemSlot</a>, React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -                        | Per-slot HTML attribute overrides.                                                                                                           |
+| <ApiBadge label="className" />    | <code>string</code>                                                                                                                                             | -                        | Appends custom classes to the root slot of this part.                                                                                        |
+
+#### Data attributes {#toggle-button-group-item-data-attributes}
+
+| Attribute                                          | Applied when                                           | Purpose                                                                                                    |
+| -------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />    | Always                                                 | Stable selector for wrapper styling on the root slot.                                                      |
+| <ApiBadge label="data-slot=&quot;content&quot;" /> | When `startContent` / `endContent` is renderable.      | Internal wrapper around the start / end content. Customize via `classNames.content` / `slotProps.content`. |
+| <ApiBadge label="data-slot=&quot;label&quot;" />   | When children are renderable.                          | Internal wrapper around the label. Customize via `classNames.label` / `slotProps.label`.                   |
+| <ApiBadge label="data-size" />                     | Always                                                 | Reflects the resolved `size` so theme recipes can scope size variants.                                     |
+| <ApiBadge label="data-variant" />                  | Always                                                 | Reflects the resolved pressed colour (`neutral` / `primary`).                                              |
+| <ApiBadge label="data-type" />                     | Always                                                 | Reflects the resolved `appearance` of the pressed item.                                                    |
+| <ApiBadge label="data-icon-only" />                | When the item has start / end content and no children. | Square padding for icon-only items.                                                                        |
+| <ApiBadge label="aria-pressed" />                  | Always                                                 | Pressed state (`true` / `false`); the recipe keys the pressed appearance on it. Emitted by Spar Button.    |
+| <ApiBadge label="data-pressed" />                  | When the item is pressed.                              | Presence hook for the pressed state. Emitted by Spar Button.                                               |
+| <ApiBadge label="data-disabled" />                 | When the item or the group is disabled.                | Theme hook for the disabled item. Emitted by Spar Button.                                                  |
+
+### Type Definitions {#toggle-type-definitions}
+
+| Name                                                                                                     | Definition                                                                                 |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| <span id="toggle-td-togglebuttongrouptype"><ApiBadge label="ToggleButtonGroupType" /></span>             | <code>'basic' &#124; 'divided' &#124; 'light'</code>                                       |
+| <span id="toggle-td-togglebuttongroupsize"><ApiBadge label="ToggleButtonGroupSize" /></span>             | <code>'small' &#124; 'base' &#124; 'large'</code>                                          |
+| <span id="toggle-td-togglebuttongroupvariant"><ApiBadge label="ToggleButtonGroupVariant" /></span>       | <code>'neutral' &#124; 'primary'</code>                                                    |
+| <span id="toggle-td-togglebuttongroupappearance"><ApiBadge label="ToggleButtonGroupAppearance" /></span> | <code>'filled' &#124; 'filledLight' &#124; 'outlined' &#124; 'text' &#124; 'raised'</code> |
+| <span id="toggle-td-togglebuttongroupitemslot"><ApiBadge label="ToggleButtonGroupItemSlot" /></span>     | <code>'root' &#124; 'content' &#124; 'label'</code>                                        |
+
+{/* api-tables:end */}
