@@ -67,6 +67,169 @@ export type ChangelogEntry = {
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: 'v0-7-tailwind-container-breakpoint',
+    date: '2026-11-21',
+    version: 'tokens 0.7.0',
+    title: 'Tailwind’s `container` no longer collapses on phones',
+    packageVersions: {
+      tokens: '0.7.0',
+      tailwind: '0.2.0',
+    },
+    summary:
+      'The `0px` `xs` breakpoint is gone from the Tailwind outputs of `@takeoff-design/tokens` and `@takeoff-design/tailwind`. Tailwind breakpoints are min-width queries, so `xs` matched every screen: its `xs:` variant did nothing, and the `container` utility turned it into `max-width: 0px` below 600px, so a `container` collapsed to nothing on phones. `container` now starts at the `sm` breakpoint (600px), like the other breakpoints. No react-spar release goes with it.',
+    sections: [
+      {
+        title: 'Breaking changes',
+        items: [
+          {
+            text: 'The `xs:` variant is no longer generated. Classes that used it now need no prefix. The `--breakpoint-xs` token and CSS variable are unchanged.',
+            code: {
+              language: 'html',
+              before: '<nav class="xs:hidden md:block">…</nav>',
+              after: '<nav class="hidden md:block">…</nav>',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'v0-7-1-spar-in-this-repository',
+    date: '2026-11-19',
+    version: '0.7.1',
+    title: 'Spar now lives in this repository',
+    packageVersions: {
+      'react-spar': '0.7.1',
+    },
+    summary:
+      'No API changes. `@turkish-technology/spar`, the headless layer under every react-spar component, is now developed in this repository, so a Spar fix and the wrapper change that depends on it can ship in one release. This release pins Spar 0.3.2, the first version published from here, with npm provenance. Spar’s own docs now live on this site as Takeoff Headless.',
+    sections: [
+      {
+        title: 'Highlights',
+        items: [
+          'react-spar depends on `@turkish-technology/spar@0.3.2`. The Spar source is unchanged from 0.3.1; only where it is built and published from moved.',
+          'Takeoff Headless joins Takeoff React and Takeoff Icons in the product switcher, with the Spar primitives’ docs and accessibility notes under `/headless`.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'v0-7-chat-and-table-resizing',
+    date: '2026-11-18',
+    version: '0.7.0',
+    title: 'Chat, resizable Table columns, and translatable Table strings',
+    packageVersions: {
+      'react-spar': '0.7.0',
+      'tokens': '0.6.0',
+      'tailwind': '0.1.6',
+    },
+    summary:
+      '`Chat` is a new compound messaging component for conversations between people, with read receipts, replies, pins, file attachments, and editing and deleting within a time window. `Table` gains user-controlled column resizing and a `labels` prop that covers every string it renders. `Dialog` and `Drawer` no longer close when you use a `Select`, `Popover` or `Dropdown` inside them, and the icon set moves to `@takeoff-icons/react` 0.5.0.',
+    sections: [
+      {
+        title: 'Highlights',
+        items: [
+          '**Chat** — a controlled root (`messages`, `currentUserId`, `onSend`) with parts that lay it out: `Chat.Header`, `Chat.Messages` (a `role="log"` that stays at the bottom, with day dividers, a typing line and a jump-to-new button), `Chat.Message`, `Chat.Composer`, and an optional conversation list and thread split that collapses to one pane below 640px. Messages show delivery and read status; `onRead` reports incoming messages once they are on screen.',
+          '**Chat actions** — edit and delete within `editWindow` / `deleteWindow`, with an Undo period before `onDelete` runs; pins with a `Chat.Pinned` bar; replies with a quote that jumps to the original; copy; and file attachments by button, drop or paste. Every string is in `labels`, so the whole chat translates through the provider.',
+          "**Table column resizing** — `columnResizing` puts a drag handle on each header edge that works with a mouse, pen, touch or the arrow keys. A double-click resets or fits the column, `onChange` fires once per resize so it can be persisted directly, and `mode: 'expand'` lets the table grow instead of keeping its container’s width. Columns take `resizable`, `minWidth` and `maxWidth`.",
+          '**Table `labels`** — every string Table renders (empty state, loading, filters, pagination, selection, expansion, resize handles) can be translated or reworded, per instance or app-wide through `TakeoffSparProvider`. Dynamic entries are `{placeholder}` templates, and preset filter fields gain accessible names.',
+        ],
+      },
+      {
+        title: 'Behaviour changes',
+        items: [
+          {
+            text: 'Table filter triggers are named per column, and the page-jump submit no longer shares the input’s name. Review tests that query these names.',
+            code: {
+              language: 'ts',
+              before: "getByRole('button', { name: 'Filter column' });\ngetByRole('button', { name: 'Go to page' });",
+              after: "getByRole('button', { name: 'Filter Name' });\ngetByRole('button', { name: 'Go' });",
+            },
+          },
+          {
+            text: 'The filter trigger takes its accessible name only from `labels`. An `aria-label` passed through `slotProps.filterButton` is now ignored, with a development warning.',
+            code: {
+              language: 'tsx',
+              before: "<Table slotProps={{ filterButton: { 'aria-label': 'Filtrele' } }} />",
+              after: "<Table labels={{ filterButton: '{column} sütununu filtrele' }} />",
+            },
+          },
+          'A whitespace-only `labels` value, or an empty `filter.placeholder` on a `select` filter, falls back to the default text.',
+        ],
+      },
+      {
+        title: 'Fixes',
+        items: [
+          '`Dialog` and `Drawer` no longer close when you pick an option in a `Select`, or press inside a `Popover`, `Dropdown` or date-picker popover rendered inside the panel. Those layers are portaled to `document.body`, and Spar counted a press in them as outside the panel. The fix is in `@turkish-technology/spar@0.3.1`, which this release pins.',
+          '`react-day-picker` 10.0.2 fixes focus loss when the month changes under a controlled `Calendar`.',
+          '`Table` `emptyState={null}` (or `false`) leaves the empty cell blank instead of showing “No data”.',
+          '`@takeoff-icons/react` `^0.5.0` brings 1252 icons. Its redrawn chevrons render larger, so Accordion, Select, Breadcrumb and the Table pagination arrows use smaller icon boxes, and the Table sort and filter icons move to 20px.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'v0-6-spar-0-3-and-coverage-fixes',
+    date: '2026-09-16',
+    version: '0.6.0',
+    title: 'Spar 0.3.0: composed handlers, cleaner accessibility semantics, and the coverage-pass fixes',
+    packageVersions: {
+      'react-spar': '0.6.0',
+      'tokens': '0.5.1',
+      'tailwind': '0.1.5',
+    },
+    summary:
+      'react-spar moves to `@turkish-technology/spar` 0.3.0 and drops the wrapper workarounds Spar now handles itself. Your own handlers on Radio, Breadcrumb and the overlay components now run alongside the built-in ones, and `preventDefault()` cancels the default, as the docs always described. The release also fixes the findings from the September test-coverage pass (issues #215–#227) and ships the v1-to-v2 migration skill.',
+    sections: [
+      {
+        title: 'Highlights',
+        items: [
+          '**Composed handlers** — consumer `onKeyDown` / `onFocus` / `onClick` on `Radio`, `Radio.Item` and `Breadcrumb.Link` run before the built-in handler instead of replacing it, and `preventDefault()` vetoes it. The overlay callbacks (`onEscapeKeyDown`, `onPointerDownOutside`, `onFocusOutside`, `onOpenAutoFocus`, `onCloseAutoFocus`) on Select, Dropdown, Popover and Tooltip honour `preventDefault()` too.',
+          '**Nested providers** — only the outermost `TakeoffSparProvider` writes `data-theme` and `lang` to `<html>`, and both are restored correctly when providers unmount in any order.',
+          '**Tabs and Accordion** — `Tabs` `onValueChange` no longer fires on mount or when the selected tab is activated again; Accordion arrow, Home and End keys skip disabled items.',
+          '**v1-to-v2 migration skill** — the React package’s `agents/` directory ships a migration skill, its inventory commands and the migration guidance.',
+        ],
+      },
+      {
+        title: 'Breaking changes',
+        items: [
+          {
+            text: '`Radio.Item` renders `<span role="radio">` instead of `<label>`, which allows no ARIA role. Selectors and refs that assumed a label must change; `Radio.Item` refs are `HTMLSpanElement`s.',
+            code: {
+              language: 'ts',
+              before: 'container.querySelectorAll(\'label[role="radio"]\');',
+              after: 'container.querySelectorAll(\'[role="radio"]\');',
+            },
+          },
+          {
+            text: '`Tooltip.Content` drops the never-called `onPointerDownOutside` / `onOpenAutoFocus` / `onCloseAutoFocus`, and `Input.Strength` drops the never-rendered `children`. Remove them; they had no effect.',
+            code: {
+              language: 'tsx',
+              before: '<Tooltip.Content onOpenAutoFocus={handleFocus}>Saved</Tooltip.Content>',
+              after: '<Tooltip.Content>Saved</Tooltip.Content>',
+            },
+          },
+          'A clickable and removable `Chip` carries `role="button"` on `.tk-chip-label` rather than on the root, so the remove button is no longer nested inside a button.',
+        ],
+      },
+      {
+        title: 'Fixes',
+        collapsible: true,
+        items: [
+          '**Core** — an explicit `undefined` instance prop no longer wipes a provider `defaultProps` value, a theme `className` and `classNames.root` add up, and disclosure indicators fall back to the default chevron for every empty node.',
+          '**Chip** — Enter or Space on the remove button removes the chip, a remove click no longer bubbles into `onClick`, a disabled chip is out of the tab order, and `slotProps.root` `role` / `tabIndex` are honoured.',
+          '**Input.Chips** — read-only or disabled fields ignore Enter, an ignored commit keeps the typed text, and removing a tag with the keyboard moves focus to a neighbour.',
+          '**Button** — a disabled or loading `<Button as="a" href>` no longer navigates; Spar now does this, so the wrapper workaround is gone.',
+          '**Dropdown / Select** — `contentWidth="trigger"` re-measures the trigger when the overlay opens; `Select.Separator` is presentational by default, and `onEscapeKeyDown` can veto the close.',
+          '**Table** — the `select` column-filter preset works inside the filter popover, and `classNames.filterButton` / `slotProps.filterButton` reach the trigger.',
+          '**Checkbox** — `indeterminate` passes straight to Spar, and clearing it from `onChange` takes a single click.',
+          '**Radio** — `onChange` fires only on real changes, `readOnly` ignores keyboard selection, and the first enabled item is the tab stop when the checked item is disabled.',
+          '**Errors and types** — Accordion, Drawer, Breadcrumb and Alert parts raise a descriptive error outside their root; `Accordion.Header` `level` is typed `1`–`6`; Popover and Tooltip `Header` / `Description` honour `as`.',
+        ],
+      },
+    ],
+  },
+  {
     id: 'v0-5-1-test-coverage-and-fixes',
     date: '2026-09-15',
     version: '0.5.1',

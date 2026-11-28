@@ -187,6 +187,6 @@ Ready to get started?
 ## Community & Support
 
 - **GitHub:**
-  [turkishtechnology/spar](https://github.com/turkishtechnology/spar)
+  [turkishtechnology/takeoff-v2 · packages/spar](https://github.com/turkishtechnology/takeoff-v2/tree/develop/packages/spar)
 - **Issues:**
-  [Report bugs or request features](https://github.com/turkishtechnology/spar/issues)
+  [Report bugs or request features](https://github.com/turkishtechnology/takeoff-v2/issues)
