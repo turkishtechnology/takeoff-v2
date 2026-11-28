@@ -12,6 +12,9 @@ import type {
   SelectTriggerProps,
   SelectTriggerSlot,
   SelectViewportProps,
+  SelectSearchProps,
+  SelectSearchSlot,
+  SelectEmptyProps,
 } from './types';
 
 export const SelectBase = createComponentBase<SelectProps, 'root'>({
@@ -51,6 +54,23 @@ export const SelectViewportBase = createComponentBase<SelectViewportProps, 'root
   name: 'SelectViewport',
   slots: ['root'] as const,
   classes: { root: 'tk-select-viewport' },
+});
+
+export const SelectSearchBase = createComponentBase<SelectSearchProps, SelectSearchSlot>({
+  name: 'SelectSearch',
+  slots: ['root', 'input', 'icon'] as const,
+  classes: {
+    // The wrapper drawing the field's frame around the icon and the input.
+    root: 'tk-select-search',
+    input: 'tk-select-search-input',
+    icon: 'tk-select-search-icon',
+  },
+});
+
+export const SelectEmptyBase = createComponentBase<SelectEmptyProps, 'root'>({
+  name: 'SelectEmpty',
+  slots: ['root'] as const,
+  classes: { root: 'tk-select-empty' },
 });
 
 export const SelectItemBase = createComponentBase<SelectItemProps, 'root'>({

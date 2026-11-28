@@ -1,0 +1,287 @@
+@use 'sass:list';
+
+// ---------------------------------------------------------------------------
+// Avatar recipe — apply to `.tk-avatar` and `.tk-avatar-group` roots.
+//
+// Slots produced by the wrapper:
+//
+//   .tk-avatar                — root (span; `role="img"` when named)
+//   .tk-avatar-image          — the picture, mounted only once it has loaded
+//   .tk-avatar-fallback       — initials / content while the image is missing
+//   .tk-avatar-icon           — default person glyph inside the fallback
+//   .tk-avatar-badge          — status Badge pinned to the bottom-start corner
+//   .tk-avatar-group          — group root
+//   .tk-avatar-group-overflow — the `+N` avatar the group renders past `max`
+//
+// Attributes on `.tk-avatar`:
+//   data-size        — xxsmall | xsmall | small | base | large | xlarge | xxlarge
+//   data-variant     — primary | light | success | info | warning | danger
+//   data-type        — appearance (filled | filledLight)
+//   data-rounded     — circle instead of a rounded square
+//   data-hide-shadow — no drop shadow
+//   data-status      — image loading status (Spar): idle | loading | loaded | error
+//   data-overflow    — the group's `+N` avatar
+// On `.tk-avatar-fallback`: data-icon — showing the default glyph.
+// On `.tk-avatar-group`: data-size, data-compact.
+// ---------------------------------------------------------------------------
+
+// size → [token key, label font token, badge diameter, glyph offset, group overlap]
+$avatar-sizes: (
+  'xxsmall': (
+    'xxsmall',
+    'desktop-body-2xs',
+    6px,
+    -8px,
+  ),
+  'xsmall': (
+    'xsmall',
+    'desktop-body-xs',
+    8px,
+    -8px,
+  ),
+  'small': (
+    'small',
+    'desktop-body-m-base',
+    10px,
+    -12px,
+  ),
+  'base': (
+    'base',
+    'desktop-title-h6',
+    14px,
+    -20px,
+  ),
+  'large': (
+    'large',
+    'desktop-title-h5',
+    18px,
+    -24px,
+  ),
+  'xlarge': (
+    'xlarge',
+    'desktop-title-h3',
+    24px,
+    -32px,
+  ),
+  'xxlarge': (
+    'xxlarge',
+    'desktop-title-h1',
+    36px,
+    -48px,
+  ),
+);
+
+$avatar-variants: (
+  'primary': (
+    var(--primary-light),
+    var(--primary-darkest),
+    var(--primary-lightest),
+  ),
+  'light': (
+    var(--background-light),
+    var(--text-darkest),
+    var(--frames-lightest),
+  ),
+  'success': (
+    var(--states-success-sub-base),
+    var(--states-success-darkest),
+    var(--states-success-light),
+  ),
+  'info': (
+    var(--states-info-sub-base),
+    var(--states-info-darkest),
+    var(--states-info-light),
+  ),
+  'warning': (
+    var(--states-warning-light),
+    var(--states-warning-darkest),
+    var(--states-warning-light),
+  ),
+  'danger': (
+    var(--states-danger-sub-base),
+    var(--states-danger-darkest),
+    var(--states-danger-light),
+  ),
+);
+
+@mixin avatar {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--avatar-base-avatar-size);
+  height: var(--avatar-base-avatar-size);
+  border: 2px solid var(--static-light);
+  border-radius: var(--avatar-base-avatar-radius);
+  box-shadow: var(--effect-1-default-sm);
+  background: var(--primary-base);
+  color: var(--text-lightest);
+  font-family: var(--family-body, 'tk-text', sans-serif);
+  vertical-align: middle;
+  user-select: none;
+  -webkit-user-drag: none;
+
+  // The picture and fallback clip to the shape; the badge sits outside the clip.
+  .tk-avatar-image,
+  .tk-avatar-fallback {
+    border-radius: inherit;
+  }
+
+  .tk-avatar-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .tk-avatar-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-weight: 400;
+    white-space: nowrap;
+
+    &[data-icon] {
+      align-items: flex-end;
+    }
+  }
+
+  .tk-avatar-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: translateY(25%);
+    pointer-events: none;
+  }
+
+  // A loaded picture fills the shape; no backdrop shows through its edges.
+  &[data-status='loaded'] {
+    background: transparent;
+  }
+
+  &[data-hide-shadow] {
+    box-shadow: none;
+  }
+
+  &[data-rounded] {
+    border-radius: var(--radius-full);
+  }
+
+  @each $variant, $colors in $avatar-variants {
+    $bg: list.nth($colors, 1);
+    $text: list.nth($colors, 2);
+    $glyph: list.nth($colors, 3);
+
+    &[data-variant='#{$variant}'] .tk-avatar-icon {
+      color: $glyph;
+    }
+
+    &[data-type='filledLight'][data-variant='#{$variant}']:not([data-status='loaded']) {
+      background: $bg;
+      color: $text;
+    }
+  }
+
+  @each $size, $spec in $avatar-sizes {
+    $key: list.nth($spec, 1);
+    $font: list.nth($spec, 2);
+    $badge: list.nth($spec, 3);
+
+    &[data-size='#{$size}'] {
+      width: var(--avatar-#{$key}-avatar-size);
+      height: var(--avatar-#{$key}-avatar-size);
+      border-radius: var(--avatar-#{$key}-avatar-radius);
+
+      .tk-avatar-fallback {
+        font-family: var(--#{$font}-font, var(--family-body));
+        font-size: var(--#{$font}-size);
+        line-height: var(--#{$font}-line-height);
+      }
+
+      .tk-avatar-badge[data-dot] {
+        width: $badge;
+        height: $badge;
+        min-width: $badge;
+        min-height: $badge;
+        max-width: $badge;
+        max-height: $badge;
+      }
+    }
+
+    &[data-size='#{$size}'][data-rounded] {
+      border-radius: var(--radius-full);
+    }
+  }
+
+  &[data-size='xxsmall'],
+  &[data-size='xsmall'],
+  &[data-size='small'] {
+    border-width: 1px;
+
+    .tk-avatar-badge {
+      border-width: 1px;
+    }
+  }
+
+  .tk-avatar-badge {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    box-sizing: border-box;
+    border: 2px solid var(--static-light);
+    box-shadow: var(--effect-1-hover-sm);
+    pointer-events: none;
+  }
+
+  // A square avatar's corner is not on its outline; pull the badge in onto it.
+  &:not([data-rounded]) .tk-avatar-badge {
+    transform: translate(-25%, 25%);
+  }
+
+  &:not([data-rounded]) .tk-avatar-badge:dir(rtl) {
+    transform: translate(25%, 25%);
+  }
+}
+
+@mixin avatar-group {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  max-width: 100%;
+
+  > .tk-avatar:not(:last-child) {
+    box-shadow: var(--effect-1-default-base);
+  }
+
+  @each $size, $spec in $avatar-sizes {
+    > .tk-avatar[data-size='#{$size}']:not(:first-child) {
+      margin-inline-start: list.nth($spec, 4);
+    }
+  }
+
+  &[data-compact] {
+    box-sizing: border-box;
+    padding: var(--spacing-xs);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-full);
+    background: var(--static-light);
+
+    .tk-avatar-badge {
+      display: none;
+    }
+
+    > .tk-avatar-group-overflow {
+      margin-inline-start: 0;
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+      color: var(--text-darkest);
+    }
+  }
+}

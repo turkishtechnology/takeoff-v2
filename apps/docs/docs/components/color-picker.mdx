@@ -1,0 +1,553 @@
+---
+title: ColorPicker
+description:
+  A color field with a popover panel — saturation/brightness area, hue and alpha
+  sliders, typed HEX / RGB / HSL channels, an eyedropper and preset swatches.
+  Also renders inline.
+sidebar_label: ColorPicker
+sidebar_position: 4
+slug: /components/color-picker
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Button,
+  ColorPicker,
+  Field,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const colorPickerScope = { Button, ColorPicker, Field };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+function PlaygroundDemo() {
+  const [color, setColor] = React.useState('#326fd1');
+
+  return (
+    <div className="mx-auto w-72">
+      <Field>
+        <Field.Label>Brand color</Field.Label>
+        <ColorPicker value={color} onValueChange={setColor} placeholder="#rrggbb" />
+        <Field.Description>Type any HEX, RGB or HSL value, or open the panel.</Field.Description>
+      </Field>
+    </div>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const inlineDemo = String.raw`
+function InlineDemo() {
+  const [color, setColor] = React.useState('rgba(17, 156, 141, 0.8)');
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <ColorPicker value={color} onValueChange={setColor} defaultFormat="rgb">
+        <ColorPicker.Panel />
+      </ColorPicker>
+      <code>{color}</code>
+    </div>
+  );
+}
+
+render(<InlineDemo />);
+`;
+
+export const orientationDemo = String.raw`
+function OrientationDemo() {
+  return (
+    <div className="flex justify-center">
+      <ColorPicker defaultValue="#c79807" orientation="horizontal">
+        <ColorPicker.Panel />
+      </ColorPicker>
+    </div>
+  );
+}
+
+render(<OrientationDemo />);
+`;
+
+export const formatDemo = String.raw`
+function FormatDemo() {
+  const [format, setFormat] = React.useState('hsl');
+  const [color, setColor] = React.useState('hsl(217, 63%, 51%)');
+
+  return (
+    <div className="mx-auto flex w-72 flex-col gap-3">
+      <Field>
+        <Field.Label>Accent</Field.Label>
+        <ColorPicker value={color} onValueChange={setColor} format={format} onFormatChange={setFormat} />
+      </Field>
+      <div className="flex gap-2">
+        {['hex', 'rgb', 'hsl'].map(next => (
+          <Button key={next} size="small" variant="neutral" appearance={next === format ? 'filled' : 'outlined'} onClick={() => setFormat(next)}>
+            {next.toUpperCase()}
+          </Button>
+        ))}
+      </div>
+      <code>{color}</code>
+    </div>
+  );
+}
+
+render(<FormatDemo />);
+`;
+
+export const swatchesDemo = String.raw`
+function SwatchesDemo() {
+  return (
+    <div className="mx-auto w-72">
+      <Field>
+        <Field.Label>Status color</Field.Label>
+        <ColorPicker
+          defaultValue="#119c8d"
+          alpha={false}
+          swatches={['#119c8d', '#c79807', '#ff6259', '#326fd1', '#717784']}
+        />
+      </Field>
+    </div>
+  );
+}
+
+render(<SwatchesDemo />);
+`;
+
+export const compositionDemo = String.raw`
+function CompositionDemo() {
+  return (
+    <div className="flex justify-center">
+      <ColorPicker defaultValue="#a45e3c">
+        <ColorPicker.Panel>
+          <ColorPicker.Area />
+          <ColorPicker.HueSlider />
+          <ColorPicker.ChannelFields />
+          <ColorPicker.Swatches>
+            <ColorPicker.Swatch value="#a45e3c" />
+            <ColorPicker.Swatch value="#edbba3" />
+            <ColorPicker.Swatch value="#ead6fd" />
+          </ColorPicker.Swatches>
+        </ColorPicker.Panel>
+      </ColorPicker>
+    </div>
+  );
+}
+
+render(<CompositionDemo />);
+`;
+
+export const statesDemo = String.raw`
+function StatesDemo() {
+  return (
+    <div className="mx-auto flex w-72 flex-col gap-4">
+      <Field disabled>
+        <Field.Label>Disabled</Field.Label>
+        <ColorPicker defaultValue="#326fd1" />
+      </Field>
+      <Field readOnly>
+        <Field.Label>Read-only</Field.Label>
+        <ColorPicker defaultValue="#326fd1" />
+      </Field>
+      <Field invalid required>
+        <Field.Label>Required</Field.Label>
+        <ColorPicker size="small" placeholder="Pick a color" />
+        <Field.ErrorMessage>Choose a color.</Field.ErrorMessage>
+      </Field>
+    </div>
+  );
+}
+
+render(<StatesDemo />);
+`;
+
+export const formDemo = String.raw`
+function FormDemo() {
+  const [submitted, setSubmitted] = React.useState('');
+
+  return (
+    <form
+      className="mx-auto flex w-72 flex-col gap-3"
+      onSubmit={event => {
+        event.preventDefault();
+        setSubmitted(String(new FormData(event.currentTarget).get('theme')));
+      }}
+    >
+      <Field>
+        <Field.Label>Theme color</Field.Label>
+        <ColorPicker name="theme" defaultValue="#ff6259" />
+      </Field>
+      <Button type="submit">Submit</Button>
+      {submitted && <code>theme={submitted}</code>}
+    </form>
+  );
+}
+
+render(<FormDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# ColorPicker
+
+`ColorPicker` is Core `tk-color-picker` for React: a typable field that opens a
+panel with a saturation/brightness area, hue and alpha sliders, typed channel
+fields, an eyedropper and preset swatches. Spar has no slider or 2D area
+primitive, so the wrapper owns the value model and the area; the disclosure is
+`Popover`, the sliders are `Slider`, and the fields are `Input` and `Select`, so
+their keyboard, sizing and accessibility apply unchanged.
+
+## Usage
+
+```tsx
+import { ColorPicker } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<ColorPicker defaultValue="#326fd1" />
+```
+
+Compose it inside a `Field` to wire the label, the description and the shared
+`disabled` / `readOnly` / `invalid` / `required` state. The Field names the
+trigger field and the panel; the controls inside the panel keep their own names
+(Hue, Opacity, Hex…).
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={140}
+  previewWrapper={ReactSparDemoRoot}
+  scope={colorPickerScope}
+/>
+
+## Value and formats
+
+`value` is a CSS color string in the active `format` — `#rrggbb` (`#rrggbbaa`
+below full opacity), `rgb(r, g, b)` / `rgba(r, g, b, a)` or `hsl(h, s%, l%)` /
+`hsla(h, s%, l%, a)` — and `''` means no color. The field parses any of the
+three notations whatever the format (`#rgb`, `#rgba`, the `#` optional, and the
+comma or space `rgb()` / `hsl()` forms); text that is not a color is rejected
+and the value stays. The format select, or a controlled `format`, re-serializes
+the same color.
+
+`onValueChange` streams every change, including each drag frame;
+`onValueChangeEnd` fires once per settled change — pointer release, a key press,
+a committed field, a swatch, the eyedropper, or Escape restoring the opened
+value.
+
+<LiveCode
+  code={formatDemo}
+  noInline
+  previewMinHeight={140}
+  previewWrapper={ReactSparDemoRoot}
+  scope={colorPickerScope}
+/>
+
+## Inline
+
+Render a `ColorPicker.Panel` without the field and popover for an always-visible
+picker.
+
+<LiveCode
+  code={inlineDemo}
+  noInline
+  previewMinHeight={480}
+  previewWrapper={ReactSparDemoRoot}
+  scope={colorPickerScope}
+/>
+
+## Orientation
+
+`orientation="horizontal"` is Core’s second layout: preview, upright sliders and
+eyedropper beside the area.
+
+<LiveCode
+  code={orientationDemo}
+  noInline
+  previewMinHeight={420}
+  previewWrapper={ReactSparDemoRoot}
+  scope={colorPickerScope}
+/>
+
+## Alpha and swatches
+
+`alpha={false}` hides the alpha slider and field and keeps every value opaque.
+`swatches` replaces Core’s preset row; `[]` removes it.
+
+<LiveCode
+  code={swatchesDemo}
+  noInline
+  previewMinHeight={140}
+  previewWrapper={ReactSparDemoRoot}
+  scope={colorPickerScope}
+/>
+
+## Composition
+
+Every part of the default panel is public, so a panel can drop or reorder
+controls. `ColorPicker.Swatches` with children shows your own swatches instead
+of the root list.
+
+<LiveCode
+  code={compositionDemo}
+  noInline
+  previewMinHeight={420}
+  previewWrapper={ReactSparDemoRoot}
+  scope={colorPickerScope}
+/>
+
+## States
+
+A disabled or read-only picker never opens its panel.
+
+<LiveCode
+  code={statesDemo}
+  noInline
+  previewMinHeight={300}
+  previewWrapper={ReactSparDemoRoot}
+  scope={colorPickerScope}
+/>
+
+## Forms
+
+With `name`, a hidden input submits the committed value. Typed text that was
+never committed is not submitted, and a disabled picker submits nothing.
+
+<LiveCode
+  code={formDemo}
+  noInline
+  previewMinHeight={180}
+  previewWrapper={ReactSparDemoRoot}
+  scope={colorPickerScope}
+/>
+
+## Keyboard
+
+| Element        | Key                                        | Action                                            |
+| -------------- | ------------------------------------------ | ------------------------------------------------- |
+| Field          | <kbd>Enter</kbd>, blur                     | Parse and commit the typed text                   |
+| Field          | <kbd>Escape</kbd>                          | Restore the typed text to the value               |
+| Field          | <kbd>↓</kbd>                               | Open the panel                                    |
+| Area           | <kbd>←</kbd> <kbd>→</kbd>                  | Saturation −1 / +1 (<kbd>Shift</kbd>: ±10)        |
+| Area           | <kbd>↑</kbd> <kbd>↓</kbd>                  | Brightness +1 / −1 (<kbd>Shift</kbd>: ±10)        |
+| Area           | <kbd>Page Up</kbd> <kbd>Page Down</kbd>    | Brightness ±10                                    |
+| Area           | <kbd>Home</kbd> <kbd>End</kbd>             | Saturation 0 / 100                                |
+| Hue, alpha     | Slider keys                                | See [Slider](/docs/components/slider#keyboard)    |
+| Channel fields | <kbd>↑</kbd> <kbd>↓</kbd>                  | Step the channel (<kbd>Shift</kbd>: ±10)          |
+| Channel fields | <kbd>Enter</kbd>, blur / <kbd>Escape</kbd> | Commit / revert the typed channel                 |
+| Open panel     | <kbd>Escape</kbd>                          | Close and restore the value the panel opened with |
+
+An outside click closes the panel and keeps the current value.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### ColorPicker {#color-picker}
+
+#### Props {#color-picker-props}
+
+| Name                               | Type                                                                                    | Default                   | Description                                                                                                                                                                                        |
+| ---------------------------------- | --------------------------------------------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="value" />         | <code>string</code>                                                                     | -                         | Controlled value: a CSS color in the active `format`. `''` means no color — the field shows its placeholder and the panel starts from black.                                                       |
+| <ApiBadge label="defaultValue" />  | <code>string</code>                                                                     | ''                        | Uncontrolled initial value.                                                                                                                                                                        |
+| <ApiBadge label="format" />        | <code><a href="#color-td-colorpickerformat">ColorPickerFormat</a></code>                | -                         | Controlled format.                                                                                                                                                                                 |
+| <ApiBadge label="defaultFormat" /> | <code><a href="#color-td-colorpickerformat">ColorPickerFormat</a></code>                | 'hex'                     | Uncontrolled initial format.                                                                                                                                                                       |
+| <ApiBadge label="alpha" />         | <code>boolean</code>                                                                    | true                      | Shows the alpha slider and field. `false` forces alpha to 1.                                                                                                                                       |
+| <ApiBadge label="swatches" />      | <code>string[]</code>                                                                   | ['#326FD1', '#C79807', …] | Preset colors for `ColorPicker.Swatches` (Core’s 11 presets by default). Pass `[]` to render none.                                                                                                 |
+| <ApiBadge label="orientation" />   | <code><a href="#color-td-colorpickerorientation">ColorPickerOrientation</a></code>      | 'vertical'                | Panel layout.                                                                                                                                                                                      |
+| <ApiBadge label="size" />          | <code><a href="#color-td-colorpickersize">ColorPickerSize</a></code>                    | 'base'                    | Trigger field size.                                                                                                                                                                                |
+| <ApiBadge label="open" />          | <code>boolean</code>                                                                    | -                         | Controlled open state of the popover panel.                                                                                                                                                        |
+| <ApiBadge label="defaultOpen" />   | <code>boolean</code>                                                                    | false                     | Uncontrolled initial open state.                                                                                                                                                                   |
+| <ApiBadge label="disabled" />      | <code>boolean</code>                                                                    | -                         | Disables every control and closes the panel. Inherited from a surrounding `Field`.                                                                                                                 |
+| <ApiBadge label="readOnly" />      | <code>boolean</code>                                                                    | -                         | Shows the value but blocks changes; the panel cannot open. Inherited from a surrounding `Field`.                                                                                                   |
+| <ApiBadge label="invalid" />       | <code>boolean</code>                                                                    | -                         | Invalid styling and `aria-invalid` on the field. Inherited from a surrounding `Field`.                                                                                                             |
+| <ApiBadge label="required" />      | <code>boolean</code>                                                                    | -                         | `aria-required` on the field. Inherited from a surrounding `Field`.                                                                                                                                |
+| <ApiBadge label="name" />          | <code>string</code>                                                                     | -                         | Submits the value under this name through a hidden input.                                                                                                                                          |
+| <ApiBadge label="form" />          | <code>string</code>                                                                     | -                         | `id` of the form the hidden input belongs to.                                                                                                                                                      |
+| <ApiBadge label="placeholder" />   | <code>string</code>                                                                     | -                         | Trigger field placeholder while the value is empty.                                                                                                                                                |
+| <ApiBadge label="labels" />        | <code>Partial&lt;<a href="#color-td-colorpickerlabels">ColorPickerLabels</a>&gt;</code> | -                         | Overrides for the user-facing strings; blank entries fall back to the English defaults.                                                                                                            |
+| <ApiBadge label="children" />      | <code>React.ReactNode</code>                                                            | -                         | Anatomy override. When omitted, the root renders `ColorPicker.Input` and a `ColorPicker.Content` holding the default `ColorPicker.Panel`. Render only a `ColorPicker.Panel` for the inline picker. |
+| <ApiBadge label="classNames" />    | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                | -                         | Per-slot class name overrides.                                                                                                                                                                     |
+| <ApiBadge label="slotProps" />     | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>     | -                         | Per-slot HTML attribute overrides.                                                                                                                                                                 |
+| <ApiBadge label="className" />     | <code>string</code>                                                                     | -                         | Appends custom classes to the root slot.                                                                                                                                                           |
+
+#### Events {#color-picker-events}
+
+| Name                                  | Type                                                                                          | Default | Description                                                                                                                                                                     |
+| ------------------------------------- | --------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="onValueChange" />    | <code>(value: string) =&gt; void</code>                                                       | -       | Fires on every change, including each frame of a drag, with the value serialized in the active `format`.                                                                        |
+| <ApiBadge label="onValueChangeEnd" /> | <code>(value: string) =&gt; void</code>                                                       | -       | Fires once per settled change: pointer release, a key press, a committed field, a swatch, the eyedropper, a format switch, or Escape restoring the value the panel opened with. |
+| <ApiBadge label="onFormatChange" />   | <code>(format: <a href="#color-td-colorpickerformat">ColorPickerFormat</a>) =&gt; void</code> | -       | Fires when the format select changes the notation. The value is re-serialized in it.                                                                                            |
+| <ApiBadge label="onOpenChange" />     | <code>(open: boolean) =&gt; void</code>                                                       | -       | Fires when the popover panel opens or closes.                                                                                                                                   |
+
+#### Data attributes {#color-picker-data-attributes}
+
+| Attribute                                       | Applied when                                                      | Purpose                                                                                                                                                                     |
+| ----------------------------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                                            | Stable selector for wrapper styling on the root slot.                                                                                                                       |
+| <ApiBadge label="data-layout" />                | Always                                                            | Reflects the resolved `orientation` (`vertical` \| `horizontal`) panel layout. Named `data-layout` rather than `data-orientation` so the inner sliders keep their own axis. |
+| <ApiBadge label="data-format" />                | Always                                                            | The active notation (`hex` \| `rgb` \| `hsl`); the recipe widens the channel row for three numeric fields.                                                                  |
+| <ApiBadge label="data-disabled" />              | When disabled (own prop or inherited from a surrounding `Field`)  | Blocks every control and keeps the panel closed.                                                                                                                            |
+| <ApiBadge label="data-readonly" />              | When read-only (own prop or inherited from a surrounding `Field`) | Shows the value while blocking changes; the panel cannot open.                                                                                                              |
+| <ApiBadge label="data-invalid" />               | When invalid (own prop or inherited from a surrounding `Field`)   | Invalid treatment; the trigger field also exposes `aria-invalid`.                                                                                                           |
+
+### ColorPicker.Input {#color-picker-input}
+
+#### Data attributes {#color-picker-input-data-attributes}
+
+| Attribute                                          | Applied when | Purpose                                                             |
+| -------------------------------------------------- | ------------ | ------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />    | Always       | Stable selector for wrapper styling on the root slot.               |
+| <ApiBadge label="data-slot=&quot;preview&quot;" /> | Always       | The leading dot painted with the current color over a checkerboard. |
+
+### ColorPicker.Content {#color-picker-content}
+
+#### Props {#color-picker-content-props}
+
+| Name                            | Type                                                                                      | Default       | Description                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| <ApiBadge label="variant" />    | <code><a href="#color-td-popovervariant">PopoverVariant</a></code>                        | 'white'       | Color variant.                                                             |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                  | -             | Per-slot extra classes.                                                    |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -             | Per-slot HTML-attribute overrides.                                         |
+| <ApiBadge label="side" />       | <code><a href="#color-td-side">Side</a></code>                                            | 'bottom'      | Side of trigger to position against                                        |
+| <ApiBadge label="align" />      | <code><a href="#color-td-align">Align</a></code>                                          | 'center'      | Alignment relative to trigger                                              |
+| <ApiBadge label="container" />  | <code>HTMLElement &#124; null</code>                                                      | document.body | Portal container element. Content is portaled to document.body by default. |
+| <ApiBadge label="trapFocus" />  | <code>boolean</code>                                                                      | false         | Whether to trap focus within content                                       |
+| <ApiBadge label="className" />  | <code>string</code>                                                                       | -             | Appends custom classes to the root slot.                                   |
+
+#### Events {#color-picker-content-events}
+
+| Name                                      | Type                                                            | Default | Description                                                                                                                                                                                                                                                                                                                          |
+| ----------------------------------------- | --------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <ApiBadge label="onOpenAutoFocus" />      | <code>(event: Event) =&gt; void</code>                          | -       | Called when the popover opens, right before focus moves inside (to the first focusable element, else the content itself). Receives a cancelable `openautofocus` event; call `preventDefault()` to skip the auto-focus and leave focus where it is.                                                                                   |
+| <ApiBadge label="onFocusOutside" />       | <code>(event: FocusEvent) =&gt; void</code>                     | -       | Called when focus moves outside the content and trigger (non-modal, non-trapped popovers only). Receives a cancelable `focusoutside` `FocusEvent` dispatched on the newly focused element (native `focusin` is not cancelable); `event.target` is the element that received focus. Call `preventDefault()` to keep the popover open. |
+| <ApiBadge label="onInteractOutside" />    | <code>(event: PointerEvent &#124; FocusEvent) =&gt; void</code> | -       | Called for any outside interaction, after `onPointerDownOutside` or `onFocusOutside`, with the `pointerdown` event or the cancelable `focusoutside` `FocusEvent` described on `onFocusOutside`. Call `preventDefault()` on either to keep the popover open.                                                                          |
+| <ApiBadge label="onCloseAutoFocus" />     | <code>(event: Event) =&gt; void</code>                          | -       | Called when popover closes and focus returns to trigger                                                                                                                                                                                                                                                                              |
+| <ApiBadge label="onEscapeKeyDown" />      | <code>(event: KeyboardEvent) =&gt; void</code>                  | -       | Called when escape is pressed                                                                                                                                                                                                                                                                                                        |
+| <ApiBadge label="onPointerDownOutside" /> | <code>(event: PointerEvent) =&gt; void</code>                   | -       | Called when pointer down occurs outside the content                                                                                                                                                                                                                                                                                  |
+
+#### Data attributes {#color-picker-content-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### ColorPicker.Panel {#color-picker-panel}
+
+#### Data attributes {#color-picker-panel-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                                                               |
+| ----------------------------------------------- | ------------ | ------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot.                                 |
+| <ApiBadge label="data-layout" />                | Always       | The root’s `orientation`; the horizontal layout puts upright sliders beside the area. |
+| <ApiBadge label="role=&quot;group&quot;" />     | Always       | Named by the surrounding `Field.Label`, else by `labels.panel`.                       |
+
+### ColorPicker.Area {#color-picker-area}
+
+#### Data attributes {#color-picker-area-data-attributes}
+
+| Attribute                                          | Applied when                            | Purpose                                                                                     |
+| -------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />    | Always                                  | Stable selector for wrapper styling on the root slot.                                       |
+| <ApiBadge label="data-slot=&quot;thumb&quot;" />   | Always                                  | The `role="slider"` thumb: `aria-valuenow` is saturation, `aria-valuetext` reads both axes. |
+| <ApiBadge label="data-dragging" />                 | On the thumb while the pointer drags    | Marks an active drag.                                                                       |
+| <ApiBadge label="data-focus" />                    | On the thumb while it holds focus       | Draws the focus ring.                                                                       |
+| <ApiBadge label="data-disabled / data-readonly" /> | When the picker is disabled / read-only | Changes the cursor and mutes the plane.                                                     |
+
+### ColorPicker.HueSlider {#color-picker-hue-slider}
+
+#### Data attributes {#color-picker-hue-slider-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### ColorPicker.AlphaSlider {#color-picker-alpha-slider}
+
+#### Data attributes {#color-picker-alpha-slider-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### ColorPicker.EyeDropper {#color-picker-eye-dropper}
+
+#### Data attributes {#color-picker-eye-dropper-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### ColorPicker.Preview {#color-picker-preview}
+
+#### Data attributes {#color-picker-preview-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### ColorPicker.FormatSelect {#color-picker-format-select}
+
+#### Data attributes {#color-picker-format-select-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### ColorPicker.ChannelFields {#color-picker-channel-fields}
+
+#### Data attributes {#color-picker-channel-fields-data-attributes}
+
+| Attribute                                        | Applied when          | Purpose                                               |
+| ------------------------------------------------ | --------------------- | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />  | Always                | Stable selector for wrapper styling on the root slot. |
+| <ApiBadge label="data-slot=&quot;field&quot;" /> | On each channel Input | One typed channel (hex, R/G/B, H/S/L or alpha).       |
+
+### ColorPicker.Swatches {#color-picker-swatches}
+
+#### Data attributes {#color-picker-swatches-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                               |
+| ----------------------------------------------- | ------------ | ----------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for wrapper styling on the root slot. |
+
+### ColorPicker.Swatch {#color-picker-swatch}
+
+#### Props {#color-picker-swatch-props}
+
+| Name                            | Type                                                                                | Default | Description                                                     |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------- | --------------------------------------------------------------- |
+| <ApiBadge label="value" />      | <code>string</code>                                                                 | -       | Color the swatch selects, in any notation `ColorPicker` parses. |
+| <ApiBadge label="classNames" /> | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                            | -       | Per-slot class name overrides.                                  |
+| <ApiBadge label="slotProps" />  | <code>Partial&lt;Record&lt;"root", HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code> | -       | Per-slot HTML attribute overrides.                              |
+| <ApiBadge label="className" />  | <code>string</code>                                                                 | -       | Appends custom classes to the root slot.                        |
+
+#### Data attributes {#color-picker-swatch-data-attributes}
+
+| Attribute                                       | Applied when                              | Purpose                                                                       |
+| ----------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                    | Stable selector for wrapper styling on the root slot.                         |
+| <ApiBadge label="data-selected" />              | When the swatch matches the current value | Draws the selection ring; `aria-pressed` carries it for assistive technology. |
+
+### Type Definitions {#color-type-definitions}
+
+| Name                                                                                                      | Definition                                                                                                                                                                                                                                                                                                              |
+| --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="color-td-colorpickerformat"><ApiBadge label="ColorPickerFormat" /></span>                       | <code>'hex' &#124; 'rgb' &#124; 'hsl'</code>                                                                                                                                                                                                                                                                            |
+| <span id="color-td-colorpickerorientation"><ApiBadge label="ColorPickerOrientation" /></span>             | <code>'vertical' &#124; 'horizontal'</code>                                                                                                                                                                                                                                                                             |
+| <span id="color-td-colorpickersize"><ApiBadge label="ColorPickerSize" /></span>                           | <code>'small' &#124; 'base' &#124; 'large'</code>                                                                                                                                                                                                                                                                       |
+| <span id="color-td-colorpickerlabels"><ApiBadge label="ColorPickerLabels" /></span>                       | <code>&#123; panel: string; trigger: string; area: string; areaRoleDescription: string; areaValue: string; hue: string; alpha: string; hex: string; red: string; green: string; blue: string; saturation: string; lightness: string; format: string; eyeDropper: string; swatches: string; swatch: string &#125;</code> |
+| <span id="color-td-colorpickerinputslot"><ApiBadge label="ColorPickerInputSlot" /></span>                 | <code>'root' &#124; 'preview'</code>                                                                                                                                                                                                                                                                                    |
+| <span id="color-td-popovervariant"><ApiBadge label="PopoverVariant" /></span>                             | <code>'white' &#124; 'dark' &#124; 'info' &#124; 'success' &#124; 'warning' &#124; 'danger' &#124; 'neutral'</code>                                                                                                                                                                                                     |
+| <span id="color-td-side"><ApiBadge label="Side" /></span>                                                 | <code>'top' &#124; 'right' &#124; 'bottom' &#124; 'left'</code>                                                                                                                                                                                                                                                         |
+| <span id="color-td-align"><ApiBadge label="Align" /></span>                                               | <code>'start' &#124; 'center' &#124; 'end'</code>                                                                                                                                                                                                                                                                       |
+| <span id="color-td-colorpickerpanelslot"><ApiBadge label="ColorPickerPanelSlot" /></span>                 | <code>'root' &#124; 'controls' &#124; 'sliders' &#124; 'fields'</code>                                                                                                                                                                                                                                                  |
+| <span id="color-td-colorpickerareaslot"><ApiBadge label="ColorPickerAreaSlot" /></span>                   | <code>'root' &#124; 'thumb'</code>                                                                                                                                                                                                                                                                                      |
+| <span id="color-td-colorpickerchannelfieldsslot"><ApiBadge label="ColorPickerChannelFieldsSlot" /></span> | <code>'root' &#124; 'field'</code>                                                                                                                                                                                                                                                                                      |
+
+{/* api-tables:end */}

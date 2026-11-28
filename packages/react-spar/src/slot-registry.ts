@@ -1,10 +1,21 @@
 import { AccordionBase, AccordionContentBase, AccordionHeaderBase, AccordionIndicatorBase, AccordionItemBase, AccordionTriggerBase } from './components/accordion/base';
 import { AlertActionsBase, AlertBase, AlertCloseBase, AlertContentBase, AlertDescriptionBase, AlertTitleBase } from './components/alert/base';
+import { AvatarBadgeBase, AvatarBase, AvatarFallbackBase, AvatarGroupBase, AvatarImageBase } from './components/avatar/base';
 import { BadgeBase } from './components/badge/base';
 import { BreadcrumbBase, BreadcrumbItemBase, BreadcrumbLinkBase, BreadcrumbListBase, BreadcrumbPageBase, BreadcrumbSeparatorBase } from './components/breadcrumb/base';
 import { ButtonBase } from './components/button/base';
 import { CalendarBase } from './components/calendar/base';
 import { CardBase, CardBodyBase, CardDescriptionBase, CardFooterBase, CardHeaderBase, CardTitleBase } from './components/card/base';
+import {
+  CarouselAutoplayTriggerBase,
+  CarouselBase,
+  CarouselControlsBase,
+  CarouselIndicatorsBase,
+  CarouselNextTriggerBase,
+  CarouselPrevTriggerBase,
+  CarouselSlideBase,
+  CarouselViewportBase,
+} from './components/carousel/base';
 import {
   ChatBase,
   ChatComposerBase,
@@ -21,6 +32,22 @@ import {
 } from './components/chat/base';
 import { CheckboxBase } from './components/checkbox/base';
 import { ChipBase } from './components/chip/base';
+import { CurrencyInputBase, CurrencyInputCurrencySelectBase, CurrencyInputFieldBase, CurrencyInputSymbolBase } from './components/currency-input/base';
+import {
+  ColorPickerBase,
+  ColorPickerAlphaSliderBase,
+  ColorPickerAreaBase,
+  ColorPickerChannelFieldsBase,
+  ColorPickerContentBase,
+  ColorPickerEyeDropperBase,
+  ColorPickerFormatSelectBase,
+  ColorPickerHueSliderBase,
+  ColorPickerInputBase,
+  ColorPickerPanelBase,
+  ColorPickerPreviewBase,
+  ColorPickerSwatchBase,
+  ColorPickerSwatchesBase,
+} from './components/color-picker/base';
 import {
   DialogBodyBase,
   DialogCloseBase,
@@ -85,6 +112,8 @@ import {
   SelectSeparatorBase,
   SelectTriggerBase,
   SelectViewportBase,
+  SelectSearchBase,
+  SelectEmptyBase,
 } from './components/select/base';
 import { SliderBase, SliderRangeBase, SliderThumbBase, SliderTicksBase, SliderTrackBase, SliderValueBase } from './components/slider/base';
 import { SpinnerBase } from './components/spinner/base';
@@ -92,12 +121,15 @@ import { StepperBase, StepperDescriptionBase, StepperItemBase, StepperTitleBase 
 import { SwitchBase } from './components/switch/base';
 import { TableBase } from './components/table/base';
 import { TabsBase, TabsContentBase, TabsListBase, TabsTriggerBase } from './components/tabs/base';
+import { PhoneInputBase, PhoneInputCountrySelectBase, PhoneInputDialCodeBase, PhoneInputFieldBase } from './components/phone-input/base';
+import { TimelineBase, TimelineDescriptionBase, TimelineItemBase, TimelineTimeBase, TimelineTitleBase } from './components/timeline/base';
 import { PopoverArrowBase, PopoverCloseBase, PopoverContentBase, PopoverDescriptionBase, PopoverHeaderBase, PopoverTriggerBase } from './components/popover/base';
 import { ToggleButtonGroupBase, ToggleButtonGroupItemBase } from './components/toggle-button-group/base';
 import { RadioBase, RadioIndicatorBase, RadioItemBase, RadioLabelBase } from './components/radio/base';
 import { TooltipArrowBase, TooltipContentBase, TooltipDescriptionBase, TooltipHeaderBase, TooltipTriggerBase } from './components/tooltip/base';
 import { SkeletonBase } from './components/skeleton/base';
 import { ToastBase, ToasterBase } from './components/toast/base';
+import { RatingBase, RatingItemBase } from './components/rating/base';
 import {
   UploadActionsBase,
   UploadBase,
@@ -137,6 +169,11 @@ export const slotClassRegistry = {
   alertDescription: { slots: AlertDescriptionBase.classes },
   alertActions: { slots: AlertActionsBase.classes },
   alertClose: { slots: AlertCloseBase.classes },
+  avatar: { slots: AvatarBase.classes },
+  avatarImage: { slots: AvatarImageBase.classes },
+  avatarFallback: { slots: AvatarFallbackBase.classes },
+  avatarBadge: { slots: AvatarBadgeBase.classes },
+  avatarGroup: { slots: AvatarGroupBase.classes },
   badge: { slots: BadgeBase.classes },
   breadcrumb: { slots: BreadcrumbBase.classes },
   breadcrumbList: { slots: BreadcrumbListBase.classes },
@@ -152,6 +189,14 @@ export const slotClassRegistry = {
   cardDescription: { slots: CardDescriptionBase.classes },
   cardBody: { slots: CardBodyBase.classes },
   cardFooter: { slots: CardFooterBase.classes },
+  carousel: { slots: CarouselBase.classes },
+  carouselViewport: { slots: CarouselViewportBase.classes },
+  carouselSlide: { slots: CarouselSlideBase.classes },
+  carouselControls: { slots: CarouselControlsBase.classes },
+  carouselPrevTrigger: { slots: CarouselPrevTriggerBase.classes },
+  carouselNextTrigger: { slots: CarouselNextTriggerBase.classes },
+  carouselIndicators: { slots: CarouselIndicatorsBase.classes },
+  carouselAutoplayTrigger: { slots: CarouselAutoplayTriggerBase.classes },
   chat: { slots: ChatBase.classes },
   chatConversationList: { slots: ChatConversationListBase.classes },
   chatConversation: { slots: ChatConversationBase.classes },
@@ -166,6 +211,23 @@ export const slotClassRegistry = {
   chatComposer: { slots: ChatComposerBase.classes },
   checkbox: { slots: CheckboxBase.classes },
   chip: { slots: ChipBase.classes },
+  colorPicker: { slots: ColorPickerBase.classes },
+  colorPickerInput: { slots: ColorPickerInputBase.classes },
+  colorPickerContent: { slots: ColorPickerContentBase.classes },
+  colorPickerPanel: { slots: ColorPickerPanelBase.classes },
+  colorPickerArea: { slots: ColorPickerAreaBase.classes },
+  colorPickerHueSlider: { slots: ColorPickerHueSliderBase.classes },
+  colorPickerAlphaSlider: { slots: ColorPickerAlphaSliderBase.classes },
+  colorPickerEyeDropper: { slots: ColorPickerEyeDropperBase.classes },
+  colorPickerPreview: { slots: ColorPickerPreviewBase.classes },
+  colorPickerFormatSelect: { slots: ColorPickerFormatSelectBase.classes },
+  colorPickerChannelFields: { slots: ColorPickerChannelFieldsBase.classes },
+  colorPickerSwatches: { slots: ColorPickerSwatchesBase.classes },
+  colorPickerSwatch: { slots: ColorPickerSwatchBase.classes },
+  currencyInput: { slots: CurrencyInputBase.classes },
+  currencyInputField: { slots: CurrencyInputFieldBase.classes },
+  currencyInputSymbol: { slots: CurrencyInputSymbolBase.classes },
+  currencyInputCurrencySelect: { slots: CurrencyInputCurrencySelectBase.classes },
   dialogTrigger: { slots: DialogTriggerBase.classes },
   dialogOverlay: { slots: DialogOverlayBase.classes },
   dialogPanel: { slots: DialogPanelBase.classes },
@@ -222,6 +284,8 @@ export const slotClassRegistry = {
   selectIndicator: { slots: SelectIndicatorBase.classes },
   selectContent: { slots: SelectContentBase.classes },
   selectViewport: { slots: SelectViewportBase.classes },
+  selectSearch: { slots: SelectSearchBase.classes },
+  selectEmpty: { slots: SelectEmptyBase.classes },
   selectItem: { slots: SelectItemBase.classes },
   selectGroup: { slots: SelectGroupBase.classes },
   selectLabel: { slots: SelectLabelBase.classes },
@@ -244,6 +308,15 @@ export const slotClassRegistry = {
   tabsList: { slots: TabsListBase.classes },
   tabsTrigger: { slots: TabsTriggerBase.classes },
   tabsContent: { slots: TabsContentBase.classes },
+  phoneInput: { slots: PhoneInputBase.classes },
+  phoneInputField: { slots: PhoneInputFieldBase.classes },
+  phoneInputDialCode: { slots: PhoneInputDialCodeBase.classes },
+  phoneInputCountrySelect: { slots: PhoneInputCountrySelectBase.classes },
+  timeline: { slots: TimelineBase.classes },
+  timelineItem: { slots: TimelineItemBase.classes },
+  timelineTitle: { slots: TimelineTitleBase.classes },
+  timelineDescription: { slots: TimelineDescriptionBase.classes },
+  timelineTime: { slots: TimelineTimeBase.classes },
   toggleButtonGroup: { slots: ToggleButtonGroupBase.classes },
   toggleButtonGroupItem: { slots: ToggleButtonGroupItemBase.classes },
   popoverTrigger: { slots: PopoverTriggerBase.classes },
@@ -275,4 +348,6 @@ export const slotClassRegistry = {
   uploadItemPreview: { slots: UploadItemPreviewBase.classes },
   uploadItemActions: { slots: UploadItemActionsBase.classes },
   uploadItemAction: { slots: UploadItemActionBase.classes },
+  rating: { slots: RatingBase.classes },
+  ratingItem: { slots: RatingItemBase.classes },
 } as const;

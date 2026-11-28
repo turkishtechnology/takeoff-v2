@@ -1,0 +1,485 @@
+---
+title: Carousel
+description:
+  A slide viewer with previous/next arrows, page indicators, several slides per
+  view, and optional autoplay with a play/pause control. Follows the WAI-ARIA
+  carousel pattern.
+sidebar_label: Carousel
+slug: /components/carousel
+---
+
+import LiveCode from '@site/src/components/LiveCode';
+import {
+  Button,
+  Carousel,
+  ReactSparDemoRoot,
+} from '@site/src/components/ReactSparDocs';
+import { ApiBadge } from '@site/src/components/ApiBadge';
+
+export const carouselScope = { Button, Carousel };
+
+{/* prettier-ignore-start */}
+
+export const playgroundDemo = String.raw`
+const slides = [
+  { title: 'Istanbul', color: '#c8102e' },
+  { title: 'London', color: '#1d4ed8' },
+  { title: 'Tokyo', color: '#0f766e' },
+  { title: 'New York', color: '#7c3aed' },
+];
+
+function PlaygroundDemo() {
+  return (
+    <Carousel aria-label="Featured destinations" className="w-full max-w-160">
+      <Carousel.Viewport>
+        {slides.map(slide => (
+          <Carousel.Slide key={slide.title}>
+            <div className="flex h-60 items-center justify-center rounded text-2xl font-medium text-white" style={{ background: slide.color }}>
+              {slide.title}
+            </div>
+          </Carousel.Slide>
+        ))}
+      </Carousel.Viewport>
+      <Carousel.Controls />
+    </Carousel>
+  );
+}
+
+render(<PlaygroundDemo />);
+`;
+
+export const slidesPerViewDemo = String.raw`
+function SlidesPerViewDemo() {
+  return (
+    <Carousel aria-label="Fare cards" slidesPerView={3} loop={false} controlsPlacement="outside" className="w-full max-w-180">
+      <Carousel.Viewport>
+        {Array.from({ length: 7 }, (_, index) => (
+          <Carousel.Slide key={index}>
+            <div className="flex h-36 items-center justify-center rounded border border-neutral-200 text-lg">Fare {index + 1}</div>
+          </Carousel.Slide>
+        ))}
+      </Carousel.Viewport>
+      <Carousel.Controls />
+    </Carousel>
+  );
+}
+
+render(<SlidesPerViewDemo />);
+`;
+
+export const autoplayDemo = String.raw`
+const colors = ['#c8102e', '#1d4ed8', '#0f766e', '#7c3aed'];
+
+function AutoplayDemo() {
+  return (
+    <Carousel aria-label="Campaigns" autoplay autoplayInterval={3000} className="w-full max-w-160">
+      <Carousel.Viewport>
+        {colors.map((color, index) => (
+          <Carousel.Slide key={color}>
+            <div className="flex h-60 items-center justify-center rounded text-2xl text-white" style={{ background: color }}>
+              Campaign {index + 1}
+            </div>
+          </Carousel.Slide>
+        ))}
+      </Carousel.Viewport>
+      <Carousel.Controls />
+    </Carousel>
+  );
+}
+
+render(<AutoplayDemo />);
+`;
+
+export const positionDemo = String.raw`
+function PositionDemo() {
+  const layouts = [
+    { placement: 'inside', position: 'start' },
+    { placement: 'inside', position: 'end' },
+    { placement: 'outside', position: 'distributed' },
+    { placement: 'outside', position: 'end' },
+  ];
+
+  return (
+    <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+      {layouts.map(({ placement, position }) => (
+        <Carousel key={placement + position} aria-label={placement + ' ' + position} controlsPlacement={placement} controlsPosition={position}>
+          <Carousel.Viewport>
+            {[1, 2, 3].map(n => (
+              <Carousel.Slide key={n}>
+                <div className="flex h-40 items-center justify-center rounded bg-neutral-700 text-white">
+                  {placement} · {position} · {n}
+                </div>
+              </Carousel.Slide>
+            ))}
+          </Carousel.Viewport>
+          <Carousel.Controls />
+        </Carousel>
+      ))}
+    </div>
+  );
+}
+
+render(<PositionDemo />);
+`;
+
+export const verticalDemo = String.raw`
+function VerticalDemo() {
+  return (
+    <div className="flex w-full justify-center gap-6">
+      <Carousel aria-label="Vertical distributed" orientation="vertical" style={{ height: 300, width: 280 }}>
+        <Carousel.Viewport>
+          {[1, 2, 3, 4].map(n => (
+            <Carousel.Slide key={n}>
+              <div className="flex h-full items-center justify-center rounded bg-neutral-700 text-white">Slide {n}</div>
+            </Carousel.Slide>
+          ))}
+        </Carousel.Viewport>
+        <Carousel.Controls />
+      </Carousel>
+      <Carousel aria-label="Vertical end" orientation="vertical" controlsPlacement="outside" controlsPosition="end" slidesPerView={2} style={{ height: 300, width: 320 }}>
+        <Carousel.Viewport>
+          {[1, 2, 3, 4].map(n => (
+            <Carousel.Slide key={n}>
+              <div className="flex h-full items-center justify-center rounded bg-neutral-700 text-white">Slide {n}</div>
+            </Carousel.Slide>
+          ))}
+        </Carousel.Viewport>
+        <Carousel.Controls />
+      </Carousel>
+    </div>
+  );
+}
+
+render(<VerticalDemo />);
+`;
+
+export const controlledDemo = String.raw`
+function ControlledDemo() {
+  const [index, setIndex] = React.useState(0);
+  const steps = ['Search', 'Select', 'Passengers', 'Payment'];
+
+  return (
+    <div className="flex w-full max-w-160 flex-col gap-3">
+      <Carousel aria-label="Booking steps" value={index} onValueChange={setIndex} loop={false}>
+        <Carousel.Viewport>
+          {steps.map(step => (
+            <Carousel.Slide key={step}>
+              <div className="flex h-40 items-center justify-center rounded border border-neutral-200 text-xl">{step}</div>
+            </Carousel.Slide>
+          ))}
+        </Carousel.Viewport>
+        <Carousel.Controls />
+      </Carousel>
+      <div className="flex items-center gap-2">
+        {steps.map((step, i) => (
+          <Button key={step} size="small" appearance={i === index ? 'filled' : 'outlined'} onClick={() => setIndex(i)}>
+            {step}
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+render(<ControlledDemo />);
+`;
+
+export const customControlsDemo = String.raw`
+function CustomControlsDemo() {
+  return (
+    <Carousel
+      aria-label="Gallery"
+      autoplay
+      controlsPosition="end"
+      labels={{ previous: 'Önceki slayt', next: 'Sonraki slayt', play: 'Otomatik gösterimi başlat', pause: 'Otomatik gösterimi durdur', indicator: '{index}. slayta git', slide: '{index} / {count}', roleDescription: 'karusel', slideRoleDescription: 'slayt' }}
+      className="w-full max-w-160"
+    >
+      <Carousel.Viewport>
+        {['#c8102e', '#1d4ed8', '#0f766e'].map((color, index) => (
+          <Carousel.Slide key={color}>
+            <div className="flex h-52 items-center justify-center rounded text-xl text-white" style={{ background: color }}>Slayt {index + 1}</div>
+          </Carousel.Slide>
+        ))}
+      </Carousel.Viewport>
+      <Carousel.Controls>
+        <Carousel.AutoplayTrigger />
+        <Carousel.PrevTrigger />
+        <Carousel.Indicators />
+        <Carousel.NextTrigger />
+      </Carousel.Controls>
+    </Carousel>
+  );
+}
+
+render(<CustomControlsDemo />);
+`;
+
+{/* prettier-ignore-end */}
+
+# Carousel
+
+`Carousel` shows a set of slides one step at a time, with arrows, page
+indicators and optional autoplay. Behavior (the index, the page model, keyboard,
+autoplay and ARIA) comes from Spar's headless `Carousel`; this wrapper adds the
+Takeoff track, controls and layout.
+
+## Usage
+
+```tsx
+import { Carousel } from '@takeoff-ui/react-spar';
+```
+
+```tsx
+<Carousel aria-label="Featured destinations">
+  <Carousel.Viewport>
+    <Carousel.Slide />
+  </Carousel.Viewport>
+  <Carousel.Controls>
+    <Carousel.PrevTrigger />
+    <Carousel.Indicators>
+      <Carousel.AutoplayTrigger />
+    </Carousel.Indicators>
+    <Carousel.NextTrigger />
+  </Carousel.Controls>
+</Carousel>
+```
+
+`Carousel.Controls` without children renders exactly the set above. Name every
+carousel with `aria-label` or `aria-labelledby`: the root is a `region`
+landmark.
+
+## Playground
+
+<LiveCode
+  code={playgroundDemo}
+  noInline
+  previewMinHeight={300}
+  previewWrapper={ReactSparDemoRoot}
+  scope={carouselScope}
+/>
+
+## Slides per view
+
+`slidesPerView` shows several slides at once. Navigation still moves one slide
+per step, so there is one indicator per start position
+(`slides - slidesPerView + 1`). Without `loop`, the arrow at an end is hidden.
+
+<LiveCode
+  code={slidesPerViewDemo}
+  noInline
+  previewMinHeight={240}
+  previewWrapper={ReactSparDemoRoot}
+  scope={carouselScope}
+/>
+
+## Autoplay
+
+`autoplay` advances every `autoplayInterval` milliseconds (3000 by default). The
+play/pause control appears in front of the indicators. Rotation pauses while the
+pointer is over the carousel or focus is inside it, stops for good when the user
+presses pause, and does not start when the user prefers reduced motion. Without
+`loop`, it stops on the last page.
+
+<LiveCode
+  code={autoplayDemo}
+  noInline
+  previewMinHeight={300}
+  previewWrapper={ReactSparDemoRoot}
+  scope={carouselScope}
+/>
+
+## Controls placement and position
+
+`controlsPlacement` puts the controls over the slides (`inside`) or in reserved
+room around them (`outside`). `controlsPosition` lays them out: `distributed`
+(arrows on the sides, indicators along the bottom), or one bar at the `start` or
+`end` edge.
+
+<LiveCode
+  code={positionDemo}
+  noInline
+  previewMinHeight={420}
+  previewWrapper={ReactSparDemoRoot}
+  scope={carouselScope}
+/>
+
+## Vertical
+
+With `orientation="vertical"` slides move up and down and ArrowUp / ArrowDown
+navigate. Give the root a height (it defaults to 300px). `start` / `end` are the
+inline-start / inline-end edges here, and `distributed` puts the arrows at the
+top and bottom with the indicators on the inline-end side.
+
+<LiveCode
+  code={verticalDemo}
+  noInline
+  previewMinHeight={340}
+  previewWrapper={ReactSparDemoRoot}
+  scope={carouselScope}
+/>
+
+## Controlled
+
+`value` is the index of the first visible slide; pair it with `onValueChange`.
+`isPlaying` / `onPlayingChange` control autoplay the same way.
+
+<LiveCode
+  code={controlledDemo}
+  noInline
+  previewMinHeight={260}
+  previewWrapper={ReactSparDemoRoot}
+  scope={carouselScope}
+/>
+
+## Custom controls and labels
+
+Place the parts yourself to change the order or leave some out. Every
+user-facing string is in `labels`; `{index}` and `{count}` are filled in.
+
+<LiveCode
+  code={customControlsDemo}
+  noInline
+  previewMinHeight={280}
+  previewWrapper={ReactSparDemoRoot}
+  scope={carouselScope}
+/>
+
+## Accessibility
+
+The root is a `region` with `aria-roledescription="carousel"`; each slide is a
+`group` with `aria-roledescription="slide"` and a "2 of 5" name. Slides outside
+the visible window are `inert`, so their links and buttons are not tab stops.
+The viewport is a polite live region except while rotating. The arrows,
+indicators and play/pause control are buttons that point at the viewport with
+`aria-controls`; the current indicator has `aria-current="true"`.
+
+| Key                        | Action                                             |
+| -------------------------- | -------------------------------------------------- |
+| `ArrowRight` / `ArrowDown` | Next slide (horizontal / vertical).                |
+| `ArrowLeft` / `ArrowUp`    | Previous slide (horizontal / vertical).            |
+| `Tab`                      | Moves through the controls and the visible slides. |
+
+The horizontal arrows flip in right-to-left layouts. Arrow keys typed in a text
+field inside a slide stay with the field.
+
+## API Reference
+
+{/* api-tables:start (generated by apps/docs/scripts/generate-api-mdx.mjs - do not edit by hand) */}
+
+### Carousel {#carousel}
+
+See
+[Spar Carousel docs](https://v2.takeoffui.com/headless/docs/Components/Carousel)
+for primitive behavior.
+
+#### Props {#carousel-props}
+
+| Name                                   | Type                                                                                        | Default       | Description                                                                                                                                                                                                            |
+| -------------------------------------- | ------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ApiBadge label="children" />          | <code>React.ReactNode</code>                                                                | -             | `Carousel.Viewport` with its `Carousel.Slide`s, and usually `Carousel.Controls`.                                                                                                                                       |
+| <ApiBadge label="controlsPlacement" /> | <code><a href="#carousel-td-carouselcontrolsplacement">CarouselControlsPlacement</a></code> | 'inside'      | Where the navigation sits. `outside` reserves room around the slides.                                                                                                                                                  |
+| <ApiBadge label="controlsPosition" />  | <code><a href="#carousel-td-carouselcontrolsposition">CarouselControlsPosition</a></code>   | 'distributed' | How the navigation is laid out (see `CarouselControlsPosition`).                                                                                                                                                       |
+| <ApiBadge label="labels" />            | <code>Partial&lt;<a href="#carousel-td-carousellabels">CarouselLabels</a>&gt;</code>        | -             | Overrides for the user-facing strings (`previous`, `next`, `play`, `pause`, `indicator`, `slide`, `roleDescription`, `slideRoleDescription`). `{index}` / `{count}` are filled in; blank entries fall back to English. |
+| <ApiBadge label="classNames" />        | <code>Partial&lt;Record&lt;"root", string&gt;&gt;</code>                                    | -             | Per-slot class name overrides.                                                                                                                                                                                         |
+| <ApiBadge label="slotProps" />         | <code>Partial&lt;Record&lt;"root", React.HTMLAttributes&lt;HTMLElement&gt;&gt;&gt;</code>   | -             | Per-slot HTML attribute overrides.                                                                                                                                                                                     |
+| <ApiBadge label="className" />         | <code>string</code>                                                                         | -             | Appends custom classes to the root slot.                                                                                                                                                                               |
+
+#### Data attributes {#carousel-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                                                          |
+| ----------------------------------------------- | ------------ | ---------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the root slot.                               |
+| <ApiBadge label="data-orientation" />           | Always       | Reflects the resolved `orientation`. Emitted by Spar.            |
+| <ApiBadge label="data-controls-placement" />    | Always       | Reflects `controlsPlacement` (`inside` \| `outside`).            |
+| <ApiBadge label="data-controls-position" />     | Always       | Reflects `controlsPosition` (`distributed` \| `start` \| `end`). |
+
+### Carousel.Viewport {#carousel-viewport}
+
+See
+[Spar Carousel docs](https://v2.takeoffui.com/headless/docs/Components/Carousel)
+for primitive behavior.
+
+#### Data attributes {#carousel-viewport-data-attributes}
+
+| Attribute                                        | Applied when | Purpose                             |
+| ------------------------------------------------ | ------------ | ----------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" />  | Always       | Stable selector for the root slot.  |
+| <ApiBadge label="data-slot=&quot;track&quot;" /> | Always       | Stable selector for the track slot. |
+
+### Carousel.Slide {#carousel-slide}
+
+See
+[Spar Carousel docs](https://v2.takeoffui.com/headless/docs/Components/Carousel)
+for primitive behavior.
+
+#### Data attributes {#carousel-slide-data-attributes}
+
+| Attribute                                       | Applied when                                 | Purpose                                                        |
+| ----------------------------------------------- | -------------------------------------------- | -------------------------------------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always                                       | Stable selector for the root slot.                             |
+| <ApiBadge label="data-active" />                | While the slide is inside the visible window | Visible-slide hook. Emitted by Spar; other slides are `inert`. |
+
+### Carousel.Controls {#carousel-controls}
+
+See
+[Spar Carousel docs](https://v2.takeoffui.com/headless/docs/Components/Carousel)
+for primitive behavior.
+
+#### Data attributes {#carousel-controls-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                            |
+| ----------------------------------------------- | ------------ | ---------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the root slot. |
+
+### Carousel.PrevTrigger / Carousel.NextTrigger {#carousel-trigger}
+
+See
+[Spar Carousel docs](https://v2.takeoffui.com/headless/docs/Components/Carousel)
+for primitive behavior.
+
+#### Data attributes {#carousel-trigger-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                            |
+| ----------------------------------------------- | ------------ | ---------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the root slot. |
+
+### Carousel.Indicators {#carousel-indicators}
+
+See
+[Spar Carousel docs](https://v2.takeoffui.com/headless/docs/Components/Carousel)
+for primitive behavior.
+
+#### Data attributes {#carousel-indicators-data-attributes}
+
+| Attribute                                                | Applied when                         | Purpose                                                                  |
+| -------------------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------ |
+| <ApiBadge label="data-slot=&quot;root&quot;" />          | Always                               | Stable selector for the root slot.                                       |
+| <ApiBadge label="data-slot=&quot;indicator&quot;" />     | Always                               | Stable selector for the indicator slot.                                  |
+| <ApiBadge label="data-slot=&quot;indicator-dot&quot;" /> | Always                               | Stable selector for the indicator-dot slot.                              |
+| <ApiBadge label="data-active" />                         | On the indicator of the current page | Active dot treatment; `aria-current="true"` is set too. Emitted by Spar. |
+
+### Carousel.AutoplayTrigger {#carousel-autoplay-trigger}
+
+See
+[Spar Carousel docs](https://v2.takeoffui.com/headless/docs/Components/Carousel)
+for primitive behavior.
+
+#### Data attributes {#carousel-autoplay-trigger-data-attributes}
+
+| Attribute                                       | Applied when | Purpose                            |
+| ----------------------------------------------- | ------------ | ---------------------------------- |
+| <ApiBadge label="data-slot=&quot;root&quot;" /> | Always       | Stable selector for the root slot. |
+
+### Type Definitions {#carousel-type-definitions}
+
+| Name                                                                                                                     | Definition                                                                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <span id="carousel-td-carouselcontrolsplacement"><ApiBadge label="CarouselControlsPlacement" /></span>                   | <code>'inside' &#124; 'outside'</code>                                                                                                                                          |
+| <span id="carousel-td-carouselcontrolsposition"><ApiBadge label="CarouselControlsPosition" /></span>                     | <code>'distributed' &#124; 'start' &#124; 'end'</code>                                                                                                                          |
+| <span id="carousel-td-carousellabels"><ApiBadge label="CarouselLabels" /></span>                                         | <code>&#123; previous: string; next: string; play: string; pause: string; indicator: string; slide: string; roleDescription: string; slideRoleDescription: string &#125;</code> |
+| <span id="carousel-td-carouselviewportslot"><ApiBadge label="CarouselViewportSlot" /></span>                             | <code>'root' &#124; 'track'</code>                                                                                                                                              |
+| <span id="carousel-td-carouselsliderenderprops"><ApiBadge label="CarouselSlideRenderProps" /></span>                     | <code>Pick&lt;SparCarouselSlideRenderProps, 'index' &#124; 'isActive'&gt;</code>                                                                                                |
+| <span id="carousel-td-carouselindicatorsslot"><ApiBadge label="CarouselIndicatorsSlot" /></span>                         | <code>'root' &#124; 'indicator' &#124; 'indicatorDot'</code>                                                                                                                    |
+| <span id="carousel-td-carouselautoplaytriggerrenderprops"><ApiBadge label="CarouselAutoplayTriggerRenderProps" /></span> | <code>Pick&lt;SparCarouselAutoplayTriggerRenderProps, 'isPlaying'&gt;</code>                                                                                                    |
+
+{/* api-tables:end */}
