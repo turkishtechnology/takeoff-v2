@@ -177,7 +177,7 @@ After installing Spar:
 Need help with installation or setup?
 
 - **GitHub Issues:**
-  [Report a bug or issue](https://github.com/turkishtechnology/spar/issues)
+  [Report a bug or issue](https://github.com/turkishtechnology/takeoff-v2/issues)
 - **Documentation:** Browse component docs for detailed usage examples
 - **Contributing:** Check our
-  [Contributing Guide](https://github.com/turkishtechnology/spar/blob/main/CONTRIBUTING.md)
+  [Contributing Guide](https://github.com/turkishtechnology/takeoff-v2/blob/develop/CONTRIBUTING.md)

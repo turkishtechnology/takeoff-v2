@@ -103,6 +103,12 @@ jobs:
           #   writes hundreds of them into the CHANGELOGs, and github.com
           #   answers a burst of requests with 503, failing every release PR
           #   on links that cannot break
+          #
+          # Remap: this repo's `/blob/<ref>/<path>` and `/tree/<ref>/<path>`
+          # links are checked as files in the checkout instead of over HTTP.
+          # github.com answers those with the same burst 503s, and the
+          # checkout is the tree the PR will merge, so a moved file still
+          # fails the check.
           args: |
             --no-progress
             --root-dir ${{ github.workspace }}
@@ -110,6 +116,7 @@ jobs:
             --exclude '/docs/'
             --exclude 'npmjs\.com'
             --exclude 'github\.com/turkishtechnology/takeoff-v2/(commit|pull)/'
+            --remap 'https://github\.com/turkishtechnology/takeoff-v2/(?:blob|tree)/[^/]+/(.*) file://${{ github.workspace }}/$1'
             './**/*.md'
             './**/*.mdx'
           fail: true
